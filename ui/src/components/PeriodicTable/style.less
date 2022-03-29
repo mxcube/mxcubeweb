@@ -1,21 +1,20 @@
 // Mixins
 .transition(@args) {
   -webkit-transition: @args;
-          transition: @args;
+  transition: @args;
 }
 
 .transform(@args) {
   -webkit-transform: @args;
-      -ms-transform: @args;
-          transform: @args;
+  -ms-transform: @args;
+  transform: @args;
 }
 
 .transform-origin(@args) {
   -webkit-transform-origin: @args;
-      -ms-transform-origin: @args;
-          transform-origin: @args;
+  -ms-transform-origin: @args;
+  transform-origin: @args;
 }
-
 
 // Styles
 body {
@@ -32,7 +31,7 @@ body {
 
 .periodic-row {
   clear: both;
-	 height: 8%;
+  height: 8%;
 }
 
 .cell {
@@ -54,13 +53,13 @@ body {
   bottom: 1px;
   right: 1px;
   box-sizing: border-box;
-  box-shadow: 0 0 4px rgba(255,255,255,0.5);
-  border: 1px solid rgba(0,0,0,0.05);
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
+  border: 1px solid rgba(0, 0, 0, 0.05);
   text-align: center;
   cursor: default;
   pointer-events: none;
   .transition(all 200ms ease);
-  
+
   background-color: rgba(0, 128, 128, 0.6);
 }
 
@@ -69,7 +68,7 @@ body {
 }
 
 .cell:hover .element {
-  border-color: rgba(0,0,0,0.1);
+  border-color: rgba(0, 0, 0, 0.1);
   .transform(scale(1.5, 1.5));
   z-index: 1;
   background-color: rgba(0, 128, 128, 1);
@@ -79,7 +78,7 @@ body {
 .at_details {
   position: absolute;
   font-size: 4px;
-  color: rgba(255,255,255,0.5);
+  color: rgba(255, 255, 255, 0.5);
   opacity: 0;
 }
 
@@ -97,7 +96,7 @@ body {
   font-size: 9px;
   line-height: 1;
   height: 9px;
-  color: rgba(255,255,255,0.9);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .at_details {
@@ -107,46 +106,46 @@ body {
 }
 
 // styles based on nth-child
-.cell:nth-child(-n+2) .element,
-.cell:nth-child(n+13) .element {
+.cell:nth-child(-n + 2) .element,
+.cell:nth-child(n + 13) .element {
   background-color: rgba(0, 160, 96, 0.6);
 }
 
 .cell:nth-child(1) .element,
-.periodic-row:nth-child(2) .cell:nth-child(n+14) .element,
-.periodic-row:nth-child(3) .cell:nth-child(n+15) .element,
-.periodic-row:nth-child(4) .cell:nth-child(n+16) .element,
-.periodic-row:nth-child(5) .cell:nth-child(n+17) .element {
+.periodic-row:nth-child(2) .cell:nth-child(n + 14) .element,
+.periodic-row:nth-child(3) .cell:nth-child(n + 15) .element,
+.periodic-row:nth-child(4) .cell:nth-child(n + 16) .element,
+.periodic-row:nth-child(5) .cell:nth-child(n + 17) .element {
   background-color: rgba(0, 192, 64, 0.6);
 }
 
-.periodic-row:nth-child(-n+6) .cell:nth-child(18) .element {
+.periodic-row:nth-child(-n + 6) .cell:nth-child(18) .element {
   background-color: rgba(64, 192, 0, 0.6);
 }
 
-.periodic-row:nth-child(n+9) .element {
+.periodic-row:nth-child(n + 9) .element {
   background-color: rgba(0, 96, 160, 0.6);
 }
 
 // hover styles
-.cell:nth-child(-n+2):hover .element,
-.cell:nth-child(n+13):hover .element {
+.cell:nth-child(-n + 2):hover .element,
+.cell:nth-child(n + 13):hover .element {
   background-color: rgba(0, 160, 96, 0.9);
 }
 
 .cell:nth-child(1):hover .element,
-.periodic-row:nth-child(2) .cell:nth-child(n+14):hover .element,
-.periodic-row:nth-child(3) .cell:nth-child(n+15):hover .element,
-.periodic-row:nth-child(4) .cell:nth-child(n+16):hover .element,
-.periodic-row:nth-child(5) .cell:nth-child(n+17):hover .element {
+.periodic-row:nth-child(2) .cell:nth-child(n + 14):hover .element,
+.periodic-row:nth-child(3) .cell:nth-child(n + 15):hover .element,
+.periodic-row:nth-child(4) .cell:nth-child(n + 16):hover .element,
+.periodic-row:nth-child(5) .cell:nth-child(n + 17):hover .element {
   background-color: rgba(0, 192, 64, 0.9);
 }
 
-.periodic-row:nth-child(-n+6) .cell:nth-child(18):hover .element {
+.periodic-row:nth-child(-n + 6) .cell:nth-child(18):hover .element {
   background-color: rgba(64, 192, 0, 0.9);
 }
 
-.periodic-row:nth-child(n+9) .cell:hover .element {
+.periodic-row:nth-child(n + 9) .cell:hover .element {
   background-color: rgba(0, 96, 160, 0.9);
 }
 
@@ -188,12 +187,12 @@ body {
     height: 460px;
     margin-right: -2px;
   }
-  
+
   .element {
     right: 2px;
     bottom: 2px;
   }
-  
+
   .at_num,
   .at_details {
     font-size: 4px;
@@ -206,8 +205,8 @@ body {
     font-weight: bold;
     line-height: 30px;
     height: 30px;
-    color: rgba(255,255,255,0.75);
-    text-shadow: 0 0 4px rgba(255,255,255,0.5);
+    color: rgba(255, 255, 255, 0.75);
+    text-shadow: 0 0 4px rgba(255, 255, 255, 0.5);
   }
 }
 
@@ -227,7 +226,7 @@ body {
   .periodic {
     height: 680px;
   }
-  
+
   .at_num,
   .at_details {
     font-size: 5px;
@@ -243,7 +242,7 @@ body {
   .periodic {
     height: 400px;
   }
-  
+
   .at_num,
   .at_details {
     font-size: 10px;

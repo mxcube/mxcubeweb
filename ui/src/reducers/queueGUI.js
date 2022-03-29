@@ -7,7 +7,7 @@ const initialState = {
   visibleList: 'current',
   loading: false,
   showResumeQueueDialog: false,
-  showConfirmCollectDialog: false
+  showConfirmCollectDialog: false,
 };
 
 export default (state = initialState, action) => {
@@ -33,7 +33,7 @@ export default (state = initialState, action) => {
               displayData[task.queueID] = {
                 collapsed: false,
                 selected: false,
-                progress: 0
+                progress: 0,
               };
             }
             sourceNodes.push(task.queueID.toString());
@@ -50,7 +50,7 @@ export default (state = initialState, action) => {
         displayData[task.queueID] = {
           collapsed: false,
           selected: false,
-          progress: 0
+          progress: 0,
         };
       });
 
@@ -59,7 +59,10 @@ export default (state = initialState, action) => {
     case 'ADD_TASK_RESULT': {
       const displayData = {
         ...state.displayData,
-        [action.queueID]: { ...state.displayData[action.queueID], progress: action.progress }
+        [action.queueID]: {
+          ...state.displayData[action.queueID],
+          progress: action.progress,
+        },
       };
 
       return Object.assign({}, state, { displayData });
@@ -71,14 +74,16 @@ export default (state = initialState, action) => {
         displayData[sample.queueID] = {
           collpased: false,
           selected: false,
-          progress: 0
+          progress: 0,
         };
       });
 
       return Object.assign({}, state, { displayData });
     }
     case 'REMOVE_TASK': {
-      return Object.assign({}, state, { displayData: omit(state.displayData, action.queueID) });
+      return Object.assign({}, state, {
+        displayData: omit(state.displayData, action.queueID),
+      });
     }
     case 'QUEUE_LOADING': {
       return { ...state, loading: action.loading };
@@ -87,7 +92,7 @@ export default (state = initialState, action) => {
     case 'SHOW_LIST':
       return {
         ...state,
-        visibleList: action.list_name
+        visibleList: action.list_name,
       };
     case 'SHOW_RESUME_QUEUE_DIALOG': {
       return { ...state, showResumeQueueDialog: action.show };
@@ -124,7 +129,7 @@ export default (state = initialState, action) => {
               displayData[task.queueID] = {
                 collapsed: false,
                 selected: false,
-                progress: 0
+                progress: 0,
               };
             }
             sourceNodes.push(task.queueID.toString());
@@ -134,8 +139,7 @@ export default (state = initialState, action) => {
 
       return { ...state, displayData };
     }
-    case 'CLEAR_ALL':
-    {
+    case 'CLEAR_ALL': {
       return initialState;
     }
     default:

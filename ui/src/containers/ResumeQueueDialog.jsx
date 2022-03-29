@@ -21,24 +21,20 @@ export class ResumeQueueDialog extends React.Component {
 
   render() {
     return (
-      <Modal
-        show={this.props.show}
-        onHide={this.props.hide}
-      >
+      <Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header>
-          <Modal.Title>
-            Resume Queue
-          </Modal.Title>
+          <Modal.Title>Resume Queue</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           Ooops ! The application was closed or there was problems with the
-          connection while the queue was running. Just press Run Queue
-          (found above the queue) if you like to continue execution.
+          connection while the queue was running. Just press Run Queue (found
+          above the queue) if you like to continue execution.
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.reject}> OK </Button>
         </Modal.Footer>
-      </Modal>);
+      </Modal>
+    );
   }
 }
 
@@ -54,7 +50,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ResumeQueueDialog);
+export default connect(mapStateToProps, mapDispatchToProps)(ResumeQueueDialog);

@@ -13,6 +13,8 @@ from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 
 from mxcubecore import HardwareRepository as HWR
 
+from mxcube3.core.util.adapterutils import export
+
 
 def create_get_route(app, server, bp, adapter, attr, name):
     atype = adapter.adapter_type.lower()
@@ -28,8 +30,7 @@ def create_get_route(app, server, bp, adapter, attr, name):
         @bp.route(route_url, endpoint=endpoint, methods=["GET"])
         @server.restrict
         @server.validate(
-            resp=spectree.Response(HTTP_200=get_type_hint["return"]), tags=["Beamline"]
-        )
+            resp=spectree.Response(HTTP_200=get_type_hint["return"]))
         def get_func(name):
             """
             Retrieves value of attribute < name > 
@@ -56,7 +57,7 @@ def create_set_route(app, server, bp, adapter, attr, name):
         @bp.route(route_url, endpoint=endpoint, methods=["PUT"])
         @server.require_control
         @server.restrict
-        @server.validate(json=set_type_hint["value"], tags=["Beamline"])
+        @server.validate(json=set_type_hint["value"])
         def set_func(name, _th=set_type_hint):
             """
             Tries to set < name > to value
@@ -67,6 +68,27 @@ def create_set_route(app, server, bp, adapter, attr, name):
             return make_response("{}", 200)
 
         set_func.__name__ = f"{atype}_set_value"
+
+
+def create_route(app, server, bp, adapter, obj, cmd_name):
+        route_url = f"/{obj}/command/{cmd_name}"
+        arg_schema = adapter._ho.pydantic_model[cmd_name]
+
+        @bp.route(route_url, endpoint=cmd_name, methods=["POST"])
+        @server.require_control
+        @server.restrict
+        @server.validate(json=arg_schema)
+        def set_func():
+            """
+            Tries to set < name > to value
+            Replies with status code 200 on success and 409 on exceptions.
+            """
+            args = request.get_json()
+            adapter = app.mxcubecore.get_adapter(obj.lower())
+            adapter.execute_command(cmd_name, args)
+            return make_response("{}", 200)
+
+        set_func.__name__ = f"{obj}_{cmd_name}"
 
 
 def add_adapter_routes(app, server, bp):
@@ -117,9 +139,11 @@ def add_adapter_routes(app, server, bp):
                     create_set_route(
                         app, server, bp, adapter, attr, attr.replace("set_", "")
                     )
-        else:
-            continue
 
+        if adapter._ho.exported_attributes:
+            print(adapter._ho.exported_attributes)
+            for cmd_name in adapter._ho.exported_attributes.keys():
+                create_route(app, server, bp, adapter, _id, cmd_name)
 
 def init_route(app, server, url_prefix):
     bp = Blueprint("beamline", __name__, url_prefix=url_prefix)
@@ -131,6 +155,14 @@ def init_route(app, server, url_prefix):
     def beamline_get_all_attributes():
         return jsonify(app.beamline.beamline_get_all_attributes())
 
+    # @bp.route("/<string:obj>/command/<string:name>", methods=["POST"])
+    # @server.restrict
+    # def execute_command(obj, name):
+    #     params = request.get_json()
+    #     adapter = app.mxcubecore.get_adapter(obj.lower())
+    #     adapter._ho.pydantic_model[name].validate(**params["args"])
+    #     adapter.execute_command(name, params["args"])
+    #     return make_response("{}", 200)
 
     @bp.route("/<name>/abort", methods=["GET"])
     @server.require_control
@@ -150,7 +182,7 @@ def init_route(app, server, url_prefix):
             return make_response(err, 520)
         else:
             logging.getLogger("user_level_log").error("%s, aborted" % name)
-            return make_response("", 200)
+            return make_response("{}", 200)
 
     @bp.route("/<name>/run", methods=["POST"])
     @server.require_control

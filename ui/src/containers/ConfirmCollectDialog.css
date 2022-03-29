@@ -7,7 +7,7 @@
   max-width: 80%;
 }
 
-.scroll table{
+.scroll table {
   width: auto;
   border-spacing: 0;
   border: 0px;
@@ -15,7 +15,7 @@
 }
 
 .scroll tbody,
-.scroll thead {  
+.scroll thead {
   display: block;
 }
 
@@ -26,10 +26,11 @@
 .scroll tbody {
   max-height: 500px;
   overflow-y: auto;
-  overflow-x: auto
+  overflow-x: auto;
 }
 
-.scroll tbody { }
+.scroll tbody {
+}
 
 .scroll tbody td,
 .scroll thead th {
@@ -37,11 +38,11 @@
 }
 
 .table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: #FFF;
+  background-color: #fff;
 }
 
 .table-striped > tbody > tr:nth-of-type(even) {
-  background-color: rgba(238,232,170, 0.2);
+  background-color: rgba(238, 232, 170, 0.2);
 }
 
 .table-striped > tbody > tr:hover {

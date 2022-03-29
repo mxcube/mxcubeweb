@@ -143,7 +143,11 @@ class MXCUBECore:
     def adapt_hardware_objects(app):
         adapter_config = app.CONFIG.app.adapter_properties
 
-        for ho_name in MXCUBECore.hwr.hardware_objects:
+        # NB. We should investigate why the list hardware_objects
+        # is updated internaly in mxcubecore
+        hwobject_list = [item for item in MXCUBECore.hwr.hardware_objects]
+
+        for ho_name in hwobject_list:
             # Go through all hardware objects exposed by mxcubecore
             # hardware repository set id to username if its deinfed
             # use the name otherwise (file name without extension)

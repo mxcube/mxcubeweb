@@ -2,6 +2,7 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Stack } from 'react-bootstrap';
+import { Outlet } from 'react-router-dom';
 import MXNavbarContainer from '../containers/MXNavbarContainer';
 import TaskContainer from '../containers/TaskContainer';
 import PleaseWaitDialog from '../containers/PleaseWaitDialog';
@@ -13,19 +14,18 @@ import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import diagonalNoise from '../img/diagonal-noise.png';
-import { sendChatMessage, getAllChatMessages,
-  resetChatMessageCount } from '../actions/remoteAccess';
+import {
+  sendChatMessage,
+  getAllChatMessages,
+  resetChatMessageCount,
+} from '../actions/remoteAccess';
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
-
-import {
-  Outlet
-} from 'react-router-dom';
+import LoadingScreen from './LoadingScreen/LoadingScreen';
 
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
-
 
 class Main extends React.Component {
   constructor(props) {
@@ -41,7 +41,9 @@ class Main extends React.Component {
         if (entry.username === this.props.login.user.username) {
           addUserMessage(`${entry.date} **You:** \n\n ${entry.message} \n\n`);
         } else {
-          addResponseMessage(`${entry.date} **${entry.nickname}:** \n\n ${entry.message}`);
+          addResponseMessage(
+            `${entry.date} **${entry.nickname}:** \n\n ${entry.message}`
+          );
         }
       });
     });
@@ -62,11 +64,14 @@ class Main extends React.Component {
   }
 
   render() {
-    const showReadOnlyDiv = !this.props.login.user.inControl &&
-            // this.props.location.pathname !== '/remoteaccess' &&
-            // this.props.location.pathname !== '/help';
-            window.location.pathname !== '/remoteaccess' &&
-            window.location.pathname !== '/help';
+    const showReadOnlyDiv =
+      !this.props.login.user.inControl &&
+      this.props.location.pathname !== '/remoteaccess' &&
+      this.props.location.pathname !== '/help';
+
+    if (!this.props.general.applicationFetched)  {
+      return (<LoadingScreen />);
+    }
 
     return (
       <div>

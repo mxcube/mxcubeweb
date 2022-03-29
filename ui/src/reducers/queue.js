@@ -20,38 +20,48 @@ export default (state = initialState, action) => {
     case 'CLEAR_QUEUE': {
       return Object.assign({}, state, {
         queue: initialState.queue,
-        current: initialState.current
+        current: initialState.current,
       });
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
-      const sampleIDList = action.samplesData.map(s => s.sampleID);
-      return Object.assign({}, state, { queue: state.queue.concat(sampleIDList) });
+      const sampleIDList = action.samplesData.map((s) => s.sampleID);
+      return Object.assign({}, state, {
+        queue: state.queue.concat(sampleIDList),
+      });
     }
     case 'SET_QUEUE_STATUS':
       return {
         ...state,
-        queueStatus: action.queueState
+        queueStatus: action.queueState,
       };
     case 'REMOVE_SAMPLES_FROM_QUEUE': {
-      const queue = state.queue.filter(value => !action.sampleIDList.includes(value));
+      const queue = state.queue.filter(
+        (value) => !action.sampleIDList.includes(value)
+      );
 
       return Object.assign({}, state, { queue });
     }
     case 'SET_CURRENT_SAMPLE':
-      return Object.assign({}, state,
-        {
-          current: { ...state.current, sampleID: action.sampleID, running: false },
-        });
+      return Object.assign({}, state, {
+        current: {
+          ...state.current,
+          sampleID: action.sampleID,
+          running: false,
+        },
+      });
     case 'CLEAR_CURRENT_SAMPLE': {
-      const queue = state.queue.filter(value => value !== state.current.sampleID);
-      return Object.assign({}, state,
-        {
-          queue,
-          current: { sampleID: null, collapsed: false, running: false },
-        });
+      const queue = state.queue.filter(
+        (value) => value !== state.current.sampleID
+      );
+      return Object.assign({}, state, {
+        queue,
+        current: { sampleID: null, collapsed: false, running: false },
+      });
     }
     case 'RUN_SAMPLE':
-      return Object.assign({}, state, { current: { ...state.current, running: true } });
+      return Object.assign({}, state, {
+        current: { ...state.current, running: true },
+      });
     case 'CHANGE_SAMPLE_ORDER':
       return {
         ...state,
@@ -60,10 +70,14 @@ export default (state = initialState, action) => {
           sampleIDs: update(state[action.listName].sampleIDs, {
             $splice: [
               [action.oldIndex, 1],
-              [action.newIndex, 0, state[action.listName].sampleIDs[action.oldIndex]]
-            ]
-          })
-        }
+              [
+                action.newIndex,
+                0,
+                state[action.listName].sampleIDs[action.oldIndex],
+              ],
+            ],
+          }),
+        },
       };
     case 'SET_AUTO_MOUNT_SAMPLE': {
       return { ...state, autoMountNext: action.automount };
@@ -80,16 +94,16 @@ export default (state = initialState, action) => {
     case 'SET_GROUP_FOLDER': {
       return { ...state, groupFolder: action.path };
     }
-    case 'CLEAR_ALL':
-    {
-      return Object.assign({}, state, { ...initialState, autoMountNext: state.autoMountNext });
+    case 'CLEAR_ALL': {
+      return Object.assign({}, state, {
+        ...initialState,
+        autoMountNext: state.autoMountNext,
+      });
     }
-    case 'QUEUE_STATE':
-    {
+    case 'QUEUE_STATE': {
       return Object.assign({}, state, ...action.queueState);
     }
-    case 'SET_INITIAL_STATE':
-    {
+    case 'SET_INITIAL_STATE': {
       return {
         ...state,
         queue: action.data.queue.queue,
@@ -100,8 +114,8 @@ export default (state = initialState, action) => {
         centringMethod: action.data.queue.centringMethod,
         current: {
           sampleID: action.data.queue.current,
-          running: action.data.queue.queueStatus
-        }
+          running: action.data.queue.queueStatus,
+        },
       };
     }
     default:

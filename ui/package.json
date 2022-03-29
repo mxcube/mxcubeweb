@@ -29,6 +29,7 @@
     "lodash": "^4.17.21",
     "node-sass": "^7.0.1",
     "plotly.js": "^1.52.3",
+    "popper.js": "^1.16.1",
     "react": "^17.0.2",
     "react-bootstrap": "^2.1.2",
     "react-bootstrap-table": "^4.3.1",
@@ -42,8 +43,8 @@
     "react-plotly.js": "^2.4.0",
     "react-redux": "7.2.6",
     "react-router": "^6.2.1",
-    "react-router-bootstrap": "^0.26.0",
-    "react-router-dom": "^6.2.1",
+    "react-router-bootstrap": "^0.26.1",
+    "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
     "react-sticky": "^6.0.3",
     "react-stonecutter": "^0.3.9",
@@ -51,16 +52,18 @@
     "redux-form": "^8.3.8",
     "redux-logger": "^3.0.6",
     "redux-persist": "^6.0.0",
-    "redux-persist-crosstab": "^3.7.0",
+    "redux-state-sync": "^3.1.2",
     "redux-thunk": "^2.4.1",
     "shortid": "^2.2.6",
     "socket.io-client": "^2.3.0",
     "underscore": "^1.8.3",
     "web-vitals": "^2.1.4",
+    "webpack": "^5.69.1",
+    "webpack-dev-server": "^4.8.0",
     "ws": "^8.5.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -86,7 +89,11 @@
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
     "concurrently": "^7.0.0",
+    "eslint": "^8.10.0",
+    "eslint-config-galex": "^3.6.5",
+    "eslint-plugin-jest": "^26.1.1",
     "less": "^4.1.2",
-    "less-watch-compiler": "^1.16.3"
+    "less-watch-compiler": "^1.16.3",
+    "prettier": "^2.5.1"
   }
 }

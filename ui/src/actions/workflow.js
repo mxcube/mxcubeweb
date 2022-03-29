@@ -11,9 +11,9 @@ export function workflowSubmitParameters(data) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify(data)
+      body: JSON.stringify(data),
     });
   };
 }

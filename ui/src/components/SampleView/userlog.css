@@ -1,15 +1,15 @@
 .logger-window {
-    font-size: 12px;
-    padding: 0px 12px 0px;
-    word-wrap: break-word;
-    color: white;
-    overflow-x: scroll;
-    text-align: left;
-    height: 75px;
+  font-size: 12px;
+  padding: 0px 12px 0px;
+  word-wrap: break-word;
+  color: white;
+  overflow-x: scroll;
+  text-align: left;
+  height: 75px;
 }
 
-.logger-window p{
-    margin: 0 0 2px;
+.logger-window p {
+  margin: 0 0 2px;
 }
 
 .log-window {

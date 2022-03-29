@@ -20,15 +20,18 @@ export class LimsResultDialog extends React.Component {
 
   getResultLink() {
     if (this.props.taskData.state !== TASK_COLLECTED) {
-      return (<span></span>);
+      return <span></span>;
     }
 
-    const link = this.props.taskData.limsResultData ?
-      this.props.taskData.limsResultData.limsTaskLink : '';
+    const link = this.props.taskData.limsResultData
+      ? this.props.taskData.limsResultData.limsTaskLink
+      : '';
 
     return (
       <div style={{ margin: '1em' }}>
-        <a href={link} target="_blank">View results in ISPyB</a>
+        <a href={link} target="_blank">
+          View results in ISPyB
+        </a>
       </div>
     );
   }
@@ -41,19 +44,20 @@ export class LimsResultDialog extends React.Component {
         onHide={this.onHide}
       >
         <Modal.Header closeButton>
-          <Modal.Title>
-            Result summary
-          </Modal.Title>
+          <Modal.Title>Result summary</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          { this.props.taskData ?
-            ([<LimsResultSummary taskData={this.props.taskData} />, this.getResultLink()]) : null
-          }
-
+          {this.props.taskData
+            ? [
+                <LimsResultSummary taskData={this.props.taskData} />,
+                this.getResultLink(),
+              ]
+            : null}
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.onHide}>Close</Button>
         </Modal.Footer>
-      </Modal>);
+      </Modal>
+    );
   }
 }

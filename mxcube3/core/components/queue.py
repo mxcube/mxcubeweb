@@ -222,8 +222,7 @@ class Queue(ComponentBase):
 
         enabled = node.is_enabled()
         curr_entry = HWR.beamline.queue_manager.get_current_entry()
-
-        running = HWR.beamline.queue_manager.is_executing and (
+        running = HWR.beamline.queue_manager.is_executing() and (
             curr_entry == entry or curr_entry == entry._parent_container
         )
 
@@ -1104,6 +1103,7 @@ class Queue(ComponentBase):
         # NBNB 
         # These two calls seems to be needed by the Global phasing workflows
         # Adding them resolves the current conflict
+        # NBNB CHECK REMOVAL
         model.set_pre_strategy_params(**params)
         model.set_pre_acquisition_params(**params)
 
@@ -1345,7 +1345,8 @@ class Queue(ComponentBase):
 
         dc_model = qmo.GphlWorkflow()
         dc_model.set_origin(ORIGIN_MX3)
-        dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
+        # dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
+        dc_entry = GphlWorkflowQueueEntry(data_model=dc_model)
 
         return dc_model, dc_entry
 
@@ -1460,7 +1461,7 @@ class Queue(ComponentBase):
         Adds a worklfow task to the parent node with id: <id>
 
         For adding GPhL Auto workflow, call with node_id==parent_node_id
-        and all required parameers in task["parameters"]
+        and all required parameters in task["parameters"]
 
         :param int node_id: id of the parent node to which the task belongs
         :param dict task: task data

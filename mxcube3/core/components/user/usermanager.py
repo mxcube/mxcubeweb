@@ -120,7 +120,7 @@ class BaseUserManager(ComponentBase):
                     )
 
     def handle_disconnect(self, username):
-        time.sleep(30)
+        time.sleep(120)
 
         user = self.get_user(username)
 
@@ -128,7 +128,7 @@ class BaseUserManager(ComponentBase):
             dt = datetime.datetime.now() - user.disconnect_timestamp
 
             # Disconnected for more than a minute
-            if dt.seconds >= 30:
+            if dt.seconds >= 120:
                 logging.getLogger("HWR").info("Client disconnected")
 
                 user.active = False
@@ -247,6 +247,7 @@ class BaseUserManager(ComponentBase):
                     "code": prop["Proposal"]["code"],
                     "number": prop["Proposal"]["number"],
                     "proposalId": prop["Proposal"]["proposalId"],
+                    "person": prop["Person"]["familyName"],
                 }
                 for prop in login_info.get("proposalList", [])
             ]
@@ -274,6 +275,21 @@ class BaseUserManager(ComponentBase):
         self.app.server.user_datastore.put(user)
         self.app.server.user_datastore.commit()
 
+    def _get_configured_roles(self, user):
+        roles = set()
+
+        _ihs = ["%s%s" % prop for prop in HWR.beamline.session.in_house_users]
+
+        if self.config.inhouse_is_staff and user in _ihs:
+            roles.add("staff")
+
+        for _u in self.config.users:
+            if _u.username == user:
+                roles.add(_u.role)
+                break
+
+        return list(roles)
+
     def db_create_user(self, user, password, lims_data):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
@@ -296,10 +312,11 @@ class BaseUserManager(ComponentBase):
                 session_id=sid,
                 selected_proposal=user,
                 limsdata=json.dumps(lims_data),
-                roles=["staff"],
+                roles=self._get_configured_roles(user)
             )
         else:
             _u.limsdata = json.dumps(lims_data)
+            user_datastore.append_roles(_u, self._get_configured_roles(user))
 
         self.app.server.user_datastore.commit()
 

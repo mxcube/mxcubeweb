@@ -1,7 +1,14 @@
 import './SampleView.css';
 import React from 'react';
 import { MOTOR_STATE } from '../../constants';
-import { makePoints, makeTwoDPoints, makeLines, makeImageOverlay, makeCross } from './shapes';
+import {
+  makePoints,
+  makeTwoDPoints,
+  makeLines,
+  makeImageOverlay,
+  makeCentringHorizontalLine,
+  makeCentringVerticalLine,
+} from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
 import SampleControls from './SampleControls';
 import GridForm from './GridForm';
@@ -9,14 +16,11 @@ import 'fabric';
 
 const jsmpeg = require('./jsmpeg.min.js');
 
-
-
 const fabric = window.fabric;
 fabric.Group.prototype.hasControls = false;
 fabric.Group.prototype.hasBorders = false;
 
 export default class SampleImage extends React.Component {
-
   constructor(props) {
     super(props);
     this.onMouseUp = this.onMouseUp.bind(this);
@@ -60,7 +64,12 @@ export default class SampleImage extends React.Component {
 
   componentDidMount() {
     // Create fabric and set image background to sample
-    this.canvas = new fabric.Canvas('canvas', { defaultCursor: 'crosshair' });
+    this.canvas = new fabric.Canvas('canvas', {
+      defaultCursor: 'crosshair',
+      altSelectionKey: 'altKey',
+      selectionKey: 'ctrlKey',
+      preserveObjectStacking: true,
+    });
 
     // Bind leftClick to function
     this.canvas.on('mouse:down', this.leftClick);
@@ -69,6 +78,7 @@ export default class SampleImage extends React.Component {
 
     this.canvas.on('selection:created', this.selectShapeEvent);
     this.canvas.on('selection:cleared', this.clearSelectionEvent);
+    this.canvas.on('selection:updated', this.selectShapeEvent);
 
     // Bind rigth click to function manually with javascript
     const imageOverlay = document.getElementById('insideWrapper');
@@ -91,8 +101,11 @@ export default class SampleImage extends React.Component {
 
   componentWillReceiveProps(nextProps) {
     const { width, cinema } = this.props;
-    if (nextProps.width !== width || nextProps.cinema !== cinema ||
-        nextProps.autoScale && this.props.imageRatio !== nextProps.imageRatio) {
+    if (
+      nextProps.width !== width ||
+      nextProps.cinema !== cinema ||
+      (nextProps.autoScale && this.props.imageRatio !== nextProps.imageRatio)
+    ) {
       this.setImageRatio();
     }
 
@@ -105,8 +118,10 @@ export default class SampleImage extends React.Component {
       this.initJSMpeg();
     }
 
-    if (this.props.width !== prevProps.width ||
-        this.props.videoHash !== prevProps.videoHash) {
+    if (
+      this.props.width !== prevProps.width ||
+      this.props.videoHash !== prevProps.videoHash
+    ) {
       this.initJSMpeg();
     }
 
@@ -131,6 +146,7 @@ export default class SampleImage extends React.Component {
     this.canvas.off('mouse:move', this.onMouseMove);
     this.canvas.off('mouse:up', this.onMouseUp);
     this.canvas.off('selection:created', this.selectShapeEvent);
+    this.canvas.off('selection:updated', this.selectShapeEvent);
     this.canvas.off('selection:cleared', this.clearSelectionEvent);
 
     document.removeEventListener('keydown', this.keyDown);
@@ -146,22 +162,42 @@ export default class SampleImage extends React.Component {
   }
 
   onMouseMove(options) {
-    if (this.props.clickCentring && this.props.clickCentringClicksLeft > 0) {
-      if (this.centringCross.length === 2) {
-        this.canvas.remove(this.centringCross[0]);
-        this.canvas.remove(this.centringCross[1]);
+    if (this.props.clickCentring) {
+      if (this.props.clickCentringClicksLeft > 0) {
+        if (this.centringVerticalLine !== undefined) {
+          this.canvas.remove(this.centringVerticalLine);
+        }
+
+        this.centringVerticalLine = makeCentringVerticalLine(
+          (options.e.layerX + 1.5) / this.props.imageRatio,
+          (options.e.layerY + 1) / this.props.imageRatio,
+          this.props.imageRatio,
+          this.canvas.height
+        );
+
+        if (this.props.clickCentringClicksLeft > 2) {
+          if (this.centringHorizontalLine !== undefined) {
+            // this.canvas.remove(this.centringHorizontalLine);
+          }
+
+          this.centringHorizontalLine = makeCentringHorizontalLine(
+            (options.e.layerX + 1.5) / this.props.imageRatio,
+            (options.e.layerY + 1) / this.props.imageRatio,
+            this.props.imageRatio,
+            this.canvas.width
+          );
+        }
+
+        this.canvas.add(...[this.centringVerticalLine]);
       }
-
-      this.centringCross = makeCross((options.e.layerX + 1.5) / this.props.imageRatio,
-        (options.e.layerY + 1) / this.props.imageRatio,
-        this.props.imageRatio,
-        this.canvas.width, this.canvas.height);
-
-      this.canvas.add(...this.centringCross);
     }
 
     if (options.e.buttons > 0) {
-      this.drawGridPlugin.update(this.canvas, options.e.layerX, options.e.layerY);
+      this.drawGridPlugin.update(
+        this.canvas,
+        options.e.layerX,
+        options.e.layerY
+      );
     }
 
     this.drawGridPlugin.onCellMouseOver(options, this.canvas);
@@ -184,30 +220,52 @@ export default class SampleImage extends React.Component {
 
   setVCellSpacing(e) {
     let value = parseFloat(e.target.value);
-    if (isNaN(value)) { value = ''; }
+    if (isNaN(value)) {
+      value = '';
+    }
 
     const gridData = this.selectedGrid();
 
     if (gridData) {
-      const gd = this.drawGridPlugin.setCellSpace(gridData, true, gridData.cellHSpace, value);
+      const gd = this.drawGridPlugin.setCellSpace(
+        gridData,
+        true,
+        gridData.cellHSpace,
+        value
+      );
       this.props.sampleActions.sendUpdateShapes([gd]);
     } else if (this.props.drawGrid) {
-      this.drawGridPlugin.setCurrentCellSpace(null, value, this.props.imageRatio);
+      this.drawGridPlugin.setCurrentCellSpace(
+        null,
+        value,
+        this.props.imageRatio
+      );
       this.drawGridPlugin.repaint(this.canvas);
     }
   }
 
   setHCellSpacing(e) {
     let value = parseFloat(e.target.value);
-    if (isNaN(value)) { value = ''; }
+    if (isNaN(value)) {
+      value = '';
+    }
 
     const gridData = this.selectedGrid();
 
     if (gridData) {
-      const gd = this.drawGridPlugin.setCellSpace(gridData, true, value, gridData.cellVSpace);
+      const gd = this.drawGridPlugin.setCellSpace(
+        gridData,
+        true,
+        value,
+        gridData.cellVSpace
+      );
       this.props.sampleActions.sendUpdateShapes([gd]);
     } else if (this.props.drawGrid) {
-      this.drawGridPlugin.setCurrentCellSpace(value, null, this.props.imageRatio);
+      this.drawGridPlugin.setCurrentCellSpace(
+        value,
+        null,
+        this.props.imageRatio
+      );
       this.drawGridPlugin.repaint(this.canvas);
     }
   }
@@ -215,7 +273,9 @@ export default class SampleImage extends React.Component {
   setGridOverlayOpacity(e) {
     let value = parseFloat(e.target.value);
 
-    if (isNaN(value)) { value = '1'; }
+    if (isNaN(value)) {
+      value = '1';
+    }
 
     this.drawGridPlugin.setGridOverlay(value);
     this.props.sampleActions.setOverlay(value);
@@ -242,8 +302,10 @@ export default class SampleImage extends React.Component {
     let cellCenter = [];
 
     if (cell) {
-      cellCenter = [(cell.aCoords.tl.x + cell.width / 2) / this.props.imageRatio,
-        (cell.aCoords.tl.y + cell.height / 2) / this.props.imageRatio];
+      cellCenter = [
+        (cell.aCoords.tl.x + cell.width / 2) / this.props.imageRatio,
+        (cell.aCoords.tl.y + cell.height / 2) / this.props.imageRatio,
+      ];
     }
 
     return cellCenter;
@@ -263,7 +325,10 @@ export default class SampleImage extends React.Component {
     if (!this._keyPressed) {
       this._keyPressed = event.key;
 
-      if (this._keyPressed === 'Delete' && document.activeElement.tagName === 'BODY') {
+      if (
+        this._keyPressed === 'Delete' &&
+        document.activeElement.tagName === 'BODY'
+      ) {
         this.removeShapes();
       }
 
@@ -284,9 +349,9 @@ export default class SampleImage extends React.Component {
       this.props.sampleActions.sendAbortCentring();
     }
 
-    this.props.selectedShapes.forEach((shapeID) => (
+    this.props.selectedShapes.forEach((shapeID) =>
       this.props.sampleActions.sendDeleteShape(shapeID)
-    ));
+    );
   }
 
   keyUp() {
@@ -306,8 +371,8 @@ export default class SampleImage extends React.Component {
   drawCanvas(imageRatio, sourceScale) {
     // Getting the size of screen
     const { width, height } = this.props;
-    const w = width * imageRatio / sourceScale;
-    const h = height * imageRatio / sourceScale;
+    const w = (width * imageRatio) / sourceScale;
+    const h = (height * imageRatio) / sourceScale;
     // Set the size of the original html Canvas
     const canvasWindow = document.getElementById('canvas');
     canvasWindow.width = w;
@@ -335,43 +400,69 @@ export default class SampleImage extends React.Component {
     let objectFound = false;
 
     // Existing selection clicked
-    if (group && group.type === 'activeSelection' && group.containsPoint(clickPoint)) {
+    if (
+      group &&
+      group.type === 'activeSelection' &&
+      group.containsPoint(clickPoint)
+    ) {
       const shapes = group.getObjects();
       // this.canvas.discardActiveObject();
 
       group.getObjects().forEach((obj) => {
-        if (!objectFound && obj.containsPoint(clickPoint, null, true) && obj.selectable) {
+        if (
+          !objectFound &&
+          obj.containsPoint(clickPoint, null, true) &&
+          obj.selectable
+        ) {
           objectFound = true;
         }
       });
 
       if (objectFound) {
-        const threeDpointList = shapes.filter((shape) => (
-          this.props.points[shape.id] !== undefined)).map((shape) => (shape.id));
+        const threeDpointList = shapes
+          .filter((shape) => this.props.points[shape.id] !== undefined)
+          .map((shape) => shape.id);
 
-        const twoDPointList = shapes.filter((shape) => (
-          this.props.twoDPoints[shape.id] !== undefined)).map((shape) => (shape.id));
+        const twoDPointList = shapes
+          .filter((shape) => this.props.twoDPoints[shape.id] !== undefined)
+          .map((shape) => shape.id);
 
         const pointList = threeDpointList.concat(twoDPointList);
 
-        const gridList = shapes.filter((shape) => (
-          this.props.grids[shape.id] !== undefined)).map((shape) => (shape.id));
+        const gridList = shapes
+          .filter((shape) => this.props.grids[shape.id] !== undefined)
+          .map((shape) => shape.id);
 
-        const lineList = shapes.filter((shape) => (
-          this.props.lines[shape.id] !== undefined)).map((shape) => (shape.id));
+        const lineList = shapes
+          .filter((shape) => this.props.lines[shape.id] !== undefined)
+          .map((shape) => shape.id);
 
         if (pointList.length === 2) {
           ctxMenuObj = { type: 'HELICAL', id: this.props.selectedShapes };
-        } else if (pointList.length === 1 && this.props.points[pointList[0]].state === 'SAVED') {
+        } else if (
+          pointList.length === 1 &&
+          this.props.points[pointList[0]].state === 'SAVED'
+        ) {
           ctxMenuObj = { type: 'SAVED', id: pointList[0] };
-        } else if (pointList.length === 1 && this.props.points[pointList[0]].state === 'TMP') {
+        } else if (
+          pointList.length === 1 &&
+          this.props.points[pointList[0]].state === 'TMP'
+        ) {
           ctxMenuObj = { type: 'TMP', id: pointList[0] };
         } else if (pointList.length > 2) {
           ctxMenuObj = { type: 'GROUP', id: pointList };
         } else if (gridList.length === 1) {
           const gridData = this.props.grids[gridList[0]];
-          const cellCenter = this.getGridCellCenter(group.getObjects()[0], clickPoint);
-          ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id, cellCenter };
+          const cellCenter = this.getGridCellCenter(
+            group.getObjects()[0],
+            clickPoint
+          );
+          ctxMenuObj = {
+            type: 'GridGroupSaved',
+            gridData,
+            id: gridData.id,
+            cellCenter,
+          };
         } else if (lineList.length !== 0) {
           ctxMenuObj = { type: 'LINE', id: lineList };
         }
@@ -379,8 +470,12 @@ export default class SampleImage extends React.Component {
     } else {
       // Individual object clicked
       this.canvas.forEachObject((obj) => {
-        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable &&
-            (obj.type === 'SAVED' || obj.type === 'TMP')) {
+        if (
+          !objectFound &&
+          obj.containsPoint(clickPoint) &&
+          obj.selectable &&
+          (obj.type === 'SAVED' || obj.type === 'TMP')
+        ) {
           objectFound = true;
 
           this.selectShape([obj], e.ctrlKey);
@@ -399,7 +494,12 @@ export default class SampleImage extends React.Component {
 
               if (gridData) {
                 const cellCenter = this.getGridCellCenter(obj, clickPoint);
-                ctxMenuObj = { type: 'GridGroupSaved', gridData, id: gridData.id, cellCenter };
+                ctxMenuObj = {
+                  type: 'GridGroupSaved',
+                  gridData,
+                  id: gridData.id,
+                  cellCenter,
+                };
               } else {
                 gridData = this.drawGridPlugin.currentGridData();
                 gridData = this.drawGridPlugin.saveGrid(gridData);
@@ -425,28 +525,22 @@ export default class SampleImage extends React.Component {
 
     this.drawGridPlugin.clearMouseOverGridLabel(this.canvas);
 
-    if (option.target && option.target.type === 'group') {
+    if (option.target && option.target.type === 'activeSelection') {
       const group = this.canvas.getActiveObject();
       const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
 
       // Important to call this for containsPoint to work properly
-      this.canvas.discardActiveObject();
+      // this.canvas.discardActiveObject();
 
       group.getObjects().forEach((obj) => {
         if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
           objectFound = obj;
         } else {
-          this.deSelectShape([obj], option.e.ctrlKey);
+          // this.deSelectShape([obj], option.e.ctrlKey);
         }
       });
     } else if (option.target) {
       objectFound = option.target;
-    }
-
-    if (!objectFound) {
-      this.clearSelection();
-    } else {
-      this.selectShape([objectFound], option.e.ctrlKey);
     }
 
     const {
@@ -454,7 +548,7 @@ export default class SampleImage extends React.Component {
       clickCentring,
       measureDistance,
       imageRatio,
-      contextMenuVisible
+      contextMenuVisible,
     } = this.props;
 
     if (contextMenuVisible) {
@@ -462,14 +556,33 @@ export default class SampleImage extends React.Component {
     }
 
     if (clickCentring) {
-      sampleActions.sendCentringPoint(option.e.layerX / imageRatio, option.e.layerY / imageRatio);
+      sampleActions.sendCentringPoint(
+        option.e.layerX / imageRatio,
+        option.e.layerY / imageRatio
+      );
     } else if (measureDistance) {
-      sampleActions.addDistancePoint(option.e.layerX / imageRatio, option.e.layerY / imageRatio);
+      sampleActions.addDistancePoint(
+        option.e.layerX / imageRatio,
+        option.e.layerY / imageRatio
+      );
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
     }
-  }
 
+    if (
+      this.props.clickCentring === true &&
+      this.props.clickCentringClicksLeft < 3
+    ) {
+      this.centringHorizontalLine = makeCentringHorizontalLine(
+        (option.e.layerX + 1.5) / this.props.imageRatio,
+        (option.e.layerY + 1) / this.props.imageRatio,
+        this.props.imageRatio,
+        this.canvas.width
+      );
+
+      this.canvas.add(this.centringHorizontalLine);
+    }
+  }
 
   wheel(e) {
     e.preventDefault();
@@ -492,10 +605,16 @@ export default class SampleImage extends React.Component {
     } else if (keyPressed === 'f' && focus.state === MOTOR_STATE.READY) {
       if (e.deltaY > 0) {
         // Focus in
-        sendMotorPosition('Focus', focus.value + parseFloat(motorSteps.focusStep, 10));
+        sendMotorPosition(
+          'Focus',
+          focus.value + parseFloat(motorSteps.focusStep, 10)
+        );
       } else if (e.deltaY < 0) {
         // Focus out
-        sendMotorPosition('Focus', focus.value - parseFloat(motorSteps.focusStep, 10));
+        sendMotorPosition(
+          'Focus',
+          focus.value - parseFloat(motorSteps.focusStep, 10)
+        );
       }
     } else if (keyPressed === 'z' && zoom.state === MOTOR_STATE.READY) {
       // in this case zooming
@@ -580,11 +699,10 @@ export default class SampleImage extends React.Component {
   }
 
   selectShapeEvent(options) {
-    let shapes = [];
-
-    if (options.e !== undefined && options.target.id === undefined) {
-      shapes = options.target.getObjects();
-      this.selectShape(shapes, options.e.ctrlKey);
+    if (options.e !== undefined && options.selected.length > 0) {
+      this.selectShape(options.selected, options.e.ctrlKey);
+    } else if (options.e !== undefined && options.deselected.length > 0) {
+      this.deSelectShape(options.deselected);
     }
   }
 
@@ -610,6 +728,8 @@ export default class SampleImage extends React.Component {
     // Single selection if control key is NOT pressed
     if (options.e !== undefined && !options.e.ctrlKey) {
       this.clearSelection();
+    } else if (options.e !== undefined) {
+      this.deSelectShape(options.deselected);
     }
   }
 
@@ -622,7 +742,9 @@ export default class SampleImage extends React.Component {
   }
 
   saveGrid() {
-    const gd = this.drawGridPlugin.saveGrid(this.drawGridPlugin.currentGridData());
+    const gd = this.drawGridPlugin.saveGrid(
+      this.drawGridPlugin.currentGridData()
+    );
     this.props.sampleActions.sendAddShape({ t: 'G', ...gd });
     this.drawGridPlugin.reset();
   }
@@ -643,15 +765,15 @@ export default class SampleImage extends React.Component {
     let result = null;
 
     if (this.props.videoMessageOverlay.show) {
-      result =
-        (
-          <div
-            dangerouslySetInnerHTML={{ __html: this.props.videoMessageOverlay.msg }}
-            key={this.props.clickCentringClicksLeft}
-            id="video-message-overlay"
-          >
-         </div>
-        );
+      result = (
+        <div
+          dangerouslySetInnerHTML={{
+            __html: this.props.videoMessageOverlay.msg,
+          }}
+          key={this.props.clickCentringClicksLeft}
+          id="video-message-overlay"
+        ></div>
+      );
     }
 
     return result;
@@ -661,14 +783,15 @@ export default class SampleImage extends React.Component {
     // Default to MJPEG
     let result = (
       <img
-        id= "sample-img"
+        id="sample-img"
         className="img"
         src="/mxcube/api/v0.1/sampleview/camera/subscribe"
         alt="SampleView"
-      />);
+      />
+    );
 
     if (format === 'MPEG1') {
-      result = (<canvas id="sample-img" className="img" />);
+      result = <canvas id="sample-img" className="img" />;
     }
 
     return result;
@@ -678,7 +801,9 @@ export default class SampleImage extends React.Component {
     if (this.player === null) {
       const canvas = document.getElementById('sample-img');
       /* eslint-disable no-undef */
-      let source = !process.env.VIDEO_STREAM_URL ? `ws://${document.location.hostname}:4042/` : process.env.VIDEO_STREAM_URL;
+      let source = !process.env.VIDEO_STREAM_URL
+        ? `ws://${document.location.hostname}:4042/`
+        : process.env.VIDEO_STREAM_URL;
       const streamOnLocalHost = process.env.VIDEO_STREAM_ON_LOCAL_HOST;
       /* eslint-enable no-undef */
 
@@ -694,6 +819,7 @@ export default class SampleImage extends React.Component {
           canvas,
           decodeFirstFrame: false,
           preserveDrawingBuffer: true,
+          protocols: [],
         });
         this.player.play();
       }
@@ -719,37 +845,50 @@ export default class SampleImage extends React.Component {
       lines,
       grids,
       pixelsPerMm,
-      sourceScale
+      sourceScale,
     } = nextProps;
     this.drawCanvas(imageRatio, sourceScale);
-    this.canvas.add(...makeImageOverlay(
-      imageRatio,
-      pixelsPerMm,
-      beamPosition,
-      beamShape,
-      beamSize,
-      clickCentring,
-      distancePoints,
-      this.canvas
-    ));
+    this.canvas.add(
+      ...makeImageOverlay(
+        imageRatio,
+        pixelsPerMm,
+        beamPosition,
+        beamShape,
+        beamSize,
+        clickCentring,
+        distancePoints,
+        this.canvas
+      )
+    );
 
-    if (this.props.clickCentring === false || this.props.clickCentringClicksLeft === 0) {
-      this.centringCross = [];
+    if (
+      this.props.clickCentring === false ||
+      this.props.clickCentringClicksLeft === 0
+    ) {
+      this.canvas.remove(this.centringHorizontalLine);
+      this.centringHorizontalLine = undefined;
     }
 
-    this.canvas.add(...this.centringCross);
+    if (
+      this.props.clickCentring === true &&
+      this.centringHorizontalLine !== undefined
+    ) {
+      this.canvas.add(this.centringHorizontalLine);
+    }
 
     const fabricSelectables = [...makeLines(lines, imageRatio)];
 
     // Grids already defined (drawn)
     Object.values(grids).forEach((gd) => {
-      let gridData = { ... gd };
+      let gridData = { ...gd };
 
       if (!this.props.busy && gridData.state !== 'HIDDEN') {
         this.drawGridPlugin.setScale(imageRatio);
         gridData = this.drawGridPlugin.setPixelsPerMM(pixelsPerMm, gridData);
-        fabricSelectables.push(this.drawGridPlugin.shapeFromGridData(
-          gridData, this.canvas).shapeGroup);
+        fabricSelectables.push(
+          this.drawGridPlugin.shapeFromGridData(gridData, this.canvas)
+            .shapeGroup
+        );
       }
     });
 
@@ -785,7 +924,7 @@ export default class SampleImage extends React.Component {
       lockScalingX: true,
       lockScalingY: true,
       lockRotation: true,
-      hoverCursor: 'pointer'
+      hoverCursor: 'pointer',
     });
 
     this.canvas.setActiveObject(sel);
@@ -814,7 +953,7 @@ export default class SampleImage extends React.Component {
               toggleVisibility={this.toggleGridVisibility}
               rotateTo={this.props.sampleActions.sendRotateToShape}
               selectGrid={this.selectShape}
-              selectedGrids={this.props.selectedGrids.map(grid => grid.id)}
+              selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
               setGridResultType={this.setGridResultType}
               gridResultType={this.props.gridResultType}
             />
@@ -822,12 +961,10 @@ export default class SampleImage extends React.Component {
             <SampleControls
               generalActions={this.props.generalActions}
               {...this.props}
-              canvas={ this.canvas }
-              imageRatio={ this.props.imageRatio }
+              canvas={this.canvas}
+              imageRatio={this.props.imageRatio}
             />
-            <div>
-              {this.centringMessage()}
-            </div>
+            <div>{this.centringMessage()}</div>
             <canvas id="canvas" className="coveringCanvas" />
           </div>
         </div>

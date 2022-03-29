@@ -1,4 +1,4 @@
-.rcw-widget-container { 
+.rcw-widget-container {
   z-index: 10001;
 }
 
@@ -20,17 +20,17 @@
   margin-left: unset;
   border: 1px solid #999;
   border-radius: 4px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, .2);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
   background-color: #c6eab7;
   padding: 10px;
   width: 100%;
-}    
+}
 
 .rcw-messages-container > .rcw-message > .rcw-response {
   margin-left: auto;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, .095);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.095);
   background-color: #fff;
   padding: 10px;
   width: 100%;
@@ -40,7 +40,7 @@
   margin-left: auto;
   border: 1px solid #ccc;
   border-radius: 4px;
-  box-shadow: 0 1px 1px rgba(0, 0, 0, .095);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.095);
   background-color: #fff;
   padding: 10px;
   width: 100%;

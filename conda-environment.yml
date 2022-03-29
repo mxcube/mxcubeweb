@@ -13,6 +13,8 @@ dependencies:
   - python-socketio=4.3.0
   - flask=1.1.2
   - flask-socketio=4.3.1
+  - jinja2=3.0.3
+  - itsdangerous=2.0.1
   - gevent-websocket=0.10.1
   - mock=4.0.3
   - jsonpickle=1.4.1
@@ -21,7 +23,7 @@ dependencies:
   - python-ldap=3.3.1
   - lxml=4.6.2
   - ruamel.yaml=0.16.12
-  - nodejs=10.13.0
+  - nodejs=17.8.0
   - scipy=1.5.3
   - opencv
   - requests
@@ -35,11 +37,17 @@ dependencies:
   - flask-sqlalchemy
   - pytz
   - tzlocal
+  - py4j
+  - psutil
 
   - pip:
       - Flask-Session==0.3.2
+      - Flask-Login==0.5.0
       - git+https://github.com/marcus-oscarsson/python-v4l2.git
       - Louie-latest
       - spectree
       - git+https://github.com/mxcube/mxcubecore.git
       - flask-security-too
+      - mgen
+      - f90nml
+      - gipc

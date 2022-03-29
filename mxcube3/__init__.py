@@ -42,6 +42,15 @@ def parse_args():
     )
 
     opt_parser.add_option(
+        "-s",
+        "--static-folder",
+        dest="static_folder",
+        help="Static folder",
+        default=f"{os.getcwd()}ui/build",
+    )
+
+
+    opt_parser.add_option(
         "-l",
         "--log-file",
         dest="log_file",

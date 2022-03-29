@@ -3,9 +3,8 @@ import fetch from 'isomorphic-fetch';
 export const STATE = {
   IDLE: 'READY',
   BUSY: 'MOVING',
-  ABORT: 'UNUSABLE'
+  ABORT: 'UNUSABLE',
 };
-
 
 // Action types
 export const BL_ATTR_SET = 'BL_ATTR_SET';
@@ -32,7 +31,7 @@ export function setMachInfo(info) {
 export function busyStateAction(name) {
   return {
     type: BL_ATTR_SET_STATE,
-    data: { name, state: STATE.BUSY }
+    data: { name, state: STATE.BUSY },
   };
 }
 
@@ -44,15 +43,19 @@ export function sendGetAllAttributes() {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
-    }).then(response => response.json())
-      .then((data) => {
-        dispatch(getBeamlineAttrsAction(data));
-      }, () => {
-        throw new Error(`GET ${url} failed`);
-      });
+      credentials: 'include',
+    })
+      .then((response) => response.json())
+      .then(
+        (data) => {
+          dispatch(getBeamlineAttrsAction(data));
+        },
+        () => {
+          throw new Error(`GET ${url} failed`);
+        }
+      );
   };
 }
 
@@ -71,14 +74,27 @@ export function sendSetAttribute(name, value) {
       method: 'PUT',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ name, value })
+      body: JSON.stringify({ name, value }),
     });
   };
 }
 
+export function executeCommand(obj, name, args) {
+  return () => {
+    fetch(`mxcube/api/v0.1/beamline/${obj}/command/${name}`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({...args}),
+    });
+  }
+}
 
 export function sendAbortCurrentAction(name) {
   return () => {
@@ -86,13 +102,12 @@ export function sendAbortCurrentAction(name) {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     });
   };
 }
-
 
 export function sendPrepareForNewSample() {
   return () => {
@@ -101,8 +116,8 @@ export function sendPrepareForNewSample() {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
-      }
+        'Content-type': 'application/json',
+      },
     });
   };
 }

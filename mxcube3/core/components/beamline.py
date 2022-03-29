@@ -29,11 +29,10 @@ class Beamline(ComponentBase):
             logging.getLogger("MX3.HWR").exception(msg)
         try:
 
-            actions = self.app.mxcubecore.hwr.get_hardware_object("beamcmds")
+            actions = HWR.beamline.beamline_actions
             if actions is not None:
-                cmds = self.app.mxcubecore.hwr.get_hardware_object(
-                    "beamcmds"
-                ).get_commands()
+                cmds = HWR.beamline.beamline_actions.get_commands() +\
+                    HWR.beamline.beamline_actions.get_annotated_commands()
                 for cmd in cmds:
                     cmd.connect("commandBeginWaitReply", signals.beamline_action_start)
                     cmd.connect("commandReplyArrived", signals.beamline_action_done)
@@ -177,9 +176,7 @@ class Beamline(ComponentBase):
         actions = list()
 
         try:
-            cmds = self.app.mxcubecore.hwr.get_hardware_object(
-                "beamcmds"
-            ).get_commands()
+            cmds = HWR.beamline.beamline_actions.get_commands()
         except Exception:
             cmds = []
         for cmd in cmds:
@@ -204,6 +201,8 @@ class Beamline(ComponentBase):
                 }
             )
 
+        actions.extend(self.beamline_get_actions())
+
         data.update({"availableMethods": ho.get_available_methods()})
 
         data.update(
@@ -219,6 +218,30 @@ class Beamline(ComponentBase):
 
         return data
 
+    def beamline_get_actions(self):
+        actions = []
+        beamline_actions = HWR.beamline.beamline_actions
+
+        if getattr(beamline_actions, "pydantic_model", None):
+            for cmd_name in beamline_actions.exported_attributes.keys():
+                cmd_object = beamline_actions.get_annotated_command(cmd_name)
+
+                actions.append(
+                    {
+                        "name": cmd_name,
+                        "username": cmd_object.name(),
+                        "state": READY,
+                        "arguments": beamline_actions.exported_attributes[cmd_name]["signature"],
+                        "argument_type": "JSONSchema",
+                        "schema": beamline_actions.exported_attributes[cmd_name]["schema"],
+                        "messages": [],
+                        "type": "JSONSchema",
+                        "data": ""
+                    }
+                )
+
+        return actions
+
     def beamline_abort_action(self, name):
         """
         Aborts an action in progress.
@@ -227,9 +250,7 @@ class Beamline(ComponentBase):
 
         """
         try:
-            cmds = self.app.mxcubecore.hwr.get_hardware_object(
-                "beamcmds"
-            ).get_commands()
+            cmds = HWR.beamline.beamline_actions.get_commands()
         except Exception:
             cmds = []
 
@@ -237,12 +258,16 @@ class Beamline(ComponentBase):
             if cmd.name() == name:
                 cmd.abort()
 
+        # Annotated command
         try:
-            ho = BeamlineAdapter(HWR.beamline).get_object(name.lower())
-        except AttributeError:
-            pass
-        else:
-            ho.stop()
+            HWR.beamline.beamline_actions.abort_command(name)
+        except KeyError:
+            try:
+                ho = BeamlineAdapter(HWR.beamline).get_object(name.lower())
+            except AttributeError:
+                pass
+            else:
+                ho.stop()
 
     def beamline_run_action(self, name, params):
         """
@@ -251,9 +276,7 @@ class Beamline(ComponentBase):
         : param str name: action to run
         """
         try:
-            cmds = self.app.mxcubecore.hwr.get_hardware_object(
-                "beamcmds"
-            ).get_commands()
+            cmds = HWR.beamline.beamline_actions.get_commands()
         except Exception:
             cmds = []
 
@@ -268,8 +291,10 @@ class Beamline(ComponentBase):
                 except Exception:
                     err = str(sys.exc_info()[1])
                     raise Exception(str(err))
-
-        else:
+        # Annotated command
+        try:
+            HWR.beamline.beamline_actions.execute_command(name, params)
+        except Exception:
             msg = "Action cannot run: command '%s' does not exist" % name
             raise Exception(msg)
 

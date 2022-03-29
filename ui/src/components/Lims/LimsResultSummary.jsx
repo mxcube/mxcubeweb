@@ -20,21 +20,27 @@ export class LimsResultSummary extends React.Component {
         credentials: 'include',
         headers: {
           Accept: 'application/json',
-          'Content-type': 'application/json'
+          'Content-type': 'application/json',
         },
-        body: JSON.stringify({ qid: taskData.queueID })
-      }).then((response) => {
-        if (response.status >= 400) {
-          return false;
-        }
+        body: JSON.stringify({ qid: taskData.queueID }),
+      })
+        .then((response) => {
+          if (response.status >= 400) {
+            return false;
+          }
 
-        return response.json();
-      }).then((data) => {
-        if (data.result !== undefined && data.result !== null &&
-            data.result !== 'undefined' && data.result !== 'null') {
-          resultCont.innerHTML = data.result;
-        }
-      });
+          return response.json();
+        })
+        .then((data) => {
+          if (
+            data.result !== undefined &&
+            data.result !== null &&
+            data.result !== 'undefined' &&
+            data.result !== 'null'
+          ) {
+            resultCont.innerHTML = data.result;
+          }
+        });
     }
   }
 
@@ -73,13 +79,20 @@ export class LimsResultSummary extends React.Component {
 
   render() {
     const task = this.props.taskData;
-    const style = {};// resize: 'both', overflow: 'auto' };
+    const style = {}; // resize: 'both', overflow: 'auto' };
 
     return (
-      <div ref="limsResultSummary" className="lims-result-summary" style={ style }>
-        { !taskHasLimsData(task) ? this.taskSummary() : null }
-        <div ref="resultContainer" className="result-container" style= {{ overflow: 'hidden' }}>
-        </div>
+      <div
+        ref="limsResultSummary"
+        className="lims-result-summary"
+        style={style}
+      >
+        {!taskHasLimsData(task) ? this.taskSummary() : null}
+        <div
+          ref="resultContainer"
+          className="result-container"
+          style={{ overflow: 'hidden' }}
+        ></div>
       </div>
     );
   }

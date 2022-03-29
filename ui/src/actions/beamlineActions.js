@@ -2,16 +2,19 @@ import fetch from 'isomorphic-fetch';
 import { RUNNING } from '../constants';
 import { checkStatus, parseJSON } from '../requests';
 
-
 export function addUserMessage(data) {
   return {
-    type: 'ADD_USER_MESSAGE', data
+    type: 'ADD_USER_MESSAGE',
+    data,
   };
 }
 
 export function setActionState(cmdName, state, data) {
   return {
-    type: 'ACTION_SET_STATE', cmdName, state, data
+    type: 'ACTION_SET_STATE',
+    cmdName,
+    state,
+    data,
   };
 }
 
@@ -25,7 +28,10 @@ export function hideActionOutput(cmdName) {
 
 export function setArgumentValue(cmdName, argIndex, value) {
   return {
-    type: 'ACTION_SET_ARGUMENT', cmdName, argIndex, value
+    type: 'ACTION_SET_ARGUMENT',
+    cmdName,
+    argIndex,
+    value,
   };
 }
 
@@ -43,13 +49,16 @@ export function startAction(cmdName, parameters, showOutput = true) {
       method: 'POST',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
       credentials: 'include',
-      body: JSON.stringify({ parameters })
-    }).then(checkStatus).then(parseJSON).catch((error) => {
-      throw new Error(`GET ${url} failed ${error}`);
-    });
+      body: JSON.stringify({ parameters }),
+    })
+      .then(checkStatus)
+      .then(parseJSON)
+      .catch((error) => {
+        throw new Error(`GET ${url} failed ${error}`);
+      });
   };
 }
 
@@ -61,12 +70,15 @@ export function stopAction(cmdName) {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
-    }).then(checkStatus).then(parseJSON).catch((error) => {
-      throw new Error(`GET ${url} failed: ${error}`);
-    });
+      credentials: 'include',
+    })
+      .then(checkStatus)
+      .then(parseJSON)
+      .catch((error) => {
+        throw new Error(`GET ${url} failed: ${error}`);
+      });
   };
 }
 
@@ -76,12 +88,18 @@ export function newPlot(plotInfo) {
 
 export function plotData(plotId, data, fullDataSet) {
   return {
-    type: 'PLOT_DATA', id: plotId, data, fullDataSet
+    type: 'PLOT_DATA',
+    id: plotId,
+    data,
+    fullDataSet,
   };
 }
 
 export function plotEnd(data) {
   return {
-    type: 'PLOT_END', id: data.id, data: data.data, dataType: data.type
+    type: 'PLOT_END',
+    id: data.id,
+    data: data.data,
+    dataType: data.type,
   };
 }

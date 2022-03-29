@@ -1,0 +1,11 @@
+<object class="BeamlineActionsMockup">
+    <commands>[
+      {"type": "controller", "name": "Centre Beam", "command": "HardwareObjects.mockup.BeamlineActionsMockup.SimulatedAction"},
+      {"type": "controller", "name": "Quick Realign", "command": "HardwareObjects.mockup.BeamlineActionsMockup.LongSimulatedAction"},
+      {"type": "controller", "name": "Anneal", "command": "HardwareObjects.mockup.BeamlineActionsMockup.SimulatedActionError"},
+      {"type": "annotated", "command": "HardwareObjects.mockup.BeamlineActionsMockup.Anneal2"},
+      {"type": "annotated", "command": "HardwareObjects.mockup.BeamlineActionsMockup.QuickRealign2"},
+      {"type": "annotated", "command": "HardwareObjects.mockup.BeamlineActionsMockup.ComboTest2"},
+    ]
+    </commands>
+</object>

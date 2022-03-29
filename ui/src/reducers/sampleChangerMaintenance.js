@@ -1,6 +1,8 @@
-
 const INITIAL_STATE = {
-  global_state: {}, commands: {}, commands_state: {}, message: ''
+  global_state: {},
+  commands: {},
+  commands_state: {},
+  message: '',
 };
 
 export default (state = INITIAL_STATE, action) => {
@@ -19,7 +21,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         global_state: JSON.parse(action.data.state),
         commands_state: JSON.parse(action.data.commands_state),
-        message: action.data.message
+        message: action.data.message,
       };
     }
     default: {

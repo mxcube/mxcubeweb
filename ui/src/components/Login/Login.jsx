@@ -13,7 +13,7 @@ import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
 import './Login.css';
 import SelectProposal from './SelectProposal';
-
+import withRouter from '../WithRouter'
 class LoginComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -120,11 +120,5 @@ class LoginComponent extends React.Component {
   }
 }
 
-
-
-function LoginWithNavigate(props) {
-  let navigate = useNavigate();
-  return <LoginComponent {...props} navigate={navigate} />
-}
-
-export default LoginWithNavigate;
+LoginComponent = withRouter(LoginComponent);
+export default LoginComponent;

@@ -43,27 +43,25 @@ export class ConnectionLostDialog extends React.Component {
     }
 
     this.timerid = setInterval(this.intervalCb, 1000);
-    setTimeout(() => { clearInterval(this.timerid); }, this.seconds * 1000);
+    setTimeout(() => {
+      clearInterval(this.timerid);
+    }, this.seconds * 1000);
 
     return (
-      <Modal
-        show={this.props.show}
-        onHide={this.props.hide}
-      >
+      <Modal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header>
-          <Modal.Title>
-          Connection lost
-          </Modal.Title>
+          <Modal.Title>Connection lost</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          Ooops ! There seems to be a problem with the internet connection,
-          the connection to the server was lost. Trying to reconnect in <span ref="countdown">
-          {this.seconds}</span> s
+          Ooops ! There seems to be a problem with the internet connection, the
+          connection to the server was lost. Trying to reconnect in{' '}
+          <span ref="countdown">{this.seconds}</span> s
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.accept}> Try again </Button>
         </Modal.Footer>
-      </Modal>);
+      </Modal>
+    );
   }
 }
 
@@ -75,7 +73,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    hide: bindActionCreators(showConnectionLostDialog.bind(this, false), dispatch),
+    hide: bindActionCreators(
+      showConnectionLostDialog.bind(this, false),
+      dispatch
+    ),
   };
 }
 

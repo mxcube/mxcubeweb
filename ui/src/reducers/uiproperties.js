@@ -1,16 +1,13 @@
 import { findIndex, setWith, clone } from 'lodash';
 
-const initialState = {
-};
+const initialState = {};
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'SET_UI_PROPERTIES':
-    {
+    case 'SET_UI_PROPERTIES': {
       return { ...state, ...action.data };
     }
-    case 'SET_STEP_SIZE':
-    {
+    case 'SET_STEP_SIZE': {
       const idx = findIndex(
         state[action.componentName].components,
         (o) => o.attribute === action.name
@@ -22,10 +19,8 @@ export default (state = initialState, action) => {
         action.value,
         clone
       );
-
     }
-    case 'SET_INITIAL_STATE':
-    {
+    case 'SET_INITIAL_STATE': {
       return { ...state, ...action.data.uiproperties };
     }
     default:

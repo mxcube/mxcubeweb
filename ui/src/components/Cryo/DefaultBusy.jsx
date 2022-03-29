@@ -5,7 +5,6 @@ import { Button, ButtonToolbar } from 'react-bootstrap';
 import './style.css';
 
 export default class DefaultInput extends React.Component {
-
   constructor(props) {
     super(props);
     this.cancel = this.cancel.bind(this);
@@ -18,8 +17,7 @@ export default class DefaultInput extends React.Component {
   render() {
     return (
       <div>
-        <div className="popinput-input-busy">
-        </div>
+        <div className="popinput-input-busy"></div>
         <ButtonToolbar className="editable-buttons">
           <Button variant="outline-secondary" className="btn-sm" onClick={this.cancel}>
             <i className="glyphicon glyphicon-remove" />
@@ -29,7 +27,6 @@ export default class DefaultInput extends React.Component {
     );
   }
 }
-
 
 DefaultInput.defaultProps = {
   onCancel: undefined,

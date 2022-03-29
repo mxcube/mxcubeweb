@@ -66,3 +66,4 @@ npm-debug.log*
 log
 mxcube3/static
 yarn.lock
+/ui/package-lock.json

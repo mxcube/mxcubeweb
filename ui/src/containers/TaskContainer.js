@@ -15,9 +15,8 @@ import {
   hideTaskParametersForm,
   showTaskForm,
   resetTaskParameters,
-  updateDefaultParameters
+  updateDefaultParameters,
 } from '../actions/taskForm';
-
 
 import {
   addTask,
@@ -26,10 +25,7 @@ import {
   addSampleAndMount,
 } from '../actions/queue';
 
-import {
-  addSamplesToList
-} from '../actions/sampleGrid';
-
+import { addSamplesToList } from '../actions/sampleGrid';
 
 class TaskContainer extends React.Component {
   constructor(props) {
@@ -52,7 +48,11 @@ class TaskContainer extends React.Component {
   addTask(params, stringFields, runNow) {
     const parameters = { ...params };
     for (const key in parameters) {
-      if (parameters.hasOwnProperty(key) && stringFields.indexOf(key) === -1 && parameters[key]) {
+      if (
+        parameters.hasOwnProperty(key) &&
+        stringFields.indexOf(key) === -1 &&
+        parameters[key]
+      ) {
         parameters[key] = Number(parameters[key]);
       }
     }
@@ -252,7 +252,6 @@ class TaskContainer extends React.Component {
   }
 }
 
-
 function mapStateToProps(state) {
   return {
     queue: state.queue.queue,
@@ -268,25 +267,28 @@ function mapStateToProps(state) {
     shapes: state.shapes.shapes,
     attributes: state.beamline.attributes,
     initialParameters: state.taskForm.initialParameters,
-    taskResult: state.taskResult
+    taskResult: state.taskResult,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
-    hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
+    hideTaskParametersForm: bindActionCreators(
+      hideTaskParametersForm,
+      dispatch
+    ),
     resetTaskParameters: bindActionCreators(resetTaskParameters, dispatch),
-    updateDefaultParameters: bindActionCreators(updateDefaultParameters, dispatch),
+    updateDefaultParameters: bindActionCreators(
+      updateDefaultParameters,
+      dispatch
+    ),
     updateTask: bindActionCreators(updateTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
     addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
     addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
-    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch)
+    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(TaskContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(TaskContainer);

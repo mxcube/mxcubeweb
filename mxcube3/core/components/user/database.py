@@ -45,3 +45,15 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
 
     def get_all_messages(self):
         return self._message_model.query.all()
+
+    def append_roles(self, user, roles):
+        for role in roles:
+            if not user.has_role(role):
+                if not self.find_role(role):
+                    _r = self.create_role(name=role)
+                    user.roles.append(_r)
+                else:
+                    user.roles.append(self.find_role(role))
+
+        self.commit()
+

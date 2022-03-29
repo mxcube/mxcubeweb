@@ -1,7 +1,9 @@
 import os
+import sys
+import logging
 import ruamel.yaml
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ValidationError
 
 from mxcube3.core.models.configmodels import (
     UIPropertiesListModel,
@@ -17,7 +19,12 @@ class ConfigLoader:
 
         with open(os.path.join(path)) as f:
             config = ruamel.yaml.load(f.read(), ruamel.yaml.RoundTripLoader)
-            model = schema.parse_obj(config)
+            try:
+                model = schema.parse_obj(config)
+            except ValidationError as ex:
+                logging.getLogger("HWR").error(f"Validation error in {path}:")
+                logging.getLogger("HWR").exception("")
+                sys.exit(-1)
 
         return model
 

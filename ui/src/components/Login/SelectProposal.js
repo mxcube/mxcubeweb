@@ -35,25 +35,33 @@ class SelectProposal extends React.Component {
       clickToSelectAndEditCell: false,
       hideSelectColumn: true,
     };
-    const proposals = this.props.data.proposalList.map(prop => ({
-      Number: prop.Proposal.code + prop.Proposal.number,
-      Person: prop.Person.familyName,
-      Session: prop.Session[0].startDate.split(' ')[0]
+    const proposals = this.props.data.proposalList.map((prop) => ({
+      Number: prop.code + prop.number,
+      Person: prop.person,
     }));
 
     return (
-      <Modal show={this.props.show} backdrop="static" onHide={this.handleCancel}>
+      <Modal
+        show={this.props.show}
+        backdrop="static"
+        onHide={this.handleCancel}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Select a proposal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div>
-            <BootstrapTable data={proposals} bordered={false} selectRow={selectRowProp}>
+            <BootstrapTable
+              data={proposals}
+              bordered={false}
+              selectRow={selectRowProp}
+            >
               <TableHeaderColumn dataField="Number" isKey editable={false}>
-Proposal Number
+                Proposal Number
               </TableHeaderColumn>
-              <TableHeaderColumn dataField="Person" editable={false}>Person</TableHeaderColumn>
-              <TableHeaderColumn dataField="Session" editable={false}>Session</TableHeaderColumn>
+              <TableHeaderColumn dataField="Person" editable={false}>
+                Person
+              </TableHeaderColumn>
             </BootstrapTable>
           </div>
         </Modal.Body>

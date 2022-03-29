@@ -18,7 +18,7 @@ export default class PhaseInput extends React.Component {
   render() {
     const inputCSS = cx('form-control input-sm', {
       'input-bg-moving': this.props.phase[0] === 'Unknown',
-      'input-bg-ready': this.props.phase[0] !== 'Unknown'
+      'input-bg-ready': this.props.phase[0] !== 'Unknown',
     });
 
     return (
@@ -28,11 +28,8 @@ export default class PhaseInput extends React.Component {
           onChange={this.sendPhase}
           value={this.props.phase}
         >
-          {this.props.phaseList.map(option => (
-            <option
-              key={option}
-              value={option}
-            >
+          {this.props.phaseList.map((option) => (
+            <option key={option} value={option}>
               {option}
             </option>
           ))}

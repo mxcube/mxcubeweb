@@ -10,18 +10,15 @@ import {
   updateShapes,
   setPixelsPerMm,
   videoMessageOverlay,
-  setCurrentPhase
+  setCurrentPhase,
 } from './actions/sampleview';
-import {
-  setBeamlineAttrAction,
-  setMachInfo
-} from './actions/beamline';
+import { setBeamlineAttrAction, setMachInfo } from './actions/beamline';
 import {
   setActionState,
   addUserMessage,
   newPlot,
   plotData,
-  plotEnd
+  plotEnd,
 } from './actions/beamlineActions';
 import {
   setStatus,
@@ -31,23 +28,14 @@ import {
   sendStopQueue,
   setCurrentSample,
   addDiffractionPlanAction,
-  setSampleAttribute
+  setSampleAttribute,
 } from './actions/queue';
-import {
-  collapseItem,
-  showResumeQueueDialog
-} from './actions/queueGUI';
-import {
-  setLoading,
-  showConnectionLostDialog
-} from './actions/general';
+import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
+import { setLoading, showConnectionLostDialog } from './actions/general';
 
 import { showWorkflowParametersDialog } from './actions/workflow';
 
-import {
-  incChatMessageCount,
-  getRaState
-} from './actions/remoteAccess';
+import { incChatMessageCount, getRaState } from './actions/remoteAccess';
 
 import { doSignOut, getLoginInfo } from './actions/login';
 
@@ -55,7 +43,7 @@ import {
   setSCState,
   setLoadedSample,
   setSCGlobalState,
-  updateSCContents
+  updateSCContents,
 } from './actions/sampleChanger';
 
 import { setEnergyScanResult } from './actions/taskResults';
@@ -76,19 +64,25 @@ class ServerIO {
         this.uiStateSocket.emit('ui_state_set', [key, value]);
       },
       getItem: (key, cb) => {
-        this.uiStateSocket.emit('ui_state_get', key, (value) => { cb(false, value); });
+        this.uiStateSocket.emit('ui_state_get', key, (value) => {
+          cb(false, value);
+        });
       },
       removeItem: (key) => {
         this.uiStateSocket.emit('ui_state_rm', key);
       },
       getAllKeys: (cb) => {
-        this.uiStateSocket.emit('ui_state_getkeys', null, (value) => { cb(false, value); });
-      }
+        this.uiStateSocket.emit('ui_state_getkeys', null, (value) => {
+          cb(false, value);
+        });
+      },
     };
   }
 
   connectNetworkSocket(cb) {
-    this.networkSocket = io.connect(`//${document.domain}:${window.location.port}/network`);
+    this.networkSocket = io.connect(
+      `//${document.domain}:${window.location.port}/network`
+    );
     this.networkSocket.on('connect', () => {
       cb(true);
       this.connected = true;
@@ -101,7 +95,9 @@ class ServerIO {
   }
 
   connectStateSocket(statePersistor) {
-    this.uiStateSocket = io.connect(`//${document.domain}:${window.location.port}/ui_state`);
+    this.uiStateSocket = io.connect(
+      `//${document.domain}:${window.location.port}/ui_state`
+    );
 
     this.uiStateSocket.on('state_update', (newState) => {
       statePersistor.rehydrate(JSON.parse(newState));
@@ -125,8 +121,12 @@ class ServerIO {
   listen(store) {
     this.dispatch = store.dispatch;
 
-    this.hwrSocket = io.connect(`//${document.domain}:${window.location.port}/hwr`);
-    this.loggingSocket = io.connect(`//${document.domain}:${window.location.port}/logging`);
+    this.hwrSocket = io.connect(
+      `//${document.domain}:${window.location.port}/hwr`
+    );
+    this.loggingSocket = io.connect(
+      `//${document.domain}:${window.location.port}/logging`
+    );
 
     this.loggingSocket.on('log_record', (record) => {
       this.dispatch(addUserMessage(record));
@@ -136,7 +136,9 @@ class ServerIO {
     this.hwrSocket.on('ra_chat_message', (record) => {
       const { username } = store.getState().login.user;
       if (record.username !== username) {
-        addResponseMessage(`${record.date} **${record.nickname}:** \n\n ${record.message}`);
+        addResponseMessage(
+          `${record.date} **${record.nickname}:** \n\n ${record.message}`
+        );
         this.dispatch(incChatMessageCount());
       }
     });
@@ -178,7 +180,13 @@ class ServerIO {
     });
 
     this.hwrSocket.on('update_task_lims_data', (record) => {
-      this.dispatch(updateTaskLimsData(record.sample, record.taskIndex, record.limsResultData));
+      this.dispatch(
+        updateTaskLimsData(
+          record.sample,
+          record.taskIndex,
+          record.limsResultData
+        )
+      );
     });
 
     this.hwrSocket.on('task', (record, callback) => {
@@ -187,8 +195,12 @@ class ServerIO {
       }
 
       // The current node might not be a task, in that case ignore it
-      if (store.getState().queueGUI.displayData[record.queueID] && record.taskIndex !== null) {
-        const taskCollapsed = store.getState().queueGUI.displayData[record.queueID].collapsed;
+      if (
+        store.getState().queueGUI.displayData[record.queueID] &&
+        record.taskIndex !== null
+      ) {
+        const taskCollapsed =
+          store.getState().queueGUI.displayData[record.queueID].collapsed;
 
         if (record.state === 1 && !taskCollapsed) {
           this.dispatch(collapseItem(record.queueID));
@@ -196,8 +208,16 @@ class ServerIO {
           this.dispatch(collapseItem(record.queueID));
         }
 
-        this.dispatch(addTaskResultAction(record.sample, record.taskIndex, record.state,
-          record.progress, record.limsResultData, record.queueID));
+        this.dispatch(
+          addTaskResultAction(
+            record.sample,
+            record.taskIndex,
+            record.state,
+            record.progress,
+            record.limsResultData,
+            record.queueID
+          )
+        );
       }
     });
 
@@ -230,27 +250,61 @@ class ServerIO {
 
     this.hwrSocket.on('sc', (record) => {
       if (record.signal === 'operatingSampleChanger') {
-        this.dispatch(setLoading(true, 'Sample changer in operation',
-          record.message, true, () => (this.dispatch(sendStopQueue()))));
-      } else if ((record.signal === 'loadingSample' || record.signal === 'loadedSample')) {
-        this.dispatch(setLoading(true, `Loading sample ${record.location}`,
-          record.message, true, () => (this.dispatch(sendStopQueue()))));
-      } else if (record.signal === 'unLoadingSample' || record.signal === 'unLoadedSample') {
-        this.dispatch(setLoading(true, `Unloading sample ${record.location}`,
-          record.message, true, () => (this.dispatch(sendStopQueue()))));
+        this.dispatch(
+          setLoading(
+            true,
+            'Sample changer in operation',
+            record.message,
+            true,
+            () => this.dispatch(sendStopQueue())
+          )
+        );
+      } else if (
+        record.signal === 'loadingSample' ||
+        record.signal === 'loadedSample'
+      ) {
+        this.dispatch(
+          setLoading(
+            true,
+            `Loading sample ${record.location}`,
+            record.message,
+            true,
+            () => this.dispatch(sendStopQueue())
+          )
+        );
+      } else if (
+        record.signal === 'unLoadingSample' ||
+        record.signal === 'unLoadedSample'
+      ) {
+        this.dispatch(
+          setLoading(
+            true,
+            `Unloading sample ${record.location}`,
+            record.message,
+            true,
+            () => this.dispatch(sendStopQueue())
+          )
+        );
       } else if (record.signal === 'loadReady') {
-        this.dispatch(setLoading(false, 'SC Ready',
-          record.message, true, () => (this.dispatch(sendStopQueue()))));
+        this.dispatch(
+          setLoading(false, 'SC Ready', record.message, true, () =>
+            this.dispatch(sendStopQueue())
+          )
+        );
       } else if (record.signal === 'inSafeArea') {
-        this.dispatch(setLoading(false, 'SC Safe',
-          record.message, true, () => (this.dispatch(sendStopQueue()))));
+        this.dispatch(
+          setLoading(false, 'SC Safe', record.message, true, () =>
+            this.dispatch(sendStopQueue())
+          )
+        );
       }
     });
 
     this.hwrSocket.on('sample_centring', (data) => {
       if (data.method === CLICK_CENTRING) {
         this.dispatch(startClickCentring());
-        const msg = '3-Click Centring: <br /> Select centered position or center';
+        const msg =
+          '3-Click Centring: <br /> Select centered position or center';
         this.dispatch(videoMessageOverlay(true, msg));
       } else {
         const msg = 'Auto loop centring: <br /> Save position or re-center';
@@ -261,7 +315,9 @@ class ServerIO {
     this.hwrSocket.on('disconnect', () => {
       if (this.connected) {
         this.connected = false;
-        setTimeout(() => { this.dispatch(showConnectionLostDialog(!this.connected)); }, 2000);
+        setTimeout(() => {
+          this.dispatch(showConnectionLostDialog(!this.connected));
+        }, 2000);
       }
     });
 
@@ -277,11 +333,19 @@ class ServerIO {
     this.hwrSocket.on('observersChanged', (data) => {
       const state = store.getState();
 
-      if (data.observers.length > 0 && data.operator.username === state.login.user.username &&
-          !state.login.user.inControl) {
+      if (
+        data.observers.length > 0 &&
+        data.operator.username === state.login.user.username &&
+        !state.login.user.inControl
+      ) {
         this.dispatch(setLoading(true, 'You were given control', data.message));
-      } else if (data.observers.length > 0 && state.login.user.inControl
-        && data.observers.map((el) => el.username).includes(state.login.user.username)) {
+      } else if (
+        data.observers.length > 0 &&
+        state.login.user.inControl &&
+        data.observers
+          .map((el) => el.username)
+          .includes(state.login.user.username)
+      ) {
         this.dispatch(setLoading(true, 'You lost control', 'You lost control'));
       }
 
@@ -290,12 +354,16 @@ class ServerIO {
     });
 
     this.hwrSocket.on('observerLogout', (observer) => {
-      addResponseMessage(`**${observer.nickname}** (${observer.ip}) disconnected.`);
+      addResponseMessage(
+        `**${observer.nickname}** (${observer.ip}) disconnected.`
+      );
     });
 
     this.hwrSocket.on('observerLogin', (observer) => {
       if (observer.nickname && observer.ip) {
-        addResponseMessage(`**${observer.nickname}** (${observer.ip}) connected.`);
+        addResponseMessage(
+          `**${observer.nickname}** (${observer.ip}) connected.`
+        );
       } else {
         addResponseMessage(`${observer.nickname} connecting ...`);
       }

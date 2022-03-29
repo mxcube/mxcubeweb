@@ -32,30 +32,34 @@ export function refresh() {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Error refreshing sample changer contents');
       }
 
-      response.json().then((contents) => { dispatch(setContents(contents)); });
+      response.json().then((contents) => {
+        dispatch(setContents(contents));
+      });
     });
 
     fetch('mxcube/api/v0.1/sample_changer/loaded_sample', {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error('Error refreshing sample changer contents');
       }
 
-      response.json().then((loadedSample) => { dispatch(setLoadedSample(loadedSample)); });
+      response.json().then((loadedSample) => {
+        dispatch(setLoadedSample(loadedSample));
+      });
     });
   };
 }
@@ -66,15 +70,19 @@ export function select(address) {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     }).then((response) => {
       if (response.status >= 400) {
-        throw new Error(`Error while selecting sample changer container @ ${address}`);
+        throw new Error(
+          `Error while selecting sample changer container @ ${address}`
+        );
       }
 
-      response.json().then((contents) => { dispatch(setContents(contents)); });
+      response.json().then((contents) => {
+        dispatch(setContents(contents));
+      });
     });
   };
 }
@@ -85,15 +93,17 @@ export function scan(address) {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error(`Error while scanning sample changer @ ${address}`);
       }
 
-      response.json().then((contents) => { dispatch(setContents(contents)); });
+      response.json().then((contents) => {
+        dispatch(setContents(contents));
+      });
     });
   };
 }
@@ -108,9 +118,9 @@ export function loadSample(sampleData, successCb = null) {
         credentials: 'include',
         headers: {
           Accept: 'application/json',
-          'Content-type': 'application/json'
+          'Content-type': 'application/json',
         },
-        body: JSON.stringify(sampleData)
+        body: JSON.stringify(sampleData),
       }).then((response) => {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, response.headers.get('message')));
@@ -133,7 +143,7 @@ export function unloadSample(sample) {
     url = 'mxcube/api/v0.1/sample_changer/unmount_current';
   }
 
-  if (typeof (sample) === 'string') {
+  if (typeof sample === 'string') {
     _sample = { location: sample };
   }
 
@@ -143,9 +153,9 @@ export function unloadSample(sample) {
       credentials: 'include',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      body: JSON.stringify({ sample: _sample })
+      body: JSON.stringify({ sample: _sample }),
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
@@ -163,9 +173,9 @@ export function abort() {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     }).then((response) => {
       if (response.status < 400) {
         dispatch(showErrorPanel(true, 'action aborted'));
@@ -180,15 +190,17 @@ export function sendCommand(cmdparts, args) {
       method: 'GET',
       headers: {
         Accept: 'application/json',
-        'Content-type': 'application/json'
+        'Content-type': 'application/json',
       },
-      credentials: 'include'
+      credentials: 'include',
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error(`Error while  sending command @ ${cmdparts}`);
       }
-      response.json().then((answer) => { dispatch(setSCCommandResponse(answer)); });
+      response.json().then((answer) => {
+        dispatch(setSCCommandResponse(answer));
+      });
     });
   };
 }

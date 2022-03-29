@@ -26,42 +26,98 @@ export const CLICK_CENTRING = 0;
 
 export const TWO_STATE_ACTUATOR = 'INOUT';
 
-
 export function isCollected(task) {
   return (task.state & TASK_COLLECTED) === TASK_COLLECTED;
 }
 
-
 export function isUnCollected(task) {
   return task.state === TASK_UNCOLLECTED;
 }
-
 
 export function hasLimsData(sample) {
   return sample.limsID !== undefined;
 }
 
 export function taskHasLimsData(task) {
-  return task.limsResultData
-    && (task.limsResultData.dataCollectionId || task.limsResultData.dataCollectionGroupId);
+  return (
+    task.limsResultData &&
+    (task.limsResultData.dataCollectionId ||
+      task.limsResultData.dataCollectionGroupId)
+  );
 }
 
 export function twoStateActuatorIsActive(state) {
   return ['in', 'on', 'enabled'].includes(String(state).toLowerCase());
 }
 
-
-export const SPACE_GROUPS = ['', 'P1', 'P2', 'P21', 'C2', 'P222', 'P2221', 'P21212',
-  'P212121', 'C222 ', 'C2221', 'F222', 'I222', 'I212121',
-  'P4', 'P41', 'P42', 'P43', 'P422', 'P4212', 'P4122',
-  'P41212', 'P4222', 'P42212', 'P4322', 'P43212', 'I4',
-  'I41', 'I422', 'I4122', 'P3', 'P31', 'P32', 'P312',
-  'P321', 'P3112', 'P3121', 'P3212', 'P3221', 'P6', 'P61',
-  'P65', 'P62', 'P64', 'P63', 'P622', 'P6122', 'P6522',
-  'P6222', 'P6422', 'P6322', 'R3', 'R32', 'P23', 'P213',
-  'P432', 'P4232', 'P4332', 'P4132', 'F23', 'F432',
-  'F4132', 'I23', 'I213', 'I432', 'I4132'];
-
+export const SPACE_GROUPS = [
+  '',
+  'P1',
+  'P2',
+  'P21',
+  'C2',
+  'P222',
+  'P2221',
+  'P21212',
+  'P212121',
+  'C222 ',
+  'C2221',
+  'F222',
+  'I222',
+  'I212121',
+  'P4',
+  'P41',
+  'P42',
+  'P43',
+  'P422',
+  'P4212',
+  'P4122',
+  'P41212',
+  'P4222',
+  'P42212',
+  'P4322',
+  'P43212',
+  'I4',
+  'I41',
+  'I422',
+  'I4122',
+  'P3',
+  'P31',
+  'P32',
+  'P312',
+  'P321',
+  'P3112',
+  'P3121',
+  'P3212',
+  'P3221',
+  'P6',
+  'P61',
+  'P65',
+  'P62',
+  'P64',
+  'P63',
+  'P622',
+  'P6122',
+  'P6522',
+  'P6222',
+  'P6422',
+  'P6322',
+  'R3',
+  'R32',
+  'P23',
+  'P213',
+  'P432',
+  'P4232',
+  'P4332',
+  'P4132',
+  'F23',
+  'F432',
+  'F4132',
+  'I23',
+  'I213',
+  'I432',
+  'I4132',
+];
 
 export const MOTOR_STATE = {
   UNKNOWN: 'UNKNOWN',
@@ -69,7 +125,7 @@ export const MOTOR_STATE = {
   BUSY: 'BUSY',
   READY: 'READY',
   FAULT: 'FAULT',
-  OFF: 'OFF'
+  OFF: 'OFF',
 };
 
 export const MOTOR_STATE_DESC = {};
@@ -91,6 +147,5 @@ MOTOR_STATE_DESC[MOTOR_STATE.LOWLIMIT] = 'LowLimit';
 MOTOR_STATE_DESC[MOTOR_STATE.HIGHLIMIT] = 'HighLimit';
 MOTOR_STATE_DESC[MOTOR_STATE.NOTINITIALIZED] = 'NotInitialized';
 MOTOR_STATE_DESC[MOTOR_STATE.MOVESTARTED] = 'MoveStarted';
-
 
 /* eslint-enable no-unused-vars */
