@@ -1,6 +1,6 @@
 import './SampleView.css';
 import React from 'react';
-import { Form, Button, Table } from 'react-bootstrap';
+import { Row, Col, Form, Button, Table } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
 
@@ -135,8 +135,8 @@ export default class GridForm extends React.Component {
   render() {
     const gridForm = (
       <Draggable defaultPosition={{ x: 20, y: 50 }} cancel={'form'}>
-        <div className="gridform">
-          <div className="col-xs-8">
+        <Row className="gridform">
+          <Col xs={8}>
             <Table
               striped
               hover
@@ -177,47 +177,54 @@ export default class GridForm extends React.Component {
                 {this.getGridControls()}
               </tbody>
            </Table>
-          </div>
-          <div className="col-xs-4" style={{ marginTop: '20px' }}>
-            <Form inline>
-              <Form.Group>
-                <Form.Label>Opacity: </Form.Label>
-                <Form.Control
-                  style={{ width: '100px', padding: '0', marginLeft: '10px', marginRight: '1em' }}
-                  className="bar"
-                  type="range"
-                  id="overlay-control"
-                  min="0" max="1"
-                  step="0.05"
-                  defaultValue={this.props.getGridOverlayOpacity()}
-                  onChange={this.props.setGridOverlayOpacity}
-                  ref="overlaySlider"
-                  name="overlaySlider"
-                />
+          </Col>
+          <Col xs={4} style={{ marginTop: '20px' }}>
+            <Form >
+              <Form.Group className='mb-2' as={Row}>
+                <Col sm="4"> <Form.Label >Opacity</Form.Label> </Col>
+                <Col sm="1"> : </Col>
+                <Col sm="7">
+                  <Form.Control
+                    style={{ width: '100px', padding: '0' }}
+                    className="bar"
+                    type="range"
+                    id="overlay-control"
+                    min="0" max="1"
+                    step="0.05"
+                    defaultValue={this.props.getGridOverlayOpacity()}
+                    onChange={this.props.setGridOverlayOpacity}
+                    ref="overlaySlider"
+                    name="overlaySlider"
+                  />
+                </Col>
               </Form.Group>
-              <br />
-              <Form.Group>
-                <Form.Label>Heat map: </Form.Label>
-                <Form.Check
-                  name="resultType"
-                  type="radio"
-                  onClick={() => this.props.setGridResultType('heatmap')}
-                  style={{ marginLeft: '10px' }}
-                  checked={this.props.gridResultType === 'heatmap'}
-                />
-              <br />
-                <Form.Label>Crystal map: </Form.Label>
-                <Form.Check
-                  name="resultType"
-                  type="radio"
-                  onClick={() => this.props.setGridResultType('crystalmap')}
-                  style={{ marginLeft: '10px' }}
-                  checked={this.props.gridResultType === 'crystalmap'}
-                />
+              <Form.Group className='mb-2'  as={Row}>
+                <Col sm="4"> <Form.Label >Heat map</Form.Label> </Col>
+                <Col sm="1"> : </Col>
+                <Col sm="7">
+                  <Form.Check
+                    name="resultType"
+                    type="radio"
+                    onClick={() => this.props.setGridResultType('heatmap')}
+                    checked={this.props.gridResultType === 'heatmap'}
+                  />
+                </Col>
+              </Form.Group>
+              <Form.Group as={Row}>
+                <Col sm="4"> <Form.Label >Crystal map</Form.Label> </Col>
+                <Col sm="1"> : </Col>
+                <Col sm="7">
+                  <Form.Check
+                    name="resultType"
+                    type="radio"
+                    onClick={() => this.props.setGridResultType('crystalmap')}
+                    checked={this.props.gridResultType === 'crystalmap'}
+                  />
+                </Col>
               </Form.Group>
             </Form>
-          </div>
-        </div>
+          </Col>
+        </Row>
       </Draggable>);
 
     return this.props.show ? gridForm : null;

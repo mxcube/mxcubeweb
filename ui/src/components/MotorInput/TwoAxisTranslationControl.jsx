@@ -19,8 +19,9 @@ export default class TwoAxisTranslationControl extends React.Component {
 
   renderMotorSettings() {
     return (
-        <Popover className='p-3' style={{ maxWidth: 'fit-content' }} title='Sample alignment motors'>
-          <div className=''>
+        <Popover style={{ maxWidth: 'fit-content' }} title=''>
+          <Popover.Header as="h3">Sample alignment motors</Popover.Header>
+          <Popover.Body>
             <MotorInput
               save={this.props.save}
               value={this.props.motors.sample_vertical.value}
@@ -49,7 +50,7 @@ export default class TwoAxisTranslationControl extends React.Component {
               disabled={this.props.motorsDisabled}
               inplace
             />
-          </div>
+          </Popover.Body>
         </Popover>);
   }
 

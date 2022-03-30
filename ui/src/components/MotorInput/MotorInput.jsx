@@ -81,54 +81,54 @@ export default class MotorInput extends React.Component {
     return (
         <div className="motor-input-container">
           <p className="motor-name">{this.props.label}</p>
-          <form style={{ display: 'inline' }} onSubmit={this.handleKey} noValidate>
-            <div style={{ display: 'inline-block', width: '124px' }}>
-            <div
-              className="rw-widget rw-numberpicker rw-widget-no-right-border"
-              style={ { width: '90px', display: 'inline-block' } }
-            >
-              <span className="rw-select">
-                <button
-                  type="button"
-                  className="rw-btn"
+          <form className='d-flex' onSubmit={this.handleKey} noValidate>
+            <div style={{ display: 'inline-block', width: '160px' }}>
+              <div
+                className="rw-widget rw-numberpicker rw-widget-no-right-border"
+                style={ { width: '90px', display: 'inline-block' } }
+              >
+                <span className="rw-select">
+                  <button
+                    type="button"
+                    className="rw-btn"
+                    disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
+                    onClick={this.stepIncrement}
+                  >
+                    <i aria-hidden="true" className="rw-i fas fa-caret-up"></i>
+                  </button>
+                  <button
+                    type="button"
+                    className="rw-btn"
+                    disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
+                    onClick={this.stepDecrement}
+                  >
+                    <i aria-hidden="true" className="rw-i fas fa-caret-down"></i>
+                  </button>
+                </span>
+                <input
+                  ref={(ref) => { this.motorValue = ref; }}
+                  className={inputCSS}
+                  onKeyUp={this.handleKey}
+                  type="number"
+                  step={step}
+                  defaultValue={valueCropped}
+                  name={motorName}
                   disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
-                  onClick={this.stepIncrement}
-                >
-                  <i aria-hidden="true" className="rw-i fas fa-caret-up"></i>
-                </button>
-                <button
-                  type="button"
-                  className="rw-btn"
-                  disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
-                  onClick={this.stepDecrement}
-                >
-                  <i aria-hidden="true" className="rw-i fas fa-caret-down"></i>
-                </button>
-              </span>
-              <input
-                ref={(ref) => { this.motorValue = ref; }}
-                className={inputCSS}
-                onKeyUp={this.handleKey}
-                type="number"
-                step={step}
-                defaultValue={valueCropped}
-                name={motorName}
-                disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
-              />
-            </div>
-            <span
-              className="rw-widget-right-border"
-              style={{
-                width: 'auto',
-                height: !this.props.inplace ? '38px' : '34px',
-                position: 'absolute',
-                display: 'inline-flex',
-                alignItems: 'center',
-                textAlign: 'center',
-                fontSize: '12px',
-                cursor: 'pointer',
-                backgroundColor: '#EAEAEA' }}
-            >
+                />
+              </div>
+              <span
+                className="rw-widget-right-border"
+                style={{
+                  width: 'auto',
+                  height: !this.props.inplace ? '38px' : '34px',
+                  position: 'absolute',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  textAlign: 'center',
+                  fontSize: '12px',
+                  cursor: 'pointer',
+                  backgroundColor: '#EAEAEA' }}
+              >
               {(this.props.saveStep && this.props.state === MOTOR_STATE.READY &&
                 !this.props.inplace) ?
                <PopInput
@@ -158,9 +158,8 @@ export default class MotorInput extends React.Component {
               }
             </span>
           </div>
-          </form>
           {(this.props.inplace) ?
-            <div className='mt-2' style={{ position: 'relative' }}>
+            <div style={{ position: 'relative' }}>
               <PopInput
                 pkey={`${motorName.toLowerCase()}Step`}
                 data={data}
@@ -173,6 +172,7 @@ export default class MotorInput extends React.Component {
            </div>
             : null
             }
+          </form>
         </div>
     );
   }
