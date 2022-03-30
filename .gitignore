@@ -67,3 +67,5 @@ log
 mxcube3/static
 yarn.lock
 /ui/package-lock.json
+
+ui/package-lock.json
