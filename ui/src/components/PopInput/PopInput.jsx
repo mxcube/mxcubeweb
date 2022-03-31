@@ -219,7 +219,7 @@ export default class PopInput extends React.Component {
       </div>);
 
     const popover = (
-      <Popover ref={(ref) => { this.overlayRef = ref; }} style={{ padding: '0.5em' }} ref="popover" id={title} title={title}>
+      <Popover ref={(ref) => { this.popoverRef = ref; }} style={{ padding: '0.5em' }} id={title} title={title}>
         { popoverContent }
       </Popover>);
 
@@ -247,7 +247,8 @@ export default class PopInput extends React.Component {
             </div>
             :
             <OverlayTrigger
-              // ref={(ref) => { this.overlayRef = ref; }}
+              ref={(ref) => { this.overlayRef = ref; }}
+              id='popOverlayRef'
               trigger="click"
               rootClose
               placement={this.props.placement}

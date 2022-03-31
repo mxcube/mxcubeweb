@@ -49,7 +49,8 @@ export default class GridForm extends React.Component {
           </td>
           <td>
             <Button
-              className="btn-sm"
+              size='sm'
+              variant='outline-secondary'
               onClick={(e) => {
                 e.stopPropagation();
                 this.props.rotateTo(grid.id);
@@ -60,7 +61,8 @@ export default class GridForm extends React.Component {
           </td>
           <td>
             <Button
-              className="btn-sm"
+              size='sm'
+              variant='outline-secondary'
               onClick={(e) => {
                 e.stopPropagation();
                 this.props.toggleVisibility(grid.id);
@@ -71,7 +73,8 @@ export default class GridForm extends React.Component {
           </td>
           <td>
             <Button
-              className="btn-sm"
+              size='sm'
+              variant='outline-secondary'
               onClick={(e) => {
                 e.stopPropagation();
                 this.props.removeGrid(grid.id);
@@ -123,7 +126,7 @@ export default class GridForm extends React.Component {
           <td>
           </td>
           <td>
-            <Button className="btn-sm" onClick={() => this.props.saveGrid()}>
+            <Button size='sm'variant='outline-secondary' onClick={() => this.props.saveGrid()}>
               +
             </Button>
           </td>
