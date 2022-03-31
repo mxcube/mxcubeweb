@@ -1085,27 +1085,6 @@ class Queue(ComponentBase):
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-
-
-    def set_xray_centring_params(self, model, entry, task_data, sample_model):
-        """
-        Helper method that sets the parameters for a, xray centring task.
-
-        :param queue_model_objects.XrayCentering2: The model to set parameters of
-        :param XryaCentring2QueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
-        :param dict sample_model: The Sample queueModelObject
-        """
-        params = task_data["parameters"]
-        self.app.lims.apply_template(params, sample_model, model.path_template)
-
-        # params include only path_template-related parametes and strategy_name
-        model.init_from_task_data(sample_model, params)
-
-        model.set_enabled(task_data["checked"])
-        entry.set_enabled(task_data["checked"])
-
-
     def set_gphl_wf_params(self, model, entry, task_data, sample_model):
         """
         Helper method that sets the parameters for a GPhL workflow task.
@@ -1370,25 +1349,6 @@ class Queue(ComponentBase):
 
         return dc_model, dc_entry
 
-    def _create_xray_centring(self, task):
-        """
-        Creates a XrayCentring2 model and its corresponding queue entry from
-        a dict with collection parameters.
-
-        :param dict task: Collection parameters
-        :returns: The tuple (model, entry)
-        :rtype: Tuple
-        """
-        from mxcubecore.HardwareObjects.Gphl.GphlQueueEntry import (
-            GphlWorkflowQueueEntry
-        )
-
-        data_model = qmo.XrayCentring2()
-        data_model.set_origin(ORIGIN_MX3)
-        queue_entry = qe.XrayCentring2QueueEntry(data_model=data_model)
-
-        return data_model, queue_entry
-
     def _create_xrf(self, task):
         """
         Creates a XRFSpectrum model and its corresponding queue entry from
@@ -1494,35 +1454,6 @@ class Queue(ComponentBase):
         group_entry.enqueue(dc_entry)
 
         return dc_model._node_id
-
-    def add_xray_centring(self, node_id, task):
-        """
-        Adds a worklfow task to the parent node with id: <id>
-
-        Note that the task dictionary includes parameters passed to the
-        XrayCentring2.init_from_task_data function,
-        which includes being passed directly to PathTemplate.set_from_dict()
-
-        :param int node_id: id of the parent node to which the task belongs
-        :param dict task: task data
-
-        :returns: The queue id of the centring
-        :rtype: int
-        """
-        parent_model, parent_entry = self.get_entry(node_id)
-        sample_model = parent_model.get_sample_node()
-        centring_model, centring_entry = self._create_xray_centring(task)
-        self.set_xray_centring_params(
-            centring_model, centring_entry, task, sample_model
-        )
-
-        HWR.beamline.queue_model.add_child(
-            parent_model, centring_model
-        )
-
-        parent_entry.enqueue(centring_entry)
-
-        return centring_model, centring_entry
 
     def add_workflow(self, node_id, task):
         """
