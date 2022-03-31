@@ -7,8 +7,6 @@ settings:
 #    use_multitrigger: true
     # Pass path_template.prefix to workflow as prefix. Any value is True Do not change
     use_path_template_prefix: true
-    # centring prcdeure to use. default is 'manual', alternative is 'xray'
-    centring: manual
     # Use advanced_mode for adidtional UI options. Default is false, any value is true
     advanced_mode: true
     # Maximum allowed value of Chi, for strategy calculation
@@ -55,7 +53,7 @@ settings:
         #                ("use predicted centrings only", "none"),
         #            )
         #         mode "scan" is not allowed as default
-        recentring_mode: none
+        recentring_mode: sweep
         # Parameters to control proposed total dose budget
         # The proposed budget is calculated so that radiation damage is predicted
         # to reduce the intensity at the highest expected redolution to this percentaged-->

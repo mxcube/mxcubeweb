@@ -1,2 +1,2 @@
 _initialise_class:
-  class: mxcubecore.HardwareObjects.XrayCentring2.XrayCentring2
+  class: mxcubecore.HardwareObjects.mockup.XrayCentringMockup.XrayCentringMockup
