@@ -1366,8 +1366,7 @@ class Queue(ComponentBase):
 
         dc_model = qmo.GphlWorkflow()
         dc_model.set_origin(ORIGIN_MX3)
-        # dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
-        dc_entry = GphlWorkflowQueueEntry(data_model=dc_model)
+        dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
 
         return dc_model, dc_entry
 
@@ -1738,7 +1737,13 @@ class Queue(ComponentBase):
 
             elif isinstance(child, qmo.XrayCentring2):
                 # Added rhfogh 20211001
-                entry = qe.XrayCenteringQueueEntry(Mock(), child)
+                entry = qe.XrayCentring2QueueEntry(Mock(), child)
+                self.enable_entry(entry, True)
+                parent_entry.enqueue(entry)
+
+            elif isinstance(child, qmo.DummyTask):
+                # Added rhfogh 20220331
+                entry = qe.DummyQueueEntry(Mock(), child)
                 self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 
