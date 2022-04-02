@@ -20,35 +20,38 @@ export default class BeamlineActionControl extends React.Component {
     }
 
     return (
-      <ButtonToolbar>
-        {this.props.arguments.length === 0 ? (
-          <Button
-            bsSize="small"
-            bsStyle={bsStyle}
-            disabled={this.props.disabled}
-            onClick={
-              this.props.state !== RUNNING
-                ? () => this.props.start(this.props.cmdName, showOutput)
-                : () => this.props.stop(this.props.cmdName)
-            }
-          >
-            <b>{label}</b>
-          </Button>
-        ) : (
-          ''
-        )}
-        {showOutput ? (
-          <Button
-            disabled={this.props.disabled}
-            bsSize="small"
-            onClick={() => this.props.showOutput(this.props.cmdName)}
-          >
-            <Glyphicon glyph="new-window" />
-          </Button>
-        ) : (
-          ''
-        )}
-      </ButtonToolbar>
+      <div>
+        <ButtonToolbar>
+          {this.props.arguments.length === 0 ? (
+            <Button
+              bsSize="small"
+              bsStyle={bsStyle}
+              disabled={this.props.disabled}
+              onClick={
+                this.props.state !== RUNNING
+                  ? () => this.props.start(this.props.cmdName, showOutput)
+                  : () => this.props.stop(this.props.cmdName)
+              }
+            >
+              <b>{label}</b>
+            </Button>
+          ) : (
+            ''
+          )}
+          {showOutput ? (
+            <Button
+              disabled={this.props.disabled}
+              bsSize="small"
+              onClick={() => this.props.showOutput(this.props.cmdName)}
+            >
+              <Glyphicon glyph="new-window" />
+            </Button>
+          ) : (
+            ''
+          )}
+          { this.props.state === RUNNING ? (<b>(Running)</b>) : '' }
+        </ButtonToolbar>
+      </div>
     );
   }
 }

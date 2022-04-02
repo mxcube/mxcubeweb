@@ -22,6 +22,7 @@ import {
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
+import LoadingScreen from './LoadingScreen/LoadingScreen';
 
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
@@ -67,6 +68,10 @@ class Main extends React.Component {
       !this.props.login.user.inControl &&
       this.props.location.pathname !== '/remoteaccess' &&
       this.props.location.pathname !== '/help';
+
+    if (!this.props.general.applicationFetched)  {
+      return (<LoadingScreen />);
+    }
 
     return (
       <div>

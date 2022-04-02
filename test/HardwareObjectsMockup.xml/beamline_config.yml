@@ -45,6 +45,7 @@ _objects:
     - queue_model: queue_model.xml
 
     # Procedures:
+    - beamline_actions: beamline_actions.xml
     - xml_rpc_server: xml_rpc_server.xml
     - workflow: ednaparams.xml
     - collect: mxcollect.xml

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import Form from '@rjsf/core';
 import {
   startAction,
   stopAction,
@@ -23,6 +24,8 @@ import Plot1D from '../components/Plot1D';
 import { RUNNING } from '../constants';
 
 import { DraggableModal } from '../components/DraggableModal';
+
+import './BeamlineActionsContainer.css';
 
 class BeamlineActionsContainer extends React.Component {
   constructor(props) {
@@ -74,6 +77,114 @@ class BeamlineActionsContainer extends React.Component {
     this.plotIdByAction[this.props.currentAction.name] = plotId;
   }
 
+  handleRun(formData) {
+    const currentActionRunning = this.props.currentAction.state === RUNNING;
+    const currentActionName = this.props.currentAction.name;
+
+    if (!currentActionRunning) {
+      console.log(formData);
+      this.props.startAction(currentActionName, formData, true);
+    } else {
+      this.props.stopAction(currentActionName);
+    }
+  }
+
+  renderRunButton() {
+    const currentActionRunning = this.props.currentAction.state === RUNNING;
+    const currentActionName = this.props.currentAction.name;
+
+    if (this.props.currentAction.argument_type == 'JSONSchema') {
+      const bsStyle = currentActionRunning ? 'danger' : 'primary';
+      return !currentActionRunning ? (
+        <Button
+          type="submit"
+          bsStyle="primary"
+        >
+          Run Action
+        </Button>
+      ) : <span />
+    } else {
+      return currentActionRunning ? (
+        <Button
+          type="submit"
+          bsStyle="danger"
+          onClick={() => {
+            this.stopAction(currentActionName);
+          }}
+        >
+          Abort
+        </Button>
+      ) : (
+        <Button
+          type="submit"
+          disabled={currentActionRunning}
+          bsStyle="primary"
+          onClick={() => {
+            this.startAction(currentActionName);
+          }}
+        >
+          Run
+        </Button>
+      )
+    }
+  }
+
+  renderInputForm() {
+    let form = null;
+    const currentActionRunning = this.props.currentAction.state === RUNNING;
+    const currentActionName = this.props.currentAction.name;
+
+    if (this.props.currentAction.argument_type == "JSONSchema") {
+      form = (
+        <div className='beamline-action-form-container'>
+          <Form
+            schema={JSON.parse(this.props.currentAction.schema)}
+            onSubmit={(formData, e) => this.handleRun(formData.formData, e)}
+          >
+            {this.renderRunButton()}
+          </Form>
+          { currentActionRunning ? (
+            <Button
+              type="submit"
+              bsStyle="danger"
+              onClick={() => {
+                this.stopAction(currentActionName);
+              }}
+            >
+              Abort action
+            </Button>
+            ) : null
+          }
+        </div>
+      );
+    } else {
+      form = this.props.currentAction.arguments.map((arg, i) => (
+        <Row>
+          <Col xs={2} component="ControlLabel">
+            {arg.name}
+          </Col>
+          <Col xs={2}>
+            <FormControl
+              label={arg.name}
+              type="text"
+              value={arg.value}
+              disabled={currentActionRunning}
+              onChange={(e) => {
+                this.props.setArgumentValue(
+                  currentActionName,
+                  i,
+                  e.target.value
+                );
+              }}
+            />
+          </Col>
+        </Row>
+      ))
+    }
+
+    return form
+  }
+
   render() {
     const currentActionRunning = this.props.currentAction.state === RUNNING;
     const currentActionName = this.props.currentAction.name;
@@ -112,7 +223,10 @@ class BeamlineActionsContainer extends React.Component {
               }
 
               return (
-                <MenuItem eventKey={i} key={i}>
+                [<MenuItem
+                  eventKey={i}
+                  key={i}
+                >
                   <span>
                     <b>{cmdUsername}</b>
                   </span>
@@ -127,7 +241,9 @@ class BeamlineActionsContainer extends React.Component {
                     type={cmd.type}
                     data={cmd.data}
                   />
-                </MenuItem>
+                </MenuItem>,
+                <MenuItem divider />
+               ]
               );
             })}
           </DropdownButton>
@@ -142,48 +258,10 @@ class BeamlineActionsContainer extends React.Component {
             <Modal.Title>{this.props.currentAction.username}</Modal.Title>
           </Modal.Header>
           <Modal.Body style={{ height: '500px', overflowY: 'auto' }}>
-            {this.props.currentAction.arguments.map((arg, i) => (
-              <Row>
-                <Col xs={2} component="ControlLabel">
-                  {arg.name}
-                </Col>
-                <Col xs={2}>
-                  <FormControl
-                    label={arg.name}
-                    type="text"
-                    value={arg.value}
-                    disabled={currentActionRunning}
-                    onChange={(e) => {
-                      this.props.setArgumentValue(
-                        currentActionName,
-                        i,
-                        e.target.value
-                      );
-                    }}
-                  />
-                </Col>
-              </Row>
-            ))}
-            {currentActionRunning ? (
-              <Button
-                bsStyle="danger"
-                onClick={() => {
-                  this.stopAction(currentActionName);
-                }}
-              >
-                Abort
-              </Button>
-            ) : (
-              <Button
-                disabled={currentActionRunning}
-                bsStyle="primary"
-                onClick={() => {
-                  this.startAction(currentActionName);
-                }}
-              >
-                Run
-              </Button>
-            )}
+            {this.renderInputForm()}
+            { this.props.currentAction.argument_type != "JSONSchema" ?
+              this.renderRunButton() : null
+            }
             <hr></hr>
             <Plot1D
               displayedPlotCallback={this.newPlotDisplayed}
@@ -201,7 +279,7 @@ class BeamlineActionsContainer extends React.Component {
             )}
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.hideOutput} disabled={currentActionRunning}>
+            <Button onClick={this.hideOutput}>
               Close window
             </Button>
           </Modal.Footer>

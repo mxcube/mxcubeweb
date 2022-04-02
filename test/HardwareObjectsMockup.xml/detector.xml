@@ -21,4 +21,6 @@
     <by>213.169</by>
   </beam>
 
+  <exports>["restart"]</exports>
+
 </equipment>

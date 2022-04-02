@@ -11,6 +11,8 @@ server:
 
 mxcube:
   VIDEO_FORMAT: MJPEG
+  # Mode, SSX, OSC
+  mode: SSX
 
   usermanager:
     class: UserManager

@@ -16,6 +16,8 @@ class HOModel(BaseModel):
         ("set_value", "get_value"), description="List of commands avilable"
     )
 
+    attributes: dict = {}
+
     class Config:
         extra: "forbid"
 

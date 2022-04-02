@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import {
   select,
@@ -11,11 +12,16 @@ import {
   refresh,
 } from '../actions/sampleChanger';
 
-import SampleChanger from '../components/SampleChanger/SampleChanger';
-import SampleChangerState from '../components/SampleChanger/SampleChangerState';
-import SampleChangerMaintenance from '../components/SampleChanger/SampleChangerMaintenance';
+import {
+  executeCommand,
+} from '../actions/beamline';
 
-class SampleChangerContainer extends React.Component {
+import SampleChanger from '../components/Equipment/SampleChanger';
+import SampleChangerState from '../components/Equipment/SampleChangerState';
+import SampleChangerMaintenance from '../components/Equipment/SampleChangerMaintenance';
+import GenericEquipmentControl from '../components/Equipment/GenericEquipmentControl';
+
+class EquipmentContainer extends React.Component {
   render() {
     return (
       <div className="row">
@@ -49,6 +55,22 @@ class SampleChangerContainer extends React.Component {
               />
             </div>
           </div>
+          <div className="row">
+            <div className="col-xs-12">
+              { Object.entries(this.props.beamline.attributes).map(([key, value]) => {
+                  const obj = this.props.beamline.attributes[key];
+                  if (Object.values(obj.attributes).length > 0) {
+                    return (<GenericEquipmentControl
+                      equipment={obj}
+                      executeCommand={this.props.executeCommand}
+                    />)
+                  } else {
+                    return null;
+                  }
+                })
+              }
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -64,6 +86,7 @@ function mapStateToProps(state) {
     commands_state: state.sampleChangerMaintenance.commands_state,
     global_state: state.sampleChangerMaintenance.global_state,
     message: state.sampleChangerMaintenance.message,
+    beamline: state.beamline,
   };
 }
 
@@ -76,10 +99,11 @@ function mapDispatchToProps(dispatch) {
     refresh: () => dispatch(refresh()),
     abort: () => dispatch(abort()),
     sendCommand: (cmd, args) => dispatch(sendCommand(cmd, args)),
+    executeCommand: bindActionCreators(executeCommand, dispatch),
   };
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SampleChangerContainer);
+)(EquipmentContainer);
