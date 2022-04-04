@@ -63,24 +63,29 @@ export class ObserverDialog extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <div>
-                      <Modal.Body>
-                        Someone else is currently using the beamline, you are going to be
-                        logged in as an observer. {this.props.login.loginType === 'User' ? '' : 'You have to enter your name to be able to continue.'}
-                      </Modal.Body>
-                      <Modal.Footer>
-                     {this.props.login.loginType === 'User' ?
-                     null
-                     : 
-                      <FormControl
-                        inputRef={(ref) => { this.name = ref; }}
-                        type="text"
-                        defaultValue={this.props.login.loginID}
-                        render
-                      />}
-                      <Button onClick={this.accept}> OK </Button>
-                    </Modal.Footer>
-                    </div>
-      </Modal>);
+          <Modal.Body>
+            Someone else is currently using the beamline, you are going to be
+            logged in as an observer.{' '}
+            {this.props.login.loginType === 'User'
+              ? ''
+              : 'You have to enter your name to be able to continue.'}
+          </Modal.Body>
+          <Modal.Footer>
+            {this.props.login.loginType === 'User' ? null : (
+              <FormControl
+                inputRef={(ref) => {
+                  this.name = ref;
+                }}
+                type='text'
+                defaultValue={this.props.login.loginID}
+                render
+              />
+            )}
+            <Button onClick={this.accept}> OK </Button>
+          </Modal.Footer>
+        </div>
+      </Modal>
+    );
   }
 }
 
