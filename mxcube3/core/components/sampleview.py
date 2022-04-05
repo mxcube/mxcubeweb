@@ -39,6 +39,22 @@ class SampleView(ComponentBase):
             HWR.beamline.collect, HWR.beamline.diffractometer, HWR.beamline.sample_view
         )
 
+        HWR.beamline.sample_view.connect("shapesChanged", self._emit_shapes_updated)
+        HWR.beamline.diffractometer.zoomMotor.connect("stateChanged", self._zoom_changed)
+
+    def _zoom_changed(self, *args, **kwargs):
+        ppm = HWR.beamline.diffractometer.get_pixels_per_mm()
+        self.app.server.emit("update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr")
+
+    def _emit_shapes_updated(self):
+        shape_dict = {}
+        
+        for shape in HWR.beamline.sample_view.get_shapes():
+            _s = to_camel(shape.as_dict())
+            shape_dict.update({shape.id: _s})
+
+        self.app.server.emit("update_shapes", {"shapes": shape_dict}, namespace="/hwr")
+
     def centring_clicks_left(self):
         return self._click_limit - self._click_count
 
@@ -53,7 +69,7 @@ class SampleView(ComponentBase):
 
         if self._centring_point_id:
             HWR.beamline.sample_view.delete_shape(self._centring_point_id)
-            signals.send_shapes(update_positions=False)
+            self._emit_shapes_updated()
             self._centring_point_id = None
 
     def centring_add_current_point(self, *args):
@@ -77,7 +93,7 @@ class SampleView(ComponentBase):
 
         if shape:
             shape.state = "SAVED"
-            signals.send_shapes(update_positions=False)
+            self._emit_shapes_updated()
             self._centring_point_id = None
 
     def centring_update_current_point(self, motor_positions, x, y):
@@ -95,7 +111,7 @@ class SampleView(ComponentBase):
             point.selected = True
             self._centring_point_id = point.id
 
-        signals.send_shapes(update_positions=False)
+        self._emit_shapes_updated()
 
     def wait_for_centring_finishes(self, *args, **kwargs):
         """
@@ -462,7 +478,6 @@ class SampleView(ComponentBase):
             self.app.CENTRING_METHOD = CENTRING_METHOD.MANUAL
 
         logging.getLogger("user_level_log").info(msg)
-
 
 def enable_snapshots(collect_object, diffractometer_object, sample_view):
     def _snapshot_received(data):
