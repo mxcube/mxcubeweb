@@ -819,6 +819,7 @@ export default class SampleImage extends React.Component {
           canvas,
           decodeFirstFrame: false,
           preserveDrawingBuffer: true,
+          protocols: [],
         });
         this.player.play();
       }
