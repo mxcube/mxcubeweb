@@ -13,6 +13,8 @@ dependencies:
   - python-socketio=4.3.0
   - flask=1.1.2
   - flask-socketio=4.3.1
+  - jinja2=3.0.3
+  - itsdangerous=2.0.1
   - gevent-websocket=0.10.1
   - mock=4.0.3
   - jsonpickle=1.4.1
@@ -35,7 +37,6 @@ dependencies:
   - flask-sqlalchemy
   - pytz
   - tzlocal
-! Required for GPhL code
   - py4j
 
   - pip:
@@ -45,6 +46,5 @@ dependencies:
       - spectree
       - git+https://github.com/mxcube/mxcubecore.git
       - flask-security-too
-! required for GPhL:
       - mgen
       - f90nml
