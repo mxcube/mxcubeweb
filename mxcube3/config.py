@@ -1,4 +1,5 @@
 import os
+import sys
 import logging
 import ruamel.yaml
 
@@ -23,6 +24,7 @@ class ConfigLoader:
             except ValidationError as ex:
                 logging.getLogger("HWR").error(f"Validation error in {path}:")
                 logging.getLogger("HWR").exception("")
+                sys.exit(-1)
 
         return model
 
