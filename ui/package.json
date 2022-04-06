@@ -57,7 +57,7 @@
     "underscore": "^1.8.3",
     "web-vitals": "^2.1.4",
     "webpack": "^5.69.1",
-    "webpack-dev-server": "^4.7.4",
+    "webpack-dev-server": "^4.8.0",
     "ws": "^8.5.0"
   },
   "scripts": {
