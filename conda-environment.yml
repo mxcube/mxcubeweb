@@ -23,7 +23,7 @@ dependencies:
   - python-ldap=3.3.1
   - lxml=4.6.2
   - ruamel.yaml=0.16.12
-  - nodejs=10.13.0
+  - nodejs=17.8.0
   - scipy=1.5.3
   - opencv
   - requests
@@ -38,9 +38,11 @@ dependencies:
   - pytz
   - tzlocal
   - py4j
+  - psutil
 
   - pip:
       - Flask-Session==0.3.2
+      - Flask-Login==0.5.0
       - git+https://github.com/marcus-oscarsson/python-v4l2.git
       - Louie-latest
       - spectree
@@ -48,3 +50,4 @@ dependencies:
       - flask-security-too
       - mgen
       - f90nml
+      - gipc
