@@ -77,7 +77,7 @@ def init_route(app, server, url_prefix):
         return check_output(["node", script_name, url], close_fds=True)
 
     def result_file_test(prefix):
-        return isfile(join(server.template_folder, prefix))
+        return isfile(join(server.flask.template_folder, prefix))
 
     def apply_template(name, data):
         try:
