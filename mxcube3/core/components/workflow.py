@@ -25,7 +25,7 @@ class Workflow(ComponentBase):
         except Exception:
             pass
 
-        if hasattr(beamline, "gphl_workflow"):
+        if getattr(beamline, "gphl_workflow", None):
             # Add Global Phasing workflows if available
             workflows.update(beamline.gphl_workflow.get_available_workflows())
 
