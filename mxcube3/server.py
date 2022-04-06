@@ -57,9 +57,7 @@ class Server:
         t0 = time.time()
 
         template_dir = os.path.join(os.path.dirname(__file__), "templates")
-        
-        import pdb
-        pdb.set_trace()
+
         Server.flask = Flask(
             __name__,
             static_folder=cmdline_options.static_folder,
