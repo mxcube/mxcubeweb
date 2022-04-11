@@ -79,7 +79,7 @@ class EnergyScan extends React.Component {
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
-            <Row>
+            <Row className='mb-2'>
               <Col xs={12} style={{ marginTop: '10px' }}>
                 <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
               </Col>
@@ -127,7 +127,7 @@ class EnergyScan extends React.Component {
                >
                  Run Now
                </Button>
-               <Button variant="primary" disabled={this.props.invalid}
+               <Button variant="outline-secondary" disabled={this.props.invalid}
                  onClick={this.submitAddToQueue}
                >
                  {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}

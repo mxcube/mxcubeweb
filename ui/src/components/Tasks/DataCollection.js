@@ -108,7 +108,7 @@ class DataCollection extends React.Component {
             </Button>
             <Button
               size="sm"
-              variant="primary"
+              variant="outline-secondary"
               disabled={this.props.invalid}
               onClick={this.submitAddToQueue}
             >

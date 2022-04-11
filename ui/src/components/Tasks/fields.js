@@ -133,11 +133,11 @@ export const CheckboxField = ({ propName, label, disabled }) => (
   <Field
     name={propName}
     component={prop => (
-      <Form.Group controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
+      <Form.Group className='d-flex' controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
         <Form.Label column xs={prop.col1 || 8} style={{ textAlign: 'left' }}>
           {label}
         </Form.Label>
-        <Col xs={prop.col2 || 4}>
+        <Col className='mt-2 ms-1' xs={prop.col2 || 4}>
           <Form.Check
             type="checkbox"
             defaultChecked={prop.input.value}

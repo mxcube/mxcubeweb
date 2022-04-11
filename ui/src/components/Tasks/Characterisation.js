@@ -219,7 +219,7 @@ class Characterisation extends React.Component {
                   label="Aimed completness"
                 />
               </FieldsRow>
-              <Row>
+              <Row className='mb-2'>
                 <Col xs="8">
                   <CheckboxField
                     propName="use_permitted_rotation"
@@ -336,25 +336,29 @@ class Characterisation extends React.Component {
           <CollapsableRows>
             <Form horizontal>
               <Row>
-                <Col xs="10">
+                <Col xs="9">
                   <CheckboxField
                     propName="determine_rad_params"
                     label="Determine radiation damage parameters"
                   />
                 </Col>
               </Row>
-              <InputField
-                col1="6"
-                col2="2"
-                propName="burn_osc_start"
-                label="Oscillation start for burn strategy"
-              />
-              <InputField
-                col1="6"
-                col2="2"
-                propName="burn_osc_interval"
-                label="Oscillation interval for burn"
-              />
+              <Row className='mb-2'>
+                <InputField
+                  col1="6"
+                  col2="2"
+                  propName="burn_osc_start"
+                  label="Oscillation start for burn strategy"
+                />
+              </Row>
+              <Row>
+                <InputField
+                  col1="6"
+                  col2="2"
+                  propName="burn_osc_interval"
+                  label="Oscillation interval for burn"
+                />
+              </Row>
             </Form>
           </CollapsableRows>
         </Modal.Body>
@@ -382,7 +386,7 @@ class Characterisation extends React.Component {
                 <Button
                   size="sm"
                   className='ms-3'
-                  variant="primary"
+                  variant="outline-secondary"
                   disabled={this.props.invalid}
                   onClick={this.submitAddToQueue}
                 >
