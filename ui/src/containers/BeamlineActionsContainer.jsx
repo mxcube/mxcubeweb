@@ -10,10 +10,8 @@ import { Row,
   Col,
   Modal,
   Dropdown,
-  DropdownButton,
   Button,
   Form,
-  ListGroup, 
   Card} from 'react-bootstrap';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
 import Plot1D from '../components/Plot1D';
@@ -91,38 +89,45 @@ class BeamlineActionsContainer extends React.Component {
     return (
       <Row>
         <Col xs={12}>
-          <DropdownButton
-            title={'Beamline Actions'}
-            id="beamline-actions-dropdown"
-            variant="outline-secondary"
-          >
-            {this.props.actionsList.map((cmd, i) => {
-              const cmdName = cmd.name;
-              const cmdUsername = cmd.username;
-              const cmdState = cmd.state;
-              let disabled = false;
-              if (currentActionRunning && (currentActionName !== cmdName)) {
-                disabled = true;
-              }
+          <Dropdown
+              title={'Beamline Actions'}
+              id="beamline-actions-dropdown"
+              variant="outline-secondary"
+              autoClose="outside"
+            >
+              <Dropdown.Toggle variant="outline-secondary" id="beamline-actions-dropdown">
+                Beamline Actions
+              </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {this.props.actionsList.map((cmd, i) => {
+                    const cmdName = cmd.name;
+                    const cmdUsername = cmd.username;
+                    const cmdState = cmd.state;
+                    let disabled = false;
+                    if (currentActionRunning && (currentActionName !== cmdName)) {
+                      disabled = true;
+                    }
 
-              return (
-                <Dropdown.Item style={{width: '200px'}} className='d-flex justify-content-between align-items-start' eventKey={i} key={i}>
-                  <div className="ms-2 me-auto">
-                    <div className="fw-bold">{cmdUsername}</div>
-                  </div>
-                  <BeamlineActionControl cmdName={cmdName}
-                    start={this.startAction}
-                    stop={this.stopAction}
-                    showOutput={this.showOutput}
-                    state={cmdState}
-                    disabled={disabled}
-                    arguments={cmd.arguments}
-                    type={cmd.type}
-                    data={cmd.data}
-                  />
-                </Dropdown.Item>);
-            })}
-          </DropdownButton>
+                    return (
+                        <Dropdown.Item style={{width: '230px'}} className='d-flex justify-content-between align-items-start' key={i}>
+                          <div className="ms-2 me-auto">
+                            <div className="fw-bold">{cmdUsername}</div>
+                          </div>
+                          <BeamlineActionControl cmdName={cmdName}
+                            start={this.startAction}
+                            stop={this.stopAction}
+                            showOutput={this.showOutput}
+                            state={cmdState}
+                            disabled={disabled}
+                            arguments={cmd.arguments}
+                            type={cmd.type}
+                            data={cmd.data}
+                          />
+                        </Dropdown.Item>
+                      );
+                  })}
+              </Dropdown.Menu>
+            </Dropdown>
         </Col>
         <DraggableModal id="beamlineActionOutput"
           show={!!this.props.currentAction.show}
@@ -134,36 +139,42 @@ class BeamlineActionsContainer extends React.Component {
               {this.props.currentAction.username}
             </Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ height: '500px', overflowY: 'auto' }}>
-              { this.props.currentAction.arguments.map((arg, i) =>
-                <Row>
-                  <Col xs={2} component={Form.Label}>{arg.name}</Col>
-                  <Col xs={2}>
-                    <Form.Control
-                      label={arg.name}
-                      type="text"
-                      value={arg.value}
-                      disabled={currentActionRunning}
-                      onChange={(e) => {
-                        this.props.setArgumentValue(currentActionName,
-                          i,
-                          e.target.value);
-                      }}
-                    />
+            <Modal.Body className='d-flex' style={{ height: '500px', overflowY: 'auto' }}>
+              <Row >
+                { this.props.currentAction.arguments.map((arg, i) =>
+                <>
+                    <Col className='mt-2' xs={3} style={{ whiteSpace: 'nowrap' }} component={Form.Label}>{arg.name}</Col>
+                    <Col xs={3}>
+                      <Form.Control
+                        label={arg.name}
+                        type="text"
+                        value={arg.value}
+                        disabled={currentActionRunning}
+                        onChange={(e) => {
+                          this.props.setArgumentValue(currentActionName,
+                            i,
+                            e.target.value);
+                        }}
+                      />
+                    </Col>
+                    </>
+                  )
+                }
+                <Col>
+                  { currentActionRunning ?
+                    <Button variant="danger"
+                      onClick={ () => { this.stopAction(currentActionName); } }
+                    >
+                      Abort
+                    </Button> : <Button disabled={currentActionRunning}
+                      variant="primary"
+                      onClick={ () => { this.startAction(currentActionName); } }
+                    >
+                      Run
+                    </Button>
+                  }
                   </Col>
-                </Row>)
-              }
-              { currentActionRunning ?
-                <Button variant="danger"
-                  onClick={ () => { this.stopAction(currentActionName); } }
-                >
-                  Abort
-                </Button> : <Button disabled={currentActionRunning}
-                  variant="primary"
-                  onClick={ () => { this.startAction(currentActionName); } }
-                >
-                  Run
-                </Button> }
+                </Row>
              <hr></hr>
              <Plot1D displayedPlotCallback={this.newPlotDisplayed}
                plotId={this.plotIdByAction[currentActionName]} autoNext={currentActionRunning}
@@ -174,6 +185,7 @@ class BeamlineActionsContainer extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button
+              variant='outline-secondary'
               onClick={this.hideOutput}
               disabled={currentActionRunning}
             >

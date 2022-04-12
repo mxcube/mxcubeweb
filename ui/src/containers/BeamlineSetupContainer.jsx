@@ -148,8 +148,7 @@ class BeamlineSetupContainer extends React.Component {
 
       components.push(
         <td className='d-flex' style={{ border: '0px', paddingLeft: '0.5em' }}>
-          <span className='me-1'>{ uiprop.label }</span>
-          <div className='ms-auto'> : </div>
+          <span className='me-1'>{ uiprop.label }:</span>
         </td>);
       components.push(
         <td style={{ fontWeight: 'bold', border: '0px', borderRight: '1px solid #ddd', paddingRight: '0.5em' }}>

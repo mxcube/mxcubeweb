@@ -33,7 +33,7 @@ export default class DefaultInput extends React.Component {
   render() {
     return (
       <Form className="popinput" inline onSubmit={this.submit} noValidate>
-        <InputGroup className='d-flex'>
+        <InputGroup className='d-flex' >
           <NumericInput
             className="popinput-input"
             size="5"
@@ -41,6 +41,7 @@ export default class DefaultInput extends React.Component {
             precision={this.props.precision}
             value={this.props.value}
             step={this.props.step}
+            
           />
           <ButtonToolbar style={{ marginLeft: '0px' }} className="ms-1 form-group editable-buttons">
             <Button variant="success" className="btn-sm " onClick={this.save}>

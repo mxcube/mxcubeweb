@@ -48,6 +48,7 @@ input[type="color"]:focus,
 
 
 .modal-content {
+    min-width: 750px;
     width: fit-content;
 }
 
@@ -64,17 +65,18 @@ cursor: pointer;
 
 .btn-outline-secondary{
     background:#ffffff;
-    border: solid 1px #00000098;
+    border: solid 1px #CCC;
     color: #000000cc;
 }
 
 .btn-outline-secondary:hover{
-    background:#e6e9ec;
+    background:#eff1f3d7;
+    border: solid 1px #c5c4c4;
     color: #000000;
 }
 
 .btn-success {
-    background: #449D44;
+    background: #449D44!important;
 }
 
 .bg-success {

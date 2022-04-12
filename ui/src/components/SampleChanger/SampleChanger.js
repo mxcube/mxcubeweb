@@ -269,7 +269,7 @@ export default class SampleChanger extends React.Component {
           {' '}
 )
           <span style={{ marginRight: '1em' }} />
-          <Button variant="secondary" onClick={this.unload}>
+          <Button variant="outline-secondary" onClick={this.unload}>
             <i className="fas fa-download" />
             {' '}
             Unload

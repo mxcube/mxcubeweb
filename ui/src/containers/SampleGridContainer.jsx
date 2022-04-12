@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Row, Dropdown } from 'react-bootstrap';
 
-import { MdAdd, MdRemove, MdAddToQueue, MdFlare, Md360 } from "react-icons/md";
+import { MdRemove, MdFlare, Md360 } from "react-icons/md";
 
 import { SpringGrid } from 'react-stonecutter';
 
@@ -719,7 +719,7 @@ class SampleGridContainer extends React.Component {
   taskContextMenuItems() {
     return [
       <Dropdown.Divider />,
-      <Dropdown.Item header> <span><MdAdd glyph="plus" /> Add </span></Dropdown.Item>,
+      <Dropdown.Item header> <span> <i class="fas fa-plus" /> Add </span></Dropdown.Item>,
       <Dropdown.Item eventKey="2" onClick={this.props.showDataCollectionForm}>
         Data collection
       </Dropdown.Item>,
@@ -741,7 +741,7 @@ class SampleGridContainer extends React.Component {
   sampleContextMenu() {
     return [
       <Dropdown.Item eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
-        <span><MdAddToQueue glyph="unchecked" /> Add to Queue</span>
+        <span><i class="fas fa-plus" />Add to Queue</span>
       </Dropdown.Item>,
       <Dropdown.Item eventKey="2" onClick={this.mountAndCollect}>
         <span><MdFlare glyph="screenshot" /> Mount </span>
@@ -752,7 +752,7 @@ class SampleGridContainer extends React.Component {
   sampleContextMenuMounted() {
     return [
       <Dropdown.Item eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
-        <span><MdAddToQueue glyph="unchecked" /> Add to Queue</span>
+        <span><i class="fas fa-plus" /> Add to Queue</span>
       </Dropdown.Item>,
       <Dropdown.Item eventKey="2" onClick={this.unmount}>
         <span><Md360 glyph="share-alt" /> Unmount </span>

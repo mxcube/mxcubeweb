@@ -328,16 +328,22 @@ export class SampleGridItem extends React.Component {
       >
         {this.moveArrows()}
         {this.itemControls()}
-        <div className={scLocationClasses}>
+        <div className={`ps-2 pe-2 ${scLocationClasses}`}>
           {this.props.sampleData.location} {this.currentSampleText()}
         </div>
         <div style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
         <OverlayTrigger
           ref={(ref) => { this.sampleInfoPopoverTrigger = ref; }}
-          placement={this.popoverPosition()}
+          // placement={this.popoverPosition()}
+          placement='auto'
           overlay={(
-            <Popover id={this.sampleDisplayName()} title={(<b>{this.sampleDisplayName()}</b>)}>
-              {this.sampleInformation()}
+            <Popover id={this.sampleDisplayName()}>
+              <Popover.Header>
+                <b>{this.sampleDisplayName()}</b>
+              </Popover.Header>
+              <Popover.Body>
+                {this.sampleInformation()}
+              </Popover.Body>
             </Popover>)}
         >
           <Badge href={limsLink}

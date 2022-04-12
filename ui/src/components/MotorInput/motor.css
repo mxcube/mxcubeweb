@@ -80,7 +80,7 @@ input::-webkit-inner-spin-button {
 }
 
 .rw-widget {
-    background-color: #fff;
+    background: #fff!important;
     border: #ccc 1px solid;
     border-radius: 4px;
     position: relative;
@@ -108,6 +108,7 @@ input::-webkit-inner-spin-button {
     border-left: #ccc 1px solid;
 }
 .rw-select {
+    background: rgb(245, 242, 242);
     position: absolute;
     width: 1.3em;
     height: 100%;

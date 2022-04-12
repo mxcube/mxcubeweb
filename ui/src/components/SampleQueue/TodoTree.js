@@ -40,8 +40,8 @@ export default class TodoTree extends React.Component {
 
     return (
       <ListGroup variant="flush">
-        <ListGroup.Item className="d-flex list-head">
-          <div className="me-auto" style={{ paddingLeft: '0px', borderBottom: 'none' }}>
+        <ListGroup.Item className="mt-2 d-flex list-head" style={{ borderBottom: 'none' }}>
+          <div className="me-auto">
             <Form.Control
               type="text"
               size="sm"
@@ -53,7 +53,7 @@ export default class TodoTree extends React.Component {
           <div>
             <Button
               disabled={this.props.queueStatus === QUEUE_RUNNING}
-              className="btn-primary"
+              className="me-2 btn-primary"
               size="sm"
               onClick={this.showAddSampleForm}
             >
@@ -72,15 +72,15 @@ export default class TodoTree extends React.Component {
               <div key={id} className="node node-sample">
                 <div className="task-head">
                   <p className="d-flex node-name">
-                    <div className='me-auto'>
-                    <b>
-                      {`${sampleData.sampleID} `}
-                    </b>
+                    <div className='pt-1 me-auto'>
+                      <b>
+                        {`${sampleData.sampleID} `}
+                      </b>
                     {`${proteinAcronym} ${sampleName}`}
                     </div>
 
                     <Button
-                      variant='secondary'
+                      variant='outline-secondary'
                       size="sm"
                       onClick={() => this.mountAndSwitchTab(sampleData)}
                     >

@@ -116,11 +116,11 @@ export default class MotorInput extends React.Component {
                   disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
                 />
               </div>
-              <span
+              <div
                 className="rw-widget-right-border"
                 style={{
                   width: 'auto',
-                  height: !this.props.inplace ? '38px' : '34px',
+                  height: !this.props.inplace ? '39px' : '35px',
                   position: 'absolute',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -156,9 +156,9 @@ export default class MotorInput extends React.Component {
                   this.props.inplace) ?
                 <span className='ms-2 me-2'>{this.props.step} {suffix}</span> : null
               }
-            </span>
+            </div>
           </div>
-          {(this.props.inplace) ?
+          {this.props.inplace ?
             <div style={{ position: 'relative' }}>
               <PopInput
                 pkey={`${motorName.toLowerCase()}Step`}

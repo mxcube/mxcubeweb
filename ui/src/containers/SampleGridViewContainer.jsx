@@ -1,9 +1,8 @@
 import React from 'react';
-// import { withRouter } from 'react-router';
-// import { withRouter } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
+import withRouter from '../components/WithRouter'
 import loader from '../img/loader.gif';
 
 import {
@@ -17,10 +16,7 @@ import {
   Dropdown,
   OverlayTrigger,
   Tooltip,
-  Card,
 } from 'react-bootstrap';
-
-import { MdOutlineChevronRight, MdAddToQueue } from "react-icons/md";
 
 import { QUEUE_RUNNING } from '../constants';
 
@@ -650,7 +646,7 @@ class SampleGridViewContainer extends React.Component {
                 <Col sm="9">
                   <InputGroup className={this.filterIsUsed() ? 'filter-input-active' : ''}>
                     <Form.Control
-                      style={{ borderColor: 'gray' }}
+                      style={{ borderColor: '#CCC' }}
                       id="filterText"
                       type="text"
                       ref={(ref) => { this.filterInput = ref; }}
@@ -669,7 +665,7 @@ class SampleGridViewContainer extends React.Component {
                 variant='outline-secondary'
                 disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                 onClick={this.addSelectedSamplesToQueue}
-                title={<span><MdAddToQueue glyph="plus" /> Add to Queue</span>}
+                title={<span ><i class="fas fa-plus" /> Add to Queue</span>}
               >
                 <Dropdown.Item eventKey="2" onClick={this.showDataCollectionForm}>
                   Add Data collection
@@ -750,7 +746,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-// SampleGridViewContainer = withRouter(SampleGridViewContainer);
+SampleGridViewContainer = withRouter(SampleGridViewContainer);
 
 export default connect(
   mapStateToProps,

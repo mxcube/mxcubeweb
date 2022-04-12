@@ -106,6 +106,7 @@ export default class OneAxisTranslationControl extends React.Component {
     return (
       <div className="arrow-control">
         <Button
+          variant='outline-secondary'
           style={{ marginRight: '2px' }}
           className="arrow-small arrow-left"
           disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
@@ -114,6 +115,7 @@ export default class OneAxisTranslationControl extends React.Component {
           <i className="fas fa-angle-double-left" />
         </Button>
         <Button
+          variant='outline-secondary'
           className="arrow-small arrow-left"
           disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, step, -1)}
@@ -139,6 +141,7 @@ export default class OneAxisTranslationControl extends React.Component {
           disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
         />
         <Button
+          variant='outline-secondary'
           className="arrow-small arrow-right"
           disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, step, 1)}
@@ -146,6 +149,7 @@ export default class OneAxisTranslationControl extends React.Component {
           <i className="fas fa-angle-right" />
         </Button>
         <Button
+          variant='outline-secondary'
           style={{ marginLeft: '2px' }}
           className="arrow-small arrow-right"
           disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
