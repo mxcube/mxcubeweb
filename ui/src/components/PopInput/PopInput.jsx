@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { Button, Nav, OverlayTrigger, Popover } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
 
@@ -42,8 +42,8 @@ export default class PopInput extends React.Component {
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
-    this.onLinkClick = this.onLinkClick.bind(this);
-    this.overlayRef = React.createRef();
+    this.showOvelay = this.showOvelay.bind(this);
+    this.state = {show: false};
   }
 
 
@@ -60,10 +60,12 @@ export default class PopInput extends React.Component {
   }
 
 
-  onLinkClick(e) {
-    this.overlayRef.handleToggle();
-    e.preventDefault();
+  showOvelay(value) {
+    this.setState({
+      show: value
+    });
   }
+
 
 
   getChild(key) {
@@ -93,8 +95,8 @@ export default class PopInput extends React.Component {
       // Only update if value actually changed
       this.props.onSave(this.props.pkey, value);
     }
-    if (this.props.data.state === 'IMMEDIATE' && this.overlayRef) {
-      this.overlayRef.show = false;
+    if (this.props.data.state === 'IMMEDIATE') {
+      this.showOvelay(false)
     }
   }
 
@@ -102,7 +104,7 @@ export default class PopInput extends React.Component {
   handleIdle(data) {
     // No message to display to user, hide overlay
     if (data.msg === '') {
-      this.overlayRef.show = false;
+      tthis.showOvelay(false)
     }
   }
 
@@ -110,7 +112,7 @@ export default class PopInput extends React.Component {
   handleError(data) {
     // No message to display to user, hide overlay
     if (data.msg === '') {
-      this.overlayRef.show = false;
+      this.showOvelay(false)
     }
   }
 
@@ -121,16 +123,14 @@ export default class PopInput extends React.Component {
 
 
   cancel() {
-    debugger;
     if (this.props.onCancel !== undefined && this.isBusy()) {
       this.props.onCancel(this.props.pkey);
     }
 
-    if (!this.isBusy() && this.overlayRef) {
-      this.overlayRef.show = false;
+    if (!this.isBusy()) {
+      this.showOvelay(false)
     }
   }
-
 
   submit(event) {
     event.preventDefault();
@@ -219,7 +219,7 @@ export default class PopInput extends React.Component {
       </div>);
 
     const popover = (
-      <Popover ref={(ref) => { this.popoverRef = ref; }} style={{ padding: '0.5em' }} id={title} title={title}>
+      <Popover style={{ padding: '0.5em' }} id={title} title={title}>
         { popoverContent }
       </Popover>);
 
@@ -228,7 +228,7 @@ export default class PopInput extends React.Component {
     if (value !== '-' && this.props.precision) {
       value = value.toFixed(parseInt(this.props.precision, 10));
     }
-
+    const show = this.state.show;
     return (
       <div style={this.props.style} className={`${this.props.className} popinput-input-container`}>
         { this.props.name ?
@@ -247,7 +247,7 @@ export default class PopInput extends React.Component {
             </div>
             :
             <OverlayTrigger
-              ref={(ref) => { this.overlayRef = ref; }}
+              show={show}
               id='popOverlayRef'
               trigger="click"
               rootClose
@@ -256,9 +256,9 @@ export default class PopInput extends React.Component {
             >
               <a
                 ref={(ref) => { this.valueLabel = ref; }}
-                onContextMenu={this.onLinkClick}
                 key="valueLabel"
                 className={`popinput-input-link ${linkClass} ${stateClass}`}
+                onClick={() => this.showOvelay(!show)}
               >
                 {value} {this.props.suffix}
               </a>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { OverlayTrigger, Popover, Button, Badge, Form } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Badge, Row, Col } from 'react-bootstrap';
 
 import './style.css';
 
@@ -24,11 +24,14 @@ export default class MachInfo extends React.Component {
       variant = 'info';
     }
 
+    const msgLabelStyle = { display: 'block', fontSize: '100%',
+    borderRadius: '0px', color: '#000' };
+
     for (propname in this.props.info) {
       if (this.props.info.hasOwnProperty(propname)) {
         if (propname === 'attention') { continue; }
         propvalue = this.props.info[propname];
-        msg = <p>{propname} : {propvalue}</p>;
+        msg = <Row className='mb-1'> <Col sm={6}>{propname}</Col> <Col sm={3}> : </Col> <Col sm={3}>{propvalue}</Col></Row>;
         popContent = <span>{popContent}{msg}</span>;
       }
     }
@@ -36,18 +39,24 @@ export default class MachInfo extends React.Component {
     popContent = <span>{popContent}</span>;
 
     const machinfoPop = (
-       <Popover style={{ minWidth: '2em', padding: '0.5em' }} id="popover-machinfo" title={tooltipTitle}>
+       <Popover id="popover-machinfo">
+         <Popover.Header>
+          {tooltipTitle}
+         </Popover.Header>
+         <Popover.Body style={{ width: '180px' }}>
           {popContent}
+         </Popover.Body>
        </Popover>
     );
 
     return (
       <OverlayTrigger placement="bottom" overlay={machinfoPop}>
-        <Button variant="outline-dark">
-          Ring Current :
-          {' '}
-          <Badge bg={variant}>{this.props.info.current}</Badge>
-        </Button>
+        <div>
+          <Badge bg='secondary' style={{ display: 'block', marginBottom: '3px' }}>
+            Ring Current
+          </Badge>
+          <Badge bg={variant} style={msgLabelStyle}>{this.props.info.current}</Badge>
+        </div>
       </OverlayTrigger>
     );
   }

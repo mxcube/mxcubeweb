@@ -66,9 +66,7 @@ class QueueSettings extends React.Component {
             autoClose="outside"
           >
             <Dropdown.Toggle
-              size="sm"
-              variant="info"
-              style={{ color: 'white' }}
+              variant="outline-secondary"
             >
               <span><i className="fas fa-1x fa-cog" /> Settings</span>
             </Dropdown.Toggle>

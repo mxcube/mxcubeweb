@@ -90,7 +90,7 @@ class DataCollection extends React.Component {
           <ButtonToolbar style={{ bottom: '15px', left: '10px'}} className="position-absolute">
             <Button
               size="sm"
-              variant="outline-dark"
+              variant="outline-secondary"
               onClick={this.defaultParameters}
             >
              Default Parameters

@@ -39,11 +39,11 @@ export default class SampleChangerSwitch extends React.Component {
       msgBgStyle = 'warning';
     }
 
-    let btn = <Button block size="sm" disabled>---</Button>;
+    let btn = <Button variant='outline-secondary' size="sm" disabled>---</Button>;
     if (this.props.data === 'DISABLED') {
-      btn = <Button block size="small" onClick={this.powerOn}>{this.props.offText}</Button>;
+      btn = <Button variant='outline-secondary' size="sm" onClick={this.powerOn}>{this.props.offText}</Button>;
     } else if (this.props.data === 'READY') {
-      btn = <Button block size="small" onClick={this.powerOff}>{this.props.onText}</Button>;
+      btn = <Button variant='outline-secondary' size="sm" onClick={this.powerOff}>{this.props.onText}</Button>;
     }
 
     const msgLabelStyle = { display: 'block', fontSize: '100%',

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Container, Navbar, Nav, Button } from 'react-bootstrap';
-import { Link } from "react-router-dom";
+import { LinkContainer } from 'react-router-bootstrap';
 import withRouter from '../WithRouter';
 import './MXNavbar.css';
 
@@ -29,32 +29,46 @@ class MXNavbar extends React.Component {
     document.title = `MxCuBE-3 Proposal: ${this.props.selectedProposal}`;
 
     return (
-      <Navbar style={{ padding: '0px'}} bg="dark" variant="dark" fixed="top" collapseOnSelect expand="lg">
+      <Navbar className='pt-1 pb-1' bg="dark" variant="dark" fixed="top" collapseOnSelect expand="lg">
         <Container fluid>
-          <Link className="nav-link" to="/remoteaccess">
+          <LinkContainer to="/remoteaccess">
             <Navbar.Brand>
               MXCuBE3 <span className="brand-subtitle">{`(${this.props.selectedProposal} collecting)`}</span>
             </Navbar.Brand>
-          </Link>
+          </LinkContainer>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="me-auto" style={{ marginLeft: '20em' }}>
-              <Link className="nav-link" to="/samplegrid">Samples</Link>
-              <Link className="nav-link" to="/datacollection">Data collection</Link>
-              <Link className="nav-link" to="/samplechanger">SC tools</Link>
-              <Link className="nav-link" to="/logging">System log</Link>
+              <LinkContainer className="me-4" to="/samplegrid"><Nav.Item className="nav-link">
+                Samples</Nav.Item>
+              </LinkContainer>
+              <LinkContainer className="me-4"to="/datacollection">
+                <Nav.Item className="nav-link">Data collection</Nav.Item>
+              </LinkContainer>
+              <LinkContainer className="me-4" to="/samplechanger">
+                <Nav.Item className="nav-link">SC tools</Nav.Item>
+              </LinkContainer>
+              <LinkContainer to="/logging">
+                <Nav.Item className="nav-link">System log</Nav.Item>
+              </LinkContainer>
             </Nav>
             <Nav>
-              <Link className="nav-link" to="/help">
-                <span className="fas fa-lg fa-question-circle" /> Help
-              </Link>
-              <Link className="nav-link" to="/remoteaccess">
-                <span style={ raStyle } className="fas fa-lg fa-globe">
-                  {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
-                </span> Remote
-              </Link>
+              <LinkContainer className="me-2" to="/help">
+                <Nav.Item className="nav-link">
+                  <span className="me-1 fas fa-lg fa-question-circle" />
+                  Help
+                </Nav.Item>
+              </LinkContainer>
+              <LinkContainer className="me-2" to="/remoteaccess">
+                <Nav.Item className="nav-link">
+                  <span style={ raStyle } className="me-1 fas fa-lg fa-globe">
+                    {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
+                  </span>
+                  Remote
+                </Nav.Item>
+              </LinkContainer>
               <Button as={Nav.Link} className="nav-link" variant="Light" onClick={this.signOut}>
-                <span className="fas fa-lg fa-sign-out-alt" />
+                <span className="me-1 fas fa-lg fa-sign-out-alt" />
                 Sign out
               </Button>
             </Nav>

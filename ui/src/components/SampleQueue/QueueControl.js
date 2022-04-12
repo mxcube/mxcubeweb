@@ -132,7 +132,7 @@ export default class QueueControl extends React.Component {
 
         nextSample = [{
           text: `Next Sample (${proteinAcronym}${sampleName})`,
-          class: 'btn-outline-dark',
+          class: 'btn-outline-secondary',
           action: this.nextSample,
           key: 2
         }];

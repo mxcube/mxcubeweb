@@ -203,6 +203,7 @@ class BeamlineSetupContainer extends React.Component {
       }} 
       className="beamline-status ps-3 pe-3"
       id="bmstatus"
+      bg='light'
       expand="lg"
     >
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -214,7 +215,7 @@ class BeamlineSetupContainer extends React.Component {
               </span>
             </Nav.Item>
           </Nav>
-          <Nav>
+          <Nav className="me-auto my-2 my-lg-0">
             <Nav.Item className="d-flex justify-content-start" >
               <Table
                 condensed
@@ -234,21 +235,13 @@ class BeamlineSetupContainer extends React.Component {
               </Table>
             </Nav.Item>
           </Nav>
-          <Nav className="me-auto my-2 my-lg-0">
-            <Nav.Item>
-             <span className="blstatus-item">
-              { this.props.beamline.attributes.machine_info ?
-                  <MachInfo
-                    info={this.props.beamline.attributes.machine_info.value}
-                  />
-                  :
-                  null
-                }
-              </span>
-            </Nav.Item>
-          </Nav>
           <Nav className="me-3">
-              {this.createActuatorComponent()}
+            <Nav.Item>
+             <DeviceState
+                labelText={ 'Detector' }
+                data = { this.props.beamline.attributes.detector.state.acq_satus }
+              />
+            </Nav.Item>
           </Nav>
           <Nav className="me-3">
             <Nav.Item>
@@ -259,13 +252,20 @@ class BeamlineSetupContainer extends React.Component {
                 />
             </Nav.Item>
           </Nav>
-
-          <Nav>
+          <Nav className="me-3">
+              {this.createActuatorComponent()}
+          </Nav>
+          <Nav className="">
             <Nav.Item>
-             <DeviceState
-                labelText={ 'Detector' }
-                data = { this.props.beamline.attributes.detector.state.acq_satus }
-              />
+             <span className="blstatus-item">
+              { this.props.beamline.attributes.machine_info ?
+                  <MachInfo
+                    info={this.props.beamline.attributes.machine_info.value}
+                  />
+                  :
+                  null
+                }
+              </span>
             </Nav.Item>
           </Nav>
         </Navbar.Collapse>

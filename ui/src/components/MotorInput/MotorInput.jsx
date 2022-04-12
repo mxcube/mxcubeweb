@@ -137,7 +137,7 @@ export default class MotorInput extends React.Component {
                  onSave={this.props.saveStep}
                  suffix={suffix}
                  inputSize="75px"
-                 style={{ display: 'inline-block', marginLeft: 'auto', marginRight: 'auto' }}
+                 style={{ display: 'inline-block', marginLeft: 'auto', marginRight: '0.5em' }}
                />
                 : null
               }
@@ -154,7 +154,7 @@ export default class MotorInput extends React.Component {
               }
                 {(this.props.saveStep && this.props.state === MOTOR_STATE.READY &&
                   this.props.inplace) ?
-                <span className='ms-2'>{this.props.step} {suffix}</span> : null
+                <span className='ms-2 me-2'>{this.props.step} {suffix}</span> : null
               }
             </span>
           </div>

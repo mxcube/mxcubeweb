@@ -55,13 +55,31 @@ input[type="color"]:focus,
     /* white-space: nowrap; */
 }
 
+.nav-link {
+cursor: pointer;
+}
 .btn-primary{
     background:#337ab7;
 }
 
-/* .btn-outline-primary {
-    color: #337ab7;
-} */
+.btn-outline-secondary{
+    background:#ffffff;
+    border: solid 1px #00000098;
+    color: #000000cc;
+}
+
+.btn-outline-secondary:hover{
+    background:#e6e9ec;
+    color: #000000;
+}
+
+.btn-success {
+    background: #449D44;
+}
+
+.bg-success {
+    background: #449D44!important;
+}
 
 
 .btn:focus, .btn:active {

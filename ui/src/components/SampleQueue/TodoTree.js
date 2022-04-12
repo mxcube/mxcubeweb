@@ -41,7 +41,7 @@ export default class TodoTree extends React.Component {
     return (
       <ListGroup variant="flush">
         <ListGroup.Item className="d-flex list-head">
-          <div className="me-auto" style={{ paddingLeft: '0px' }}>
+          <div className="me-auto" style={{ paddingLeft: '0px', borderBottom: 'none' }}>
             <Form.Control
               type="text"
               size="sm"

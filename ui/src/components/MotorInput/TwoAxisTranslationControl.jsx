@@ -66,7 +66,7 @@ export default class TwoAxisTranslationControl extends React.Component {
         <div style={{ marginBottom: '1em' }}></div>
         <Button
           size="sm"
-          variant="outline-dark"
+          variant="outline-secondary"
           onClick={() => this.stepChange('sample_vertical', sample_verticalStep, 1)}
           disabled={this.props.motors.sample_vertical.state !== MOTOR_STATE.READY ||
           this.props.motorsDisabled}
@@ -76,7 +76,7 @@ export default class TwoAxisTranslationControl extends React.Component {
         </Button>
         <Button
           size="sm"
-          variant="outline-dark"
+          variant="outline-secondary"
           className="arrow arrow-left"
           disabled={this.props.motors.sample_horizontal.state !== MOTOR_STATE.READY ||
            this.props.motorsDisabled}
@@ -89,7 +89,7 @@ export default class TwoAxisTranslationControl extends React.Component {
         >
           <Button
             size="sm"
-            variant="outline-dark"
+            variant="outline-secondary"
             className="arrow arrow-settings"
           >
             <i className="fas fa-cog" />
@@ -97,7 +97,7 @@ export default class TwoAxisTranslationControl extends React.Component {
         </OverlayTrigger>
         <Button
           size="sm"
-          variant="outline-dark"
+          variant="outline-secondary"
           className="arrow arrow-right"
           disabled={this.props.motors.sample_horizontal.state !== MOTOR_STATE.READY ||
            this.props.motorsDisabled}
@@ -107,7 +107,7 @@ export default class TwoAxisTranslationControl extends React.Component {
         </Button>
         <Button
           size="sm"
-          variant="outline-dark"
+          variant="outline-secondary"
           className="arrow arrow-down"
           disabled={this.props.motors.sample_vertical.state !== MOTOR_STATE.READY ||
           this.props.motorsDisabled}

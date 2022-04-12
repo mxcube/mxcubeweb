@@ -364,7 +364,7 @@ class Characterisation extends React.Component {
               <ButtonToolbar style={{ bottom: '0.8%', left: '1%'}} className="position-absolute">
                 <Button
                   size="sm"
-                  variant="outline-dark"
+                  variant="outline-secondary"
                   onClick={this.defaultParameters}
                 >
               Default Parameters

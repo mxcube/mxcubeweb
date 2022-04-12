@@ -185,14 +185,14 @@ class Mesh extends React.Component {
               <ButtonToolbar className="pull-left">
                 <Button
                   size="sm"
-                  variant="outline-dark"
+                  variant="outline-secondary"
                   onClick={this.defaultParameters}
                 >
                Default Parameters
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline-dark"
+                  variant="outline-secondary"
                   onClick={this.resetParameters}
                 >
                Reset Form

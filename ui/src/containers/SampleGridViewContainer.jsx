@@ -440,7 +440,6 @@ class SampleGridViewContainer extends React.Component {
       <Button
         className="btn btn-success"
         variant=''
-        size="sm"
         onClick={this.startCollect}
         disabled={this.isCollectDisabled()}
         style={{ whiteSpace: 'nowrap'}}
@@ -452,7 +451,6 @@ class SampleGridViewContainer extends React.Component {
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       button = (
         <Button
-          size="sm"
           variant=''
           className="btn btn-danger"
           onClick={this.props.sendStopQueue}
@@ -469,7 +467,7 @@ class SampleGridViewContainer extends React.Component {
   render() {
     const innerSearchIcon = (
       <DropdownButton
-        variant='outline-dark'
+        variant='outline-secondary'
         title="" id="filter-drop-down"
       >
         <div style={{ padding: '1em 1em 0 1em', width: '350px' }}>
@@ -568,10 +566,16 @@ class SampleGridViewContainer extends React.Component {
               </Row>
             </Col>
           </Row>
-          <Row className="ps-5 pe-5 mt-3">
-            <Button onClick={this.sampleGridClearFilter}>
-              Clear
-            </Button>
+          <Row className="mt-3 justify-content-end">
+            <Col className='align-self-end'>        
+              <Button
+                variant="outline-secondary"
+                style={{ float: 'right'}}
+                onClick={this.sampleGridClearFilter}
+              >
+                Clear
+              </Button>
+            </Col>
           </Row>
         </div>
       </DropdownButton>
@@ -593,12 +597,11 @@ class SampleGridViewContainer extends React.Component {
           </div>
           : null
         }
-        <Row className="samples-grid-row-header">
+        <Row className="samples-grid-row-header ps-4 pe-4">
           <Col sm={4} className='d-flex'>
             <Form>
               <SplitButton
-                size='sm'
-                variant='outline-dark'
+                variant='outline-secondary'
                 id="split-button-sample-changer-selection"
                 disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                 title={'Get samples from SC'}
@@ -616,7 +619,7 @@ class SampleGridViewContainer extends React.Component {
                     Synchronise sample list with ISPyB
                   </Tooltip>)}
               >
-                <Button size='sm' variant='outline-dark' onClick={this.syncSamples}>
+                <Button variant='outline-secondary' onClick={this.syncSamples}>
                   <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />
                   ISPyB
                 </Button>
@@ -630,8 +633,7 @@ class SampleGridViewContainer extends React.Component {
                   </Tooltip>)}
               >
                 <Button
-                  variant='outline-danger'
-                  size='sm'
+                  variant='outline-secondary'
                   onClick={this.props.confirmClearQueueShow}
                   disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                 >
@@ -643,27 +645,28 @@ class SampleGridViewContainer extends React.Component {
           </Col>
           <Col sm={6} className='d-flex'>
             <Form>
-              <Form.Group className="mb-3 d-flex">
-                <InputGroup size='sm' className={this.filterIsUsed() ? 'filter-input-active' : ''}>
-                  <Form.Label>Filter: &nbsp;</Form.Label>
-                  <Form.Control
-                    style={{ borderColor: 'black' }}
-                    id="filterText"
-                    type="text"
-                    ref={(ref) => { this.filterInput = ref; }}
-                    defaultValue={this.props.filterOptions.text}
-                    onChange={this.sampleGridFilter}
-                  />
+              <Form.Group  as={Row} className="mb-3 d-flex">
+                <Form.Label style={{ whiteSpace: 'nowrap', marginRight: '0px'}} className="d-flex" column sm="2">Filter :</Form.Label>
+                <Col sm="9">
+                  <InputGroup className={this.filterIsUsed() ? 'filter-input-active' : ''}>
+                    <Form.Control
+                      style={{ borderColor: 'gray' }}
+                      id="filterText"
+                      type="text"
+                      ref={(ref) => { this.filterInput = ref; }}
+                      defaultValue={this.props.filterOptions.text}
+                      onChange={this.sampleGridFilter}
+                    />
                     {innerSearchIcon}
                   </InputGroup>
+                </Col>
               </Form.Group>
             </Form>
             <span style={{ marginLeft: '3em' }} />
             <Form>
               <SplitButton
                 id="pipeline-mode-dropdown"
-                size='sm'
-                variant='outline-dark'
+                variant='outline-secondary'
                 disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                 onClick={this.addSelectedSamplesToQueue}
                 title={<span><MdAddToQueue glyph="plus" /> Add to Queue</span>}
@@ -679,9 +682,9 @@ class SampleGridViewContainer extends React.Component {
           </Col>
           <Col className='d-flex justify-content-end' sm={2}>
             <ButtonToolbar className="mb-3 justify-content-end">
-              {this.collectButton()}
-              <span style={{ marginLeft: '1em' }} />
               <QueueSettings />
+              <span style={{ marginLeft: '1em' }} />
+              {this.collectButton()}
             </ButtonToolbar>
           </Col>
         </Row>

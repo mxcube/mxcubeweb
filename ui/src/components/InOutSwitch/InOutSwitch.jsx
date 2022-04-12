@@ -62,7 +62,7 @@ export default class InOutSwitch extends React.Component {
            <div onContextMenu={this.onOptionsRightClick}>
              <Badge
               bg="secondary"
-               style={{ display: 'block', marginBottom: '3px' }}
+              style={{ display: 'block', marginBottom: '3px' }}
              >
                { this.props.labelText }
                  <i className="fas fa-cog ms-2" />
@@ -82,12 +82,12 @@ export default class InOutSwitch extends React.Component {
       msgBgStyle = 'danger';
     }
 
-    let btn = <Button block size="sm" disabled>---</Button>;
+    let btn = <Button variant='outline-secondary' size="sm" disabled>---</Button>;
 
     if (this.props.data.value === this.props.onText) {
-      btn = <Button block size="small" onClick={this.setOff}>Set: {this.props.offText}</Button>;
+      btn = <Button variant='outline-secondary' size="sm" onClick={this.setOff}>Set: {this.props.offText}</Button>;
     } else {
-      btn = <Button block size="small" onClick={this.setOn}>Set: {this.props.onText}</Button>;
+      btn = <Button variant='outline-secondary' size="sm" onClick={this.setOn}>Set: {this.props.onText}</Button>;
     }
 
     const msgLabelStyle = { display: 'block', fontSize: '100%',

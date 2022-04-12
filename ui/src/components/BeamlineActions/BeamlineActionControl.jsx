@@ -28,8 +28,9 @@ export default class BeamlineActionControl extends React.Component {
           {label}
           </Button> : ''
         }
-        { !showOutput ?
+        { showOutput ?
           <Button
+            variant='outline-secondary'
             disabled = {this.props.disabled}
             size = "sm"
             onClick = { () => this.props.showOutput(this.props.cmdName) }

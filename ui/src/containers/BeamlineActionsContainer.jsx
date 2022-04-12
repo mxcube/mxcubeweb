@@ -94,8 +94,7 @@ class BeamlineActionsContainer extends React.Component {
           <DropdownButton
             title={'Beamline Actions'}
             id="beamline-actions-dropdown"
-            size="sm"
-            variant="outline-dark"
+            variant="outline-secondary"
           >
             {this.props.actionsList.map((cmd, i) => {
               const cmdName = cmd.name;

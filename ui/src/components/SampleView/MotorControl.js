@@ -121,7 +121,7 @@ export default class MotorControl extends React.Component {
           ? (
             <div>
               <Button
-                variant="outline-dark"
+                variant="outline-secondary"
                 style={{ marginTop: '1em', }}
                 size="sm"
                 onClick={() => { this.setState({ showAll: false }); }}
@@ -137,7 +137,7 @@ export default class MotorControl extends React.Component {
           )
           : (
             <Button
-              variant="outline-dark"
+              variant="outline-secondary"
               size='sm'
               style={{ marginTop: '1em' }}
               onClick={() => { this.setState({ showAll: true }); }}
