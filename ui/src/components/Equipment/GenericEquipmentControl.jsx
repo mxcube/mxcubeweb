@@ -1,5 +1,5 @@
 import React from 'react';
-import { Panel, PanelGroup, Button } from 'react-bootstrap';
+import { Card, CardGroup, Button } from 'react-bootstrap';
 import Form from '@rjsf/core';
 import './GenericEquipmentControl.css';
 
@@ -65,19 +65,19 @@ export default class GenericEquipmentControl extends React.Component {
 
     return Object.entries(a).map(([key, value]) => {
       return (
-       <Panel bsStyle="info" className="command-panel">
-         <Panel.Heading> <Panel.Title toggle><b>Command: {key}</b></Panel.Title></Panel.Heading>
-         <Panel.Collapse>
-           <Panel.Body>
+       <Card bsStyle="info" className="command-panel">
+         <Card.Header> <Card.Title toggle><b>Command: {key}</b></Card.Title></Card.Header>
+         {/* <Panel.Collapse> */}
+           <Card.Body>
              <div className="col-xs-6">
                {this.renderParameters(key)}
              </div>
              <div className="col-xs-6">
                {this.renderInfo(key)}
              </div>
-           </Panel.Body>
-         </Panel.Collapse>
-       </Panel>
+           </Card.Body>
+         {/* </Panel.Collapse> */}
+       </Card>
       );
     })
   }
@@ -100,17 +100,17 @@ export default class GenericEquipmentControl extends React.Component {
     return (
       <div className={'row generic-equipment-container'}>
         <div className="col-xs-12">
-            <Panel defaultExpanded bsStyle={this.titleBackgroundClass()}>
-              <Panel.Heading>
-                <Panel.Title toggle>{this.props.equipment.name} ({this.props.equipment.state})</Panel.Title>
-              </Panel.Heading>
-            <Panel.Collapse>
-              <Panel.Body className="generic-equipment-container-panel-body" collapsible>
+            <Card defaultExpanded bsStyle={this.titleBackgroundClass()}>
+              <Card.Header>
+                <Card.Title toggle>{this.props.equipment.name} ({this.props.equipment.state})</Card.Title>
+              </Card.Header>
+            {/* <Panel.Collapse> */}
+              <Card.Body className="generic-equipment-container-panel-body" collapsible>
                 {this.getCommands()}
                 {this.renderDialog}
-              </Panel.Body>
-            </Panel.Collapse>
-            </Panel>
+              </Card.Body>
+            {/* </Panel.Collapse> */}
+            </Card>
         </div>
       </div>
     );
