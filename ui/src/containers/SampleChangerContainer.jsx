@@ -3,17 +3,16 @@ import { connect } from 'react-redux';
 
 import {Container, Row, Col} from 'react-bootstrap';
 
-import { select, loadSample, unloadSample, scan, abort, sendCommand,
-  refresh } from '../actions/sampleChanger';
+import {
+  select, loadSample, unloadSample, scan, abort, sendCommand, refresh
+} from '../actions/sampleChanger';
 
 import SampleChanger from '../components/SampleChanger/SampleChanger';
-// import SampleChangerState from '../components/SampleChanger/SampleChangerState';
-
-import HardwareState from '../components/HardwareState/HardwareState';
-
+import EquipmentState from '../components/Equipment/EquipmentState';
 import SampleChangerMaintenance from '../components/SampleChanger/SampleChangerMaintenance';
+import GenericEquipmentControl from '../components/Equipment/GenericEquipmentControl';
 
-class SampleChangerContainer extends React.Component {
+class EquipmentContainer extends React.Component {
   render() {
     return (
       <Container fluid>
@@ -21,16 +20,16 @@ class SampleChangerContainer extends React.Component {
           <Col sm={12} style={{ marginTop: '-20px' }}>
               <Row className="d-flex">
               <Col sm={12} style={{ marginTop: '1em' }}>
-                <HardwareState
-                  state={this.props.state}
-                  hardwareName='Samplechanger'
+                <EquipmentState
+                  state={this.props.sampleChangerState}
+                  equipmentName='Samplechanger'
                 />
               </Col>
             </Row>
             <Row className="row">
               <Col sm={6}>
                 <SampleChanger
-                  state={this.props.state}
+                  state={this.props.sampleChangerState}
                   loadedSample={this.props.loadedSample}
                   select={this.props.select}
                   load={this.props.loadSample}
@@ -51,6 +50,22 @@ class SampleChangerContainer extends React.Component {
                 />
               </Col>
             </Row>
+            <Row>
+              <Col sm={6}>
+                { Object.entries(this.props.beamline.attributes).map(([key, value]) => {
+                    const obj = this.props.beamline.attributes[key];
+                    if (Object.values(obj.attributes).length > 0) {
+                      return (<GenericEquipmentControl
+                        equipment={obj}
+                        executeCommand={this.props.executeCommand}
+                      />)
+                    } else {
+                      return null;
+                    }
+                  })
+                }
+              </Col>
+          </Row>
           </Col>
         </Row>
       </Container>
@@ -61,12 +76,13 @@ class SampleChangerContainer extends React.Component {
 function mapStateToProps(state) {
   return {
     contents: state.sampleChanger.contents,
-    state: state.sampleChanger.state,
+    sampleChangerState: state.sampleChanger.state,
     loadedSample: state.sampleChanger.loadedSample,
     commands: state.sampleChangerMaintenance.commands,
     commands_state: state.sampleChangerMaintenance.commands_state,
     global_state: state.sampleChangerMaintenance.global_state,
-    message: state.sampleChangerMaintenance.message
+    message: state.sampleChangerMaintenance.message,
+    beamline: state.beamline
   };
 }
 
@@ -78,12 +94,13 @@ function mapDispatchToProps(dispatch) {
     scan: (container) => dispatch(scan(container)),
     refresh: () => dispatch(refresh()),
     abort: () => dispatch(abort()),
-    sendCommand: (cmd, args) => dispatch(sendCommand(cmd, args))
+    sendCommand: (cmd, args) => dispatch(sendCommand(cmd, args)),
+    executeCommand: bindActionCreators(executeCommand, dispatch)
   };
 }
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SampleChangerContainer);
+)(EquipmentContainer);
 
