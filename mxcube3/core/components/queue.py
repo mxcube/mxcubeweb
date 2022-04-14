@@ -1100,12 +1100,12 @@ class Queue(ComponentBase):
         # params include only path_template-related parametes and strategy_name
         model.init_from_task_data(sample_model, params)
 
-        # NBNB 
-        # These two calls seems to be needed by the Global phasing workflows
-        # Adding them resolves the current conflict
-        # NBNB CHECK REMOVAL
-        model.set_pre_strategy_params(**params)
-        model.set_pre_acquisition_params(**params)
+        # # NBNB
+        # # These two calls seems to be needed by the Global phasing workflows
+        # # Adding them resolves the current conflict
+        # # NBNB CHECK REMOVAL
+        # model.set_pre_strategy_params(**params)
+        # model.set_pre_acquisition_params(**params)
 
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
