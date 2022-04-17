@@ -7,6 +7,7 @@ import { sendMail } from '../actions/login';
 import characterisation from '../help_videos/mx3-characterisation.ogv';
 import interleaved from '../help_videos/mx3-interleaved.ogv';
 import mesh from '../help_videos/mx3-mesh.ogv';
+import general from '../reducers/general';
 
 export class HelpContainer extends React.Component {
   constructor(props) {
@@ -18,8 +19,8 @@ export class HelpContainer extends React.Component {
 
   sendMail() {
     sendMail(this.sender.value, this.content.value);
-    // this.sender.value = '';
-    // this.content.value = '';
+    this.sender.value = '';
+    this.content.value = '';
   }
 
   localContactPanel() {
@@ -106,11 +107,9 @@ export class HelpContainer extends React.Component {
                   <span>About MXCuBE3</span>
                 </Card.Header>
                 <Card.Body>
-                  Version: '3'
-                  {/* VERSION.BRANCH} */}
-                  <br />
-                  Commit hash: '8'
-                  {/* { VERSION.COMMITHASH  */}
+              <span>
+                Version: {this.props.general.serverVersion}
+                </span>
                 </Card.Body>
               </Card>
             </Col>
@@ -172,7 +171,8 @@ export class HelpContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    login: state.login
+    login: state.login,
+    general: state.general
   };
 }
 

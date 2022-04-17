@@ -31,18 +31,17 @@ export default class SampleControls extends React.Component {
   }
 
   setZoom(option) {
-    const newZoom = parseInt(option.target.value, 10);
-    this.props.setBeamlineAttribute('zoom', option.target.value);
-
-    if (this.props.attributes.zoom.value !== newZoom) {
-      this.props.sendSetAttribute('zoom', newZoom);
-    }
+    const newZoom = this.props.attributes.zoom.commands[option.target.value];
+    this.props.sendSetAttribute('zoom', newZoom);
   }
 
   toggleDrawGrid() {
     // Cancel click centering before draw grid is started
     if (this.props.current.sampleID === '') {
-      this.props.generalActions.showErrorPanel(true, 'There is no sample mounted');
+      this.props.generalActions.showErrorPanel(
+        true,
+        'There is no sample mounted'
+      );
     } else {
       if (this.props.clickCentring) {
         this.props.sampleActions.sendAbortCentring();
@@ -74,7 +73,8 @@ export default class SampleControls extends React.Component {
   }
 
   toggleCentring() {
-    const { sendStartClickCentring, sendAbortCentring } = this.props.sampleActions;
+    const { sendStartClickCentring, sendAbortCentring } =
+      this.props.sampleActions;
     const { clickCentring } = this.props;
 
     // If draw grid tool enabled, disable it before starting centering
@@ -91,15 +91,19 @@ export default class SampleControls extends React.Component {
 
   toggleLight(name) {
     const lighstate = this.props.attributes[`${name}_switch`].value;
-    const newState = this.props.attributes[`${name}_switch`].
-      commands.filter(state => state !== lighstate)[0];
+    const newState = this.props.attributes[`${name}_switch`].commands.filter(
+      (state) => state !== lighstate
+    )[0];
     this.props.sendSetAttribute(`${name}_switch`, newState);
   }
 
 
   availableVideoSizes() {
     const items = this.props.videoSizes.map((size) => {
-      const sizeGClass = this.props.width === String(size[0]) ? 'fa-dot-circle-o' : 'fa-circle-o';
+      const sizeGClass =
+        this.props.width === String(size[0])
+          ? 'fa-dot-circle-o'
+          : 'fa-circle-o';
 
       return (
         <Dropdown.Item
@@ -243,10 +247,12 @@ export default class SampleControls extends React.Component {
                     min={attributes.zoom.limits[0]}
                     max={attributes.zoom.limits[1]}
                     step="1"
-                    value={attributes.zoom.value}
+                    value={attributes.zoom.commands.indexOf(attributes.zoom.value)}
                     disabled={attributes.zoom.state !== MOTOR_STATE.READY}
                     onMouseUp={this.setZoom}
-                    onChange={e => this.props.setBeamlineAttribute('zoom', e.target.value)}
+                    onChange={(e) => {
+                      this.props.setBeamlineAttribute('zoom', attributes.zoom.commands[e.target.value])
+                    }}
                     list="volsettings"
                     name="zoomSlider"
                   />
@@ -263,9 +269,13 @@ export default class SampleControls extends React.Component {
                   name="zoomOut"
                 />
                 <datalist id="volsettings">
-                  {[...Array(attributes.zoom.limits[1] - attributes.zoom.limits[0]).keys()].map(i =>
-                    (<option>{attributes.zoom.limits[0] + i }</option>)
-                  )}
+                  {[
+                    ...Array(
+                      attributes.zoom.limits[1] - attributes.zoom.limits[0]
+                    ).keys(),
+                  ].map((i) => (
+                    <option>{attributes.zoom.limits[0] + i}</option>
+                  ))}
                 </datalist>
                 <span className="sample-control-label">Zoom</span>
               </li>
@@ -278,8 +288,9 @@ export default class SampleControls extends React.Component {
                 title="Backlight On/Off"
                 className="fas fa-lightbulb sample-control"
                 onClick={this.toggleBackLight}
-                active= {
-                  attributes.backlight_switch.value === attributes.backlight_switch.commands[0]
+                active={
+                  attributes.backlight_switch.value ===
+                  attributes.backlight_switch.commands[0]
                 }
               />
               <OverlayTrigger
