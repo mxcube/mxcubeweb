@@ -26,7 +26,7 @@ class LoginComponent extends React.Component {
     event.preventDefault();
     const username = this.loginID.value;
     const password = this.password.value;
-    const navigate = this.props.navigate;
+    const navigate = this.props.router.navigate;
 
     this.props.setLoading(true);
     this.props.signIn(username.toLowerCase(), password, navigate);
