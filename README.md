@@ -3,8 +3,8 @@
 
 <p align="center"><img src="http://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
 
-# MXCuBE 3
-MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), and has since then been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
+# MXCuBE-Web
+MXCuBE-Web is the latest generation of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), and has since then been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
 
 * ESRF
 * [Soleil](http://www.synchrotron-soleil.fr/)
@@ -18,7 +18,7 @@ MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromole
 * [Elettra](https://www.elettra.trieste.it/)
 * [NSRRC](https://www.nsrrc.org.tw/english/index.aspx)
 
-Version 3 is developed as a web application and runs in any recent browser. The application is further built using standard web technologies and does not require any third party plugins to be installed in order to function. 
+MXCuBE-Web is developed as a web application and runs in any recent browser. The application is further built using standard web technologies and does not require any third party plugins to be installed in order to function. 
 
  Data collection           | Sample grid
 :-------------------------:|:-------------------------:
