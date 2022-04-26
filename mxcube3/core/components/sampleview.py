@@ -40,15 +40,20 @@ class SampleView(ComponentBase):
         )
 
         HWR.beamline.sample_view.connect("shapesChanged", self._emit_shapes_updated)
-        HWR.beamline.diffractometer.zoomMotor.connect("stateChanged", self._zoom_changed)
+
+        zoom_motor = HWR.beamline.diffractometer.get_object_by_role("zoom")
+
+        if zoom_motor:
+            zoom_motor.connect("stateChanged", self._zoom_changed)
 
     def _zoom_changed(self, *args, **kwargs):
         ppm = HWR.beamline.diffractometer.get_pixels_per_mm()
-        self.app.server.emit("update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr")
+        self.app.server.emit("update_pixels_per_mm", {
+                             "pixelsPerMm": ppm}, namespace="/hwr")
 
     def _emit_shapes_updated(self):
         shape_dict = {}
-        
+
         for shape in HWR.beamline.sample_view.get_shapes():
             _s = to_camel(shape.as_dict())
             shape_dict.update({shape.id: _s})
@@ -478,6 +483,7 @@ class SampleView(ComponentBase):
             self.app.CENTRING_METHOD = CENTRING_METHOD.MANUAL
 
         logging.getLogger("user_level_log").info(msg)
+
 
 def enable_snapshots(collect_object, diffractometer_object, sample_view):
     def _snapshot_received(data):
