@@ -40,7 +40,6 @@ import { showConfirmCollectDialog } from '../actions/queueGUI';
 import { showConfirmClearQueueDialog } from '../actions/general';
 
 import { showTaskForm } from '../actions/taskForm';
-import BeamlineSetupContainer from './BeamlineSetupContainer';
 
 import SampleGridContainer from './SampleGridContainer';
 import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog';
