@@ -89,7 +89,7 @@ export default class App extends React.Component {
                   <Route index element={<SampleViewContainer />} />
                   <Route path="samplegrid" element={<SampleGridViewContainer />} />
                   <Route path="datacollection" element={<SampleViewContainer />} />
-                  <Route path="samplechanger" element={<EquipmentContainer />} />
+                  <Route path="equipment" element={<EquipmentContainer />} />
                   <Route path="logging" element={<LoggerContainer />} />
                   <Route path="remoteaccess" element={<RemoteAccessContainer />} />
                   <Route path="help" element={<HelpContainer />} />

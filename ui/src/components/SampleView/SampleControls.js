@@ -317,8 +317,7 @@ export default class SampleControls extends React.Component {
               >
                 <Button
                   type="button"
-                  style={{ paddingLeft: '0px' }}
-                  className="fas fa-sort-desc sample-control sample-control-small"
+                  className="ps-2 fas fa-sort-down sample-control sample-control-small"
                 />
               </OverlayTrigger>
               <span className="sample-control-label">Backlight</span>
@@ -358,8 +357,7 @@ export default class SampleControls extends React.Component {
               >
                 <Button
                   type="button"
-                  style={{ paddingLeft: '0px', fontSize: '1.5em' }}
-                  className="fas fa-sort-desc sample-control sample-control-small"
+                  className="ps-2 fas fa-sort-down sample-control sample-control-small"
                 />
               </OverlayTrigger>
               <span className="sample-control-label">Frontlight</span>

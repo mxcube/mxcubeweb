@@ -68,7 +68,7 @@ class SampleViewContainer extends Component {
     return (
         <Stack>
           <Row>
-            <Col sm={12} style={{ marginTop: '-45px' }}>
+            <Col sm={12} style={{ marginTop: '-40px' }}>
               <BeamlineSetupContainer />
             </Col>
           </Row>

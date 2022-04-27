@@ -1,6 +1,5 @@
 import React from 'react';
-// import { withRouter } from 'react-router';
-// import { withRouter } from 'react-router-dom';
+import withRouter from '../components/WithRouter'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Row, Dropdown } from 'react-bootstrap';
@@ -764,7 +763,7 @@ class SampleGridContainer extends React.Component {
     this.sampleItems = this.getSampleItems(this.props);
 
     return (
-      <div
+      <Row
         className="samples-grid"
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
@@ -794,7 +793,7 @@ class SampleGridContainer extends React.Component {
         >
           {this.sampleItems}
         </SpringGrid>
-      </div>
+      </Row>
     );
   }
 }
@@ -833,7 +832,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-// SampleGridContainer = withRouter(SampleGridContainer);
+SampleGridContainer = withRouter(SampleGridContainer);
 
 export default connect(
   mapStateToProps,

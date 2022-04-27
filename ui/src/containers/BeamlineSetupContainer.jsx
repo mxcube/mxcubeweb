@@ -147,11 +147,17 @@ class BeamlineSetupContainer extends React.Component {
       const beamline_attribute = this.props.beamline.attributes[uiprop.attribute];
 
       components.push(
-        <td className='d-flex' style={{ border: '0px', paddingLeft: '0.5em' }}>
+        <td className='d-flex pt-1' style={{ border: '0px', paddingLeft: '0.5em' }}>
           <span className='me-1'>{ uiprop.label }:</span>
         </td>);
       components.push(
-        <td style={{ fontWeight: 'bold', border: '0px', borderRight: '1px solid #ddd', paddingRight: '0.5em' }}>
+        <td
+        className='pe-3 pt-1' 
+        style={{
+          fontWeight: 'bold',
+          border: '0px',
+          borderRight: uiprop_list.length != uiprop_list.indexOf(uiprop) + 1 ? '1px solid #ddd': '',
+          padding: '0em , 0em'}}>
           { beamline_attribute.readonly ?
             (<LabeledValue
               suffix={ uiprop.suffix }
@@ -180,8 +186,6 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   render() {
-    // const blsetup_properties = uiproperties.beamline_setup.components;
-
     const uiproperties = this.props.uiproperties;
 
     if (!uiproperties.hasOwnProperty('beamline_setup')) {
@@ -217,18 +221,19 @@ class BeamlineSetupContainer extends React.Component {
           <Nav className="me-auto my-2 my-lg-0">
             <Nav.Item className="d-flex justify-content-start" >
               <Table
-                condensed
+                responsive
                 style={{ margin: '0px', fontWeight: 'bold',
-                  paddingLeft: '7em', paddingRight: '7em' }}
+                  paddingLeft: '7em', paddingRight: '7em'
+                }}
               >
                 <tbody>
-                  <tr style={{ height: '0px'}}>
+                  <tr>
                     {this.render_table_row(uiprop_list.slice(0, (uiprop_list.length / 2).toFixed() ))}
                   </tr>
                   <tr>
                     {this.render_table_row(uiprop_list.slice((uiprop_list.length /2).toFixed() ))}
-                    <td style={{ border: '0px', borderLeft: '1px solid #ddd', paddingLeft: '1em' }} />
-                    <td style={{ border: '0px' }} />
+                    {/* <td style={{ border: '0px', borderLeft: '1px solid #ddd', paddingLeft: '1em' }} />
+                    <td style={{ border: '0px' }} /> */}
                   </tr>
                 </tbody>
               </Table>

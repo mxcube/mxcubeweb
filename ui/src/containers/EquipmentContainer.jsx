@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
 import {Container, Row, Col} from 'react-bootstrap';
 
@@ -55,7 +56,7 @@ class EquipmentContainer extends React.Component {
               </Col>
             </Row>
             <Row>
-              <Col sm={6}>
+              <Col sm={12}>
                 { Object.entries(this.props.beamline.attributes).map(([key, value]) => {
                     const obj = this.props.beamline.attributes[key];
                     if (Object.values(obj.attributes).length > 0) {

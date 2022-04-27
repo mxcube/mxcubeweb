@@ -109,7 +109,11 @@ class BeamlineActionsContainer extends React.Component {
                     }
 
                     return (
-                        <Dropdown.Item style={{width: '230px'}} className='d-flex justify-content-between align-items-start' key={i}>
+                        <Dropdown.Item
+                          style={{width: '250px' }}
+                          className='d-flex justify-content-between align-items-start'
+                          key={i}
+                        >
                           <div className="ms-2 me-auto">
                             <div className="fw-bold">{cmdUsername}</div>
                           </div>
