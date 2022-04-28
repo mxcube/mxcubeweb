@@ -3,8 +3,8 @@
 
 <p align="center"><img src="http://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
 
-# MXCuBE 3
-MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), and has since then been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
+# MXCuBE-Web
+MXCuBE-Web is the latest generation of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), and has since then been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
 
 * ESRF
 * [Soleil](http://www.synchrotron-soleil.fr/)
@@ -18,13 +18,13 @@ MXCuBE3 is the latest version of the data acquisition software MXCuBE (Macromole
 * [Elettra](https://www.elettra.trieste.it/)
 * [NSRRC](https://www.nsrrc.org.tw/english/index.aspx)
 
-Version 3 is developed as a web application and runs in any recent browser. The application is further built using standard web technologies and does not require any third party plugins to be installed in order to function. 
+MXCuBE-Web is developed as a web application and runs in any recent browser. The application is further built using standard web technologies and does not require any third party plugins to be installed in order to function. 
 
  Data collection           | Sample grid
 :-------------------------:|:-------------------------:
 ![datacollection-view](https://user-images.githubusercontent.com/4331447/42496925-d983bf3e-8427-11e8-890e-898dda649101.png)|![samplegrid-view](https://user-images.githubusercontent.com/4331447/42496937-e8547b34-8427-11e8-9447-645e6d7f1dc5.png)
 
-The underlaying beamline control layer is implemented using the library [**mxcubecore**](https://github.com/mxcube/mxcubecore) previously known as [HardwareRepository](https://github.com/mxcube/HardwareRepository). The **mxcubecore** module is compatable with both MXCuBE3 also known as MXCuBE-Web and the [MXCuBE-Qt application](https://github.com/mxcube/mxcubeqt). The earlier versions of MXCuBE3 (upto 3.2.x) uses [HardwareRepository](https://github.com/mxcube/HardwareRepository) while versions after 3.2.x uses [**mxcubecore**](https://github.com/mxcube/mxcubecore).
+The underlaying beamline control layer is implemented using the library [**mxcubecore**](https://github.com/mxcube/mxcubecore) previously known as [HardwareRepository](https://github.com/mxcube/HardwareRepository). The **mxcubecore** module is compatable with both MXCuBE-Web and the [MXCuBE-Qt application](https://github.com/mxcube/mxcubeqt). The earlier versions of MXCuBE-Web (upto 3.2.x) uses [HardwareRepository](https://github.com/mxcube/HardwareRepository) while versions after 4.x uses [**mxcubecore**](https://github.com/mxcube/mxcubecore).
 
 Latest information about the MXCuBE project can be found on the
 [project webpage](http://mxcube.github.io/mxcube/).
