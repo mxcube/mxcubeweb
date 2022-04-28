@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Stack } from 'react-bootstrap';
 import { Outlet } from 'react-router-dom';
+import withRouter from '../components/WithRouter';
 import MXNavbarContainer from '../containers/MXNavbarContainer';
 import TaskContainer from '../containers/TaskContainer';
 import PleaseWaitDialog from '../containers/PleaseWaitDialog';
@@ -66,8 +67,8 @@ class Main extends React.Component {
   render() {
     const showReadOnlyDiv =
       !this.props.login.user.inControl &&
-      this.props.location.pathname !== '/remoteaccess' &&
-      this.props.location.pathname !== '/help';
+      this.props.router.location.pathname !== '/remoteaccess' &&
+      this.props.router.location.pathname !== '/help';
 
     if (!this.props.general.applicationFetched)  {
       return (<LoadingScreen />);
@@ -107,7 +108,6 @@ class Main extends React.Component {
         />
         <MXNavbarContainer location={window.location} />
         <Stack style={{ paddingTop: '5.5em', zIndex: 9999 }}>
-            {/* {this.props.children} */}
           <Outlet />
         </Stack>
         <span onClick={this.onChatContainerClick}>
@@ -140,6 +140,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
+Main = withRouter(Main);
 
 export default connect(
   mapStateToProps,
