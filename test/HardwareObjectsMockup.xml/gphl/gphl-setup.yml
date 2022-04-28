@@ -3,10 +3,9 @@ _initialise_class:
     class: mxcubecore.HardwareObjects.GphlWorkflowConnection.GphlWorkflowConnection
 
 directory_locations:
-    # Directory locations
-    # file names below are set as file_name.format(directory_locations)
-    GPHL_SETUP: /alt/rhfogh/Software/GPhL/mxcube_setup
-    GPHL_RELEASE: /alt/rhfogh/Software/GPhL
+    # Directory locations. Can also be used with ${} syntax in this file
+    GPHL_INSTALLATION: /alt/rhfogh/Software/GPhL/gphl_release
+    # GPHL_WRAPPERS: /data/users/p3l-gleb1/gphl/
 
 
 # If set, run workflow through ssh with selected options
@@ -40,24 +39,19 @@ gphl_persistname: persistence
 #HardwareRepository directories on the lookup path
   
 software_paths:
-    #Location of Java binary to execute for workflow application
-    java_binary: "{GPHL_SETUP}/jre1.8.0_144/bin/java"
-    #Set Debug mode:
-#    java_binary: ssh -i /home/rhfogh/.ssh/wf_test_id -o StrictHostKeyChecking=no lonsdale java
+    # Mandatory. Directory with workflow config input, e.g. instrumentation.nml
+    gphl_beamline_config: gphl/config_embl_hh_p14
 
-    #Location of GPhL release, containing program binaries (or their wrapper scripts)
-    GPHL_INSTALLATION: "{GPHL_RELEASE}/gphl_release/exe"
-
-    #Location of CCP4 release binaries - required to pass on to some wrapper scripts
+    # MANDATORY for CCP4 => $GPHL_CCP4_PATH/bin/ccp4.setup-sh,
+    # unless already sourced in environment
     GPHL_CCP4_PATH: /alt/rhfogh/Software/CCP4/latest/bin
 
-    #Gphl workflow Java classpath.
-    #Should point to all contents of workflow application directory
-#    gphl_java_classpath: "{GPHL_SETUP}/workflow/gphl_java_classes/wfjars/*"
-    gphl_java_classpath: "{GPHL_SETUP}/workflow/gphl_java_classes/lib/*"
+    # MANDATORY for XDS => $GPHL_XDS_PATH/xds_par
+    # unless already sourced in environment
+    GPHL_XDS_PATH: /alt/rhfogh/Software/XDS/latest
 
-    #Directory with workflow config input, e.g. instrumentation.nml
-    gphl_beamline_config: gphl/config_embl_hh_p14
+    # OPTIONAL for java binary => defaults to just 'java'
+    java_binary: "/alt/rhfogh/Software/GPhL/mxcube_setup/jre1.8.0_144/bin/java"
 
     # gphl test samples directory - for collection emulation
     gphl_test_samples: gphl/test_samples
@@ -66,46 +60,30 @@ software_paths:
     #Passed as environmental variable GPHL_PROC_INSTALLATION. Optional
 #    gphl_wf_processing_installation: /users/pkeller/GPhL-ESRF/exe
 
-#Software paths that are passed to global phasing workflow as java properties
+# Software paths that are passed to global phasing workflow as java properties
+# Used to specify locations of alternative executables (wrappers)
+# More (unused) properties are described in the ASTRA workflow documentation
 software_properties:
+    #Location of GPhL .license directory
+    #defaults to GPHL_INSTALLATION
+    #Only needed if you do NOT use the gphl installation wrapper scripts in .../exe :
+    #        co.gphl.wf.bdg_licence_dir: "{GPHL_RELEASE}/gphl_release/latest"
 
-  #Location of GPhL .license directory
-  #defaults to GPHL_INSTALLATION
-  #Only needed if you do NOT use the gphl installation wrapper scripts in .../exe :
-#        co.gphl.wf.bdg_licence_dir: "{GPHL_RELEASE}/gphl_release/latest"
-#
-  #Location of executable XDS binary. Mandatory
-#        co.gphl.wf.xds.bin: /public/xtal/Xds/XDS-INTEL64_Linux_x86_64/xds_par
-  co.gphl.wf.xds.bin: "/alt/rhfogh/Software/XDS/latest/xds_par"
+    # MANDATORY pending change in workflow
+    co.gphl.wf.stratcal.bin: "{GPHL_INSTALLATION}/exe/run_stratcal_wrap.py"
 
-  #Location of individual binaries or wrappers are optional.
-  #They default to within GPHL_INSTALLATION
+    # OPTIONAL location of alternative executables (wrappers) supported by the workflow
+    # Each has an option (rarely used)  to specify a specific license directory -->
+    # co.gphl.wf.process.bin: {GPHL_WRAPPERS}/scripts/aP_wf_process
+    # co.gphl.wf.process.bdg_licence_dir/fill/me/in
+    # co.gphl.wf.diffractcal.bin: {GPHL_WRAPPERS}/scripts/aP_wf_rotcal
+    # co.gphl.wf.diffractcal.bdg_licence_dir/fill/me/in
+    # co.gphl.wf.simcal_predict.bin: {GPHL_WRAPPERS}/scripts/simcal_predict
+    # co.gphl.wf.simcal_predict.bdg_licence_dir/fill/me/in
+    # co.gphl.wf.transcal.bin: {GPHL_WRAPPERS}/scripts/transcal
+    # co.gphl.wf.transcal.bdg_licence_dir/fill/me/in
+    # co.gphl.wf.recen.bin: {GPHL_WRAPPERS}/scripts/recen
+    # co.gphl.wf.recen.bdg_licence_dir/fill/me/in
 
-  #Location of stratcal binary
-  co.gphl.wf.stratcal.bin: "{GPHL_RELEASE}/mxcube_setup/stratcal/scripts/run_stratcal_wrap.py"
-#  co.gphl.wf.stratcal.bin: "{GPHL_RELEASE}/gphl_release/exe/run_stratcal_wrap.py"
-
-  #Location of stratcal-specific license directory - OPTIONAL ->
-#        co.gphl.wf.stratcal.bdg_licence_dir: /public/xtal/Server-nightly-alpha-bdg-linux64
-
-  #Location of simcal binaries
-#        co.gphl.wf.simcal.bin: "{GPHL_SETUP}/scripts/simcal"
-  co.gphl.wf.simcal.bin: gphl/scripts/simcal
-  #Location of simcal-specific license directory - OPTIONAL ->
-#        co.gphl.wf.simcal_predict.bdg_licence_dir: /public/xtal/Server-nightly-alpha-bdg-linux64
-
-  #Location of transcal binary
-#        co.gphl.wf.transcal.bin: "{GPHL_SETUP}/scripts/transcal"
-
-  #Location of recen binary
-#        co.gphl.wf.recen.bin: "{GPHL_SETUP}/scripts/recen"
-
-  #Path of application that analyses diffractcal (aka rotational
-  #calibration) data. In practice, this will almost always be a wrapper
-  #script that sets up the environment properly.
-#        co.gphl.wf.diffractcal.bin: "{GPHL_SETUP}/scripts/aP_wf_rotcal"
-  co.gphl.wf.diffractcal.bin: gphl/scripts/aP_wf_rotcal
-
-  #processing for stratcal acquisitions. In practice, this will almost always
-  #be a wrapper script that sets up the environment properly.
-#       co.gphl.wf.process.bin: scripts/aP_wf_process
+    # OPTIONAL. simcal *binary* For Mock collection emulation only. Not used by ASTRA workflow
+    co.gphl.wf.simcal.bin: "{GPHL_INSTALLATION}/autoPROC/bin/linux64/simcal"
