@@ -49,9 +49,7 @@ class SampleChanger(ComponentBase):
         for s in samples_list:
             if not s.is_present():
                 continue
-            if s.is_loaded():
-                state = self.app.queue.SAMPLE_MOUNTED
-            elif s.has_been_loaded():
+            if s.has_been_loaded():
                 state = COLLECTED
             else:
                 state = UNCOLLECTED

@@ -34,12 +34,8 @@ export default class SampleControls extends React.Component {
   }
 
   setZoom(option) {
-    const newZoom = parseInt(option.target.value, 10);
-    this.props.setBeamlineAttribute('zoom', option.target.value);
-
-    if (this.props.attributes.zoom.value !== newZoom) {
-      this.props.sendSetAttribute('zoom', newZoom);
-    }
+    const newZoom = this.props.attributes.zoom.commands[option.target.value];
+    this.props.sendSetAttribute('zoom', newZoom);
   }
 
   toggleDrawGrid() {
@@ -260,12 +256,12 @@ export default class SampleControls extends React.Component {
                     min={attributes.zoom.limits[0]}
                     max={attributes.zoom.limits[1]}
                     step="1"
-                    value={attributes.zoom.value}
+                    value={attributes.zoom.commands.indexOf(attributes.zoom.value)}
                     disabled={attributes.zoom.state !== MOTOR_STATE.READY}
                     onMouseUp={this.setZoom}
-                    onChange={(e) =>
-                      this.props.setBeamlineAttribute('zoom', e.target.value)
-                    }
+                    onChange={(e) => {
+                      this.props.setBeamlineAttribute('zoom', attributes.zoom.commands[e.target.value])
+                    }}
                     list="volsettings"
                     name="zoomSlider"
                   />
@@ -343,7 +339,7 @@ export default class SampleControls extends React.Component {
                 <Button
                   type="button"
                   style={{ paddingLeft: '0px' }}
-                  className="fas fa-sort-desc sample-controll sample-controll-small"
+                  className="fas fa-caret-down sample-controll sample-controll-small"
                 />
               </OverlayTrigger>
               <span className="sample-controll-label">Backlight</span>
@@ -400,7 +396,7 @@ export default class SampleControls extends React.Component {
                 <Button
                   type="button"
                   style={{ paddingLeft: '0px', fontSize: '1.5em' }}
-                  className="fas fa-sort-desc sample-controll sample-controll-small"
+                  className="fas fa-caret-down sample-controll sample-controll-small"
                 />
               </OverlayTrigger>
               <span className="sample-controll-label">Frontlight</span>

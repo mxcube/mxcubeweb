@@ -581,38 +581,8 @@ def xrf_task_progress(taskId, progress):
         logging.getLogger("HWR").error("error sending message: " + str(msg))
 
 
-def send_shapes(update_positions=False, movable={}):
-
-    shape_dict = {}
-    for shape in HWR.beamline.sample_view.get_shapes():
-        if update_positions:
-            shape.update_position(HWR.beamline.diffractometer.motor_positions_to_screen)
-
-        s = to_camel(shape.as_dict())
-        shape_dict.update({shape.id: s})
-
-    server.emit("update_shapes", {"shapes": shape_dict}, namespace="/hwr")
-
-
 def motor_position_callback(movable):
     server.emit("motor_position", movable, namespace="/hwr")
-
-
-def motor_state_callback(movable, sender=None, **kw):
-    if movable["state"] == HardwareObjectState.READY.value:
-        # Re emit the position when the motor have finished to move
-        # so that we are always sure that we have sent the final position
-        motor_position_callback(movable)
-
-        # Re calculate positions for shapes after motor finished to move
-        send_shapes(update_positions=True, movable=movable)
-
-        # Update the pixels per mm if it was the zoom motor that moved
-        if movable["name"] == "zoom":
-            ppm = HWR.beamline.diffractometer.get_pixels_per_mm()
-            server.emit("update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr")
-
-    server.emit("motor_state", movable, namespace="/hwr")
 
 
 def beam_changed(*args, **kwargs):
