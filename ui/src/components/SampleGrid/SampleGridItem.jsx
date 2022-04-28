@@ -90,7 +90,7 @@ export class SampleGridItem extends React.Component {
           onMouseUp={this.pickButtonMouseUp}
           onMouseDown={this.pickButtonMouseDown}
         >
-          {icon}
+          <i>{icon}</i>j
         </Button>
       </OverlayTrigger>
     );

@@ -10,33 +10,34 @@ class UserList extends React.Component {
 
     for (const observer of this.props.remoteAccess.observers) {
       observers.push((
-        <div key={observer.username}>
-          <div className="col-xs-4">
+        <Row key={observer.username}>
+          <Col sm={4}>
             <span style={{ lineHeight: '24px' }}>{observer.nickname}</span>
-          </div>
-          <div className="col-xs-3">
+          </Col>
+          <Col sm={3}>
             <span style={{ lineHeight: '24px' }}>{observer.ip}</span>
-          </div>
+          </Col>
+          <Col sm={5} />
           { this.props.login.user.inControl ?
-            (<div className="col-xs-5">
-               <Button className="btn-sm" onClick={() => this.props.sendGiveControl(observer.username)}>
+            (<Col className='mt-3' sm={5}>
+               <Button size='sm' variant='outline-secondary' className='me-3' onClick={() => this.props.sendGiveControl(observer.username)}>
                  Give control
                </Button>
                { this.props.login.user.isstaff ?
                  (<span>
                    &nbsp;
-                   <Button className="btn-sm" onClick={() => this.props.sendLogoutUser(observer.username)}>
+                   <Button size='sm' variant='outline-secondary' onClick={() => this.props.sendLogoutUser(observer.username)}>
                      Logout
                    </Button>
                   </span>)
                  :
                  null
                }
-             </div>)
+             </Col>)
             :
-            (<div className="col-xs-4"><span>&nbsp;</span></div>)
+            (<Col sm={4}><span>&nbsp;</span></Col>)
           }
-        </div>
+        </Row>
       ));
     }
 
@@ -48,12 +49,12 @@ class UserList extends React.Component {
       <Card className="mb-3">
         <Card.Header>Users</Card.Header>
         <Card.Body>
-          <Row className="col-xs-12">
-            <Col className="col-xs-4"><b>Name</b></Col>
-            <Col className="col-xs-4"><b>Host</b></Col>
-            <Col className="col-xs-4"><span>&nbsp;</span></Col>
-            {this.getObservers()}
+          <Row >
+            <Col sm={4}><b>Name</b></Col>
+            <Col sm={4}><b>Host</b></Col>
+            <Col sm={4}><span>&nbsp;</span></Col>
           </Row>
+          {this.getObservers()}
         </Card.Body>
       </Card>
     );

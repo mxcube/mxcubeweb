@@ -20,7 +20,7 @@ class RequestControlForm extends React.Component {
 
   getTakeControlOption() {
     let content = (<span style={{ marginLeft: '1em' }}>
-                     <Button onClick={this.takeControlOnClick}>Take control</Button>
+                     <Button size='sm' variant='outline-secondary' onClick={this.takeControlOnClick}>Take control</Button>
                    </span>);
 
     if (!this.props.login.user.isstaff) {
@@ -90,7 +90,8 @@ class RequestControlForm extends React.Component {
               />
             </Form.Group>
             <Button
-              variant="primary"
+              variant="outline-secondary"
+              size ='sm'
               onClick={this.askForControl}
             >
               Ask for control

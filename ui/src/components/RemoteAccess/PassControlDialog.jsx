@@ -77,8 +77,8 @@ export class PassControlDialog extends React.Component {
             rows="3"
           />
           <br />
-          <Button onClick={this.accept}> Give control to "{observer.nickname}" </Button>
-          <Button onClick={this.reject}> Deny control </Button>
+          <Button size='sm' variant='outline-secondary' onClick={this.accept}> Give control to "{observer.nickname}" </Button>
+          <Button size='sm' variant='outline-secondary' onClick={this.reject}> Deny control </Button>
         </Modal.Footer>
       </Modal>);
   }

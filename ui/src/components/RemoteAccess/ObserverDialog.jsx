@@ -72,7 +72,7 @@ export class ObserverDialog extends React.Component {
             type="text"
             default={this.props.login.selectedProposal}
           />
-          <Button onClick={this.accept}> OK </Button>
+          <Button size='sm' variant='outline-secondary' onClick={this.accept}> OK </Button>
         </Modal.Footer>
       </Modal>);
   }
