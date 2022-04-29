@@ -1,5 +1,6 @@
 import React from 'react';
-import { Row, Col, Accordion, Alert, Button } from 'react-bootstrap';
+import { Row, Col, Accordion, Button } from 'react-bootstrap';
+import EquipmentState from './EquipmentState';
 import Form from '@rjsf/core';
 import './GenericEquipmentControl.css';
 
@@ -86,20 +87,6 @@ export default class GenericEquipmentControl extends React.Component {
     })
   }
 
-  titleBackgroundClass(){
-    let titleBackground = 'danger';
-
-    if (this.props.equipment.state=== 'READY') {
-        titleBackground = 'success';
-      } else if (this.props.equipment.state=== 'MOVING') {
-        titleBackground = 'warning';
-      } else if (this.props.equipment.state=== 'DISABLED') {
-        titleBackground = 'default';
-      }
-
-      return titleBackground;
-  }
-
   render() {
     return (
       <Row className='mb-2 generic-equipment-container'>
@@ -107,9 +94,10 @@ export default class GenericEquipmentControl extends React.Component {
             <Accordion defaultActiveKey="0">
               <Accordion.Item>
                 <Accordion.Header className='custom-accordion-header'>
-                  <Alert style={{ margin: '0px' }} variant={this.titleBackgroundClass()}>
-                  {this.props.equipment.name} ({this.props.equipment.state})
-                </Alert>
+                <EquipmentState
+                  state={this.props.equipment.state}
+                  equipmentName={this.props.equipment.name}
+                />
               </Accordion.Header>
               <Accordion.Body className="p-3 generic-equipment-container-panel-body">
                 {this.getCommands()}

@@ -21,7 +21,7 @@ export default class EquipmentState extends React.Component {
     }
 
     return (
-      <Alert style={{ marginTop: '0.5em' }} variant={titleBackground}>
+      <Alert style={{ margin: '0em' }} variant={titleBackground}>
         {this.props.equipmentName}
         {' '}
         {this.props.state}
