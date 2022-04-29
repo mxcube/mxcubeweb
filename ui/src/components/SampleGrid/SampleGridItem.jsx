@@ -71,7 +71,7 @@ export class SampleGridItem extends React.Component {
   }
 
   itemControls() {
-    let icon = <BsSquare />;
+    let icon = <BsSquare size='0.9em' />;
 
     if (this.props.picked) {
       icon = <BsCheck2Square />;
@@ -90,7 +90,7 @@ export class SampleGridItem extends React.Component {
           onMouseUp={this.pickButtonMouseUp}
           onMouseDown={this.pickButtonMouseDown}
         >
-          <i>{icon}</i>j
+          <i>{icon}</i>
         </Button>
       </OverlayTrigger>
     );

@@ -32,10 +32,10 @@ export default class ConfirmActionDialog extends React.Component {
         </Modal.Header>
         <Modal.Body>{this.props.message}</Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.onCancelClick}>
+          <Button variant='outline-secondary' onClick={this.onCancelClick}>
             {this.props.cancelButtonText}
           </Button>
-          <Button onClick={this.onOkClick}>{this.props.okButtonText}</Button>
+          <Button variant='outline-secondary' onClick={this.onOkClick}>{this.props.okButtonText}</Button>
         </Modal.Footer>
       </Modal>
     );
