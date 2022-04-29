@@ -24,7 +24,6 @@ class NumSnapshotsDropDown extends React.Component {
                   Crystal snapshots ({this.props.queue.numSnapshots})
                 </span>)}
         id="numSnapshotsDropDown"
-        // menuVariant="dark"
       >
         <Dropdown.Item key="0" onClick={ () => (this.setNumSnapshots(0)) }>0</Dropdown.Item>
         <Dropdown.Item key="1" onClick={ () => (this.setNumSnapshots(1)) }>1</Dropdown.Item>

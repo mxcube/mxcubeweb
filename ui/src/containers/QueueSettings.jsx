@@ -71,7 +71,6 @@ class QueueSettings extends React.Component {
               <span><i className="fas fa-1x fa-cog" /> Settings</span>
             </Dropdown.Toggle>
             <Dropdown.Menu
-              // variant="dark"
             >
               <Dropdown.Item>
                 <Form.Check

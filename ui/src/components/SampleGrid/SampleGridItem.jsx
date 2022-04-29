@@ -279,22 +279,6 @@ export class SampleGridItem extends React.Component {
   }
 
 
-  popoverPosition() {
-    const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    let result = 'bottom';
-
-    if (this.sampleItem) {
-      if (parseInt(this.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
-        result = 'bottom';
-      } else {
-        result = 'top';
-      }
-    }
-
-    return result;
-  }
-
-
   sampleItemOnClick(e) {
     if (this.props.onClick) {
       this.props.onClick(e, this.props.sampleData.sampleID);
@@ -334,7 +318,6 @@ export class SampleGridItem extends React.Component {
         <div style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
         <OverlayTrigger
           ref={(ref) => { this.sampleInfoPopoverTrigger = ref; }}
-          // placement={this.popoverPosition()}
           placement='auto'
           overlay={(
             <Popover id={this.sampleDisplayName()}>

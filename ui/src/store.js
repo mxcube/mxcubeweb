@@ -64,7 +64,6 @@ function initStore() {
   const composedEnhancers = compose(applyMiddleware(...middleware), ...enhancers);
 
   const store = createStore(persistedReducer, composedEnhancers);
-  // const store = createStore(rootReducer, composedEnhancers);
 
   initMessageListener(store);
 

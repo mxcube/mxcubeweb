@@ -140,7 +140,6 @@ export default class PopInput extends React.Component {
 
   inputComponent() {
     const props = { value: this.props.data.value,
-      // ref: 'input',
       onSubmit: this.submit,
       onCancel: this.cancel,
       onSave: this.save,

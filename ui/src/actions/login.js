@@ -1,5 +1,4 @@
 import fetch from 'isomorphic-fetch';
-// import { browserHistory } from 'react-router';
 import { createBrowserHistory } from 'history';
 import { showErrorPanel, setLoading, getInitialState } from './general';
 import { serverIO } from '../serverIO';
@@ -120,7 +119,6 @@ export function signIn(proposal, password, navigate) {
             dispatch(showProposalsForm());
           } else {
             dispatch(selectProposal(proposal));
-            // browserHistory.push('/');
             navigate("/");
           }
         });
@@ -143,7 +141,6 @@ export function doSignOut(navigate) {
     }).then(() => {
       dispatch(signOut());
       navigate('/login');
-      // browserHistory.push('/login');
       serverIO.disconnect();
     });
   };
