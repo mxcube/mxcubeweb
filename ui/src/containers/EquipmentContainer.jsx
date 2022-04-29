@@ -24,7 +24,7 @@ class EquipmentContainer extends React.Component {
         <Row className="d-flex">
           <Col sm={12} style={{ marginTop: '-20px' }}>
               <Row className="d-flex">
-              <Col sm={12} style={{ marginTop: '1em' }}>
+              <Col sm={12} className='mt-1 mb-3'>
                 <EquipmentState
                   state={this.props.sampleChangerState}
                   equipmentName='Samplechanger'
