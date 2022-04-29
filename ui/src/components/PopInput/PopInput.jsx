@@ -104,7 +104,7 @@ export default class PopInput extends React.Component {
   handleIdle(data) {
     // No message to display to user, hide overlay
     if (data.msg === '') {
-      tthis.showOvelay(false)
+      this.showOvelay(false)
     }
   }
 
