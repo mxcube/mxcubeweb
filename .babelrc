@@ -1,0 +1,7 @@
+{
+  "presets": [["env", { "targets": [ { "browsers": ">= 5%" } ], "modules": false }], "react", "stage-0"],
+  "plugins": [
+    "transform-decorators-legacy",
+    "transform-class-properties"
+  ]
+}
