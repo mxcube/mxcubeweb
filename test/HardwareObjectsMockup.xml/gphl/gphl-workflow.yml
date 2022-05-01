@@ -85,6 +85,7 @@ settings:
       - exposure_time: 0.02
         image_width: 0.1
         resolution: 1.7
+#        image_count: 90
         # strategy_options: # Not currently used
         # For acquisition or diffractcal
       - exposure_time: 0.02
