@@ -6,6 +6,7 @@ import {
   Form,
   Button
 } from 'react-bootstrap';
+import { TiWarning, TiTimes } from "react-icons/ti";
 
 import './style.css';
 
@@ -23,19 +24,11 @@ function errorIndicator(error, warning) {
   let icon = null;
   if (error) {
     icon = (
-      <span
-        className="glyphicon glyphicon-remove"
-        title={error}
-        style={{ color: 'red' }}
-      />
+      <i title={error}><TiTimes size='1.3em' color='red'/></i>
     );
   } else if (warning) {
     icon = (
-      <span
-        className="glyphicon glyphicon-exclamation-sign"
-        title={warning}
-        style={{ color: 'orange' }}
-      />
+      <i title={warning}><TiWarning size='1.3em' color='orange'/></i>
     );
   }
   return icon;
