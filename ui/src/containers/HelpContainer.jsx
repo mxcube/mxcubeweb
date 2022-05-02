@@ -89,8 +89,7 @@ export class HelpContainer extends React.Component {
                         <Form.Control
                           required
                           as="textarea"
-                          rows={3} 
-                          rows="7"
+                          rows={7} 
                           id="Content"
                           placeholder="Let us know whats on your mind !"
                           ref={(ref) => { this.content = ref; }}
