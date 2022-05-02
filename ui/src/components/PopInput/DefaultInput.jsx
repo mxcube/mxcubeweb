@@ -2,7 +2,7 @@
 import React from 'react';
 import { Form, InputGroup, Button, ButtonToolbar } from 'react-bootstrap';
 import NumericInput from 'react-numeric-input';
-import {FaCheck, FaTimes} from 'react-icons/fa';
+import { TiTick, TiTimes } from "react-icons/ti";
 
 export default class DefaultInput extends React.Component {
   constructor(props) {
@@ -44,12 +44,12 @@ export default class DefaultInput extends React.Component {
             
           />
           <ButtonToolbar style={{ marginLeft: '0px' }} className="ms-1 form-group editable-buttons">
-            <Button variant="success" className="btn-sm " onClick={this.save}>
-              <FaCheck />
+            <Button variant="success" size='sm' onClick={this.save}>
+              <TiTick size='1.5em' />
             </Button>
             { !this.props.inplace ? (
-              <Button variant="outline-secondary" className="btn-sm ms-1" onClick={this.cancel}>
-                <FaTimes />
+              <Button variant="outline-secondary" size='sm' className="ms-1" onClick={this.cancel}>
+                <TiTimes size='1.5em' />
               </Button>
               ) : (null)
             }
