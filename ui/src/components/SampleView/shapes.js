@@ -14,7 +14,7 @@ export function makeRectangle(posX, posY, sizeX, sizeY, color) {
     stroke: color,
     strokeWidth: 3,
     selectable: false,
-    hoverCursor: 'crosshair',
+    hoverCursor: 'crosshair'
   });
 }
 
@@ -31,21 +31,11 @@ export function makeElipse(posX, posY, sizeX, sizeY, color) {
     strokeWidth: 1,
     strokeDashArray: [2, 2],
     selectable: false,
-    hoverCursor: 'crosshair',
+    hoverCursor: 'crosshair'
   });
 }
 
-export function makeCircle(
-  x,
-  y,
-  selectable,
-  radius,
-  color,
-  id,
-  type,
-  text,
-  strokeWidth
-) {
+export function makeCircle(x, y, selectable, radius, color, id, type, text, strokeWidth) {
   return new fabric.Circle({
     radius,
     strokeWidth,
@@ -68,23 +58,11 @@ export function makeCircle(
     hasControls: false,
     hasBorders: false,
     id,
-    text,
+    text
   });
 }
 
-export function makeLine(
-  x1,
-  y1,
-  x2,
-  y2,
-  col,
-  wid,
-  select,
-  id,
-  hover = 'crosshair',
-  text,
-  type
-) {
+export function makeLine(x1, y1, x2, y2, col, wid, select, id, hover = 'crosshair', text, type) {
   return new fabric.Line([x1, y1, x2, y2], {
     fill: col,
     stroke: col,
@@ -104,16 +82,15 @@ export function makeLine(
     hasControls: false,
     hasBorders: false,
     id,
-    text,
+    text
   });
 }
 
 export function makeArrow(line, col, select, id, hover = 'crosshair') {
   const dist = Math.sqrt((line.x1 - line.x2) ** 2 + (line.y1 - line.y2) ** 2);
-  const angledeg =
-    (Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180) / Math.PI;
-  const deltaX = dist * 0.99 * Math.cos((angledeg * Math.PI) / 180);
-  const deltaY = dist * 0.99 * Math.sin((angledeg * Math.PI) / 180);
+  const angledeg = Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180 / Math.PI;
+  const deltaX = dist * 0.99 * Math.cos(angledeg * Math.PI / 180);
+  const deltaY = dist * 0.99 * Math.sin(angledeg * Math.PI / 180);
   return new fabric.Triangle({
     left: line.get('x1') - deltaX,
     top: line.get('y1') - deltaY,
@@ -131,13 +108,12 @@ export function makeArrow(line, col, select, id, hover = 'crosshair') {
     angle: angledeg - 90,
     width: 7,
     height: 10,
-    hoverCursor: hover,
+    hoverCursor: hover
   });
 }
 
 export function makeAnchor(line, col, select, id, hover = 'crosshair') {
-  const angledeg =
-    (Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180) / Math.PI;
+  const angledeg = Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180 / Math.PI;
   return new fabric.Rect({
     left: line.get('x1'),
     top: line.get('y1'),
@@ -155,9 +131,10 @@ export function makeAnchor(line, col, select, id, hover = 'crosshair') {
     angle: angledeg - 90,
     width: 7,
     height: 2,
-    hoverCursor: hover,
+    hoverCursor: hover
   });
 }
+
 
 export function makeText(x, y, fontSize, color, text) {
   return new fabric.Text(text, {
@@ -169,54 +146,22 @@ export function makeText(x, y, fontSize, color, text) {
     selectable: false,
     hoverCursor: 'crosshair',
     hasBorders: false,
-    fontFamily: 'Arial',
+    fontFamily: 'Arial'
   });
 }
 
 export function makeScale(height, scaleLengthX, scaleLengthY, color, text) {
   return [
-    makeLine(
-      10,
-      height - 10,
-      scaleLengthX + 10,
-      height - 10,
-      'green',
-      4,
-      false
-    ),
-    makeLine(
-      10,
-      height - 10,
-      10,
-      height - 10 - scaleLengthY,
-      'green',
-      4,
-      false
-    ),
-    makeText(20, height - 30, 16, color, text),
+    makeLine(10, height - 10, scaleLengthX + 10, height - 10, 'green', 4, false),
+    makeLine(10, height - 10, 10, height - 10 - scaleLengthY, 'green', 4, false),
+    makeText(20, height - 30, 16, color, text)
   ];
 }
 
 export function makeCross(x, y, imageRatio, width, height) {
   return [
-    makeLine(
-      x * imageRatio,
-      0,
-      x * imageRatio,
-      height,
-      'rgba(255,255,0,0.5)',
-      2,
-      false
-    ),
-    makeLine(
-      0,
-      y * imageRatio,
-      width,
-      y * imageRatio,
-      'rgba(255,255,0,0.5)',
-      2,
-      false
-    ),
+    makeLine(x * imageRatio, 0, x * imageRatio, height, 'rgba(255,255,0,0.5)', 2, false),
+    makeLine(0, y * imageRatio, width, y * imageRatio, 'rgba(255,255,0,0.5)', 2, false)
   ];
 }
 
@@ -244,47 +189,16 @@ export function makeCentringHorizontalLine(x, y, imageRatio, width) {
   );
 }
 
+
 export function makeBeam(posX, posY, sizeX, sizeY, shape) {
   return [
-    makeLine(
-      posX - sizeX / 4 - 20,
-      posY,
-      posX - sizeX / 4,
-      posY,
-      'rgba(0,255,0,1)',
-      1,
-      false
-    ),
-    makeLine(
-      posX,
-      posY - sizeY / 4 - 20,
-      posX,
-      posY - sizeY / 4,
-      'rgba(0,255,0,1)',
-      1,
-      false
-    ),
-    makeLine(
-      posX + sizeX / 4 + 20,
-      posY,
-      posX + sizeX / 4,
-      posY,
-      'rgba(0,255,0,1)',
-      1,
-      false
-    ),
-    makeLine(
-      posX,
-      posY + sizeY / 4 + 20,
-      posX,
-      posY + sizeY / 4,
-      'rgba(0,255,0,1)',
-      1,
-      false
-    ),
-    shape === 'ellipse'
+    makeLine(posX - sizeX / 4 - 20, posY, posX - sizeX / 4, posY, 'rgba(0,255,0,1)', 1, false),
+    makeLine(posX, posY - sizeY / 4 - 20, posX, posY - sizeY / 4, 'rgba(0,255,0,1)', 1, false),
+    makeLine(posX + sizeX / 4 + 20, posY, posX + sizeX / 4, posY, 'rgba(0,255,0,1)', 1, false),
+    makeLine(posX, posY + sizeY / 4 + 20, posX, posY + sizeY / 4, 'rgba(0,255,0,1)', 1, false),
+    (shape === 'ellipse'
       ? makeElipse(posX, posY, sizeX, sizeY, 'rgba(0,255,0,1)', 0.5)
-      : makeRectangle(posX, posY, sizeX, sizeY, 'rgba(0,255,0,1)'),
+      : makeRectangle(posX, posY, sizeX, sizeY, 'rgba(0,255,0,1)'))
   ];
 }
 
@@ -294,7 +208,7 @@ export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
   const length = parseInt(Math.sqrt(a * a + b * b) * 1000, 10);
   return [
     makeLine(p1.x * iR, p1.y * iR, p2.x * iR, p2.y * iR, color, width, false),
-    makeText(p2.x * iR, p2.y * iR, 12, color, `${length} µm`),
+    makeText(p2.x * iR, p2.y * iR, 12, color, `${length} µm`)
   ];
 }
 
@@ -345,6 +259,7 @@ export function makePoints(points, imageRatio) {
   return fabricPoints;
 }
 
+
 export function makeTwoDPoints(points, imageRatio) {
   const fabricPoints = [];
   for (const id in points) {
@@ -386,35 +301,17 @@ export function makeTwoDPoints(points, imageRatio) {
   return fabricPoints;
 }
 
-export function pointLine(
-  x1,
-  y1,
-  x2,
-  y2,
-  color,
-  width,
-  selectable,
-  id,
-  name,
-  cursor
-) {
+export function pointLine(x1, y1, x2, y2, color, width, selectable, id, name, cursor) {
   const text = makeText((x1 + x2) / 2, (y1 + y2) / 2, 14, color, name);
-  const line = makeLine(
-    x1,
-    y1,
-    x2,
-    y2,
-    color,
-    width,
-    selectable,
-    id,
-    cursor,
-    text,
-    'LINE'
-  );
+  const line = makeLine(x1, y1, x2, y2, color, width, selectable, id, cursor, text, 'LINE');
   const arrow = makeArrow(line, color, selectable, id);
   const anchor = makeAnchor(line, color, selectable, id);
-  return [text, line, arrow, anchor];
+  return [
+    text,
+    line,
+    arrow,
+    anchor
+  ];
 }
 
 export function makeLines(lines, imageRatio) {
@@ -423,20 +320,18 @@ export function makeLines(lines, imageRatio) {
     const line = lines[id];
     const [x1, y1, x2, y2] = line.screenCoord;
 
-    fabricLines.push(
-      ...pointLine(
-        x1 * imageRatio,
-        y1 * imageRatio,
-        x2 * imageRatio,
-        y2 * imageRatio,
-        line.selected ? '#88ff5b' : '#e4ff09',
-        line.selected ? 3 : 2,
-        true,
-        id,
-        line.name,
-        'pointer'
-      )
-    );
+    fabricLines.push(...pointLine(
+      x1 * imageRatio,
+      y1 * imageRatio,
+      x2 * imageRatio,
+      y2 * imageRatio,
+      line.selected ? '#88ff5b' : '#e4ff09',
+      line.selected ? 3 : 2,
+      true,
+      id,
+      line.name,
+      'pointer'
+    ));
   });
   return fabricLines;
 }
@@ -455,9 +350,7 @@ export function makeImageOverlay(iR, ppMm, bP, bSh, bSi, cCP, dP, canvas) {
       bSh
     )
   );
-  imageOverlay.push(
-    ...makeScale(canvas.height, scaleLengthX, scaleLengthY, 'green', '50 µm')
-  );
+  imageOverlay.push(...makeScale(canvas.height, scaleLengthX, scaleLengthY, 'green', '50 µm'));
   if (cCP.length) {
     const point = cCP[cCP.length - 1];
     imageOverlay.push(...makeCross(point, iR, canvas.width, canvas.height));

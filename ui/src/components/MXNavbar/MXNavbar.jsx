@@ -1,11 +1,12 @@
 import React from 'react';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Container, Navbar, Nav, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
-
 import withRouter from '../WithRouter';
 import './MXNavbar.css';
 
+
 class MXNavbar extends React.Component {
+
   constructor(props) {
     super(props);
     this.findProposal = this.findProposal.bind(this);
@@ -13,10 +14,7 @@ class MXNavbar extends React.Component {
   }
 
   findProposal(prop) {
-    return (
-      `${prop.Proposal.code}${prop.Proposal.number}` ===
-      this.props.selectedProposal
-    );
+    return `${prop.Proposal.code}${prop.Proposal.number}` === this.props.selectedProposal;
   }
 
   signOut(){
@@ -25,59 +23,60 @@ class MXNavbar extends React.Component {
   }
 
   render() {
-    const raStyle = this.props.user.inControl ? { color: 'white' } : {};
+    const raStyle = (this.props.user.inControl ? { color: 'white' } : {});
     const numObservers = this.props.remoteAccess.observers.length;
 
     document.title = `MxCuBE-3 Proposal: ${this.props.selectedProposal}`;
 
     return (
-      <Navbar inverse fixedTop fluid>
-        <Navbar.Header>
+      <Navbar className='pt-1 pb-1' bg="dark" variant="dark" fixed="top" collapseOnSelect expand="lg">
+        <Container fluid>
           <LinkContainer to="/remoteaccess">
             <Navbar.Brand>
-              MXCuBE-WEB{' '}
-              <span className="brand-subtitle">(v{this.props.version}-{this.props.mode})</span>
+              MXCuBE3 <span className="brand-subtitle">{`(${this.props.selectedProposal} collecting)`}</span>
             </Navbar.Brand>
           </LinkContainer>
-        </Navbar.Header>
-        <Nav style={{ marginLeft: '20em' }}>
-          <LinkContainer to="/samplegrid">
-            <NavItem eventKey={1}>Samples</NavItem>
-          </LinkContainer>
-          <LinkContainer to="/datacollection">
-            <NavItem eventKey={2}>Data collection</NavItem>
-          </LinkContainer>
-          <LinkContainer to="/samplechanger">
-            <NavItem eventKey={3}>Equipment</NavItem>
-          </LinkContainer>
-          <LinkContainer to="/logging">
-            <NavItem eventKey={4}>System log</NavItem>
-          </LinkContainer>
-        </Nav>
-        <Nav pullRight>
-          <LinkContainer to="/help">
-            <NavItem eventKey={5}>
-              <span className="fas fa-lg fa-question-circle" /> Help
-            </NavItem>
-          </LinkContainer>
-          <LinkContainer to="/remoteaccess">
-            <NavItem eventKey={6}>
-              <span style={raStyle} className="fas fa-lg fa-globe">
-                {numObservers > 0 ? (
-                  <span className="badge-num">{numObservers}</span>
-                ) : null}
-              </span>{' '}
-              Remote
-            </NavItem>
-          </LinkContainer>
-          <NavItem eventKey={7} onClick={this.props.signOut}>
-            <span className="fas fa-lg fa-sign-out" /> Sign out ({this.props.selectedProposal})
-          </NavItem>
-        </Nav>
+          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
+          <Navbar.Collapse id="responsive-navbar-nav">
+            <Nav className="me-auto" style={{ marginLeft: '20em' }}>
+              <LinkContainer className="me-4" to="/samplegrid"><Nav.Item className="nav-link">
+                Samples</Nav.Item>
+              </LinkContainer>
+              <LinkContainer className="me-4"to="/datacollection">
+                <Nav.Item className="nav-link">Data collection</Nav.Item>
+              </LinkContainer>
+              <LinkContainer className="me-4" to="/equipment">
+                <Nav.Item className="nav-link">Equipment</Nav.Item>
+              </LinkContainer>
+              <LinkContainer to="/logging">
+                <Nav.Item className="nav-link">System log</Nav.Item>
+              </LinkContainer>
+            </Nav>
+            <Nav>
+              <LinkContainer className="me-2" to="/help">
+                <Nav.Item className="nav-link">
+                  <span className="me-1 fas fa-lg fa-question-circle" />
+                  Help
+                </Nav.Item>
+              </LinkContainer>
+              <LinkContainer className="me-2" to="/remoteaccess">
+                <Nav.Item className="nav-link">
+                  <span style={ raStyle } className="me-1 fas fa-lg fa-globe">
+                    {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
+                  </span>
+                  Remote
+                </Nav.Item>
+              </LinkContainer>
+              <Button as={Nav.Link} className="nav-link" variant="Light" onClick={this.signOut}>
+                <span className="me-1 fas fa-lg fa-sign-out-alt" />
+                Sign out
+              </Button>
+            </Nav>
+          </Navbar.Collapse>
+        </Container>
       </Navbar>
     );
   }
 }
-
 MXNavbar = withRouter(MXNavbar);
 export default MXNavbar;

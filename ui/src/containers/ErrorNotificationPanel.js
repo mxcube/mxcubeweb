@@ -13,7 +13,7 @@ export class ErrorNotificationPanel extends React.Component {
         onHide={this.props.hideErrorPanel}
       >
         <div style={{ marginBottom: '-20px' }}>
-          <Alert bsStyle="danger">
+          <Alert variant="danger" onClose={this.props.hideErrorPanel} dismissible>
             <strong>Error:&nbsp;</strong>
             {this.props.message}
           </Alert>

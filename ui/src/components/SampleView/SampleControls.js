@@ -1,10 +1,7 @@
 import './SampleView.css';
 import React from 'react';
 import {
-  OverlayTrigger,
-  Button,
-  DropdownButton,
-  MenuItem,
+  OverlayTrigger, Button, Dropdown,
 } from 'react-bootstrap';
 import 'fabric';
 
@@ -100,6 +97,7 @@ export default class SampleControls extends React.Component {
     this.props.sendSetAttribute(`${name}_switch`, newState);
   }
 
+
   availableVideoSizes() {
     const items = this.props.videoSizes.map((size) => {
       const sizeGClass =
@@ -108,24 +106,22 @@ export default class SampleControls extends React.Component {
           : 'fa-circle-o';
 
       return (
-        <MenuItem
+        <Dropdown.Item
           key={`${size[0]} x ${size[1]}`}
           eventKey="1"
-          onClick={() =>
-            this.props.sampleActions.setVideoSize(size[0], size[1])
-          }
+          onClick={() => this.props.sampleActions.setVideoSize(size[0], size[1])}
         >
-          <span className={`fa ${sizeGClass}`} /> {`${size[0]} x ${size[1]}`}
-        </MenuItem>
+          <span className={`fa ${sizeGClass}`} />
+          {' '}
+          {`${size[0]} x ${size[1]}`}
+        </Dropdown.Item>
       );
     });
 
-    const autoScaleGClass = this.props.autoScale
-      ? ' fa-check-square-o'
-      : 'fa-square-o';
+    const autoScaleGClass = this.props.autoScale ? ' fa-check-square-o' : 'fa-square-o';
 
-    items.push(
-      <MenuItem
+    items.push((
+      <Dropdown.Item
         eventKey="3"
         key="auto scale"
         onClick={() => {
@@ -133,25 +129,24 @@ export default class SampleControls extends React.Component {
           this.props.sampleActions.toggleAutoScale(clientWidth);
         }}
       >
-        <span className={`fa ${autoScaleGClass}`} /> Auto Scale
-      </MenuItem>
-    );
+        <span className={`fa ${autoScaleGClass}`} />
+        {' '}
+        Auto Scale
+      </Dropdown.Item>));
 
-    items.push(
-      <MenuItem
+    items.push((
+      <Dropdown.Item
         eventKey="3"
         key="reset"
         onClick={() => {
           window.initJSMpeg();
-          this.props.sampleActions.setVideoSize(
-            this.props.width,
-            this.props.height
-          );
+          this.props.sampleActions.setVideoSize(this.props.width, this.props.height);
         }}
       >
-        <span className="fas fa-redo" /> Reset
-      </MenuItem>
-    );
+        <span className="fas fa-redo" />
+        {' '}
+        Reset
+      </Dropdown.Item>));
 
     return items;
   }
@@ -159,9 +154,9 @@ export default class SampleControls extends React.Component {
   render() {
     const { attributes } = this.props;
 
-    const foucs_motor_uiprop = find(this.props.uiproperties.components, {
-      role: 'focus',
-    });
+    const foucs_motor_uiprop = find(
+      this.props.uiproperties.components, { role: 'focus' }
+    );
 
     const focus_motor = this.props.attributes[foucs_motor_uiprop.attribute];
 
@@ -170,82 +165,78 @@ export default class SampleControls extends React.Component {
         <div className="sample-controlls text-center">
           <ul className="bs-glyphicons-list">
             <li>
-              <a
-                style={{ marginTop: '0.3em' }}
-                href="#"
+              <Button
                 id="downloadLink"
                 data-toggle="tooltip"
                 title="Take snapshot"
-                className="fas fa-camera sample-controll"
+                className="fas fa-camera sample-control"
                 onClick={this.takeSnapShot}
                 download
               />
-              <span className="sample-controll-label">Snapshot</span>
+              <span className="sample-control-label">Snapshot</span>
             </li>
             <li>
               <Button
                 type="button"
                 data-toggle="tooltip"
                 title="Draw grid"
-                className="fas fa-th sample-controll"
+                className="fas fa-th sample-control"
                 onClick={this.toggleDrawGrid}
                 active={this.props.drawGrid}
               />
-              <span className="sample-controll-label">Draw grid</span>
+              <span className="sample-control-label">Draw grid</span>
             </li>
             <li>
               <Button
                 type="button"
                 data-toggle="tooltip"
                 title="Start 3-click Centring"
-                className="fas fa-circle-notch sample-controll"
+                className="fas fa-circle-notch sample-control"
                 onClick={this.toggleCentring}
                 active={this.props.clickCentring}
               />
-              <span className="sample-controll-label">3-click Centring</span>
+              <span className="sample-control-label">3-click Centring</span>
             </li>
-            {process.env.focusControlOnCanvas ? (
-              <li>
-                <OverlayTrigger
-                  trigger="click"
-                  rootClose
-                  placement="bottom"
-                  overlay={
-                    <span
-                      className="slider-overlay"
-                      style={{ marginTop: '20px' }}
-                    >
-                      <OneAxisTranslationControl
-                        save={this.props.sendSetAttribute}
-                        value={focus_motor.value}
-                        min={focus_motor.limits[0]}
-                        max={focus_motor.limits[1]}
-                        step={this.props.steps.focusStep}
-                        motorName={foucs_motor_uiprop.attribute}
-                        suffix={foucs_motor_uiprop.suffix}
-                        decimalPoints={foucs_motor_uiprop.precision}
-                        state={focus_motor.state}
-                        disabled={this.props.motorsDisabled}
-                      />
-                    </span>
-                  }
-                >
-                  <Button
-                    name="focus"
-                    type="button"
-                    data-toggle="tooltip"
-                    title="Focus"
-                    className="fas fa-adjust sample-controll"
-                  />
-                </OverlayTrigger>
-                <span className="sample-controll-label">Focus</span>
-              </li>
-            ) : null}
+            {process.env.focusControlOnCanvas
+              ? (
+                <li>
+                  <OverlayTrigger
+                    trigger="click"
+                    rootClose
+                    placement="bottom"
+                    overlay={(
+                      <span className="slider-overlay" style={{ marginTop: '20px' }}>
+                        <OneAxisTranslationControl
+                          save={this.props.sendSetAttribute}
+                          value={focus_motor.value}
+                          min={focus_motor.limits[0]}
+                          max={focus_motor.limits[1]}
+                          step={this.props.steps.focusStep}
+                          motorName={foucs_motor_uiprop.attribute}
+                          suffix={foucs_motor_uiprop.suffix}
+                          decimalPoints={foucs_motor_uiprop.precision}
+                          state={focus_motor.state}
+                          disabled={this.props.motorsDisabled}
+                        />
+                      </span>
+                    )}
+                  >
+                    <Button
+                      name="focus"
+                      type="button"
+                      data-toggle="tooltip"
+                      title="Focus"
+                      className="fas fa-adjust sample-control"
+                    />
+                  </OverlayTrigger>
+                  <span className="sample-control-label">Focus</span>
+                </li>
+              ) : null}
             <OverlayTrigger
               trigger="click"
               rootClose
               placement="bottom"
-              overlay={
+              overlay={(
                 <span className="slider-overlay">
                   {attributes.zoom.limits[0]}
                   <input
@@ -267,14 +258,14 @@ export default class SampleControls extends React.Component {
                   />
                   {attributes.zoom.limits[1]}
                 </span>
-              }
+          )}
             >
               <li>
                 <Button
                   type="button"
                   data-toggle="tooltip"
                   title="Zoom in/out"
-                  className="fas fa-search sample-controll"
+                  className="fas fa-search sample-control"
                   name="zoomOut"
                 />
                 <datalist id="volsettings">
@@ -286,7 +277,7 @@ export default class SampleControls extends React.Component {
                     <option>{attributes.zoom.limits[0] + i}</option>
                   ))}
                 </datalist>
-                <span className="sample-controll-label">Zoom</span>
+                <span className="sample-control-label">Zoom</span>
               </li>
             </OverlayTrigger>
             <li>
@@ -295,7 +286,7 @@ export default class SampleControls extends React.Component {
                 type="button"
                 data-toggle="tooltip"
                 title="Backlight On/Off"
-                className="fas fa-lightbulb sample-controll"
+                className="fas fa-lightbulb sample-control"
                 onClick={this.toggleBackLight}
                 active={
                   attributes.backlight_switch.value ===
@@ -306,11 +297,8 @@ export default class SampleControls extends React.Component {
                 trigger="click"
                 rootClose
                 placement="bottom"
-                overlay={
-                  <span
-                    className="slider-overlay"
-                    style={{ marginTop: '20px' }}
-                  >
+                overlay={(
+                  <span className="slider-overlay" style={{ marginTop: '20px' }}>
                     <input
                       style={{ top: '20px' }}
                       className="bar"
@@ -319,30 +307,20 @@ export default class SampleControls extends React.Component {
                       min={attributes.backlight.limits[0]}
                       max={attributes.backlight.limits[1]}
                       value={attributes.backlight.value}
-                      disabled={
-                        attributes.backlight.state !== MOTOR_STATE.READY
-                      }
-                      onMouseUp={(e) =>
-                        this.props.sendSetAttribute('backlight', e.target.value)
-                      }
-                      onChange={(e) =>
-                        this.props.setBeamlineAttribute(
-                          'backlight',
-                          e.target.value
-                        )
-                      }
+                      disabled={attributes.backlight.state !== MOTOR_STATE.READY}
+                      onMouseUp={e => this.props.sendSetAttribute('backlight', e.target.value)}
+                      onChange={e => this.props.setBeamlineAttribute('backlight', e.target.value)}
                       name="backlightSlider"
                     />
                   </span>
-                }
+            )}
               >
                 <Button
                   type="button"
-                  style={{ paddingLeft: '0px' }}
-                  className="fas fa-caret-down sample-controll sample-controll-small"
+                  className="ps-2 fas fa-sort-down sample-control sample-control-small"
                 />
               </OverlayTrigger>
-              <span className="sample-controll-label">Backlight</span>
+              <span className="sample-control-label">Backlight</span>
             </li>
             <li>
               <Button
@@ -350,22 +328,18 @@ export default class SampleControls extends React.Component {
                 type="button"
                 data-toggle="tooltip"
                 title="Front On/Off"
-                className="fas fa-lightbulb sample-controll"
+                className="fas fa-lightbulb sample-control"
                 onClick={this.toggleFrontLight}
                 active={
-                  attributes.frontlight_switch.value ===
-                  attributes.backlight_switch.commands[0]
+                  attributes.frontlight_switch.value === attributes.backlight_switch.commands[0]
                 }
               />
               <OverlayTrigger
                 trigger="click"
                 rootClose
                 placement="bottom"
-                overlay={
-                  <span
-                    className="slider-overlay"
-                    style={{ marginTop: '20px' }}
-                  >
+                overlay={(
+                  <span className="slider-overlay" style={{ marginTop: '20px' }}>
                     <input
                       className="bar"
                       type="range"
@@ -373,45 +347,36 @@ export default class SampleControls extends React.Component {
                       min={attributes.frontlight.limits[0]}
                       max={attributes.frontlight.limits[1]}
                       value={attributes.frontlight.value}
-                      disabled={
-                        attributes.frontlight.state !== MOTOR_STATE.READY
-                      }
-                      onMouseUp={(e) =>
-                        this.props.sendSetAttribute(
-                          'frontlight',
-                          e.target.value
-                        )
-                      }
-                      onChange={(e) =>
-                        this.props.setBeamlineAttribute(
-                          'frontlight',
-                          e.target.value
-                        )
-                      }
+                      disabled={attributes.frontlight.state !== MOTOR_STATE.READY}
+                      onMouseUp={e => this.props.sendSetAttribute('frontlight', e.target.value)}
+                      onChange={e => this.props.setBeamlineAttribute('frontlight', e.target.value)}
                       name="frontLightSlider"
                     />
                   </span>
-                }
+)}
               >
                 <Button
                   type="button"
-                  style={{ paddingLeft: '0px', fontSize: '1.5em' }}
-                  className="fas fa-caret-down sample-controll sample-controll-small"
+                  className="ps-2 fas fa-sort-down sample-control sample-control-small"
                 />
               </OverlayTrigger>
-              <span className="sample-controll-label">Frontlight</span>
+              <span className="sample-control-label">Frontlight</span>
             </li>
             <li>
-              <DropdownButton
-                style={{ lineHeight: '1.3', padding: '0px' }}
-                className="sample-controll"
-                bsStyle="default"
-                title={<i className="fas fa-1x fa-video" />}
-                id="video-size-dropdown"
-              >
-                {this.availableVideoSizes()}
-              </DropdownButton>
-              <span className="sample-controll-label">Video size</span>
+              <Dropdown>
+                <Dropdown.Toggle
+                  className="sample-control"
+                  variant="content"
+                  id="video-size-dropdown"
+                  style={{ lineHeight: '0' }}
+                  >
+                  <i className="fas fa-1x fa-video" />
+                </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {this.availableVideoSizes()}
+                </Dropdown.Menu>
+              </Dropdown>
+              <span className="sample-control-label">Video size</span>
             </li>
           </ul>
         </div>

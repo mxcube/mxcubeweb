@@ -5,32 +5,36 @@ const initialState = {
   selectedProposalID: '',
   rootPath: '',
   user: {
-    inControl: false,
-  },
+    inControl: false
+  }
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case 'SET_LOGIN_INFO': {
-      return Object.assign({}, state, {
-        beamlineName: action.loginInfo.beamlineName,
-        synchrotronName: action.loginInfo.synchrotronName,
-        loginType: action.loginInfo.loginType,
-        user: action.loginInfo.user,
-        proposalList: action.loginInfo.proposalList,
-        selectedProposal: action.loginInfo.selectedProposal,
-        selectedProposalID: action.loginInfo.selectedProposalID,
-        loggedIn: action.loginInfo.loggedIn,
-        rootPath: action.loginInfo.rootPath,
-      });
+    case 'SET_LOGIN_INFO':
+    {
+      return Object.assign({}, state,
+        {
+          beamlineName: action.loginInfo.beamlineName,
+          synchrotronName: action.loginInfo.synchrotronName,
+          loginType: action.loginInfo.loginType,
+          user: action.loginInfo.user,
+          proposalList: action.loginInfo.proposalList,
+          selectedProposal: action.loginInfo.selectedProposal,
+          selectedProposalID: action.loginInfo.selectedProposalID,
+          loggedIn: action.loginInfo.loggedIn,
+          rootPath: action.loginInfo.rootPath,
+        });
     }
-    case 'SHOW_PROPOSALS_FORM': {
+    case 'SHOW_PROPOSALS_FORM':
+    {
       return {
         ...state,
         showProposalsForm: true,
       };
     }
-    case 'SELECT_PROPOSAL': {
+    case 'SELECT_PROPOSAL':
+    {
       const proposals = state.proposalList;
 
       const propInfo = proposals.find((prop) => {
@@ -42,10 +46,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         selectedProposal: action.proposal,
-        selectedProposalID: propId,
+        selectedProposalID: propId
       };
     }
-    case 'HIDE_PROPOSALS_FORM': {
+    case 'HIDE_PROPOSALS_FORM':
+    {
       return { ...state, showProposalsForm: false };
     }
     default:

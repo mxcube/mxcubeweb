@@ -1,8 +1,9 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-// config exported by webpack at buildtime
-// eslint-disable-next-line import/no-unresolved
+
+import { Row, Col, Stack, Container } from 'react-bootstrap';
+
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import ApertureInput from '../components/SampleView/ApertureInput';
@@ -18,8 +19,9 @@ import { QUEUE_RUNNING } from '../constants';
 import {
   sendSetAttribute,
   sendAbortCurrentAction,
-  setBeamlineAttribute,
+  setBeamlineAttribute
 } from '../actions/beamline';
+
 
 class SampleViewContainer extends Component {
   render() {
@@ -64,85 +66,84 @@ class SampleViewContainer extends Component {
     );
 
     return (
-      <div className="row">
-        <div className="col-xs-12">
-          <div className="row">
-            <div className="col-xs-12" style={{ marginTop: '-10px' }}>
+        <Stack>
+          <Row>
+            <Col sm={12} style={{ marginTop: '-40px' }}>
               <BeamlineSetupContainer />
-            </div>
-          </div>
-          <div className="row" style={{ display: 'flex', marginTop: '1em' }}>
-            <div
-              className="col-xs-1"
-              style={{ paddingRight: '5px', paddingLeft: '1.5em' }}
-            >
-              {apertureControl}
-              <MotorControl
-                save={this.props.sendSetAttribute}
-                saveStep={setStepSize}
-                uiproperties={uiproperties.sample_view}
-                attributes={this.props.attributes}
-                motorsDisabled={
-                  this.props.motorInputDisable ||
-                  this.props.queueState === QUEUE_RUNNING
-                }
-                steps={motorSteps}
-                stop={this.props.sendAbortCurrentAction}
-                sampleViewActions={this.props.sampleViewActions}
-                sampleViewState={this.props.sampleViewState}
-              />
-            </div>
-            <div className="col-xs-7">
-              <ContextMenu
-                {...this.props.contextMenu}
-                sampleActions={this.props.sampleViewActions}
-                updateTask={this.props.updateTask}
-                availableMethods={this.props.availableMethods}
-                showForm={this.props.showForm}
-                sampleID={sampleID}
-                sampleData={this.props.sampleList[sampleID]}
-                defaultParameters={this.props.defaultParameters}
-                imageRatio={imageRatio * sourceScale}
-                workflows={this.props.workflows}
-                savedPointId={this.props.sampleViewState.savedPointId}
-                groupFolder={this.props.groupFolder}
-                clickCentring={this.props.sampleViewState.clickCentring}
-              />
-              <SampleImage
-                generalActions={this.props.generalActions}
-                sampleActions={this.props.sampleViewActions}
-                {...this.props.sampleViewState}
-                uiproperties={uiproperties.sample_view}
-                attributes={this.props.attributes}
-                steps={motorSteps}
-                imageRatio={imageRatio * sourceScale}
-                contextMenuVisible={this.props.contextMenu.show}
-                shapes={this.props.shapes}
-                points={points}
-                twoDPoints={twoDPoints}
-                lines={lines}
-                grids={grids}
-                selectedGrids={selectedGrids}
-                cellCounting={this.props.cellCounting}
-                cellSpacing={this.props.cellSpacing}
-                current={this.props.current}
-                sampleList={this.props.sampleList}
-                proposal={this.props.proposal}
-                busy={this.props.queueState === QUEUE_RUNNING}
-                sendSetAttribute={this.props.sendSetAttribute}
-                sendAbortCurrentAction={this.props.sendAbortCurrentAction}
-                setBeamlineAttribute={this.props.setBeamlineAttribute}
-              />
-            </div>
-            <div className="col-xs-4" style={{ display: 'flex' }}>
-              <SampleQueueContainer />
-            </div>
-          </div>
-        </div>
-      </div>
+            </Col>
+          </Row>
+          <Container fluid>
+            <Row style={{ display: 'flex', marginTop: '1em' }}>
+              <Col
+                sm={1}
+                style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
+              >
+                {apertureControl}
+                <MotorControl
+                  save={this.props.sendSetAttribute}
+                  saveStep={setStepSize}
+                  uiproperties={uiproperties.sample_view}
+                  attributes={this.props.attributes}
+                  motorsDisabled={this.props.motorInputDisable
+                                    || this.props.queueState === QUEUE_RUNNING}
+                  steps={motorSteps}
+                  stop={this.props.sendAbortCurrentAction}
+                  sampleViewActions={this.props.sampleViewActions}
+                  sampleViewState={this.props.sampleViewState}
+                />
+              </Col>
+              <Col sm={8}>
+                <ContextMenu
+                  {...this.props.contextMenu}
+                  sampleActions={this.props.sampleViewActions}
+                  updateTask={this.props.updateTask}
+                  availableMethods={this.props.availableMethods}
+                  showForm={this.props.showForm}
+                  sampleID={sampleID}
+                  sampleData={this.props.sampleList[sampleID]}
+                  defaultParameters={this.props.defaultParameters}
+                  imageRatio={imageRatio * sourceScale}
+                  workflows={this.props.workflows}
+                  savedPointId={this.props.sampleViewState.savedPointId}
+                  groupFolder={this.props.groupFolder}
+                  clickCentring={this.props.sampleViewState.clickCentring}
+                />
+                <SampleImage
+                  generalActions={this.props.generalActions}
+                  sampleActions={this.props.sampleViewActions}
+                  {...this.props.sampleViewState}
+                  uiproperties={uiproperties.sample_view}
+                  attributes={this.props.attributes}
+                  steps={motorSteps}
+                  imageRatio={imageRatio * sourceScale}
+                  contextMenuVisible={this.props.contextMenu.show}
+                  shapes={this.props.shapes}
+                  points={points}
+                  twoDPoints={twoDPoints}
+                  lines={lines}
+                  grids={grids}
+                  selectedGrids={selectedGrids}
+                  cellCounting={this.props.cellCounting}
+                  cellSpacing={this.props.cellSpacing}
+                  current={this.props.current}
+                  sampleList={this.props.sampleList}
+                  proposal={this.props.proposal}
+                  busy={this.props.queueState === QUEUE_RUNNING}
+                  sendSetAttribute={this.props.sendSetAttribute}
+                  sendAbortCurrentAction={this.props.sendAbortCurrentAction}
+                  setBeamlineAttribute={this.props.setBeamlineAttribute}
+                />
+              </Col>
+              <Col sm={3} style={{ display: 'flex' }}>
+                <SampleQueueContainer />
+              </Col>
+            </Row>
+          </Container>
+        </Stack>
     );
   }
 }
+
 
 function mapStateToProps(state) {
   return {
@@ -173,11 +174,8 @@ function mapDispatchToProps(dispatch) {
     showForm: bindActionCreators(showTaskForm, dispatch),
     generalActions: bindActionCreators(GeneralActions, dispatch),
     sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
-    sendAbortCurrentAction: bindActionCreators(
-      sendAbortCurrentAction,
-      dispatch
-    ),
-    setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
+    sendAbortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch),
+    setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch)
   };
 }
 

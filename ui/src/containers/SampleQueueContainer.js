@@ -9,7 +9,7 @@ import * as QueueGUIActions from '../actions/queueGUI';
 import * as SampleViewActions from '../actions/sampleview';
 import * as SampleChangerActions from '../actions/sampleChanger';
 import { showTaskForm } from '../actions/taskForm';
-import { Nav, NavItem } from 'react-bootstrap';
+import { Nav } from 'react-bootstrap';
 import { showDialog } from '../actions/general';
 
 import UserMessage from '../components/Notify/UserMessage';
@@ -36,9 +36,10 @@ function mapStateToProps(state) {
     plotsData: state.beamline.plotsData,
     plotsInfo: state.beamline.plotsInfo,
     selectedShapes: state.sampleview.selectedShapes,
-    shapes: state.shapes,
+    shapes: state.shapes
   };
 }
+
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -48,19 +49,22 @@ function mapDispatchToProps(dispatch) {
     sampleChangerActions: bindActionCreators(SampleChangerActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
-    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
+    beamlineActions: bindActionCreators(BeamlineActions, dispatch)
   };
 }
 
 class SampleQueueContainer extends React.Component {
+
   constructor(props) {
     super(props);
     this.handleSelect = this.handleSelect.bind(this);
   }
 
   handleSelect(selectedKey) {
+    debugger;
     this.props.queueGUIActions.showList(selectedKey);
   }
+
 
   render() {
     const {
@@ -77,7 +81,7 @@ class SampleQueueContainer extends React.Component {
       loading,
       autoMountNext,
       autoAddDiffPlan,
-      centringMethod,
+      centringMethod
     } = this.props;
     const {
       sendToggleCheckBox,
@@ -92,12 +96,21 @@ class SampleQueueContainer extends React.Component {
       setAutoAddDiffPlan,
       sendRunSample,
       sendSetCentringMethod,
-      setEnabledSample,
+      setEnabledSample
     } = this.props.queueActions;
-    const { collapseItem, showConfirmCollectDialog, selectItem, showList } =
-      this.props.queueGUIActions;
-    const { sendPrepareForNewSample } = this.props.beamlineActions;
-    const { loadSample, unloadSample } = this.props.sampleChangerActions;
+    const {
+      collapseItem,
+      showConfirmCollectDialog,
+      selectItem,
+      showList
+    } = this.props.queueGUIActions;
+    const {
+      sendPrepareForNewSample
+    } = this.props.beamlineActions;
+    const {
+      loadSample,
+      unloadSample
+    } = this.props.sampleChangerActions;
 
     // go through the queue, check if sample has been collected or not
     // to make todo and history lists
@@ -120,13 +133,11 @@ class SampleQueueContainer extends React.Component {
     if (current.sampleID) {
       const sampleData = sampleList[current.sampleID] || {};
       sampleName = sampleData.sampleName ? sampleData.sampleName : '';
-      proteinAcronym = sampleData.proteinAcronym
-        ? `${sampleData.proteinAcronym} -`
-        : '';
+      proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} -` : '';
     }
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
         <QueueControl
           ref="queueContainer"
           historyLength={history.length}
@@ -153,82 +164,84 @@ class SampleQueueContainer extends React.Component {
         />
         <div className="m-tree queue-body">
           <Nav
-            bsStyle="tabs"
-            justified
+            variant="tabs"
+            fill
+            justify
+            defaultActiveKey="current"
             activeKey={visibleList}
             onSelect={this.handleSelect}
           >
-            <NavItem eventKey={'current'}>
-              <b>
-                {current.sampleID
-                  ? `Sample: ${proteinAcronym} ${sampleName}`
-                  : 'Current'}
-              </b>
-            </NavItem>
-            <NavItem eventKey={'todo'}>
-              <b>Queued Samples ({todo.length})</b>
-            </NavItem>
+            <Nav.Item>
+              <Nav.Link eventKey='current'>
+                <b>
+                  { current.sampleID ? `Sample: ${proteinAcronym} ${sampleName}` : 'Current'}
+                </b>
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey='todo'>
+                <b>Queued Samples ({todo.length})</b>
+              </Nav.Link>
+            </Nav.Item>
           </Nav>
-          {loading ? (
+          {loading ?
             <div className="center-in-box" style={{ zIndex: '1000' }}>
               <img src={loader} className="img-responsive" alt="" />
             </div>
-          ) : null}
-          <CurrentTree
-            changeOrder={changeTaskOrderAction}
-            show={visibleList === 'current'}
-            mounted={current.sampleID}
-            queue={queue}
-            sampleList={sampleList}
-            toggleCheckBox={sendToggleCheckBox}
-            checked={checked}
-            deleteTask={deleteTask}
-            pause={sendPauseQueue}
-            unpause={sendUnpauseQueue}
-            stop={sendStopQueue}
-            showForm={showForm}
-            unmount={unloadSample}
-            queueStatus={queueStatus}
-            rootPath={rootPath}
-            collapseItem={collapseItem}
-            selectItem={selectItem}
-            displayData={displayData}
-            runSample={sendRunSample}
-            todoList={todo}
-            moveTask={moveTask}
-            addTask={addTask}
-            plotsData={this.props.plotsData}
-            plotsInfo={this.props.plotsInfo}
-            shapes={this.props.shapes}
-            showDialog={this.props.showDialog}
-          />
-          <TodoTree
-            show={visibleList === 'todo'}
-            list={todo}
-            queue={queue}
-            sampleList={sampleList}
-            collapseItem={collapseItem}
-            displayData={displayData}
-            mount={loadSample}
-            showForm={showForm}
-            queueStatus={queueStatus}
-            showList={showList}
-            sendPrepareForNewSample={sendPrepareForNewSample}
-          />
-          <div className="queue-messages">
-            <div className="queue-messages-title">
-              <span
-                style={{ marginRight: '7px' }}
-                className="fas fa-lg fa-info-circle"
-              />
-              Log messages:
-            </div>
-            <UserMessage
-              messages={this.props.logRecords}
-              target="user_level_log"
+            : null
+          }
+            <CurrentTree
+              changeOrder={changeTaskOrderAction}
+              show={visibleList === 'current'}
+              mounted={current.sampleID}
+              queue={queue}
+              sampleList={sampleList}
+              toggleCheckBox={sendToggleCheckBox}
+              checked={checked}
+              deleteTask={deleteTask}
+              pause={sendPauseQueue}
+              unpause={sendUnpauseQueue}
+              stop={sendStopQueue}
+              showForm={showForm}
+              unmount={unloadSample}
+              queueStatus={queueStatus}
+              rootPath={rootPath}
+              collapseItem={collapseItem}
+              selectItem={selectItem}
+              displayData={displayData}
+              runSample={sendRunSample}
+              todoList={todo}
+              moveTask={moveTask}
+              addTask={addTask}
+              plotsData={this.props.plotsData}
+              plotsInfo={this.props.plotsInfo}
+              shapes={this.props.shapes}
+              showDialog={this.props.showDialog}
             />
+            <TodoTree
+              show={visibleList === 'todo'}
+              list={todo}
+              queue={queue}
+              sampleList={sampleList}
+              collapseItem={collapseItem}
+              displayData={displayData}
+              mount={loadSample}
+              showForm={showForm}
+              queueStatus={queueStatus}
+              showList={showList}
+              sendPrepareForNewSample={sendPrepareForNewSample}
+            />
+            <div className="queue-messages">
+              <div className="queue-messages-title">
+                <span style={{ marginRight: '7px' }} className="fas fa-lg fa-info-circle" />
+                 Log messages:
+              </div>
+              <UserMessage
+                messages={this.props.logRecords}
+                target="user_level_log"
+              />
+            </div>
           </div>
-        </div>
       </div>
     );
   }

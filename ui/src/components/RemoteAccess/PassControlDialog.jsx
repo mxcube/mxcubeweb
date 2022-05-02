@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, FormControl } from 'react-bootstrap';
+import { Modal, Button, Form } from 'react-bootstrap';
 import { requestControlResponse } from '../../actions/remoteAccess';
 
 export class PassControlDialog extends React.Component {
@@ -13,7 +13,7 @@ export class PassControlDialog extends React.Component {
     this.getObserver = this.getObserver.bind(this);
   }
 
-  onHide() {}
+  onHide() { }
 
   getObserver() {
     let observer = { name: '', message: '', requestsControl: false };
@@ -61,47 +61,45 @@ export class PassControlDialog extends React.Component {
         style={{ zIndex: 10001 }}
       >
         <Modal.Header>
-          <Modal.Title>{observer.nickname} is asking for control</Modal.Title>
+          <Modal.Title>
+            {observer.nickname} is asking for control
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           User "{observer.nickname}" is asking for control:
         </Modal.Body>
         <Modal.Footer>
-          <FormControl
-            inputRef={(ref) => {
-              this.message = ref;
-            }}
+          <Form.Control
+            ref={(ref) => { this.message = ref; }}
             defaultValue="Here you go !"
             type="textarea"
             placeholder="Message"
             rows="3"
           />
           <br />
-          <Button onClick={this.accept}>
-            {' '}
-            Give control to "{observer.nickname}"{' '}
-          </Button>
-          <Button onClick={this.reject}> Deny control </Button>
+          <Button size='sm' variant='outline-secondary' onClick={this.accept}> Give control to "{observer.nickname}" </Button>
+          <Button size='sm' variant='outline-secondary' onClick={this.reject}> Deny control </Button>
         </Modal.Footer>
-      </Modal>
-    );
+      </Modal>);
   }
 }
 
 function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
-    login: state.login,
+    login: state.login
   };
 }
+
 
 function mapDispatchToProps(dispatch) {
   return {
-    requestControlResponse: bindActionCreators(
-      requestControlResponse,
-      dispatch
-    ),
+    requestControlResponse: bindActionCreators(requestControlResponse, dispatch)
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PassControlDialog);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PassControlDialog);

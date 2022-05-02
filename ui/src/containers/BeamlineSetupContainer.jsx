@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col, Table, Popover } from 'react-bootstrap';
+import { Navbar, Nav, Row, Col, Table, Popover } from 'react-bootstrap';
 import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
@@ -17,7 +17,7 @@ import { find, filter } from 'lodash';
 import {
   sendGetAllAttributes,
   sendSetAttribute,
-  sendAbortCurrentAction,
+  sendAbortCurrentAction
 } from '../actions/beamline';
 
 import { sendCommand } from '../actions/sampleChanger';
@@ -36,13 +36,16 @@ class BeamlineSetupContainer extends React.Component {
   // this.props.getAllAttributes();
   // }
 
+
   onSaveHandler(name, value) {
     this.props.setAttribute(name, value);
   }
 
+
   onCancelHandler(name) {
     this.props.abortCurrentAction(name);
   }
+
 
   setAttribute(name, value) {
     this.props.setAttribute(name, value);
@@ -57,14 +60,13 @@ class BeamlineSetupContainer extends React.Component {
     const step = this.props.sampleview.motorSteps.beamstop_distance;
 
     if (motor !== undefined && motor.state !== 0) {
-      motorInputList.push(
-        <div style={{ marginBottom: '1em' }}>
-          <p className="motor-name">Beamstop distance:</p>
+      motorInputList.push((
+        <div style={{ padding: '0.5em' }}>
+          <p className="motor-name"> Beamstop distance: </p>
           <OneAxisTranslationControl
             save={this.props.sampleViewActions.sendMotorPosition}
             value={motor.position}
-            min={motor.limits[0]}
-            max={motor.limits[1]}
+            min={motor.limits[0]} max={motor.limits[1]}
             step={step}
             motorName={motor.name}
             suffix="mm"
@@ -73,15 +75,16 @@ class BeamlineSetupContainer extends React.Component {
             disabled={this.props.beamline.motorInputDisable}
           />
         </div>
-      );
+      ));
     }
 
     if (motorInputList.length > 0) {
-      popover = <Popover>{motorInputList}</Popover>;
+      popover = (<Popover>{motorInputList}</Popover>);
     }
 
     return popover;
   }
+
 
   createActuatorComponent() {
     const acts = [];
@@ -98,30 +101,30 @@ class BeamlineSetupContainer extends React.Component {
             if (uiprop.value_type === 'NSTATE') {
               if (uiprop.label === 'Beamstop') {
                 acts.push(
-                  <Col key={key} className="pull-right">
+                <Nav.Item key={key} className="ms-3">
                     <InOutSwitch
-                      onText={this.props.beamline.attributes[key].commands[0]}
-                      offText={this.props.beamline.attributes[key].commands[1]}
-                      labelText={uiprop.label}
-                      pkey={key}
-                      data={this.props.beamline.attributes[key]}
-                      onSave={this.setAttribute}
-                      optionsOverlay={this.beamstopAlignmentOverlay()}
+                      onText={ this.props.beamline.attributes[key].commands[0] }
+                      offText={ this.props.beamline.attributes[key].commands[1] }
+                      labelText={ uiprop.label }
+                      pkey={ key }
+                      data={ this.props.beamline.attributes[key] }
+                      onSave={ this.setAttribute }
+                      optionsOverlay={ this.beamstopAlignmentOverlay() }
                     />
-                  </Col>
+                  </Nav.Item>
                 );
               } else {
                 acts.push(
-                  <Col key={key} className="pull-right">
+                  <Nav.Item key={key} className="ms-3">
                     <InOutSwitch
-                      onText={this.props.beamline.attributes[key].commands[0]}
-                      offText={this.props.beamline.attributes[key].commands[1]}
-                      labelText={uiprop.label}
-                      pkey={key}
-                      data={this.props.beamline.attributes[key]}
-                      onSave={this.setAttribute}
+                      onText={ this.props.beamline.attributes[key].commands[0] }
+                      offText={ this.props.beamline.attributes[key].commands[1] }
+                      labelText={ uiprop.label }
+                      pkey={ key }
+                      data={ this.props.beamline.attributes[key] }
+                      onSave={ this.setAttribute }
                     />
-                  </Col>
+                  </Nav.Item>
                 );
               }
             }
@@ -132,6 +135,7 @@ class BeamlineSetupContainer extends React.Component {
     return acts;
   }
 
+
   dmState() {
     return this.props.beamline.attributes.diffractometer.state;
   }
@@ -140,40 +144,40 @@ class BeamlineSetupContainer extends React.Component {
     const components = [];
 
     for (const uiprop of uiprop_list) {
-      const beamline_attribute =
-        this.props.beamline.attributes[uiprop.attribute];
+      const beamline_attribute = this.props.beamline.attributes[uiprop.attribute];
 
       components.push(
-        <td style={{ border: '0px', paddingLeft: '0.5em' }}>{uiprop.label}:</td>
-      );
+        <td className='d-flex pt-1' style={{ border: '0px', paddingLeft: '0.5em' }}>
+          <span className='me-1'>{ uiprop.label }:</span>
+        </td>);
       components.push(
         <td
-          style={{
-            fontWeight: 'bold',
-            border: '0px',
-            borderRight: '1px solid #ddd',
-            paddingRight: '0.5em',
-          }}
-        >
-          {beamline_attribute.readonly ? (
-            <LabeledValue
-              suffix={uiprop.suffix}
-              precision={uiprop.precision}
-              format={uiprop.format || ''}
+        className='pe-3 pt-1' 
+        style={{
+          fontWeight: 'bold',
+          border: '0px',
+          borderRight: uiprop_list.length != uiprop_list.indexOf(uiprop) + 1 ? '1px solid #ddd': '',
+          padding: '0em , 0em'}}>
+          { beamline_attribute.readonly ?
+            (<LabeledValue
+              suffix={ uiprop.suffix }
+              precision={ uiprop.precision }
+              format={ uiprop.format || '' }
               name=""
               value={beamline_attribute.value}
-            />
-          ) : (
-            <PopInput
+              level="light"
+            />)
+            :
+            (<PopInput
               name=""
-              pkey={uiprop.attribute}
-              suffix={uiprop.suffix}
-              precision={uiprop.precision}
-              data={beamline_attribute}
-              onSave={this.setAttribute}
-              onCancel={this.onCancelHandler}
-            />
-          )}
+              pkey= {uiprop.attribute}
+              suffix={uiprop.suffix }
+              precision={ uiprop.precision }
+              data={ beamline_attribute }
+              onSave= { this.setAttribute }
+              onCancel= { this.onCancelHandler }
+            />)
+          }
         </td>
       );
     }
@@ -182,8 +186,6 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   render() {
-    // const blsetup_properties = uiproperties.beamline_setup.components;
-
     const uiproperties = this.props.uiproperties;
 
     if (!uiproperties.hasOwnProperty('beamline_setup')) {
@@ -191,94 +193,101 @@ class BeamlineSetupContainer extends React.Component {
     }
 
     const uiprops = this.props.uiproperties.beamline_setup.components;
-    const uiprop_list = filter(
-      uiprops,
-      (o) => o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
+    const uiprop_list = filter(uiprops, (o) =>
+      o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
     );
 
     return (
-      <Row
-        style={{
-          paddingTop: '0.5em',
-          paddingBottom: '0.5em',
-          background: '#FAFAFA',
-        }}
-      >
-        <Col sm={12}>
-          <Row style={{ display: 'flex', alignItems: 'center' }}>
-            <Col sm={1}>
-              <BeamlineActions
-                actionsList={this.props.beamline.beamlineActionsList}
-              />
-            </Col>
-            <Col sm={5} smPush={1}>
+    <Navbar
+      style={{
+        background: '#FAFAFA',
+        borderBottom: '1px solid lightgray',
+        paddingBottom: '0em',
+      }} 
+      className="beamline-status ps-3 pe-3"
+      id="bmstatus"
+      bg='light'
+      expand="lg"
+    >
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="d-flex  me-auto my-2 my-lg-0">
+            <Nav.Item className=" d-flex justify-content-start">
+              <span className="blstatus-item" style={{ marginRight: '1em' }}>
+                <BeamlineActions actionsList={this.props.beamline.beamlineActionsList} />
+              </span>
+            </Nav.Item>
+          </Nav>
+          <Nav className="me-auto my-2 my-lg-0">
+            <Nav.Item className="d-flex justify-content-start" >
               <Table
-                condensed
-                style={{
-                  margin: '0px',
-                  fontWeight: 'bold',
-                  paddingLeft: '7em',
-                  paddingRight: '7em',
+                responsive
+                style={{ margin: '0px', fontWeight: 'bold',
+                  paddingLeft: '7em', paddingRight: '7em'
                 }}
               >
                 <tbody>
-                  <tr>{this.render_table_row(uiprop_list.slice(0, 4))}</tr>
                   <tr>
-                    {this.render_table_row(uiprop_list.slice(4))}
-                    <td
-                      style={{
-                        border: '0px',
-                        borderLeft: '1px solid #ddd',
-                        paddingLeft: '1em',
-                      }}
-                    ></td>
-                    <td style={{ border: '0px' }}></td>
+                    {this.render_table_row(uiprop_list.slice(0, (uiprop_list.length / 2).toFixed() ))}
+                  </tr>
+                  <tr>
+                    {this.render_table_row(uiprop_list.slice((uiprop_list.length /2).toFixed() ))}
+                    {/* <td style={{ border: '0px', borderLeft: '1px solid #ddd', paddingLeft: '1em' }} />
+                    <td style={{ border: '0px' }} /> */}
                   </tr>
                 </tbody>
               </Table>
-            </Col>
-            <Col className="device-status-container" sm={5} smPush={1}>
-              <Col className="pull-right">
-                {this.props.beamline.attributes.machine_info ? (
+            </Nav.Item>
+          </Nav>
+          <Nav className="me-3">
+            <Nav.Item>
+             <DeviceState
+                labelText={ 'Detector' }
+                data = { this.props.beamline.attributes.detector.state.acq_satus }
+              />
+            </Nav.Item>
+          </Nav>
+          <Nav className="me-3">
+            <Nav.Item>
+              <SampleChangerSwitch
+                  labelText={ 'Sample Changer' }
+                  data = { this.props.sampleChanger.state }
+                  onSave={ this.props.sendCommand }
+                />
+            </Nav.Item>
+          </Nav>
+          <Nav className="me-3">
+              {this.createActuatorComponent()}
+          </Nav>
+          <Nav className="">
+            <Nav.Item>
+             <span className="blstatus-item">
+              { this.props.beamline.attributes.machine_info ?
                   <MachInfo
                     info={this.props.beamline.attributes.machine_info.value}
                   />
-                ) : null}
-              </Col>
-              {this.createActuatorComponent()}
-              <Col className="pull-right">
-                <SampleChangerSwitch
-                  labelText={'Sample Changer'}
-                  data={this.props.sampleChanger.state}
-                  onSave={this.props.sendCommand}
-                />
-              </Col>
-              {this.props.beamline.attributes.detector ? (
-                <Col className="pull-right">
-                  <DeviceState
-                    labelText={'Detector'}
-                    data={
-                      this.props.beamline.attributes.detector.state.acq_satus
-                    }
-                  />
-                </Col>
-              ) : null}
-            </Col>
-          </Row>
-        </Col>
-      </Row>
+                  :
+                  null
+                }
+              </span>
+            </Nav.Item>
+          </Nav>
+        </Navbar.Collapse>
+      </Navbar>
     );
   }
 }
+
 
 function mapStateToProps(state) {
   return {
     uiproperties: state.uiproperties,
     beamline: state.beamline,
     sampleview: state.sampleview,
-    sampleChanger: state.sampleChanger,
+    sampleChanger: state.sampleChanger
   };
 }
+
 
 function mapDispatchToProps(dispatch) {
   return {
@@ -286,9 +295,10 @@ function mapDispatchToProps(dispatch) {
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     setAttribute: bindActionCreators(sendSetAttribute, dispatch),
     sendCommand: bindActionCreators(sendCommand, dispatch),
-    abortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch),
+    abortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch)
   };
 }
+
 
 export default connect(
   mapStateToProps,

@@ -1,8 +1,9 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Grid } from 'react-bootstrap';
+import { Stack } from 'react-bootstrap';
 import { Outlet } from 'react-router-dom';
+import withRouter from '../components/WithRouter';
 import MXNavbarContainer from '../containers/MXNavbarContainer';
 import TaskContainer from '../containers/TaskContainer';
 import PleaseWaitDialog from '../containers/PleaseWaitDialog';
@@ -66,8 +67,8 @@ class Main extends React.Component {
   render() {
     const showReadOnlyDiv =
       !this.props.login.user.inControl &&
-      this.props.location.pathname !== '/remoteaccess' &&
-      this.props.location.pathname !== '/help';
+      this.props.router.location.pathname !== '/remoteaccess' &&
+      this.props.router.location.pathname !== '/help';
 
     if (!this.props.general.applicationFetched)  {
       return (<LoadingScreen />);
@@ -75,8 +76,8 @@ class Main extends React.Component {
 
     return (
       <div>
-        {showReadOnlyDiv ? (
-          <div
+        {showReadOnlyDiv ?
+          (<div
             onMouseDown={this.handleClick}
             style={{
               backgroundImage: `url(${diagonalNoise})`,
@@ -87,10 +88,10 @@ class Main extends React.Component {
               top: 50,
               left: 0,
               width: '100vw',
-              height: '100vh',
+              height: '100vh'
             }}
-          />
-        ) : null}
+          />) : null
+          }
         <TaskContainer />
         <PleaseWaitDialog />
         <ErrorNotificationPanel />
@@ -105,17 +106,19 @@ class Main extends React.Component {
           taskData={this.props.general.dialogData}
           onHide={() => this.props.showDialog(false)}
         />
-        <MXNavbarContainer location={this.props.location} />
-        <Grid fluid> <Outlet /> </Grid>
+        <MXNavbarContainer location={window.location} />
+        <Stack style={{ paddingTop: '5.5em', zIndex: 9999 }}>
+          <Outlet />
+        </Stack>
         <span onClick={this.onChatContainerClick}>
-          {this.props.remoteAccess.observers.length > 0 ? (
-            <Widget
+          { this.props.remoteAccess.observers.length > 0 ?
+            (<Widget
               title="Chat"
               subtitle=""
               badge={this.props.remoteAccess.chatMessageCount}
               handleNewUserMessage={this.handleNewUserMessage}
-            />
-          ) : null}
+            />) : null
+          }
         </span>
       </div>
     );
@@ -126,15 +129,20 @@ function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
     general: state.general,
-    login: state.login,
+    login: state.login
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     resetChatMessageCount: bindActionCreators(resetChatMessageCount, dispatch),
-    showDialog: bindActionCreators(showDialog, dispatch),
+    showDialog: bindActionCreators(showDialog, dispatch)
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Main);
+Main = withRouter(Main);
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(Main);

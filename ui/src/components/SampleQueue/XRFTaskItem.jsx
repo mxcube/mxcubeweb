@@ -1,28 +1,19 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {
-  ProgressBar,
-  Button,
-  Collapse,
-  OverlayTrigger,
-  Popover,
-  Modal,
-} from 'react-bootstrap';
+import { ProgressBar, Button, Collapse, OverlayTrigger, Popover, Modal } from 'react-bootstrap';
 import { ContextMenuTrigger } from 'react-contextmenu';
 import Plot1D from '../Plot1D';
 
-import {
-  TASK_UNCOLLECTED,
+import { TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
-  TASK_RUNNING,
-} from '../../constants';
+  TASK_RUNNING } from '../../constants';
 
 export default class XRFTaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    moveCard: PropTypes.func.isRequired,
+    moveCard: PropTypes.func.isRequired
   };
 
   constructor(props) {
@@ -42,53 +33,47 @@ export default class XRFTaskItem extends Component {
     this.state = {
       overInput: false,
       selected: false,
-      showModal: false,
+      showModal: false
     };
   }
 
   getResult(state) {
     if (state !== TASK_COLLECTED) {
-      return <span></span>;
+      return (<span></span>);
     }
-    const link = this.props.data.limsResultData
-      ? this.props.data.limsResultData.limsTaskLink
-      : '';
+    const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
 
     return (
-      <div
-        style={{
-          borderLeft: '1px solid #DDD',
-          borderRight: '1px solid #DDD',
-          borderBottom: '1px solid #DDD',
-          padding: '0.5em',
-        }}
+      <div style={ { borderLeft: '1px solid #DDD',
+        borderRight: '1px solid #DDD',
+        borderBottom: '1px solid #DDD',
+        padding: '0.5em' } }
       >
-        <a href={link} target="_blank">
-          {' '}
-          View Results in ISPyB
-        </a>
+        <a href={link} target="_blank"> View Results in ISPyB</a>
       </div>
     );
   }
 
   getIspybLink(state) {
     if (state !== TASK_COLLECTED) {
-      return <span></span>;
+      return (<span></span>);
     }
 
-    return <a href={this.props.data.limstResultData}> ISPyB link</a>;
+    return (<a href={this.props.data.limstResultData}> ISPyB link</a>);
   }
 
   getPlot(state) {
     if (state === TASK_UNCOLLECTED) {
-      return <span></span>;
+      return (<span></span>);
     }
 
     return (
       <div className="pull-right">
-        <a href="#" onClick={this.showXRFPlot}>
-          Plot available
-        </a>
+      <a href="#"
+        onClick={this.showXRFPlot}
+      >
+      Plot available
+      </a>
       </div>
     );
   }
@@ -96,22 +81,20 @@ export default class XRFTaskItem extends Component {
   showPlotModal() {
     return (
       <div>
-        <Modal show={this.state.showModal} onHide={this.close}>
-          <Modal.Header closeButton>
-            <Modal.Title>XRF Plot</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <h4>Text in a modal</h4>
-          </Modal.Body>
-          <Plot1D
-            displayedPlotCallback={this.newPlotDisplayed}
-            plotId={'this.plotIdByAction[currentActionName'}
-            autoNext={'True'}
-          />
-          <Modal.Footer>
-            <Button onClick={this.close}>Close</Button>
-          </Modal.Footer>
-        </Modal>
+      <Modal show={this.state.showModal} onHide={this.close}>
+        <Modal.Header closeButton>
+          <Modal.Title>XRF Plot</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <h4>Text in a modal</h4>
+        </Modal.Body>
+        <Plot1D displayedPlotCallback={this.newPlotDisplayed}
+          plotId={'this.plotIdByAction[currentActionName'} autoNext={'True'}
+        />
+        <Modal.Footer>
+          <Button onClick={this.close}>Close</Button>
+        </Modal.Footer>
+      </Modal>
       </div>
     );
   }
@@ -145,15 +128,12 @@ export default class XRFTaskItem extends Component {
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
+
   deleteButton() {
-    let content = (
-      <Button bsSize="sm" onClick={this.deleteTask}>
-        Delete
-      </Button>
-    );
+    let content = (<Button size="sm" onClick={this.deleteTask}>Delete</Button>);
 
     if (this.props.state !== TASK_UNCOLLECTED) {
-      content = <span> </span>;
+      content = (<span> </span>);
     }
 
     return content;
@@ -188,29 +168,25 @@ export default class XRFTaskItem extends Component {
         trigger="click"
         placement="top"
         rootClose
-        overlay={
-          <Popover
-            id="wedge-popover"
-            style={{ maxWidth: '2000px', width: 'auto' }}
-          >
-            <input
-              type="text"
-              onFocus={(e) => {
-                e.target.select();
-              }}
-              value={path}
-              size={path.length + 10}
-            />
-          </Popover>
-        }
+        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '2000px', width: 'auto' }}>
+                    <input
+                      type="text"
+                      onFocus={(e) => {e.target.select();}}
+                      value={path}
+                      size={path.length + 10}
+                    />
+                  </Popover>)}
       >
-        <a onClick={(e) => e.stopPropagation()}>{value}</a>
-      </OverlayTrigger>
-    );
+        <a onClick={(e) => (e.stopPropagation())}>
+          { value }
+        </a>
+      </OverlayTrigger>);
   }
 
   render() {
-    const { state, data, show } = this.props;
+    const { state,
+      data,
+      show } = this.props;
     const plotId = this.props.id;
     const parameters = data.parameters;
 
@@ -224,12 +200,10 @@ export default class XRFTaskItem extends Component {
       paddingLeft: '10px',
       paddingRight: '10px',
       color: '#d9534f',
-      cursor: 'pointer',
+      cursor: 'pointer'
     };
 
-    const taskCSS = this.props.selected
-      ? 'task-head task-head-selected'
-      : 'task-head';
+    const taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
 
     let pbarBsStyle = 'info';
 
@@ -248,19 +222,16 @@ export default class XRFTaskItem extends Component {
             onClick={this.taskHeaderOnClick}
             onContextMenu={this.taskHeaderOnContextMenu}
           >
-            <div className={taskCSS} style={{ display: 'flex' }}>
+            <div
+              className={taskCSS}
+              style={{ display: 'flex' }}
+            >
               <b>
-                <span className="node-name" style={{ display: 'flex' }}>
+                <span className="node-name" style={{ display: 'flex' }} >
                   {this.pointIDString(parameters)} {data.label}
-                  <span
-                    style={{
-                      width: '150px',
-                      right: '60px',
-                      position: 'absolute',
-                    }}
-                  >
+                  <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
                     <ProgressBar
-                      bsStyle={pbarBsStyle}
+                      variant={pbarBsStyle}
                       striped
                       style={{ marginBottom: '0px', height: '18px' }}
                       min={0}
@@ -272,19 +243,18 @@ export default class XRFTaskItem extends Component {
                   </span>
                 </span>
               </b>
-              {state === TASK_UNCOLLECTED ? (
-                <i
-                  className="fas fa-remove"
-                  onClick={this.deleteTask}
-                  style={delTaskCSS}
-                />
-              ) : null}
+              {state === TASK_UNCOLLECTED ?
+                <i className="fas fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
+              }
             </div>
             <Collapse in={Boolean(show)}>
               <div className="task-body">
                 <div>
                   <div style={{ border: '1px solid #DDD' }}>
-                    <div style={{ padding: '0.5em' }} onClick={this.showForm}>
+                    <div
+                      style={{ padding: '0.5em' }}
+                      onClick={this.showForm}
+                    >
                       <b>Path:</b> {this.path(parameters)}
                       <br />
                       <b>Count time:</b> {parameters.countTime}
@@ -296,10 +266,7 @@ export default class XRFTaskItem extends Component {
                       <Modal.Title>XRF Plot</Modal.Title>
                     </Modal.Header>
                     <Plot1D
-                      plotId={plotId}
-                      autoNext
-                      saved={plotAlreadyStored}
-                      data={result}
+                      plotId={plotId} autoNext saved={plotAlreadyStored} data={result}
                     />
                     <Modal.Footer>
                       <Button onClick={this.close}>Close</Button>
@@ -310,7 +277,6 @@ export default class XRFTaskItem extends Component {
             </Collapse>
           </div>
         </ContextMenuTrigger>
-      </div>
-    );
+      </div>);
   }
 }

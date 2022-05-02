@@ -1,11 +1,10 @@
 import React from 'react';
-import { Panel } from 'react-bootstrap';
+import { Alert } from 'react-bootstrap';
 
-import './SampleChanger.css';
 import '../context-menu-style.css';
 /* eslint-disable react/no-multi-comp */
 
-export default class SampleChangerState extends React.Component {
+export default class EquipmentState extends React.Component {
   render() {
     let titleBackground;
 
@@ -21,12 +20,12 @@ export default class SampleChangerState extends React.Component {
       titleBackground = 'danger';
     }
 
-    const title = `Sample changer (${this.props.state})`;
-
     return (
-      <Panel style={{ marginTop: '0.5em' }} bsStyle={titleBackground}>
-        <Panel.Heading>{title}</Panel.Heading>
-      </Panel>
+      <Alert style={{ margin: '0em' }} variant={titleBackground}>
+        {this.props.equipmentName}
+        {' '}
+        {this.props.state}
+      </Alert>
     );
   }
 }

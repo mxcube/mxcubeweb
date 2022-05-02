@@ -29,7 +29,7 @@ class XRFScan extends React.Component {
       type: 'XRFScan',
       label: params.wfname,
       shape: this.props.pointID,
-      suffix: this.props.suffix,
+      suffix: this.props.suffix
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -42,7 +42,7 @@ class XRFScan extends React.Component {
       'label',
       'wfname',
       'wfpath',
-      'suffix',
+      'suffix'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -50,8 +50,7 @@ class XRFScan extends React.Component {
   }
 
   render() {
-    return (
-      <DraggableModal show={this.props.show} onHide={this.props.hide}>
+    return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>XRF</Modal.Title>
         </Modal.Header>
@@ -61,25 +60,15 @@ class XRFScan extends React.Component {
             <StaticField label="Filename" data={this.props.filename} />
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField
-                  propName="subdir"
-                  label="Subdirectory"
-                  col1="4"
-                  col2="8"
-                />
+                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
-                <InputField
-                  propName="prefix"
-                  label="Prefix"
-                  col1="4"
-                  col2="6"
-                />
+                <InputField propName="prefix" label="Prefix" col1="4" col2="6" />
               </Col>
-              {this.props.taskData.sampleID ? (
-                <Col xs={4}>
+              {this.props.taskData.sampleID ?
+                (<Col xs={4}>
                   <InputField
                     propName="run_number"
                     disabled
@@ -87,8 +76,8 @@ class XRFScan extends React.Component {
                     col1="4"
                     col2="8"
                   />
-                </Col>
-              ) : null}
+                </Col>)
+                : null}
             </Row>
             <Row>
               <Col xs={12} style={{ marginTop: '10px' }}>
@@ -102,46 +91,37 @@ class XRFScan extends React.Component {
               </Col>
             </Row>
           </Form>
-        </Modal.Body>
+       </Modal.Body>
 
-        {this.props.taskData.state ? (
-          ''
-        ) : (
-          <Modal.Footer>
-            <ButtonToolbar className="pull-right">
-              <Button
-                bsStyle="success"
-                disabled={
-                  this.props.taskData.parameters.shape === -1 ||
-                  this.props.invalid
-                }
-                onClick={this.submitRunNow}
-              >
-                Run Now
-              </Button>
-              <Button
-                bsStyle="primary"
-                disabled={this.props.invalid}
-                onClick={this.submitAddToQueue}
-              >
-                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-              </Button>
-            </ButtonToolbar>
-          </Modal.Footer>
-        )}
-      </DraggableModal>
-    );
+       { this.props.taskData.state ? '' :
+           <Modal.Footer>
+             <ButtonToolbar className="pull-right">
+               <Button variant="success"
+                 disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+                 onClick={this.submitRunNow}
+               >
+                 Run Now
+               </Button>
+               <Button variant="primary" disabled={this.props.invalid}
+                 onClick={this.submitAddToQueue}
+               >
+                 {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+               </Button>
+             </ButtonToolbar>
+           </Modal.Footer>
+       }
+      </DraggableModal>);
   }
 }
 
 XRFScan = reduxForm({
   form: 'workflow',
-  validate,
+  validate
 })(XRFScan);
 
 const selector = formValueSelector('workflow');
 
-XRFScan = connect((state) => {
+XRFScan = connect(state => {
   const subdir = selector(state, 'subdir');
   const countTime = selector(state, 'countTime');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
@@ -161,16 +141,16 @@ XRFScan = connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: state.taskForm.taskData.sampleID
-        ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.attributes.resolution.value,
-      energy: state.taskForm.taskData.sampleID
-        ? state.taskForm.taskData.parameters.energy
-        : state.beamline.attributes.energy.value,
-      transmission: state.taskForm.taskData.sampleID
-        ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.attributes.transmission.value,
-    },
+      resolution: (state.taskForm.taskData.sampleID ?
+        state.taskForm.taskData.parameters.resolution :
+        state.beamline.attributes.resolution.value),
+      energy: (state.taskForm.taskData.sampleID ?
+        state.taskForm.taskData.parameters.energy :
+        state.beamline.attributes.energy.value),
+      transmission: (state.taskForm.taskData.sampleID ?
+        state.taskForm.taskData.parameters.transmission :
+        state.beamline.attributes.transmission.value)
+    }
   };
 })(XRFScan);
 

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
-import ModalDialog from 'react-bootstrap/lib/ModalDialog';
 import Draggable from 'react-draggable';
 
 class DraggableModalDialog extends React.Component {
@@ -10,7 +9,9 @@ class DraggableModalDialog extends React.Component {
         handle=".modal-header"
         defaultPosition={this.props.defaultPosition}
       >
-        <ModalDialog {...this.props} />
+        <Modal.Dialog
+          {...this.props}
+        />
       </Draggable>
     );
   }
@@ -26,3 +27,5 @@ export const DraggableModal = (props) => (
     {props.children}
   </Modal>
 );
+
+

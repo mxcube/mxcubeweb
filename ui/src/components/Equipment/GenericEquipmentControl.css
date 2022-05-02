@@ -14,3 +14,8 @@
 .generic-equipment-container .panel-title {
   text-transform:capitalize;
 }
+
+.custom-accordion-header > .accordion-button { 
+  padding: 0.3rem 1rem
+
+}

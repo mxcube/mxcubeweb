@@ -3,17 +3,16 @@ import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 import './SampleGrid.css';
-import {
-  TASK_COLLECTED,
+import { TASK_COLLECTED,
   TASK_COLLECT_FAILED,
   TASK_COLLECT_WARNING,
   TASK_RUNNING,
-  isUnCollected,
-} from '../../constants';
+  isUnCollected } from '../../constants';
 
 import loader from '../../img/busy-indicator.gif';
 
 export class TaskItem extends React.Component {
+
   constructor(props) {
     super(props);
     this.taskItemOnClick = this.taskItemOnClick.bind(this);
@@ -80,18 +79,15 @@ export class TaskItem extends React.Component {
 
   result() {
     const task = this.props.taskData;
-    let content = <div></div>;
+    let content = (<div></div>);
     let lImageUrl = '';
     let fImageUrl = '';
     let qIndUrl = '';
 
     const r = task.limsResultData;
 
-    if (
-      !isUnCollected(task) &&
-      task.limsResultData &&
-      Object.keys(task.limsResultData).length > 0
-    ) {
+    if (!isUnCollected(task) && task.limsResultData &&
+        Object.keys(task.limsResultData).length > 0) {
       if (task.limsResultData.firstImageId) {
         fImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
         fImageUrl += task.limsResultData.firstImageId.toString();
@@ -114,11 +110,7 @@ export class TaskItem extends React.Component {
         <div>
           <div
             className="row"
-            style={{
-              paddingLeft: '1em',
-              paddingTop: '1em',
-              paddingBottom: '0.2em',
-            }}
+            style={ { paddingLeft: '1em', paddingTop: '1em', paddingBottom: '0.2em' } }
           >
             <b>Status: {r.runStatus}</b>
           </div>
@@ -127,9 +119,7 @@ export class TaskItem extends React.Component {
             <span className="col-sm-3">Resolution at collect</span>
             <span className="col-sm-3">{`${r.resolution || '-'} Å`}</span>
             <span className="col-sm-3">Resolution at corner:</span>
-            <span className="col-sm-3">{`${
-              r.resolutionAtCorner || '-'
-            } Å`}</span>
+            <span className="col-sm-3">{`${r.resolutionAtCorner || '-'} Å`}</span>
           </div>
 
           <div className="row">
@@ -139,7 +129,7 @@ export class TaskItem extends React.Component {
             <span className="col-sm-3"> </span>
           </div>
 
-          <div className="row" style={{ paddingTop: '1em' }}>
+          <div className="row" style={ { paddingTop: '1em' } }>
             <span className="col-sm-2">Start time:</span>
             <span className="col-sm-4">{r.startTime || '-'}</span>
             <span className="col-sm-2">End time</span>
@@ -153,7 +143,7 @@ export class TaskItem extends React.Component {
             <span className="col-sm-4">{eFlux || '-'} ph/s</span>
           </div>
 
-          <div className="row" style={{ paddingTop: '0.5em' }}>
+          <div className="row" style={ { paddingTop: '0.5em' } } >
             <span className="col-sm-4">
               <b>Quality Indictor: </b>
               <img ref="fimage" alt="First" src={qIndUrl} width="90%" />
@@ -170,11 +160,9 @@ export class TaskItem extends React.Component {
         </div>
       );
     } else if (!isUnCollected(task)) {
-      content = (
-        <span>
-          <img src={loader} role="presentation" /> Fetching data, please wait
-        </span>
-      );
+      content = (<span>
+                   <img src={loader} role="presentation" />  Fetching data, please wait
+                 </span>);
     }
 
     return content;
@@ -200,11 +188,9 @@ export class TaskItem extends React.Component {
 
     if (task.state === TASK_RUNNING) {
       cls = 'btn-warning';
-    }
-    if (task.state === TASK_COLLECT_FAILED) {
+    } if (task.state === TASK_COLLECT_FAILED) {
       cls = 'btn-danger';
-    }
-    if (task.state === TASK_COLLECT_WARNING) {
+    } if (task.state === TASK_COLLECT_WARNING) {
       cls = 'btn-danger';
     } else if (task.state === TASK_COLLECTED) {
       cls = 'btn-success';
@@ -214,14 +200,11 @@ export class TaskItem extends React.Component {
   }
 
   popoverPosition() {
-    const viewportHeight = Math.max(
-      document.documentElement.clientHeight,
-      window.innerHeight || 0
-    );
+    const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     let result = 'bottom';
 
     if (this.refs.sampleItem) {
-      if (parseInt(this.refs.sampleItem.style.top, 10) <= viewportHeight / 2) {
+      if (parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
         result = 'bottom';
       } else {
         result = 'top';
@@ -231,20 +214,19 @@ export class TaskItem extends React.Component {
     return result;
   }
 
+
   taskItemOnClick() {
     const task = this.props.taskData;
     this.props.showDialog(true, 'LIMS_RESULT_DIALOG', 'Lims Results', task);
   }
 
+
   deleteButtonOnClick(e) {
     if (this.props.deleteButtonOnClick) {
-      this.props.deleteButtonOnClick(
-        e,
-        this.props.taskData.sampleID,
-        this.props.taskIndex
-      );
+      this.props.deleteButtonOnClick(e, this.props.taskData.sampleID, this.props.taskIndex);
     }
   }
+
 
   render() {
     const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
@@ -257,15 +239,14 @@ export class TaskItem extends React.Component {
           rootClose="true"
           ref="taskSummaryPopoverTrigger"
           placement={this.popoverPosition()}
-          overlay={
+          overlay={(
             <Popover
               id="taskSummaryPopover"
               style={{ minWidth: '700px', paddingBottom: '1em' }}
-              title={<b>{this.title()}</b>}
+              title={(<b>{this.title()}</b>)}
             >
               <LimsResultSummary taskData={this.props.taskData} scale="0.5" />
-            </Popover>
-          }
+            </Popover>) }
         >
           <span
             className={`${this.stateClass()} label`}
@@ -273,17 +254,18 @@ export class TaskItem extends React.Component {
             onClick={this.taskItemOnClick}
           >
             {this.tagName()}
-            {task.state !== TASK_COLLECTED ? (
-              <i className="fas fa-times" onClick={this.deleteButtonOnClick} />
-            ) : (
-              <span />
-            )}
+            {
+             task.state !== TASK_COLLECTED ?
+               (<i className="fas fa-times" onClick={this.deleteButtonOnClick} />) :
+               (<span />)
+            }
           </span>
         </OverlayTrigger>
       </div>
     );
   }
 }
+
 
 TaskItem.defaultProps = {
   taskData: {},

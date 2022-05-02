@@ -2,13 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import {
-  Modal,
-  Button,
-  Form,
-  Row,
-  Col,
-  ButtonToolbar,
-  ControlLabel,
+  Modal, Button, Form, Row, Col, ButtonToolbar
 } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
@@ -21,7 +15,7 @@ import {
   CheckboxField,
   SelectField,
   FieldsRow,
-  CollapsableRows,
+  CollapsableRows
 } from './fields';
 
 import { SPACE_GROUPS } from '../../constants';
@@ -51,7 +45,7 @@ class Characterisation extends React.Component {
       type: 'Characterisation',
       label: 'Characterisation',
       shape: this.props.pointID,
-      helical: false,
+      helical: false
     };
 
     const stringFields = [
@@ -80,14 +74,9 @@ class Characterisation extends React.Component {
   defaultParameters() {
     this.props.resetTaskParameters();
     const { type } = this.props.taskData.parameters;
-    const fieldNames = Object.keys(
-      this.props.initialParameters[type.toLowerCase()]
-    );
+    const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(
-        field,
-        this.props.initialParameters[type.toLowerCase()][field]
-      );
+      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
     });
   }
 
@@ -101,70 +90,42 @@ class Characterisation extends React.Component {
           <Form horizontal>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
-            <Row>
+            <Row className='mb-2'>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField
-                  propName="subdir"
-                  label="Subdirectory"
-                  col1="4"
-                  col2="8"
-                />
+                <InputField propName="subdir" label="Subdirectory" col1="3" col2="7" />
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
-                <InputField
-                  propName="prefix"
-                  label="Prefix"
-                  col1="4"
-                  col2="6"
-                />
+                <InputField propName="prefix" label="Prefix" col1="3" col2="7" />
               </Col>
-              {this.props.taskData.sampleID ? (
-                <Col xs={4}>
-                  <InputField
-                    propName="run_number"
-                    disabled
-                    label="Run number"
-                    col1="4"
-                    col2="8"
-                  />
-                </Col>
-              ) : null}
+              {this.props.taskData.sampleID
+                ? (
+                  <Col xs={4}>
+                    <InputField
+                      propName="run_number"
+                      disabled
+                      label="Run number"
+                      col1="4"
+                      col2="8"
+                    />
+                  </Col>
+                )
+                : null}
             </Row>
           </Form>
           <FieldsHeader title="Reference acquisition" />
           <Form horizontal>
             <FieldsRow>
-              <SelectField
-                propName="num_images"
-                label="Number of images"
-                list={[1, 2, 4]}
-              />
-              <InputField
-                propName="transmission"
-                type="number"
-                label="Transmission"
-              />
+              <SelectField propName="num_images" label="Number of images" list={[1, 2, 4]} />
+              <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
-              <InputField
-                propName="exp_time"
-                type="number"
-                label="Exposure time (s)"
-              />
-              <InputField
-                propName="resolution"
-                type="number"
-                label="Resolution (Å)"
-              />
+              <InputField propName="exp_time" type="number" label="Exposure time (s)" />
+              <InputField propName="resolution" type="number" label="Resolution (Å)" />
             </FieldsRow>
             <FieldsRow>
-              <InputField
-                propName="osc_range"
-                type="number"
-                label="Oscillation range"
-              />
+              <InputField propName="osc_range" type="number" label="Oscillation range" />
               <InputField
                 disabled={this.props.beamline.attributes.energy.readonly}
                 propName="energy"
@@ -173,11 +134,7 @@ class Characterisation extends React.Component {
               />
             </FieldsRow>
             <FieldsRow>
-              <InputField
-                propName="osc_start"
-                type="number"
-                label="Oscillation start"
-              />
+              <InputField propName="osc_start" type="number" label="Oscillation start" />
             </FieldsRow>
             <CollapsableRows>
               <FieldsRow>
@@ -201,7 +158,10 @@ class Characterisation extends React.Component {
                 propName="account_rad_damage"
                 label="Account for radiation damage"
               />
-              <CheckboxField propName="opt_sad" label="Optimised SAD" />
+              <CheckboxField
+                propName="opt_sad"
+                label="Optimised SAD"
+              />
             </FieldsRow>
             <SelectField
               col1="4"
@@ -221,20 +181,14 @@ class Characterisation extends React.Component {
                 label="Space group"
                 list={SPACE_GROUPS}
               />
-              <ControlLabel>Vertical Crystal dimension:</ControlLabel>
+              <Form.Label>Vertical Crystal dimension:</Form.Label>
               <FieldsRow>
                 <InputField propName="min_crystal_vdim" label="Min" />
-                <InputField
-                  propName="min_crystal_vphi"
-                  label="&omega; at min"
-                />
+                <InputField propName="min_crystal_vphi" label="&omega; at min" />
               </FieldsRow>
               <FieldsRow>
                 <InputField propName="max_crystal_vdim" label="Max" />
-                <InputField
-                  propName="max_crystal_vphi"
-                  label="&omega; at max"
-                />
+                <InputField propName="max_crystal_vphi" label="&omega; at max" />
               </FieldsRow>
             </Form>
           </CollapsableRows>
@@ -242,24 +196,9 @@ class Characterisation extends React.Component {
           <CollapsableRows>
             <Form horizontal>
               <FieldsRow>
-                <InputField
-                  col1="6"
-                  col2="5"
-                  propName="beta"
-                  label="&beta; Å / Mgy"
-                />
-                <InputField
-                  col1="5"
-                  col2="5"
-                  propName="gamma"
-                  label="&gamma; 1/Mgy"
-                />
-                <InputField
-                  col1="6"
-                  col2="5"
-                  propName="rad_suscept"
-                  label="Sensetivity"
-                />
+                <InputField col1="6" col2="5" propName="beta" label="&beta; Å / Mgy" />
+                <InputField col1="5" col2="5" propName="gamma" label="&gamma; 1/Mgy" />
+                <InputField col1="6" col2="5" propName="rad_suscept" label="Sensetivity" />
               </FieldsRow>
             </Form>
           </CollapsableRows>
@@ -280,7 +219,7 @@ class Characterisation extends React.Component {
                   label="Aimed completness"
                 />
               </FieldsRow>
-              <Row>
+              <Row className='mb-2'>
                 <Col xs="8">
                   <CheckboxField
                     propName="use_permitted_rotation"
@@ -397,62 +336,66 @@ class Characterisation extends React.Component {
           <CollapsableRows>
             <Form horizontal>
               <Row>
-                <Col xs="10">
+                <Col xs="9">
                   <CheckboxField
                     propName="determine_rad_params"
                     label="Determine radiation damage parameters"
                   />
                 </Col>
               </Row>
-              <InputField
-                col1="6"
-                col2="2"
-                propName="burn_osc_start"
-                label="Oscillation start for burn strategy"
-              />
-              <InputField
-                col1="6"
-                col2="2"
-                propName="burn_osc_interval"
-                label="Oscillation interval for burn"
-              />
+              <Row className='mb-2'>
+                <InputField
+                  col1="6"
+                  col2="2"
+                  propName="burn_osc_start"
+                  label="Oscillation start for burn strategy"
+                />
+              </Row>
+              <Row>
+                <InputField
+                  col1="6"
+                  col2="2"
+                  propName="burn_osc_interval"
+                  label="Oscillation interval for burn"
+                />
+              </Row>
             </Form>
           </CollapsableRows>
         </Modal.Body>
-        {this.props.taskData.state ? (
-          ''
-        ) : (
-          <Modal.Footer>
-            <ButtonToolbar className="pull-left">
-              <Button
-                bsSize="xsmall"
-                bsStyle="default"
-                onClick={this.defaultParameters}
-              >
-                Default Parameters
-              </Button>
-            </ButtonToolbar>
-            <ButtonToolbar className="pull-right">
-              <Button
-                bsStyle="success"
-                disabled={
-                  this.props.taskData.parameters.shape === -1 ||
-                  this.props.invalid
-                }
-                onClick={this.submitRunNow}
-              >
-                Run Now
-              </Button>
-              <Button
-                bsStyle="primary"
-                disabled={this.props.invalid}
-                onClick={this.submitAddToQueue}
-              >
-                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-              </Button>
-            </ButtonToolbar>
-          </Modal.Footer>
-        )}
+        { this.props.taskData.state ? ''
+          : (
+            <Modal.Footer>
+              <ButtonToolbar style={{ bottom: '0.8%', left: '1%'}} className="position-absolute">
+                <Button
+                  size="sm"
+                  variant="outline-secondary"
+                  onClick={this.defaultParameters}
+                >
+              Default Parameters
+                </Button>
+              </ButtonToolbar>
+              <ButtonToolbar className="pull-right">
+                <Button
+                  size="sm"
+                  variant="success"
+                  disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+                  onClick={this.submitRunNow}
+                >
+                 Run Now
+                </Button>
+                <Button
+                  size="sm"
+                  className='ms-3'
+                  variant="outline-secondary"
+                  disabled={this.props.invalid}
+                  onClick={this.submitAddToQueue}
+                >
+                  {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+                </Button>
+              </ButtonToolbar>
+            </Modal.Footer>
+          )
+         }
       </DraggableModal>
     );
   }
@@ -461,7 +404,7 @@ class Characterisation extends React.Component {
 Characterisation = reduxForm({
   form: 'characterisation',
   validate,
-  warn,
+  warn
 })(Characterisation);
 
 const selector = formValueSelector('characterisation');
@@ -498,23 +441,19 @@ Characterisation = connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.resolution
-          : state.beamline.attributes.resolution.value,
-      energy:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.energy
-          : state.beamline.attributes.energy.value,
-      transmission:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.transmission
-          : state.beamline.attributes.transmission.value,
-      osc_start:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.osc_start
-          : state.beamline.attributes.omega.value,
-    },
+      resolution: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.resolution
+        : state.beamline.attributes.resolution.value),
+      energy: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.energy
+        : state.beamline.attributes.energy.value),
+      transmission: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.transmission
+        : state.beamline.attributes.transmission.value),
+      osc_start: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.osc_start
+        : state.beamline.attributes.omega.value)
+    }
   };
 })(Characterisation);
 

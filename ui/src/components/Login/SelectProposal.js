@@ -17,7 +17,7 @@ class SelectProposal extends React.Component {
   }
 
   sendProposal() {
-    this.props.sendSelectProposal(this.props.selectedProposal, this,this.props.navigate);
+    this.props.sendSelectProposal(this.props.selectedProposal);
     this.props.hide();
   }
 
@@ -67,11 +67,14 @@ class SelectProposal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar>
-            <Button bsStyle="default" onClick={this.handleCancel}>
+            <Button
+              variant="outline-secondary"
+              onClick={this.handleCancel}
+            >
               Sign Out
             </Button>
             <Button
-              bsStyle="primary"
+              variant="primary"
               className="pull-right"
               disabled={typeof this.props.selectedProposal === 'undefined'}
               onClick={this.sendProposal}
@@ -86,11 +89,9 @@ class SelectProposal extends React.Component {
 }
 
 SelectProposal = reduxForm({
-  form: 'proposals',
+  form: 'proposals'
 })(SelectProposal);
 
-SelectProposal = connect((state) => ({
-  initialValues: { ...state.login.data },
-}))(SelectProposal);
+SelectProposal = connect(state => ({ initialValues: { ...state.login.data } }))(SelectProposal);
 
 export default SelectProposal;
