@@ -11,7 +11,7 @@ export default (state = initialState, action) => {
         ip: [`IP ${action.ip}`, action.ip],
         rm: [`RM ${action.rm}`, action.rm],
       });
-      return Object.assign({}, state, { energyScan: results });
+      return { ...state, energyScan: results};
     }
     case 'SET_INITIAL_STATE': {
       return { ...initialState };

@@ -17,10 +17,10 @@ export default class LabeledValue extends React.Component {
       valueStyle = { display: 'block', fontSize: '100%', borderRadius: '0px' };
     }
 
-    let value = this.props.value.toFixed(parseInt(this.props.precision, 10));
+    let value = this.props.value.toFixed(Number.parseInt(this.props.precision, 10));
 
     if (this.props.format === 'expo') {
-      value = parseFloat(this.props.value).toExponential(this.props.precision);
+      value = Number.parseFloat(this.props.value).toExponential(this.props.precision);
     }
 
     return (

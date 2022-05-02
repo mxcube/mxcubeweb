@@ -35,7 +35,7 @@ class RequestControlForm extends React.Component {
 
     try {
       name = this.props.login.user.nickname;
-    } catch (e) {
+    } catch {
       name = '';
     }
 

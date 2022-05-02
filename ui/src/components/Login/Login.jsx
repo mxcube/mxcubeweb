@@ -14,6 +14,7 @@ import loader from '../../img/loader.gif';
 import './Login.css';
 import SelectProposal from './SelectProposal';
 import withRouter from '../WithRouter'
+
 class LoginComponent extends React.Component {
   constructor(props) {
     super(props);
@@ -26,7 +27,7 @@ class LoginComponent extends React.Component {
     event.preventDefault();
     const username = this.loginID.value;
     const password = this.password.value;
-    const navigate = this.props.router.navigate;
+    const {navigate} = this.props.router;
 
     this.props.setLoading(true);
     this.props.signIn(username.toLowerCase(), password, navigate);

@@ -537,7 +537,7 @@ export function addTask(sampleIDs, parameters, runNow) {
           }
         }
 
-        const sample = Object.assign({}, state.sampleGrid.sampleList[sampleID]);
+        const sample = { ...state.sampleGrid.sampleList[sampleID]};
         sample.tasks = [task];
         samples.push(sample);
       });
@@ -620,8 +620,7 @@ export function deleteSamplesFromQueue(sampleIDList) {
     dispatch(queueLoading(true));
 
     const itemPostList = sampleIDList.map((sampleID) => {
-      const itemPos = [sampleID, undefined];
-      return itemPos;
+      return [sampleID, undefined];
     });
 
     sendDeleteQueueItem(itemPostList)

@@ -31,7 +31,7 @@ export default class EnergyScanTaskItem extends Component {
 
   getResult(state) {
     if (state !== TASK_COLLECTED) {
-      return (<span></span>);
+      return (<span />);
     }
     const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
 
@@ -41,7 +41,7 @@ export default class EnergyScanTaskItem extends Component {
         borderBottom: '1px solid #DDD',
         padding: '0.5em' } }
       >
-        <a href={link} target="_blank"> View Results in ISPyB</a>
+        <a href={link} target="_blank" rel="noreferrer"> View Results in ISPyB</a>
       </div>
     );
   }
@@ -86,7 +86,7 @@ export default class EnergyScanTaskItem extends Component {
     if (parameters.shape !== -1) {
       try {
         res = `${this.props.shapes.shapes[parameters.shape].name}: `;
-      } catch (e) {
+      } catch {
         res = '';
       }
     }
@@ -123,7 +123,7 @@ export default class EnergyScanTaskItem extends Component {
       data,
       show } = this.props;
 
-    const parameters = data.parameters;
+    const {parameters} = data;
 
 
     const delTaskCSS = {
@@ -140,12 +140,23 @@ export default class EnergyScanTaskItem extends Component {
 
     let pbarBsStyle = 'info';
 
-    if (state === TASK_RUNNING) {
+    switch (state) {
+    case TASK_RUNNING: {
       pbarBsStyle = 'info';
-    } else if (state === TASK_COLLECTED) {
+    
+    break;
+    }
+    case TASK_COLLECTED: {
       pbarBsStyle = 'success';
-    } else if (state === TASK_COLLECT_FAILED) {
+    
+    break;
+    }
+    case TASK_COLLECT_FAILED: {
       pbarBsStyle = 'danger';
+    
+    break;
+    }
+    // No default
     }
 
     return (

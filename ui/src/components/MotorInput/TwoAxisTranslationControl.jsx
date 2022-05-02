@@ -12,7 +12,7 @@ export default class TwoAxisTranslationControl extends React.Component {
   }
 
   stepChange(name, step, operator) {
-    const value = this.props.motors[name].value;
+    const {value} = this.props.motors[name];
     const newValue = value + step * operator;
     this.props.save(this.props.motors[name].attribute, newValue);
   }
@@ -63,7 +63,7 @@ export default class TwoAxisTranslationControl extends React.Component {
     return (
       <div className="arrow-control">
         <p className="motor-name">Sample alignment:</p>
-        <div style={{ marginBottom: '1em' }}></div>
+        <div style={{ marginBottom: '1em' }} />
         <Button
           size="sm"
           variant="outline-secondary"

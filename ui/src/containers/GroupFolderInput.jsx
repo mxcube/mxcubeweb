@@ -14,7 +14,7 @@ class GroupFolderInput extends React.Component {
   }
 
   setGroupFolderInput() {
-    /* eslint-disable react/no-set-state */
+     
     this.setState({ validationState: 'success' });
     /* eslint-enable react/no-set-state */
     this.props.queueActions.sendSetGroupFolder(this.inputValue.value);
@@ -26,7 +26,7 @@ class GroupFolderInput extends React.Component {
   }
 
   inputOnChangeHandler() {
-    /* eslint-disable react/no-set-state */
+     
     this.setState({ validationState: 'warning' });
     /* eslint-enable react/no-set-state */
   }

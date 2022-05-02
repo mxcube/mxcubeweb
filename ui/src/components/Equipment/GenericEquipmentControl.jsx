@@ -28,7 +28,7 @@ export default class GenericEquipmentControl extends React.Component {
           </Form>
         </div>
       );
-    } else {
+    } 
         return (
           <span>
             <p>(No arguments)</p>
@@ -37,7 +37,7 @@ export default class GenericEquipmentControl extends React.Component {
             </Button>
            </span>
         );
-    }
+    
   }
 
   renderInfo(key) {
@@ -58,9 +58,9 @@ export default class GenericEquipmentControl extends React.Component {
           </pre>
         </div>
       );
-    } else {
+    } 
         return (<p/>);
-    }
+    
   }
 
   getCommands() {

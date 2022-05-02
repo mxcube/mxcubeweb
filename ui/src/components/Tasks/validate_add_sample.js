@@ -6,7 +6,7 @@ const validate = (values, props) => {
   }
   const name = values.sampleName ? values.sampleName : '';
   const acr = values.proteinAcronym ? values.proteinAcronym : '';
-  const regex = new RegExp(/^[a-zA-Z0-9:+_-]*$/);
+  const regex = new RegExp(/^[\w+:-]*$/);
 
   if (name.length === 0 || !regex.test(name)) {
     errors.sampleName = 'Missing sample name';

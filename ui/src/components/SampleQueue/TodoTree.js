@@ -28,9 +28,7 @@ export default class TodoTree extends React.Component {
   }
 
   filter(list, searchWord) {
-    const filteredList = list.filter(sampleID => String(sampleID).includes(searchWord));
-
-    return filteredList;
+    return list.filter(sampleID => String(sampleID).includes(searchWord));
   }
 
   render() {

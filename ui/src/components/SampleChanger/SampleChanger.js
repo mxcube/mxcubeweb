@@ -7,20 +7,31 @@ import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
 
 import './SampleChanger.css';
 import '../context-menu-style.css';
-/* eslint-disable react/no-multi-comp */
+ 
 
 export class SampleChangerTree extends React.Component {
   render() {
     let titleBackground;
 
-    if (this.props.state === 'READY') {
+    switch (this.props.state) {
+    case 'READY': {
       titleBackground = 'success';
-    } else if (this.props.state === 'MOVING') {
+    
+    break;
+    }
+    case 'MOVING': {
       titleBackground = 'warning';
-    } else if (this.props.state === 'DISABLED') {
+    
+    break;
+    }
+    case 'DISABLED': {
       titleBackground = 'default';
-    } else {
+    
+    break;
+    }
+    default: {
       titleBackground = 'danger';
+    }
     }
 
     return (
@@ -129,7 +140,7 @@ export class SampleChangerTreeItem extends React.Component {
   }
 
   itemClicked() {
-    /* eslint-disable react/no-set-state */
+     
     this.setState({ allow_control: !this.state.allow_control });
     /* eslint-enable react/no-set-state */
   }

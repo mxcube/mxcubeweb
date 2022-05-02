@@ -66,7 +66,7 @@ export default class LabelPopInput extends React.Component {
 
 
   getChild(key) {
-    let children = this.props.children;
+    let {children} = this.props;
     let child;
 
     // We need to create a real array here since react is so kind to give us

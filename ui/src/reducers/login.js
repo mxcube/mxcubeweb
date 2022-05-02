@@ -13,9 +13,8 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_LOGIN_INFO':
     {
-      return Object.assign({}, state,
-        {
-          beamlineName: action.loginInfo.beamlineName,
+      return { ...state,
+        beamlineName: action.loginInfo.beamlineName,
           synchrotronName: action.loginInfo.synchrotronName,
           loginType: action.loginInfo.loginType,
           user: action.loginInfo.user,
@@ -23,8 +22,7 @@ export default (state = initialState, action) => {
           selectedProposal: action.loginInfo.selectedProposal,
           selectedProposalID: action.loginInfo.selectedProposalID,
           loggedIn: action.loginInfo.loggedIn,
-          rootPath: action.loginInfo.rootPath,
-        });
+          rootPath: action.loginInfo.rootPath,};
     }
     case 'SHOW_PROPOSALS_FORM':
     {

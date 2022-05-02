@@ -30,7 +30,7 @@ export default class CurrentTree extends React.Component {
       const displayData = this.props.displayData[task.queueID];
 
       if (displayData && displayData.selected) {
-        const tData = this.props.sampleList[this.props.mounted].tasks[parseInt(taskIdx, 10)];
+        const tData = this.props.sampleList[this.props.mounted].tasks[Number.parseInt(taskIdx, 10)];
 
         if (tData) {
           selectedTasks.push(tData);
@@ -94,7 +94,7 @@ export default class CurrentTree extends React.Component {
 
     Object.values(this.props.sampleList[this.props.mounted].tasks).forEach((task, taskIdx) => {
       if (this.props.displayData[task.queueID].selected) {
-        wedges.push(this.props.sampleList[this.props.mounted].tasks[parseInt(taskIdx, 10)]);
+        wedges.push(this.props.sampleList[this.props.mounted].tasks[Number.parseInt(taskIdx, 10)]);
         taskIndexList.push(taskIdx);
       }
     });
@@ -122,7 +122,9 @@ export default class CurrentTree extends React.Component {
             let task = null;
             const displayData = this.props.displayData[taskData.queueID] || {};
 
-            if (taskData.type === 'Workflow' || taskData.type === 'GphlWorkflow') {
+            switch (taskData.type) {
+            case 'Workflow': 
+            case 'GphlWorkflow': {
               task = (
                 <WorkflowTaskItem
                   key={taskData.queueID}
@@ -146,7 +148,10 @@ export default class CurrentTree extends React.Component {
                   showDialog={this.props.showDialog}
                 />
               );
-            } else if (taskData.type === 'XRFScan') {
+            
+            break;
+            }
+            case 'XRFScan': {
               task = (
                 <XRFTaskItem
                   key={taskData.queueID}
@@ -171,7 +176,10 @@ export default class CurrentTree extends React.Component {
                   showDialog={this.props.showDialog}
                 />
               );
-            } else if (taskData.type === 'EnergyScan') {
+            
+            break;
+            }
+            case 'EnergyScan': {
               task = (
                 <EnergyScanTaskItem
                   key={taskData.queueID}
@@ -195,7 +203,10 @@ export default class CurrentTree extends React.Component {
                   showDialog={this.props.showDialog}
                 />
               );
-            } else if (taskData.type === 'Characterisation') {
+            
+            break;
+            }
+            case 'Characterisation': {
               task = (
                 <CharacterisationTaskItem
                   key={taskData.queueID}
@@ -220,7 +231,10 @@ export default class CurrentTree extends React.Component {
                   showDialog={this.props.showDialog}
                 />
               );
-            } else {
+            
+            break;
+            }
+            default: {
               task = (
                 <TaskItem
                   key={taskData.queueID}
@@ -244,6 +258,7 @@ export default class CurrentTree extends React.Component {
                   showDialog={this.props.showDialog}
                 />
               );
+            }
             }
 
             return task;

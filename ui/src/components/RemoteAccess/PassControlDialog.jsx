@@ -31,11 +31,9 @@ export class PassControlDialog extends React.Component {
   show() {
     let show = false;
 
-    if (this.props.login.user.inControl) {
-      if (this.getObserver().requestsControl) {
+    if (this.props.login.user.inControl && this.getObserver().requestsControl) {
         show = true;
       }
-    }
 
     return show;
   }
@@ -58,7 +56,7 @@ export class PassControlDialog extends React.Component {
         show={this.show()}
         backdrop="static"
         onHide={this.onHide}
-        style={{ zIndex: 10001 }}
+        style={{ zIndex: 10_001 }}
       >
         <Modal.Header>
           <Modal.Title>

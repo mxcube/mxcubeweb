@@ -276,7 +276,7 @@ export default class ContextMenu extends React.Component {
   }
 
   showContextMenu(x, y) {
-    const contextMenu = document.getElementById('contextMenu');
+    const contextMenu = document.querySelector('#contextMenu');
     if (contextMenu) {
       contextMenu.style.top = `${y}px`;
       contextMenu.style.left = `${x + 15}px`;
@@ -374,7 +374,7 @@ export default class ContextMenu extends React.Component {
   }
 
   hideContextMenu() {
-    const ctxMenu = document.getElementById('contextMenu');
+    const ctxMenu = document.querySelector('#contextMenu');
     if (ctxMenu) {
       ctxMenu.style.display = 'none';
     }

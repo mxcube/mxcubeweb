@@ -99,7 +99,7 @@ class SampleGridContainer extends React.Component {
    * @param {MouseEvent} e
    */
   onMouseDown(e) {
-    const selectionRubberBand = document.getElementById('selectionRubberBand');
+    const selectionRubberBand = document.querySelector('#selectionRubberBand');
     selectionRubberBand.style.top = `${e.pageY}px`;
     selectionRubberBand.style.left = `${e.pageX}px`;
     selectionRubberBand.style.width = '0px';
@@ -119,8 +119,8 @@ class SampleGridContainer extends React.Component {
    */
   onMouseMove(e) {
     if (this.showRubberBand) {
-      const selectionRubberBand = document.getElementById('selectionRubberBand');
-      document.getElementById('selectionRubberBand').style.display = 'block';
+      const selectionRubberBand = document.querySelector('#selectionRubberBand');
+      document.querySelector('#selectionRubberBand').style.display = 'block';
       selectionRubberBand.style.width = `${e.pageX - selectionRubberBand.offsetLeft}px`;
       selectionRubberBand.style.height = `${e.pageY - selectionRubberBand.offsetTop}px`;
     }
@@ -135,7 +135,7 @@ class SampleGridContainer extends React.Component {
    * @param {MouseEvent} e
    */
   onMouseUp(e) {
-    const selectionRubberBand = document.getElementById('selectionRubberBand');
+    const selectionRubberBand = document.querySelector('#selectionRubberBand');
 
     const selected = this.sampleItems.filter((sampleItem) => {
       const sampleElement = document.getElementById(sampleItem.key);
@@ -170,14 +170,28 @@ class SampleGridContainer extends React.Component {
   onKeyDown(e) {
     const sampleID = Object.keys(this.props.moving)[0];
 
-    if (e.key === 'ArrowRight') {
+    switch (e.key) {
+    case 'ArrowRight': {
       this.sampleItemOnMoveHandler(e, sampleID, 'RIGHT');
-    } else if (e.key === 'ArrowLeft') {
+    
+    break;
+    }
+    case 'ArrowLeft': {
       this.sampleItemOnMoveHandler(e, sampleID, 'LEFT');
-    } else if (e.key === 'ArrowDown') {
+    
+    break;
+    }
+    case 'ArrowDown': {
       this.sampleItemOnMoveHandler(e, sampleID, 'DOWN');
-    } else if (e.key === 'ArrowUp') {
+    
+    break;
+    }
+    case 'ArrowUp': {
       this.sampleItemOnMoveHandler(e, sampleID, 'UP');
+    
+    break;
+    }
+    // No default
     }
   }
 
@@ -202,7 +216,7 @@ class SampleGridContainer extends React.Component {
 
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       menuEl.style.display = 'none';
-    } else if (e.target.className.indexOf('samples-grid-item') > -1 && e.button === 2) {
+    } else if (e.target.className.includes('samples-grid-item') && e.button === 2) {
       menuEl.style.top = `${e.pageY}px`;
       menuEl.style.left = `${e.pageX}px`;
       menuEl.style.display = 'block';
@@ -298,10 +312,9 @@ class SampleGridContainer extends React.Component {
     // mouse cursor when doing the overlap detection, reusing the same
     // mechanism as for mutiple selection
     const syntheticElement = { getBoundingClientRect: () => {
-      const bbox = { top: e.clientY, left: e.clientX,
+      return { top: e.clientY, left: e.clientX,
         bottom: e.clientY + 1, right: e.clientX + 1,
         width: 1, height: 1 };
-      return bbox;
     } };
 
     const selected = this.sampleItems.filter((sampleItem) => {
@@ -434,12 +447,12 @@ class SampleGridContainer extends React.Component {
       // CTRL key is pressed just modify the current selection, remove already
       // selected and add new ones.
       if (e.ctrlKey) {
-        const intersection = sampleIDList.filter((sampleID) => (
+        const intersection = new Set(sampleIDList.filter((sampleID) => (
           this.sampleItemIsSelected(sampleID)
-        ));
+        )));
 
         const union = Object.keys(this.props.selected).concat(sampleIDList);
-        samplesToSelect = union.filter((sampleID) => !intersection.includes(sampleID));
+        samplesToSelect = union.filter((sampleID) => !intersection.has(sampleID));
       }
 
       this.props.selectSamples(samplesToSelect);
@@ -472,13 +485,13 @@ class SampleGridContainer extends React.Component {
     const [canMoveUp, canMoveDown, canMoveLeft, canMoveRight] = this.sampleItemCanMove(sampleID);
 
     if (dir === 'RIGHT' && canMoveRight) {
-      targetPos = targetPos + 1;
+      targetPos += 1;
     } else if (dir === 'LEFT' && canMoveLeft) {
-      targetPos = targetPos - 1;
+      targetPos -= 1;
     } else if (dir === 'DOWN' && canMoveDown) {
-      targetPos = targetPos + numCols;
+      targetPos += numCols;
     } else if (dir === 'UP' && canMoveUp) {
-      targetPos = targetPos - numCols;
+      targetPos -= numCols;
     } else {
       return;
     }
@@ -683,13 +696,11 @@ class SampleGridContainer extends React.Component {
       }
     });
 
-    const menuItems = workflowTasks.samplegrid.map((wf) => (
+    return workflowTasks.samplegrid.map((wf) => (
       <Dropdown.Item eventKey={wf.key} onClick={wf.action} key={wf.key}>
         {wf.text}
       </Dropdown.Item>
     ));
-
-    return menuItems;
   }
 
 
@@ -718,7 +729,7 @@ class SampleGridContainer extends React.Component {
   taskContextMenuItems() {
     return [
       <Dropdown.Divider />,
-      <Dropdown.Item header> <span> <i class="fas fa-plus" /> Add </span></Dropdown.Item>,
+      <Dropdown.Item header> <span> <i className="fas fa-plus" /> Add </span></Dropdown.Item>,
       <Dropdown.Item eventKey="2" onClick={this.props.showDataCollectionForm}>
         Data collection
       </Dropdown.Item>,
@@ -740,7 +751,7 @@ class SampleGridContainer extends React.Component {
   sampleContextMenu() {
     return [
       <Dropdown.Item eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
-        <span><i class="fas fa-plus" />Add to Queue</span>
+        <span><i className="fas fa-plus" />Add to Queue</span>
       </Dropdown.Item>,
       <Dropdown.Item eventKey="2" onClick={this.mountAndCollect}>
         <span><MdFlare glyph="screenshot" /> Mount </span>
@@ -751,7 +762,7 @@ class SampleGridContainer extends React.Component {
   sampleContextMenuMounted() {
     return [
       <Dropdown.Item eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
-        <span><i class="fas fa-plus" /> Add to Queue</span>
+        <span><i className="fas fa-plus" /> Add to Queue</span>
       </Dropdown.Item>,
       <Dropdown.Item eventKey="2" onClick={this.unmount}>
         <span><Md360 glyph="share-alt" /> Unmount </span>

@@ -1,11 +1,10 @@
 import React from 'react';
-import { Button } from 'react-bootstrap';
+import { Button , Row, Col } from 'react-bootstrap';
 import MotorInput from '../MotorInput/MotorInput';
 import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
 import PhaseInput from './PhaseInput';
 import { find } from 'lodash';
 
-import { Row, Col } from 'react-bootstrap';
 
 import '../MotorInput/motor.css';
 
@@ -22,7 +21,7 @@ export default class MotorControl extends React.Component {
 
     const to_arg = to !== null ? to : this.props.uiproperties.components.length;
 
-    const motor_components = Object.values(this.props.uiproperties.components).
+    return Object.values(this.props.uiproperties.components).
       slice(from, to_arg).map((motor_uiprop) => {
         const motor = this.props.attributes[motor_uiprop.attribute];
         return (
@@ -43,8 +42,6 @@ export default class MotorControl extends React.Component {
           </Col>
         );
       });
-
-    return motor_components;
   }
 
   horVerTranslationAvailable() {

@@ -94,7 +94,7 @@ export default class MotorInput extends React.Component {
                     disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
                     onClick={this.stepIncrement}
                   >
-                    <i aria-hidden="true" className="rw-i fas fa-caret-up"></i>
+                    <i aria-hidden="true" className="rw-i fas fa-caret-up" />
                   </button>
                   <button
                     type="button"
@@ -102,7 +102,7 @@ export default class MotorInput extends React.Component {
                     disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
                     onClick={this.stepDecrement}
                   >
-                    <i aria-hidden="true" className="rw-i fas fa-caret-down"></i>
+                    <i aria-hidden="true" className="rw-i fas fa-caret-down" />
                   </button>
                 </span>
                 <input
@@ -148,7 +148,7 @@ export default class MotorInput extends React.Component {
                   variant="danger"
                   onClick={this.stopMotor}
                 >
-                  <i class="fas fa-times" />
+                  <i className="fas fa-times" />
                 </Button>
                 : null
               }

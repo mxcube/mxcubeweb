@@ -69,7 +69,7 @@ export default class PopInput extends React.Component {
 
 
   getChild(key) {
-    let children = this.props.children;
+    let {children} = this.props;
     let child;
 
     // We need to create a real array here since react is so kind to give us
@@ -222,12 +222,12 @@ export default class PopInput extends React.Component {
         { popoverContent }
       </Popover>);
 
-    let value = this.props.data.value ? parseFloat(this.props.data.value) : '-';
+    let value = this.props.data.value ? Number.parseFloat(this.props.data.value) : '-';
 
     if (value !== '-' && this.props.precision) {
-      value = value.toFixed(parseInt(this.props.precision, 10));
+      value = value.toFixed(Number.parseInt(this.props.precision, 10));
     }
-    const show = this.state.show;
+    const {show} = this.state;
     return (
       <div style={this.props.style} className={`${this.props.className} popinput-input-container`}>
         { this.props.name ?

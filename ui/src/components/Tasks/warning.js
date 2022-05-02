@@ -4,16 +4,16 @@ const warn = (values, props) => {
     // for some reason redux-form is loaded before the initial status
     return warnings;
   }
-  const energy = parseFloat(values.energy);
-  const blEnergy = parseFloat(props.attributes.energy.value);
+  const energy = Number.parseFloat(values.energy);
+  const blEnergy = Number.parseFloat(props.attributes.energy.value);
   const energyThreshold = blEnergy * 0.01;
 
-  const resolution = parseFloat(values.resolution);
-  const blResolution = parseFloat(props.attributes.resolution.value);
+  const resolution = Number.parseFloat(values.resolution);
+  const blResolution = Number.parseFloat(props.attributes.resolution.value);
   const resThreshold = blResolution * 0.01;
 
-  const trans = parseFloat(values.transmission);
-  const blTrans = parseFloat(props.attributes.transmission.value);
+  const trans = Number.parseFloat(values.transmission);
+  const blTrans = Number.parseFloat(props.attributes.transmission.value);
   const transThreshold = blTrans * 0.01;
 
   if (
@@ -36,7 +36,7 @@ const warn = (values, props) => {
       'Entered transmission is different from current transmission';
   }
 
-  if (props.beamline.attributes.omega.value !== parseFloat(values.osc_start)) {
+  if (props.beamline.attributes.omega.value !== Number.parseFloat(values.osc_start)) {
     warnings.osc_start =
       'Oscillation start angle is different from current omega';
   }
@@ -44,7 +44,7 @@ const warn = (values, props) => {
   if (
     props.pointID !== -1 &&
     props.pointID.includes('2D') &&
-    parseFloat(values.osc_range) * parseFloat(values.num_images) > 5
+    Number.parseFloat(values.osc_range) * Number.parseFloat(values.num_images) > 5
   ) {
     warnings.osc_range =
       'The given oscillation range might be to large for this centering';

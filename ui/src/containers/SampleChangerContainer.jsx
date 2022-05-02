@@ -59,9 +59,9 @@ class EquipmentContainer extends React.Component {
                         equipment={obj}
                         executeCommand={this.props.executeCommand}
                       />)
-                    } else {
+                    } 
                       return null;
-                    }
+                    
                   })
                 }
               </Col>

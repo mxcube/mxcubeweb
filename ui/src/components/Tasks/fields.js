@@ -42,8 +42,8 @@ function errorIndicator(error, warning) {
 }
 
 
-export const FieldsHeader = ({ title }) => (
-  <Row >
+export function FieldsHeader({ title }) {
+  return <Row >
     <Col xs={12} style={{  marginTop: '0.5em', marginBottom: '0.5em' }}>
       <hr style={{ marginBottom: '-12px',  }} />
       <center>
@@ -55,10 +55,10 @@ export const FieldsHeader = ({ title }) => (
       </center>
     </Col>
   </Row>
-);
+}
 
-export const StaticField = ({ label, data }) => (
-  <Form.Group as={Row} className='d-flex' style={{ textAlign: 'left' }}>
+export function StaticField({ label, data }) {
+  return <Form.Group as={Row} className='d-flex' style={{ textAlign: 'left' }}>
    <Form.Label column sm="2" >
      <b>
         {label}
@@ -76,10 +76,10 @@ export const StaticField = ({ label, data }) => (
       />
     </Col> */}
   </Form.Group>
-);
+}
 
-const ReduxInputField = prop => (
-  <Form.Group
+function ReduxInputField(prop) {
+  return <Form.Group
     as={Row}
     controlId={prop.input.name}
     validationState={validation(prop.meta.error, prop.meta.warning)}
@@ -104,18 +104,18 @@ const ReduxInputField = prop => (
         }
 
   </Form.Group>
-);
+}
 
-export const InputField = prop => (
-  <Field
+export function InputField(prop) {
+  return <Field
     name={prop.propName}
     component={ReduxInputField}
     {...prop}
   />
-);
+}
 
-export const DisplayField = ({ label, value }) => (
-  <Form.Group as={Row}>
+export function DisplayField({ label, value }) {
+  return <Form.Group as={Row}>
     <Form.Label column xs="8" style={{ textAlign: 'left' }}>
       <b>
         {' '}
@@ -127,10 +127,10 @@ export const DisplayField = ({ label, value }) => (
       <Form.Control value={value} readOnly />
     </Col>
   </Form.Group>
-);
+}
 
-export const CheckboxField = ({ propName, label, disabled }) => (
-  <Field
+export function CheckboxField({ propName, label, disabled }) {
+  return <Field
     name={propName}
     component={prop => (
       <Form.Group className='d-flex' controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
@@ -150,12 +150,12 @@ export const CheckboxField = ({ propName, label, disabled }) => (
       </Form.Group>
     )}
   />
-);
+}
 
-export const SelectField = ({
+export function SelectField({
   propName, label, list, col1, col2
-}) => (
-  <Field
+}) {
+  return <Field
     name={propName}
     component={prop => (
       <Form.Group className='d-flex mb-2' controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
@@ -178,10 +178,10 @@ export const SelectField = ({
       </Form.Group>
     )}
   />
-);
+}
 
-export const FieldsRow = ({ children }) => (
-  <Row className='mb-3'>
+export function FieldsRow({ children }) {
+  return <Row className='mb-3'>
     {children.length > 0 ? children.map((child, i) => (
       <Col key={i} xs={12 / children.length}>
         {child}
@@ -193,9 +193,9 @@ export const FieldsRow = ({ children }) => (
     )
      }
   </Row>
-);
+}
 
-/* eslint-disable react/no-set-state */
+ 
 export class CollapsableRows extends React.Component {
   constructor(props) {
     super(props);

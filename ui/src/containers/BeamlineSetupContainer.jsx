@@ -52,7 +52,7 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   beamstopAlignmentOverlay() {
-    const attributes = this.props.beamline.attributes;
+    const {attributes} = this.props.beamline;
     const motorInputList = [];
     let popover = null;
 
@@ -89,7 +89,7 @@ class BeamlineSetupContainer extends React.Component {
   createActuatorComponent() {
     const acts = [];
 
-    const uiproperties = this.props.uiproperties;
+    const {uiproperties} = this.props;
     if (uiproperties.hasOwnProperty('beamline_setup')) {
       const blsetup_properties = uiproperties.beamline_setup.components;
 
@@ -97,8 +97,7 @@ class BeamlineSetupContainer extends React.Component {
         if (this.props.beamline.attributes[key] !== undefined) {
           const uiprop = find(blsetup_properties, { attribute: key });
 
-          if (uiprop !== undefined) {
-            if (uiprop.value_type === 'NSTATE') {
+          if (uiprop !== undefined && uiprop.value_type === 'NSTATE') {
               if (uiprop.label === 'Beamstop') {
                 acts.push(
                 <Nav.Item key={key} className="ms-3">
@@ -128,7 +127,6 @@ class BeamlineSetupContainer extends React.Component {
                 );
               }
             }
-          }
         }
       }
     }
@@ -186,7 +184,7 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   render() {
-    const uiproperties = this.props.uiproperties;
+    const {uiproperties} = this.props;
 
     if (!uiproperties.hasOwnProperty('beamline_setup')) {
       return null;
@@ -228,10 +226,10 @@ class BeamlineSetupContainer extends React.Component {
               >
                 <tbody>
                   <tr>
-                    {this.render_table_row(uiprop_list.slice(0, (uiprop_list.length / 2).toFixed() ))}
+                    {this.render_table_row(uiprop_list.slice(0, (uiprop_list.length / 2).toFixed(0) ))}
                   </tr>
                   <tr>
-                    {this.render_table_row(uiprop_list.slice((uiprop_list.length /2).toFixed() ))}
+                    {this.render_table_row(uiprop_list.slice((uiprop_list.length /2).toFixed(0) ))}
                     {/* <td style={{ border: '0px', borderLeft: '1px solid #ddd', paddingLeft: '1em' }} />
                     <td style={{ border: '0px' }} /> */}
                   </tr>
@@ -242,7 +240,7 @@ class BeamlineSetupContainer extends React.Component {
           <Nav className="me-3">
             <Nav.Item>
              <DeviceState
-                labelText={ 'Detector' }
+                labelText="Detector"
                 data = { this.props.beamline.attributes.detector.state.acq_satus }
               />
             </Nav.Item>
@@ -250,7 +248,7 @@ class BeamlineSetupContainer extends React.Component {
           <Nav className="me-3">
             <Nav.Item>
               <SampleChangerSwitch
-                  labelText={ 'Sample Changer' }
+                  labelText="Sample Changer"
                   data = { this.props.sampleChanger.state }
                   onSave={ this.props.sendCommand }
                 />

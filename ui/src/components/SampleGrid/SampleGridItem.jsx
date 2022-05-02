@@ -182,7 +182,7 @@ export class SampleGridItem extends React.Component {
       displayRight = 'none';
     }
 
-    let content = (<div></div>);
+    let content = (<div />);
 
     if (this.props.moving) {
       content = (
@@ -237,7 +237,7 @@ export class SampleGridItem extends React.Component {
 
 
   sampleInformation() {
-    const sampleData = this.props.sampleData;
+    const {sampleData} = this.props;
     const limsData = (
       <div>
         <div className="row">
