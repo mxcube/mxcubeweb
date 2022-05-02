@@ -106,7 +106,7 @@ class SampleViewContainer extends Component {
                   sampleViewState={this.props.sampleViewState}
                 />
               </Col>
-              <Col sm={8}>
+              <Col sm={7}>
                 <ContextMenu
                   {...this.props.contextMenu}
                   sampleActions={this.props.sampleViewActions}
@@ -148,7 +148,7 @@ class SampleViewContainer extends Component {
                   setBeamlineAttribute={this.props.setBeamlineAttribute}
                 />
               </Col>
-              <Col sm={3} style={{ display: 'flex' }}>
+              <Col sm={4} style={{ display: 'flex' }}>
                 <SampleQueueContainer />
               </Col>
             </Row>
