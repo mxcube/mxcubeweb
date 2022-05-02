@@ -35,7 +35,6 @@ export default class LabeledValue extends React.Component {
             </Form.Label>
             
             <Form.Label
-              as={Button}
               variant={this.props.level}
               style={ valueStyle }
             >
