@@ -455,7 +455,7 @@ export function sendStartClickCentring() {
           return response.json();
         })
         .then((json) => {
-          const clicksLeft = json.clicksLeft;
+          const {clicksLeft} = json;
           dispatch(centringClicksLeft(clicksLeft));
 
           let msg = '3-Click Centring: <br />';

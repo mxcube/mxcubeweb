@@ -16,13 +16,11 @@ export default class OneAxisTranslationControl extends React.Component {
 
   /* eslint-enable react/no-set-state */
   componentWillReceiveProps(nextProps) {
-    if(nextProps.value) {
-      if (nextProps.value !== this.props.value) {
+    if(nextProps.value && nextProps.value !== this.props.value) {
         this.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
         this.motorValue.defaultValue = nextProps.value.toFixed(this.props.decimalPoints);
         this.setState({ edited: false });
       }
-    }
   }
 
   handleKey(e) {
@@ -44,7 +42,7 @@ export default class OneAxisTranslationControl extends React.Component {
   /* eslint-enable react/no-set-state */
 
   stepChange(name, step, operator) {
-    const value = this.props.value;
+    const {value} = this.props;
     const newValue = value + step * operator;
     this.props.save(name, newValue);
   }
@@ -123,7 +121,7 @@ export default class OneAxisTranslationControl extends React.Component {
           <i className="fas fa-angle-left" />
         </Button>
         <input
-          style={{ width: `${parseFloat(decimalPoints) + 2}em`,
+          style={{ width: `${Number.parseFloat(decimalPoints) + 2}em`,
             height: '2.1em',
             display: 'inline-block',
             marginLeft: '5px',

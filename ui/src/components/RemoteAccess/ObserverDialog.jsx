@@ -16,7 +16,7 @@ export class ObserverDialog extends React.Component {
     if (this.name && this.name.value === '') {
       try {
         this.name.value = this.props.login.user.nickname;
-      } catch (err) {
+      } catch {
         this.name.value = '';
       }
     }
@@ -54,7 +54,7 @@ export class ObserverDialog extends React.Component {
         backdrop="static"
         show={this.show()}
         onHide={this.onHide}
-        style={{ zIndex: 10001 }}
+        style={{ zIndex: 10_001 }}
       >
         <Modal.Header>
           <Modal.Title>

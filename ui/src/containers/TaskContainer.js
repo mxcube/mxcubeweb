@@ -50,7 +50,7 @@ class TaskContainer extends React.Component {
     for (const key in parameters) {
       if (
         parameters.hasOwnProperty(key) &&
-        stringFields.indexOf(key) === -1 &&
+        !stringFields.includes(key) &&
         parameters[key]
       ) {
         parameters[key] = Number(parameters[key]);
@@ -86,12 +86,23 @@ class TaskContainer extends React.Component {
 
     Object.keys(this.props.shapes).forEach((key) => {
       const shape = this.props.shapes[key];
-      if (shape.t === 'P') {
+      switch (shape.t) {
+      case 'P': {
         points[shape.id] = shape;
-      } else if (shape.t === 'L') {
+      
+      break;
+      }
+      case 'L': {
         lines[shape.id] = shape;
-      } else if (shape.t === 'G') {
+      
+      break;
+      }
+      case 'G': {
         grids[shape.id] = shape;
+      
+      break;
+      }
+      // No default
       }
     });
 

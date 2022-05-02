@@ -91,7 +91,7 @@ function createServerStatePersistor(store, serverIO, cb) {
       storage: new ServerStorage(serverIO),
     },
     () => {
-      /* eslint-disable react/no-set-state */
+       
       // cb();
       /* eslint-enable react/no-set-state */
     }

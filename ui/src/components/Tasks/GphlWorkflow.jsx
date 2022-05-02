@@ -6,7 +6,7 @@ import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
 import { StaticField, InputField, SelectField } from './fields';
 
-/* eslint-disable no-debugger */
+ 
 
 class GphlWorkflow extends React.Component {
   constructor(props) {

@@ -137,7 +137,7 @@ class DataCollection extends React.Component {
             disabled={this.props.invalid}
             onClick={this.submitAddToQueue}
           >
-            { 'Add Diffraction Plan to Queue' }
+            Add Diffraction Plan to Queue
           </Button>
         </ButtonToolbar>
       </Modal.Footer>

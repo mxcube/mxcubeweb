@@ -26,19 +26,36 @@ export class TaskItem extends React.Component {
   }
 
   tagName() {
-    const type = this.props.taskData.type;
+    const {type} = this.props.taskData;
     let res = 'DC';
 
-    if (type === 'DataCollection') {
+    switch (type) {
+    case 'DataCollection': {
       res = 'DC';
-    } else if (type === 'Characterisation') {
+    
+    break;
+    }
+    case 'Characterisation': {
       res = 'C';
-    } else if (type === 'Workflow') {
+    
+    break;
+    }
+    case 'Workflow': {
       res = 'WF';
-    } else if (type === 'XRFScan') {
+    
+    break;
+    }
+    case 'XRFScan': {
       res = 'XRF';
-    } else if (type === 'EnergyScan') {
+    
+    break;
+    }
+    case 'EnergyScan': {
       res = 'ESCAN';
+    
+    break;
+    }
+    // No default
     }
 
     return res;
@@ -79,7 +96,7 @@ export class TaskItem extends React.Component {
 
   result() {
     const task = this.props.taskData;
-    let content = (<div></div>);
+    let content = (<div />);
     let lImageUrl = '';
     let fImageUrl = '';
     let qIndUrl = '';
@@ -103,8 +120,8 @@ export class TaskItem extends React.Component {
         qIndUrl += task.limsResultData.dataCollectionId.toString();
       }
 
-      const sFlux = parseInt(r.flux, 10) / Math.pow(10, 9);
-      const eFlux = parseInt(r.flux_end, 10) / Math.pow(10, 9);
+      const sFlux = Number.parseInt(r.flux, 10) / 10**9;
+      const eFlux = Number.parseInt(r.flux_end, 10) / 10**9;
 
       content = (
         <div>
@@ -204,7 +221,7 @@ export class TaskItem extends React.Component {
     let result = 'bottom';
 
     if (this.refs.sampleItem) {
-      if (parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
+      if (Number.parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
         result = 'bottom';
       } else {
         result = 'top';

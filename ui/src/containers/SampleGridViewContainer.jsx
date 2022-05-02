@@ -175,7 +175,7 @@ class SampleGridViewContainer extends React.Component {
   resizeGridContainer() {
     const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
     const width = Math.min(viewportWidth, this.calcGridWidth()[0] || 0);
-    document.getElementById('sampleGridContainer').style.width = `${width - 38}px`;
+    document.querySelector('#sampleGridContainer').style.width = `${width - 38}px`;
   }
 
 
@@ -400,8 +400,7 @@ class SampleGridViewContainer extends React.Component {
    */
   addSamplesToQueue(sampleIDList) {
     const samplesToAdd = sampleIDList.map((sampleID) => {
-      const sample = { ...this.props.sampleList[sampleID], checked: true, tasks: [] };
-      return sample;
+      return { ...this.props.sampleList[sampleID], checked: true, tasks: [] };
     });
 
     if (samplesToAdd.length > 0) { this.props.addSamplesToQueue(samplesToAdd); }
@@ -599,7 +598,7 @@ class SampleGridViewContainer extends React.Component {
                 variant='outline-secondary'
                 id="split-button-sample-changer-selection"
                 disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                title={'Get samples from SC'}
+                title="Get samples from SC"
                 onClick={this.props.getSamples}
               >
                 <Dropdown.Item eventKey="2" onClick={this.showAddSampleForm}>
@@ -664,7 +663,7 @@ class SampleGridViewContainer extends React.Component {
                 variant='outline-secondary'
                 disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                 onClick={this.addSelectedSamplesToQueue}
-                title={<span ><i class="fas fa-plus" /> Add to Queue</span>}
+                title={<span ><i className="fas fa-plus" /> Add to Queue</span>}
               >
                 <Dropdown.Item eventKey="2" onClick={this.showDataCollectionForm}>
                   Add Data collection

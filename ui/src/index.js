@@ -55,7 +55,7 @@ function requireAuth() {
 }
 
 function PrivateOutlet() {
-  let location = useLocation();
+  const location = useLocation();
   const auth = requireAuth();
   return auth ? <Outlet /> : <Navigate to="/login" state={{ from: location }}  replace />;
 }
@@ -103,4 +103,4 @@ export default class App extends React.Component {
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.querySelector('#root'));

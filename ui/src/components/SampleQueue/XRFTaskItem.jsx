@@ -39,7 +39,7 @@ export default class XRFTaskItem extends Component {
 
   getResult(state) {
     if (state !== TASK_COLLECTED) {
-      return (<span></span>);
+      return (<span />);
     }
     const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
 
@@ -49,14 +49,14 @@ export default class XRFTaskItem extends Component {
         borderBottom: '1px solid #DDD',
         padding: '0.5em' } }
       >
-        <a href={link} target="_blank"> View Results in ISPyB</a>
+        <a href={link} target="_blank" rel="noreferrer"> View Results in ISPyB</a>
       </div>
     );
   }
 
   getIspybLink(state) {
     if (state !== TASK_COLLECTED) {
-      return (<span></span>);
+      return (<span />);
     }
 
     return (<a href={this.props.data.limstResultData}> ISPyB link</a>);
@@ -64,7 +64,7 @@ export default class XRFTaskItem extends Component {
 
   getPlot(state) {
     if (state === TASK_UNCOLLECTED) {
-      return (<span></span>);
+      return (<span />);
     }
 
     return (
@@ -89,7 +89,7 @@ export default class XRFTaskItem extends Component {
           <h4>Text in a modal</h4>
         </Modal.Body>
         <Plot1D displayedPlotCallback={this.newPlotDisplayed}
-          plotId={'this.plotIdByAction[currentActionName'} autoNext={'True'}
+          plotId="this.plotIdByAction[currentActionName" autoNext="True"
         />
         <Modal.Footer>
           <Button onClick={this.close}>Close</Button>
@@ -151,7 +151,7 @@ export default class XRFTaskItem extends Component {
     if (parameters.shape !== -1) {
       try {
         res = `${this.props.shapes.shapes[parameters.shape].name}: `;
-      } catch (e) {
+      } catch {
         res = '';
       }
     }
@@ -188,9 +188,9 @@ export default class XRFTaskItem extends Component {
       data,
       show } = this.props;
     const plotId = this.props.id;
-    const parameters = data.parameters;
+    const {parameters} = data;
 
-    const result = this.props.data.result;
+    const {result} = this.props.data;
     const plotAlreadyStored = result !== null;
 
     const delTaskCSS = {
@@ -207,12 +207,23 @@ export default class XRFTaskItem extends Component {
 
     let pbarBsStyle = 'info';
 
-    if (state === TASK_RUNNING) {
+    switch (state) {
+    case TASK_RUNNING: {
       pbarBsStyle = 'info';
-    } else if (state === TASK_COLLECTED) {
+    
+    break;
+    }
+    case TASK_COLLECTED: {
       pbarBsStyle = 'success';
-    } else if (state === TASK_COLLECT_FAILED) {
+    
+    break;
+    }
+    case TASK_COLLECT_FAILED: {
       pbarBsStyle = 'danger';
+    
+    break;
+    }
+    // No default
     }
 
     return (

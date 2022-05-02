@@ -25,7 +25,7 @@ import {
 
 class SampleViewContainer extends Component {
   render() {
-    const uiproperties = this.props.uiproperties;
+    const {uiproperties} = this.props;
 
     if (!uiproperties.hasOwnProperty('sample_view')) {
       return null;
@@ -39,18 +39,32 @@ class SampleViewContainer extends Component {
 
     Object.keys(this.props.shapes).forEach((key) => {
       const shape = this.props.shapes[key];
-      if (shape.t === 'P') {
+      switch (shape.t) {
+      case 'P': {
         points[shape.id] = shape;
-      } else if (shape.t === '2DP') {
+      
+      break;
+      }
+      case '2DP': {
         twoDPoints[shape.id] = shape;
-      } else if (shape.t === 'L') {
+      
+      break;
+      }
+      case 'L': {
         lines[shape.id] = shape;
-      } else if (shape.t === 'G') {
+      
+      break;
+      }
+      case 'G': {
         grids[shape.id] = shape;
 
         if (shape.selected) {
           selectedGrids.push(shape);
         }
+      
+      break;
+      }
+      // No default
       }
     });
 

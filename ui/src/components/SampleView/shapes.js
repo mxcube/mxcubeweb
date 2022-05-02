@@ -205,7 +205,7 @@ export function makeBeam(posX, posY, sizeX, sizeY, shape) {
 export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
   const a = (p1.x - p2.x) / ppMm[0];
   const b = (p1.y - p2.y) / ppMm[1];
-  const length = parseInt(Math.sqrt(a * a + b * b) * 1000, 10);
+  const length = Number.parseInt(Math.sqrt(a * a + b * b) * 1000, 10);
   return [
     makeLine(p1.x * iR, p1.y * iR, p2.x * iR, p2.y * iR, color, width, false),
     makeText(p2.x * iR, p2.y * iR, 12, color, `${length} µm`)
@@ -221,7 +221,7 @@ export function makePoint(x, y, id, color, type, name, strokeWidth) {
 export function makePoints(points, imageRatio) {
   const fabricPoints = [];
   for (const id in points) {
-    if ({}.hasOwnProperty.call(points, id)) {
+    if (Object.hasOwn(points, id)) {
       const [x, y] = points[id].screenCoord;
 
       switch (points[id].state) {
@@ -263,7 +263,7 @@ export function makePoints(points, imageRatio) {
 export function makeTwoDPoints(points, imageRatio) {
   const fabricPoints = [];
   for (const id in points) {
-    if ({}.hasOwnProperty.call(points, id)) {
+    if (Object.hasOwn(points, id)) {
       const [x, y] = points[id].screenCoord;
 
       switch (points[id].state) {
@@ -351,7 +351,7 @@ export function makeImageOverlay(iR, ppMm, bP, bSh, bSi, cCP, dP, canvas) {
     )
   );
   imageOverlay.push(...makeScale(canvas.height, scaleLengthX, scaleLengthY, 'green', '50 µm'));
-  if (cCP.length) {
+  if (cCP.length > 0) {
     const point = cCP[cCP.length - 1];
     imageOverlay.push(...makeCross(point, iR, canvas.width, canvas.height));
   }
