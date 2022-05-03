@@ -68,7 +68,7 @@ export default class TaskItem extends Component {
                 style={{ width: 'auto', marginTop: '-4px' }}
                 onClick={this.showDiffPlan}
               >
-                <i className="glyphicon glyphicon-plus" />
+                <i class="fas fa-plus" />
                 Add Diffraction Plan
               </Button>
           </span>

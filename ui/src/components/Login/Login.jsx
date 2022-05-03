@@ -54,7 +54,7 @@ class LoginComponent extends React.Component {
               data={this.props.data}
               selectedProposal={this.props.selectedProposal}
               selectProposal={this.props.selectProposal}
-              sendSelectProposal={this.props.sendSelectProposal}
+              sendSelectProposal={()=>this.props.sendSelectProposal(this.props.selectedProposal, this.props.navigate)}
               singOut={()=>this.props.doSignOut(this.props.navigate)}
 
             />

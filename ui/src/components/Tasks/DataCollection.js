@@ -172,7 +172,7 @@ class DataCollection extends React.Component {
           <Modal.Title>Standard Data Collection</Modal.Title>
         </Modal.Header>
         <Modal.Body >
-          <Form horizontal>
+          <Form>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
             <Row className='mb-2'>
@@ -182,7 +182,7 @@ class DataCollection extends React.Component {
             </Row>
             <Row>
               <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="2" col2="6" />
+                <InputField propName="prefix" label="Prefix" col1="2" col2="8" />
               </Col>
               {this.props.taskData.sampleID
                 ? (
@@ -201,7 +201,7 @@ class DataCollection extends React.Component {
           </Form>
 
           <FieldsHeader title="Acquisition" />
-          <Form horizontal>
+          <Form>
             <FieldsRow>
               <InputField propName="osc_range" type="number" label="Oscillation range" />
               <InputField propName="first_image" type="number" label="First image" />

@@ -419,7 +419,7 @@ class SampleGridViewContainer extends React.Component {
    * Start collection
    */
   startCollect() {
-    this.props.router.push('datacollection');
+    this.props.router.navigate('/datacollection' , { replace: true });
     this.props.showConfirmCollectDialog();
   }
 
@@ -591,7 +591,7 @@ class SampleGridViewContainer extends React.Component {
           </div>
           : null
         }
-        <Row className="samples-grid-row-header ps-4 pe-4">
+        <Row className="samples-grid-row-header">
           <Col sm={4} className='d-flex'>
             <Form>
               <SplitButton

@@ -2,7 +2,7 @@ import React from 'react';
 import withRouter from '../components/WithRouter'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Dropdown } from 'react-bootstrap';
+import { Row, Col, Dropdown } from 'react-bootstrap';
 
 import { MdRemove, MdFlare, Md360 } from "react-icons/md";
 
@@ -717,7 +717,7 @@ class SampleGridContainer extends React.Component {
 
     if (sampleData) {
       this.props.addSampleAndMount(sampleData);
-      this.props.router.push('datacollection');
+      this.props.router.navigate('/datacollection' , { replace: true });
     }
   }
 
@@ -775,24 +775,26 @@ class SampleGridContainer extends React.Component {
 
     return (
       <Row
-        className="samples-grid"
+        className="samples-grid "
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseMove={this.onMouseMove}
       >
-        <ul id="contextMenu" style={{ display: 'none' }} className="dropdown-menu" role="menu">
-          {this.sampleContextMenu()}
-          {this.taskContextMenuItems()}
-        </ul>
-        <ul id="contextMenuMounted"
-          style={{ display: 'none' }}
-          className="dropdown-menu"
-          role="menu"
-        >
-          {this.sampleContextMenuMounted()}
-          {this.taskContextMenuItems()}
-        </ul>
-
+        <Col sm={3}>
+          <Dropdown.Menu show id="contextMenu" style={{ display: 'none' }} role="menu">
+            {this.sampleContextMenu()}
+            {this.taskContextMenuItems()}
+          </Dropdown.Menu>
+          <Dropdown.Menu
+            show
+            id="contextMenuMounted"
+            style={{ display: 'none' }}
+            role="menu"
+          >
+            {this.sampleContextMenuMounted()}
+            {this.taskContextMenuItems()}
+          </Dropdown.Menu>
+        </Col>
         <div className="selection-rubber-band" id="selectionRubberBand" />
         <SpringGrid
           component="ul"

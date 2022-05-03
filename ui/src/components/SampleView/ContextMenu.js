@@ -1,4 +1,5 @@
 import React from 'react';
+import { Dropdown } from 'react-bootstrap';
 
 export default class ContextMenu extends React.Component {
   constructor(props) {
@@ -381,10 +382,10 @@ export default class ContextMenu extends React.Component {
   }
 
   listOptions(type) {
-    let el = (<li key={type.key}><a onClick={type.action}>{type.text}</a></li>);
+    let el = (<Dropdown.Item key={type.key}><a onClick={type.action}>{type.text}</a></Dropdown.Item>);
 
     if (type.text === 'divider') {
-      el = (<li key={type.key} className="divider" />);
+      el = (<Dropdown.Divider key={type.key} />);
     }
 
     return el;
@@ -400,9 +401,9 @@ export default class ContextMenu extends React.Component {
       optionList = menuOptions.NONE.map(this.listOptions);
     }
     return (
-      <ul id="contextMenu" className="dropdown-menu" role="menu">
+      <Dropdown.Menu show id="contextMenu" role="menu">
         {optionList}
-      </ul>
+      </Dropdown.Menu>
     );
   }
 }

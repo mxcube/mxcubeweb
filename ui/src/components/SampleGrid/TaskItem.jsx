@@ -1,5 +1,5 @@
 import React from 'react';
-import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Badge } from 'react-bootstrap';
 import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 import './SampleGrid.css';
@@ -201,19 +201,19 @@ export class TaskItem extends React.Component {
   stateClass() {
     const task = this.props.taskData;
 
-    let cls = 'btn-primary';
+    let varaint = 'primary';
 
     if (task.state === TASK_RUNNING) {
-      cls = 'btn-warning';
+      varaint = 'warning';
     } if (task.state === TASK_COLLECT_FAILED) {
-      cls = 'btn-danger';
+      varaint = 'danger';
     } if (task.state === TASK_COLLECT_WARNING) {
-      cls = 'btn-danger';
+      varaint = 'danger';
     } else if (task.state === TASK_COLLECTED) {
-      cls = 'btn-success';
+      varaint = 'success';
     }
 
-    return cls;
+    return varaint;
   }
 
   popoverPosition() {
@@ -258,25 +258,28 @@ export class TaskItem extends React.Component {
           placement={this.popoverPosition()}
           overlay={(
             <Popover
+              className='p-2'
               id="taskSummaryPopover"
-              style={{ minWidth: '700px', paddingBottom: '1em' }}
+              style={{ minWidth: '700px',}}
               title={(<b>{this.title()}</b>)}
             >
               <LimsResultSummary taskData={this.props.taskData} scale="0.5" />
             </Popover>) }
         >
-          <span
-            className={`${this.stateClass()} label`}
+          <Badge
+            varaint={this.stateClass()}
             style={style}
             onClick={this.taskItemOnClick}
+            className='p-1'
+            style={{ fontSize: '0.7em'}}
           >
             {this.tagName()}
             {
              task.state !== TASK_COLLECTED ?
-               (<i className="fas fa-times" onClick={this.deleteButtonOnClick} />) :
+               (<i style={{ cursor: 'pointer'}} className="ms-1 fas fa-times" onClick={this.deleteButtonOnClick} />) :
                (<span />)
             }
-          </span>
+          </Badge>
         </OverlayTrigger>
       </div>
     );

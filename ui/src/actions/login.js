@@ -1,9 +1,7 @@
 import fetch from 'isomorphic-fetch';
-import { createBrowserHistory } from 'history';
 import { showErrorPanel, setLoading, getInitialState } from './general';
 import { serverIO } from '../serverIO';
 
-const browserHistory = createBrowserHistory();
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -56,14 +54,14 @@ export function postProposal(number) {
   });
 }
 
-export function sendSelectProposal(number) {
+export function sendSelectProposal(number, navigate) {
   return function (dispatch) {
     postProposal(number).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to select proposal'));
-        browserHistory.push('/login');
+        navigate('/login');
       } else {
-        browserHistory.push('/');
+        navigate('/');
       }
     });
   };
