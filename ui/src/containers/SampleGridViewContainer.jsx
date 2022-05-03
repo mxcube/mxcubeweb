@@ -419,7 +419,7 @@ class SampleGridViewContainer extends React.Component {
    * Start collection
    */
   startCollect() {
-    this.props.router.push('datacollection');
+    this.props.router.navigate('/datacollection' , { replace: true });
     this.props.showConfirmCollectDialog();
   }
 

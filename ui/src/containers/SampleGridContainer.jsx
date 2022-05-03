@@ -717,7 +717,7 @@ class SampleGridContainer extends React.Component {
 
     if (sampleData) {
       this.props.addSampleAndMount(sampleData);
-      this.props.router.push('datacollection');
+      this.props.router.navigate('/datacollection' , { replace: true });
     }
   }
 
