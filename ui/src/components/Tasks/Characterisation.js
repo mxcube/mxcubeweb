@@ -87,17 +87,17 @@ class Characterisation extends React.Component {
           <Modal.Title>Characterisation</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form horizontal>
+          <Form>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
             <Row className='mb-2'>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="3" col2="7" />
+                <InputField propName="subdir" label="Subdirectory" col1="2" col2="8" />
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="3" col2="7" />
+                <InputField propName="prefix" label="Prefix" col1="2" col2="8" />
               </Col>
               {this.props.taskData.sampleID
                 ? (
@@ -115,7 +115,7 @@ class Characterisation extends React.Component {
             </Row>
           </Form>
           <FieldsHeader title="Reference acquisition" />
-          <Form horizontal>
+          <Form>
             <FieldsRow>
               <SelectField propName="num_images" label="Number of images" list={[1, 2, 4]} />
               <InputField propName="transmission" type="number" label="Transmission" />

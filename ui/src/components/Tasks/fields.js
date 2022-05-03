@@ -11,13 +11,13 @@ import { TiWarning, TiTimes } from "react-icons/ti";
 import './style.css';
 
 function validation(error, warning) {
-  let state = null;
+  let stateColor = null;
   if (error) {
-    state = 'error';
+    stateColor = 'red';
   } else if (warning) {
-    state = 'warning';
+    stateColor = 'orange';
   }
-  return state;
+  return stateColor;
 }
 
 function errorIndicator(error, warning) {
@@ -61,13 +61,6 @@ export function StaticField({ label, data }) {
     <Form.Label className='form-label-StaticField' column sm="9">
       {data}
     </Form.Label>
-    {/* <Col sm="10">
-      <Form.Control
-        plaintext readOnly
-        defaultValue={data}
-        style={{ textAlign: 'left', marginBottom: '0px' }}
-      />
-    </Col> */}
   </Form.Group>
 }
 
@@ -75,24 +68,28 @@ function ReduxInputField(prop) {
   return <Form.Group
     as={Row}
     controlId={prop.input.name}
-    validationState={validation(prop.meta.error, prop.meta.warning)}
   >
-    <Form.Label column xs={prop.col1 || 7} style={{ textAlign: 'left' }}>
+    <Form.Label
+    column xs={prop.col1 || 6}
+    style={{ textAlign: 'left', color: validation(prop.meta.error, prop.meta.warning) }}
+    >
       {prop.label}
     </Form.Label>
     <Col xs={prop.col2 || 4}>
       <Form.Control
         disabled={prop.disabled}
+        required
         value={prop.input.value}
         onChange={prop.input.onChange}
         {...prop}
+        style={{ borderColor: validation(prop.meta.error, prop.meta.warning) }}
       />
     </Col>
     {prop.meta.error || prop.meta.warning
       ? (
-        <span style={{ top: '7px', left: '-10px', position: 'relative' }}>
+        <Col sm={1} style={{ top: '7px', left: '-10px', position: 'relative' }}>
           {errorIndicator(prop.meta.error, prop.meta.warning)}
-        </span>
+        </Col>
       ) : null
         }
 
@@ -152,7 +149,7 @@ export function SelectField({
     name={propName}
     component={prop => (
       <Form.Group className='d-flex mb-2' controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
-        <Form.Label column xs={col1 || 7} style={{ textAlign: 'left' }}>
+        <Form.Label column xs={col1 || 6} style={{ textAlign: 'left' }}>
           {label}
         </Form.Label>
         <Col xs={col2 || 4}>

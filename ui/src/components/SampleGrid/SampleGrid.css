@@ -15,17 +15,16 @@
 }
 
 .samples-grid ul {
-  margin: 0px auto;
-  list-style-type: none;
-}
-
-.samples-grid-header {
-  z-index: 1000;
-  background-color: #f6f6f6;
   margin-left: auto;
   margin-right: auto;
   padding-left: 4em;
   padding-right: 4em;
+  list-style-type: none;
+}
+
+.samples-grid-row-header{
+  padding-left: 2.9em;
+  padding-right: 2.9em;
 }
 
 .move-arrow {

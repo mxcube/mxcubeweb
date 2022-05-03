@@ -591,7 +591,7 @@ class SampleGridViewContainer extends React.Component {
           </div>
           : null
         }
-        <Row className="samples-grid-row-header ps-4 pe-4">
+        <Row className="samples-grid-row-header">
           <Col sm={4} className='d-flex'>
             <Form>
               <SplitButton

@@ -775,7 +775,7 @@ class SampleGridContainer extends React.Component {
 
     return (
       <Row
-        className="samples-grid"
+        className="samples-grid "
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseMove={this.onMouseMove}

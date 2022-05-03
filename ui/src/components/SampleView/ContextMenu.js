@@ -385,7 +385,7 @@ export default class ContextMenu extends React.Component {
     let el = (<Dropdown.Item key={type.key}><a onClick={type.action}>{type.text}</a></Dropdown.Item>);
 
     if (type.text === 'divider') {
-      el = (<Dropdown.Item key={type.key} className="divider" />);
+      el = (<Dropdown.Divider key={type.key} />);
     }
 
     return el;
@@ -401,7 +401,7 @@ export default class ContextMenu extends React.Component {
       optionList = menuOptions.NONE.map(this.listOptions);
     }
     return (
-      <Dropdown.Menu show id="contextMenu" className="" role="menu">
+      <Dropdown.Menu show id="contextMenu" role="menu">
         {optionList}
       </Dropdown.Menu>
     );

@@ -79,7 +79,7 @@ export class SampleGridItem extends React.Component {
 
     const pickButton = (
       <OverlayTrigger
-        placement="top"
+        placement="auto"
         overlay={(<Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>)}
       >
         <Button
@@ -97,7 +97,7 @@ export class SampleGridItem extends React.Component {
 
     const moveButton = (
       <OverlayTrigger
-        placement="top"
+        placement="auto"
         overlay={(
           <Tooltip id="move-sample">
             Move sample (change order in which sample is collected)

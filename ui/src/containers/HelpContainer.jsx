@@ -36,7 +36,7 @@ export class HelpContainer extends React.Component {
         <Card className="mb-3">
           <Card.Header>
             <span>Local Contact</span>
-            <span className="glyphicon glyphicon-user pull-right"  />
+            <span className="me-3 position-absolute end-0" ><i className="fas fa-user" /></span>
           </Card.Header>
           <Card.Body>
             <span>
@@ -68,7 +68,7 @@ export class HelpContainer extends React.Component {
               <Card className="mb-3">
                 <Card.Header>
                   <span>Feedback</span>
-                  <span className="glyphicon glyphicon-envelope pull-right"  />
+                  <span className="me-3 position-absolute end-0" ><i className="fas fa-envelope" /></span>
                 </Card.Header>
               
                 <Card.Body>
@@ -151,7 +151,7 @@ export class HelpContainer extends React.Component {
                 (<Card header={
                   <div>
                     <span>Help Links</span>
-                    <span className="glyphicon glyphicon-info-sign pull-right"  />
+                    <span className="me-3 position-absolute end-0" ><i className="fas fa-info-circle" /></span>
                   </div>}
                 >
                   <span>

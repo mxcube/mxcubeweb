@@ -60,7 +60,7 @@ input[type="color"]:focus,
 cursor: pointer;
 }
 .btn-primary{
-    background:#337ab7;
+    background:#317fc4!important;
 }
 
 .btn-outline-secondary{
@@ -81,6 +81,14 @@ cursor: pointer;
 
 .bg-success {
     background: #449D44!important;
+}
+
+.bg-primary {
+    background:#317fc4!important;
+}
+
+.alert-success{
+    background: #DFF0D8!important;
 }
 
 
