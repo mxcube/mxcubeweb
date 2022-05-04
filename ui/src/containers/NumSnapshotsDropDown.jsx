@@ -18,7 +18,7 @@ class NumSnapshotsDropDown extends React.Component {
     return (
       <DropdownButton
         variant="outline-secondary"
-        align={{ lg: 'end' }}
+        align={{ sm: this.props.align }}
         title={(<span>
                 <i className="fas fa-1x fa-camera" /> &nbsp;
                   Crystal snapshots ({this.props.queue.numSnapshots})

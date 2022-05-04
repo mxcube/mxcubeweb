@@ -6,7 +6,7 @@ import { Modal,
   Button,
   Table,
   OverlayTrigger,
-  Popover, Alert,
+  Popover,
   Form } from 'react-bootstrap';
 
 import { sendRunQueue,
@@ -274,7 +274,7 @@ export class ConfirmCollectDialog extends React.Component {
     if (summary.numTasks > 0) {
       table = (
         <div className="scroll">
-        <Table striped bordered hover condensed>
+        <Table striped bordered hover>
           <thead id="table-head">
             <tr>
               <th>Type</th>
@@ -341,6 +341,7 @@ export class ConfirmCollectDialog extends React.Component {
           <div>
             <span>
               <Form.Check
+                className='mb-2'
                 type="checkbox"
                 defaultChecked={this.props.queue.centringMethod === AUTO_LOOP_CENTRING}
                 onClick={this.autoLoopCentringOnClick}
@@ -348,6 +349,7 @@ export class ConfirmCollectDialog extends React.Component {
               />
               { autoMountNext ?
                   <Form.Check
+                    className='mb-2'
                     type="checkbox"
                     defaultChecked={this.props.queue.autoMountNext}
                     onClick={this.autoMountNextOnClick}
@@ -355,7 +357,7 @@ export class ConfirmCollectDialog extends React.Component {
                   />
                 : <span />
               }
-              <NumSnapshotsDropDown />
+                <NumSnapshotsDropDown align='start'/>
             </span>
           </div>
 
@@ -366,8 +368,8 @@ export class ConfirmCollectDialog extends React.Component {
           {this.taskTable()}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.onCancelClick}>Cancel</Button>
-          <Button onClick={this.onOkClick}>Collect</Button>
+          <Button variant='outline-secondary' onClick={this.onCancelClick}>Cancel</Button>
+          <Button variant='success' onClick={this.onOkClick}>Collect</Button>
         </Modal.Footer>
       </Modal>);
   }
