@@ -201,25 +201,25 @@ export class TaskItem extends React.Component {
   stateClass() {
     const task = this.props.taskData;
 
-    let varaint = 'primary';
+    let variant = 'primary';
 
     if (task.state === TASK_RUNNING) {
-      varaint = 'warning';
+      variant = 'warning';
     } if (task.state === TASK_COLLECT_FAILED) {
-      varaint = 'danger';
+      variant = 'danger';
     } if (task.state === TASK_COLLECT_WARNING) {
-      varaint = 'danger';
+      variant = 'danger';
     } else if (task.state === TASK_COLLECTED) {
-      varaint = 'success';
+      variant = 'success';
     }
 
-    return varaint;
+    return variant;
   }
 
   popoverPosition() {
     const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     let result = 'bottom';
-
+    debugger;
     if (this.refs.sampleItem) {
       if (Number.parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
         result = 'bottom';
@@ -267,7 +267,7 @@ export class TaskItem extends React.Component {
             </Popover>) }
         >
           <Badge
-            varaint={this.stateClass()}
+            variant={this.stateClass()}
             style={style}
             onClick={this.taskItemOnClick}
             className='p-1'
