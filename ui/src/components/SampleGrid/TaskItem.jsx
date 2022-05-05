@@ -246,7 +246,7 @@ export class TaskItem extends React.Component {
 
 
   render() {
-    const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
+    const style = { display: 'inline-block', margin: '3px', cursor: 'pointer', fontSize: '0.7em' };
     const task = this.props.taskData;
 
     return (
@@ -271,7 +271,6 @@ export class TaskItem extends React.Component {
             style={style}
             onClick={this.taskItemOnClick}
             className='p-1'
-            style={{ fontSize: '0.7em'}}
           >
             {this.tagName()}
             {
