@@ -101,7 +101,7 @@ class QueueSettings extends React.Component {
               </Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item>
-                <NumSnapshotsDropDown />
+                <NumSnapshotsDropDown align='end' />
               </Dropdown.Item>
               <Dropdown.Divider />
               <Dropdown.Item>
