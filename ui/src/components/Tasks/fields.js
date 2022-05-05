@@ -68,6 +68,7 @@ function ReduxInputField(prop) {
   return <Form.Group
     as={Row}
     controlId={prop.input.name}
+    className='d-flex text-nowrap'
   >
     <Form.Label
     column xs={prop.col1 || 6}
@@ -78,7 +79,6 @@ function ReduxInputField(prop) {
     <Col xs={prop.col2 || 4}>
       <Form.Control
         disabled={prop.disabled}
-        required
         value={prop.input.value}
         onChange={prop.input.onChange}
         {...prop}
@@ -173,7 +173,7 @@ export function SelectField({
 export function FieldsRow({ children }) {
   return <Row className='mb-3'>
     {children.length > 0 ? children.map((child, i) => (
-      <Col key={i} xs={12 / children.length}>
+      <Col className='text-nowrap d-flex' key={i} xs={12 / children.length}>
         {child}
       </Col>
     )) : (

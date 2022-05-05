@@ -82,14 +82,14 @@ class AddSample extends React.Component {
                 label="Sample Name"
                 ref={(ref) => { this.sampleName = ref; }}
                 col1="4"
-                col2="7"
+                col2="6"
               />
               <InputField
                 propName="proteinAcronym"
                 label="Protein Acronym"
                 ref={(ref) => { this.proteinAcronym = ref; }}
                 col1="4"
-                col2="7"
+                col2="6"
                 onKeyPress={this.handleKeyPress}
               />
             </FieldsRow>
