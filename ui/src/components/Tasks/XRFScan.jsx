@@ -55,40 +55,35 @@ class XRFScan extends React.Component {
           <Modal.Title>XRF</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form horizontal>
+          <Form>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
-            <Row>
-              <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
-              </Col>
+            <Row className='mt-3'>
+              <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
             </Row>
-            <Row>
-              <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="4" col2="6" />
-              </Col>
+            <Row className='mt-3'>
+              <InputField propName="prefix" label="Prefix" col1="4" col2="7" />
+            </Row>
+            <Row className='mt-3'>
               {this.props.taskData.sampleID ?
-                (<Col xs={4}>
+                (
                   <InputField
                     propName="run_number"
                     disabled
                     label="Run number"
                     col1="4"
-                    col2="8"
-                  />
-                </Col>)
+                    col2="7"
+                  />)
                 : null}
             </Row>
-            <Row>
-              <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField
-                  propName="countTime"
-                  type="number"
-                  label="Count time (s)"
-                  col1="4"
-                  col2="2"
-                />
-              </Col>
+            <Row className='mt-3'>
+              <InputField
+                propName="countTime"
+                type="number"
+                label="Count time (s)"
+                col1="4"
+                col2="2"
+              />
             </Row>
           </Form>
        </Modal.Body>
@@ -102,7 +97,7 @@ class XRFScan extends React.Component {
                >
                  Run Now
                </Button>
-               <Button variant="primary" disabled={this.props.invalid}
+               <Button className='ms-3' variant="primary" disabled={this.props.invalid}
                  onClick={this.submitAddToQueue}
                >
                  {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}

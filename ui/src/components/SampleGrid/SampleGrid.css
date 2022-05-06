@@ -125,9 +125,15 @@ button[disabled] {
 }
 
 .samples-grid-item-tasks {
-  width: 180px;
-  height: 60px;
+  display: flex;
+  width: 185px;
+  height: 55px;
   overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.sample-grid-task-item {
+  margin: 0px!important;
 }
 
 .samples-item-controls-container {
@@ -227,9 +233,6 @@ button[disabled] {
   padding-bottom: 1em;
 }
 
-.sample-grid-task-item {
-  float: left;
-}
 
 .label-custom-success {
   color: #464646;

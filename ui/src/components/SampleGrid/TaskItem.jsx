@@ -1,5 +1,5 @@
 import React from 'react';
-import { OverlayTrigger, Popover, Badge } from 'react-bootstrap';
+import { Col, OverlayTrigger, Popover, Badge } from 'react-bootstrap';
 import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 import './SampleGrid.css';
@@ -249,7 +249,7 @@ export class TaskItem extends React.Component {
     const task = this.props.taskData;
 
     return (
-      <div key={this.props.taskIndex} className="sample-grid-task-item">
+      <Col sm={4} key={this.props.taskIndex} className=" ms-1 sample-grid-task-item">
         <OverlayTrigger
           trigger={['hover']}
           rootClose="true"
@@ -279,7 +279,7 @@ export class TaskItem extends React.Component {
             }
           </Badge>
         </OverlayTrigger>
-      </div>
+      </Col>
     );
   }
 }
