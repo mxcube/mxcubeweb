@@ -37,7 +37,7 @@ function errorIndicator(error, warning) {
 
 export function FieldsHeader({ title }) {
   return <Row >
-    <Col xs={12} style={{  marginTop: '0.5em', marginBottom: '0.5em' }}>
+    <Col sm={12} style={{  marginTop: '0.5em', marginBottom: '0.5em' }}>
       <hr style={{ marginBottom: '-12px',  }} />
       <center>
         <div>
@@ -71,12 +71,12 @@ function ReduxInputField(prop) {
     className='d-flex text-nowrap'
   >
     <Form.Label
-    column xs={prop.col1 || 6}
+    column sm={prop.col1 || 6}
     style={{ textAlign: 'left', color: validation(prop.meta.error, prop.meta.warning) }}
     >
       {prop.label}
     </Form.Label>
-    <Col xs={prop.col2 || 4}>
+    <Col sm={prop.col2 || 4}>
       <Form.Control
         disabled={prop.disabled}
         value={prop.input.value}
@@ -90,7 +90,7 @@ function ReduxInputField(prop) {
         <Col sm={1} style={{ top: '7px', left: '-10px', position: 'relative' }}>
           {errorIndicator(prop.meta.error, prop.meta.warning)}
         </Col>
-      ) : null
+      ) : <Col sm={1}/>
         }
 
   </Form.Group>
@@ -106,14 +106,14 @@ export function InputField(prop) {
 
 export function DisplayField({ label, value }) {
   return <Form.Group as={Row}>
-    <Form.Label column xs="8" style={{ textAlign: 'left' }}>
+    <Form.Label column sm="8" style={{ textAlign: 'left' }}>
       <b>
         {' '}
         {label}
         {' '}
       </b>
     </Form.Label>
-    <Col className="mb-2" xs="4">
+    <Col className="mb-2" sm="4">
       <Form.Control value={value} readOnly />
     </Col>
   </Form.Group>
@@ -123,11 +123,11 @@ export function CheckboxField({ propName, label, disabled }) {
   return <Field
     name={propName}
     component={prop => (
-      <Form.Group className='d-flex' controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
-        <Form.Label column xs={prop.col1 || 8} style={{ textAlign: 'left' }}>
+      <Form.Group as={Row} className='d-flex' controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
+        <Form.Label className='text-nowrap' column sm={prop.col1 || 9} style={{ textAlign: 'left' }}>
           {label}
         </Form.Label>
-        <Col className='mt-2 ms-1' xs={prop.col2 || 4}>
+        <Col className='mt-2' sm={prop.col2 || 2}>
           <Form.Check
             type="checkbox"
             defaultChecked={prop.input.value}
@@ -148,11 +148,11 @@ export function SelectField({
   return <Field
     name={propName}
     component={prop => (
-      <Form.Group className='d-flex mb-2' controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
-        <Form.Label column xs={col1 || 6} style={{ textAlign: 'left' }}>
+      <Form.Group as={Col} className='d-flex mb-2' controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
+        <Form.Label column sm={col1 || 6} style={{ textAlign: 'left' }}>
           {label}
         </Form.Label>
-        <Col xs={col2 || 4}>
+        <Col sm={col2 || 4}>
           <Form.Select
             value={prop.input.value}
             onChange={prop.input.onChange}
@@ -173,11 +173,11 @@ export function SelectField({
 export function FieldsRow({ children }) {
   return <Row className='mb-3'>
     {children.length > 0 ? children.map((child, i) => (
-      <Col className='text-nowrap d-flex' key={i} xs={12 / children.length}>
+      <Col className='d-flex' key={i} sm={12 / children.length}>
         {child}
       </Col>
     )) : (
-      <Col key={1} xs={6}>
+      <Col key={1} sm={6}>
         {children}
       </Col>
     )
@@ -197,7 +197,7 @@ export class CollapsableRows extends React.Component {
     return (
       <div>
         <Row>
-          <Col xs={12}>
+          <Col sm={12}>
             <center>
               { this.state.collapsed
                 ? (

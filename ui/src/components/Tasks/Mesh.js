@@ -102,17 +102,15 @@ class Mesh extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
-          <Form horizontal>
+          <Form>
             <StaticField label="Path" data={this.props.path} />
-            <Row>
-              <Col xs={12}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
-              </Col>
+            <Row className='mt-3'>
+              <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
             </Row>
             <Row>
-              <Col xs={8}>
-                <InputField propName="prefix" label="Prefix" col1="6" col2="6" />
-              </Col>
+              <InputField propName="prefix" label="Prefix" col1="6" col2="7" />
+            </Row>
+            <Row className='mt-3 mb-3'>
               {this.props.taskData.sampleID
                 ? (
                   <Col xs={4}>
@@ -121,7 +119,7 @@ class Mesh extends React.Component {
                       disabled
                       label="Run number"
                       col1="4"
-                      col2="8"
+                      col2="7"
                     />
                   </Col>
                 )
@@ -131,7 +129,7 @@ class Mesh extends React.Component {
           </Form>
 
           <FieldsHeader title="Acquisition" />
-          <Form horizontal>
+          <Form>
             <FieldsRow>
               <InputField propName="osc_range" type="number" label="Oscillation range per image" />
               <InputField propName="first_image" type="number" label="First image" />
@@ -182,7 +180,7 @@ class Mesh extends React.Component {
         { this.props.taskData.state ? ''
           : (
             <Modal.Footer>
-              <ButtonToolbar className="pull-left">
+              <ButtonToolbar style={{ bottom: '15px', left: '10px'}} className="position-absolute">
                 <Button
                   size="sm"
                   variant="outline-secondary"
@@ -191,6 +189,7 @@ class Mesh extends React.Component {
                Default Parameters
                 </Button>
                 <Button
+                  className='ms-3'
                   size="sm"
                   variant="outline-secondary"
                   onClick={this.resetParameters}
@@ -207,6 +206,7 @@ class Mesh extends React.Component {
                  Run Now
                 </Button>
                 <Button
+                  className='ms-3'
                   variant="primary"
                   disabled={this.props.invalid}
                   onClick={this.submitAddToQueue}

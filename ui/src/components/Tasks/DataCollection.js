@@ -254,7 +254,7 @@ class DataCollection extends React.Component {
 
           <FieldsHeader title="Processing" />
           <CollapsableRows>
-            <Form horizontal>
+            <Form>
               <SelectField
                 col1="3"
                 col2="3"
@@ -262,7 +262,7 @@ class DataCollection extends React.Component {
                 label="Space group"
                 list={SPACE_GROUPS}
               />
-              <b> Unit Cell: </b>
+              <b className='mb-2 mt-3'> Unit Cell: </b>
               <FieldsRow>
                 <InputField col1="1" col2="5" propName="cellA" label="a" />
                 <InputField col1="1" col2="5" propName="cellB" label="b" />

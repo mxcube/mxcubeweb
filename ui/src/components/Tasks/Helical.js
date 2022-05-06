@@ -87,28 +87,24 @@ class Helical extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
-          <Form horizontal>
+          <Form>
             <StaticField label="Path" data={this.props.path} />
-            <Row>
-              <Col xs={12}>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="8" />
-              </Col>
+            <Row className='mt-3'>
+                <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
             </Row>
-            <Row>
-              <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="4" col2="6" />
-              </Col>
+            <Row  className='mt-3'>
+              <InputField propName="prefix" label="Prefix" col1="4" col2="7" />
+            </Row>
+            <Row  className='mt-3 mb-3'>
               {this.props.taskData.sampleID
                 ? (
-                  <Col xs={4}>
                     <InputField
                       propName="run_number"
                       disabled
                       label="Run number"
                       col1="4"
-                      col2="8"
+                      col2="7"
                     />
-                  </Col>
                 )
                 : null}
             </Row>
@@ -116,7 +112,7 @@ class Helical extends React.Component {
           </Form>
 
           <FieldsHeader title="Acquisition" />
-          <Form horizontal>
+          <Form>
             <FieldsRow>
               <InputField propName="osc_range" type="number" label="Oscillation range" />
               <InputField propName="first_image" type="number" label="First image" />
@@ -180,6 +176,7 @@ class Helical extends React.Component {
                  Run Now
                 </Button>
                 <Button
+                  className='ms-3'
                   variant="primary"
                   disabled={this.props.invalid}
                   onClick={this.submitAddToQueue}

@@ -117,7 +117,7 @@ class Characterisation extends React.Component {
           <FieldsHeader title="Reference acquisition" />
           <Form>
             <FieldsRow>
-              <SelectField propName="num_images" label="Number of images" list={[1, 2, 4]} />
+              <SelectField col1='7' col2='4' propName="num_images" label="Number of images" list={[1, 2, 4]} />
               <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
@@ -152,7 +152,7 @@ class Characterisation extends React.Component {
             </CollapsableRows>
           </Form>
           <FieldsHeader title="Characterisation" />
-          <Form horizontal>
+          <Form>
             <FieldsRow>
               <CheckboxField
                 propName="account_rad_damage"
@@ -173,7 +173,7 @@ class Characterisation extends React.Component {
           </Form>
           <FieldsHeader title="Crystal" />
           <CollapsableRows>
-            <Form horizontal>
+            <Form>
               <SelectField
                 col1="3"
                 col2="3"
@@ -181,7 +181,7 @@ class Characterisation extends React.Component {
                 label="Space group"
                 list={SPACE_GROUPS}
               />
-              <Form.Label>Vertical Crystal dimension:</Form.Label>
+              <Form.Label className='mb-2 mt-3'>Vertical Crystal dimension:</Form.Label>
               <FieldsRow>
                 <InputField propName="min_crystal_vdim" label="Min" />
                 <InputField propName="min_crystal_vphi" label="&omega; at min" />
@@ -194,7 +194,7 @@ class Characterisation extends React.Component {
           </CollapsableRows>
           <FieldsHeader title="Radiation damage model" />
           <CollapsableRows>
-            <Form horizontal>
+            <Form>
               <FieldsRow>
                 <InputField col1="6" col2="5" propName="beta" label="&beta; Å / Mgy" />
                 <InputField col1="5" col2="5" propName="gamma" label="&gamma; 1/Mgy" />
@@ -204,11 +204,11 @@ class Characterisation extends React.Component {
           </CollapsableRows>
           <FieldsHeader title="Optimization parameters" />
           <CollapsableRows>
-            <Form horizontal>
+            <Form>
               <FieldsRow>
                 <InputField
-                  col1="6"
-                  col2="5"
+                  col1="7"
+                  col2="4"
                   propName="aimed_i_sigma"
                   label="Aimed I/&sigma; at highest resolution"
                 />
@@ -220,7 +220,7 @@ class Characterisation extends React.Component {
                 />
               </FieldsRow>
               <Row className='mb-2'>
-                <Col xs="8">
+                <Col xs="6">
                   <CheckboxField
                     propName="use_permitted_rotation"
                     label="Use permitted rotaion range"
@@ -256,7 +256,7 @@ class Characterisation extends React.Component {
                 />
               </FieldsRow>
               <Row>
-                <Col xs="8">
+                <Col xs="6">
                   <CheckboxField
                     propName="low_res_pass_strat"
                     label="Calculate low resolution pass strategy"
@@ -267,7 +267,7 @@ class Characterisation extends React.Component {
           </CollapsableRows>
           <FieldsHeader title="Routine DC" />
           <CollapsableRows>
-            <Form horizontal>
+            <Form>
               <FieldsRow>
                 <CheckboxField
                   propName="use_min_dose"
@@ -300,7 +300,7 @@ class Characterisation extends React.Component {
           </CollapsableRows>
           <FieldsHeader title="SAD" />
           <CollapsableRows>
-            <Form horizontal>
+            <Form>
               <Row>
                 <Col xs="10">
                   <CheckboxField
@@ -310,7 +310,7 @@ class Characterisation extends React.Component {
                   />
                 </Col>
               </Row>
-              <Row>
+              <Row className='mb-2'>
                 <Col xs="10">
                   <CheckboxField
                     propName="opt_sad"
@@ -334,9 +334,9 @@ class Characterisation extends React.Component {
           </CollapsableRows>
           <FieldsHeader title="Radiation Damage" />
           <CollapsableRows>
-            <Form horizontal>
+            <Form>
               <Row>
-                <Col xs="9">
+                <Col xs="8">
                   <CheckboxField
                     propName="determine_rad_params"
                     label="Determine radiation damage parameters"
