@@ -219,7 +219,6 @@ export class TaskItem extends React.Component {
   popoverPosition() {
     const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     let result = 'bottom';
-    debugger;
     if (this.refs.sampleItem) {
       if (Number.parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
         result = 'bottom';
