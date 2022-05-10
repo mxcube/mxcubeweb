@@ -338,11 +338,13 @@ class Queue(ComponentBase):
         queueID = node._node_id
         enabled, state = self.get_node_state(queueID)
 
-        parameters["subdir"] = os.path.join(
-            *parameters["directory"].split(HWR.beamline.session.raw_data_folder_name)[
-                1:
-            ]
-        ).lstrip("/")
+        raw_data = HWR.beamline.session.raw_data_folder_name
+        ddir = parameters["directory"]
+        if raw_data in ddir:
+            parameters["subdir"] = os.path.join(*ddir.split(raw_data)[1:]).lstrip("/")
+        else:
+            # We are given a relative directory. Thisa might or mightnto work.
+            parameters["subdir"] = ddir
 
         parameters["fileName"] = pt.get_image_file_name().replace(
             "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"

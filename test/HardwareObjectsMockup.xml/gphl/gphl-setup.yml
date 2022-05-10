@@ -71,6 +71,7 @@ software_properties:
 
     # MANDATORY pending change in workflow
     co.gphl.wf.stratcal.bin: "{GPHL_INSTALLATION}/exe/run_stratcal_wrap.py"
+#    co.gphl.wf.stratcal.bin: "/alt/rhfogh/Software/GPhL/mxcube_setup/stratcal/scripts/run_stratcal_wrap.py"
 
     # OPTIONAL location of alternative executables (wrappers) supported by the workflow
     # Each has an option (rarely used)  to specify a specific license directory -->
@@ -86,4 +87,4 @@ software_properties:
     # co.gphl.wf.recen.bdg_licence_dir/fill/me/in
 
     # OPTIONAL. simcal *binary* For Mock collection emulation only. Not used by ASTRA workflow
-    co.gphl.wf.simcal.bin: "{GPHL_INSTALLATION}/autoPROC/bin/linux64/simcal"
+    co.gphl.wf.simcal.bin: "/alt/rhfogh/Software/GPhL/GPhL-WF-beta-academic-20220420//autoPROC/bin/linux64/simcal"
