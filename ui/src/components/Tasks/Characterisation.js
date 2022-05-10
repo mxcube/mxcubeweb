@@ -336,7 +336,7 @@ class Characterisation extends React.Component {
           <CollapsableRows>
             <Form>
               <Row>
-                <Col xs="9">
+                <Col xs="8">
                   <CheckboxField
                     propName="determine_rad_params"
                     label="Determine radiation damage parameters"
