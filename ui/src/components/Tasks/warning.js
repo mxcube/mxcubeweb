@@ -38,7 +38,7 @@ const warn = (values, props) => {
 
   if (props.beamline.hardwareObjects.omega.value !== Number.parseFloat(values.osc_start)) {
     warnings.osc_start =
-      'Oscillation start angle is different from current omega';
+      'Entered Oscillation start angle is different from current omega';
   }
 
   if (

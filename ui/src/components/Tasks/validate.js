@@ -43,13 +43,18 @@ const validate = (values, props) => {
   if (values.num_images === ''
       || Number.parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images
       || Number.parseInt(values.num_images, 10) < 1) {
-    errors.num_images = 'Number of images out of allowed range';
+    errors.num_images = 'Entered Number of images out of allowed range';
   }
-  if (values.osc_range === ''
-    || Number.parseInt(values.osc_range, 10) > props.acqParametersLimits.osc_range
+
+  if (Number.parseInt(values.osc_range, 10) > props.acqParametersLimits.osc_range
     || Number.parseFloat(values.osc_range, 10) < 0) {
     errors.osc_range = 'wrong value';
   }
+
+  if (values.osc_range === '') {
+    errors.osc_range = 'field empty';
+  }
+
   if (values.osc_start === '') {
     errors.osc_start = 'field empty';
   }
@@ -58,20 +63,21 @@ const validate = (values, props) => {
   const exptimemax = props.acqParametersLimits.exposure_time[1];
   if (values.exp_time === '' || Number.parseFloat(values.exp_time, 10) > exptimemax
       || Number.parseFloat(values.exp_time, 10) < exptimemin) {
-    errors.exp_time = 'Exposure time out of allowed limit';
+    errors.exp_time = 'Entered Exposure time out of allowed limit';
   }
 
-  if (!(currRes > resMin && currRes <= resMax)) {
-    errors.resolution = 'Resolution outside working range';
+  if (!(currRes >= resMin && currRes <= resMax)) {
+    errors.resolution = 'Entered Resolution outside working range';
   }
 
   if (energies.length > 2 && !(currEnergy > props.beamline.hardwareObjects.energy.limits[0]
           && currEnergy < props.beamline.hardwareObjects.energy.limits[1])) {
-      errors.energy = 'Energy outside working range';
+      errors.energy = `Entered Energy is outside working range [${props.attributes.energy.limits[0]},
+        ${props.attributes.energy.limits[0].toFixed(1)}]`;
     }
 
   if (!(currTransmission >= 0 && currTransmission <= 100)) {
-    errors.transmission = 'Transmission outside working range';
+    errors.transmission = 'Entered Transmission is outside working range [0, 100]';
   }
 
   if (props.pointID !== -1 && props.pointID.includes('2D') && props.form === 'characterisation'
