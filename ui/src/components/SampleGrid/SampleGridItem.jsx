@@ -1,5 +1,5 @@
 import React from 'react';
-import { OverlayTrigger, Tooltip, Popover, Badge, Button } from 'react-bootstrap';
+import { Row, OverlayTrigger, Tooltip, Popover, Badge, Button } from 'react-bootstrap';
 import classNames from 'classnames';
 import { isCollected } from '../../constants';
 
@@ -315,7 +315,7 @@ export class SampleGridItem extends React.Component {
         <div className={`ps-2 pe-2 ${scLocationClasses}`}>
           {this.props.sampleData.location} {this.currentSampleText()}
         </div>
-        <div style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
+        <div className='mb-2' style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
         <OverlayTrigger
           ref={(ref) => { this.sampleInfoPopoverTrigger = ref; }}
           placement='auto'
@@ -342,10 +342,9 @@ export class SampleGridItem extends React.Component {
         </OverlayTrigger>
         </div>
         {this.seqId()}
-        <br />
-        <div className="samples-grid-item-tasks">
+        <Row className="samples-grid-item-tasks">
           { this.props.children }
-        </div>
+        </Row>
       </div>
     );
   }

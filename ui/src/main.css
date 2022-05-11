@@ -47,6 +47,10 @@ input[type="color"]:focus,
 }
 
 
+.modal {
+    height: 100vh!important;
+}
+
 .modal-content {
     min-width: 750px;
     width: fit-content;

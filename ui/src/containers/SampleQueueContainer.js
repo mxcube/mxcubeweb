@@ -61,7 +61,6 @@ class SampleQueueContainer extends React.Component {
   }
 
   handleSelect(selectedKey) {
-    debugger;
     this.props.queueGUIActions.showList(selectedKey);
   }
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import { OverlayTrigger, Popover, Badge } from 'react-bootstrap';
+import { Col, OverlayTrigger, Popover, Badge } from 'react-bootstrap';
 import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 import './SampleGrid.css';
@@ -201,25 +201,24 @@ export class TaskItem extends React.Component {
   stateClass() {
     const task = this.props.taskData;
 
-    let varaint = 'primary';
+    let variant = 'primary';
 
     if (task.state === TASK_RUNNING) {
-      varaint = 'warning';
+      variant = 'warning';
     } if (task.state === TASK_COLLECT_FAILED) {
-      varaint = 'danger';
+      variant = 'danger';
     } if (task.state === TASK_COLLECT_WARNING) {
-      varaint = 'danger';
+      variant = 'danger';
     } else if (task.state === TASK_COLLECTED) {
-      varaint = 'success';
+      variant = 'success';
     }
 
-    return varaint;
+    return variant;
   }
 
   popoverPosition() {
     const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
     let result = 'bottom';
-
     if (this.refs.sampleItem) {
       if (Number.parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
         result = 'bottom';
@@ -246,11 +245,11 @@ export class TaskItem extends React.Component {
 
 
   render() {
-    const style = { display: 'inline-block', margin: '3px', cursor: 'pointer' };
+    const style = { display: 'inline-block', margin: '3px', cursor: 'pointer', fontSize: '0.7em' };
     const task = this.props.taskData;
 
     return (
-      <div key={this.props.taskIndex} className="sample-grid-task-item">
+      <Col sm={4} key={this.props.taskIndex} className=" ms-1 sample-grid-task-item">
         <OverlayTrigger
           trigger={['hover']}
           rootClose="true"
@@ -267,11 +266,10 @@ export class TaskItem extends React.Component {
             </Popover>) }
         >
           <Badge
-            varaint={this.stateClass()}
+            variant={this.stateClass()}
             style={style}
             onClick={this.taskItemOnClick}
             className='p-1'
-            style={{ fontSize: '0.7em'}}
           >
             {this.tagName()}
             {
@@ -281,7 +279,7 @@ export class TaskItem extends React.Component {
             }
           </Badge>
         </OverlayTrigger>
-      </div>
+      </Col>
     );
   }
 }

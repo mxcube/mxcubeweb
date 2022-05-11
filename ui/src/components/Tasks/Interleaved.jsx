@@ -129,7 +129,7 @@ class Interleaved extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
-          <Form horizontal>
+          <Form>
             <Table
               striped
               condensed
@@ -159,7 +159,7 @@ class Interleaved extends React.Component {
             <br />
             <br />
             <FieldsHeader title="Interleaved parameters" />
-            <Row>
+            <Row className='mt-2'>
               <Col xs={6}>
                 <StaticField label="Wedge size" data={(<span> {wedgeSize} &deg; </span>)} />
               </Col>
@@ -170,7 +170,7 @@ class Interleaved extends React.Component {
                 />
               </Col>
             </Row>
-            <Row>
+            <Row className='mt-3'>
               <Col xs={6} style={{ marginTop: '10px' }}>
                 <InputField
                   propName="subWedgeSize"
@@ -193,7 +193,7 @@ class Interleaved extends React.Component {
               bordered
               hover
               style={{ fontSize: 'smaller', marginBottom: '0px' }}
-              className="task-parameters-table"
+              className="task-parameters-table mt-3"
             >
               <thead>
                 <tr>
@@ -239,7 +239,7 @@ class Interleaved extends React.Component {
                >
                  Run Now
                </Button>
-               <Button variant="primary" disabled={this.props.invalid}
+               <Button className='ms-3' variant="primary" disabled={this.props.invalid}
                  onClick={this.submitAddToQueue}
                >
                  {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
