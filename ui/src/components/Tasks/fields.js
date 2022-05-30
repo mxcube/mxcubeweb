@@ -64,9 +64,9 @@ export function FieldsHeader({ title }) {
   </Row>
 }
 
-export function StaticField({ label, data }) {
+export function StaticField({ label, data, col1, col2 }) {
   return <Form.Group as={Row} style={{ textAlign: 'left' }}>
-   <Form.Label column sm="2" >
+   <Form.Label column sm={col1 || 2} >
      <b>
         {label}
         :

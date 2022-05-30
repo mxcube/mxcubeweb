@@ -21,6 +21,8 @@ const validate = (values, props) => {
   const validFname = props.filename.match(/^[-\w\-\#\_\{\}\[\]]+$/);
   /* eslint-enable no-useless-escape */
 
+  const emptyField = 'field is empty';
+
   if (!validFname) {
     errors.prefix = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
   }
@@ -40,10 +42,13 @@ const validate = (values, props) => {
     resMax = props.beamline.hardwareObjects.resolution.limits[1];
   }
 
-  if (values.num_images === ''
-      || Number.parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images
+  if (Number.parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images
       || Number.parseInt(values.num_images, 10) < 1) {
     errors.num_images = 'Entered Number of images out of allowed range';
+  }
+
+  if (values.num_images === '') {
+    errors.num_images = emptyField;
   }
 
   if (Number.parseInt(values.osc_range, 10) > props.acqParametersLimits.osc_range
@@ -52,11 +57,11 @@ const validate = (values, props) => {
   }
 
   if (values.osc_range === '') {
-    errors.osc_range = 'field empty';
+    errors.osc_range = emptyField;
   }
 
   if (values.osc_start === '') {
-    errors.osc_start = 'field empty';
+    errors.osc_start = emptyField;
   }
 
   const exptimemin = props.acqParametersLimits.exposure_time[0];
