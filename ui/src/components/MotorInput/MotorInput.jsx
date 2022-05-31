@@ -120,7 +120,7 @@ export default class MotorInput extends React.Component {
                 className="rw-widget-right-border"
                 style={{
                   width: 'auto',
-                  height: !this.props.inplace ? '39px' : '35px',
+                  height: !this.props.inplace ? '38.5px' : '34px',
                   position: 'absolute',
                   display: 'inline-flex',
                   alignItems: 'center',
@@ -136,7 +136,7 @@ export default class MotorInput extends React.Component {
                  data={data}
                  onSave={this.props.saveStep}
                  suffix={suffix}
-                 inputSize="75px"
+                 inputSize="5"
                  style={{ display: 'inline-block', marginLeft: 'auto', marginRight: '0.5em' }}
                />
                 : null
@@ -165,7 +165,7 @@ export default class MotorInput extends React.Component {
                 data={data}
                 onSave={this.props.saveStep}
                 suffix={suffix}
-                inputSize="50px"
+                inputSize="5"
                 inplace
                 style={{ display: 'inline-block', marginLeft: 'auto', marginRight: 'auto' }}
               />

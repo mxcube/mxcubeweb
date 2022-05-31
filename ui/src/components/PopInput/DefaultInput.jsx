@@ -36,7 +36,7 @@ export default class DefaultInput extends React.Component {
         <InputGroup className='d-flex' >
           <NumericInput
             className="popinput-input"
-            size="5"
+            size={this.props.inputSize}
             ref={this.formControlRef}
             precision={this.props.precision}
             value={this.props.value}
@@ -63,7 +63,7 @@ export default class DefaultInput extends React.Component {
 
 DefaultInput.defaultProps = {
   dataType: 'number',
-  inputSize: '10',
+  inputSize: '3',
   step: 0.1,
   inplace: false,
   precision: 3,
