@@ -42,35 +42,37 @@ class LoginComponent extends React.Component {
 
   render() {
     if (this.props.loading && !this.props.showProposalsForm) {
-      return <img src={loader} className="centered" role="presentation" />;
+      return (
+        <div className="centered"><img src={loader} role="presentation" /></div>
+      );
     }
 
     return (
       <Container>
-          { this.props.showProposalsForm ?
-            <SelectProposal
-              show
-              hide={this.props.hideTaskParametersForm}
-              data={this.props.data}
-              selectedProposal={this.props.selectedProposal}
-              selectProposal={this.props.selectProposal}
-              sendSelectProposal={()=>this.props.sendSelectProposal(this.props.selectedProposal, this.props.navigate)}
-              singOut={()=>this.props.doSignOut(this.props.navigate)}
+        { this.props.showProposalsForm ?
+          <SelectProposal
+            show
+            hide={this.props.hideTaskParametersForm}
+            data={this.props.data}
+            selectedProposal={this.props.selectedProposal}
+            selectProposal={this.props.selectProposal}
+            sendSelectProposal={()=>this.props.sendSelectProposal(this.props.selectedProposal, this.props.navigate)}
+            singOut={()=>this.props.doSignOut(this.props.navigate)}
 
-            />
-            : null
-          }
-          <Row>
-            <Col xs={4}>
-              <Form onSubmit={this.signIn} className="loginBox">
-                <Row>
-                  <center>
-                    <img src={logo} role="presentation"
-                      style={{ width: '80px', marginBottom: '30px' }}
-                    />
-                    <span className="title">MXCuBE 3</span>
-                  </center>
-                </Row>
+          />
+          : null
+        }
+        <Row>
+          <Col xs={4}>
+            <Form onSubmit={this.signIn} className="loginBox">
+              <Row>
+                <center>
+                  <img src={logo} role="presentation"
+                    style={{ width: '80px', marginBottom: '30px' }}
+                  />
+                  <span className="title">MXCuBE 3</span>
+                </center>
+              </Row>
               <Row>
                 <Col xs={12}>
                   <Form.Group className="mb-3">
