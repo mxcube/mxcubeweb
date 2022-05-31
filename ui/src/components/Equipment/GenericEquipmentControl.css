@@ -16,6 +16,21 @@
 }
 
 .custom-accordion-header > .accordion-button { 
-  padding: 0.3rem 1rem
+  padding: 0rem 0.5rem 0rem 0rem
 
+}
+
+
+.custom-accordion-header >  .accordion-button:not(.collapsed) {
+  background-color: #ffffff !important;
+  box-shadow: none !important;
+}
+
+.custom-accordion-header-child >  .accordion-button:not(.collapsed) {
+  /* background-color: #ffffff !important; */
+  box-shadow: 0px !important;
+}
+
+.accordion-button:focus {
+  box-shadow:none !important;
 }
