@@ -251,7 +251,7 @@ export default class LabelPopInput extends React.Component {
 LabelPopInput.defaultProps = {
   className: '',
   dataType: 'number',
-  inputSize: '110',
+  inputSize: '5',
   name: '',
   title: '',
   suffix: '',

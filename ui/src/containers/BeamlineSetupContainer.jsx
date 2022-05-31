@@ -171,6 +171,7 @@ class BeamlineSetupContainer extends React.Component {
               pkey= {uiprop.attribute}
               suffix={uiprop.suffix }
               precision={ uiprop.precision }
+              inputSize="5"
               data={ beamline_attribute }
               onSave= { this.setAttribute }
               onCancel= { this.onCancelHandler }
