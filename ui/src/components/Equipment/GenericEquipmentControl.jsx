@@ -68,10 +68,10 @@ export default class GenericEquipmentControl extends React.Component {
 
     return Object.entries(a).map(([key, value]) => {
       return (
-       <Accordion defaultActiveKey="0" className="command-panel mb-2">
+       <Accordion defaultActiveKey="0" className="command-panel">
          <Accordion.Item>
-           <Accordion.Header><b>Command: {key}</b></Accordion.Header>
-           <Accordion.Body className='mb-2'>
+           <Accordion.Header className='custom-accordion-header-child'><b>Command: {key}</b></Accordion.Header>
+           <Accordion.Body className=''>
              <Row>
               <Col className="col-xs-6">
                 {this.renderParameters(key)}
@@ -97,12 +97,13 @@ export default class GenericEquipmentControl extends React.Component {
                 <EquipmentState
                   state={this.props.equipment.state}
                   equipmentName={this.props.equipment.name}
+                  style={{ margin: '0px 10px 0px 0px', width: 'inherit'}}
                 />
-              </Accordion.Header>
-              <Accordion.Body className="p-3 generic-equipment-container-panel-body">
-                {this.getCommands()}
-                {this.renderDialog}
-              </Accordion.Body>
+                </Accordion.Header>
+                <Accordion.Body className="p-3 generic-equipment-container-panel-body">
+                  {this.getCommands()}
+                  {this.renderDialog}
+                </Accordion.Body>
               </Accordion.Item>
             </Accordion>
         </Col>
