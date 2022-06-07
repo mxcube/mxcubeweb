@@ -1,5 +1,6 @@
 import React from 'react';
-import { Label, Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { Badge, Button, OverlayTrigger, Popover } from 'react-bootstrap';
+
 
 export default class InOutSwitch extends React.Component {
   constructor(props) {
@@ -10,13 +11,15 @@ export default class InOutSwitch extends React.Component {
     this.onOptionsRightClick = this.onOptionsRightClick.bind(this);
   }
 
+
   onLinkRightClick(e) {
-    this.refs.overlay.handleToggle();
+    this.overlay.handleToggle();
     e.preventDefault();
   }
 
+
   onOptionsRightClick(e) {
-    this.refs.optionsOverlay.handleToggle();
+    this.optionsOverlay.handleToggle();
     e.preventDefault();
   }
 
@@ -25,43 +28,47 @@ export default class InOutSwitch extends React.Component {
       this.props.onSave(this.props.pkey, this.props.offText);
     }
 
-    this.refs.overlay.hide();
+    this.overlay.hide();
   }
+
 
   setOn() {
     if (this.props.onSave !== undefined) {
       this.props.onSave(this.props.pkey, this.props.onText);
     }
 
-    this.refs.overlay.hide();
+    this.overlay.hide();
   }
+
 
   renderLabel() {
     let optionsLabel = (
-      <Label style={{ display: 'block', marginBottom: '3px' }}>
+      <Badge
+        bg="secondary"
+        style={{ display: 'block', marginBottom: '3px' }}
+      >
         {this.props.labelText}
-      </Label>
-    );
+      </Badge>);
 
     if (this.props.optionsOverlay) {
       optionsLabel = (
-        <OverlayTrigger
-          ref="optionsOverlay"
-          rootClose
-          trigger="click"
-          placement="bottom"
-          overlay={this.props.optionsOverlay}
-        >
-          <div onContextMenu={this.onOptionsRightClick}>
-            <Label style={{ display: 'block', marginBottom: '3px' }}>
-              {this.props.labelText}
-              <span>
-                <i className="fas fa-cog" />
-              </span>
-            </Label>
-          </div>
-        </OverlayTrigger>
-      );
+         <OverlayTrigger
+           ref={(ref) => { this.optionsOverlay = ref; }}
+           rootClose
+           trigger="click"
+           placement="bottom"
+           overlay={ this.props.optionsOverlay }
+         >
+           <div onContextMenu={this.onOptionsRightClick}>
+             <Badge
+              bg="secondary"
+              style={{ display: 'block', marginBottom: '3px' }}
+             >
+               { this.props.labelText }
+                 <i className="fas fa-cog ms-2" />
+             </Badge>
+           </div>
+        </OverlayTrigger>);
     }
 
     return optionsLabel;
@@ -75,49 +82,29 @@ export default class InOutSwitch extends React.Component {
       msgBgStyle = 'danger';
     }
 
-    let btn = (
-      <Button block bsSize="small" disabled>
-        ---
-      </Button>
-    );
+    let btn = <Button variant='outline-secondary' size="sm" disabled>---</Button>;
 
     if (this.props.data.value === this.props.onText) {
-      btn = (
-        <Button block bsSize="small" onClick={this.setOff}>
-          Set: {this.props.offText}
-        </Button>
-      );
+      btn = <Button variant='outline-secondary' size="sm" onClick={this.setOff}>Set: {this.props.offText}</Button>;
     } else {
-      btn = (
-        <Button block bsSize="small" onClick={this.setOn}>
-          Set: {this.props.onText}
-        </Button>
-      );
+      btn = <Button variant='outline-secondary' size="sm" onClick={this.setOn}>Set: {this.props.onText}</Button>;
     }
 
-    const msgLabelStyle = {
-      display: 'block',
-      fontSize: '100%',
-      borderRadius: '0px',
-      color: '#000',
-    };
+    const msgLabelStyle = { display: 'block', fontSize: '100%',
+      borderRadius: '0px', color: '#000' };
 
     return (
       <div>
-        {this.renderLabel()}
+       {this.renderLabel()}
         <OverlayTrigger
-          ref="overlay"
+          ref={(ref) => { this.overlay = ref; }}
           rootClose
           trigger="click"
           placement="bottom"
-          overlay={
-            <Popover id={`${this.props.labelText} popover`}>{btn}</Popover>
-          }
+          overlay={(<Popover style={{ padding: '0.5em'}} id={`${this.props.labelText} popover`}>{btn}</Popover>)}
         >
           <div onContextMenu={this.onLinkRightClick}>
-            <Label bsStyle={msgBgStyle} style={msgLabelStyle}>
-              {this.props.data.msg}
-            </Label>
+            <Badge bg={msgBgStyle} style={msgLabelStyle}>{this.props.data.msg}</Badge>
           </div>
         </OverlayTrigger>
       </div>
@@ -125,11 +112,12 @@ export default class InOutSwitch extends React.Component {
   }
 }
 
+
 InOutSwitch.defaultProps = {
   onText: 'Open',
   offText: 'Close',
   labelText: '',
   pkey: undefined,
   onSave: undefined,
-  data: { value: 'undefined', state: 'IN', msg: 'UNKNOWN' },
+  data: { value: 'undefined', state: 'IN', msg: 'UNKNOWN' }
 };

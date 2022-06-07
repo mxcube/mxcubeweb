@@ -3,126 +3,132 @@ import { Field } from 'redux-form';
 import {
   Row,
   Col,
-  FormGroup,
-  Checkbox,
-  FormControl,
-  ControlLabel,
-  Button,
+  Form,
+  Button
 } from 'react-bootstrap';
+import { TiWarning, TiTimes } from "react-icons/ti";
+
+import './style.css';
 
 function validation(error, warning) {
-  let state = null;
+  let stateColor = null;
   if (error) {
-    state = 'error';
+    stateColor = 'red';
   } else if (warning) {
-    state = 'warning';
+    stateColor = 'orange';
   }
-  return state;
+  return stateColor;
 }
 
 function errorIndicator(error, warning) {
   let icon = null;
   if (error) {
     icon = (
-      <span
-        className="glyphicon glyphicon-remove"
-        title={error}
-        style={{ color: 'red' }}
-      />
+      <i title={error}><TiTimes size='1.3em' color='red'/></i>
     );
   } else if (warning) {
     icon = (
-      <span
-        className="glyphicon glyphicon-exclamation-sign"
-        title={warning}
-        style={{ color: 'orange' }}
-      />
+      <i title={warning}><TiWarning size='1.3em' color='orange'/></i>
     );
   }
   return icon;
 }
 
-export const FieldsHeader = ({ title }) => (
-  <Row>
-    <Col xs={12}>
+
+export function FieldsHeader({ title }) {
+  return <Row >
+    <Col sm={12} style={{  marginTop: '0.5em', marginBottom: '0.5em' }}>
+      <hr style={{ marginBottom: '-12px',  }} />
       <center>
-        <b style={{ padding: '0.5em', backgroundColor: 'white' }}>{title}</b>
+        <div>
+          <b style={{ position: 'relative', padding: '0.5em', backgroundColor: 'white' }}>
+           {title} 
+          </b>
+        </div>
       </center>
-      <hr style={{ marginTop: '-10px' }} />
     </Col>
   </Row>
-);
+}
 
-export const StaticField = ({ label, data }) => (
-  <FormGroup style={{ textAlign: 'left', marginBottom: '0px' }}>
-    <Col xs={12}>
-      <FormControl.Static style={{ padding: '5px 0px', minHeight: '0px' }}>
-        <b>{label}:</b> {data}
-      </FormControl.Static>
-    </Col>
-  </FormGroup>
-);
+export function StaticField({ label, data }) {
+  return <Form.Group as={Row} style={{ textAlign: 'left' }}>
+   <Form.Label column sm="2" >
+     <b>
+        {label}
+        :
+      </b>
+    </Form.Label>
+    <Form.Label className='form-label-StaticField' column sm="9">
+      {data}
+    </Form.Label>
+  </Form.Group>
+}
 
-const ReduxInputField = (prop) => (
-  <FormGroup
+function ReduxInputField(prop) {
+  return <Form.Group
+    as={Row}
     controlId={prop.input.name}
-    validationState={validation(prop.meta.error, prop.meta.warning)}
   >
-    <Col
-      xs={prop.col1 || 7}
-      componentClass={ControlLabel}
-      style={{ textAlign: 'left' }}
+    <Form.Label
+    column sm={prop.col1 || 6}
+    style={{ textAlign: 'left', color: validation(prop.meta.error, prop.meta.warning) }}
     >
       {prop.label}
-    </Col>
-    <Col xs={prop.col2 || 4}>
-      <FormControl
+    </Form.Label>
+    <Col sm={prop.col2 || 4}>
+      <Form.Control
         disabled={prop.disabled}
         value={prop.input.value}
         onChange={prop.input.onChange}
         {...prop}
+        style={{ borderColor: validation(prop.meta.error, prop.meta.warning) }}
       />
     </Col>
-    {prop.meta.error || prop.meta.warning ? (
-      <span style={{ top: '7px', left: '-10px', position: 'relative' }}>
-        {errorIndicator(prop.meta.error, prop.meta.warning)}
-      </span>
-    ) : null}
-  </FormGroup>
-);
-
-export const InputField = (prop) => (
-  <Field name={prop.propName} component={ReduxInputField} {...prop} />
-);
-
-export const DisplayField = ({ label, value }) => (
-  <FormGroup>
-    <Col className="col-xs-8 control-label" style={{ textAlign: 'left' }}>
-      <b> {label} </b>
-    </Col>
-    <Col className="col-xs-4">
-      <FormControl value={value} readOnly />
-    </Col>
-  </FormGroup>
-);
-
-export const CheckboxField = ({ propName, label, disabled }) => (
-  <Field
-    name={propName}
-    component={(prop) => (
-      <FormGroup
-        controlId={prop.input.name}
-        validationState={prop.meta.error ? 'error' : null}
-      >
-        <Col
-          xs={prop.col1 || 8}
-          componentClass={ControlLabel}
-          style={{ textAlign: 'left' }}
-        >
-          {label}
+    {prop.meta.error || prop.meta.warning
+      ? (
+        <Col sm={1} style={{ top: '7px', left: '-10px', position: 'relative' }}>
+          {errorIndicator(prop.meta.error, prop.meta.warning)}
         </Col>
-        <Col xs={prop.col2 || 4}>
-          <Checkbox
+      ) : <Col sm={1}/>
+        }
+
+  </Form.Group>
+}
+
+export function InputField(prop) {
+  return <Field
+    name={prop.propName}
+    component={ReduxInputField}
+    {...prop}
+  />
+}
+
+export function DisplayField({ label, value }) {
+  return <Form.Group as={Row}>
+    <Form.Label column sm="8" style={{ textAlign: 'left' }}>
+      <b>
+        {' '}
+        {label}
+        {' '}
+      </b>
+    </Form.Label>
+    <Col className="mb-2" sm="4">
+      <Form.Control value={value} readOnly />
+    </Col>
+  </Form.Group>
+}
+
+export function CheckboxField({ propName, label, disabled }) {
+  return <Field
+    name={propName}
+    component={prop => (
+      <Form.Group className="mb-2" as={Row} controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
+        <Form.Label column sm={prop.col1 || 8} style={{ textAlign: 'left' }}>
+          {label}
+        </Form.Label>
+        <Col className='mt-2' sm={prop.col2 || 2}>
+          <Form.Check
+            type="checkbox"
             defaultChecked={prop.input.value}
             value={prop.input.value}
             disabled={disabled}
@@ -130,29 +136,23 @@ export const CheckboxField = ({ propName, label, disabled }) => (
             {...prop}
           />
         </Col>
-      </FormGroup>
+      </Form.Group>
     )}
   />
-);
+}
 
-export const SelectField = ({ propName, label, list, col1, col2 }) => (
-  <Field
+export function SelectField({
+  propName, label, list, col1, col2
+}) {
+  return <Field
     name={propName}
-    component={(prop) => (
-      <FormGroup
-        controlId={prop.input.name}
-        validationState={prop.meta.error ? 'error' : null}
-      >
-        <Col
-          xs={col1 || 7}
-          componentClass={ControlLabel}
-          style={{ textAlign: 'left' }}
-        >
+    component={prop => (
+      <Row controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
+        <Form.Label column sm={col1 || 6} style={{ textAlign: 'left'}}>
           {label}
-        </Col>
-        <Col xs={col2 || 4}>
-          <FormControl
-            componentClass="select"
+        </Form.Label>
+        <Col sm={col2 || 4}>
+          <Form.Select
             value={prop.input.value}
             onChange={prop.input.onChange}
             {...prop}
@@ -160,36 +160,31 @@ export const SelectField = ({ propName, label, list, col1, col2 }) => (
             {list.map((val, i) => {
               const lbl = Array.isArray(val) ? val[0] : val;
               const v = Array.isArray(val) ? val[1] : val;
-              return (
-                <option key={i} value={v}>
-                  {lbl}
-                </option>
-              );
+              return (<option key={i} value={v}>{lbl}</option>);
             })}
-          </FormControl>
+          </Form.Select>
         </Col>
-      </FormGroup>
+      </Row>
     )}
   />
-);
+}
 
-export const FieldsRow = ({ children }) => (
-  <Row>
-    {children.length > 0 ? (
-      children.map((child, i) => (
-        <Col key={i} xs={12 / children.length}>
-          {child}
-        </Col>
-      ))
-    ) : (
-      <Col key={1} xs={6}>
+export function FieldsRow({ children }) {
+  return <Row className='mb-3'>
+    {children.length > 0 ? children.map((child, i) => (
+      <Col key={i} sm={12 / children.length}>
+        {child}
+      </Col>
+    )) : (
+      <Col key={1} sm={6}>
         {children}
       </Col>
-    )}
+    )
+     }
   </Row>
-);
+}
 
-/* eslint-disable react/no-set-state */
+ 
 export class CollapsableRows extends React.Component {
   constructor(props) {
     super(props);
@@ -200,32 +195,35 @@ export class CollapsableRows extends React.Component {
   render() {
     return (
       <div>
-        {this.state.collapsed ? '' : this.props.children}
         <Row>
-          <Col xs={12}>
+          <Col sm={12}>
             <center>
-              {this.state.collapsed ? (
-                <Button
-                  bsStyle="link"
-                  onClick={() => {
-                    this.setState({ collapsed: false });
-                  }}
-                >
-                  <a>Show</a>
-                </Button>
-              ) : (
-                <Button
-                  bsStyle="link"
-                  onClick={() => {
-                    this.setState({ collapsed: true });
-                  }}
-                >
-                  <a>Hide</a>
-                </Button>
-              )}
+              { this.state.collapsed
+                ? (
+                  <Button
+                    variant="link"
+                    onClick={() => { this.setState({ collapsed: false }); }}
+                  >
+                    <a>
+                      Show more
+                    </a>
+                  </Button>
+                )
+                : (
+                  <Button
+                    variant="link"
+                    onClick={() => { this.setState({ collapsed: true }); }}
+                  >
+                    <a>
+                  Hide
+                    </a>
+                  </Button>
+                )
+            }
             </center>
           </Col>
         </Row>
+        { this.state.collapsed ? '' : this.props.children }
       </div>
     );
   }

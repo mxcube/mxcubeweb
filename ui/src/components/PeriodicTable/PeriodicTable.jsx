@@ -19,7 +19,7 @@ export default class PeriodicTable extends React.Component {
       }
 
       this.props.onElementSelected(e.target.id, null);
-      /* eslint-disable react/no-set-state */
+       
       this.setState({ selectedElement: e.target.id });
       /* eslint-enable react/no-set-state */
       cell.className += ' selected';
@@ -51,22 +51,22 @@ export default class PeriodicTable extends React.Component {
               </div>
             </div>
           </div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
           <div id="He" className="cell">
             <div className="element">
               <div className="at_num">2</div>
@@ -102,16 +102,16 @@ export default class PeriodicTable extends React.Component {
               </div>
             </div>
           </div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
           <div id="B" className="cell">
             <div className="element">
               <div className="at_num">5</div>
@@ -202,16 +202,16 @@ export default class PeriodicTable extends React.Component {
               </div>
             </div>
           </div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
           <div id="Al" className="cell">
             <div className="element">
               <div className="at_num">13</div>
@@ -702,7 +702,7 @@ export default class PeriodicTable extends React.Component {
               </div>
             </div>
           </div>
-          <div className="cell"></div>
+          <div className="cell" />
           <div id="Hf" className="cell">
             <div className="element">
               <div className="at_num">72</div>
@@ -892,7 +892,7 @@ export default class PeriodicTable extends React.Component {
               </div>
             </div>
           </div>
-          <div className="cell"></div>
+          <div className="cell" />
           <div id="Rf" className="cell">
             <div className="element">
               <div className="at_num">104</div>
@@ -1059,11 +1059,11 @@ export default class PeriodicTable extends React.Component {
             </div>
           </div>
         </div>
-        <div className="periodic-row"></div>
+        <div className="periodic-row" />
         <div className="periodic-row">
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
           <div id="La" className="cell">
             <div className="element">
               <div className="at_num">57</div>
@@ -1231,9 +1231,9 @@ export default class PeriodicTable extends React.Component {
           </div>
         </div>
         <div className="periodic-row">
-          <div className="cell"></div>
-          <div className="cell"></div>
-          <div className="cell"></div>
+          <div className="cell" />
+          <div className="cell" />
+          <div className="cell" />
           <div id="Ac" className="cell">
             <div className="element">
               <div className="at_num">89</div>
@@ -1400,7 +1400,7 @@ export default class PeriodicTable extends React.Component {
             </div>
           </div>
         </div>
-        <div style={{ clear: 'both' }}></div>
+        <div style={{ clear: 'both' }} />
       </div>
     );
   }

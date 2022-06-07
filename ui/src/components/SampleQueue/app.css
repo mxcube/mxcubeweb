@@ -107,10 +107,10 @@
   z-index: 1;
 }
 .passive {
-  background-color: #adabab !important;
+  background-color: #ADABAB !important;
 }
 .active {
-  background-color: #337ab7 !important;
+  /* background-color: #337ab7 !important; */
 }
 .success {
   background-color: #5cb85c !important;
@@ -126,7 +126,7 @@
 }
 .m-tree {
   background-color: white;
-  border: 1px solid #aaa;
+  border: 1px solid #AAA;
   border-radius: 3px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
 }
@@ -144,17 +144,18 @@
   margin-bottom: 10px;
 }
 .list-head {
-  padding: 0.5rem 1rem;
+  padding: 1.5rem 1rem;
+  border: 0px;
 }
 .list-body {
   padding: 0.5rem 1rem;
   display: flex;
   flex-direction: column;
   position: absolute;
-  overflow-y: scroll;
+  overflow-y: auto;
   overflow-x: hidden;
   top: 15%;
-  height: 70%;
+  height: 60%;
   width: 100%;
 }
 .queue-messages {
@@ -205,20 +206,20 @@
 }
 .task-head {
   padding: 0.5rem 1rem;
-  border: 1px solid #ddd;
+  border: 1px solid #DDD;
   background-color: #f9f9f9;
 }
 .task-head p {
   margin: 0;
 }
 .task-head-selected {
-  background-color: #adcbda;
+  background-color: #ADCBDA;
 }
 .task-head-selected:hover {
   background-color: #98b2bf !important;
 }
 .task-head:hover {
-  background-color: #eaeaea;
+  background-color: #EAEAEA;
 }
 .task-body {
   margin: 0;
@@ -261,4 +262,3 @@
 .task-parameters-table > thead {
   color: #636363;
 }
-/*# sourceMappingURL=app.css.map */

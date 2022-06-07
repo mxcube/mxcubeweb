@@ -2,17 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import { DraggableModal } from '../DraggableModal';
-import {
-  Modal,
-  Button,
-  Form,
-  Row,
-  Col,
-  ButtonToolbar,
-  Table,
-} from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, ButtonToolbar, Table } from 'react-bootstrap';
 import validate from './validate';
 import { FieldsHeader, StaticField, InputField } from './fields';
+
 
 const wedgeColorTable = {
   0: 'rgba(175,238,238, 0.1)',
@@ -22,6 +15,7 @@ const wedgeColorTable = {
   4: 'rgba(95,158,160, 0.1)',
   5: 'rgba(255,228,181, 0.2)',
 };
+
 
 function getSubWedges(swNumImg, wedgeList) {
   const subWedges = {};
@@ -36,16 +30,10 @@ function getSubWedges(swNumImg, wedgeList) {
     subWedges[wedgeIdx] = [];
     subWedges.swSizes.push(swSizeDeg);
 
-    for (
-      let _swSizeDeg = 0;
-      _swSizeDeg < wedgeSize;
-      _swSizeDeg = _swSizeDeg + swSizeDeg
-    ) {
+    for (let _swSizeDeg = 0; _swSizeDeg < wedgeSize; _swSizeDeg += swSizeDeg) {
       const subWedge = { ...wedge, parameters: { ...wedge.parameters } };
 
-      subWedge.parameters.osc_start = (
-        _swSizeDeg + wedge.parameters.osc_start
-      ).toPrecision(4);
+      subWedge.parameters.osc_start = (_swSizeDeg + wedge.parameters.osc_start).toPrecision(4);
       subWedge.parameters.osc_range = wedge.parameters.osc_range;
       subWedge.parameters.num_images = swNumImg;
       subWedges[wedgeIdx].push(subWedge);
@@ -56,10 +44,8 @@ function getSubWedges(swNumImg, wedgeList) {
       const subWedge = { ...wedge, parameters: { ...wedge.parameters } };
       const numSubWedges = wedge.parameters.num_images / swNumImg;
 
-      subWedge.parameters.osc_start = (
-        swSizeDeg * numSubWedges +
-        wedge.parameters.osc_start
-      ).toPrecision(4);
+      subWedge.parameters.osc_start = (swSizeDeg * numSubWedges +
+                                       wedge.parameters.osc_start).toPrecision(4);
       subWedge.parameters.osc_range = wedge.parameters.osc_range;
       subWedge.parameters.num_images = swNumImg;
       subWedges[wedgeIdx].push(subWedge);
@@ -76,11 +62,7 @@ function interleave(subWedgeObject) {
   const numSubWedges = subWedgeObject[0].length;
 
   for (let swIndex = 0; swIndex < numSubWedges; swIndex++) {
-    for (
-      let wedgeIndex = 0;
-      wedgeIndex < subWedgeObject.numWedges;
-      wedgeIndex++
-    ) {
+    for (let wedgeIndex = 0; wedgeIndex < subWedgeObject.numWedges; wedgeIndex++) {
       swList.push(subWedgeObject[wedgeIndex][swIndex]);
       swList[swList.length - 1].swIndex = `${wedgeIndex + 1}:${swIndex + 1}`;
     }
@@ -88,6 +70,7 @@ function interleave(subWedgeObject) {
 
   return swList;
 }
+
 
 class Interleaved extends React.Component {
   constructor(props) {
@@ -115,7 +98,7 @@ class Interleaved extends React.Component {
       suffix: this.props.suffix,
       taskIndexList: this.props.taskIndexList,
       swNumImages: this.props.subWedgeSize,
-      wedges: this.props.wedges,
+      wedges: this.props.wedges
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -128,7 +111,7 @@ class Interleaved extends React.Component {
       'label',
       'suffix',
       'taskIndexList',
-      'wedges',
+      'wedges'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -140,14 +123,13 @@ class Interleaved extends React.Component {
     const wedgeNumImages = params.num_images;
     const wedgeSize = params.osc_range * params.num_images;
 
-    return (
-      <DraggableModal show={this.props.show} onHide={this.props.hide}>
+    return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Interleaved data collection</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
-          <Form horizontal>
+          <Form>
             <Table
               striped
               condensed
@@ -163,38 +145,32 @@ class Interleaved extends React.Component {
                 </tr>
               </thead>
               <tbody>
-                {this.props.wedges.map((task, i) => {
-                  const filename = task.parameters.fileName;
+            {this.props.wedges.map((task, i) => {
+              const filename = task.parameters.fileName;
 
-                  return (
-                    <tr style={{ backgroundColor: wedgeColorTable[i] }}>
-                      <td>{i + 1}</td>
-                      <td>
-                        {task.parameters.path}/{filename}
-                      </td>
-                    </tr>
-                  );
-                })}
+              return (
+                <tr style={{ backgroundColor: wedgeColorTable[i] }}>
+                  <td>{i + 1}</td>
+                  <td>{task.parameters.path}/{filename}</td>
+                </tr>);
+            })}
               </tbody>
             </Table>
             <br />
             <br />
             <FieldsHeader title="Interleaved parameters" />
-            <Row>
+            <Row className='mt-2'>
               <Col xs={6}>
-                <StaticField
-                  label="Wedge size"
-                  data={<span> {wedgeSize} &deg; </span>}
-                />
+                <StaticField label="Wedge size" data={(<span> {wedgeSize} &deg; </span>)} />
               </Col>
               <Col xs={6}>
                 <StaticField
                   label="No of images per wedge"
-                  data={<span> {wedgeNumImages} </span>}
+                  data={(<span> {wedgeNumImages} </span>)}
                 />
               </Col>
             </Row>
-            <Row>
+            <Row className='mt-3'>
               <Col xs={6} style={{ marginTop: '10px' }}>
                 <InputField
                   propName="subWedgeSize"
@@ -206,100 +182,87 @@ class Interleaved extends React.Component {
               <Col xs={6} style={{ marginTop: '10px' }}>
                 <StaticField
                   label="Sub wedge size"
-                  data={
-                    <span> {this.props.subWedgeObject.swSizes[0]} &deg;</span>
-                  }
+                  data={(<span> {this.props.subWedgeObject.swSizes[0]} &deg;</span>)}
                 />
               </Col>
             </Row>
             <div style={{ overflowY: 'scroll', height: '400px' }}>
-              <Table
-                striped
-                condensed
-                bordered
-                hover
-                style={{ fontSize: 'smaller', marginBottom: '0px' }}
-                className="task-parameters-table"
-              >
-                <thead>
-                  <tr>
-                    <th>Subwedge </th>
-                    <th>Start &deg; </th>
-                    <th>Osc. &deg; </th>
-                    <th># Img</th>
-                    <th>t (ms)</th>
-                    <th>T (%)</th>
-                    <th>Res. (&Aring;)</th>
-                    <th>E (KeV)</th>
-                    <th>&phi; &deg;</th>
-                    <th>&kappa; &deg;</th>
+            <Table
+              striped
+              condensed
+              bordered
+              hover
+              style={{ fontSize: 'smaller', marginBottom: '0px' }}
+              className="task-parameters-table mt-3"
+            >
+              <thead>
+                <tr>
+                  <th>Subwedge </th>
+                  <th>Start &deg; </th>
+                  <th>Osc. &deg; </th>
+                  <th># Img</th>
+                  <th>t (ms)</th>
+                  <th>T (%)</th>
+                  <th>Res. (&Aring;)</th>
+                  <th>E (KeV)</th>
+                  <th>&phi; &deg;</th>
+                  <th>&kappa; &deg;</th>
+                </tr>
+              </thead>
+              <tbody>
+                {interleave(this.props.subWedgeObject).map((task) => (
+                  <tr style={{ backgroundColor: wedgeColorTable[task.wedge] }}>
+                    <td>{task.swIndex}</td>
+                    <td>{task.parameters.osc_start}</td>
+                    <td>{task.parameters.osc_range}</td>
+                    <td>{task.parameters.num_images}</td>
+                    <td>{task.parameters.exp_time}</td>
+                    <td>{task.parameters.transmission}</td>
+                    <td>{task.parameters.resolution}</td>
+                    <td>{task.parameters.energy}</td>
+                    <td>{task.parameters.kappa_phi}</td>
+                    <td>{task.parameters.kappa}</td>
                   </tr>
-                </thead>
-                <tbody>
-                  {interleave(this.props.subWedgeObject).map((task) => (
-                    <tr
-                      style={{ backgroundColor: wedgeColorTable[task.wedge] }}
-                    >
-                      <td>{task.swIndex}</td>
-                      <td>{task.parameters.osc_start}</td>
-                      <td>{task.parameters.osc_range}</td>
-                      <td>{task.parameters.num_images}</td>
-                      <td>{task.parameters.exp_time}</td>
-                      <td>{task.parameters.transmission}</td>
-                      <td>{task.parameters.resolution}</td>
-                      <td>{task.parameters.energy}</td>
-                      <td>{task.parameters.kappa_phi}</td>
-                      <td>{task.parameters.kappa}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </Table>
+                ))}
+              </tbody>
+            </Table>
             </div>
           </Form>
-        </Modal.Body>
+       </Modal.Body>
 
-        {this.props.taskData.state ? (
-          ''
-        ) : (
-          <Modal.Footer>
-            <ButtonToolbar className="pull-right">
-              <Button
-                bsStyle="success"
-                disabled={
-                  this.props.taskData.parameters.shape === -1 ||
-                  this.props.invalid
-                }
-                onClick={this.submitRunNow}
-              >
-                Run Now
-              </Button>
-              <Button
-                bsStyle="primary"
-                disabled={this.props.invalid}
-                onClick={this.submitAddToQueue}
-              >
-                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-              </Button>
-            </ButtonToolbar>
-          </Modal.Footer>
-        )}
-      </DraggableModal>
-    );
+       { this.props.taskData.state ? '' :
+           <Modal.Footer>
+             <ButtonToolbar className="pull-right">
+               <Button variant="success"
+                 disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+                 onClick={this.submitRunNow}
+               >
+                 Run Now
+               </Button>
+               <Button className='ms-3' variant="primary" disabled={this.props.invalid}
+                 onClick={this.submitAddToQueue}
+               >
+                 {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+               </Button>
+             </ButtonToolbar>
+           </Modal.Footer>
+       }
+      </DraggableModal>);
   }
 }
 
 Interleaved = reduxForm({
   form: 'workflow',
-  validate,
+  validate
 })(Interleaved);
 
 const selector = formValueSelector('workflow');
 
-Interleaved = connect((state) => {
+Interleaved = connect(state => {
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   const shapeId = state.taskForm.pointID;
   const subWedgeSize = selector(state, 'subWedgeSize');
-  const wedges = state.taskForm.taskData.parameters.wedges;
+  const {wedges} = state.taskForm.taskData.parameters;
 
   return {
     acqParametersLimits: state.taskForm.acqParametersLimits,
@@ -310,8 +273,8 @@ Interleaved = connect((state) => {
     suffix: fileSuffix,
     subWedgeSize,
     initialValues: {
-      subWedgeSize: state.taskForm.defaultParameters.interleaved.subWedgeSize,
-    },
+      subWedgeSize: state.taskForm.defaultParameters.interleaved.subWedgeSize
+    }
   };
 })(Interleaved);
 

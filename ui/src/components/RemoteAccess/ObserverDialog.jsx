@@ -1,11 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, FormControl } from 'react-bootstrap';
-import {
-  showObserverDialog,
-  sendUpdateNickname,
-} from '../../actions/remoteAccess';
+import { Modal, Button, Form } from 'react-bootstrap';
+import { showObserverDialog, sendUpdateNickname } from '../../actions/remoteAccess';
 
 export class ObserverDialog extends React.Component {
   constructor(props) {
@@ -19,18 +16,16 @@ export class ObserverDialog extends React.Component {
     if (this.name && this.name.value === '') {
       try {
         this.name.value = this.props.login.user.nickname;
-      } catch (err) {
+      } catch {
         this.name.value = '';
       }
     }
   }
 
-  onHide() {}
+  onHide() { }
 
   show() {
-    return (
-      !this.props.login.user.inControl && this.props.login.user.nickname === ''
-    );
+    return !this.props.login.user.inControl && this.props.login.user.nickname === '';
   }
 
   accept() {
@@ -59,10 +54,12 @@ export class ObserverDialog extends React.Component {
         backdrop="static"
         show={this.show()}
         onHide={this.onHide}
-        style={{ zIndex: 10001 }}
+        style={{ zIndex: 10_001 }}
       >
         <Modal.Header>
-          <Modal.Title>{this.title()}</Modal.Title>
+          <Modal.Title>
+            {this.title()}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           Someone else is currently using the beamline, you are going to be
@@ -70,32 +67,32 @@ export class ObserverDialog extends React.Component {
           continue.
         </Modal.Body>
         <Modal.Footer>
-          <FormControl
-            inputRef={(ref) => {
-              this.name = ref;
-            }}
+          <Form.Control
+            ref={(ref) => { this.name = ref; }}
             type="text"
             default={this.props.login.selectedProposal}
           />
-          <Button onClick={this.accept}> OK </Button>
+          <Button size='sm' variant='outline-secondary' onClick={this.accept}> OK </Button>
         </Modal.Footer>
-      </Modal>
-    );
+      </Modal>);
   }
 }
 
 function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
-    login: state.login,
+    login: state.login
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(showObserverDialog.bind(this, false), dispatch),
-    sendUpdateNickname: bindActionCreators(sendUpdateNickname, dispatch),
+    sendUpdateNickname: bindActionCreators(sendUpdateNickname, dispatch)
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(ObserverDialog);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ObserverDialog);

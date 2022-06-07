@@ -1,6 +1,5 @@
 import React from 'react';
 import { Modal } from 'react-bootstrap';
-import ModalDialog from 'react-bootstrap/lib/ModalDialog';
 import Draggable from 'react-draggable';
 
 class DraggableModalDialog extends React.Component {
@@ -10,19 +9,23 @@ class DraggableModalDialog extends React.Component {
         handle=".modal-header"
         defaultPosition={this.props.defaultPosition}
       >
-        <ModalDialog {...this.props} />
+        <Modal.Dialog
+          {...this.props}
+        />
       </Draggable>
     );
   }
 }
 
-export const DraggableModal = (props) => (
-  <Modal
-    dialogComponentClass={DraggableModalDialog}
+export function DraggableModal(props) {
+  return <Modal
+    dialogAs={DraggableModalDialog}
     enforceFocus={false}
     backdrop="static"
     {...props}
   >
     {props.children}
   </Modal>
-);
+}
+
+

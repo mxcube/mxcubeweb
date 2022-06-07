@@ -1,31 +1,23 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import Form from '@rjsf/core';
-import {
-  startAction,
+import { startAction,
   stopAction,
   showActionOutput,
   hideActionOutput,
-  setArgumentValue,
-} from '../actions/beamlineActions';
-import {
-  Row,
+  setArgumentValue } from '../actions/beamlineActions';
+import { Row,
   Col,
   Modal,
-  MenuItem,
-  DropdownButton,
+  Dropdown,
   Button,
-  Well,
-  FormControl,
-} from 'react-bootstrap';
+  Form,
+  Card} from 'react-bootstrap';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
 import Plot1D from '../components/Plot1D';
 import { RUNNING } from '../constants';
 
 import { DraggableModal } from '../components/DraggableModal';
-
-import './BeamlineActionsContainer.css';
 
 class BeamlineActionsContainer extends React.Component {
   constructor(props) {
@@ -47,7 +39,7 @@ class BeamlineActionsContainer extends React.Component {
       if (cmd.name === cmdName) {
         cmd.arguments.forEach((arg) => {
           if (arg.type === 'float') {
-            parameters.push(parseFloat(arg.value));
+            parameters.push(Number.parseFloat(arg.value));
           } else {
             parameters.push(arg.value);
           }
@@ -77,209 +69,130 @@ class BeamlineActionsContainer extends React.Component {
     this.plotIdByAction[this.props.currentAction.name] = plotId;
   }
 
-  handleRun(formData) {
-    const currentActionRunning = this.props.currentAction.state === RUNNING;
-    const currentActionName = this.props.currentAction.name;
-
-    if (!currentActionRunning) {
-      console.log(formData);
-      this.props.startAction(currentActionName, formData, true);
-    } else {
-      this.props.stopAction(currentActionName);
-    }
-  }
-
-  renderRunButton() {
-    const currentActionRunning = this.props.currentAction.state === RUNNING;
-    const currentActionName = this.props.currentAction.name;
-
-    if (this.props.currentAction.argument_type == 'JSONSchema') {
-      const bsStyle = currentActionRunning ? 'danger' : 'primary';
-      return !currentActionRunning ? (
-        <Button
-          type="submit"
-          bsStyle="primary"
-        >
-          Run Action
-        </Button>
-      ) : <span />
-    } else {
-      return currentActionRunning ? (
-        <Button
-          type="submit"
-          bsStyle="danger"
-          onClick={() => {
-            this.stopAction(currentActionName);
-          }}
-        >
-          Abort
-        </Button>
-      ) : (
-        <Button
-          type="submit"
-          disabled={currentActionRunning}
-          bsStyle="primary"
-          onClick={() => {
-            this.startAction(currentActionName);
-          }}
-        >
-          Run
-        </Button>
-      )
-    }
-  }
-
-  renderInputForm() {
-    let form = null;
-    const currentActionRunning = this.props.currentAction.state === RUNNING;
-    const currentActionName = this.props.currentAction.name;
-
-    if (this.props.currentAction.argument_type == "JSONSchema") {
-      form = (
-        <div className='beamline-action-form-container'>
-          <Form
-            schema={JSON.parse(this.props.currentAction.schema)}
-            onSubmit={(formData, e) => this.handleRun(formData.formData, e)}
-          >
-            {this.renderRunButton()}
-          </Form>
-          { currentActionRunning ? (
-            <Button
-              type="submit"
-              bsStyle="danger"
-              onClick={() => {
-                this.stopAction(currentActionName);
-              }}
-            >
-              Abort action
-            </Button>
-            ) : null
-          }
-        </div>
-      );
-    } else {
-      form = this.props.currentAction.arguments.map((arg, i) => (
-        <Row>
-          <Col xs={2} component="ControlLabel">
-            {arg.name}
-          </Col>
-          <Col xs={2}>
-            <FormControl
-              label={arg.name}
-              type="text"
-              value={arg.value}
-              disabled={currentActionRunning}
-              onChange={(e) => {
-                this.props.setArgumentValue(
-                  currentActionName,
-                  i,
-                  e.target.value
-                );
-              }}
-            />
-          </Col>
-        </Row>
-      ))
-    }
-
-    return form
-  }
-
   render() {
     const currentActionRunning = this.props.currentAction.state === RUNNING;
     const currentActionName = this.props.currentAction.name;
 
     let defaultDialogPosition = { x: 0, y: 0 };
 
-    if (document.getElementsByClassName('m-tree').length > 0) {
-      const width =
-        window.innerWidth ||
-        document.documentElement.clientWidth ||
-        document.body.clientWidth;
+    if (document.querySelectorAll('.m-tree').length > 0) {
+      const width = window.innerWidth
+        || document.documentElement.clientWidth
+        || document.body.clientWidth;
 
       defaultDialogPosition = {
-        x:
-          width -
-          document.getElementsByClassName('m-tree')[0].getClientRects()[0].x -
-          50,
-        y: 0,
+        x: width - document.querySelectorAll('.m-tree')[0].getClientRects()[0].x - 50,
+        y: 0
       };
     }
 
     return (
       <Row>
         <Col xs={12}>
-          <DropdownButton
-            title={'Beamline Actions'}
-            id="beamline-actions-dropdown"
-          >
-            {this.props.actionsList.map((cmd, i) => {
-              const cmdName = cmd.name;
-              const cmdUsername = cmd.username;
-              const cmdState = cmd.state;
-              let disabled = false;
-              if (currentActionRunning && currentActionName !== cmdName) {
-                disabled = true;
-              }
+          <Dropdown
+              title="Beamline Actions"
+              id="beamline-actions-dropdown"
+              variant="outline-secondary"
+              autoClose="outside"
+            >
+              <Dropdown.Toggle variant="outline-secondary" id="beamline-actions-dropdown">
+                Beamline Actions
+              </Dropdown.Toggle>
+                <Dropdown.Menu>
+                  {this.props.actionsList.map((cmd, i) => {
+                    const cmdName = cmd.name;
+                    const cmdUsername = cmd.username;
+                    const cmdState = cmd.state;
+                    let disabled = false;
+                    if (currentActionRunning && (currentActionName !== cmdName)) {
+                      disabled = true;
+                    }
 
-              return (
-                [<MenuItem
-                  eventKey={i}
-                  key={i}
-                >
-                  <span>
-                    <b>{cmdUsername}</b>
-                  </span>
-                  <BeamlineActionControl
-                    cmdName={cmdName}
-                    start={this.startAction}
-                    stop={this.stopAction}
-                    showOutput={this.showOutput}
-                    state={cmdState}
-                    disabled={disabled}
-                    arguments={cmd.arguments}
-                    type={cmd.type}
-                    data={cmd.data}
-                  />
-                </MenuItem>,
-                <MenuItem divider />
-               ]
-              );
-            })}
-          </DropdownButton>
+                    return (
+                        <Dropdown.Item
+                          style={{width: '250px' }}
+                          className='d-flex justify-content-between align-items-start'
+                          key={i}
+                        >
+                          <div className="ms-2 me-auto">
+                            <div className="fw-bold">{cmdUsername}</div>
+                          </div>
+                          <BeamlineActionControl cmdName={cmdName}
+                            start={this.startAction}
+                            stop={this.stopAction}
+                            showOutput={this.showOutput}
+                            state={cmdState}
+                            disabled={disabled}
+                            arguments={cmd.arguments}
+                            type={cmd.type}
+                            data={cmd.data}
+                          />
+                        </Dropdown.Item>
+                      );
+                  })}
+              </Dropdown.Menu>
+            </Dropdown>
         </Col>
-        <DraggableModal
-          id="beamlineActionOutput"
+        <DraggableModal id="beamlineActionOutput"
           show={!!this.props.currentAction.show}
           onHide={this.hideOutput}
           defaultPosition={defaultDialogPosition}
         >
           <Modal.Header>
-            <Modal.Title>{this.props.currentAction.username}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body style={{ height: '500px', overflowY: 'auto' }}>
-            {this.renderInputForm()}
-            { this.props.currentAction.argument_type != "JSONSchema" ?
-              this.renderRunButton() : null
-            }
-            <hr></hr>
-            <Plot1D
-              displayedPlotCallback={this.newPlotDisplayed}
-              plotId={this.plotIdByAction[currentActionName]}
-              autoNext={currentActionRunning}
-            />
-            {this.props.currentAction.messages.length > 0 ? (
-              <Well>
-                {this.props.currentAction.messages.map((message) => (
-                  <p>{message.message}</p>
-                ))}
-              </Well>
-            ) : (
-              ''
-            )}
+            <Modal.Title>
+              {this.props.currentAction.username}
+            </Modal.Title>
+            </Modal.Header>
+            <Modal.Body className='d-flex' style={{ height: '500px', overflowY: 'auto' }}>
+              <Row >
+                { this.props.currentAction.arguments.map((arg, i) =>
+                <>
+                    <Col className='mt-2' xs={3} style={{ whiteSpace: 'nowrap' }} component={Form.Label}>{arg.name}</Col>
+                    <Col xs={3}>
+                      <Form.Control
+                        label={arg.name}
+                        type="text"
+                        value={arg.value}
+                        disabled={currentActionRunning}
+                        onChange={(e) => {
+                          this.props.setArgumentValue(currentActionName,
+                            i,
+                            e.target.value);
+                        }}
+                      />
+                    </Col>
+                    </>
+                  )
+                }
+                <Col>
+                  { currentActionRunning ?
+                    <Button variant="danger"
+                      onClick={ () => { this.stopAction(currentActionName); } }
+                    >
+                      Abort
+                    </Button> : <Button disabled={currentActionRunning}
+                      variant="primary"
+                      onClick={ () => { this.startAction(currentActionName); } }
+                    >
+                      Run
+                    </Button>
+                  }
+                  </Col>
+                </Row>
+             <hr />
+             <Plot1D displayedPlotCallback={this.newPlotDisplayed}
+               plotId={this.plotIdByAction[currentActionName]} autoNext={currentActionRunning}
+             />
+             { this.props.currentAction.messages.length > 0 ? (<Card>
+               {this.props.currentAction.messages.map(message => <p>{message.message}</p>)}
+             </Card>) : '' }
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={this.hideOutput}>
+            <Button
+              variant='outline-secondary'
+              onClick={this.hideOutput}
+              disabled={currentActionRunning}
+            >
               Close window
             </Button>
           </Modal.Footer>
@@ -291,7 +204,7 @@ class BeamlineActionsContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    currentAction: state.beamline.currentBeamlineAction,
+    currentAction: state.beamline.currentBeamlineAction
   };
 }
 
@@ -301,7 +214,7 @@ function mapDispatchToProps(dispatch) {
     stopAction: bindActionCreators(stopAction, dispatch),
     showOutput: bindActionCreators(showActionOutput, dispatch),
     hideOutput: bindActionCreators(hideActionOutput, dispatch),
-    setArgumentValue: bindActionCreators(setArgumentValue, dispatch),
+    setArgumentValue: bindActionCreators(setArgumentValue, dispatch)
   };
 }
 
@@ -309,3 +222,4 @@ export default connect(
   mapStateToProps,
   mapDispatchToProps
 )(BeamlineActionsContainer);
+

@@ -23,7 +23,7 @@ dependencies:
   - python-ldap=3.3.1
   - lxml=4.6.2
   - ruamel.yaml=0.16.12
-  - nodejs=17.8.0
+  - nodejs=16.14
   - scipy=1.5.3
   - opencv
   - requests

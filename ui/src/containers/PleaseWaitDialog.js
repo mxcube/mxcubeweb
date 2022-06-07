@@ -58,14 +58,14 @@ export class PleaseWaitDialog extends React.Component {
   renderFooter() {
     let footer = (
       <Modal.Footer>
-        <Button onClick={this.getHideFun()}>Hide</Button>
+        <Button variant='outline-secondary' onClick={this.getHideFun()}>Hide</Button>
       </Modal.Footer>
     );
 
     if (this.props.blocking) {
       footer = (
         <Modal.Footer>
-          <Button onClick={this.abort}>Cancel</Button>
+          <Button variant='outline-secondary' onClick={this.abort}>Cancel</Button>
         </Modal.Footer>
       );
     }
@@ -76,15 +76,19 @@ export class PleaseWaitDialog extends React.Component {
   renderContent() {
     let content = (
       <div>
-        <p>{this.getMessage()}</p>
+        <p>
+          {this.getMessage()}
+        </p>
       </div>
     );
 
     if (this.props.blocking) {
       content = (
         <div>
-          <p>{this.getMessage()}</p>
-          <ProgressBar active now={100} />
+          <p>
+            {this.getMessage()}
+          </p>
+          <ProgressBar variant="primary" animated active now={100} />
         </div>
       );
     }
@@ -94,18 +98,17 @@ export class PleaseWaitDialog extends React.Component {
 
   render() {
     return (
-      <Modal
-        animation={false}
-        show={this.props.loading}
-        onHide={this.getHideFun}
-      >
+      <Modal animation={false} show={this.props.loading} onHide={this.getHideFun}>
         {this.renderHeader()}
-        <Modal.Body>{this.renderContent()}</Modal.Body>
+        <Modal.Body>
+          {this.renderContent()}
+        </Modal.Body>
         {this.renderFooter()}
       </Modal>
     );
   }
 }
+
 
 function mapStateToProps(state) {
   return {
@@ -113,15 +116,18 @@ function mapStateToProps(state) {
     title: state.general.title,
     message: state.general.message,
     blocking: state.general.blocking,
-    abortFun: state.general.abortFun,
+    abortFun: state.general.abortFun
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     setLoadingFalse: bindActionCreators(setLoading.bind(this, false), dispatch),
-    setLoadingTrue: bindActionCreators(setLoading.bind(this, true), dispatch),
+    setLoadingTrue: bindActionCreators(setLoading.bind(this, true), dispatch)
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(PleaseWaitDialog);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(PleaseWaitDialog);

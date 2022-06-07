@@ -64,7 +64,6 @@ function initStore() {
   const composedEnhancers = compose(applyMiddleware(...middleware), ...enhancers);
 
   const store = createStore(persistedReducer, composedEnhancers);
-  // const store = createStore(rootReducer, composedEnhancers);
 
   initMessageListener(store);
 
@@ -92,7 +91,7 @@ function createServerStatePersistor(store, serverIO, cb) {
       storage: new ServerStorage(serverIO),
     },
     () => {
-      /* eslint-disable react/no-set-state */
+       
       // cb();
       /* eslint-enable react/no-set-state */
     }

@@ -58,7 +58,7 @@ class WorkflowParametersDialog extends React.Component {
         <Modal.Body>
           <div id="form-holder">{form}</div>
         </Modal.Body>
-        <Modal.Footer></Modal.Footer>
+        <Modal.Footer />
       </Modal>
     );
   }

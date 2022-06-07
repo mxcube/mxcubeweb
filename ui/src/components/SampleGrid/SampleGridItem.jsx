@@ -1,15 +1,19 @@
 import React from 'react';
-import { OverlayTrigger, Tooltip, Popover } from 'react-bootstrap';
+import { Row, OverlayTrigger, Tooltip, Popover, Badge, Button } from 'react-bootstrap';
 import classNames from 'classnames';
 import { isCollected } from '../../constants';
 
+import { BsSquare, BsCheck2Square, BsArrowsMove  } from "react-icons/bs";
 import './SampleGrid.css';
+
 
 export const SAMPLE_ITEM_WIDTH = 192;
 export const SAMPLE_ITEM_HEIGHT = 130;
 export const SAMPLE_ITEM_SPACE = 8;
 
+
 export class SampleGridItem extends React.Component {
+
   constructor(props) {
     super(props);
     this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
@@ -27,16 +31,13 @@ export class SampleGridItem extends React.Component {
     this.sampleInformation = this.sampleInformation.bind(this);
   }
 
+
   componentDidMount() {
-    this.refs.sampleItem.addEventListener(
-      'contextmenu',
-      this.contextMenu,
-      false
-    );
+    this.sampleItem.addEventListener('contextmenu', this.contextMenu, false);
   }
 
   componentWillUnmount() {
-    this.refs.sampleItem.removeEventListener('contextmenu', this.contextMenu);
+    this.sampleItem.removeEventListener('contextmenu', this.contextMenu);
   }
 
   contextMenu(e) {
@@ -70,57 +71,55 @@ export class SampleGridItem extends React.Component {
   }
 
   itemControls() {
-    let iconClassName = 'glyphicon glyphicon-unchecked';
+    let icon = <BsSquare size='0.9em' />;
 
     if (this.props.picked) {
-      iconClassName = 'glyphicon glyphicon-check';
+      icon = <BsCheck2Square />;
     }
 
     const pickButton = (
       <OverlayTrigger
-        placement="top"
-        overlay={
-          <Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>
-        }
+        placement="auto"
+        overlay={(<Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>)}
       >
-        <button
+        <Button
+          variant="content"
           disabled={this.props.current && this.props.picked}
           className="samples-grid-item-button"
           onClick={this.pickButtonOnClick}
           onMouseUp={this.pickButtonMouseUp}
           onMouseDown={this.pickButtonMouseDown}
         >
-          <i className={iconClassName} />
-        </button>
+          <i>{icon}</i>
+        </Button>
       </OverlayTrigger>
     );
 
     const moveButton = (
       <OverlayTrigger
-        placement="top"
-        overlay={
+        placement="auto"
+        overlay={(
           <Tooltip id="move-sample">
             Move sample (change order in which sample is collected)
-          </Tooltip>
-        }
+          </Tooltip>)}
       >
-        <button
+        <Button
+          variant="content"
           className="samples-grid-item-button"
           onClick={this.moveButtonOnClick}
         >
-          <i className="glyphicon glyphicon-move" />
-        </button>
+          <BsArrowsMove />
+        </Button>
       </OverlayTrigger>
     );
 
     let content = (
-      <div className="samples-item-controls-container">{pickButton}</div>
+      <div className="samples-item-controls-container">
+        {pickButton}
+      </div>
     );
 
-    if (
-      this.props.selected &&
-      !this.props.allowedDirections.every((value) => value === false)
-    ) {
+    if (this.props.selected && !this.props.allowedDirections.every(value => value === false)) {
       content = (
         <div className="samples-item-controls-container">
           {pickButton}
@@ -132,32 +131,36 @@ export class SampleGridItem extends React.Component {
     return content;
   }
 
+
   moveItemUp(e) {
     this.moveItem(e, 'UP');
   }
+
 
   moveItemDown(e) {
     this.moveItem(e, 'DOWN');
   }
 
+
   moveItemRight(e) {
     this.moveItem(e, 'RIGHT');
   }
+
 
   moveItemLeft(e) {
     this.moveItem(e, 'LEFT');
   }
 
+
   seqId() {
     const showId = this.props.picked ? '' : 'none';
     return (
       <div>
-        <div style={{ display: showId }} className="queue-order">
-          {this.props.queueOrder}
-        </div>
+        <div style={{ display: showId }} className="queue-order">{this.props.queueOrder}</div>
       </div>
     );
   }
+
 
   moveArrows() {
     let [displayUp, displayDown, displayLeft, displayRight] = ['', '', '', ''];
@@ -179,7 +182,7 @@ export class SampleGridItem extends React.Component {
       displayRight = 'none';
     }
 
-    let content = <div></div>;
+    let content = (<div />);
 
     if (this.props.moving) {
       content = (
@@ -189,28 +192,28 @@ export class SampleGridItem extends React.Component {
             className="move-arrow move-arrow-up"
             onClick={this.moveItemUp}
           >
-            <i className="glyphicon glyphicon-arrow-up" />
+            <i className="fas fa-arrow-up" />
           </button>
           <button
             style={{ display: displayLeft }}
             className="move-arrow move-arrow-left"
             onClick={this.moveItemLeft}
           >
-            <i className="glyphicon glyphicon-arrow-left" />
+            <i className="fas fa-arrow-left" />
           </button>
           <button
             style={{ display: displayRight }}
             className="move-arrow move-arrow-right"
             onClick={this.moveItemRight}
           >
-            <i className="glyphicon glyphicon-arrow-right" />
+            <i className="fas fa-arrow-right" />
           </button>
           <button
             style={{ display: displayDown }}
             className="move-arrow move-arrow-down"
             onClick={this.moveItemDown}
           >
-            <i className="glyphicon glyphicon-arrow-down" />
+            <i className="fas fa-arrow-down" />
           </button>
         </div>
       );
@@ -218,6 +221,7 @@ export class SampleGridItem extends React.Component {
 
     return content;
   }
+
 
   sampleDisplayName() {
     let name = this.props.sampleData.proteinAcronym || '';
@@ -231,8 +235,9 @@ export class SampleGridItem extends React.Component {
     return name;
   }
 
+
   sampleInformation() {
-    const sampleData = this.props.sampleData;
+    const {sampleData} = this.props;
     const limsData = (
       <div>
         <div className="row">
@@ -258,8 +263,7 @@ export class SampleGridItem extends React.Component {
           <span className="col-sm-1">&gamma;:</span>
           <span className="col-sm-2">{sampleData.cellGamma}</span>
         </div>
-      </div>
-    );
+      </div>);
 
     return (
       <div>
@@ -269,28 +273,11 @@ export class SampleGridItem extends React.Component {
           <span className="col-sm-6">Data matrix:</span>
           <span className="col-sm-6">{sampleData.code}</span>
         </div>
-        {sampleData.limsID ? limsData : ''}
+        { sampleData.limsID ? limsData : '' }
       </div>
     );
   }
 
-  popoverPosition() {
-    const viewportHeight = Math.max(
-      document.documentElement.clientHeight,
-      window.innerHeight || 0
-    );
-    let result = 'bottom';
-
-    if (this.refs.sampleItem) {
-      if (parseInt(this.refs.sampleItem.style.top, 10) <= viewportHeight / 2) {
-        result = 'bottom';
-      } else {
-        result = 'top';
-      }
-    }
-
-    return result;
-  }
 
   sampleItemOnClick(e) {
     if (this.props.onClick) {
@@ -302,75 +289,67 @@ export class SampleGridItem extends React.Component {
     return this.props.current ? '(MOUNTED)' : '';
   }
 
+
   render() {
-    const classes = classNames('samples-grid-item', {
-      'samples-grid-item-selected': this.props.selected && !this.props.moving,
-      'samples-grid-item-moving': this.props.moving,
-      'samples-grid-item-to-be-collected': this.props.picked,
-      'samples-grid-item-collected': isCollected(this.props.sampleData),
-    });
+    const classes = classNames('samples-grid-item',
+      { 'samples-grid-item-selected': this.props.selected && !this.props.moving,
+        'samples-grid-item-moving': this.props.moving,
+        'samples-grid-item-to-be-collected': this.props.picked,
+        'samples-grid-item-collected': isCollected(this.props.sampleData) });
 
-    const scLocationClasses = classNames(
-      'sc_location',
-      'label',
-      'label-default',
-      { 'label-custom-success': this.props.sampleData.loadable === true }
-    );
+    const scLocationClasses = classNames('sc_location', 'label', 'label-default',
+      { 'label-custom-success': this.props.sampleData.loadable === true });
 
-    const limsLink = this.props.sampleData.limsLink
-      ? this.props.sampleData.limsLink
-      : '#';
+    const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
 
     return (
       <div
         id={this.props.sampleData.sampleID}
-        ref="sampleItem"
+        ref={(ref) => { this.sampleItem = ref; }}
         className={classes}
         onClick={this.sampleItemOnClick}
-        style={{
-          width: `${SAMPLE_ITEM_WIDTH}px`,
-          height: `${SAMPLE_ITEM_HEIGHT}px`,
-        }}
+        style={{ width: `${SAMPLE_ITEM_WIDTH}px`, height: `${SAMPLE_ITEM_HEIGHT}px` }}
       >
         {this.moveArrows()}
         {this.itemControls()}
-        <div className={scLocationClasses}>
+        <div className={`ps-2 pe-2 ${scLocationClasses}`}>
           {this.props.sampleData.location} {this.currentSampleText()}
         </div>
-        <div style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
-          <OverlayTrigger
-            ref="sampleInfoPopoverTrigger"
-            placement={this.popoverPosition()}
-            overlay={
-              <Popover
-                id={this.sampleDisplayName()}
-                title={<b>{this.sampleDisplayName()}</b>}
-              >
+        <div className='mb-2' style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
+        <OverlayTrigger
+          ref={(ref) => { this.sampleInfoPopoverTrigger = ref; }}
+          placement='auto'
+          overlay={(
+            <Popover id={this.sampleDisplayName()}>
+              <Popover.Header>
+                <b>{this.sampleDisplayName()}</b>
+              </Popover.Header>
+              <Popover.Body>
                 {this.sampleInformation()}
-              </Popover>
-            }
+              </Popover.Body>
+            </Popover>)}
+        >
+          <Badge href={limsLink}
+            target="_blank"
+            bg="light"
+            text="primary"
+            ref={(ref) => { this.pacronym = ref; }}
+            className="protein-acronym"
+            data-type="text" data-pk="1" data-url="/post" data-title="Enter protein acronym"
           >
-            <a
-              href={limsLink}
-              target="_blank"
-              ref="pacronym"
-              className="protein-acronym"
-              data-type="text"
-              data-pk="1"
-              data-url="/post"
-              data-title="Enter protein acronym"
-            >
-              {this.sampleDisplayName()}
-            </a>
-          </OverlayTrigger>
+            {this.sampleDisplayName()}
+          </Badge>
+        </OverlayTrigger>
         </div>
         {this.seqId()}
-        <br />
-        <div className="samples-grid-item-tasks">{this.props.children}</div>
+        <Row className="samples-grid-item-tasks">
+          { this.props.children }
+        </Row>
       </div>
     );
   }
 }
+
 
 SampleGridItem.defaultProps = {
   itemKey: '',
@@ -383,5 +362,5 @@ SampleGridItem.defaultProps = {
   allowedDirections: [],
   pickButtonOnClickHandler: undefined,
   moveButtonOnClickHandler: undefined,
-  onMoveHandler: undefined,
+  onMoveHandler: undefined
 };

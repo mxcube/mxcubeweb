@@ -92,7 +92,7 @@ export class LimsResultSummary extends React.Component {
           ref="resultContainer"
           className="result-container"
           style={{ overflow: 'hidden' }}
-        ></div>
+         />
       </div>
     );
   }

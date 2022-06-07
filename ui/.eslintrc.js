@@ -77,7 +77,7 @@ module.exports = createConfig({
         'jsx-a11y/anchor-has-content': 'warn',
         'react/static-property-placement': 'warn',
         'jsx-a11y/no-autofocus': 'warn',
-        'react/jsx-handler-names': 'warn',
+        'react/jsx-handler-names': 'off',
         'react/button-has-type': 'warn',
         'jsx-a11y/anchor-is-valid': 'warn',
         'jsx-a11y/alt-text': 'warn',

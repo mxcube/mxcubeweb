@@ -1,7 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import {
+  Modal, Button, Form, Row, Col, ButtonToolbar
+} from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import warn from './warning';
@@ -13,7 +15,7 @@ import {
   CheckboxField,
   SelectField,
   FieldsRow,
-  CollapsableRows,
+  CollapsableRows
 } from './fields';
 
 class Helical extends React.Component {
@@ -71,14 +73,9 @@ class Helical extends React.Component {
   defaultParameters() {
     this.props.resetTaskParameters();
     const { type } = this.props.taskData.parameters;
-    const fieldNames = Object.keys(
-      this.props.initialParameters[type.toLowerCase()]
-    );
+    const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(
-        field,
-        this.props.initialParameters[type.toLowerCase()][field]
-      );
+      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
     });
   }
 
@@ -90,87 +87,47 @@ class Helical extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
-          <Form horizontal>
+          <Form>
             <StaticField label="Path" data={this.props.path} />
-            <Row>
-              <Col xs={12}>
-                <InputField
-                  propName="subdir"
-                  label="Subdirectory"
-                  col1="4"
-                  col2="8"
-                />
-              </Col>
+            <Row className='mt-3'>
+                <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
             </Row>
-            <Row>
-              <Col xs={12}>
-                <InputField
-                  propName="prefix"
-                  label="Prefix"
-                  col1="4"
-                  col2="6"
-                />
-              </Col>
-              {this.props.taskData.sampleID ? (
-                <Col xs={4}>
-                  <InputField
-                    propName="run_number"
-                    disabled
-                    label="Run number"
-                    col1="4"
-                    col2="8"
-                  />
-                </Col>
-              ) : null}
+            <Row  className='mt-3'>
+              <InputField propName="prefix" label="Prefix" col1="4" col2="7" />
+            </Row>
+            <Row  className='mt-3 mb-3'>
+              {this.props.taskData.sampleID
+                ? (
+                    <InputField
+                      propName="run_number"
+                      disabled
+                      label="Run number"
+                      col1="4"
+                      col2="7"
+                    />
+                )
+                : null}
             </Row>
             <StaticField label="Filename" data={this.props.filename} />
           </Form>
 
           <FieldsHeader title="Acquisition" />
-          <Form horizontal>
+          <Form>
             <FieldsRow>
-              <InputField
-                propName="osc_range"
-                type="number"
-                label="Oscillation range"
-              />
-              <InputField
-                propName="first_image"
-                type="number"
-                label="First image"
-              />
+              <InputField propName="osc_range" type="number" label="Oscillation range" />
+              <InputField propName="first_image" type="number" label="First image" />
             </FieldsRow>
             <FieldsRow>
-              <InputField
-                propName="osc_start"
-                type="number"
-                label="Oscillation start"
-              />
-              <InputField
-                propName="num_images"
-                type="number"
-                label="Number of images"
-              />
+              <InputField propName="osc_start" type="number" label="Oscillation start" />
+              <InputField propName="num_images" type="number" label="Number of images" />
             </FieldsRow>
             <FieldsRow>
-              <InputField
-                propName="exp_time"
-                type="number"
-                label="Exposure time (s)"
-              />
-              <InputField
-                propName="transmission"
-                type="number"
-                label="Transmission"
-              />
+              <InputField propName="exp_time" type="number" label="Exposure time (s)" />
+              <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
               <InputField propName="energy" type="number" label="Energy" />
-              <InputField
-                propName="resolution"
-                type="number"
-                label="Resolution"
-              />
+              <InputField propName="resolution" type="number" label="Resolution" />
             </FieldsRow>
             <CollapsableRows>
               <FieldsRow>
@@ -198,40 +155,38 @@ class Helical extends React.Component {
 
           <FieldsHeader title="Processing" />
         </Modal.Body>
-        {this.props.taskData.state ? (
-          ''
-        ) : (
-          <Modal.Footer>
-            <ButtonToolbar className="pull-left">
-              <Button
-                bsSize="xsmall"
-                bsStyle="default"
-                onClick={this.defaultParameters}
-              >
-                Default Parameters
-              </Button>
-            </ButtonToolbar>
-            <ButtonToolbar className="pull-right">
-              <Button
-                bsStyle="success"
-                disabled={
-                  this.props.taskData.parameters.shape === -1 ||
-                  this.props.invalid
-                }
-                onClick={this.submitRunNow}
-              >
-                Run Now
-              </Button>
-              <Button
-                bsStyle="primary"
-                disabled={this.props.invalid}
-                onClick={this.submitAddToQueue}
-              >
-                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-              </Button>
-            </ButtonToolbar>
-          </Modal.Footer>
-        )}
+        { this.props.taskData.state ? ''
+          : (
+            <Modal.Footer>
+              <ButtonToolbar className="pull-left">
+                <Button
+                  size="sm"
+                  variant="outline-secondary"
+                  onClick={this.defaultParameters}
+                >
+                 Default Parameters
+                </Button>
+              </ButtonToolbar>
+              <ButtonToolbar className="pull-right">
+                <Button
+                  variant="success"
+                  disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+                  onClick={this.submitRunNow}
+                >
+                 Run Now
+                </Button>
+                <Button
+                  className='ms-3'
+                  variant="primary"
+                  disabled={this.props.invalid}
+                  onClick={this.submitAddToQueue}
+                >
+                  {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+                </Button>
+              </ButtonToolbar>
+            </Modal.Footer>
+          )
+       }
       </DraggableModal>
     );
   }
@@ -240,7 +195,7 @@ class Helical extends React.Component {
 Helical = reduxForm({
   form: 'helical',
   validate,
-  warn,
+  warn
 })(Helical);
 
 const selector = formValueSelector('helical');
@@ -264,23 +219,19 @@ Helical = connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.resolution
-          : state.beamline.attributes.resolution.value,
-      energy:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.energy
-          : state.beamline.attributes.energy.value,
-      transmission:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.transmission
-          : state.beamline.attributes.transmission.value,
-      osc_start:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.osc_start
-          : state.beamline.attributes.omega.value,
-    },
+      resolution: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.resolution
+        : state.beamline.attributes.resolution.value),
+      energy: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.energy
+        : state.beamline.attributes.energy.value),
+      transmission: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.transmission
+        : state.beamline.attributes.transmission.value),
+      osc_start: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.osc_start
+        : state.beamline.attributes.omega.value)
+    }
   };
 })(Helical);
 

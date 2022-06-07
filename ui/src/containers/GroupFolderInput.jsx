@@ -1,13 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import {
-  FormGroup,
-  Form,
-  FormControl,
-  ControlLabel,
-  Button,
-} from 'react-bootstrap';
+import { Form, Button } from 'react-bootstrap';
 import * as QueueActions from '../actions/queue';
 
 class GroupFolderInput extends React.Component {
@@ -20,7 +14,7 @@ class GroupFolderInput extends React.Component {
   }
 
   setGroupFolderInput() {
-    /* eslint-disable react/no-set-state */
+     
     this.setState({ validationState: 'success' });
     /* eslint-enable react/no-set-state */
     this.props.queueActions.sendSetGroupFolder(this.inputValue.value);
@@ -32,7 +26,7 @@ class GroupFolderInput extends React.Component {
   }
 
   inputOnChangeHandler() {
-    /* eslint-disable react/no-set-state */
+     
     this.setState({ validationState: 'warning' });
     /* eslint-enable react/no-set-state */
   }
@@ -40,41 +34,21 @@ class GroupFolderInput extends React.Component {
   render() {
     return (
       <span>
-        <ControlLabel>Group path:</ControlLabel>
-        <br />
-        <Form
-          inline
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <FormGroup
-            bsSize="small"
-            validationState={this.state.validationState}
-          >
-            <FormControl
-              bsSize="sm"
+        <Form.Label>Group path :</Form.Label><br />
+        <Form onSubmit={e => { e.preventDefault(); }} >
+          <Form.Group className='d-flex' validationState={this.state.validationState}>
+            <Form.Control
+              size="sm"
               defaultValue={this.props.queue.groupFolder}
-              style={{
-                maxWidth: '13em',
-                minWidth: '13em',
-                marginRight: '0.5em',
-              }}
-              type="text"
               onSelect={this.inputOnSelectHandler}
               onChange={this.inputOnChangeHandler}
-              inputRef={(input) => {
-                this.inputValue = input;
-              }}
+              ref={(ref) => { this.inputValue = ref; }}
             />
-          </FormGroup>
-          <Button
-            type="button"
-            bsSize="small"
-            onClick={this.setGroupFolderInput}
-          >
-            Set
-          </Button>
+            <span style={{ marginRight: '0.5em' }} />
+            <Button variant="outline-secondary" size="sm" onClick={this.setGroupFolderInput}>
+              Set
+            </Button>
+          </Form.Group>
         </Form>
       </span>
     );
@@ -83,14 +57,18 @@ class GroupFolderInput extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    queue: state.queue,
+    queue: state.queue
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    queueActions: bindActionCreators(QueueActions, dispatch),
+    queueActions: bindActionCreators(QueueActions, dispatch)
   };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(GroupFolderInput);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(GroupFolderInput);
+

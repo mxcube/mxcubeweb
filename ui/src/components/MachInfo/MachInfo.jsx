@@ -1,7 +1,8 @@
 import React from 'react';
-import { OverlayTrigger, Popover, Label } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Badge, Row, Col } from 'react-bootstrap';
 
 import './style.css';
+
 
 export default class MachInfo extends React.Component {
   shouldComponentUpdate(nextProps) {
@@ -11,77 +12,56 @@ export default class MachInfo extends React.Component {
   render() {
     const tooltipTitle = 'Machine Status\n';
 
-    let bsStyle = 'info';
+    let variant = 'info';
     let msg = '';
     let propname = '';
     let propvalue = '';
     let popContent = '';
 
     if (this.props.info.attention === true) {
-      bsStyle = 'danger';
+      variant = 'danger';
     } else {
-      bsStyle = 'info';
+      variant = 'info';
     }
+
+    const msgLabelStyle = { display: 'block', fontSize: '100%',
+    borderRadius: '0px', color: '#000' };
 
     for (propname in this.props.info) {
       if (this.props.info.hasOwnProperty(propname)) {
-        if (propname === 'attention') {
-          continue;
-        }
+        if (propname === 'attention') { continue; }
         propvalue = this.props.info[propname];
-        msg = (
-          <p>
-            {propname} : {propvalue}
-          </p>
-        );
-        popContent = (
-          <span>
-            {popContent}
-            {msg}
-          </span>
-        );
+        msg = <Row className='mb-1'> <Col sm={6}>{propname}</Col> <Col sm={3}> : </Col> <Col sm={3}>{propvalue}</Col></Row>;
+        popContent = <span>{popContent}{msg}</span>;
       }
     }
 
     popContent = <span>{popContent}</span>;
 
     const machinfoPop = (
-      <Popover id="popover-machinfo" title={tooltipTitle}>
-        {popContent}
-      </Popover>
+       <Popover id="popover-machinfo">
+         <Popover.Header>
+          {tooltipTitle}
+         </Popover.Header>
+         <Popover.Body style={{ width: '180px' }}>
+          {popContent}
+         </Popover.Body>
+       </Popover>
     );
 
     return (
-      <div>
-        <OverlayTrigger placement="bottom" overlay={machinfoPop}>
-          <span>
-            <div>
-              <Label
-                bsStyle="default"
-                style={{ display: 'block', marginBottom: '3px' }}
-              >
-                Ring Current
-              </Label>
-            </div>
-            <div>
-              <Label
-                bsStyle={bsStyle}
-                style={{
-                  display: 'block',
-                  fontSize: '100%',
-                  borderRadius: '0px',
-                }}
-              >
-                {this.props.info.current}
-              </Label>
-            </div>
-          </span>
-        </OverlayTrigger>
-      </div>
+      <OverlayTrigger placement="bottom" overlay={machinfoPop}>
+        <div>
+          <Badge bg='secondary' style={{ display: 'block', marginBottom: '3px' }}>
+            Ring Current
+          </Badge>
+          <Badge bg={variant} style={msgLabelStyle}>{this.props.info.current}</Badge>
+        </div>
+      </OverlayTrigger>
     );
   }
 }
 
 MachInfo.defaultProps = {
-  info: { current: -1, message: '' },
+  info: { current: -1, message: '' }
 };

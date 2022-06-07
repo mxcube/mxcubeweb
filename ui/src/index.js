@@ -55,7 +55,7 @@ function requireAuth() {
 }
 
 function PrivateOutlet() {
-  let location = useLocation();
+  const location = useLocation();
   const auth = requireAuth();
   return auth ? <Outlet /> : <Navigate to="/login" state={{ from: location }}  replace />;
 }
@@ -89,7 +89,7 @@ export default class App extends React.Component {
                   <Route index element={<SampleViewContainer />} />
                   <Route path="samplegrid" element={<SampleGridViewContainer />} />
                   <Route path="datacollection" element={<SampleViewContainer />} />
-                  <Route path="samplechanger" element={<EquipmentContainer />} />
+                  <Route path="equipment" element={<EquipmentContainer />} />
                   <Route path="logging" element={<LoggerContainer />} />
                   <Route path="remoteaccess" element={<RemoteAccessContainer />} />
                   <Route path="help" element={<HelpContainer />} />
@@ -103,4 +103,4 @@ export default class App extends React.Component {
   }
 }
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.querySelector('#root'));

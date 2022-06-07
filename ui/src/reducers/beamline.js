@@ -146,7 +146,7 @@ export default (state = INITIAL_STATE, action) => {
 
   switch (action.type) {
     case 'BL_ATTR_GET_ALL':
-      return Object.assign({}, state, action.data);
+      return { ...state, ...action.data};
 
     case 'BL_ATTR_SET': {
       const attrData = Object.assign(
@@ -170,7 +170,7 @@ export default (state = INITIAL_STATE, action) => {
         },
       };
     case 'BL_ATTR_SET_STATE':
-      data = Object.assign({}, state);
+      data = { ...state};
       data.attributes[action.data.name].state = action.data.state;
       return data;
 
@@ -230,7 +230,7 @@ export default (state = INITIAL_STATE, action) => {
         //          ...INITIAL_STATE.motorsLimits,
         //          ...action.data.motorsLimits
         //        },
-        beamlineActionsList: action.data.beamlineSetup.actionsList.slice(0),
+        beamlineActionsList: [...action.data.beamlineSetup.actionsList],
         availableMethods: action.data.beamlineSetup.availableMethods,
         energyScanElements: action.data.beamlineSetup.energyScanElements,
       };
@@ -302,11 +302,11 @@ export default (state = INITIAL_STATE, action) => {
     case 'ACTION_HIDE_OUTPUT': {
       return {
         ...state,
-        currentBeamlineAction: Object.assign(
-          {},
-          JSON.parse(JSON.stringify(state.currentBeamlineAction)),
-          { show: false }
-        ),
+        currentBeamlineAction: {
+          
+          ...JSON.parse(JSON.stringify(state.currentBeamlineAction)),
+          show: false
+        },
       };
     }
     case 'ADD_USER_MESSAGE': {

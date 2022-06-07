@@ -1,57 +1,45 @@
 import React from 'react';
-import { Button, ButtonToolbar, Glyphicon } from 'react-bootstrap';
-import {
-  RUNNING,
-  twoStateActuatorIsActive,
-  TWO_STATE_ACTUATOR,
-} from '../../constants';
+import { Button, ButtonToolbar } from 'react-bootstrap';
+import { BiLinkExternal } from "react-icons/bi";
+import { RUNNING, twoStateActuatorIsActive, TWO_STATE_ACTUATOR } from '../../constants';
 
 export default class BeamlineActionControl extends React.Component {
   render() {
-    let bsStyle = this.props.state === RUNNING ? 'danger' : 'primary';
+    let variant = this.props.state === RUNNING ? 'danger' : 'primary';
     let label = this.props.state === RUNNING ? 'Stop' : 'Run';
     const showOutput = this.props.type !== TWO_STATE_ACTUATOR;
 
     if (this.props.type === 'INOUT') {
       label = String(this.props.data).toUpperCase();
-      bsStyle = twoStateActuatorIsActive(this.props.data)
-        ? 'success'
-        : 'danger';
+      variant = twoStateActuatorIsActive(this.props.data) ? 'success' : 'danger';
     }
 
     return (
-      <div>
-        <ButtonToolbar>
-          {this.props.arguments.length === 0 ? (
-            <Button
-              bsSize="small"
-              bsStyle={bsStyle}
-              disabled={this.props.disabled}
-              onClick={
-                this.props.state !== RUNNING
-                  ? () => this.props.start(this.props.cmdName, showOutput)
-                  : () => this.props.stop(this.props.cmdName)
-              }
-            >
-              <b>{label}</b>
-            </Button>
-          ) : (
-            ''
-          )}
-          {showOutput ? (
-            <Button
-              disabled={this.props.disabled}
-              bsSize="small"
-              onClick={() => this.props.showOutput(this.props.cmdName)}
-            >
-              <Glyphicon glyph="new-window" />
-            </Button>
-          ) : (
-            ''
-          )}
-          { this.props.state === RUNNING ? (<b>(Running)</b>) : '' }
-        </ButtonToolbar>
-      </div>
-    );
+      <ButtonToolbar>
+        { this.props.arguments.length === 0 ?
+          <Button
+            size="sm"
+            className='me-1'
+            variant = {variant}
+            disabled = {this.props.disabled}
+            onClick = { this.props.state !== RUNNING ?
+              () => this.props.start(this.props.cmdName, showOutput) :
+              () => this.props.stop(this.props.cmdName) }
+          >
+          {label}
+          </Button> : ''
+        }
+        { showOutput ?
+          <Button
+            variant='outline-secondary'
+            disabled = {this.props.disabled}
+            size = "sm"
+            onClick = { () => this.props.showOutput(this.props.cmdName) }
+          >
+            <BiLinkExternal />
+          </Button> : ''
+        }
+      </ButtonToolbar>);
   }
 }
+

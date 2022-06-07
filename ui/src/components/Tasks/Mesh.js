@@ -1,7 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
+import {
+  Modal,
+  Button,
+  Form,
+  Row,
+  Col,
+  ButtonToolbar
+} from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import warn from './warning';
@@ -14,7 +21,7 @@ import {
   SelectField,
   FieldsRow,
   CollapsableRows,
-  DisplayField,
+  DisplayField
 } from './fields';
 
 class Mesh extends React.Component {
@@ -51,7 +58,7 @@ class Mesh extends React.Component {
       mesh: true,
       helical: false,
       shape: this.props.pointID,
-      num_images: aux,
+      num_images: aux
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -81,14 +88,9 @@ class Mesh extends React.Component {
   defaultParameters() {
     this.props.resetTaskParameters();
     const { type } = this.props.taskData.parameters;
-    const fieldNames = Object.keys(
-      this.props.initialParameters[type.toLowerCase()]
-    );
+    const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(
-        field,
-        this.props.initialParameters[type.toLowerCase()][field]
-      );
+      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
     });
   }
 
@@ -100,55 +102,37 @@ class Mesh extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <FieldsHeader title="Data location" />
-          <Form horizontal>
+          <Form>
             <StaticField label="Path" data={this.props.path} />
-            <Row>
-              <Col xs={12}>
-                <InputField
-                  propName="subdir"
-                  label="Subdirectory"
-                  col1="4"
-                  col2="8"
-                />
-              </Col>
+            <Row className='mt-3'>
+              <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
             </Row>
             <Row>
-              <Col xs={8}>
-                <InputField
-                  propName="prefix"
-                  label="Prefix"
-                  col1="6"
-                  col2="6"
-                />
-              </Col>
-              {this.props.taskData.sampleID ? (
-                <Col xs={4}>
-                  <InputField
-                    propName="run_number"
-                    disabled
-                    label="Run number"
-                    col1="4"
-                    col2="8"
-                  />
-                </Col>
-              ) : null}
+              <InputField propName="prefix" label="Prefix" col1="6" col2="7" />
+            </Row>
+            <Row className='mt-3 mb-3'>
+              {this.props.taskData.sampleID
+                ? (
+                  <Col xs={4}>
+                    <InputField
+                      propName="run_number"
+                      disabled
+                      label="Run number"
+                      col1="4"
+                      col2="7"
+                    />
+                  </Col>
+                )
+                : null}
             </Row>
             <StaticField label="Filename" data={this.props.filename} />
           </Form>
 
           <FieldsHeader title="Acquisition" />
-          <Form horizontal>
+          <Form>
             <FieldsRow>
-              <InputField
-                propName="osc_range"
-                type="number"
-                label="Oscillation range per image"
-              />
-              <InputField
-                propName="first_image"
-                type="number"
-                label="First image"
-              />
+              <InputField propName="osc_range" type="number" label="Oscillation range per image" />
+              <InputField propName="first_image" type="number" label="First image" />
             </FieldsRow>
             <FieldsRow>
               <DisplayField
@@ -161,24 +145,12 @@ class Mesh extends React.Component {
               />
             </FieldsRow>
             <FieldsRow>
-              <InputField
-                propName="exp_time"
-                type="number"
-                label="Exposure time per image(s)"
-              />
-              <InputField
-                propName="transmission"
-                type="number"
-                label="Transmission"
-              />
+              <InputField propName="exp_time" type="number" label="Exposure time per image(s)" />
+              <InputField propName="transmission" type="number" label="Transmission" />
             </FieldsRow>
             <FieldsRow>
               <InputField propName="energy" type="number" label="Energy" />
-              <InputField
-                propName="resolution"
-                type="number"
-                label="Resolution"
-              />
+              <InputField propName="resolution" type="number" label="Resolution" />
             </FieldsRow>
             <CollapsableRows>
               <FieldsRow>
@@ -205,47 +177,46 @@ class Mesh extends React.Component {
 
           <FieldsHeader title="Processing" />
         </Modal.Body>
-        {this.props.taskData.state ? (
-          ''
-        ) : (
-          <Modal.Footer>
-            <ButtonToolbar className="pull-left">
-              <Button
-                bsSize="xsmall"
-                bsStyle="default"
-                onClick={this.defaultParameters}
-              >
-                Default Parameters
-              </Button>
-              <Button
-                bsSize="xsmall"
-                bsStyle="default"
-                onClick={this.resetParameters}
-              >
-                Reset Form
-              </Button>
-            </ButtonToolbar>
-            <ButtonToolbar className="pull-right">
-              <Button
-                bsStyle="success"
-                disabled={
-                  this.props.taskData.parameters.shape === -1 ||
-                  this.props.invalid
-                }
-                onClick={this.submitRunNow}
-              >
-                Run Now
-              </Button>
-              <Button
-                bsStyle="primary"
-                disabled={this.props.invalid}
-                onClick={this.submitAddToQueue}
-              >
-                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-              </Button>
-            </ButtonToolbar>
-          </Modal.Footer>
-        )}
+        { this.props.taskData.state ? ''
+          : (
+            <Modal.Footer>
+              <ButtonToolbar style={{ bottom: '15px', left: '10px'}} className="position-absolute">
+                <Button
+                  size="sm"
+                  variant="outline-secondary"
+                  onClick={this.defaultParameters}
+                >
+               Default Parameters
+                </Button>
+                <Button
+                  className='ms-3'
+                  size="sm"
+                  variant="outline-secondary"
+                  onClick={this.resetParameters}
+                >
+               Reset Form
+                </Button>
+              </ButtonToolbar>
+              <ButtonToolbar className="pull-right">
+                <Button
+                  variant="success"
+                  disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+                  onClick={this.submitRunNow}
+                >
+                 Run Now
+                </Button>
+                <Button
+                  className='ms-3'
+                  variant="primary"
+                  disabled={this.props.invalid}
+                  onClick={this.submitAddToQueue}
+                >
+                  {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+                </Button>
+              </ButtonToolbar>
+            </Modal.Footer>
+          )
+       }
       </DraggableModal>
     );
   }
@@ -254,7 +225,7 @@ class Mesh extends React.Component {
 Mesh = reduxForm({
   form: 'mesh',
   validate,
-  warn,
+  warn
 })(Mesh);
 
 const selector = formValueSelector('helical');
@@ -278,17 +249,17 @@ Mesh = connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: state.taskForm.taskData.sampleID
+      resolution: (state.taskForm.taskData.sampleID
         ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.attributes.resolution.value,
-      energy: state.taskForm.taskData.sampleID
+        : state.beamline.attributes.resolution.value),
+      energy: (state.taskForm.taskData.sampleID
         ? state.taskForm.taskData.parameters.energy
-        : state.beamline.attributes.energy.value,
-      transmission: state.taskForm.taskData.sampleID
+        : state.beamline.attributes.energy.value),
+      transmission: (state.taskForm.taskData.sampleID
         ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.attributes.transmission.value,
-      osc_start: state.beamline.attributes.omega.value,
-    },
+        : state.beamline.attributes.transmission.value),
+      osc_start: state.beamline.attributes.omega.value
+    }
   };
 })(Mesh);
 
