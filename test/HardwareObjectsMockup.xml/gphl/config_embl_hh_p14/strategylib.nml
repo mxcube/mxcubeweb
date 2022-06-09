@@ -46,6 +46,25 @@ length_deg= 1.2
 start_deg= 0.0
 /
 
+! ################### 4deg/4 characteristation strategy
+
+&sdcp_strategy_list
+strategy_name= 'Char_4_by_10_multitrigger'
+type= 'geometric'
+allowed_widths= 0.1
+default_width_idx= 6
+/
+
+&stratcal_sweep_list
+repeat= 4
+offset= 90.0
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 1.0
+start_deg= 0.0
+/
+
 ! ################### One 24deg sweep
 
 &sdcp_strategy_list

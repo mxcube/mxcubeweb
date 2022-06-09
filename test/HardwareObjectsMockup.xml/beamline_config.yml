@@ -53,6 +53,7 @@ _objects:
     - energy_scan: energyscan.xml
     - gphl_connection: gphl/gphl-setup.yml
     - gphl_workflow: gphl/gphl-workflow.yml
+    - xray_centring: xray_centring2.yml
 #    - centring: centring.xml
     # Analysis:
     - offline_processing: auto_processing.xml

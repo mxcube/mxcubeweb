@@ -53,7 +53,7 @@ settings:
         #                ("use predicted centrings only", "none"),
         #            )
         #         mode "scan" is not allowed as default
-        recentring_mode: none
+        recentring_mode: sweep
         # Parameters to control proposed total dose budget
         # The proposed budget is calculated so that radiation damage is predicted
         # to reduce the intensity at the highest expected redolution to this percentaged-->
@@ -71,7 +71,7 @@ settings:
         relative_rad_sensitivity: 1.0
         interleave_order: gs
         characterisation_strategy: Char_6_5_multitrigger
-
+        # characterisation_strategy: Char_6_5_multitrigger
         # For testing only:
         automation_mode: TEST
 
@@ -85,6 +85,7 @@ settings:
       - exposure_time: 0.02
         image_width: 0.1
         resolution: 1.7
+#        image_count: 90
         # strategy_options: # Not currently used
         # For acquisition or diffractcal
       - exposure_time: 0.02

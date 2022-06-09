@@ -338,11 +338,13 @@ class Queue(ComponentBase):
         queueID = node._node_id
         enabled, state = self.get_node_state(queueID)
 
-        parameters["subdir"] = os.path.join(
-            *parameters["directory"].split(HWR.beamline.session.raw_data_folder_name)[
-                1:
-            ]
-        ).lstrip("/")
+        raw_data = HWR.beamline.session.raw_data_folder_name
+        ddir = parameters["directory"]
+        if raw_data in ddir:
+            parameters["subdir"] = os.path.join(*ddir.split(raw_data)[1:]).lstrip("/")
+        else:
+            # We are given a relative directory. Thisa might or mightnto work.
+            parameters["subdir"] = ddir
 
         parameters["fileName"] = pt.get_image_file_name().replace(
             "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
@@ -1100,12 +1102,12 @@ class Queue(ComponentBase):
         # params include only path_template-related parametes and strategy_name
         model.init_from_task_data(sample_model, params)
 
-        # NBNB 
-        # These two calls seems to be needed by the Global phasing workflows
-        # Adding them resolves the current conflict
-        # NBNB CHECK REMOVAL
-        model.set_pre_strategy_params(**params)
-        model.set_pre_acquisition_params(**params)
+        # # NBNB
+        # # These two calls seems to be needed by the Global phasing workflows
+        # # Adding them resolves the current conflict
+        # # NBNB CHECK REMOVAL
+        # model.set_pre_strategy_params(**params)
+        # model.set_pre_acquisition_params(**params)
 
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
@@ -1345,8 +1347,7 @@ class Queue(ComponentBase):
 
         dc_model = qmo.GphlWorkflow()
         dc_model.set_origin(ORIGIN_MX3)
-        # dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
-        dc_entry = GphlWorkflowQueueEntry(data_model=dc_model)
+        dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
 
         return dc_model, dc_entry
 
@@ -1667,9 +1668,15 @@ class Queue(ComponentBase):
                 self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 
-            elif isinstance(child, qmo.XrayCentering):
+            elif isinstance(child, qmo.XrayCentring2):
                 # Added rhfogh 20211001
-                entry = qe.XrayCenteringQueueEntry(Mock(), child)
+                entry = qe.XrayCentring2QueueEntry(Mock(), child)
+                self.enable_entry(entry, True)
+                parent_entry.enqueue(entry)
+
+            elif isinstance(child, qmo.DelayTask):
+                # Added rhfogh 20220331
+                entry = qe.DelayQueueEntry(Mock(), child)
                 self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 
