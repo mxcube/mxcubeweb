@@ -70,7 +70,7 @@ settings:
         # Radiation sensitivity relative to standard crystal
         relative_rad_sensitivity: 1.0
         interleave_order: gs
-        characterisation_strategy: Char_4_by_10_multitrigger
+        characterisation_strategy: Char_6_5_multitrigger
         # characterisation_strategy: Char_6_5_multitrigger
         # For testing only:
         automation_mode: TEST
