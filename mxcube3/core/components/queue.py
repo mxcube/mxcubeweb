@@ -1674,9 +1674,9 @@ class Queue(ComponentBase):
                 self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 
-            elif isinstance(child, qmo.DummyTask):
+            elif isinstance(child, qmo.DelayTask):
                 # Added rhfogh 20220331
-                entry = qe.DummyQueueEntry(Mock(), child)
+                entry = qe.DelayQueueEntry(Mock(), child)
                 self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 
