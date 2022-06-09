@@ -797,9 +797,9 @@ export default class SampleImage extends React.Component {
       />
     );
 
-    if (format === 'MPEG1') {
-      result = <canvas id="sample-img" className="img" />;
-    }
+    // if (format === 'MPEG1') {
+    //  result = <canvas id="sample-img" className="img" />;
+    // }
 
     return result;
   }
