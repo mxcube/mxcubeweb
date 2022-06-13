@@ -109,6 +109,9 @@ settings:
     # Note that irrelevant properties are simply ignored.-->
     workflow_properties:
 
+#        # If set, run after-acquisition processing in detatched mode
+#        co.gphl.wf.process.detach: true
+
         # Set to false to switch off pre-start checks for directory existence
         # in cases where the directories are are created after the workflow starts
         # Checks for data directory tree
