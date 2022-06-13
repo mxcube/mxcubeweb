@@ -1775,7 +1775,7 @@ class Queue(ComponentBase):
             node, entry = self.get_entry(parent_id)
 
             try:
-                HWR.beamline.queue_manager.execute_entry(entry, use_async=True)
+                HWR.beamline.queue_manager.execute(entry)
             except BaseException:
                 HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
 
