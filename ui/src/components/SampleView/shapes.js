@@ -221,7 +221,7 @@ export function makePoint(x, y, id, color, type, name, strokeWidth) {
 export function makePoints(points, imageRatio) {
   const fabricPoints = [];
   for (const id in points) {
-    if (Object.hasOwn(points, id)) {
+    if ({}.hasOwnProperty.call(points, id)) {
       const [x, y] = points[id].screenCoord;
 
       switch (points[id].state) {
@@ -263,7 +263,7 @@ export function makePoints(points, imageRatio) {
 export function makeTwoDPoints(points, imageRatio) {
   const fabricPoints = [];
   for (const id in points) {
-    if (Object.hasOwn(points, id)) {
+    if ({}.hasOwnProperty.call(points, id)) {
       const [x, y] = points[id].screenCoord;
 
       switch (points[id].state) {
