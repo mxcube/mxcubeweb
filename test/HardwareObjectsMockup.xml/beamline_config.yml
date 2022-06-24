@@ -46,7 +46,6 @@ _objects:
 
     # Procedures:
     - beamline_actions: beamline_actions.xml
-    - xml_rpc_server: xml_rpc_server.xml
     - workflow: ednaparams.xml
     - collect: mxcollect.xml
     - xrf_spectrum: xrf.xml
@@ -55,6 +54,7 @@ _objects:
     - gphl_workflow: gphl/gphl-workflow.yml
     - xray_centring: xray_centring2.yml
 #    - centring: centring.xml
+    - xml_rpc_server: xml_rpc_server.xml
     # Analysis:
     - offline_processing: auto_processing.xml
     - online_processing: parallel_processing.xml

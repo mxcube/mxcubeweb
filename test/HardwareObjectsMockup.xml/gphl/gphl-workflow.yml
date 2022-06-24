@@ -26,7 +26,7 @@ settings:
     characterisation_strategies:
         - Char_6_5_multitrigger
         - Char_24deg
-#        - Characterisation_6_5
+#        - Char_4_by_10
 #        - TEST_Characterisation_12_3
 #        - TEST_Characterisation_12_4
 #        - TEST_Characterisation_12_5
@@ -184,6 +184,7 @@ workflows:
                   variants:
                       - full
                       - quick
+                      - minimal
                   options:
                       # Filename pattern name for normal data collections
                       pattern: interleaved

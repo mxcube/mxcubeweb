@@ -1,16 +1,11 @@
 import sys
 import mock
 import os
+import traceback
 
 from gevent import monkey
-
-# NB HardwareRepository must be imported *before* the gevent monkeypatching
-# in order to set the unpatched version of socket for use elseqhere
-# See HardwareRepository.original_socket
-from mxcubecore import HardwareRepository as HWR
-
 monkey.patch_all(thread=False)
-
+from mxcubecore import HardwareRepository as HWR
 
 from optparse import OptionParser
 
@@ -88,31 +83,35 @@ def parse_args():
 
 
 def main():
-    cmdline_options, args = parse_args()
 
-    # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
-    # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
-    # without continuously editing teh main config files.
-    # Note that the machinery was all there in the core alrady. rhfogh.
-    HWR.init_hardware_repository(cmdline_options.hwr_directory)
-    config_path = HWR.get_hardware_repository().find_in_repository(
-        "mxcube-web"
-    )
+    try:
+        cmdline_options, args = parse_args()
 
-    cfg = Config(config_path)
+        # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
+        # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
+        # without continuously editing teh main config files.
+        # Note that the machinery was all there in the core alrady. rhfogh.
+        HWR.init_hardware_repository(cmdline_options.hwr_directory)
+        config_path = HWR.get_hardware_repository().find_in_repository(
+            "mxcube-web"
+        )
 
-    server.init(cmdline_options, cfg, mxcube)
+        cfg = Config(config_path)
 
-    mxcube.init(
-        server,
-        cmdline_options.allow_remote,
-        cmdline_options.ra_timeout,
-        cmdline_options.video_device,
-        cmdline_options.log_file,
-        cfg,
-    )
+        server.init(cmdline_options, cfg, mxcube)
+        mxcube.init(
+            server,
+            cmdline_options.allow_remote,
+            cmdline_options.ra_timeout,
+            cmdline_options.video_device,
+            cmdline_options.log_file,
+            cfg,
+        )
 
-    server.register_routes(mxcube)
+        server.register_routes(mxcube)
+    except:
+        traceback.print_exc()
+        raise
 
     server.run()
 
