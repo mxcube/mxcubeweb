@@ -2,35 +2,29 @@
   display: none;
 }
 
-.generic-equipment-container-panel-body {
-  padding-left: 0px;
-  padding-right: 0px;
+.generic-equipment-container-collapsible {
+  border: 1px solid #d6d2d2;
+  padding: 10px;
 }
 
 .command-panel {
   border: 0px;
 }
 
-.generic-equipment-container .panel-title {
-  text-transform:capitalize;
+.generic-equipment-arrow-p{
+  position: relative;
+  bottom: 35px;
+  float: right;
+  margin-bottom: -20px;
+  margin-right: 20px;
 }
 
-.custom-accordion-header > .accordion-button { 
-  padding: 0rem 0.5rem 0rem 0rem
-
+.generic-equipment-arrow-c{
+  float: right;
+  margin-right: 10px;
+  margin-top: 4px;
 }
 
-
-.custom-accordion-header >  .accordion-button:not(.collapsed) {
-  background-color: #ffffff !important;
-  box-shadow: none !important;
-}
-
-.custom-accordion-header-child >  .accordion-button:not(.collapsed) {
-  /* background-color: #ffffff !important; */
-  box-shadow: 0px !important;
-}
-
-.accordion-button:focus {
-  box-shadow:none !important;
+.generic-equipment-collapsible-child-content{
+  margin-bottom: 0.5rem;
 }
