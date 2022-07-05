@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Navbar, Nav, Row, Col, Table, Popover } from 'react-bootstrap';
+import { Navbar, Nav, Table, Popover } from 'react-bootstrap';
 import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
@@ -150,12 +150,12 @@ class BeamlineSetupContainer extends React.Component {
         </td>);
       components.push(
         <td
-        className='pe-3 pt-1' 
+        className='pe-3' 
         style={{
           fontWeight: 'bold',
           border: '0px',
           borderRight: uiprop_list.length != uiprop_list.indexOf(uiprop) + 1 ? '1px solid #ddd': '',
-          padding: '0em , 0em'}}>
+          padding: '0em'}}>
           { beamline_attribute.readonly ?
             (<LabeledValue
               suffix={ uiprop.suffix }
