@@ -82,7 +82,7 @@ class SampleViewContainer extends Component {
     return (
         <Container fluid>
           <Row>
-            <Col sm={12} style={{ marginTop: '-40px',  paddingLeft: '0px',  paddingRight: '0px' }}>
+            <Col sm={12} style={{ paddingLeft: '0px',  paddingRight: '0px' }}>
               <BeamlineSetupContainer />
             </Col>
           </Row>

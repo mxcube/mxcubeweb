@@ -3,6 +3,8 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Stack } from 'react-bootstrap';
 import { Outlet } from 'react-router-dom';
+import Draggable from 'react-draggable';
+
 import withRouter from '../components/WithRouter';
 import MXNavbarContainer from '../containers/MXNavbarContainer';
 import TaskContainer from '../containers/TaskContainer';
@@ -107,10 +109,11 @@ class Main extends React.Component {
           onHide={() => this.props.showDialog(false)}
         />
         <MXNavbarContainer location={window.location} />
-        <Stack style={{ paddingTop: '5.5em', zIndex: 9999 }}>
+        <Stack gap={2} style={{ paddingTop: '3em', zIndex: 9999 }}>
           <Outlet />
         </Stack>
-        <span onClick={this.onChatContainerClick}>
+        <Draggable>
+          <div onClick={this.onChatContainerClick}>
           { this.props.remoteAccess.observers.length > 0 ?
             (<Widget
               title="Chat"
@@ -119,7 +122,8 @@ class Main extends React.Component {
               handleNewUserMessage={this.handleNewUserMessage}
             />) : null
           }
-        </span>
+        </div>
+        </Draggable>
       </div>
     );
   }
