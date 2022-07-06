@@ -17,6 +17,8 @@ from mxcubecore.HardwareObjects import queue_entry as qe
 from mxcubecore.HardwareObjects import queue_model_enumerables as qme
 from mxcubecore.HardwareObjects.base_queue_entry import QUEUE_ENTRY_STATUS
 
+from mxcubecore.HardwareObjects.Gphl import GphlQueueEntry
+
 from mxcube3.core.components.component_base import ComponentBase
 
 from functools import reduce
@@ -1158,6 +1160,7 @@ class Queue(ComponentBase):
         beamline_params["run_number"] = model.path_template.run_number
         beamline_params["collection_software"] = "MXCuBE - 3.0"
         beamline_params["sample_node_id"] = sample_model._node_id
+        beamline_params["workflow_node_id"] = model._node_id
         beamline_params["sample_lims_id"] = sample_model.lims_id
         beamline_params["beamline"] = HWR.beamline.session.endstation_name
         beamline_params["shape"] = params["shape"]
@@ -1671,6 +1674,13 @@ class Queue(ComponentBase):
             elif isinstance(child, qmo.XrayCentring2):
                 # Added rhfogh 20211001
                 entry = qe.XrayCentring2QueueEntry(Mock(), child)
+                self.enable_entry(entry, True)
+                parent_entry.enqueue(entry)
+
+            elif isinstance(child, qmo.GphlWorkflow):
+                # Added olofsvensson 20220504
+                # import pdb; pdb.set_trace()
+                entry = GphlQueueEntry.GphlWorkflowQueueEntry(Mock(), child)
                 self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 

@@ -48,8 +48,9 @@ class SampleView(ComponentBase):
 
     def _zoom_changed(self, *args, **kwargs):
         ppm = HWR.beamline.diffractometer.get_pixels_per_mm()
-        self.app.server.emit("update_pixels_per_mm", {
-                             "pixelsPerMm": ppm}, namespace="/hwr")
+        self.app.server.emit(
+            "update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr"
+        )
 
     def _emit_shapes_updated(self):
         shape_dict = {}
