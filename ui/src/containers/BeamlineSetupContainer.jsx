@@ -61,7 +61,7 @@ class BeamlineSetupContainer extends React.Component {
 
     if (motor !== undefined && motor.state !== 0) {
       motorInputList.push((
-        <div style={{ padding: '0.5em' }}>
+        <div key={`bsao-${motor.name}`} style={{ padding: '0.5em' }}>
           <p className="motor-name"> Beamstop distance: </p>
           <OneAxisTranslationControl
             save={this.props.sampleViewActions.sendMotorPosition}
@@ -145,11 +145,12 @@ class BeamlineSetupContainer extends React.Component {
       const beamline_attribute = this.props.beamline.attributes[uiprop.attribute];
 
       components.push(
-        <td className='d-flex pt-1' style={{ border: '0px', paddingLeft: '0.5em' }}>
-          <span className='me-1'>{ uiprop.label }:</span>
+        <td key={`bs-name-${uiprop.label}`} className='d-flex pt-1' style={{ border: '0px', paddingLeft: '0.5em' }}>
+          <span className='me-1'>{uiprop.label}:</span>
         </td>);
       components.push(
         <td
+        key={`bs-val-${uiprop.label}`}
         className='pe-3' 
         style={{
           fontWeight: 'bold',

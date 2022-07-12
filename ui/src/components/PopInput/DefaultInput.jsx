@@ -32,7 +32,7 @@ export default class DefaultInput extends React.Component {
 
   render() {
     return (
-      <Form className="popinput" inline onSubmit={this.submit} noValidate>
+      <Form className="popinput" onSubmit={this.submit} noValidate>
         <InputGroup className='d-flex' >
           <NumericInput
             className="popinput-input"

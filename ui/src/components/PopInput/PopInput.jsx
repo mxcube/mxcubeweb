@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, Nav, OverlayTrigger, Popover } from 'react-bootstrap';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
 

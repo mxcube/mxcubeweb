@@ -25,7 +25,7 @@ export default class MotorControl extends React.Component {
       slice(from, to_arg).map((motor_uiprop) => {
         const motor = this.props.attributes[motor_uiprop.attribute];
         return (
-          <Col sm={12}>
+          <Col key={`mc-${motor_uiprop.attribute}`} sm={12}>
             <MotorInput
               save={save}
               saveStep={saveStep}
