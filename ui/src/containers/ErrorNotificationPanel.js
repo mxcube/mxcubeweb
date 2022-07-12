@@ -9,7 +9,6 @@ export class ErrorNotificationPanel extends React.Component {
     return (
       <Modal
         show={this.props.show}
-        bsStyle="danger"
         onHide={this.props.hideErrorPanel}
       >
         <div style={{ marginBottom: '-20px' }}>

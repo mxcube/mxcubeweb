@@ -37,7 +37,7 @@ export class LoggerContainer extends React.Component {
     ));
 
     return (
-      <Container fluid>
+      <Container fluid className='mt-4'>
           <Row>
             <Col className="col-xs-12 text-center" style={{ float: 'none', margin: '0 auto' }}>
               <nav>

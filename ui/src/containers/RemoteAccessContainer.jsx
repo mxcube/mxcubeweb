@@ -46,7 +46,7 @@ export class RemoteAccessContainer extends React.Component {
 
   render() {
     return (
-      <Container fluid>
+      <Container fluid className='mt-4'>
         <Row sm={12} className="d-flex">
           { !this.props.login.user.inControl ?
             (<Col sm={4} className="col-xs-4">

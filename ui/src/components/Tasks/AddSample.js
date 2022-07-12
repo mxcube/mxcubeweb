@@ -69,7 +69,7 @@ class AddSample extends React.Component {
 
   render() {
     return (
-      <Modal show={this.props.show} onHide={this.handleCancel}>
+      <Modal show={this.props.show} onHide={this.handleCancel} style={{ minWidth: '795px'}}>
         <Modal.Header closeButton>
           <Modal.Title>Add Sample Manually</Modal.Title>
         </Modal.Header>
@@ -97,10 +97,10 @@ class AddSample extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar>
-            <Button variant="primary" disabled={this.props.invalid} onClick={this.addAndEnqueue}>
+            <Button variant="outline-secondary" disabled={this.props.invalid} onClick={this.addAndEnqueue}>
               Add Sample
             </Button>
-            <Button className= "ms-3" variant="primary" disabled={this.props.invalid} onClick={this.addAndMount}>
+            <Button className= "ms-3" variant="outline-secondary" disabled={this.props.invalid} onClick={this.addAndMount}>
               Add and mount sample
             </Button>
           </ButtonToolbar>

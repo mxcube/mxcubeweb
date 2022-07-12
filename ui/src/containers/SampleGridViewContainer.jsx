@@ -576,7 +576,7 @@ class SampleGridViewContainer extends React.Component {
     );
 
     return (
-      <Container fluid id="sampleGridContainer" className="samples-grid-container">
+      <Container fluid id="sampleGridContainer" className="samples-grid-container mt-4">
         <ConfirmActionDialog
           title="Clear sample grid ?"
           message="This will remove all samples (and collections) from the grid,

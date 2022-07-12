@@ -60,7 +60,7 @@ export class HelpContainer extends React.Component {
     }
 
     return (
-      <Container fluid>
+      <Container fluid className='mt-4'>
         <Row>
           <Col sm={12} className="d-flex">
             <Col sm={4}>
