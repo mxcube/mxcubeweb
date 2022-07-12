@@ -73,18 +73,7 @@ class BeamlineActionsContainer extends React.Component {
     const currentActionRunning = this.props.currentAction.state === RUNNING;
     const currentActionName = this.props.currentAction.name;
 
-    let defaultDialogPosition = { x: 0, y: 0 };
-
-    if (document.querySelectorAll('.m-tree').length > 0) {
-      const width = window.innerWidth
-        || document.documentElement.clientWidth
-        || document.body.clientWidth;
-
-      defaultDialogPosition = {
-        x: width - document.querySelectorAll('.m-tree')[0].getClientRects()[0].x - 50,
-        y: 0
-      };
-    }
+    let defaultDialogPosition = { x: '-50%', y: '-50%' };
 
     return (
       <Row>
