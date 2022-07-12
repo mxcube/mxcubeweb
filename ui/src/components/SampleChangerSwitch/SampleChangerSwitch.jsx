@@ -8,11 +8,23 @@ export default class SampleChangerSwitch extends React.Component {
     this.powerOn = this.powerOn.bind(this);
     this.powerOff = this.powerOff.bind(this);
     this.onRightLinkClick = this.onRightLinkClick.bind(this);
+    this.showOvelay = this.showOvelay.bind(this);
+
+    this.state = {
+      showOvelay: false,
+    };
+  }
+
+  showOvelay(value) {
+    this.setState({
+      showOvelay: value
+    });
   }
 
 
   onRightLinkClick(e) {
-    this.overlay.handleToggle();
+    // this.overlay.handleToggle();
+    this.showOvelay(!this.state.showOvelay)
     e.preventDefault();
   }
 
@@ -20,17 +32,20 @@ export default class SampleChangerSwitch extends React.Component {
   powerOn() {
     this.props.onSave('powerOn');
 
-    this.overlay.hide();
+    // this.overlay.hide();
+    this.showOvelay(false)
   }
 
 
   powerOff() {
     this.props.onSave('powerOff');
-    this.overlay.hide();
+    // this.overlay.hide();
+    this.showOvelay(false)
   }
 
 
   render() {
+    const showOvelay = this.state.showOvelay;
     let msgBgStyle = 'warning';
 
     if (this.props.data === 'READY') {
@@ -52,13 +67,14 @@ export default class SampleChangerSwitch extends React.Component {
     return (
       <div>
         <OverlayTrigger
-          ref={(ref) => { this.overlay = ref; }}
+          // ref={(ref) => { this.overlay = ref; }}
+          show={showOvelay}
           rootClose
           trigger="click"
           placement="bottom"
           overlay={(<Popover style={{ padding: '0.5em' }} id={`${this.props.labelText} popover`}>{btn}</Popover>)}
         >
-          <div onContextMenu={this.onRightLinkClick}>
+          <div onClick={() => this.showOvelay(!showOvelay)} onContextMenu={this.onRightLinkClick}>
             <Badge
               bg="secondary"
               style={{ display: 'block', marginBottom: '3px' }}
