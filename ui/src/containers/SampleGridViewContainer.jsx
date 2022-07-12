@@ -191,33 +191,34 @@ class SampleGridViewContainer extends React.Component {
     const path = '';
     let subdir = `${this.props.queue.groupFolder}`;
 
-    if (Object.keys(this.props.selected).length === 1) {
-      prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
-      subdir += this.props.sampleList[Object.keys(this.props.selected)[0]].defaultSubDir;
-    } else {
-      prefix = this.props.defaultParameters[formName.toLowerCase()].prefixTemplate;
-      subdir += this.props.defaultParameters[formName.toLowerCase()].subDirTemplate;
-    }
-
-    const parameters = { parameters: {
-      ...this.props.defaultParameters[formName.toLowerCase()],
-      ...extraParams,
-      prefix,
-      path,
-      subdir,
-      shape: -1 } };
-
-    const selected = [];
-
-    for (const sampleID in this.props.selected) {
-      if (this.props.selected[sampleID]) {
-        selected.push(sampleID);
-      }
-    }
 
     if (formName === 'AddSample') {
       this.props.showTaskParametersForm('AddSample');
     } else {
+      if (Object.keys(this.props.selected).length === 1) {
+        prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
+        subdir += this.props.sampleList[Object.keys(this.props.selected)[0]].defaultSubDir;
+      } else {
+        prefix = this.props.defaultParameters[formName.toLowerCase()].prefixTemplate;
+        subdir += this.props.defaultParameters[formName.toLowerCase()].subDirTemplate;
+      }
+  
+      const parameters = { parameters: {
+        ...this.props.defaultParameters[formName.toLowerCase()],
+        ...extraParams,
+        prefix,
+        path,
+        subdir,
+        shape: -1 } };
+  
+      const selected = [];
+  
+      for (const sampleID in this.props.selected) {
+        if (this.props.selected[sampleID]) {
+          selected.push(sampleID);
+        }
+      }
+
       this.props.showTaskParametersForm(formName, selected, parameters);
     }
   }
