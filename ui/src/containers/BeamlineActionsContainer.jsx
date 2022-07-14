@@ -73,7 +73,7 @@ class BeamlineActionsContainer extends React.Component {
     const currentActionRunning = this.props.currentAction.state === RUNNING;
     const currentActionName = this.props.currentAction.name;
 
-    let defaultDialogPosition = { x: '-50%', y: '-50%' };
+    let defaultDialogPosition = { x: -100, y: 100 };
 
     return (
       <Row>
@@ -125,7 +125,7 @@ class BeamlineActionsContainer extends React.Component {
         <DraggableModal id="beamlineActionOutput"
           show={!!this.props.currentAction.show}
           onHide={this.hideOutput}
-          defaultPosition={defaultDialogPosition}
+          defaultpos={defaultDialogPosition}
         >
           <Modal.Header>
             <Modal.Title>
