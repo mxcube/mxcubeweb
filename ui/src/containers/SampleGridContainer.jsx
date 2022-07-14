@@ -728,21 +728,21 @@ class SampleGridContainer extends React.Component {
 
   taskContextMenuItems() {
     return [
-      <Dropdown.Divider />,
-      <Dropdown.Item header> <span> <i className="fas fa-plus" /> Add </span></Dropdown.Item>,
-      <Dropdown.Item eventKey="2" onClick={this.props.showDataCollectionForm}>
+      <Dropdown.Divider key='t-c-m-i-d-1'/>,
+      <Dropdown.Header key='t-c-m-i-add'> <span> <i className="fas fa-plus" /> Add </span></Dropdown.Header>,
+      <Dropdown.Item key='t-c-m-i-d-c' eventKey="2" onClick={this.props.showDataCollectionForm}>
         Data collection
       </Dropdown.Item>,
-      <Dropdown.Item eventKey="3" onClick={this.props.showCharacterisationForm}>
+      <Dropdown.Item key='t-c-m-i-c' eventKey="3" onClick={this.props.showCharacterisationForm}>
         Characterisation
       </Dropdown.Item>,
       ...this.workflowMenuOptions(),
-      <Dropdown.Divider />,
-      <Dropdown.Item header><span><MdRemove glyph="minus" /> Remove </span></Dropdown.Item>,
-      <Dropdown.Item eventKey="1" onClick={this.props.removeSelectedSamples}>
+      <Dropdown.Divider key='t-c-m-i-d-2' />,
+      <Dropdown.Header key='t-c-m-i-remove'><span><MdRemove glyph="minus" /> Remove </span></Dropdown.Header>,
+      <Dropdown.Item key='t-c-m-i-d-dequeue' eventKey="1" onClick={this.props.removeSelectedSamples}>
         Dequeue Samples
       </Dropdown.Item>,
-      <Dropdown.Item eventKey="1" onClick={this.props.removeSelectedTasks}>
+      <Dropdown.Item key='t-c-m-i-d-remove' eventKey="1" onClick={this.props.removeSelectedTasks}>
         Remove Tasks
       </Dropdown.Item>,
     ];
@@ -750,10 +750,10 @@ class SampleGridContainer extends React.Component {
 
   sampleContextMenu() {
     return [
-      <Dropdown.Item eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
+      <Dropdown.Item key='mount-add-to-queue-item' eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
         <span><i className="fas fa-plus" />Add to Queue</span>
       </Dropdown.Item>,
-      <Dropdown.Item eventKey="2" onClick={this.mountAndCollect}>
+      <Dropdown.Item key='mount-item'  eventKey="2" onClick={this.mountAndCollect}>
         <span><MdFlare glyph="screenshot" /> Mount </span>
       </Dropdown.Item>,
     ];
@@ -761,10 +761,10 @@ class SampleGridContainer extends React.Component {
 
   sampleContextMenuMounted() {
     return [
-      <Dropdown.Item eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
+      <Dropdown.Item key='add-to-queue-item' eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
         <span><i className="fas fa-plus" /> Add to Queue</span>
       </Dropdown.Item>,
-      <Dropdown.Item eventKey="2" onClick={this.unmount}>
+      <Dropdown.Item key='unmount-item' eventKey="2" onClick={this.unmount}>
         <span><Md360 glyph="share-alt" /> Unmount </span>
       </Dropdown.Item>
     ];
