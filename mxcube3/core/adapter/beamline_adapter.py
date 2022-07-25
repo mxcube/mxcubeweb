@@ -29,9 +29,15 @@ class _BeamlineAdapter:
         self.adapter_dict = {}
 
         workflow = self._bl.workflow
-
         if workflow:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
+
+        gphl_workflow = self._bl.gphl_workflow
+        print ('@~@~ connecting ', gphl_workflow)
+        if gphl_workflow:
+            gphl_workflow.connect(
+                "gphlParametersNeeded", self.gphl_wf_parameters_needed
+            )
 
     def wf_parameters_needed(self, params):
         self.app.server.emit("workflowParametersDialog", params, namespace="/hwr")
