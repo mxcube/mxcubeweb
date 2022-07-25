@@ -6,15 +6,18 @@ from flask import Blueprint, Response, jsonify, request, send_file
 
 def init_route(app, server, url_prefix):
     bp = Blueprint("workflow", __name__, url_prefix=url_prefix)
+    print ('@~@~ init_route app.workflow', app.workflow)
 
     @bp.route("/", methods=["GET"])
     @server.restrict
     def workflow():
+        print ('@~@~ app.workflow', app.workflow)
         return jsonify(app.workflow.get_available_workflows())
 
     @bp.route("/", methods=["POST"])
     @server.restrict
     def submit_parameters():
+        print ('@~@~ wf route submit_parameters')
         data = request.get_json()
         app.workflow.submit_parameters(data)
         return Response(status=200)
