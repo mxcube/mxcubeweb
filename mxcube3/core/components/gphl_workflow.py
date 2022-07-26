@@ -19,7 +19,6 @@ class GphlWorkflow(ComponentBase):
         }
 
     def submit_parameters(self, params):
-        print ('@~@~ in submit_parameters')
         HWR.beamline.gphl_workflow.set_values_map(params)
 
     def test_workflow_dialog(self, wf):
