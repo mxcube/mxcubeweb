@@ -33,14 +33,24 @@ class _BeamlineAdapter:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
 
         gphl_workflow = self._bl.gphl_workflow
-        print ('@~@~ connecting ', gphl_workflow)
         if gphl_workflow:
             gphl_workflow.connect(
                 "gphlParametersNeeded", self.gphl_wf_parameters_needed
             )
 
     def wf_parameters_needed(self, params):
-        self.app.server.emit("workflowParametersDialog", params, namespace="/hwr")
+        for val in params:
+            print ('-->', val)
+        self.app.server.emit(
+            "workflowParametersDialog", params, broadcast=True, namespace="/hwr"
+        )
+
+    def gphl_wf_parameters_needed(self, params):
+        for val in params:
+            print ('-->', val)
+        self.app.server.emit(
+            "gphlWorkflowParametersDialog", params, broadcast=True, namespace="/hwr"
+        )
 
     def get_object(self, name):
         return self.get_attr_from_path(name)

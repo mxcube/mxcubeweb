@@ -15,6 +15,7 @@ import contextMenu from './contextMenu';
 import remoteAccess from './remoteAccess';
 import shapes from './shapes';
 import workflow from './workflow';
+import gphl_workflow from './gphl_workflow';
 import taskResult from './taskResult';
 import uiproperties from './uiproperties';
 
@@ -35,6 +36,7 @@ const mxcubeReducer = combineReducers({
   shapes,
   queueGUI,
   workflow,
+  gphl_workflow,
   taskResult,
   form: formReducer,
 });

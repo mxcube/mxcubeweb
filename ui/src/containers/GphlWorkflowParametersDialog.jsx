@@ -77,7 +77,7 @@ function mapDispatchToProps(dispatch) {
       showGphlWorkflowParametersDialog.bind(this, null, false),
       dispatch
     ),
-    workflowSubmitParameters: bindActionCreators(
+    gphlWorkflowSubmitParameters: bindActionCreators(
       gphlWorkflowSubmitParameters,
       dispatch
     ),
