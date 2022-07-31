@@ -8,73 +8,54 @@
   display: inline;
 }
 
+.new-samples-grid-card{
+  border: 0px!important;
+  margin-bottom: 25em;
+}
+
 .new-samples-grid-card-body{
-  padding: 1em 0.5em 0.5em 0.5em;
-  min-height: 85vh;
+  padding: 1.5em 0.5em 0.5em 0.5em;
 }
 
 .new-samples-grid {
-}
 
-.new-samples-grid-template{
-  /* height: 1000px; */
-  /* display: grid;
-  grid-template-areas: "a a";
-  gap: 10px;
-  grid-auto-rows: auto; */
 }
-
 
 .sample-items-collapsible{
   margin-bottom: 2%;
+  width:fit-content;
 }
 
-.sample-items-collapsible-header{
-  border: 1px solid #c9c7c7!important;
-  /* border-radius: 3px!important; */
+
+.Collapsible__contentOuter{
+  /* width: fit-content; */
+}
+
+
+.sample-items-collapsible-header {
+  border: 1px solid #d1d6da!important;
+  border-radius: 3px 3px 0px 0px!important;
   padding: 4px;
 }
 
+
 .sample-items-collapsible-header-actions{
   position: relative;
-  top: 37px;
+  top: 0px;
   left: 5%;
-  margin-top: -40px;
+  margin-bottom: -37px;
   width: fit-content;
 }
 
 .sample-items-table{
-  /* width: fit-content; */
-  /* display: flex; */
-  /* flex-direction: column; */
   align-items: center;
   margin-bottom: 0px;
+  background: #e5e8eb6b;
+  width: fit-content;
 }
 
-.new-samples-grid ul {
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 4em;
-  padding-right: 4em;
-  list-style-type: none;
-}
-
-.new-samples-grid-li {
-  margin-bottom: 5px;
-  z-index: 2 !important;
-  list-style-type: none;
-  border: 1px solid #c9c7c7!important;
-  border-radius: 3px!important;
-}
-
-.new-samples-grid-li-mv {
-  z-index: 3 !important;
-  list-style-type: none;
-}
-
-.new-samples-grid-row-header{
-  /* padding-left: 2.9em;
-  padding-right: 2.9em; */
+.sample-items-table >thead{
+  border-bottom: transparent!important;
 }
 
 .sample-items-table-row-header {
@@ -83,7 +64,43 @@
 
 .sample-items-table-row-header-th {
   padding: 0px!important;
-  text-align: center;
+  text-align: right;
+  width: 330px!important;
+}
+
+.table > :not(:first-child) {
+  border-top: 0px;
+}
+
+.sample-items-table >td{
+  padding: 0.3em!important;
+} 
+
+.new-samples-grid-context-menu-icon{
+  position: relative;
+  bottom: 2px;
+  margin-right: 10px;
+}
+
+.new-samples-grid-context-menu-icon-cell{
+  position: relative;
+  bottom: 2px;
+  margin-right: 10px;
+}
+
+.new-samples-grid-li {
+  max-width: 700px;
+  margin-bottom: 10px;
+  z-index: 2 !important;
+  list-style-type: none;
+  height: 70px;
+  border: 1px solid #9c9c9c!important;
+  border-radius: 3px!important;
+}
+
+.new-samples-grid-li-mv {
+  z-index: 3 !important;
+  list-style-type: none;
 }
 
 .move-arrow {
@@ -131,17 +148,17 @@
 
 
 .new-samples-grid-item {
-  /* border: 1px solid #c9c7c7!important; */
-  /* background-color: #fafafa!important; */
   list-style-type: none!important;
   padding: 0px;
-  /* border-radius: 3px!important; */
-  display: flex;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05)!important;
 }
 
-.list-group-sample-items {
-  overflow-y: hidden!important;
+.new-samples-grid-item-top{
+  width: 240px;
+  /* background: #5cb85c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; */
 }
 
 .new-samples-grid-item-moving {
@@ -164,13 +181,8 @@
 }
 
 .new-samples-grid-item-button {
-  border: 0px;
-  border-radius: 4px;
   background: Transparent;
   opacity: 1;
-  padding-left: 2px;
-  padding-right: 2px;
-  border: 1px solid Transparent;
 }
 
 .pick-puck-checkbox-button {
@@ -187,10 +199,17 @@ button[disabled] {
 }
 
 .new-samples-grid-item-tasks {
-  display: flex;
-  width: 295px;
-  padding-left: 5px;
-  padding-bottom: 2px;
+  width: 267px;
+  height: 28px;
+  padding-left: 25px;
+}
+
+.new-samples-grid-item-tasks > .slick-list > .slick-track {
+  margin-left: 0px!important;
+}
+
+.new-samples-grid-item-tasks> .slick-prev{
+  left: 2px;
 }
 
 .new-sample-grid-task-item {
@@ -202,13 +221,28 @@ button[disabled] {
 }
 
 .new-samples-grid-item-selected {
-  border:3px double #616161 !important;
+  border: 2px dashed #000000 !important;
 }
 
-.protein-acronym {
+
+.new-samples-grid-item-name-pt {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+
+.new-samples-grid-item-name-protein-acronym {
   font-size: small;
   font-weight: bold;
   pointer-events: auto;
+
+  max-width: 190px;
+  background: #5cb85c;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  position: absolute;
+  top: 8px;
 }
 
 .dm {
@@ -221,7 +255,7 @@ button[disabled] {
   float: right;
   pointer-events: none;
   position: absolute;
-  margin: 2px;
+  margin: 4px;
   top: 0;
   right: 0;
 
@@ -248,7 +282,7 @@ button[disabled] {
 .new-queue-order {
   position: absolute;
   right: 5%;
-  top: 60%;
+  top: 38%;
   margin-left: 10px;
   font-size: 16px;
   line-height: 16px;

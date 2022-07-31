@@ -75,6 +75,7 @@ class SampleGridViewContainer extends React.Component {
     this.showAddSampleForm = this.showTaskForm.bind(this, 'AddSample');
     this.inQueue = this.inQueue.bind(this);
     this.inQueueDeleteElseAddSamples = this.inQueueDeleteElseAddSamples.bind(this);
+    this.addSamplesToQueue = this.addSamplesToQueue.bind(this);
     this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
     this.removeSelectedTasks = this.removeSelectedTasks.bind(this);
 
@@ -324,7 +325,7 @@ class SampleGridViewContainer extends React.Component {
    *
    * @param {array} sampleIDList - array of sampleIDs to add or remove
    */
-  inQueueDeleteElseAddSamples(sampleIDList) {
+  inQueueDeleteElseAddSamples(sampleIDList, addSamples) {
     const samples = [];
     const samplesToRemove = [];
     for (const sampleID of sampleIDList) {
@@ -341,9 +342,8 @@ class SampleGridViewContainer extends React.Component {
     if (samplesToRemove.length > 0) {
       this.props.setEnabledSample(samplesToRemove, false);
     }
-    if (samples.length > 0) { this.addSamplesToQueue(samples); }
+    if (addSamples && samples.length > 0) { this.addSamplesToQueue(samples); }
   }
-
 
   /**
    * Removes selected samples
@@ -403,7 +403,6 @@ class SampleGridViewContainer extends React.Component {
     const samplesToAdd = sampleIDList.map((sampleID) => {
       return { ...this.props.sampleList[sampleID], checked: true, tasks: [] };
     });
-    debugger;
     if (samplesToAdd.length > 0) { this.props.addSamplesToQueue(samplesToAdd); }
   }
 
@@ -576,7 +575,7 @@ class SampleGridViewContainer extends React.Component {
     );
 
     return (
-      <Container fluid id="sampleGridContainer" className="samples-grid-container">
+      <Container fluid id="sampleGridContainer" className="new-samples-grid-container mt-4">
         <ConfirmActionDialog
           title="Clear sample grid ?"
           message="This will remove all samples (and collections) from the grid,
@@ -587,12 +586,12 @@ class SampleGridViewContainer extends React.Component {
         />
         {this.props.loading ?
           <div className="center-in-box" style={{ zIndex: 1200 }} >
-            <img src={loader} className="img-responsive" alt="" />
+            <img src={loader} className="img-centerd img-responsive" alt="" />
           </div>
           : null
         }
-        <Card>
-          <Card.Header>
+        <Card className='new-samples-grid-card'>
+          <Card.Header className='new-samples-grid-card-header ms-2 me-2'>
             <Row className="new-samples-grid-row-header">
               <Col sm={4} className='d-flex'>
                 <Form>
@@ -607,7 +606,7 @@ class SampleGridViewContainer extends React.Component {
                       Create new sample
                     </Dropdown.Item>
                   </SplitButton>
-                  <span style={{ marginLeft: '1.5em' }} />
+                  <span style={{ marginLeft: '3em' }} />
                   <OverlayTrigger
                     placement="bottom"
                     overlay={(
@@ -620,7 +619,7 @@ class SampleGridViewContainer extends React.Component {
                       ISPyB
                     </Button>
                   </OverlayTrigger>
-                  <span style={{ marginLeft: '1.5em' }} />
+                  <span style={{ marginLeft: '3em' }} />
                   <OverlayTrigger
                     placement="bottom"
                     overlay={(
@@ -640,6 +639,7 @@ class SampleGridViewContainer extends React.Component {
                 </Form>
               </Col>
               <Col sm={6} className='d-flex'>
+              <span style={{ marginLeft: '5em' }} />
                 <Form>
                   <Form.Group  as={Row} className="d-flex">
                     <Form.Label style={{ whiteSpace: 'nowrap', marginRight: '0px'}} className="d-flex" column sm="2">Filter :</Form.Label>
@@ -685,6 +685,8 @@ class SampleGridViewContainer extends React.Component {
               </Col>
             </Row>
           </Card.Header>
+         {this.props.sampleChanger.contents.children && this.props.order.length > 0 ?
+         (
           <Card.Body className='new-samples-grid-card-body'>
             <NewSampleGridContainer
               addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
@@ -699,6 +701,9 @@ class SampleGridViewContainer extends React.Component {
               gridWidth={this.calcGridWidth()}
             />
           </Card.Body>
+         )
+         : null
+         }
         </Card>
       </Container>
     );
@@ -724,6 +729,7 @@ function mapStateToProps(state) {
     sampleList: state.sampleGrid.sampleList,
     defaultParameters: state.taskForm.defaultParameters,
     filterOptions: state.sampleGrid.filterOptions,
+    order: state.sampleGrid.order,
     sampleChanger: state.sampleChanger,
     general: state.general
   };

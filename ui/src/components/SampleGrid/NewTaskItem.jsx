@@ -235,7 +235,7 @@ export class TaskItem extends React.Component {
     const task = this.props.taskData;
 
     return (
-      <Col sm={2} key={this.props.taskIndex} className=" ms-1 sample-grid-task-item">
+      <div sm={2} key={this.props.taskIndex} className=" ms-1 sample-grid-task-item">
         <OverlayTrigger
           rootClose="true"
           placement='auto'
@@ -243,7 +243,7 @@ export class TaskItem extends React.Component {
             <Popover
               className='p-2'
               id="taskSummaryPopover"
-              style={{ minWidth: '700px',}}
+              // style={{ minWidth: '700px'}}
               title={(<b>{this.title()}</b>)}
             >
               <LimsResultSummary taskData={this.props.taskData} scale="0.5" />
@@ -263,7 +263,7 @@ export class TaskItem extends React.Component {
             }
           </Badge>
         </OverlayTrigger>
-      </Col>
+      </div>
     );
   }
 }

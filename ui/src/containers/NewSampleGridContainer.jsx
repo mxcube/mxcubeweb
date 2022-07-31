@@ -3,18 +3,31 @@ import withRouter from '../components/WithRouter'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Row, Col, Table, OverlayTrigger,
-  Tooltip, Dropdown, Button, Accordion, ButtonToolbar
+  Tooltip, Dropdown, Button
 } from 'react-bootstrap';
 
 import Collapsible from 'react-collapsible';
-import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+
+import {
+  Menu,
+  Item,
+  Separator,
+  useContextMenu
+} from "react-contexify";
+
+import "react-contexify/dist/ReactContexify.css";
 
 import { MdRemove, MdFlare, Md360 } from "react-icons/md";
-import { BsSquare, BsCheck2Square, BsDashSquare, BsPlus, BsDash} from "react-icons/bs";
+import { BsSquare, BsCheck2Square, BsDashSquare, BsChevronUp, BsChevronDown} from "react-icons/bs";
 
-import { CSSGrid, layout, SpringGrid } from 'react-stonecutter';
+import { BiMenu } from "react-icons/bi";
 
 import classNames from 'classnames';
+
+import Slider from "react-slick";
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 
 import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected, hasLimsData } from '../constants';
 
@@ -51,7 +64,7 @@ class NewSampleGridContainer extends React.Component {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
-    this.onContextMenu = this.onContextMenu.bind(this);
+    // this.onContextMenu = this.onContextMenu.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
 
     this.filter = this.filter.bind(this);
@@ -68,12 +81,12 @@ class NewSampleGridContainer extends React.Component {
 
     this.getSamplesList = this.getSamplesList.bind(this);
 
+    this.displayContextMenu = this.displayContextMenu.bind(this);
+    this.displayPuckCellContextMenu = this.displayPuckCellContextMenu.bind(this);
+
     this.selectItemUnderCursor = this.selectItemUnderCursor.bind(this);
     this.sampleItemPickButtonOnClickHandler = this.sampleItemPickButtonOnClickHandler.bind(this);
-    this.sampleItemMoveButtonOnClickHandler = this.sampleItemMoveButtonOnClickHandler.bind(this);
-    this.sampleItemOnMoveHandler = this.sampleItemOnMoveHandler.bind(this);
     this.sampleItemIsSelected = this.sampleItemIsSelected.bind(this);
-    this.sampleItemCanMove = this.sampleItemCanMove.bind(this);
 
     this.taskItemDeleteButtonOnClickHandler = this.taskItemDeleteButtonOnClickHandler.bind(this);
     this.taskItemOnClickHandler = this.taskItemOnClickHandler.bind(this);
@@ -85,6 +98,7 @@ class NewSampleGridContainer extends React.Component {
     this.unmount = this.unmount.bind(this);
 
     this.currentCtxMenu = 'contextMenu';
+
   }
 
 
@@ -166,41 +180,18 @@ class NewSampleGridContainer extends React.Component {
     // onClick handler to handle the click
     if (selected.length > 1) {
       this.sampleGridItemsSelectedHandler(e, selected);
-    } else {
-      this.selectItemUnderCursor(e);
     }
+    // else {
+    //   this.selectItemUnderCursor(e);
+    // }
   }
 
 
   /**
-   * Moves SampleItems on arrow key press
-   *
    * @param {MouseEvent} e
    */
   onKeyDown(e) {
-    const sampleID = Object.keys(this.props.moving)[0];
-
     switch (e.key) {
-    case 'ArrowRight': {
-      this.sampleItemOnMoveHandler(e, sampleID, 'RIGHT');
-    
-    break;
-    }
-    case 'ArrowLeft': {
-      this.sampleItemOnMoveHandler(e, sampleID, 'LEFT');
-    
-    break;
-    }
-    case 'ArrowDown': {
-      this.sampleItemOnMoveHandler(e, sampleID, 'DOWN');
-    
-    break;
-    }
-    case 'ArrowUp': {
-      this.sampleItemOnMoveHandler(e, sampleID, 'UP');
-    
-    break;
-    }
     case 'Escape': {
       this.props.selectSamples(Object.keys(this.props.sampleList), false);
     break;
@@ -209,127 +200,174 @@ class NewSampleGridContainer extends React.Component {
     }
   }
 
-  /**
-  * Selects clicked item and shows context menu
-  *
-  * @param {MouseEvent} e
-  */
-  onContextMenu(e) {
-    let res = true;
 
-    this.selectItemUnderCursor(e);
-
-    // this.currentCtxMenu = 'contextMenu';
-    // let contextMenuToHide = 'contextMenuMounted';
-
-    // if (Object.keys(this.props.selected)[0] === this.props.sampleChanger.loadedSample.address) {
-    //   this.currentCtxMenu = 'contextMenuMounted';
-    //   contextMenuToHide = 'contextMenu';
-    // }
-
-    // const menuEl = document.getElementById(this.currentCtxMenu);
-
-    // if (this.props.queue.queueStatus === QUEUE_RUNNING) {
-    //   menuEl.style.display = 'none';
-    // } else if (e.target.className.includes('samples-grid-item') && e.button === 2) {
-    //   menuEl.style.top = `${e.pageY}px`;
-    //   menuEl.style.left = `${e.pageX}px`;
-    //   menuEl.style.display = 'block';
-    //   document.getElementById(contextMenuToHide).style.display = 'none';
-    //   res = false;
-    // } else {
-    //   menuEl.style.display = 'none';
-    // }
-
-    return res;
-  }
-
-  /**
+    /**
    * Select Items for collect 
   * Add All items in a puck to queue
   */
      pickAllPuckItemsOnClick(cell, puck, pickSample) {
       const sampleItemToAdd = []
-      // debugger;
-      // this.props.inQueueDeleteElseAddSamples([sampleID]);
       this.props.order.forEach(key => {
         const sample = this.props.sampleList[key];
         if (this.filter(key)) {
           if (sample.cell_no == cell && sample.puck_no == puck ) {
-            // if (this.props.inQueue(sample.sampleID) && sample.checked) {
-              sampleItemToAdd.push(sample.sampleID)
-            // }
-         }
+            sampleItemToAdd.push(sample.sampleID)
+          }
         }
       });
-
+  
       if(pickSample) {
         this.props.addSamplesToQueue(sampleItemToAdd)
       }
-  
-      // this.props.inQueueDeleteElseAddSamples(sampleItemToAdd)
-  
+      else{
+        this.props.inQueueDeleteElseAddSamples(sampleItemToAdd, false)
+      }
     }
   
     /**
     * Select All items in a Cell
     */
-    pickAllCellItemsOnClick (cell) {
-  
+    pickAllCellItemsOnClick (cell, puck, pickSample) {
       const sampleItemToAdd = []
-      debugger;
-      // this.props.inQueueDeleteElseAddSamples([sampleID]);
       this.props.order.forEach(key => {
         const sample = this.props.sampleList[key];
         if (this.filter(key)) {
           if (sample.cell_no == cell) {
-            // if (this.props.inQueue(sample.sampleID) && sample.checked) {
-              sampleItemToAdd.push(sample.sampleID)
-            // }
-         }
+            sampleItemToAdd.push(sample.sampleID)
+          }
         }
       });
   
-      this.props.inQueueDeleteElseAddSamples(sampleItemToAdd)
+      if(pickSample) {
+        this.props.addSamplesToQueue(sampleItemToAdd)
+      }
+      else{
+        this.props.inQueueDeleteElseAddSamples(sampleItemToAdd, false)
+      }
+    }
   
+  
+    filterListCell(cell) {
+      let allCellSample = [];
+      let allCellSampleCheck = [];
+  
+      this.props.order.forEach(key => {
+        const sample = this.props.sampleList[key];
+        if (this.filter(key)) {
+          if (sample.cell_no == cell) {
+            allCellSample.push(sample.sampleID);
+            if (this.props.inQueue(sample.sampleID) && sample.checked) {
+              allCellSampleCheck.push(sample.sampleID)
+            }
+         }
+        }
+      });
+      return [allCellSample, allCellSampleCheck, cell, null ]
+    }
+  
+    filterListPuck(cell, puck) {
+      let allPuckSample = [];
+      let allPuckSampleCheck = [];
+  
+      this.props.order.forEach(key => {
+        const sample = this.props.sampleList[key];
+        if (this.filter(key)) {
+          if (sample.cell_no == cell && sample.puck_no == puck ) {
+            allPuckSample.push(sample.sampleID);
+            if (this.props.inQueue(sample.sampleID) && sample.checked) {
+              allPuckSampleCheck.push(sample.sampleID)
+            }
+         }
+        }
+      });
+      return [allPuckSample, allPuckSampleCheck, cell, puck]
+    }
+  
+
+  displayContextMenu(e, contextMenuID) {
+    e.preventDefault();
+    this.selectItemUnderCursor(e);
+
+    const { show } = useContextMenu({
+      id: contextMenuID
+    });
+
+    show(e , {
+      position: {
+        x: e.pageX,
+        y: e.pageY,
+      },
+    });
+    e.stopPropagation();
+  }
+
+  displayPuckCellContextMenu(e, contextMenuID, cell, puck) {
+    e.preventDefault();
+
+    let selectedList = []
+    // if puck is null we select all sample in the cell
+    if(puck !== null) {
+      selectedList = this.filterListPuck(cell, puck)[0]
+    }
+    else{
+      selectedList = this.filterListCell(cell)[0]
     }
 
+    this.sampleGridItemsSelectedHandler(e, selectedList);
 
-  filterListCell(cell) {
-    let allCellSample = [];
-    let allCellSampleCheck = [];
 
-    this.props.order.forEach(key => {
-      const sample = this.props.sampleList[key];
-      if (this.filter(key)) {
-        if (sample.cell_no == cell) {
-          allCellSample.push(sample.sampleID);
-          if (this.props.inQueue(sample.sampleID) && sample.checked) {
-            allCellSampleCheck.push(sample.sampleID)
-          }
-       }
-      }
+    const { show } = useContextMenu({
+      id: contextMenuID
     });
-    return [allCellSample, allCellSampleCheck, cell, null ]
+
+    show(e , {
+      position: {
+        x: e.pageX,
+        y: e.pageY,
+      },
+    });
+    e.stopPropagation();
   }
 
-  filterListPuck(cell, puck) {
-    let allPuckSample = [];
-    let allPuckSampleCheck = [];
+  // /**
+  // * Selects clicked item and shows context menu
+  // *
+  // * @param {MouseEvent} e
+  // */
+  // onContextMenu(e) {
+  //   let res = true;
 
-    this.props.order.forEach(key => {
-      const sample = this.props.sampleList[key];
-      if (this.filter(key)) {
-        if (sample.cell_no == cell && sample.puck_no == puck ) {
-          allPuckSample.push(sample.sampleID);
-          if (this.props.inQueue(sample.sampleID) && sample.checked) {
-            allPuckSampleCheck.push(sample.sampleID)
-          }
-       }
-      }
-    });
-    return [allPuckSample, allPuckSampleCheck, cell, puck]
-  }
+  //   if (Object.keys(this.props.selected).length == 0) {
+  //   this.selectItemUnderCursor(e);
+  //   }
+
+    
+
+  //   this.currentCtxMenu = 'contextMenu';
+  //   let contextMenuToHide = 'contextMenuMounted';
+
+  //   if (Object.keys(this.props.selected)[0] === this.props.sampleChanger.loadedSample.address) {
+  //     this.currentCtxMenu = 'contextMenuMounted';
+  //     contextMenuToHide = 'contextMenu';
+  //   }
+
+  //   const menuEl = document.getElementById(this.currentCtxMenu);
+
+  //   if (this.props.queue.queueStatus === QUEUE_RUNNING) {
+  //     menuEl.style.display = 'none';
+  //   } else if (e.target.className.includes('samples-grid-item') && e.button === 2) {
+  //     menuEl.style.top = `${e.pageY}px`;
+  //     menuEl.style.left = `${e.pageX}px`;
+  //     menuEl.style.display = 'block';
+  //     document.getElementById(contextMenuToHide).style.display = 'none';
+  //     res = false;
+  //   } else {
+  //     menuEl.style.display = 'none';
+  //   }
+
+  //   return res;
+  // }
+
 
   itemsControls(filterList) {
     let icon = <BsSquare size='0.9em'/>;
@@ -375,56 +413,125 @@ class NewSampleGridContainer extends React.Component {
     );
   }
 
+  getCollapsibleHeaderOpen(name, cssClass) {
+    return (
+      <div className='sample-items-collapsible-header'>
+        <b>Cell {name}</b>
+        <BsChevronUp className={cssClass} size="1em"/>
+      </div>
+    )
+  }
+
+  getCollapsibleHeaderClose(name, cssClass) {
+    return (
+      <div className='sample-items-collapsible-header'>
+        <b>Cell {name}</b>
+        <BsChevronDown className={cssClass} size="1em"/>
+      </div>
+    )
+  }
+
 
   getSampleTable(props) {
     const sc = props.sampleChanger.contents;
     let tableCell = [];
 
+    // This is a bug
+    let sampleItemList = [];
+
     if (sc.children && props.order.length > 0) {
-      tableCell = Object.values(sc.children).map((cell) => {
+      Object.values(sc.children).map((cell) => {
         if (this.props.filterOptions.puckFilter.toLowerCase() === cell.name
           || this.props.filterOptions.puckFilter.toLowerCase() === ''){
-          return (
-            <Col key={cell.name} sm={6} className="mb-2">
+          const cellMenuID = `new-samples-grid-context-menu-puck-${cell.name}`
+
+          let filter
+          
+          // we check in among for each puck , if there are samples 
+          // we won't display the cell / table  if all puck in the cell are empty 
+          cell.children.map((puck, idxth)=> {
+            sampleItemList.push(this.getSampleItems(props, cell.name, idxth+1))
+          });
+
+        if(sampleItemList.find(sil => sil.length > 0)){   
+          tableCell.push(
+            <div key={`cell-${cell.name}`} className="mb-2">
               <div className='sample-items-collapsible-header-actions'>
-                  {this.itemsControls(this.filterListCell(cell.name))}
+                {this.itemsControls(this.filterListCell(cell.name))}
+                <span
+                  className='new-samples-grid-context-menu-icon'
+                  onClick={(e) => {this.displayPuckCellContextMenu(e, cellMenuID, cell.name, null)}}
+                >
+                  <BiMenu size='1.5em'/>
+                </span>
+                <Menu id={cellMenuID}>
+                  <Item disabled><span> Cell Actions </span></Item>
+                  {this.taskContextMenuItemsCellPuck('cell', cell.name)}
+                </Menu>
               </div>
-              <Collapsible transitionTime={400} className='sample-items-collapsible'
+              <Collapsible transitionTime={300}
+                className='sample-items-collapsible'
+                openedClassName="sample-items-collapsible"
                 open
-                trigger={<div className='sample-items-collapsible-header'> Cell {cell.name}</div>}
+                trigger={this.getCollapsibleHeaderClose(cell.name, 'collapsible-arrow-c')}
+                triggerWhenOpen={this.getCollapsibleHeaderOpen(cell.name, 'collapsible-arrow-c')}
               >
                 <Table bordered responsive size="sm" className='sample-items-table'>
                   <thead>
                     <tr>
-                      <th className='sample-items-table-row-header-th'>
-                        <span>Puck 1 {this.itemsControls(this.filterListPuck(cell.name, 1))}</span>
-                      </th>
-                      <th className='sample-items-table-row-header-th'>
-                        <span>Puck 2 {this.itemsControls(this.filterListPuck(cell.name, 2))}</span>
-                      </th>
-                      <th className='sample-items-table-row-header-th'>
-                        <span>Puck 3 {this.itemsControls(this.filterListPuck(cell.name, 3))}</span>
-                      </th>
+                      {cell.children.map((puck, idxth)=> {
+                        if(this.getSampleItems(props, cell.name, idxth+1).length > 0) {
+                          const puckMenuID = `new-samples-grid-context-menu-puck-${puck.name}`
+                          return(
+                            <th key={`th-${puck.name}`} className={`sample-items-table-row-header-th custom-table-border-${idxth+1}`}>
+                              <span style={{ marginTop: '15px'}}>
+                                Puck {idxth+1}
+                                {this.itemsControls(this.filterListPuck(cell.name, idxth+1))}
+                              </span>
+                              <span
+                                className='new-samples-grid-context-menu-icon'
+                                onClick={(e) => {this.displayPuckCellContextMenu(e, puckMenuID, cell.name, idxth+1)}}
+                              >
+                                <BiMenu size='1.5em'/>
+                              </span>
+                              <Menu id={puckMenuID}>
+                                <Item disabled><span> Puck Actions </span></Item>
+                                {this.taskContextMenuItemsCellPuck('Puck', idxth+1)}
+                              </Menu>
+                            </th>
+                          )
+                        }
+                    })}
                     </tr>
                   </thead>
                   <tbody>
                     <tr>
-                      <td className='p-1'>{this.getSampleItems(props, cell.name, 1)}</td>
-                      <td>{this.getSampleItems(props, cell.name, 2)}</td>
-                      <td>{this.getSampleItems(props, cell.name, 3)}</td>
+                      {cell.children.map((puck, idxtd)=> {
+                        if(this.getSampleItems(props, cell.name, idxtd+1).length > 0) {
+                          return(
+                            <td key={`td-${puck.name}`} className={`sample-items-table-column-body custom-table-border-${idxtd+1}`}>
+                              {this.getSampleItems(props, cell.name, idxtd+1)}
+                            </td>
+                          )
+                        }
+                      })}
                     </tr>
                   </tbody>
                 </Table>
               </Collapsible>
-            </Col>
+            </div>
             );
           }
-          else {return null}
+          // after each check we empty the filter List 
+          sampleItemList = [];
+        }
+        else {return null}
       });
     }
-
     return tableCell;
   }
+
+
 
   /**
    * Build a list of SampleItems and for each SampleItem a list of TaskItems
@@ -432,7 +539,6 @@ class NewSampleGridContainer extends React.Component {
    * @property {Object} sampleList
    * @property {array} order
    * @property {array} queue
-   * @property {object} moving
    * @property {object} selected
    *
    * return {array} array of SampleItems
@@ -452,60 +558,66 @@ class NewSampleGridContainer extends React.Component {
       const picked= props.inQueue(sample.sampleID) && sample.checked
 
       const classes = classNames('new-samples-grid-li',
-      { 'new-samples-grid-item-selected': props.selected[sample.sampleID] && !props.moving[key],
-        // 'new-samples-grid-item-moving': this.props.moving,
+      { 'new-samples-grid-item-selected': props.selected[sample.sampleID],
         'new-samples-grid-item-to-be-collected': picked,
         'new-samples-grid-item-collected': isCollected(sample) });
 
-      const liClass = props.moving[key] ? 'new-samples-grid-li-mv' : 'new-samples-grid-item-to-be-collected ';
-
+      const settings = {
+        dots: true,
+        infinite: false,
+        speed: 200,
+        slidesToShow: 6,
+        slidesToScroll: 1
+      };
 
       if (this.filter(key)) {
         if (sample.cell_no == cell && sample.puck_no == puck ) {
+          // const contextMenuID = this.props.sampleChanger.loadedSample.address == sample.sampleID ?
+          // `new-samples-grid-context-menu-mounted-${key}` :`new-samples-grid-context-menu-${key}`;
+
           const contextMenuID = this.props.sampleChanger.loadedSample.address == sample.sampleID ?
-          `new-samples-grid-context-menu-mounted-${key}` :`new-samples-grid-context-menu-${key}`;
+          'new-samples-grid-context-menu-mounted' : 'new-samples-grid-context-menu';
+
           sampleItemList.push(
-              <li className={classes} key={key}>
-                <ContextMenuTrigger id={`new-samples-grid-context-menu-${key}`}>
-                  <Collapsible transitionTime={400} className='new-samples-grid-item-to-be-collected' open trigger={
-                      <SampleGridItem
-                        key={key}
-                        itemKey={key}
-                        pickButtonOnClickHandler={this.sampleItemPickButtonOnClickHandler}
-                        moveButtonOnClickHandler={this.sampleItemMoveButtonOnClickHandler}
-                        onMoveHandler={this.sampleItemOnMoveHandler}
-                        allowedDirections={this.sampleItemCanMove(key)}
-                        sampleData={sample}
-                        queueOrder={orderedList.indexOf(key) + 1}
-                        selected={props.selected[sample.sampleID]}
-                        current={this.currentSample(sample.sampleID)}
-                        picked={picked}
-                        moving={props.moving[key]}
-                    />
-                  }>
-                    <Row className="new-samples-grid-item-tasks">
-                      {sample.tasks.map((taskData, i) => (
-                        <TaskItem
-                          key={i}
-                          taskItemOnClick={this.taskItemOnClickHandler}
-                          showDialog={this.props.showDialog}
-                          deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
-                          taskData={taskData}
-                          taskIndex={i}
-                        />))
-                      }
-                    </Row>
-                  </Collapsible>
-                </ContextMenuTrigger>
-                <ContextMenu id={`new-samples-grid-context-menu-${key}`}>
+            <div className={classes} key={key}
+            onContextMenu={(e) => {this.displayContextMenu(e, contextMenuID)}}
+            onClick={(e) => {this.selectItemUnderCursor(e)}}
+            >
+              <SampleGridItem
+                  key={key}
+                  itemKey={key}
+                  pickButtonOnClickHandler={this.sampleItemPickButtonOnClickHandler}
+                  sampleData={sample}
+                  queueOrder={orderedList.indexOf(key) + 1}
+                  selected={props.selected[sample.sampleID]}
+                  current={this.currentSample(sample.sampleID)}
+                  picked={picked}
+                >
+                  <Slider
+                    className="new-samples-grid-item-tasks"
+                    {...settings}
+                  >
+                    {sample.tasks.map((taskData, i) => (
+                      <TaskItem
+                        key={i}
+                        taskItemOnClick={this.taskItemOnClickHandler}
+                        showDialog={this.props.showDialog}
+                        deleteButtonOnClick={this.taskItemDeleteButtonOnClickHandler}
+                        taskData={taskData}
+                        taskIndex={i}
+                      />))
+                    }
+                  </Slider>
+                </SampleGridItem>
+                {/* <Menu id={`new-samples-grid-context-menu-${key}`}>
                   {this.sampleContextMenu()}
                   {this.taskContextMenuItems()}
-                </ContextMenu>
-                <ContextMenu id={`new-samples-grid-context-menu-mounted-${key}`}>
+                </Menu>
+                <Menu id={`new-samples-grid-context-menu-mounted-${key}`}>
                   {this.sampleContextMenuMounted()}
                   {this.taskContextMenuItems()}
-                </ContextMenu>
-              </li>  
+                </Menu> */}
+            </div>
             );
           }
         }
@@ -699,60 +811,6 @@ class NewSampleGridContainer extends React.Component {
 
 
   /**
-   * Handles sample movement in grid (change of order)
-   *
-   * @property {Object} order
-   *
-   * @param {MouseEvent} e
-   * @param {array} sampleID - sample to move
-   * @param {string} dir - direction to move one of [RIGHT, LEFT, DOWN, UP]
-   *
-   * return {boolean} true if item is to be included otherwise false
-   */
-  sampleItemOnMoveHandler(e, sampleID, dir) {
-    e.preventDefault();
-    e.stopPropagation();
-
-    if (!sampleID || !this.props.moving[sampleID]) {
-      return;
-    }
-
-    const numCols = this.gridDimension()[0];
-    const sourcePos = this.props.order.indexOf(sampleID);
-    let targetPos = sourcePos;
-    const [canMoveUp, canMoveDown, canMoveLeft, canMoveRight] = this.sampleItemCanMove(sampleID);
-
-    if (dir === 'RIGHT' && canMoveRight) {
-      targetPos += 1;
-    } else if (dir === 'LEFT' && canMoveLeft) {
-      targetPos -= 1;
-    } else if (dir === 'DOWN' && canMoveDown) {
-      targetPos += numCols;
-    } else if (dir === 'UP' && canMoveUp) {
-      targetPos -= numCols;
-    } else {
-      return;
-    }
-
-    const newSampleOrder = [...this.props.order];
-    newSampleOrder.splice(targetPos, 0, newSampleOrder.splice(sourcePos, 1)[0]);
-    this.props.sendSetSampleOrderAction(newSampleOrder);
-  }
-
-
-  /**
-   * Handles click on move sample button (when the user initiates move)
-   *
-   * @param {MouseEvent} e
-   * @param {string} sampleID - sample to move
-   */
-  sampleItemMoveButtonOnClickHandler(e, sampleID) {
-    e.stopPropagation();
-    this.props.toggleMovableAction(sampleID);
-  }
-
-
-  /**
    * Handles click on sample item pick 'checkbox', adds sample to queue if its
    * not in the queue or removes it from the queue if it was already in.
    *
@@ -765,12 +823,12 @@ class NewSampleGridContainer extends React.Component {
     // Is sample already in the set of selected samples, add all those samples
     // to queue
     if (this.sampleItemIsSelected(sampleID)) {
-      this.props.inQueueDeleteElseAddSamples(Object.keys(this.props.selected));
+      this.props.inQueueDeleteElseAddSamples(Object.keys(this.props.selected), true);
     } else {
       // The sample is not in the set of selected samples (or no samples are
       // selected), select only sample with sampleID and add it queue
       this.props.selectSamples([sampleID]);
-      this.props.inQueueDeleteElseAddSamples([sampleID]);
+      this.props.inQueueDeleteElseAddSamples([sampleID], true);
     }
   }
 
@@ -786,43 +844,6 @@ class NewSampleGridContainer extends React.Component {
   }
 
 
-  /**
-   * Returns an array with booleans that tell if the SampleItem with
-   * the given sampleID can move in a certain direction
-   *
-   * @param {key} sampleID
-   * @return {array} - [canMoveUp, canMoveDown, canMoveLeft, canMoveRight]
-   */
-  sampleItemCanMove(key) {
-    let [up, down, left, right] = [true, true, true, true];
-    const itemPos = this.itemGridPosition(key);
-
-    if (Object.keys(this.props.selected).map(_key => this.props.selected[_key]).length === 1) {
-      if (itemPos.col === 0) {
-        left = false;
-      }
-
-      if (itemPos.row === 0) {
-        up = false;
-      }
-
-      if (itemPos.row === (itemPos.gridDimension.length - 1)) {
-        down = false;
-      }
-
-      if (itemPos.col > (itemPos.gridDimension[itemPos.row + 1] - 1)) {
-        down = false;
-      }
-
-      if (itemPos.col === (itemPos.gridDimension[itemPos.row] - 1)) {
-        right = false;
-      }
-    } else {
-      [up, down, left, right] = [false, false, false, false];
-    }
-
-    return [up, down, left, right];
-  }
 
   /**
    * Returns the grid position of SampleItem
@@ -935,9 +956,9 @@ class NewSampleGridContainer extends React.Component {
     });
 
     return workflowTasks.samplegrid.map((wf) => (
-      <MenuItem eventKey={wf.key} onClick={wf.action} key={wf.key}>
+      <Item onClick={wf.action} key={wf.key}>
         {wf.text}
-      </MenuItem>
+      </Item>
     ));
   }
 
@@ -967,23 +988,48 @@ class NewSampleGridContainer extends React.Component {
   taskContextMenuItems() {
     return (
       <>
-        <Dropdown.Divider />
-        <MenuItem header> <span> <i className="fas fa-plus" /> Add </span></MenuItem>,
-        <MenuItem eventKey="2" onClick={this.props.showDataCollectionForm}>
+        <Separator/>
+        <Item disabled> <span> <i className="fas fa-plus" /> Add </span></Item>
+        <Item onClick={this.props.showDataCollectionForm}>
           Data collection
-        </MenuItem>,
-        <MenuItem eventKey="3" onClick={this.props.showCharacterisationForm}>
+        </Item>
+        <Item onClick={this.props.showCharacterisationForm}>
           Characterisation
-        </MenuItem>,
-        ...this.workflowMenuOptions(),
-        <Dropdown.Divider />,
-        <MenuItem header><span><MdRemove glyph="minus" /> Remove </span></MenuItem>,
-        <MenuItem eventKey="1" onClick={this.props.removeSelectedSamples}>
+        </Item>
+        {this.workflowMenuOptions()}
+        <Separator />
+        <Item disabled><span><MdRemove glyph="minus" /> Remove </span></Item>
+        <Item onClick={this.props.removeSelectedSamples}>
           Dequeue Samples
-        </MenuItem>,
-        <MenuItem eventKey="1" onClick={this.props.removeSelectedTasks}>
+        </Item>
+        <Item onClick={this.props.removeSelectedTasks}>
           Remove Tasks
-        </MenuItem>
+        </Item>
+      </>
+    );
+  }
+
+  taskContextMenuItemsCellPuck(idname, idnum) {
+    return (
+      <>
+        <Separator/>
+        <Item disabled> <span>  Add <i className="fas fa-plus" /></span></Item>
+        <Item onClick={this.props.showDataCollectionForm}>
+          Data collection
+        </Item>
+        <Item onClick={this.props.showCharacterisationForm}>
+          Characterisation
+        </Item>
+        {this.workflowMenuOptions()}
+        <Separator />
+        <Item disabled><span> Remove <MdRemove /></span></Item>
+        <Item onClick={this.props.removeSelectedSamples}>
+          Dequeue Samples
+        </Item>
+        <Item onClick={this.props.removeSelectedTasks}>
+            Remove All Tasks
+          {` ${idname}`}
+        </Item>
       </>
     );
   }
@@ -991,12 +1037,12 @@ class NewSampleGridContainer extends React.Component {
   sampleContextMenu() {
     return (
       <>
-        <MenuItem eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
+        <Item onClick={this.props.addSelectedSamplesToQueue}>
           <span><i className="fas fa-plus" />Add to Queue</span>
-        </MenuItem>,
-        <MenuItem eventKey="2" onClick={this.mountAndCollect}>
+        </Item>
+        <Item onClick={this.mountAndCollect}>
           <span><MdFlare glyph="screenshot" /> Mount </span>
-        </MenuItem>
+        </Item>
       </>
     );
   }
@@ -1004,12 +1050,12 @@ class NewSampleGridContainer extends React.Component {
   sampleContextMenuMounted() {
     return (
       <>
-      <MenuItem eventKey="1" onClick={this.props.addSelectedSamplesToQueue}>
+      <Item onClick={this.props.addSelectedSamplesToQueue}>
         <span><i className="fas fa-plus" /> Add to Queue</span>
-      </MenuItem>
-      <MenuItem eventKey="2" onClick={this.unmount}>
+      </Item>
+      <Item onClick={this.unmount}>
         <span><Md360 glyph="share-alt" /> Unmount </span>
-      </MenuItem>
+      </Item>
       </>
     );
   }
@@ -1023,51 +1069,34 @@ class NewSampleGridContainer extends React.Component {
         onMouseDown={this.onMouseDown}
         onMouseUp={this.onMouseUp}
         onMouseMove={this.onMouseMove}
+        xs="auto"
       >
-        <Col sm={3}>
-          {/* <Dropdown.Menu show id="contextMenu" style={{ display: 'none' }} role="menu">
-            {this.sampleContextMenu()}
-            {this.taskContextMenuItems()}
-          </Dropdown.Menu>
-          <Dropdown.Menu
-            show
-            id="contextMenuMounted"
-            style={{ display: 'none' }}
-            role="menu"
-          >
-            {this.sampleContextMenuMounted()}
-            {this.taskContextMenuItems()}
-          </Dropdown.Menu> */}
+        {/* <Col sm={6}>
+          <div>
+            <svg version="1.1"
+                width="750" height="800" fill='red'
+              xmlns="http://www.w3.org/2000/svg"
+              >
+                <circle cx="370" cy="400" r="360" fill="green" />
+                <text x="350" y="400" font-size="60" text-anchor="middle" fill="white">FlexHCD</text>
+            </svg>
+            <img src={tempIMG} className="App-logo" alt="logo" style={{ width: '750px', height: '800px' }}/>
+          </div>
+        </Col> */}
+        <Menu id='new-samples-grid-context-menu'>
+          {this.sampleContextMenu()}
+          {this.taskContextMenuItems()}
+        </Menu>
+        <Menu id='new-samples-grid-context-menu-mounted'>
+          {this.sampleContextMenuMounted()}
+          {this.taskContextMenuItems()}
+        </Menu>
+        <div className="selection-rubber-band" id="selectionRubberBand" />
+        <Col sm>
+          {this.getSampleTable(this.props).filter((n, i) => i%2 !=1)}
         </Col>
-        {/* <div className="selection-rubber-band" id="selectionRubberBand" /> */}
-        {/* <CSSGrid
-          component="ul"
-          columns={2}
-          columnWidth={SAMPLE_ITEM_WIDTH}
-          gutterWidth={SAMPLE_ITEM_SPACE}
-          gutterHeight={SAMPLE_ITEM_SPACE + 3}
-          layout={layout.pinterest}
-          // itemHeight={SAMPLE_ITEM_HEIGHT}
-        >
-          {this.getSampleTable(this.props)}
-        </CSSGrid> */}
-        <Col sm={12}>
-          <Row className='new-samples-grid-template'>
-            {/* <Col sm={6}>
-              <div>
-                <svg version="1.1"
-                   width="750" height="800" fill='red'
-                  xmlns="http://www.w3.org/2000/svg"
-                 >
-                   <circle cx="370" cy="400" r="360" fill="green" />
-                   <text x="350" y="400" font-size="60" text-anchor="middle" fill="white">FlexHCD</text>
-                </svg>
-                <img src={tempIMG} className="App-logo" alt="logo" style={{ width: '750px', height: '800px' }}/>
-              </div>
-            </Col> */}
-            <div className="selection-rubber-band" id="selectionRubberBand" />
-            {this.getSampleTable(this.props)}
-          </Row>
+        <Col sm>
+        {this.getSampleTable(this.props).filter((n, i) => i%2 == 1)}
         </Col>
       </Row>
     );
@@ -1078,7 +1107,6 @@ class NewSampleGridContainer extends React.Component {
  * @property {Object} sampleList - list of samples
  * @property {array} order - order of samples within sample list
  * @property {array} queue - samples in queue
- * @property {object} moving - contains samples that are currently beeing moved
  * @property {object} selected - contains samples that are currently selected
  *
  */
@@ -1087,7 +1115,6 @@ function mapStateToProps(state) {
     workflows: state.workflow.workflows,
     queue: state.queue,
     selected: state.sampleGrid.selected,
-    moving: state.sampleGrid.moving,
     sampleList: state.sampleGrid.sampleList,
     filterOptions: state.sampleGrid.filterOptions,
     order: state.sampleGrid.order,
