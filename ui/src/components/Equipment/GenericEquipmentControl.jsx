@@ -84,8 +84,8 @@ export default class GenericEquipmentControl extends React.Component {
       return (
         <div className='mb-3'>
         <Collapsible
-          trigger={<div> <b>Command: {key}</b> {this.getCollapsibleHeaderClose('generic-equipment-arrow-c')}</div>}
-          triggerWhenOpen={<div> <b>Command: {key}</b> {this.getCollapsibleHeaderOpen('generic-equipment-arrow-c')}</div>}
+          trigger={<div> <b>Command: {key}</b> {this.getCollapsibleHeaderClose('collapsible-arrow-c')}</div>}
+          triggerWhenOpen={<div> <b>Command: {key}</b> {this.getCollapsibleHeaderOpen('collapsible-arrow-c')}</div>}
         >
         <Row className='generic-equipment-collapsible-child-content'>
           <Col className="col-xs-6"> 
