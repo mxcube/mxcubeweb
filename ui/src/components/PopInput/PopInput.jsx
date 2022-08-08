@@ -247,9 +247,10 @@ export default class PopInput extends React.Component {
             :
             <OverlayTrigger
               show={show}
+              onHide={() => this.showOvelay(false)}
               id='popOverlayRef'
-              trigger="click"
-              rootClose
+              trigger="focus"
+              rootClose={true}
               placement={this.props.placement}
               overlay={popover}
             >

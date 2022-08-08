@@ -25,7 +25,6 @@ export default class ApertureInput extends React.Component {
         <Form.Select
           className={inputCSS}
           style={{ float: 'none' }}
-          id="puckFilter"
           defaultValue={this.props.aperture}
           onChange={this.sendAperture}
         >
