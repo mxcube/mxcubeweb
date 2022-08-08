@@ -38,8 +38,15 @@ class ServerStorage {
 }
 
 function initStore() {
+  const config = {
+    blacklist: ["persist/PERSIST", "persist/REHYDRATE"]
+  };
   // Logger MUST BE the last middleware
-  const middleware = [thunk, createStateSyncMiddleware(), createLogger()];
+  const middleware = [
+    thunk,
+    createStateSyncMiddleware(config),
+    createLogger()
+  ];
 
   const persistConfig = {
     key: 'root',
