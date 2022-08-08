@@ -19,13 +19,17 @@ const INITIAL_STATE = {
   sampleList: {},
   order: [],
   moving: {},
+  viewMode: {
+    mode: 'grid table',
+    options: ['grid table', 'flex grid']
+  },
   filterOptions: {
     text: '',
     inQueue: false,
     notInQueue: false,
     collected: false,
     notCollected: false,
-    puckFilter: '',
+    cellFilter: '',
     limsFilter: false,
     useFilter: false,
   },
@@ -291,6 +295,14 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, sampleList};
     }
+    // Change view mode 
+    case 'SET_VIEW_MODE': {
+      // debugger;
+      const viewMode = { ...state.viewMode};
+      viewMode['mode'] = action.mode;
+      return { ...state,  viewMode };
+    }
+
     case 'SET_SAMPLE_ATTRIBUTE': {
       const sampleList = { ...state.sampleList};
       sampleList[action.sampleID][action.attr] = action.value;

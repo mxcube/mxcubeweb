@@ -61,6 +61,10 @@ input[type="color"]:focus,
     width: fit-content;
 }
 
+.popover{
+    max-width: 100%; /* Max Width of the popover (depending on the container!) */
+  }
+
 .form-label {
     /* white-space: nowrap; */
 }
