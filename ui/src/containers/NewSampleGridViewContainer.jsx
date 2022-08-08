@@ -19,10 +19,13 @@ import {
   Tooltip,
 } from 'react-bootstrap';
 
+import { MdGridView } from "react-icons/md";
+
 import { QUEUE_RUNNING } from '../constants';
 
 import {
   sendGetSampleList,
+  setViewModeAction,
   sendSyncSamples,
   filterAction,
   selectSamplesAction,
@@ -66,6 +69,7 @@ class SampleGridViewContainer extends React.Component {
 
     // Methods for handling addition and removal of queue items (Samples and Tasks)
     // Also used by the SampleGridContainer
+    this.setViewMode = this.setViewMode.bind(this);
     this.addSelectedSamplesToQueue = this.addSelectedSamplesToQueue.bind(this);
     this.selectAllSamples = this.selectAllSamples.bind(this);
     this.clearSelectedSamples = this.clearSelectedSamples.bind(this);
@@ -104,6 +108,11 @@ class SampleGridViewContainer extends React.Component {
     this.forceUpdate();
   }
 
+  setViewMode(mode) {
+    this.props.filter({cellFilter: "1"});
+    this.props.setViewMode(mode)
+  }
+
 
   /**
    * Mapping between a input and a filter option value
@@ -121,7 +130,7 @@ class SampleGridViewContainer extends React.Component {
       notCollected: this.props.filterOptions.notCollected,
       limsSamples: this.props.filterOptions.limsSamples,
       filterText: this.props.filterOptions.text,
-      puckFilter: this.props.filterOptions.puckFilter
+      cellFilter: this.props.filterOptions.cellFilter
     };
 
     value = optionMap[id];
@@ -140,7 +149,9 @@ class SampleGridViewContainer extends React.Component {
       ));
     }
 
-    options.push((<option key="all" value="">ALL</option>));
+    if(this.props.viewMode.mode !== 'flex grid') {
+      options.push((<option key="all" value="">ALL</option>));
+    }
 
     return options;
   }
@@ -257,7 +268,7 @@ class SampleGridViewContainer extends React.Component {
    */
   sampleGridFilter(e) {
     const optionMap = {
-      puckFilter: { puckFilter: e.target.value },
+      cellFilter: { cellFilter: e.target.value },
       inQueue: { inQueue: e.target.checked },
       notInQueue: { notInQueue: e.target.checked },
       collected: { collected: e.target.checked },
@@ -265,6 +276,9 @@ class SampleGridViewContainer extends React.Component {
       limsSamples: { limsSamples: e.target.checked },
       filterText: { text: ReactDOM.findDOMNode(this.filterInput).value.trim() }
     };
+
+    console.log(optionMap[e.target.id]);
+    debugger;
 
     this.props.filter(optionMap[e.target.id]);
   }
@@ -476,8 +490,8 @@ class SampleGridViewContainer extends React.Component {
                       <Col sm="6">
                         <Form.Select
                           style={{ float: 'none' }}
-                          id="puckFilter"
-                          defaultValue={this.getFilterOptionValue('puckFilter')}
+                          id="cellFilter"
+                          defaultValue={this.getFilterOptionValue('cellFilter')}
                           onChange={this.sampleGridFilter}
                         >
                           {this.getCellFilterOptions()}
@@ -606,7 +620,7 @@ class SampleGridViewContainer extends React.Component {
                       Create new sample
                     </Dropdown.Item>
                   </SplitButton>
-                  <span style={{ marginLeft: '3em' }} />
+                  <span style={{ marginLeft: '1em' }} />
                   <OverlayTrigger
                     placement="bottom"
                     overlay={(
@@ -619,7 +633,7 @@ class SampleGridViewContainer extends React.Component {
                       ISPyB
                     </Button>
                   </OverlayTrigger>
-                  <span style={{ marginLeft: '3em' }} />
+                  <span style={{ marginLeft: '1em' }} />
                   <OverlayTrigger
                     placement="bottom"
                     overlay={(
@@ -638,8 +652,8 @@ class SampleGridViewContainer extends React.Component {
                   </OverlayTrigger>
                 </Form>
               </Col>
-              <Col sm={6} className='d-flex'>
-              <span style={{ marginLeft: '5em' }} />
+              <Col sm={5} className='d-flex ms-auto'>
+              <span style={{ marginLeft: '1em' }} />
                 <Form>
                   <Form.Group  as={Row} className="d-flex">
                     <Form.Label style={{ whiteSpace: 'nowrap', marginRight: '0px'}} className="d-flex" column sm="2">Filter :</Form.Label>
@@ -658,7 +672,7 @@ class SampleGridViewContainer extends React.Component {
                     </Col>
                   </Form.Group>
                 </Form>
-                <span style={{ marginLeft: '3em' }} />
+                <span style={{ marginLeft: '1em' }} />
                 <Form>
                   <SplitButton
                     id="pipeline-mode-dropdown"
@@ -676,7 +690,23 @@ class SampleGridViewContainer extends React.Component {
                   </SplitButton>
                 </Form>
               </Col>
-              <Col className='d-flex justify-content-end' sm={2}>
+              <Col className='d-flex justify-content-end' sm={3}>
+                <Dropdown>
+                  <Dropdown.Toggle variant="outline-secondary" id="dropdown-basic">
+                    <MdGridView size='1em' /> View Mode
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    {this.props.viewMode.options.map( (option) => (
+                      <Dropdown.Item
+                        key={option}
+                        onClick={() => this.setViewMode(option)}>
+                        {option}
+                      </Dropdown.Item>
+                    )
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
+                <span style={{ marginLeft: '1em' }} />
                 <ButtonToolbar className="justify-content-end">
                   <QueueSettings />
                   <span style={{ marginLeft: '1em' }} />
@@ -727,6 +757,7 @@ function mapStateToProps(state) {
     loading: state.queueGUI.loading,
     selected: state.sampleGrid.selected,
     sampleList: state.sampleGrid.sampleList,
+    viewMode: state.sampleGrid.viewMode,
     defaultParameters: state.taskForm.defaultParameters,
     filterOptions: state.sampleGrid.filterOptions,
     order: state.sampleGrid.order,
@@ -739,6 +770,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     getSamples: () => dispatch(sendGetSampleList()),
+    setViewMode: (mode) => dispatch(setViewModeAction(mode)),
     filter: (filterOptions) => dispatch(filterAction(filterOptions)),
     syncSamples: () => dispatch(sendSyncSamples()),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),

@@ -1,6 +1,9 @@
 import React from 'react';
 import { Row, ListGroup, OverlayTrigger, Tooltip, Popover, Badge, Button } from 'react-bootstrap';
 import classNames from 'classnames';
+
+import {CopyToClipboard} from 'react-copy-to-clipboard';
+
 import { isCollected } from '../../constants';
 
 import { BsSquare, BsCheck2Square  } from "react-icons/bs";
@@ -23,6 +26,10 @@ export class SampleGridItem extends React.Component {
     this.pickButtonMouseDown = this.pickButtonMouseDown.bind(this);
 
     this.sampleInformation = this.sampleInformation.bind(this);
+    this.onCopy = this.onCopy.bind(this);
+    this.state = {
+      copied: false,
+    };
   }
 
 
@@ -164,6 +171,13 @@ export class SampleGridItem extends React.Component {
     return this.props.current ? '(MOUNTED)' : '';
   }
 
+  onCopy() {
+    this.setState({ copied: true });
+    setTimeout(() => this.setState({ copied: false }),
+      1000);
+  }
+
+
 
   render() {
     const classes = classNames('new-samples-grid-item',
@@ -194,11 +208,22 @@ export class SampleGridItem extends React.Component {
                 trigger="click"
                 overlay={(
                   <Popover id={this.sampleDisplayName()}>
-                    <Popover.Header>
-                      <b className='new-samples-grid-item-name-pt'>
-                        {this.sampleDisplayName()}
-                      </b>
-                      <MdContentCopy style={{ float: 'right'}}/>
+                    <Popover.Header className='d-flex'>
+                      <div>
+                        <b className='new-samples-grid-item-name-pt'>
+                          {this.sampleDisplayName()}
+                        </b>
+                      </div>
+                      <div>
+                        <CopyToClipboard className="copy-link" text={this.sampleDisplayName()} onCopy={this.onCopy}>
+                          <Button variant="content" className="btn-copy-link">
+                            <MdContentCopy style={{ float: 'right'}} size=""/>
+                            <span className={`tooltiptext ${this.state.copied ? 'copy-link-glow' : ''}`} id="myTooltip">
+                              {this.state.copied ? 'Sample Name Copied' : 'Copy Sample Name to Clipboard'}
+                            </span>
+                          </Button>
+                        </CopyToClipboard>
+                      </div>
                     </Popover.Header>
                     <Popover.Body>
                       {this.sampleInformation()}
