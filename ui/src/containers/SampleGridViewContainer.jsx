@@ -119,7 +119,7 @@ class SampleGridViewContainer extends React.Component {
       notCollected: this.props.filterOptions.notCollected,
       limsSamples: this.props.filterOptions.limsSamples,
       filterText: this.props.filterOptions.text,
-      puckFilter: this.props.filterOptions.puckFilter
+      cellFilter: this.props.filterOptions.cellFilter
     };
 
     value = optionMap[id];
@@ -256,7 +256,7 @@ class SampleGridViewContainer extends React.Component {
    */
   sampleGridFilter(e) {
     const optionMap = {
-      puckFilter: { puckFilter: e.target.value },
+      cellFilter: { cellFilter: e.target.value },
       inQueue: { inQueue: e.target.checked },
       notInQueue: { notInQueue: e.target.checked },
       collected: { collected: e.target.checked },
@@ -478,8 +478,8 @@ class SampleGridViewContainer extends React.Component {
                       <Col sm="6">
                         <Form.Select
                           style={{ float: 'none' }}
-                          id="puckFilter"
-                          defaultValue={this.getFilterOptionValue('puckFilter')}
+                          id="cellFilter"
+                          defaultValue={this.getFilterOptionValue('cellFilter')}
                           onChange={this.sampleGridFilter}
                         >
                           {this.getPuckFilterOptions()}

@@ -325,3 +325,60 @@ button[disabled] {
   background-color: #d9edf7;
   font-weight: bolder;
 }
+
+
+.copy-link{
+  display: block;
+  width: 50px;
+  margin-bottom: -25px;
+}
+
+.copy-link > .btn-copy-link:focus{
+}
+.copy-link > .copy-icon {
+  color: #e7eff1; 
+}
+
+
+.copy-link > .tooltiptext::after {
+  content: "";
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color:  transparent transparent #0122388e transparent;
+}
+
+.copy-link > .tooltiptext {
+  visibility: hidden;
+  white-space: nowrap;
+  background-color: #0122388e;
+  color: rgb(255, 255, 255);
+  text-align: center;
+  border-radius: 6px;
+  padding: 2px;
+  position: relative;
+  z-index: 1;
+  top: 10px;
+  right: 109px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+
+.copy-link:focus{
+  cursor: pointer;
+  outline: none;
+}
+
+.copy-link-glow{
+  margin-left: 45px;
+  transition: all 0.1s ease-in-out;
+}
+  
+.copy-link:hover .tooltiptext {
+  visibility: visible;
+  opacity: 1;
+}
