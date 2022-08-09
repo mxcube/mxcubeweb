@@ -147,7 +147,7 @@ export function SelectField({
   return <Field
     name={propName}
     component={prop => (
-      <Row controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
+      <Form.Group as={Row} controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
         <Form.Label column sm={col1 || 6} style={{ textAlign: 'left'}}>
           {label}
         </Form.Label>
@@ -164,7 +164,7 @@ export function SelectField({
             })}
           </Form.Select>
         </Col>
-      </Row>
+      </Form.Group>
     )}
   />
 }

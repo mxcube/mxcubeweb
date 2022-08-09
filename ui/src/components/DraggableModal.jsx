@@ -7,7 +7,7 @@ class DraggableModalDialog extends React.Component {
     return (
       <Draggable
         handle=".modal-header"
-        defaultPosition={this.props.defaultPosition}
+        defaultPosition={this.props.defaultpos}
       >
         <Modal.Dialog
           {...this.props}

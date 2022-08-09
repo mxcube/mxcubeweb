@@ -36,7 +36,7 @@ export default class DefaultInput extends React.Component {
 
   render() {
     return (
-      <form ref="popinput-form" className="form-inline" onSubmit={this.submit} noValidate>
+      <Form ref="popinput-form" className="form-inline" onSubmit={this.submit} noValidate>
         <Form.Control ref={(ref) => { this.input = ref; }} style={{ width: this.props.inputSize }}
           placeholder="" defaultValue={this.props.value}
         />
@@ -48,7 +48,7 @@ export default class DefaultInput extends React.Component {
             <i className="glyphicon glyphicon-remove" />
           </Button>
         </ButtonToolbar>
-      </form>
+      </Form>
     );
   }
 }

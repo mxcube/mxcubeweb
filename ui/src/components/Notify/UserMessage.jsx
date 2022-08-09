@@ -63,7 +63,7 @@ export default class UserMessage extends React.Component {
   render() {
     const messages = [];
 
-    for (const message of this.props.messages) {
+    for (const [idx, message] of this.props.messages.entries()) {
       const messageClass = `message message${message.severity}`;
 
       // Message is not for this component or have have expired, skip !
@@ -72,7 +72,7 @@ export default class UserMessage extends React.Component {
       }
 
       messages.push((
-        <div key={message.id} ref={message.id} className={messageClass}>
+        <div key={`${message.id}-${idx}`} ref={message.id} className={messageClass}>
           { message.severity === 'INFO' ?
             (<span className="fas fa-lg fa-check-circle" />)
             :

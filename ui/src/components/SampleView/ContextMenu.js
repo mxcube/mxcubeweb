@@ -382,10 +382,10 @@ export default class ContextMenu extends React.Component {
   }
 
   listOptions(type) {
-    let el = (<Dropdown.Item key={type.key}><a onClick={type.action}>{type.text}</a></Dropdown.Item>);
+    let el = (<Dropdown.Item key={`${type.key}_${type.text}`} onClick={type.action}>{type.text}</Dropdown.Item>);
 
     if (type.text === 'divider') {
-      el = (<Dropdown.Divider key={type.key} />);
+      el = (<Dropdown.Divider key={`${type.key}_${type.text}`} />);
     }
 
     return el;

@@ -69,13 +69,13 @@ export default class TodoTree extends React.Component {
             return (
               <div key={id} className="node node-sample">
                 <div className="task-head">
-                  <p className="d-flex node-name">
-                    <div className='pt-1 me-auto'>
+                  <div className="d-flex node-name">
+                    <p className='pt-1 me-auto'>
                       <b>
                         {`${sampleData.sampleID} `}
                       </b>
                     {`${proteinAcronym} ${sampleName}`}
-                    </div>
+                    </p>
 
                     <Button
                       variant='outline-secondary'
@@ -84,7 +84,7 @@ export default class TodoTree extends React.Component {
                     >
                       Mount
                     </Button>
-                  </p>
+                  </div>
                 </div>
               </div>
             );

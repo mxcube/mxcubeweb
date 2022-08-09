@@ -272,7 +272,7 @@ export default class SampleControls extends React.Component {
                       attributes.zoom.limits[1] - attributes.zoom.limits[0]
                     ).keys(),
                   ].map((i) => (
-                    <option>{attributes.zoom.limits[0] + i}</option>
+                    <option key={`z-${attributes.zoom.limits[0] + i}`}>{attributes.zoom.limits[0] + i}</option>
                   ))}
                 </datalist>
                 <span className="sample-control-label">Zoom</span>

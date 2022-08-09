@@ -20,9 +20,9 @@ import GenericEquipmentControl from '../components/Equipment/GenericEquipmentCon
 class EquipmentContainer extends React.Component {
   render() {
     return (
-      <Container fluid>
+      <Container fluid className='mt-3'>
         <Row className="d-flex">
-          <Col sm={12} style={{ marginTop: '-20px' }}>
+          <Col sm={12}>
               <Row className="d-flex">
               <Col sm={12} className='mt-1 mb-3'>
                 <EquipmentState

@@ -32,11 +32,11 @@ export default class DefaultInput extends React.Component {
 
   render() {
     return (
-      <Form className="popinput" inline onSubmit={this.submit} noValidate>
+      <Form className="popinput" onSubmit={this.submit} noValidate>
         <InputGroup className='d-flex' >
           <NumericInput
             className="popinput-input"
-            size="5"
+            size={this.props.inputSize}
             ref={this.formControlRef}
             precision={this.props.precision}
             value={this.props.value}
@@ -63,7 +63,7 @@ export default class DefaultInput extends React.Component {
 
 DefaultInput.defaultProps = {
   dataType: 'number',
-  inputSize: '10',
+  inputSize: '3',
   step: 0.1,
   inplace: false,
   precision: 3,

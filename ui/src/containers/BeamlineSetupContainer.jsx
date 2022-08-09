@@ -1,7 +1,7 @@
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Navbar, Nav, Row, Col, Table, Popover } from 'react-bootstrap';
+import { Navbar, Nav, Table, Popover } from 'react-bootstrap';
 import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
@@ -61,7 +61,7 @@ class BeamlineSetupContainer extends React.Component {
 
     if (motor !== undefined && motor.state !== 0) {
       motorInputList.push((
-        <div style={{ padding: '0.5em' }}>
+        <div key={`bsao-${motor.name}`} style={{ padding: '0.5em' }}>
           <p className="motor-name"> Beamstop distance: </p>
           <OneAxisTranslationControl
             save={this.props.sampleViewActions.sendMotorPosition}
@@ -145,17 +145,18 @@ class BeamlineSetupContainer extends React.Component {
       const beamline_attribute = this.props.beamline.attributes[uiprop.attribute];
 
       components.push(
-        <td className='d-flex pt-1' style={{ border: '0px', paddingLeft: '0.5em' }}>
-          <span className='me-1'>{ uiprop.label }:</span>
+        <td key={`bs-name-${uiprop.label}`} className='d-flex pt-1' style={{ border: '0px', paddingLeft: '0.5em' }}>
+          <span className='me-1'>{uiprop.label}:</span>
         </td>);
       components.push(
         <td
-        className='pe-3 pt-1' 
+        key={`bs-val-${uiprop.label}`}
+        className='pe-3' 
         style={{
           fontWeight: 'bold',
           border: '0px',
           borderRight: uiprop_list.length != uiprop_list.indexOf(uiprop) + 1 ? '1px solid #ddd': '',
-          padding: '0em , 0em'}}>
+          padding: '0em'}}>
           { beamline_attribute.readonly ?
             (<LabeledValue
               suffix={ uiprop.suffix }
@@ -171,6 +172,7 @@ class BeamlineSetupContainer extends React.Component {
               pkey= {uiprop.attribute}
               suffix={uiprop.suffix }
               precision={ uiprop.precision }
+              inputSize="5"
               data={ beamline_attribute }
               onSave= { this.setAttribute }
               onCancel= { this.onCancelHandler }

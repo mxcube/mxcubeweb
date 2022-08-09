@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Button, Nav, OverlayTrigger, Popover } from 'react-bootstrap';
+import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
 
@@ -273,7 +273,7 @@ export default class PopInput extends React.Component {
 PopInput.defaultProps = {
   className: '',
   dataType: 'number',
-  inputSize: '80px',
+  inputSize: '5',
   precision: 1,
   step: 0.1,
   name: '',

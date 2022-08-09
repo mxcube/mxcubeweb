@@ -1,9 +1,20 @@
 .rcw-widget-container {
   z-index: 10001;
+  position: initial;
+  max-width: 415px;
+  float: right;
+  position: absolute;
+  cursor: move;
+  color: black;
+  border-radius: 5px;
+  padding: 1em;
+  margin: auto;
+  user-select: none;
 }
 
 .rcw-conversation-container .rcw-header {
   background-color: #f4f7f9;
+  color: rgb(90, 85, 85);
   padding: 0px 0px;
   border-bottom: 1px solid #ddd;
 }

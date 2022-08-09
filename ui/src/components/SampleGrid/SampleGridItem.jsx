@@ -317,7 +317,6 @@ export class SampleGridItem extends React.Component {
         </div>
         <div className='mb-2' style={{ display: 'block', clear: 'both', pointerEvents: 'none' }}>
         <OverlayTrigger
-          ref={(ref) => { this.sampleInfoPopoverTrigger = ref; }}
           placement='auto'
           overlay={(
             <Popover id={this.sampleDisplayName()}>

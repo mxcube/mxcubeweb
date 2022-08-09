@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { Row, Col, Stack, Container } from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
@@ -80,80 +80,78 @@ class SampleViewContainer extends Component {
     );
 
     return (
-        <Stack>
+        <Container fluid>
           <Row>
-            <Col sm={12} style={{ marginTop: '-40px' }}>
+            <Col sm={12} style={{ paddingLeft: '0px',  paddingRight: '0px' }}>
               <BeamlineSetupContainer />
             </Col>
           </Row>
-          <Container fluid>
-            <Row style={{ display: 'flex', marginTop: '1em' }}>
-              <Col
-                sm={1}
-                style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
-              >
-                {apertureControl}
-                <MotorControl
-                  save={this.props.sendSetAttribute}
-                  saveStep={setStepSize}
-                  uiproperties={uiproperties.sample_view}
-                  attributes={this.props.attributes}
-                  motorsDisabled={this.props.motorInputDisable
-                                    || this.props.queueState === QUEUE_RUNNING}
-                  steps={motorSteps}
-                  stop={this.props.sendAbortCurrentAction}
-                  sampleViewActions={this.props.sampleViewActions}
-                  sampleViewState={this.props.sampleViewState}
-                />
-              </Col>
-              <Col sm={7}>
-                <ContextMenu
-                  {...this.props.contextMenu}
-                  sampleActions={this.props.sampleViewActions}
-                  updateTask={this.props.updateTask}
-                  availableMethods={this.props.availableMethods}
-                  showForm={this.props.showForm}
-                  sampleID={sampleID}
-                  sampleData={this.props.sampleList[sampleID]}
-                  defaultParameters={this.props.defaultParameters}
-                  imageRatio={imageRatio * sourceScale}
-                  workflows={this.props.workflows}
-                  savedPointId={this.props.sampleViewState.savedPointId}
-                  groupFolder={this.props.groupFolder}
-                  clickCentring={this.props.sampleViewState.clickCentring}
-                />
-                <SampleImage
-                  generalActions={this.props.generalActions}
-                  sampleActions={this.props.sampleViewActions}
-                  {...this.props.sampleViewState}
-                  uiproperties={uiproperties.sample_view}
-                  attributes={this.props.attributes}
-                  steps={motorSteps}
-                  imageRatio={imageRatio * sourceScale}
-                  contextMenuVisible={this.props.contextMenu.show}
-                  shapes={this.props.shapes}
-                  points={points}
-                  twoDPoints={twoDPoints}
-                  lines={lines}
-                  grids={grids}
-                  selectedGrids={selectedGrids}
-                  cellCounting={this.props.cellCounting}
-                  cellSpacing={this.props.cellSpacing}
-                  current={this.props.current}
-                  sampleList={this.props.sampleList}
-                  proposal={this.props.proposal}
-                  busy={this.props.queueState === QUEUE_RUNNING}
-                  sendSetAttribute={this.props.sendSetAttribute}
-                  sendAbortCurrentAction={this.props.sendAbortCurrentAction}
-                  setBeamlineAttribute={this.props.setBeamlineAttribute}
-                />
-              </Col>
-              <Col sm={4} style={{ display: 'flex' }}>
-                <SampleQueueContainer />
-              </Col>
-            </Row>
-          </Container>
-        </Stack>
+          <Row style={{ marginTop: '0.7em', marginRight: '0px' }}>
+            <Col
+              sm={1}
+              style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
+            >
+              {apertureControl}
+              <MotorControl
+                save={this.props.sendSetAttribute}
+                saveStep={setStepSize}
+                uiproperties={uiproperties.sample_view}
+                attributes={this.props.attributes}
+                motorsDisabled={this.props.motorInputDisable
+                                  || this.props.queueState === QUEUE_RUNNING}
+                steps={motorSteps}
+                stop={this.props.sendAbortCurrentAction}
+                sampleViewActions={this.props.sampleViewActions}
+                sampleViewState={this.props.sampleViewState}
+              />
+            </Col>
+            <Col sm={7}>
+              <ContextMenu
+                {...this.props.contextMenu}
+                sampleActions={this.props.sampleViewActions}
+                updateTask={this.props.updateTask}
+                availableMethods={this.props.availableMethods}
+                showForm={this.props.showForm}
+                sampleID={sampleID}
+                sampleData={this.props.sampleList[sampleID]}
+                defaultParameters={this.props.defaultParameters}
+                imageRatio={imageRatio * sourceScale}
+                workflows={this.props.workflows}
+                savedPointId={this.props.sampleViewState.savedPointId}
+                groupFolder={this.props.groupFolder}
+                clickCentring={this.props.sampleViewState.clickCentring}
+              />
+              <SampleImage
+                generalActions={this.props.generalActions}
+                sampleActions={this.props.sampleViewActions}
+                {...this.props.sampleViewState}
+                uiproperties={uiproperties.sample_view}
+                attributes={this.props.attributes}
+                steps={motorSteps}
+                imageRatio={imageRatio * sourceScale}
+                contextMenuVisible={this.props.contextMenu.show}
+                shapes={this.props.shapes}
+                points={points}
+                twoDPoints={twoDPoints}
+                lines={lines}
+                grids={grids}
+                selectedGrids={selectedGrids}
+                cellCounting={this.props.cellCounting}
+                cellSpacing={this.props.cellSpacing}
+                current={this.props.current}
+                sampleList={this.props.sampleList}
+                proposal={this.props.proposal}
+                busy={this.props.queueState === QUEUE_RUNNING}
+                sendSetAttribute={this.props.sendSetAttribute}
+                sendAbortCurrentAction={this.props.sendAbortCurrentAction}
+                setBeamlineAttribute={this.props.setBeamlineAttribute}
+              />
+            </Col>
+            <Col sm={4} style={{ display: 'flex' }}>
+              <SampleQueueContainer />
+            </Col>
+          </Row>
+        </Container>
     );
   }
 }
