@@ -59,6 +59,7 @@ class ModeEnum(str, Enum):
 
 class MXCUBEAppConfigModel(BaseModel):
     VIDEO_FORMAT: str = Field("MPEG1", description="Video format MPEG1 or MJPEG")
+    VIDEO_STREAM_URL: str = Field("", description="Video stream URL")
     mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
     usermanager: UserManagerConfigModel
     ui_properties: Dict[str, UIPropertiesModel] = {}

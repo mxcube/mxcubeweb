@@ -92,7 +92,6 @@ class Server:
             annotations=True,
         )
         Server.validate = Server.api.validate
-        #Server.flask.permanent_session_lifetime = timedelta(minutes=1)
 
         # the following test prevents Flask from initializing twice
         # (because of the Reloader)
