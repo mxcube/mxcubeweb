@@ -20,8 +20,8 @@ const INITIAL_STATE = {
   order: [],
   moving: {},
   viewMode: {
-    mode: 'grid table',
-    options: ['grid table', 'flex grid']
+    mode: 'Grid Table',
+    options: ['Grid Table', 'Flex Grid']
   },
   filterOptions: {
     text: '',
