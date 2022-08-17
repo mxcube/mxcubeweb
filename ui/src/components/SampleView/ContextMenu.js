@@ -342,8 +342,8 @@ export default class ContextMenu extends React.Component {
   showContextMenu(x, y) {
     const contextMenu = document.querySelector('#contextMenu');
     if (contextMenu) {
-      contextMenu.style.top = `${y}px`;
-      contextMenu.style.left = `${x + 15}px`;
+      contextMenu.style.top = `${y + 140}px`;
+      contextMenu.style.left = `${x + 170}px`;
       contextMenu.style.display = 'block';
     }
   }
