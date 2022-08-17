@@ -41,9 +41,6 @@ class MXNavbar extends React.Component {
               <LinkContainer className="me-4" to="/samplegrid"><Nav.Item className="nav-link">
                 Samples</Nav.Item>
               </LinkContainer>
-              <LinkContainer className="me-4" to="/samplegrid2"><Nav.Item className="nav-link">
-                New Samples</Nav.Item>
-              </LinkContainer>
               <LinkContainer className="me-4"to="/datacollection">
                 <Nav.Item className="nav-link">Data collection</Nav.Item>
               </LinkContainer>

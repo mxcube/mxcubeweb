@@ -52,7 +52,6 @@ import QueueSettings from './QueueSettings.jsx';
 import { SAMPLE_ITEM_WIDTH,
   SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
 
-import '../components/SampleGrid/SampleGrid.css';
 
 class SampleGridViewContainer extends React.Component {
 
@@ -80,6 +79,7 @@ class SampleGridViewContainer extends React.Component {
     this.inQueue = this.inQueue.bind(this);
     this.inQueueDeleteElseAddSamples = this.inQueueDeleteElseAddSamples.bind(this);
     this.addSamplesToQueue = this.addSamplesToQueue.bind(this);
+    this.removeSamplesFromQueue = this.removeSamplesFromQueue.bind(this);
     this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
     this.removeSelectedTasks = this.removeSelectedTasks.bind(this);
 
@@ -109,7 +109,11 @@ class SampleGridViewContainer extends React.Component {
   }
 
   setViewMode(mode) {
-    this.props.filter({cellFilter: "1"});
+    if (mode == 'Flex Grid' ) {
+      this.props.filter({cellFilter: "1"});
+    }else {
+      this.props.filter({cellFilter: ""});
+    }
     this.props.setViewMode(mode)
   }
 
@@ -149,7 +153,7 @@ class SampleGridViewContainer extends React.Component {
       ));
     }
 
-    if(this.props.viewMode.mode !== 'flex grid') {
+    if(this.props.viewMode.mode !== 'Flex Grid') {
       options.push((<option key="all" value="">ALL</option>));
     }
 
@@ -355,19 +359,37 @@ class SampleGridViewContainer extends React.Component {
 
     if (samplesToRemove.length > 0) {
       this.props.setEnabledSample(samplesToRemove, false);
+      // this.props.deleteSamplesFromQueue(samplesToRemove);
     }
     if (addSamples && samples.length > 0) { this.addSamplesToQueue(samples); }
   }
 
   /**
-   * Removes selected samples
+   * Removes selected samples from queue
    */
   removeSelectedSamples() {
+    const samplesToRemove = [];
     for (const sampleID of Object.keys(this.props.selected)) {
       if (this.inQueue(sampleID) && sampleID !== this.props.sampleChanger.loadedSample.address) {
-        this.props.setEnabledSample([sampleID], false);
+        samplesToRemove.push(sampleID);
       }
     }
+    this.props.setEnabledSample(samplesToRemove, false);
+    // this.props.deleteSamplesFromQueue(samplesToRemove);
+  }
+
+  /**
+   * Removes samples from queue
+   */
+   removeSamplesFromQueue(samplesList) {
+    const samplesToRemove = [];
+    for (const sampleID of samplesList) {
+      if (this.inQueue(sampleID) && sampleID !== this.props.sampleChanger.loadedSample.address) {
+        samplesToRemove.push(sampleID);
+      }
+    }
+
+    this.props.deleteSamplesFromQueue(samplesToRemove);
   }
 
   /**
@@ -375,11 +397,9 @@ class SampleGridViewContainer extends React.Component {
    */
   removeSelectedTasks() {
     for (const sampleID of Object.keys(this.props.selected)) {
-      if (this.inQueue(sampleID)) {
         this.props.sampleList[sampleID].tasks.forEach(() => {
           this.props.deleteTask(sampleID, 0);
         });
-      }
     }
   }
 
@@ -652,8 +672,8 @@ class SampleGridViewContainer extends React.Component {
                   </OverlayTrigger>
                 </Form>
               </Col>
-              <Col sm={5} className='d-flex ms-auto'>
-              <span style={{ marginLeft: '1em' }} />
+              <Col sm={5} className='d-flex me-auto'>
+              <span style={{ marginLeft: '2em' }} />
                 <Form>
                   <Form.Group  as={Row} className="d-flex">
                     <Form.Label style={{ whiteSpace: 'nowrap', marginRight: '0px'}} className="d-flex" column sm="2">Filter :</Form.Label>
@@ -726,6 +746,7 @@ class SampleGridViewContainer extends React.Component {
               showWorkflowForm={this.showWorkflowForm}
               inQueue={this.inQueue}
               inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
+              removeSamplesFromQueue={this.removeSamplesFromQueue}
               removeSelectedSamples={this.removeSelectedSamples}
               removeSelectedTasks={this.removeSelectedTasks}
               gridWidth={this.calcGridWidth()}
