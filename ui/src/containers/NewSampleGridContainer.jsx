@@ -3,7 +3,7 @@ import withRouter from '../components/WithRouter'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Row, Col, Table, OverlayTrigger,
-  Tooltip, Dropdown, Button
+  Tooltip, Button
 } from 'react-bootstrap';
 
 import Collapsible from 'react-collapsible';
@@ -52,11 +52,6 @@ import { SampleGridItem,
   SAMPLE_ITEM_SPACE } from '../components/SampleGrid/NewSampleGridItem';
 
 import { TaskItem } from '../components/SampleGrid/NewTaskItem';
-
-import tempIMG from '../img/flexHCD.png';
-
-import '../components/SampleGrid/SampleGrid.css';
-
 
 class NewSampleGridContainer extends React.Component {
 
@@ -204,44 +199,46 @@ class NewSampleGridContainer extends React.Component {
    * Select Items for collect 
   * Add All items in a puck to queue
   */
-     pickAllPuckItemsOnClick(cell, puck, pickSample) {
-      const sampleItemToAdd = []
-      this.props.order.forEach(key => {
-        const sample = this.props.sampleList[key];
-        if (this.filter(key)) {
-          if (sample.cell_no == cell && sample.puck_no == puck ) {
-            sampleItemToAdd.push(sample.sampleID)
-          }
+  pickAllPuckItemsOnClick(cell, puck, pickSample) {
+    const sampleItem = []
+    this.props.order.forEach(key => {
+      const sample = this.props.sampleList[key];
+      if (this.filter(key)) {
+        if (sample.cell_no == cell && sample.puck_no == puck ) {
+          sampleItem.push(sample.sampleID)
         }
-      });
-  
-      if(pickSample) {
-        this.props.addSamplesToQueue(sampleItemToAdd)
       }
-      else{
-        this.props.inQueueDeleteElseAddSamples(sampleItemToAdd, false)
-      }
+    });
+
+    if(pickSample) {
+      this.props.addSamplesToQueue(sampleItem)
     }
+    else {
+      // this.props.removeSamplesFromQueue(sampleItem)
+      this.props.inQueueDeleteElseAddSamples(sampleItem, false);
+    }
+  }
   
     /**
     * Select All items in a Cell
     */
     pickAllCellItemsOnClick (cell, puck, pickSample) {
-      const sampleItemToAdd = []
+      const sampleItem = []
       this.props.order.forEach(key => {
         const sample = this.props.sampleList[key];
         if (this.filter(key)) {
           if (sample.cell_no == cell) {
-            sampleItemToAdd.push(sample.sampleID)
+            sampleItem.push(sample.sampleID)
           }
         }
       });
   
       if(pickSample) {
-        this.props.addSamplesToQueue(sampleItemToAdd)
+        this.props.addSamplesToQueue(sampleItem)
       }
       else{
-        this.props.inQueueDeleteElseAddSamples(sampleItemToAdd, false)
+        // this.props.removeSamplesFromQueue(sampleItem)
+        this.props.inQueueDeleteElseAddSamples(sampleItem, false);
       }
     }
   
@@ -948,29 +945,6 @@ class NewSampleGridContainer extends React.Component {
     );
   }
 
-  taskContextMenuItemsCellPuck() {
-    return (
-      <>
-        <Separator/>
-        <Item disabled> <span>  Add <i className="fas fa-plus" /></span></Item>
-        <Item onClick={this.props.showDataCollectionForm}>
-          Data collection
-        </Item>
-        <Item onClick={this.props.showCharacterisationForm}>
-          Characterisation
-        </Item>
-        {this.workflowMenuOptions()}
-        <Separator />
-        <Item disabled><span> Remove <MdRemove /></span></Item>
-        <Item onClick={this.props.removeSelectedSamples}>
-          Dequeue Samples
-        </Item>
-        <Item onClick={this.props.removeSelectedTasks}>
-          Remove All Tasks
-        </Item>
-      </>
-    );
-  }
 
   sampleContextMenu() {
     return (
@@ -1005,11 +979,11 @@ class NewSampleGridContainer extends React.Component {
       <>
         <Menu id='new-samples-grid-context-menu-puck'>
           <Item disabled><span> Cell Actions </span></Item>
-          {this.taskContextMenuItemsCellPuck()}
+          {this.taskContextMenuItems()}
         </Menu>
         <Menu id='new-samples-grid-context-menu-puck'>
           <Item disabled><span> Puck Actions </span></Item>
-          {this.taskContextMenuItemsCellPuck()}
+          {this.taskContextMenuItems()}
         </Menu>
         <Menu id='new-samples-grid-context-menu'>
           {this.sampleContextMenu()}
@@ -1019,7 +993,7 @@ class NewSampleGridContainer extends React.Component {
           {this.sampleContextMenuMounted()}
           {this.taskContextMenuItems()}
         </Menu>
-        {this.props.viewMode.mode == 'flex grid'?
+        {this.props.viewMode.mode == 'Flex Grid'?
         (
           <Row
           className="new-samples-grid"
