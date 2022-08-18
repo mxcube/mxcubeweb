@@ -113,6 +113,10 @@ class MXCUBECore:
     def _get_adapter_id(ho):
         _id = ho.global_role
 
+        if _id == None:
+            import pdb
+            pdb.set_trace()
+
         return _id.replace(" ", "_").lower()
 
     @staticmethod
