@@ -403,7 +403,7 @@ class NewSampleGridContainer extends React.Component {
 
         if (sampleItemList.find(sil => sil.length > 0)) {   
           tableCell.push(
-            <div key={`cell-${cell.name}`} className="mb-2">
+            <div key={`cell-${cell.name}`} className="mb-2 div-sample-items-collapsible">
               <div className='sample-items-collapsible-header-actions'>
                 {this.itemsControls(this.filterListCell(cell.name))}
                 <span
@@ -510,9 +510,9 @@ class NewSampleGridContainer extends React.Component {
       const settings = {
         dots: false,
         infinite: false,
-        speed: 200,
-        slidesToShow: 6,
-        slidesToScroll: 1
+        speed: 100,
+        slidesToShow: 7,
+        slidesToScroll: 7
       };
 
       if (this.filter(key)) {
