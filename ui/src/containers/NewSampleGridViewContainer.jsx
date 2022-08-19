@@ -640,7 +640,7 @@ class SampleGridViewContainer extends React.Component {
           : null
         }
         <Card className='new-samples-grid-card'>
-          <Card.Header className='new-samples-grid-card-header ms-2 me-2'>
+          <Card.Header className='new-samples-grid-card-header'>
             <Row className="new-samples-grid-row-header">
               <Col sm={4} className='d-flex'>
                 <Form>

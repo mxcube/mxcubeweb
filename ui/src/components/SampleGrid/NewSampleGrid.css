@@ -13,6 +13,11 @@
   margin-bottom: 25em;
 }
 
+.new-samples-grid-card-header{
+  margin-left: 2.5em;
+  margin-right: 2.5em;
+
+}
 .new-samples-grid-card-body{
   padding: 1.5em 0.5em 0.5em 0.5em;
 }
@@ -24,6 +29,11 @@
 .sample-items-collapsible{
   margin-bottom: 2%;
   width:fit-content;
+}
+
+.div-sample-items-collapsible{
+  width: fit-content;
+  margin: auto auto 2em auto;
 }
 
 
@@ -84,8 +94,8 @@
 }
 
 .new-samples-grid-li {
-  max-width: 700px;
-  margin-bottom: 10px;
+  width: 340px;
+  margin: auto auto 6px auto;
   z-index: 2 !important;
   list-style-type: none;
   height: 70px;
@@ -149,7 +159,7 @@
 }
 
 .new-samples-grid-item-top{
-  width: 240px;
+  width: 280px;
   /* background: #5cb85c;
   white-space: nowrap;
   overflow: hidden;
@@ -194,9 +204,9 @@ button[disabled] {
 }
 
 .new-samples-grid-item-tasks {
-  width: 267px;
+  width: 312px;
   height: 28px;
-  padding-left: 25px;
+  padding-left: 26px;
 }
 
 .new-samples-grid-item-tasks > .slick-list > .slick-track {
@@ -215,7 +225,7 @@ button[disabled] {
 }
 
 .new-samples-grid-item-tasks> .slick-prev{
-  left: 2px;
+  left: 1px;
 }
 
 .new-sample-grid-task-item {
