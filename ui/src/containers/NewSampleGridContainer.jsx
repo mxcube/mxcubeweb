@@ -12,7 +12,7 @@ import {
   Menu,
   Item,
   Separator,
-  useContextMenu
+  contextMenu
 } from "react-contexify";
 
 import "react-contexify/dist/ReactContexify.css";
@@ -284,11 +284,9 @@ class NewSampleGridContainer extends React.Component {
     e.preventDefault();
     this.selectItemUnderCursor(e);
 
-    const { show } = useContextMenu({
-      id: contextMenuID
-    });
-
-    show(e , {
+    contextMenu.show({
+      id: contextMenuID,
+      event: e,
       position: {
         x: e.pageX,
         y: e.pageY,
@@ -311,12 +309,9 @@ class NewSampleGridContainer extends React.Component {
 
     this.sampleGridItemsSelectedHandler(e, selectedList);
 
-
-    const { show } = useContextMenu({
-      id: contextMenuID
-    });
-
-    show(e , {
+    contextMenu.show({
+      id: contextMenuID,
+      event: e,
       position: {
         x: e.pageX,
         y: e.pageY,
@@ -448,6 +443,7 @@ class NewSampleGridContainer extends React.Component {
                             </th>
                           )
                         }
+                        return null;
                     })}
                     </tr>
                   </thead>
@@ -461,6 +457,7 @@ class NewSampleGridContainer extends React.Component {
                             </td>
                           )
                         }
+                        return null
                       })}
                     </tr>
                   </tbody>
@@ -473,6 +470,7 @@ class NewSampleGridContainer extends React.Component {
           sampleItemList = [];
         }
         else {return null}
+        return null;
       });
     }
     return tableCell;
