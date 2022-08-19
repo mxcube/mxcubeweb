@@ -250,7 +250,7 @@ export class TaskItem extends React.Component {
             </Popover>) }
         >
           <Badge
-            variant={this.stateClass()}
+            bg={this.stateClass()}
             style={style}
             onClick={this.taskItemOnClick}
             className='p-1 me-2'
