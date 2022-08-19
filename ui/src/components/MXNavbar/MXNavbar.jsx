@@ -12,14 +12,6 @@ class MXNavbar extends React.Component {
     this.signOut = this.signOut.bind(this);
   }
 
-  componentDidMount() {
-    window.addEventListener('beforeunload', this.signOut);
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('beforeunload', this.signOut);
-  }
-
   findProposal(prop) {
     return `${prop.Proposal.code}${prop.Proposal.number}` === this.props.selectedProposal;
   }
