@@ -13,6 +13,11 @@
   margin-bottom: 25em;
 }
 
+.new-samples-grid-card-header{
+  margin-left: 2.5em;
+  margin-right: 2.5em;
+
+}
 .new-samples-grid-card-body{
   padding: 1.5em 0.5em 0.5em 0.5em;
 }
@@ -26,6 +31,11 @@
   width:fit-content;
 }
 
+.div-sample-items-collapsible{
+  width: fit-content;
+  margin: auto auto 2em auto;
+}
+
 
 .sample-items-collapsible-header {
   border: 1px solid #d1d6da!important;
@@ -34,10 +44,10 @@
 }
 
 
-.sample-items-collapsible-header-actions{
+.sample-items-collapsible-header-actions {
   position: relative;
   top: 0px;
-  left: 5%;
+  left: 50px;
   margin-bottom: -37px;
   width: fit-content;
 }
@@ -84,8 +94,8 @@
 }
 
 .new-samples-grid-li {
-  max-width: 700px;
-  margin-bottom: 10px;
+  width: 340px;
+  margin: auto auto 6px auto;
   z-index: 2 !important;
   list-style-type: none;
   height: 70px;
@@ -149,7 +159,7 @@
 }
 
 .new-samples-grid-item-top{
-  width: 240px;
+  width: 280px;
   /* background: #5cb85c;
   white-space: nowrap;
   overflow: hidden;
@@ -194,9 +204,9 @@ button[disabled] {
 }
 
 .new-samples-grid-item-tasks {
-  width: 267px;
+  width: 312px;
   height: 28px;
-  padding-left: 25px;
+  padding-left: 26px;
 }
 
 .new-samples-grid-item-tasks > .slick-list > .slick-track {
@@ -215,7 +225,7 @@ button[disabled] {
 }
 
 .new-samples-grid-item-tasks> .slick-prev{
-  left: 2px;
+  left: 1px;
 }
 
 .new-sample-grid-task-item {
@@ -230,6 +240,10 @@ button[disabled] {
   border: 2px dashed #000000 !important;
 }
 
+.div-new-samples-grid-item-top{
+  width: 180px;
+}
+
 
 .new-samples-grid-item-name-pt {
   white-space: nowrap;
@@ -241,8 +255,7 @@ button[disabled] {
   font-size: small;
   font-weight: bold;
   pointer-events: auto;
-
-  max-width: 190px;
+  max-width: 155px;
   background: #5cb85c;
   white-space: nowrap;
   overflow: hidden;
@@ -261,7 +274,7 @@ button[disabled] {
   float: right;
   pointer-events: none;
   position: absolute;
-  margin: 4px;
+  margin: 2px;
   top: 0;
   right: 0;
 
@@ -334,9 +347,17 @@ button[disabled] {
 
 
 .copy-link{
-  display: block;
-  width: 50px;
+  width: 20px;
+  height: 20px;
+  padding: 0%;
   margin-bottom: -25px;
+  position: relative;
+  /* left: 70px; */
+  top: -5px;
+  opacity: 25%;
+}
+.copy-link:hover{
+  opacity: 100%;
 }
 
 .copy-link > .btn-copy-link:focus{
@@ -350,7 +371,7 @@ button[disabled] {
   content: "";
   position: absolute;
   bottom: 100%;
-  left: 50%;
+  left: 20%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
@@ -358,17 +379,18 @@ button[disabled] {
 }
 
 .copy-link > .tooltiptext {
+  z-index: 20000;
   visibility: hidden;
   white-space: nowrap;
-  background-color: #0122388e;
-  color: rgb(255, 255, 255);
+  background-color: #015f9d;
+  color: #ffffff;
   text-align: center;
   border-radius: 6px;
   padding: 2px;
   position: relative;
   z-index: 1;
-  top: 10px;
-  right: 109px;
+  top: 8px;
+  right: 40px;
   opacity: 0;
   transition: opacity 0.3s;
 }
@@ -380,7 +402,7 @@ button[disabled] {
 }
 
 .copy-link-glow{
-  margin-left: 45px;
+  margin-left: 20px;
   transition: all 0.1s ease-in-out;
 }
   

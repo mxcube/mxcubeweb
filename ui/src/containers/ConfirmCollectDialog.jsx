@@ -345,12 +345,14 @@ export class ConfirmCollectDialog extends React.Component {
                 type="checkbox"
                 defaultChecked={this.props.queue.centringMethod === AUTO_LOOP_CENTRING}
                 onClick={this.autoLoopCentringOnClick}
+                id={'auto-lopp-centring'}
                 label="Auto loop centring"
               />
               { autoMountNext ?
                   <Form.Check
                     className='mb-2'
                     type="checkbox"
+                    id={'auto-mount-next'}
                     defaultChecked={this.props.queue.autoMountNext}
                     onClick={this.autoMountNextOnClick}
                     label="Auto mount next sample"

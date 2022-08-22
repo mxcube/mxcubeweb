@@ -12,7 +12,7 @@ import {
   Menu,
   Item,
   Separator,
-  useContextMenu
+  contextMenu
 } from "react-contexify";
 
 import "react-contexify/dist/ReactContexify.css";
@@ -282,13 +282,12 @@ class NewSampleGridContainer extends React.Component {
 
   displayContextMenu(e, contextMenuID) {
     e.preventDefault();
+    this.showRubberBand = false;
     this.selectItemUnderCursor(e);
 
-    const { show } = useContextMenu({
-      id: contextMenuID
-    });
-
-    show(e , {
+    contextMenu.show({
+      id: contextMenuID,
+      event: e,
       position: {
         x: e.pageX,
         y: e.pageY,
@@ -311,12 +310,9 @@ class NewSampleGridContainer extends React.Component {
 
     this.sampleGridItemsSelectedHandler(e, selectedList);
 
-
-    const { show } = useContextMenu({
-      id: contextMenuID
-    });
-
-    show(e , {
+    contextMenu.show({
+      id: contextMenuID,
+      event: e,
       position: {
         x: e.pageX,
         y: e.pageY,
@@ -402,13 +398,13 @@ class NewSampleGridContainer extends React.Component {
 
           // we check in among for each puck , if there are samples 
           // we won't display the cell / table  if all puck in the cell are empty 
-          cell.children.map((puck, idxth)=> {
+          cell.children.forEach((puck, idxth)=> {
             sampleItemList.push(this.getSampleItems(props, cell.name, idxth+1))
           });
 
         if (sampleItemList.find(sil => sil.length > 0)) {   
           tableCell.push(
-            <div key={`cell-${cell.name}`} className="mb-2">
+            <div key={`cell-${cell.name}`} className="mb-2 div-sample-items-collapsible">
               <div className='sample-items-collapsible-header-actions'>
                 {this.itemsControls(this.filterListCell(cell.name))}
                 <span
@@ -448,6 +444,7 @@ class NewSampleGridContainer extends React.Component {
                             </th>
                           )
                         }
+                        return null;
                     })}
                     </tr>
                   </thead>
@@ -461,6 +458,7 @@ class NewSampleGridContainer extends React.Component {
                             </td>
                           )
                         }
+                        return null
                       })}
                     </tr>
                   </tbody>
@@ -473,6 +471,7 @@ class NewSampleGridContainer extends React.Component {
           sampleItemList = [];
         }
         else {return null}
+        return null;
       });
     }
     return tableCell;
@@ -512,9 +511,9 @@ class NewSampleGridContainer extends React.Component {
       const settings = {
         dots: false,
         infinite: false,
-        speed: 200,
-        slidesToShow: 6,
-        slidesToScroll: 1
+        speed: 100,
+        slidesToShow: 7,
+        slidesToScroll: 7
       };
 
       if (this.filter(key)) {

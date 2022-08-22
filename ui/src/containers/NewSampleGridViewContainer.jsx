@@ -208,34 +208,49 @@ class SampleGridViewContainer extends React.Component {
     const path = '';
     let subdir = `${this.props.queue.groupFolder}`;
 
-    if (Object.keys(this.props.selected).length === 1) {
-      prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
-      subdir += this.props.sampleList[Object.keys(this.props.selected)[0]].defaultSubDir;
-    } else {
-      prefix = this.props.defaultParameters[formName.toLowerCase()].prefixTemplate;
-      subdir += this.props.defaultParameters[formName.toLowerCase()].subDirTemplate;
-    }
-
-    const parameters = { parameters: {
-      ...this.props.defaultParameters[formName.toLowerCase()],
-      ...extraParams,
-      prefix,
-      path,
-      subdir,
-      shape: -1 } };
-
-    const selected = [];
-
-    for (const sampleID in this.props.selected) {
-      if (this.props.selected[sampleID]) {
-        selected.push(sampleID);
-      }
-    }
-
     if (formName === 'AddSample') {
       this.props.showTaskParametersForm('AddSample');
     } else {
-      this.props.showTaskParametersForm(formName, selected, parameters);
+      if (Object.keys(this.props.selected).length === 1) {
+        prefix = this.props.sampleList[Object.keys(this.props.selected)[0]].defaultPrefix;
+        subdir += this.props.sampleList[Object.keys(this.props.selected)[0]].defaultSubDir;
+      } else {
+        let type = formName === "Generic" ? extraParams.type : formName.toLowerCase();
+        type = formName === "Workflow" ? "datacollection" : type;
+
+        prefix = this.props.defaultParameters[type].acq_parameters.prefixTemplate;
+        subdir += this.props.defaultParameters[type].acq_parameters.subDirTemplate;
+      }
+
+      const type = formName === "Generic" ? extraParams.type : formName.toLowerCase();
+      const params = (formName !== "Workflow") ? this.props.defaultParameters[type].acq_parameters : 
+        this.props.defaultParameters["datacollection"].acq_parameters;
+
+      const parameters = {
+        parameters: {
+          ...params,
+          ...extraParams,
+          prefix,
+          path,
+          subdir,
+          shape: -1
+        },
+        type: type
+      };
+
+      const selected = [];
+
+      for (const sampleID in this.props.selected) {
+        if (this.props.selected[sampleID]) {
+          selected.push(sampleID);
+        }
+      }
+
+      if (formName === 'AddSample') {
+        this.props.showTaskParametersForm('AddSample');
+      } else {
+        this.props.showTaskParametersForm(formName, selected, parameters);
+      }
     }
   }
 
@@ -625,7 +640,7 @@ class SampleGridViewContainer extends React.Component {
           : null
         }
         <Card className='new-samples-grid-card'>
-          <Card.Header className='new-samples-grid-card-header ms-2 me-2'>
+          <Card.Header className='new-samples-grid-card-header'>
             <Row className="new-samples-grid-row-header">
               <Col sm={4} className='d-flex'>
                 <Form>

@@ -250,7 +250,7 @@ export default class PopInput extends React.Component {
               onHide={() => this.showOvelay(false)}
               id='popOverlayRef'
               trigger="focus"
-              rootClose={true}
+              rootClose
               placement={this.props.placement}
               overlay={popover}
             >
