@@ -201,11 +201,17 @@ export class SampleGridItem extends React.Component {
         <ListGroup.Item className={classes}>
           <div className="new-samples-grid-item-top d-flex">
             {this.itemControls()}
-            <div style={{ display: 'block', clear: 'both' }}>
+            <div  className="div-new-samples-grid-item-top">
+            <CopyToClipboard className="copy-link" text={this.sampleDisplayName()} onCopy={this.onCopy}>
+                <Button variant="content" className="btn-copy-link">
+                  <MdContentCopy style={{ float: 'right'}} size=""/>
+                  <span className={`tooltiptext ${this.state.copied ? 'copy-link-glow' : ''}`} id="myTooltip">
+                    {this.state.copied ? 'Sample Name Copied' : 'Copy Sample Name to Clipboard'}
+                  </span>
+                </Button>
+              </CopyToClipboard>
               <OverlayTrigger
-                placement='auto'
-                rootClose
-                trigger="click"
+                placement="right"
                 overlay={(
                   <Popover id={this.sampleDisplayName()}>
                     <Popover.Header className='d-flex'>
@@ -213,16 +219,6 @@ export class SampleGridItem extends React.Component {
                         <b className='new-samples-grid-item-name-pt'>
                           {this.sampleDisplayName()}
                         </b>
-                      </div>
-                      <div>
-                        <CopyToClipboard className="copy-link" text={this.sampleDisplayName()} onCopy={this.onCopy}>
-                          <Button variant="content" className="btn-copy-link">
-                            <MdContentCopy style={{ float: 'right'}} size=""/>
-                            <span className={`tooltiptext ${this.state.copied ? 'copy-link-glow' : ''}`} id="myTooltip">
-                              {this.state.copied ? 'Sample Name Copied' : 'Copy Sample Name to Clipboard'}
-                            </span>
-                          </Button>
-                        </CopyToClipboard>
                       </div>
                     </Popover.Header>
                     <Popover.Body>
