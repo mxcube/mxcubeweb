@@ -282,6 +282,7 @@ class NewSampleGridContainer extends React.Component {
 
   displayContextMenu(e, contextMenuID) {
     e.preventDefault();
+    this.showRubberBand = false;
     this.selectItemUnderCursor(e);
 
     contextMenu.show({
@@ -397,7 +398,7 @@ class NewSampleGridContainer extends React.Component {
 
           // we check in among for each puck , if there are samples 
           // we won't display the cell / table  if all puck in the cell are empty 
-          cell.children.map((puck, idxth)=> {
+          cell.children.forEach((puck, idxth)=> {
             sampleItemList.push(this.getSampleItems(props, cell.name, idxth+1))
           });
 
