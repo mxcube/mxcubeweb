@@ -58,12 +58,12 @@ class SampleGridViewContainer extends React.Component {
   constructor(props) {
     super(props);
     this.onResize = this.onResize.bind(this);
+    this.onScroll = this.onScroll.bind(this);
     this.syncSamples = this.syncSamples.bind(this);
     this.sampleGridFilter = this.sampleGridFilter.bind(this);
     this.getFilterOptionValue = this.getFilterOptionValue.bind(this);
     this.sampleGridClearFilter = this.sampleGridClearFilter.bind(this);
     this.filterIsUsed = this.filterIsUsed.bind(this);
-    this.resizeGridContainer = this.resizeGridContainer.bind(this);
     this.getCellFilterOptions = this.getCellFilterOptions.bind(this);
 
     // Methods for handling addition and removal of queue items (Samples and Tasks)
@@ -90,22 +90,26 @@ class SampleGridViewContainer extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.onResize, false);
-    this.resizeGridContainer();
+    window.addEventListener('scroll', this.onScroll);
   }
 
 
-  componentDidUpdate() {
-    this.resizeGridContainer();
-  }
+  // componentDidUpdate() {
+  // }
 
 
   componentWillUnmount() {
+    window.removeEventListener('resize', this.onResize);
     window.removeEventListener('resize', this.onResize);
   }
 
 
   onResize() {
     this.forceUpdate();
+  }
+
+  onScroll(event) {
+    event.stopPropagation();
   }
 
   setViewMode(mode) {
@@ -160,40 +164,6 @@ class SampleGridViewContainer extends React.Component {
     return options;
   }
 
-
-  /**
-   * Calculates the grid width
-   *
-   * return {number} width in pixels
-   */
-  calcGridWidth() {
-    // We know that the side menu is fixed width 65px and that the padding from
-    // bootstrap is 15px so content starts at 80px;
-
-    // Get the viewportWidth
-    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-
-    // The full content width for this media (not forgeting the padding to the right 15px)
-    const fullContentWidth = viewportWidth - 80 - 15;
-
-    // Each sample item is 190px wide, calculate maximum number of items for each row
-    const numCols = Math.floor(fullContentWidth / SAMPLE_ITEM_WIDTH);
-
-    // Caculating the actual grid size, with space between sample items;
-    const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE) + 10;
-
-    return [actualGridWidth, numCols];
-  }
-
-
-  /**
-   * Resizes the grid container element (with id smapleGridContainer)
-   */
-  resizeGridContainer() {
-    const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-    const width = Math.min(viewportWidth, this.calcGridWidth()[0] || 0);
-    document.querySelector('#sampleGridContainer').style.width = `${width - 38}px`;
-  }
 
 
   /**
@@ -764,7 +734,6 @@ class SampleGridViewContainer extends React.Component {
               removeSamplesFromQueue={this.removeSamplesFromQueue}
               removeSelectedSamples={this.removeSelectedSamples}
               removeSelectedTasks={this.removeSelectedTasks}
-              gridWidth={this.calcGridWidth()}
             />
           </Card.Body>
          )

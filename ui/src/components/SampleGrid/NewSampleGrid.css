@@ -27,7 +27,7 @@
 }
 
 .sample-items-collapsible{
-  margin-bottom: 2%;
+  margin-bottom: 1%;
   width:fit-content;
 }
 
@@ -345,7 +345,6 @@ button[disabled] {
   font-weight: bolder;
 }
 
-
 .copy-link{
   width: 20px;
   height: 20px;
@@ -415,7 +414,13 @@ button[disabled] {
 /* Flex grid css */
 
 
-.div-svg-flex{
+.div-flex-pie-collapsible{
+  width: 95%;
+  margin: auto auto 2em auto;
+}
+
+.div-svg-flex {
+  margin-left: auto;
   border: 1px solid #e5e6e7;
 }
 
