@@ -100,7 +100,6 @@ class NewSampleFlexView extends React.Component {
         </g>
       </g>
      )
-
   }
 
   getCollapsibleHeaderOpen(cssClass) {
@@ -135,25 +134,27 @@ class NewSampleFlexView extends React.Component {
   render() {
     const scContent = this.props.sampleChanger.contents
     return (
-      <Col sm={6} >
-        <Collapsible transitionTime={300}
-          open
-          trigger={this.getCollapsibleHeaderClose('collapsible-arrow-c')}
-          triggerWhenOpen={this.getCollapsibleHeaderOpen('collapsible-arrow-c')}
-            >
-          <div className='div-svg-flex pt-2 pb-2'>    
-            <svg className='svg-flex' height="95%" width="95%" viewBox="0 0 20 20">
-              <circle className='main-cicle-center' r="10" cx="10" cy="10" />
-              {Object.values(scContent.children).map((cell, idx) => { 
-                return (
-                  this.renderCircle(scContent.children.length, idx, this.isCellSelected(cell.name))
-                )
-              })}
-              <circle className='cell-cicle-center' r="5" cx="10" cy="10" />
-              <text x='10' y='10' fontSize="1" textAnchor="middle" fill="gray">Flex HCD</text>
-            </svg>
-          </div>
-        </Collapsible>
+      <Col sm >
+        <div  className='div-flex-pie-collapsible'>
+          <Collapsible className='sample-items-collapsible' transitionTime={300}
+            open
+            trigger={this.getCollapsibleHeaderClose('collapsible-arrow-c')}
+            triggerWhenOpen={this.getCollapsibleHeaderOpen('collapsible-arrow-c')}
+              >
+            <div className='div-svg-flex ps-4 pt-2 pb-2'>    
+              <svg className='svg-flex' height="97%" width="97%" viewBox="0 0 20 20">
+                <circle className='main-cicle-center' r="10" cx="10" cy="10" />
+                {Object.values(scContent.children).map((cell, idx) => { 
+                  return (
+                    this.renderCircle(scContent.children.length, idx, this.isCellSelected(cell.name))
+                  )
+                })}
+                <circle className='cell-cicle-center' r="5" cx="10" cy="10" />
+                <text x='10' y='10' fontSize="1" textAnchor="middle" fill="gray">Flex HCD</text>
+              </svg>
+            </div>
+          </Collapsible>
+        </div>
       </Col>
     );
   }

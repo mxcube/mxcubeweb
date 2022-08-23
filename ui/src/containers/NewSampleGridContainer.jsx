@@ -118,6 +118,94 @@ class NewSampleGridContainer extends React.Component {
 
 
   /**
+  * Handles selection of SampleItems
+  *
+  * @property {Object} selected
+  *
+  * @param {MouseEvent} e
+  * @param {array} sampleIDlist - array of sampleIDs to select
+  *
+  * return {boolean} true if item is to be included otherwise false
+  */
+  sampleGridItemsSelectedHandler(e, sampleIDList) {
+    const alreadySelected = sampleIDList.length === 1 && this.sampleItemIsSelected(sampleIDList[0]);
+    let samplesToSelect = sampleIDList;
+
+    // We dont want to do anything here if sample is already selected and
+    // the right button was clicked. This allows for the context menu to be
+    // used on several samples at once. Otherwise just do the select magic.
+    if (!(alreadySelected && e.button === 2)) {
+      // CTRL key is pressed just modify the current selection, remove already
+      // selected and add new ones.
+      if (e.ctrlKey) {
+        const intersection = new Set(sampleIDList.filter((sampleID) => (
+          this.sampleItemIsSelected(sampleID)
+        )));
+
+        const union = Object.keys(this.props.selected).concat(sampleIDList);
+        samplesToSelect = union.filter((sampleID) => !intersection.has(sampleID));
+      }
+
+      this.props.selectSamples(samplesToSelect);
+    }
+  }
+
+
+  /**
+   * Checks if the two DOMElements el1 and el2 overlap
+   *
+   * @param {DOMElement} el1
+   * @param {DOMElement} el2
+   * @return {boolean}
+   */
+  checkForOverlap(el1, el2) {
+    let result = false;
+    const bounds1 = el1.getBoundingClientRect();
+    const bounds2 = el2.getBoundingClientRect();
+
+    const firstIstLeftmost = (bounds1.left <= bounds2.left);
+    const leftmost = firstIstLeftmost ? bounds1 : bounds2;
+    const rightmost = firstIstLeftmost ? bounds2 : bounds1;
+
+    // change to >= if border overlap should count
+    if (leftmost.right > rightmost.left) {
+      const firstIsTopmost = (bounds1.top <= bounds2.top);
+      const topmost = firstIsTopmost ? bounds1 : bounds2;
+      const bottommost = firstIsTopmost ? bounds2 : bounds1;
+
+      // change to >= if border overlap should count
+      result = topmost.bottom > bottommost.top;
+    }
+
+    return result;
+  }
+
+
+  /**
+  * Selects the SampleItem currently under the mouse cursor
+  *
+  * @param {MouseEvent} e
+  */
+  selectItemUnderCursor(e) {
+    // Handling single item selection, create a syntheticElement to use for the
+    // mouse cursor when doing the overlap detection, reusing the same
+    // mechanism as for mutiple selection
+    const syntheticElement = { getBoundingClientRect: () => {
+      return { top: e.clientY, left: e.clientX,
+        bottom: e.clientY + 1, right: e.clientX + 1,
+        width: 1, height: 1 };
+    } };
+
+    const selected = this.sampleItems.filter((sampleItem) => {
+      const sampleElement = document.getElementById(sampleItem.key);
+      return this.checkForOverlap(syntheticElement, sampleElement);
+    }).map((sampleItem) => sampleItem.key);
+
+    if (selected.length > 0) { this.sampleGridItemsSelectedHandler(e, selected); }
+  }
+  
+
+  /**
    * Handles multiple item selection on mouseDown, initializes the 'rubberband'
    * that outlines the selected area.
    *
@@ -175,15 +263,15 @@ class NewSampleGridContainer extends React.Component {
     if (selected.length > 1) {
       this.sampleGridItemsSelectedHandler(e, selected);
     }
-    // else {
-    //   this.selectItemUnderCursor(e);
-    // }
+    else {
+      this.selectItemUnderCursor(e);
+    }
   }
 
 
   /**
    * @param {MouseEvent} e
-   */
+  */
   onKeyDown(e) {
     switch (e.key) {
     case 'Escape': {
@@ -195,9 +283,30 @@ class NewSampleGridContainer extends React.Component {
   }
 
 
-    /**
-   * Select Items for collect 
-  * Add All items in a puck to queue
+  /**
+  * Select Items in a cell for collect
+  */
+  pickAllCellItemsOnClick (cell, puck, pickSample) {
+    const sampleItem = []
+    this.props.order.forEach(key => {
+      const sample = this.props.sampleList[key];
+      if (this.filter(key)) {
+        if (sample.cell_no == cell) {
+          sampleItem.push(sample.sampleID)
+        }
+      }
+    });
+
+    if(pickSample) {
+      this.props.addSamplesToQueue(sampleItem)
+    }
+    else{
+      this.props.inQueueDeleteElseAddSamples(sampleItem, false);
+    }
+  }
+    
+  /**
+   * Select Items in a puck for collect or select
   */
   pickAllPuckItemsOnClick(cell, puck, pickSample) {
     const sampleItem = []
@@ -214,92 +323,77 @@ class NewSampleGridContainer extends React.Component {
       this.props.addSamplesToQueue(sampleItem)
     }
     else {
-      // this.props.removeSamplesFromQueue(sampleItem)
       this.props.inQueueDeleteElseAddSamples(sampleItem, false);
     }
   }
   
-    /**
-    * Select All items in a Cell
-    */
-    pickAllCellItemsOnClick (cell, puck, pickSample) {
-      const sampleItem = []
-      this.props.order.forEach(key => {
-        const sample = this.props.sampleList[key];
-        if (this.filter(key)) {
-          if (sample.cell_no == cell) {
-            sampleItem.push(sample.sampleID)
+
+  
+  filterListCell(cell) {
+    let allCellSample = [];
+    let allCellSampleCheck = [];
+
+    this.props.order.forEach(key => {
+      const sample = this.props.sampleList[key];
+      if (this.filter(key)) {
+        if (sample.cell_no == cell) {
+          allCellSample.push(sample.sampleID);
+          if (this.props.inQueue(sample.sampleID) && sample.checked) {
+            allCellSampleCheck.push(sample.sampleID)
           }
         }
-      });
-  
-      if(pickSample) {
-        this.props.addSamplesToQueue(sampleItem)
       }
-      else{
-        // this.props.removeSamplesFromQueue(sampleItem)
-        this.props.inQueueDeleteElseAddSamples(sampleItem, false);
+    });
+    return [allCellSample, allCellSampleCheck, cell, null ]
+  }
+
+  filterListPuck(cell, puck) {
+    let allPuckSample = [];
+    let allPuckSampleCheck = [];
+
+    this.props.order.forEach(key => {
+      const sample = this.props.sampleList[key];
+      if (this.filter(key)) {
+        if (sample.cell_no == cell && sample.puck_no == puck ) {
+          allPuckSample.push(sample.sampleID);
+          if (this.props.inQueue(sample.sampleID) && sample.checked) {
+            allPuckSampleCheck.push(sample.sampleID)
+          }
+        }
       }
-    }
-  
-  
-    filterListCell(cell) {
-      let allCellSample = [];
-      let allCellSampleCheck = [];
-  
-      this.props.order.forEach(key => {
-        const sample = this.props.sampleList[key];
-        if (this.filter(key)) {
-          if (sample.cell_no == cell) {
-            allCellSample.push(sample.sampleID);
-            if (this.props.inQueue(sample.sampleID) && sample.checked) {
-              allCellSampleCheck.push(sample.sampleID)
-            }
-         }
-        }
-      });
-      return [allCellSample, allCellSampleCheck, cell, null ]
-    }
-  
-    filterListPuck(cell, puck) {
-      let allPuckSample = [];
-      let allPuckSampleCheck = [];
-  
-      this.props.order.forEach(key => {
-        const sample = this.props.sampleList[key];
-        if (this.filter(key)) {
-          if (sample.cell_no == cell && sample.puck_no == puck ) {
-            allPuckSample.push(sample.sampleID);
-            if (this.props.inQueue(sample.sampleID) && sample.checked) {
-              allPuckSampleCheck.push(sample.sampleID)
-            }
-         }
-        }
-      });
-      return [allPuckSample, allPuckSampleCheck, cell, puck]
-    }
+    });
+    return [allPuckSample, allPuckSampleCheck, cell, puck]
+  }
   
 
   displayContextMenu(e, contextMenuID) {
-    e.preventDefault();
     this.showRubberBand = false;
+    if (this.props.queue.queueStatus !== QUEUE_RUNNING) {
+      contextMenu.show({
+        id: contextMenuID,
+        event: e,
+        position: {
+          x: e.pageX,
+          y: e.pageY,
+        },
+      });
+    }
     this.selectItemUnderCursor(e);
-
-    contextMenu.show({
-      id: contextMenuID,
-      event: e,
-      position: {
-        x: e.pageX,
-        y: e.pageY,
-      },
-    });
-    e.stopPropagation();
   }
 
   displayPuckCellContextMenu(e, contextMenuID, cell, puck) {
-    e.preventDefault();
-
     let selectedList = []
+
+    if (this.props.queue.queueStatus !== QUEUE_RUNNING) {
+      contextMenu.show({
+        id: contextMenuID,
+        event: e,
+        position: {
+          x: e.pageX,
+          y: e.pageY,
+        },
+      });
+    }
     // if puck is null we select all sample in the cell
     if(puck !== null) {
       selectedList = this.filterListPuck(cell, puck)[0]
@@ -309,16 +403,6 @@ class NewSampleGridContainer extends React.Component {
     }
 
     this.sampleGridItemsSelectedHandler(e, selectedList);
-
-    contextMenu.show({
-      id: contextMenuID,
-      event: e,
-      position: {
-        x: e.pageX,
-        y: e.pageY,
-      },
-    });
-    e.stopPropagation();
   }
 
 
@@ -404,7 +488,7 @@ class NewSampleGridContainer extends React.Component {
 
         if (sampleItemList.find(sil => sil.length > 0)) {   
           tableCell.push(
-            <div key={`cell-${cell.name}`} className="mb-2 div-sample-items-collapsible">
+            <div key={`cell-${cell.name}`} className="div-sample-items-collapsible">
               <div className='sample-items-collapsible-header-actions'>
                 {this.itemsControls(this.filterListCell(cell.name))}
                 <span
@@ -524,7 +608,6 @@ class NewSampleGridContainer extends React.Component {
           sampleItemList.push(
             <div className={classes} key={key}
             onContextMenu={(e) => {this.displayContextMenu(e, contextMenuID)}}
-            onClick={(e) => {this.selectItemUnderCursor(e)}}
             >
               <SampleGridItem
                   key={key}
@@ -585,53 +668,6 @@ class NewSampleGridContainer extends React.Component {
     }
 
     return current;
-  }
-
-  /**
-   * Selects the SampleItem currently under the mouse cursor
-   *
-   * @param {MouseEvent} e
-   */
-  selectItemUnderCursor(e) {
-    // Handling single item selection, create a syntheticElement to use for the
-    // mouse cursor when doing the overlap detection, reusing the same
-    // mechanism as for mutiple selection
-    const syntheticElement = { getBoundingClientRect: () => {
-      return { top: e.clientY, left: e.clientX,
-        bottom: e.clientY + 1, right: e.clientX + 1,
-        width: 1, height: 1 };
-    } };
-
-    const selected = this.sampleItems.filter((sampleItem) => {
-      const sampleElement = document.getElementById(sampleItem.key);
-      return this.checkForOverlap(syntheticElement, sampleElement);
-    }).map((sampleItem) => sampleItem.key);
-
-    if (selected.length > 0) { this.sampleGridItemsSelectedHandler(e, selected); }
-  }
-
-
-  /**
-   * Calculates the grid dimension
-   *
-   * return {array} array on the format [NumRowsCol1, NumRowsCol2, ... NumRowsColN]
-   */
-  gridDimension() {
-    const colArray = [];
-    const numItems = Object.keys(this.props.order).length;
-    const numFullCols = Math.floor(this.props.gridWidth[0] / SAMPLE_ITEM_WIDTH);
-    const numFullRows = Math.floor(numItems / numFullCols);
-    const itemsOnLastRow = numItems - (numFullRows * numFullCols);
-
-    for (let i = 0; i < numFullRows; i++) {
-      colArray[i] = numFullCols;
-    }
-
-    if (itemsOnLastRow > 0) {
-      colArray[numFullRows] = itemsOnLastRow;
-    }
-
-    return colArray;
   }
 
 
@@ -712,40 +748,6 @@ class NewSampleGridContainer extends React.Component {
 
 
   /**
-   * Handles selection of SampleItems
-   *
-   * @property {Object} selected
-   *
-   * @param {MouseEvent} e
-   * @param {array} sampleIDlist - array of sampleIDs to select
-   *
-   * return {boolean} true if item is to be included otherwise false
-   */
-  sampleGridItemsSelectedHandler(e, sampleIDList) {
-    const alreadySelected = sampleIDList.length === 1 && this.sampleItemIsSelected(sampleIDList[0]);
-    let samplesToSelect = sampleIDList;
-
-    // We dont want to do anything here if sample is already selected and
-    // the right button was clicked. This allows for the context menu to be
-    // used on several samples at once. Otherwise just do the select magic.
-    if (!(alreadySelected && e.button === 2)) {
-      // CTRL key is pressed just modify the current selection, remove already
-      // selected and add new ones.
-      if (e.ctrlKey) {
-        const intersection = new Set(sampleIDList.filter((sampleID) => (
-          this.sampleItemIsSelected(sampleID)
-        )));
-
-        const union = Object.keys(this.props.selected).concat(sampleIDList);
-        samplesToSelect = union.filter((sampleID) => !intersection.has(sampleID));
-      }
-
-      this.props.selectSamples(samplesToSelect);
-    }
-  }
-
-
-  /**
    * Handles click on sample item pick 'checkbox', adds sample to queue if its
    * not in the queue or removes it from the queue if it was already in.
    *
@@ -781,24 +783,6 @@ class NewSampleGridContainer extends React.Component {
 
 
   /**
-   * Returns the grid position of SampleItem
-   *
-   * @param {string} key - sampleID of the sample
-   * @return {object} {row: n, col: m, gridDimension: [NumRowsCol1, ... NumRowsColN]}
-   */
-  itemGridPosition(key) {
-    const gridDim = this.gridDimension();
-    const numCols = gridDim[0];
-    const pos = this.props.order.indexOf(key);
-
-    const rowPos = Math.floor(pos / numCols);
-    const colPos = pos - (rowPos * numCols);
-
-    return { row: rowPos, col: colPos, gridDimension: gridDim };
-  }
-
-
-  /**
    * Handels clicks on TaskItem
    *
    * @param {MouseEvent} e
@@ -826,34 +810,7 @@ class NewSampleGridContainer extends React.Component {
   }
 
 
-  /**
-   * Checks if the two DOMElements el1 and el2 overlap
-   *
-   * @param {DOMElement} el1
-   * @param {DOMElement} el2
-   * @return {boolean}
-   */
-  checkForOverlap(el1, el2) {
-    let result = false;
-    const bounds1 = el1.getBoundingClientRect();
-    const bounds2 = el2.getBoundingClientRect();
 
-    const firstIstLeftmost = (bounds1.left <= bounds2.left);
-    const leftmost = firstIstLeftmost ? bounds1 : bounds2;
-    const rightmost = firstIstLeftmost ? bounds2 : bounds1;
-
-    // change to >= if border overlap should count
-    if (leftmost.right > rightmost.left) {
-      const firstIsTopmost = (bounds1.top <= bounds2.top);
-      const topmost = firstIsTopmost ? bounds1 : bounds2;
-      const bottommost = firstIsTopmost ? bounds2 : bounds1;
-
-      // change to >= if border overlap should count
-      result = topmost.bottom > bottommost.top;
-    }
-
-    return result;
-  }
 
 
   /**
