@@ -49,10 +49,6 @@ import NewSampleGridContainer from './NewSampleGridContainer';
 import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog';
 import QueueSettings from './QueueSettings.jsx';
 
-import { SAMPLE_ITEM_WIDTH,
-  SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
-
-
 class SampleGridViewContainer extends React.Component {
 
   constructor(props) {

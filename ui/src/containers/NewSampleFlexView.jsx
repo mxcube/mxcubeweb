@@ -2,8 +2,7 @@ import React from 'react';
 import withRouter from '../components/WithRouter'
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Card, Col,
-} from 'react-bootstrap';
+import { Col } from 'react-bootstrap';
 
 import Collapsible from 'react-collapsible';
 
@@ -13,9 +12,7 @@ import { BsChevronUp, BsChevronDown} from "react-icons/bs";
 import "react-contexify/dist/ReactContexify.css";
 
 import {
-  selectSamplesAction,
   filterAction,
-  sendSetSampleOrderAction
 } from '../actions/sampleGrid';
 
 
@@ -162,19 +159,16 @@ class NewSampleFlexView extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    workflows: state.workflow.workflows,
     queue: state.queue,
     selected: state.sampleGrid.selected,
     sampleList: state.sampleGrid.sampleList,
     filterOptions: state.sampleGrid.filterOptions,
-    order: state.sampleGrid.order,
     sampleChanger: state.sampleChanger
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendSetSampleOrderAction: (order) => dispatch(sendSetSampleOrderAction(order)),
     filter: (filterOptions) => dispatch(filterAction(filterOptions)),
   };
 }
