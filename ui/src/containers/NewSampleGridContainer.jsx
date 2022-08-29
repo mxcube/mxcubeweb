@@ -47,10 +47,7 @@ import { showDialog } from '../actions/general';
 
 import NewSampleFlexView from './NewSampleFlexView';
 
-import { SampleGridItem,
-  SAMPLE_ITEM_WIDTH,
-  SAMPLE_ITEM_HEIGHT,
-  SAMPLE_ITEM_SPACE } from '../components/SampleGrid/NewSampleGridItem';
+import { SampleGridItem } from '../components/SampleGrid/NewSampleGridItem';
 
 import { TaskItem } from '../components/SampleGrid/NewTaskItem';
 
@@ -487,7 +484,7 @@ class NewSampleGridContainer extends React.Component {
       Object.values(sc.children).map((cell) => {
         if (this.props.filterOptions.cellFilter.toLowerCase() === cell.name
           || this.props.filterOptions.cellFilter.toLowerCase() === ''){
-          const cellMenuID = 'new-samples-grid-context-menu-puck'
+          const cellPuckMenuID = 'context-menu-cell-puck'
 
           // we check in among for each puck , if there are samples 
           // we won't display the cell / table  if all puck in the cell are empty 
@@ -503,7 +500,7 @@ class NewSampleGridContainer extends React.Component {
                 <span
                   title='Cell Options'
                   className='new-samples-grid-context-menu-icon'
-                  onClick={(e) => {this.displayPuckCellContextMenu(e, cellMenuID, cell.name, null)}}
+                  onClick={(e) => {this.displayPuckCellContextMenu(e, cellPuckMenuID, cell.name, null)}}
                 >
                   <BiMenu size='1.5em'/>
                 </span>
@@ -520,7 +517,6 @@ class NewSampleGridContainer extends React.Component {
                     <tr>
                       {cell.children.map((puck, idxth)=> {
                         if(this.getSampleItems(props, cell.name, idxth+1).length > 0) {
-                          const puckMenuID ='new-samples-grid-context-menu-puck'
                           return(
                             <th key={`th-${puck.name}`} className='sample-items-table-row-header-th'>
                               <span style={{ marginTop: '15px'}}>
@@ -530,7 +526,7 @@ class NewSampleGridContainer extends React.Component {
                               <span
                                 title='Puck Options'
                                 className='new-samples-grid-context-menu-icon'
-                                onClick={(e) => {this.displayPuckCellContextMenu(e, puckMenuID, cell.name, idxth+1)}}
+                                onClick={(e) => {this.displayPuckCellContextMenu(e, cellPuckMenuID, cell.name, idxth+1)}}
                               >
                                 <BiMenu size='1.5em'/>
                               </span>
@@ -942,11 +938,11 @@ class NewSampleGridContainer extends React.Component {
 
     return (
       <>
-        <Menu id='new-samples-grid-context-menu-puck' animation={animation.slide} >
+        <Menu id='context-menu-cell-puck' animation={animation.slide} >
           <Item disabled><span> Cell Actions </span></Item>
           {this.taskContextMenuItems()}
         </Menu>
-        <Menu id='new-samples-grid-context-menu-puck' animation={animation.slide}>
+        <Menu id='context-menu-cell-puck' animation={animation.slide}>
           <Item disabled><span> Puck Actions </span></Item>
           {this.taskContextMenuItems()}
         </Menu>
