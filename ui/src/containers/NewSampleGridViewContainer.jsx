@@ -58,7 +58,6 @@ class SampleGridViewContainer extends React.Component {
   constructor(props) {
     super(props);
     this.onResize = this.onResize.bind(this);
-    this.onScroll = this.onScroll.bind(this);
     this.syncSamples = this.syncSamples.bind(this);
     this.sampleGridFilter = this.sampleGridFilter.bind(this);
     this.getFilterOptionValue = this.getFilterOptionValue.bind(this);
@@ -90,7 +89,6 @@ class SampleGridViewContainer extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.onResize, false);
-    window.addEventListener('scroll', this.onScroll);
   }
 
 
@@ -100,16 +98,11 @@ class SampleGridViewContainer extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.onResize);
-    window.removeEventListener('resize', this.onResize);
   }
 
 
   onResize() {
     this.forceUpdate();
-  }
-
-  onScroll(event) {
-    event.stopPropagation();
   }
 
   setViewMode(mode) {
