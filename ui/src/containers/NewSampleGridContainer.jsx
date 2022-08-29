@@ -10,6 +10,7 @@ import Collapsible from 'react-collapsible';
 
 import {
   Menu,
+  animation,
   Item,
   Separator,
   contextMenu
@@ -62,6 +63,7 @@ class NewSampleGridContainer extends React.Component {
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
+    this.onScroll = this.onScroll.bind(this);
 
     this.filter = this.filter.bind(this);
     this.mutualExclusiveFilterOption = this.mutualExclusiveFilterOption.bind(this);
@@ -101,6 +103,7 @@ class NewSampleGridContainer extends React.Component {
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown, false);
     document.addEventListener('click', this.onClick, false);
+    window.addEventListener('scroll', this.onScroll);
   }
 
 
@@ -114,6 +117,11 @@ class NewSampleGridContainer extends React.Component {
   componentWillUnmount() {
     document.removeEventListener('keydown', this.onKeyDown);
     document.removeEventListener('click', this.onClick);
+    window.removeEventListener('scroll', this.onScroll);
+  }
+
+  onScroll(event) {
+    event.stopImmediatePropagation()
   }
 
 
@@ -394,11 +402,12 @@ class NewSampleGridContainer extends React.Component {
         },
       });
     }
+    // select all sample in the Puck
     // if puck is null we select all sample in the cell
     if(puck !== null) {
       selectedList = this.filterListPuck(cell, puck)[0]
     }
-    else{
+    else {
       selectedList = this.filterListCell(cell)[0]
     }
 
@@ -933,42 +942,25 @@ class NewSampleGridContainer extends React.Component {
 
     return (
       <>
-        <Menu id='new-samples-grid-context-menu-puck'>
+        <Menu id='new-samples-grid-context-menu-puck' animation={animation.slide} >
           <Item disabled><span> Cell Actions </span></Item>
           {this.taskContextMenuItems()}
         </Menu>
-        <Menu id='new-samples-grid-context-menu-puck'>
+        <Menu id='new-samples-grid-context-menu-puck' animation={animation.slide}>
           <Item disabled><span> Puck Actions </span></Item>
           {this.taskContextMenuItems()}
         </Menu>
-        <Menu id='new-samples-grid-context-menu'>
+        <Menu id='new-samples-grid-context-menu' animation={animation.slide}>
           {this.sampleContextMenu()}
           {this.taskContextMenuItems()}
         </Menu>
-        <Menu id='new-samples-grid-context-menu-mounted'>
+        <Menu id='new-samples-grid-context-menu-mounted' animation={animation.slide}>
           {this.sampleContextMenuMounted()}
           {this.taskContextMenuItems()}
         </Menu>
         {this.props.viewMode.mode == 'Flex Grid'?
-        (
-          <Row
-          className="new-samples-grid"
-          onMouseDown={this.onMouseDown}
-          onMouseUp={this.onMouseUp}
-          onMouseMove={this.onMouseMove}
-          xs="auto"
-        >
-          <div className="selection-rubber-band" id="selectionRubberBand" />
-          <NewSampleFlexView />            
-          <Col sm>
-            {this.getSampleTable(this.props)}
-          </Col>
-
-        </Row>
-        )
-        :
-        (
-          <Row
+          (
+            <Row
             className="new-samples-grid"
             onMouseDown={this.onMouseDown}
             onMouseUp={this.onMouseUp}
@@ -976,14 +968,31 @@ class NewSampleGridContainer extends React.Component {
             xs="auto"
           >
             <div className="selection-rubber-band" id="selectionRubberBand" />
+            <NewSampleFlexView />            
             <Col sm>
-              {this.getSampleTable(this.props).filter((n, i) => i%2 !=1)}
+              {this.getSampleTable(this.props)}
             </Col>
-            <Col sm>
-            {this.getSampleTable(this.props).filter((n, i) => i%2 == 1)}
-            </Col>
+
           </Row>
-        )
+          )
+          :
+          (
+            <Row
+              className="new-samples-grid"
+              onMouseDown={this.onMouseDown}
+              onMouseUp={this.onMouseUp}
+              onMouseMove={this.onMouseMove}
+              xs="auto"
+            >
+              <div className="selection-rubber-band" id="selectionRubberBand" />
+              <Col sm>
+                {this.getSampleTable(this.props).filter((n, i) => i%2 !=1)}
+              </Col>
+              <Col sm>
+              {this.getSampleTable(this.props).filter((n, i) => i%2 == 1)}
+              </Col>
+            </Row>
+          )
         }
       </>
     );
