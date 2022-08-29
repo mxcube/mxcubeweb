@@ -11,11 +11,6 @@ import { MdContentCopy } from "react-icons/md";
 import './NewSampleGrid.css';
 
 
-export const SAMPLE_ITEM_WIDTH = 943.5;
-export const SAMPLE_ITEM_HEIGHT = 70;
-export const SAMPLE_ITEM_SPACE = 4;
-
-
 export class SampleGridItem extends React.Component {
 
   constructor(props) {
