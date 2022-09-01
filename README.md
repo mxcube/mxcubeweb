@@ -8,7 +8,7 @@ MXCuBE-Web is the latest generation of the data acquisition software MXCuBE (Mac
 
 * ESRF
 * [Soleil](http://www.synchrotron-soleil.fr/)
-* [Max lab](https://www.maxlab.lu.se/)
+* [MAX IV](https://www.maxiv.lu.se/)
 * [HZB](http://www.helmholtz-berlin.de/)
 * [EMBL](http://www.embl.org/)
 * [Global Phasing Ltd.](http://www.globalphasing.com/)
