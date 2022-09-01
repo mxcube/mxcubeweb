@@ -16,7 +16,7 @@ import flask_security
 from spectree import SpecTree
 
 from mxcube3.core.util import networkutils
-from mxcube3.core.components.user.database import db_session, init_db, UserDatastore
+from mxcube3.core.components.user.database import init_db, UserDatastore
 from mxcube3.core.models.usermodels import User, Role, Message
 
 
@@ -68,11 +68,13 @@ class Server:
         Server.flask.config.from_object(cfg.flask)
         Server.flask.register_error_handler(Exception, Server.exception_handler)
 
+        db_session = init_db(
+            cfg.flask.USER_DB_PATH
+        )
         Server.user_datastore = UserDatastore(
             db_session, User, Role, message_model=Message
         )
         Server.security = flask_security.Security(Server.flask, Server.user_datastore)
-        init_db()
         Server.db_session = db_session
 
         Server.flask_socketio = SocketIO(

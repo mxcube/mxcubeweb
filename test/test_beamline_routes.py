@@ -16,23 +16,38 @@ def test_beamline_get_all_attribute(client):
     """
     resp = client.get("/mxcube/api/v0.1/beamline/")
     data = json.loads(resp.data)
-
     actual = list(data.get("attributes").keys())
 
     expected = [
+        "backlight",
+        "backlight_switch",
+        "beam",
         "beamstop",
+        "beamstop_alignemnt_x",
         "capillary",
-        "cryo",
         "detector",
         "detector_distance",
+        "diffractometer",
         "energy",
+        "energy.wavelength",
         "fast_shutter",
         "flux",
+        "frontlight",
+        "frontlight_switch",
+        "kappa",
+        "kappa_phi",
         "machine_info",
+        "microdiff_light",
+        "omega",
+        "phix",
+        "phiy",
+        "phiz",
         "resolution",
         "safety_shutter",
+        "sampx",
+        "sampy",
         "transmission",
-        "wavelength",
+        "zoom"
     ]
 
     assert isinstance(data["attributes"], dict)
@@ -49,24 +64,21 @@ def test_beamline_get_attribute(client):
     the data returned at-least contain a minimal set of keys that make up a
     'beamline attribute'
     """
-
     bl_attrs = [
-        "safety_shutter",
-        "capillary",
-        "beamstop",
-        "fast_shutter",
-        "resolution",
-        "energy",
-        "flux",
-        "wavelength",
-        "transmission",
-        "machine_info",
-        "detector_distance",
+        ("safety_shutter", "nstate"),
+        ("capillary", "nstate"),
+        ("beamstop", "nstate"),
+        ("fast_shutter", "nstate"),
+        ("resolution", "motor"),
+        ("energy", "motor"),
+        ("flux", "actuator"),
+        ("transmission", "motor"),
+        ("detector_distance", "motor"),
     ]
 
-    for name in bl_attrs:
-        resp = client.get("/mxcube/api/v0.1/beamline/%s" % name)
-
+    for name, adapter_type in bl_attrs:
+        print(name)
+        resp = client.get(f"/mxcube/api/v0.1/beamline/{adapter_type}/{name}")
         data = json.loads(resp.data)
 
         # Check for minimal set of attributes
@@ -78,7 +90,6 @@ def test_beamline_get_attribute(client):
         assert data["available"] == True
         assert resp.status_code == 200
 
-
 def test_beamline_set_attribute(client):
     """
     Tests set on the writable attributes
@@ -88,29 +99,28 @@ def test_beamline_set_attribute(client):
     that the test can be safely executed on a beamline.
     """
     bl_attrs = [
-        "resolution",
-        "energy",
-        "wavelength",
-        "transmission",
-        "safety_shutter",
-        "beamstop",
-        "fast_shutter",
-        "detector_distance",
+        ("resolution", "motor"),
+        ("energy", "motor"),
+        ("transmission", "motor"),
+        ("safety_shutter", "nstate"),
+        ("beamstop", "nstate"),
+        ("fast_shutter", "nstate"),
+        ("detector_distance", "motor"),
     ]
 
-    for name in bl_attrs:
-        resp = client.get("/mxcube/api/v0.1/beamline/%s" % name)
+    for (name, adapter_type) in bl_attrs:
+        resp = client.get(f"/mxcube/api/v0.1/beamline/{adapter_type}/{name}")
         data = json.loads(resp.data)
 
         new_value = data.get("value")
 
         resp = client.put(
-            "/mxcube/api/v0.1/beamline/%s" % name,
+            f"/mxcube/api/v0.1/beamline/{adapter_type}/value",
             data=json.dumps({"name": name, "value": new_value}),
             content_type="application/json",
         )
 
-        resp = client.get("/mxcube/api/v0.1/beamline/%s" % name)
+        resp = client.get(f"/mxcube/api/v0.1/beamline/{adapter_type}/{name}")
         data = json.loads(resp.data)
 
         assert data.get("value", None) == new_value
@@ -121,7 +131,7 @@ def test_get_beam_info(client):
     Tests retrieval of information regarding the beam, and that the data is
     returned on the expected format
     """
-    resp = client.get("/mxcube/api/v0.1/beam/info")
+    resp = client.get("/mxcube/api/v0.1/beamline/beam/info")
     data = json.loads(resp.data)
 
     assert isinstance(data["currentAperture"], int)

@@ -75,24 +75,6 @@ def test_set_phase(client):
     )
 
     assert new_phase == actual_phase
-    # assert original_phase == actual_original_phase
-
-
-def test_get_movables_state(client):
-    """
-    Checks if atleast the key elements ['sampx', 'sampy', 'phi', 'focus',
-    'zoom', 'phiy', 'phiz', 'BackLight'] that can be assumed to exist on all
-    diffractometers used with MXCuBE exists in the data returned.
-
-    Does not check the structure of each movable
-    """
-    resp = client.get("/mxcube/api/v0.1/diffractometer/movables/state")
-    data = json.loads(resp.data)
-
-    keys = ["sampx", "sampy", "phi", "focus", "zoom", "phiy", "phiz", "BackLight"]
-
-    for key in keys:
-        assert key in data
 
 
 def test_get_aperture(client):
