@@ -183,6 +183,18 @@
   bottom: 3px;
 }
 
+.sample-items-puck-code{
+  padding-left: 15px;
+  margin-left: 15px;
+  border-left: 1px solid gray;
+  display: inline-flex;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  
+  max-width: 180px!important;
+}
+
 button[disabled] {
   opacity: 0.2;
 }
