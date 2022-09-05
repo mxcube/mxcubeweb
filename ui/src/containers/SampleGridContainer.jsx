@@ -217,8 +217,16 @@ class SampleGridContainer extends React.Component {
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       menuEl.style.display = 'none';
     } else if (e.target.className.includes('samples-grid-item') && e.button === 2) {
-      menuEl.style.top = `${e.pageY}px`;
-      menuEl.style.left = `${e.pageX}px`;
+      const windowWidth = document.body.offsetWidth;
+      const menuEndPos = e.pageX + menuEl.offsetWidth;
+
+      let posxoffset = 10;
+      if (menuEndPos > windowWidth) {
+        posxoffset = menuEl.offsetWidth;
+      }
+
+      menuEl.style.top = `${e.pageY -60}px`;
+      menuEl.style.left = `${e.pageX - posxoffset}px`;
       menuEl.style.display = 'block';
       document.getElementById(contextMenuToHide).style.display = 'none';
       res = false;

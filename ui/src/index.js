@@ -8,8 +8,7 @@ import { PersistGate } from 'redux-persist/integration/react';
 
 import { Provider } from 'react-redux';
 import SampleViewContainer from './containers/SampleViewContainer';
-// import SampleGridViewContainer from './containers/SampleGridViewContainer';
-import NewSampleGridViewContainer from './containers/NewSampleGridViewContainer';
+import SampleListViewContainer from './containers/SampleListViewContainer';
 import EquipmentContainer from './containers/EquipmentContainer';
 import LoginContainer from './containers/LoginContainer';
 import LoggerContainer from './containers/LoggerContainer';
@@ -87,7 +86,7 @@ export default class App extends React.Component {
               <Route path="/" element={<PrivateOutlet />}>
                 <Route path="" element={<Main />}>
                   <Route index element={<SampleViewContainer />} />
-                  <Route path="samplegrid" element={<NewSampleGridViewContainer />} />
+                  <Route path="samplegrid" element={<SampleListViewContainer />} />
                   <Route path="datacollection" element={<SampleViewContainer />} />
                   <Route path="equipment" element={<EquipmentContainer />} />
                   <Route path="logging" element={<LoggerContainer />} />
