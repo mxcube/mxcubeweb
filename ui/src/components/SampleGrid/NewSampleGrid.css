@@ -22,9 +22,6 @@
   padding: 1.5em 0.5em 0.5em 0.5em;
 }
 
-.new-samples-grid {
-
-}
 
 .sample-items-collapsible{
   margin-bottom: 1%;
@@ -101,11 +98,7 @@
   height: 70px;
   border: 1px solid #9c9c9c!important;
   border-radius: 3px!important;
-}
-
-.new-samples-grid-li-mv {
-  z-index: 3 !important;
-  list-style-type: none;
+  cursor: context-menu;
 }
 
 .move-arrow {
@@ -160,10 +153,6 @@
 
 .new-samples-grid-item-top{
   width: 280px;
-  /* background: #5cb85c;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; */
 }
 
 .new-samples-grid-item-moving {
@@ -182,7 +171,6 @@
 
 .new-samples-grid-item-to-be-collected {
   background: #cee3f6!important;
-  /* border: 1px solid #DDD!important; */
 }
 
 .new-samples-grid-item-button {
@@ -199,9 +187,6 @@ button[disabled] {
   opacity: 0.2;
 }
 
-.new-samples-grid-item-button:hover {
-  /* border: 1px solid #888; */
-}
 
 .new-samples-grid-item-tasks {
   width: 312px;
@@ -351,7 +336,6 @@ button[disabled] {
   padding: 0%;
   margin-bottom: -25px;
   position: relative;
-  /* left: 70px; */
   top: -5px;
   opacity: 25%;
 }
@@ -413,7 +397,6 @@ button[disabled] {
 
 /* Flex grid css */
 
-
 .div-flex-pie-collapsible{
   width: 95%;
   margin: auto auto 2em auto;
@@ -428,15 +411,29 @@ button[disabled] {
   fill: #d1d9df;
 }
 
-.cell-cicle{
-  fill: transparent;
-  border: 2px solid #5cb85c;
-  cursor: pointer;
+.g-cell-cicle {
+
 }
 
 
+.has-sample {
+  cursor: pointer;
+}
+.empty-cell {
+  cursor:not-allowed;
+  background: #000000;
+}
+
+.cell-cicle-empty :hover{
+  stroke: #ffffff;
+}
+
+.cell-cicle{
+  fill:#015f9d;
+  border: 2px solid #5cb85c;
+}
+
 .cell-cicle:hover{
-    /* stroke-opacity: 80%; */
   stroke: #6cb0f5;
   stroke-width: 9.5;
   text-shadow:0px 0px 30px #fdec6e;
