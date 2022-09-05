@@ -26,6 +26,8 @@ export function addSamplesToList(samplesData) {
       if (!sampleData.sampleID) {
         lastSampleID++;
         sampleData.sampleID = lastSampleID.toString();
+        sampleData['cell_no'] = 1
+        sampleData['puck_no'] = 1
       }
     }
 
