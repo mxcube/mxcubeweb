@@ -1,8 +1,15 @@
+/* eslint-disable import/no-anonymous-default-export */
 const initialState = {
   show: false,
   shape: { type: 'NONE' },
   x: 0,
   y: 0,
+  genericContextMenu: {
+    id: '',
+    show: false,
+    x: 0,
+    y: 0,
+  },
 };
 
 export default (state = initialState, action) => {
@@ -14,6 +21,16 @@ export default (state = initialState, action) => {
         x: action.x,
         y: action.y,
       };
+    }
+    case 'SHOW_GENERIC_CONTEXT_MENU': {
+      const genericContextMenu = { ...state.genericContextMenu};
+
+      genericContextMenu['id'] = action.id;
+      genericContextMenu['show'] = action.show;
+      genericContextMenu['x'] = action.x;
+      genericContextMenu['y'] = action.y;
+
+      return { ...state,  genericContextMenu };
     }
     default:
       return state;
