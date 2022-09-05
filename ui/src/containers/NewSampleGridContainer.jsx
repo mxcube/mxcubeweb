@@ -600,8 +600,17 @@ class NewSampleGridContainer extends React.Component {
                           const puckMenuID = 'new-samples-grid-context-menu-puck'
                           return(
                             <th key={`th-${puck.name}`} className='sample-items-table-row-header-th'>
-                              <span style={{ marginTop: '15px'}}>
+                               <span style={{ marginLeft: '5px', marginTop: '4px', float:'left'}}>
                                 Puck {idxth+1}
+                                {puck.id != '' ?
+                                  <div className='sample-items-puck-code'>
+                                     Code : {puck.id}
+                                  </div>
+                                  :
+                                  null
+                                }
+                              </span>
+                              <span style={{ marginTop: '15px', marginRight: '2px'}}>
                                 {this.itemsControls(this.getSampleListFilteredByPuck(cell.name, idxth+1))}
                               </span>
                               <span
