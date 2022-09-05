@@ -1,6 +1,5 @@
 import React from 'react';
 import withRouter from '../components/WithRouter'
-import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Col } from 'react-bootstrap';
 
@@ -71,19 +70,35 @@ class NewSampleFlexView extends React.Component {
     const strokeDashArray = `${strokeDash} ${circumference}`;
     const rgbColorList= ['#e8ebee', '#cdced1', '#e8ebee', '#cdced1', '#e8ebee', '#cdced1', '#e8ebee', '#cdced1']
 
+    const disableClasse =  this.props.cellSampleList(idx + 1)[0].length > 0 ?
+      'has-sample' : 'empty-cell';
+
+    const disabled =  this.props.cellSampleList(idx + 1)[0].length > 0 ?
+    false : true;
+
     return (
-      <g className='g-cell-cicle' key={`circle-${idx}`} onClick={(e) => {this.onClickCell(e, idx)}}>
+      <g 
+        className={`g-cell-cicle ${disableClasse}`}
+        key={`circle-${idx}`}
+        onClick={(e) => { disabled? null : this.onClickCell(e, idx) }}
+        title="Sample #"
+      >
         <circle
           r="5"
           cx="10" cy="10"
           key={`circle-${idx}`}
           id={`tpath${idx}`}
-          className='cell-cicle'
+          className={disabled? 'cell-cicle-empty': 'cell-cicle'}
           stroke={isCellSelected ? '#6cb0f5' : rgbColorList[idx]}
           strokeWidth="10"
           strokeDasharray={strokeDashArray}
           transform="rotate(-90) translate(-20, 0)"
-        />
+        >
+          <title>
+            {this.props.cellSampleList(idx + 1)[0].length > 0 ?
+            `${this.props.cellSampleList(idx + 1)[0].length} Samples` : 'Empty'}
+          </title>
+        </circle>
         <g transform="rotate(-113) translate(-21.5, 0)">
           <text
             className='circle-text'
@@ -93,6 +108,10 @@ class NewSampleFlexView extends React.Component {
             rotate="113"
           >
             {idx + 1}
+            <title>
+            {this.props.cellSampleList(idx + 1)[0].length > 0 ?
+            `${this.props.cellSampleList(idx + 1)[0].length} Samples` : 'Empty'}
+          </title>
           </text>
         </g>
       </g>
@@ -129,21 +148,22 @@ class NewSampleFlexView extends React.Component {
   }
 
   render() {
-    const scContent = this.props.sampleChanger.contents
+    // this is specific to 8 cells Baskets
+    const scContent = [1, 2, 3, 4, 5, 6, 7, 8]
     return (
-      <Col sm >
+      <Col sm>
         <div  className='div-flex-pie-collapsible'>
-          <Collapsible className='sample-items-collapsible' transitionTime={300}
+          <Collapsible transitionTime={200}
             open
             trigger={this.getCollapsibleHeaderClose('collapsible-arrow-c')}
             triggerWhenOpen={this.getCollapsibleHeaderOpen('collapsible-arrow-c')}
-              >
+          >
             <div className='div-svg-flex ps-4 pt-2 pb-2'>    
               <svg className='svg-flex' height="97%" width="97%" viewBox="0 0 20 20">
                 <circle className='main-cicle-center' r="10" cx="10" cy="10" />
-                {Object.values(scContent.children).map((cell, idx) => { 
+                {scContent.map((cell, idx) => { 
                   return (
-                    this.renderCircle(scContent.children.length, idx, this.isCellSelected(cell.name))
+                    this.renderCircle(scContent.length, idx, this.isCellSelected(cell))
                   )
                 })}
                 <circle className='cell-cicle-center' r="5" cx="10" cy="10" />
@@ -163,7 +183,6 @@ function mapStateToProps(state) {
     selected: state.sampleGrid.selected,
     sampleList: state.sampleGrid.sampleList,
     filterOptions: state.sampleGrid.filterOptions,
-    sampleChanger: state.sampleChanger
   };
 }
 
