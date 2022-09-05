@@ -29,6 +29,7 @@ import {
   sendSyncSamples,
   filterAction,
   selectSamplesAction,
+  showGenericContextMenu
 } from '../actions/sampleGrid';
 
 import {
@@ -53,6 +54,7 @@ class SampleGridViewContainer extends React.Component {
 
   constructor(props) {
     super(props);
+    this.onMouseDown = this.onMouseDown.bind(this);
     this.onResize = this.onResize.bind(this);
     this.syncSamples = this.syncSamples.bind(this);
     this.sampleGridFilter = this.sampleGridFilter.bind(this);
@@ -94,6 +96,18 @@ class SampleGridViewContainer extends React.Component {
 
   componentWillUnmount() {
     window.removeEventListener('resize', this.onResize);
+  }
+
+  /**
+   * If Context menu is showed set it to false'
+   *
+   * @param {MouseEvent} e
+   */
+  onMouseDown(e) {
+    if(this.props.contextMenu.show) {
+      this.props.showGenericContextMenu(false, null, 0, 0)
+    }
+    e.preventDefault();
   }
 
 
@@ -307,7 +321,8 @@ class SampleGridViewContainer extends React.Component {
    * @return {boolean} true if sample with sampleID is in queue otherwise false
    */
   inQueue(sampleID) {
-    return this.props.queue.queue.includes(sampleID) && this.props.sampleList[sampleID].checked;
+    return this.props.queue.queue.includes(sampleID);
+    //  && this.props.sampleList[sampleID].checked;
   }
 
 
@@ -599,7 +614,7 @@ class SampleGridViewContainer extends React.Component {
           : null
         }
         <Card className='new-samples-grid-card'>
-          <Card.Header className='new-samples-grid-card-header'>
+          <Card.Header onMouseDown={this.onMouseDown} className='new-samples-grid-card-header'>
             <Row className="new-samples-grid-row-header">
               <Col sm={4} className='d-flex'>
                 <Form>
@@ -756,6 +771,7 @@ function mapStateToProps(state) {
     filterOptions: state.sampleGrid.filterOptions,
     order: state.sampleGrid.order,
     sampleChanger: state.sampleChanger,
+    contextMenu: state.contextMenu.genericContextMenu,
     general: state.general
   };
 }
@@ -778,7 +794,8 @@ function mapDispatchToProps(dispatch) {
     confirmClearQueueShow: bindActionCreators(showConfirmClearQueueDialog, dispatch),
     confirmClearQueueHide:
       bindActionCreators(showConfirmClearQueueDialog.bind(this, false), dispatch),
-    showConfirmCollectDialog: bindActionCreators(showConfirmCollectDialog, dispatch)
+    showConfirmCollectDialog: bindActionCreators(showConfirmCollectDialog, dispatch),
+    showGenericContextMenu: (show, id, x, y) => dispatch(showGenericContextMenu(show, id, x, y)),
   };
 }
 
