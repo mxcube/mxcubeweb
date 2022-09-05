@@ -1,0 +1,4 @@
+.generic-context-menu{
+    animation: growDown 300ms ease-in-out forwards;
+    transform-origin: top center;
+}
