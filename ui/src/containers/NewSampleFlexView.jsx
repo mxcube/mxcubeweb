@@ -31,9 +31,11 @@ class NewSampleFlexView extends React.Component {
 
   }
 
-  onClickCell(event, idx) {
-    event.stopPropagation()
+  onClickCell(event, idx, disabled) {
+    if (!disabled) {
     this.props.filter({cellFilter: `${idx+1}`});
+  }
+    event.stopPropagation()
   }
 
 
@@ -80,7 +82,7 @@ class NewSampleFlexView extends React.Component {
       <g 
         className={`g-cell-cicle ${disableClasse}`}
         key={`circle-${idx}`}
-        onClick={(e) => { disabled? null : this.onClickCell(e, idx) }}
+        onClick={(e) => {this.onClickCell(e, idx, disabled) }}
         title="Sample #"
       >
         <circle
