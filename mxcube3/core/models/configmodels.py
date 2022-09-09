@@ -12,7 +12,7 @@ class FlaskConfigModel(BaseModel):
     ALLOWED_CORS_ORIGINS: List[str] = Field(["*"], description="")
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
     SECURITY_TRACKABLE: bool = Field(True, description="")
-
+    USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
 
 class UIComponentModel(BaseModel):
     label: str

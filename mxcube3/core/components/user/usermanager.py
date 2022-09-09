@@ -181,7 +181,7 @@ class BaseUserManager(ComponentBase):
             self.update_operator(new_login=True)
             self.emit_observers_changed()
 
-            msg = "User %s signed in" % user
+            msg = "User %s signed in" % user.username
             logging.getLogger("MX3.HWR").info(msg)
 
             return login_res["status"]

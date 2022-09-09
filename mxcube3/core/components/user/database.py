@@ -6,16 +6,17 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from flask_security import SQLAlchemySessionUserDatastore
 
-engine = create_engine("sqlite:////tmp/mxcube-user.db")
-db_session = scoped_session(
-    sessionmaker(autocommit=False, autoflush=False, bind=engine)
-)
 Base = declarative_base()
-Base.query = db_session.query_property()
 
-
-def init_db():
+def init_db(path):
+    engine = create_engine(f"sqlite:///{path}")
+    db_session = scoped_session(
+        sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    )
+    Base.query = db_session.query_property()
     Base.metadata.create_all(bind=engine)
+
+    return db_session
 
 
 class UserDatastore(SQLAlchemySessionUserDatastore):
