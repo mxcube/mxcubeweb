@@ -1,4 +1,30 @@
-.generic-context-menu{
-    animation: growDown 300ms ease-in-out forwards;
-    transform-origin: top center;
-}
+
+@keyframes fadeIn {
+    0% {
+      opacity: 0;
+      transform: translateY(3rem);
+    }
+    100% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeOut {
+    0% {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    100% {
+      opacity: 0;
+      transform: translateY(3rem);
+    }
+  }
+  
+  .generic-context-menu {
+    animation: fadeIn 0.2s ease-in-out;
+  }
+  
+  .generic-context-menu-close {
+    animation: fadeOut 0.2s ease-i
+  }

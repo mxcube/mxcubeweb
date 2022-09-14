@@ -6,8 +6,8 @@ import './MXContextMenu.css'
 export default class MXContextMenu extends React.Component {
   constructor(props) {
     super(props);
-    this.showContextMenu = this.showContextMenu.bind(this)
-    this.hideContextMenu = this.hideContextMenu.bind(this)
+    this.showContextMenu = this.showContextMenu.bind(this);
+    this.hideContextMenu = this.hideContextMenu.bind(this);
   }
 
   componentDidMount() {
@@ -40,7 +40,7 @@ export default class MXContextMenu extends React.Component {
   hideContextMenu() {
     const ctxMenu = document.querySelector('#generic-contextMenu');
     if (ctxMenu) {
-      ctxMenu.style.display = 'none';
+      ctxMenu.classList.add('generic-context-menu-close');
     }
   }
 
