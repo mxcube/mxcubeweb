@@ -7,9 +7,6 @@
   min-width: fit-content;
 }
 
-.modal-dialog {
-    margin: 50px auto;
-}
 
 #loading {
     margin-top: 20%;
@@ -52,13 +49,8 @@ input[type="color"]:focus,
 }
 
 
-.modal {
-    height: 100vh!important;
-}
-
-.modal-content {
-    min-width: 860px;
-    width: fit-content;
+.modal-dialog {
+    min-width: 50%;
 }
 
 .popover{

@@ -327,7 +327,7 @@ export class ConfirmCollectDialog extends React.Component {
       <Modal
         dialogClassName="collect-confirm-dialog"
         show={this.props.show}
-        fullscreen
+        // fullscreen
         onHide={this.onHide}
       >
         <Modal.Header>

@@ -69,7 +69,12 @@ class AddSample extends React.Component {
 
   render() {
     return (
-      <Modal show={this.props.show} onHide={this.handleCancel} style={{ minWidth: '795px'}}>
+      <Modal
+        // fullscreen
+        show={this.props.show}
+        onHide={this.handleCancel}
+        // style={{ width: '60%', height: '20%'}}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Add Sample Manually</Modal.Title>
         </Modal.Header>
