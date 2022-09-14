@@ -82,12 +82,7 @@
   position: relative;
   bottom: 2px;
   margin-right: 10px;
-}
-
-.new-samples-grid-context-menu-icon-cell{
-  position: relative;
-  bottom: 2px;
-  margin-right: 10px;
+  cursor: pointer;
 }
 
 .new-samples-grid-li {
