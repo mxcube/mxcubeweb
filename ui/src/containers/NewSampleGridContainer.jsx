@@ -880,7 +880,7 @@ class NewSampleGridContainer extends React.Component {
     return (
       <>
         <Dropdown.Divider/>
-        <Dropdown.Item disabled> <span> <i className="fas fa-plus" /> Add </span></Dropdown.Item>
+        <Dropdown.Header><i className="fas fa-plus" /> Add </Dropdown.Header>
         <Dropdown.Item onClick={this.props.showDataCollectionForm}>
           Data collection
         </Dropdown.Item>
@@ -889,7 +889,7 @@ class NewSampleGridContainer extends React.Component {
         </Dropdown.Item>
         {this.workflowMenuOptions()}
         <Dropdown.Divider />
-        <Dropdown.Item disabled><span><MdRemove glyph="minus" /> Remove </span></Dropdown.Item>
+        <Dropdown.Header><MdRemove glyph="minus" /> Remove</Dropdown.Header>
         <Dropdown.Item onClick={this.props.removeSelectedSamples}>
           Dequeue Samples
         </Dropdown.Item>
@@ -948,7 +948,7 @@ class NewSampleGridContainer extends React.Component {
     else if(id == 'new-samples-grid-context-menu-cell') {
       menu = (
         <>
-          <Dropdown.Item disabled><span> Cell Actions </span></Dropdown.Item>
+          <Dropdown.Header>Cell Actions</Dropdown.Header>
           {this.taskContextMenuItems()}
         </>
       )
@@ -956,7 +956,7 @@ class NewSampleGridContainer extends React.Component {
     else if(id == 'new-samples-grid-context-menu-puck') {
       menu = (
         <>
-          <Dropdown.Item disabled><span> Puck Actions </span></Dropdown.Item>
+          <Dropdown.Header>Puck Actions</Dropdown.Header>
           {this.taskContextMenuItems()}
         </>
       )
@@ -969,7 +969,7 @@ class NewSampleGridContainer extends React.Component {
     this.sampleItems = this.getSamplesList(this.props);
 
     return (
-      <>
+      <div>
         {this.props.contextMenu.show ?
           (
             <MXContextMenu
@@ -1023,7 +1023,7 @@ class NewSampleGridContainer extends React.Component {
             </Row>
           )
         }
-      </>
+      </div>
     );
   }
 }
