@@ -29,8 +29,15 @@ export default class MXContextMenu extends React.Component {
   showContextMenu(x, y) {
     const contextMenu = document.querySelector('#generic-contextMenu');
     if (contextMenu) {
+      const windowWidth = document.body.offsetWidth;
+      const menuEndPos = x + contextMenu.offsetWidth;
+
+      let posxoffset = 10;
+      if (menuEndPos > windowWidth) {
+        posxoffset = contextMenu.offsetWidth;
+      }
       contextMenu.style.top = `${y - 70}px`;
-      contextMenu.style.left = `${x -10}px`;
+      contextMenu.style.left = `${x - posxoffset}px`;
       contextMenu.style.display = 'block';
       contextMenu.style.transform =  "rotateY(0deg) rotateX(0deg)";
     }
