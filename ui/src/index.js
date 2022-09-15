@@ -1,6 +1,6 @@
 import 'bootstrap/dist/css/bootstrap.css';
 
-import 'react-bootstrap-table/css/react-bootstrap-table.css';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import './main.css';
 import React from 'react';
 import ReactDOM from 'react-dom';

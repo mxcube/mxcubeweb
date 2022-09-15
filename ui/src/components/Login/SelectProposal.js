@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
 import { Modal, ButtonToolbar, Button } from 'react-bootstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import BootstrapTable from 'react-bootstrap-table-next';
 
 class SelectProposal extends React.Component {
   constructor(props) {
@@ -39,6 +39,15 @@ class SelectProposal extends React.Component {
       Number: prop.code + prop.number,
       Person: prop.person,
     }));
+    const columns = [{
+      dataField: 'Number',
+      text: 'Proposal Number',
+      sort: true
+    }, {
+      dataField: 'Person',
+      text: 'Person',
+      sort: true
+    }];
 
     return (
       <Modal
@@ -52,16 +61,12 @@ class SelectProposal extends React.Component {
         <Modal.Body>
           <div>
             <BootstrapTable
+              keyField="Number"
               data={proposals}
               bordered={false}
               selectRow={selectRowProp}
+              columns={ columns }
             >
-              <TableHeaderColumn dataField="Number" isKey editable={false}>
-                Proposal Number
-              </TableHeaderColumn>
-              <TableHeaderColumn dataField="Person" editable={false}>
-                Person
-              </TableHeaderColumn>
             </BootstrapTable>
           </div>
         </Modal.Body>
