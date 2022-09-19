@@ -274,7 +274,7 @@ export class ConfirmCollectDialog extends React.Component {
     if (summary.numTasks > 0) {
       table = (
         <div className="scroll">
-        <Table striped bordered hover>
+        <Table responsive striped bordered hover>
           <thead id="table-head">
             <tr>
               <th>Type</th>
