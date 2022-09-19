@@ -271,7 +271,7 @@ class NewSampleGridContainer extends React.Component {
   /**
   * Select Items in a cell for collect
   */
-  pickAllCellItemsOnClick (cell, puck, pickSample) {
+  pickAllCellItemsOnClick (cell, pickSample) {
     const sampleItem = []
     this.props.order.forEach(key => {
       const sample = this.props.sampleList[key];
@@ -293,7 +293,7 @@ class NewSampleGridContainer extends React.Component {
   /**
    * Select Items in a puck for collect or select
   */
-  pickAllPuckItemsOnClick(cell, puck, pickSample) {
+  pickAllPuckItemsOnClick(cell, pickSample, puck) {
     const sampleItem = []
     this.props.order.forEach(key => {
       const sample = this.props.sampleList[key];
@@ -427,7 +427,7 @@ class NewSampleGridContainer extends React.Component {
           variant="content"
           disabled={this.props.current && this.props.picked}
           className="pick-puck-checkbox-button"
-          onClick={() => onClickFunc(cell, puck, pickSample)}
+          onClick={() => onClickFunc(cell, pickSample, puck, )}
         >
           <i>{icon}</i>
         </Button>
@@ -478,7 +478,8 @@ class NewSampleGridContainer extends React.Component {
       const picked= props.inQueue(sample.sampleID) && sample.checked
 
       const classes = classNames('new-samples-grid-li',
-      { 'new-samples-grid-item-selected': props.selected[sample.sampleID],
+      { 
+        'new-samples-grid-item-selected': props.selected[sample.sampleID],
         'new-samples-grid-item-to-be-collected': picked,
         'new-samples-grid-item-collected': isCollected(sample) });
 
@@ -562,88 +563,88 @@ class NewSampleGridContainer extends React.Component {
     if (sc.children && props.order.length > 0) {
       Object.values(sc.children).map((cell) => {
         if (this.props.filterOptions.cellFilter.toLowerCase() === cell.name
-          || this.props.filterOptions.cellFilter.toLowerCase() === ''){
+          || this.props.filterOptions.cellFilter.toLowerCase() === '') {
           const cellMenuID = 'new-samples-grid-context-menu-cell'
 
           // we check in among for each puck , if there are samples 
           // we won't display the cell / table  if all puck in the cell are empty 
           cell.children.forEach((puck)=> {
             const indxP = cell.children.indexOf(puck);
-            sampleItemList.push(this.getSampleItems(props, cell.name, indxP + 1))
+            sampleItemList.push(this.getSampleItems(props, cell.name, indxP + 1));
           });
 
-        if (sampleItemList.find(sil => sil.length > 0)) {   
-          tableCell.push(
-            <div key={`cell-${cell.name}`} className="div-sample-items-collapsible">
-              <div className='sample-items-collapsible-header-actions'>
-                {this.itemsControls(this.getSampleListFilteredByCell(cell.name))}
-                <span
-                  title='Cell Options'
-                  className='new-samples-grid-context-menu-icon'
-                  onClick={(e) => {this.displayPuckCellContextMenu(e, cellMenuID, cell.name, null)}}
+          if (sampleItemList.find(sil => sil.length > 0)) {   
+            tableCell.push(
+              <div key={`cell-${cell.name}`} className="div-sample-items-collapsible">
+                <div className='sample-items-collapsible-header-actions'>
+                  {this.itemsControls(this.getSampleListFilteredByCell(cell.name))}
+                  <span
+                    title='Cell Options'
+                    className='new-samples-grid-context-menu-icon'
+                    onClick={(e) => {this.displayPuckCellContextMenu(e, cellMenuID, cell.name, null)}}
+                  >
+                    <BiMenu size='1.5em'/>
+                  </span>
+                </div>
+                <Collapsible transitionTime={300}
+                  className='sample-items-collapsible'
+                  openedClassName="sample-items-collapsible"
+                  open
+                  trigger={this.getCollapsibleHeaderClose(cell.name, 'collapsible-arrow-c')}
+                  triggerWhenOpen={this.getCollapsibleHeaderOpen(cell.name, 'collapsible-arrow-c')}
                 >
-                  <BiMenu size='1.5em'/>
-                </span>
-              </div>
-              <Collapsible transitionTime={300}
-                className='sample-items-collapsible'
-                openedClassName="sample-items-collapsible"
-                open
-                trigger={this.getCollapsibleHeaderClose(cell.name, 'collapsible-arrow-c')}
-                triggerWhenOpen={this.getCollapsibleHeaderOpen(cell.name, 'collapsible-arrow-c')}
-              >
-                <Table bordered responsive size="sm" className='sample-items-table'>
-                  <thead>
-                    <tr>
-                      {cell.children.map((puck, idxth)=> {
-                        if(this.getSampleItems(props, cell.name, idxth+1).length > 0) {
-                          const puckMenuID = 'new-samples-grid-context-menu-puck'
-                          return(
-                            <th key={`th-${puck.name}`} className='sample-items-table-row-header-th'>
-                               <span style={{ marginLeft: '5px', marginTop: '4px', float:'left'}}>
-                                Puck {idxth+1}
-                                {puck.id != '' ?
-                                  <div className='sample-items-puck-code'>
-                                     Code : {puck.id}
-                                  </div>
-                                  :
-                                  null
-                                }
-                              </span>
-                              <span style={{ marginTop: '15px', marginRight: '2px'}}>
-                                {this.itemsControls(this.getSampleListFilteredByPuck(cell.name, idxth+1))}
-                              </span>
-                              <span
-                                title='Puck Options'
-                                className='new-samples-grid-context-menu-icon'
-                                onClick={(e) => {this.displayPuckCellContextMenu(e, puckMenuID, cell.name, idxth+1)}}
-                              >
-                                <BiMenu size='1.5em'/>
-                              </span>
-                            </th>
-                          )
-                        }
-                        return null;
-                    })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      {cell.children.map((puck, idxtd)=> {
-                        if(this.getSampleItems(props, cell.name, idxtd+1).length > 0) {
-                          return(
-                            <td key={`td-${puck.name}`} className={`sample-items-table-column-body custom-table-border-${idxtd+1}`}>
-                              {this.getSampleItems(props, cell.name, idxtd+1)}
-                            </td>
-                          )
-                        }
-                        return null
+                  <Table bordered responsive size="sm" className='sample-items-table'>
+                    <thead>
+                      <tr>
+                        {cell.children.map((puck, idxth)=> {
+                          if(this.getSampleItems(props, cell.name, idxth+1).length > 0) {
+                            const puckMenuID = 'new-samples-grid-context-menu-puck'
+                            return(
+                              <th key={`th-${puck.name}`} className='sample-items-table-row-header-th'>
+                                <span style={{ marginLeft: '5px', marginTop: '4px', float:'left'}}>
+                                  Puck {idxth+1}
+                                  {puck.id != '' ?
+                                    <div className='sample-items-puck-code'>
+                                      Code : {puck.id}
+                                    </div>
+                                    :
+                                    null
+                                  }
+                                </span>
+                                <span style={{ marginTop: '15px', marginRight: '2px'}}>
+                                  {this.itemsControls(this.getSampleListFilteredByPuck(cell.name, idxth+1))}
+                                </span>
+                                <span
+                                  title='Puck Options'
+                                  className='new-samples-grid-context-menu-icon'
+                                  onClick={(e) => {this.displayPuckCellContextMenu(e, puckMenuID, cell.name, idxth+1)}}
+                                >
+                                  <BiMenu size='1.5em'/>
+                                </span>
+                              </th>
+                            )
+                          }
+                          return null;
                       })}
-                    </tr>
-                  </tbody>
-                </Table>
-              </Collapsible>
-            </div>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        {cell.children.map((puck, idxtd)=> {
+                          if(this.getSampleItems(props, cell.name, idxtd+1).length > 0) {
+                            return(
+                              <td key={`td-${puck.name}`} className={`sample-items-table-column-body custom-table-border-${idxtd+1}`}>
+                                {this.getSampleItems(props, cell.name, idxtd+1)}
+                              </td>
+                            )
+                          }
+                          return null
+                        })}
+                      </tr>
+                    </tbody>
+                  </Table>
+                </Collapsible>
+              </div>
             );
           }
           // after each check we empty the filter List 
@@ -880,7 +881,7 @@ class NewSampleGridContainer extends React.Component {
     return (
       <>
         <Dropdown.Divider/>
-        <Dropdown.Item disabled> <span> <i className="fas fa-plus" /> Add </span></Dropdown.Item>
+        <Dropdown.Header><i className="fas fa-plus" /> Add </Dropdown.Header>
         <Dropdown.Item onClick={this.props.showDataCollectionForm}>
           Data collection
         </Dropdown.Item>
@@ -889,7 +890,7 @@ class NewSampleGridContainer extends React.Component {
         </Dropdown.Item>
         {this.workflowMenuOptions()}
         <Dropdown.Divider />
-        <Dropdown.Item disabled><span><MdRemove glyph="minus" /> Remove </span></Dropdown.Item>
+        <Dropdown.Header><MdRemove glyph="minus" /> Remove</Dropdown.Header>
         <Dropdown.Item onClick={this.props.removeSelectedSamples}>
           Dequeue Samples
         </Dropdown.Item>
@@ -948,7 +949,7 @@ class NewSampleGridContainer extends React.Component {
     else if(id == 'new-samples-grid-context-menu-cell') {
       menu = (
         <>
-          <Dropdown.Item disabled><span> Cell Actions </span></Dropdown.Item>
+          <Dropdown.Header>Cell Actions</Dropdown.Header>
           {this.taskContextMenuItems()}
         </>
       )
@@ -956,7 +957,7 @@ class NewSampleGridContainer extends React.Component {
     else if(id == 'new-samples-grid-context-menu-puck') {
       menu = (
         <>
-          <Dropdown.Item disabled><span> Puck Actions </span></Dropdown.Item>
+          <Dropdown.Header>Puck Actions</Dropdown.Header>
           {this.taskContextMenuItems()}
         </>
       )
@@ -969,7 +970,7 @@ class NewSampleGridContainer extends React.Component {
     this.sampleItems = this.getSamplesList(this.props);
 
     return (
-      <>
+      <div>
         {this.props.contextMenu.show ?
           (
             <MXContextMenu
@@ -1023,7 +1024,7 @@ class NewSampleGridContainer extends React.Component {
             </Row>
           )
         }
-      </>
+      </div>
     );
   }
 }
