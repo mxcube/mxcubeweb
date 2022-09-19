@@ -297,7 +297,6 @@ export default (state = INITIAL_STATE, action) => {
     }
     // Change view mode 
     case 'SET_VIEW_MODE': {
-      // debugger;
       const viewMode = { ...state.viewMode};
       viewMode['mode'] = action.mode;
       return { ...state,  viewMode };
