@@ -89,11 +89,6 @@ class SampleGridViewContainer extends React.Component {
     window.addEventListener('resize', this.onResize, false);
   }
 
-
-  // componentDidUpdate() {
-  // }
-
-
   componentWillUnmount() {
     window.removeEventListener('resize', this.onResize);
   }
@@ -118,7 +113,7 @@ class SampleGridViewContainer extends React.Component {
   setViewMode(mode) {
     if (mode == 'Flex Grid' ) {
       this.props.filter({cellFilter: "1"});
-    }else {
+    } else {
       this.props.filter({cellFilter: ""});
     }
     this.props.setViewMode(mode)
@@ -270,7 +265,6 @@ class SampleGridViewContainer extends React.Component {
     };
 
     console.log(optionMap[e.target.id]);
-    debugger;
 
     this.props.filter(optionMap[e.target.id]);
   }
@@ -489,97 +483,76 @@ class SampleGridViewContainer extends React.Component {
         <div style={{ padding: '1em 1em 0 1em', width: '350px' }}>
           <b>Filter <i className="fas fa-filter" /> </b>
           <hr />
-          <Row>
-            <Col xs={12}>
-              <Row>
-                <Col xs={12}>
-                  <Form.Group as={Row} size="small" style={{ float: 'none', marginTop: '0.5em' }}>
-                      <Form.Label column sm="3"> Cell &nbsp;</Form.Label>
-                      <Form.Label column sm="1"> : &nbsp;</Form.Label>
-                      <Col sm="6">
-                        <Form.Select
-                          style={{ float: 'none' }}
-                          id="cellFilter"
-                          defaultValue={this.getFilterOptionValue('cellFilter')}
-                          onChange={this.sampleGridFilter}
-                        >
-                          {this.getCellFilterOptions()}
-                        </Form.Select>
-                      </Col>
-                  </Form.Group>
-                </Col>
-              </Row>
+          <Form.Group as={Row} size="small">
+              <Form.Label column sm="3"> Cell &nbsp;</Form.Label>
+              <Form.Label column sm="1"> : &nbsp;</Form.Label>
+              <Col sm="6">
+                <Form.Select
+                  id="cellFilter"
+                  value={this.getFilterOptionValue('cellFilter')}
+                  onChange={this.sampleGridFilter}
+                >
+                  {this.getCellFilterOptions()}
+                </Form.Select>
+              </Col>
+          </Form.Group>
+          <Row className='mb-2'>
+            <Col xs={6}>
+              <Form.Check
+                type="checkbox"
+                id="inQueue"
+                inline
+                checked={this.getFilterOptionValue('inQueue')}
+                onChange={this.sampleGridFilter}
+                label="In Queue"
+              />
+            </Col>
+            <Col xs={6}>
+              <Form.Check
+                type="checkbox"
+                inline
+                id="notInQueue"
+                checked={this.getFilterOptionValue('notInQueue')}
+                onChange={this.sampleGridFilter}
+                label="Not in Queue"
+              />
             </Col>
           </Row>
           <Row className='mb-2'>
-            <Col xs={12}>
-              <Row>
-                <Col xs={6}>
-                  <Form.Check
-                    type="checkbox"
-                    id="inQueue"
-                    inline
-                    checked={this.getFilterOptionValue('inQueue')}
-                    onChange={this.sampleGridFilter}
-                    label="In Queue"
-                  />
-                </Col>
-                <Col xs={6}>
-                  <Form.Check
-                    type="checkbox"
-                    inline
-                    id="notInQueue"
-                    checked={this.getFilterOptionValue('notInQueue')}
-                    onChange={this.sampleGridFilter}
-                    label="Not in Queue"
-                  />
-                </Col>
-              </Row>
+            <Col xs={6}>
+              <Form.Check
+                type="checkbox"
+                inline
+                id="collected"
+                checked={this.getFilterOptionValue('collected')}
+                onChange={this.sampleGridFilter}
+                label="Collected"
+              />
+            </Col>
+            <Col xs={6}>
+              <Form.Check
+                type="checkbox"
+                inline
+                id="notCollected"
+                checked={this.getFilterOptionValue('notCollected')}
+                onChange={this.sampleGridFilter}
+                label="Not Collected"
+              />
             </Col>
           </Row>
           <Row className='mb-2'>
-            <Col xs={12}>
-              <Row>
-                <Col xs={6}>
-                  <Form.Check
-                    type="checkbox"
-                    inline
-                    id="collected"
-                    checked={this.getFilterOptionValue('collected')}
-                    onChange={this.sampleGridFilter}
-                    label="Collected"
-                  />
-                </Col>
-                <Col xs={6}>
-                  <Form.Check
-                    type="checkbox"
-                    inline
-                    id="notCollected"
-                    checked={this.getFilterOptionValue('notCollected')}
-                    onChange={this.sampleGridFilter}
-                    label="Not Collected"
-                  />
-                </Col>
-              </Row>
+            <Col xs={9}>
+              <Form.Check
+                type="checkbox"
+                inline
+                id="limsSamples"
+                checked={this.getFilterOptionValue('limsSamples')}
+                onChange={this.sampleGridFilter}
+                label="ISPyB Samples"
+              />
             </Col>
-          </Row>
-          <Row className='mb-2'>
-            <Col xs={12}>
-              <Row>
-                <Col xs={9}>
-                  <Form.Check
-                    type="checkbox"
-                    inline
-                    id="limsSamples"
-                    checked={this.getFilterOptionValue('limsSamples')}
-                    onChange={this.sampleGridFilter}
-                    label="ISPyB Samples"
-                  />
-                </Col>
-                <Col xs={3}>
-                  <span />
-                </Col>
-              </Row>
+            <Col xs={3}>
+              <span />
             </Col>
           </Row>
           <Row className="mt-3 justify-content-end">
