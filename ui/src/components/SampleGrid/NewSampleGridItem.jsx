@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, ListGroup, OverlayTrigger, Tooltip, Popover, Badge, Button } from 'react-bootstrap';
+import { ListGroup, OverlayTrigger, Tooltip, Popover, Badge, Button } from 'react-bootstrap';
 import classNames from 'classnames';
 
 import {CopyToClipboard} from 'react-copy-to-clipboard';
@@ -177,7 +177,6 @@ export class SampleGridItem extends React.Component {
   render() {
     const classes = classNames('new-samples-grid-item',
       { 
-        // 'new-samples-grid-item-selected': this.props.selected,
         'new-samples-grid-item-to-be-collected': this.props.picked,
         'new-samples-grid-item-collected': isCollected(this.props.sampleData) });
 
