@@ -2,7 +2,7 @@ import React from 'react';
 import { Col, OverlayTrigger, Popover, Badge } from 'react-bootstrap';
 import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
-import './SampleGrid.css';
+import './SampleGridTable.css';
 import { TASK_COLLECTED,
   TASK_COLLECT_FAILED,
   TASK_COLLECT_WARNING,
@@ -216,20 +216,6 @@ export class TaskItem extends React.Component {
     return variant;
   }
 
-  popoverPosition() {
-    const viewportHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
-    let result = 'bottom';
-    if (this.refs.sampleItem) {
-      if (Number.parseInt(this.refs.sampleItem.style.top, 10) <= (viewportHeight / 2)) {
-        result = 'bottom';
-      } else {
-        result = 'top';
-      }
-    }
-
-    return result;
-  }
-
 
   taskItemOnClick() {
     const task = this.props.taskData;
@@ -245,31 +231,28 @@ export class TaskItem extends React.Component {
 
 
   render() {
-    const style = { display: 'inline-block', margin: '3px', cursor: 'pointer', fontSize: '0.7em' };
+    const style = { display: 'inline-block', margin: '0px', cursor: 'pointer', fontSize: '0.7em' };
     const task = this.props.taskData;
 
     return (
-      <Col sm={4} key={this.props.taskIndex} className=" ms-1 sample-grid-task-item">
+      <div sm={2} key={this.props.taskIndex} className=" ms-1 sample-grid-task-item">
         <OverlayTrigger
-          trigger={['hover']}
           rootClose="true"
-          ref="taskSummaryPopoverTrigger"
-          placement={this.popoverPosition()}
+          placement='auto'
           overlay={(
             <Popover
               className='p-2'
               id="taskSummaryPopover"
-              style={{ minWidth: '700px',}}
               title={(<b>{this.title()}</b>)}
             >
               <LimsResultSummary taskData={this.props.taskData} scale="0.5" />
             </Popover>) }
         >
           <Badge
-            variant={this.stateClass()}
+            bg={this.stateClass()}
             style={style}
             onClick={this.taskItemOnClick}
-            className='p-1'
+            className='p-1 me-2'
           >
             {this.tagName()}
             {
@@ -279,7 +262,7 @@ export class TaskItem extends React.Component {
             }
           </Badge>
         </OverlayTrigger>
-      </Col>
+      </div>
     );
   }
 }

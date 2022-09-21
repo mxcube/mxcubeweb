@@ -21,7 +21,7 @@ const INITIAL_STATE = {
   moving: {},
   viewMode: {
     mode: 'Grid Table',
-    options: ['Grid Table', 'Flex Grid']
+    options: ['Grid Table', 'Flex Grid', 'Spring Grid']
   },
   filterOptions: {
     text: '',
