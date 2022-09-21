@@ -114,3 +114,7 @@ cursor: pointer;
     background: transparent;
     color: #000000;
   }
+
+  .nowrap-style {
+    white-space: nowrap;
+  }

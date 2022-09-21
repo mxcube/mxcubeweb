@@ -636,12 +636,13 @@ class SampleListViewContainer extends React.Component {
               <Col sm={4} className='d-flex'>
                 <SplitButton
                   variant='outline-secondary'
+                  className='nowrap-style'
                   id="split-button-sample-changer-selection"
                   disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                   title="Get samples from SC"
                   onClick={this.props.getSamples}
                 >
-                  <Dropdown.Item eventKey="2" onClick={this.showAddSampleForm}>
+                  <Dropdown.Item className='nowrap-style' eventKey="2" onClick={this.showAddSampleForm}>
                     Create new sample
                   </Dropdown.Item>
                 </SplitButton>
@@ -653,7 +654,7 @@ class SampleListViewContainer extends React.Component {
                       Synchronise sample list with ISPyB
                     </Tooltip>)}
                 >
-                  <Button variant='outline-secondary' onClick={this.syncSamples}>
+                  <Button className='nowrap-style' variant='outline-secondary' onClick={this.syncSamples}>
                     <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />
                     ISPyB
                   </Button>
@@ -667,6 +668,7 @@ class SampleListViewContainer extends React.Component {
                     </Tooltip>)}
                 >
                   <Button
+                    className='nowrap-style'
                     variant='outline-secondary'
                     onClick={this.props.confirmClearQueueShow}
                     disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
@@ -719,7 +721,7 @@ class SampleListViewContainer extends React.Component {
                   variant='outline-secondary'
                   disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                   onClick={this.addSelectedSamplesToQueue}
-                  title={<span ><i className="fas fa-plus" /> Add to Queue</span>}
+                  title={<span className='nowrap-style' ><i className="fas fa-plus" /> Add to Queue</span>}
                 >
                   <Dropdown.Item eventKey="2" onClick={this.showDataCollectionForm}>
                     Add Data collection
