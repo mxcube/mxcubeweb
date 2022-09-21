@@ -122,11 +122,12 @@ button[disabled] {
 }
 
 .samples-grid-item-tasks {
-  display: flex;
+  display: inline-grid;
   width: 185px;
-  height: 55px;
+  height: 50px;
   overflow-y: auto;
   overflow-x: hidden;
+  grid-template-columns: repeat(4,1fr);
 }
 
 .sample-grid-task-item {
