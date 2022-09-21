@@ -11,7 +11,6 @@ import {
   Row, Col, Form,
   Button,
   SplitButton,
-  ButtonToolbar,
   DropdownButton,
   InputGroup,
   Dropdown,
@@ -46,16 +45,25 @@ import { showConfirmClearQueueDialog } from '../actions/general';
 
 import { showTaskForm } from '../actions/taskForm';
 
-import NewSampleGridContainer from './NewSampleGridContainer';
+import SampleGridTableContainer from './SampleGridTableContainer';
+// import SampleGridViewContainer from './SampleGridViewContainer';
+
+import SampleGridContainer from './SampleGridContainer';
+import { SAMPLE_ITEM_WIDTH,
+  SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
+
 import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog';
 import QueueSettings from './QueueSettings.jsx';
 
-class SampleGridViewContainer extends React.Component {
+import '../components/SampleGrid/SampleGridTable.css';
+
+class SampleListViewContainer extends React.Component {
 
   constructor(props) {
     super(props);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onResize = this.onResize.bind(this);
+    this.resizeGridContainer = this.resizeGridContainer.bind(this);
     this.syncSamples = this.syncSamples.bind(this);
     this.sampleGridFilter = this.sampleGridFilter.bind(this);
     this.getFilterOptionValue = this.getFilterOptionValue.bind(this);
@@ -87,6 +95,11 @@ class SampleGridViewContainer extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.onResize, false);
+    this.resizeGridContainer();
+  }
+
+  componentDidUpdate() {
+    this.resizeGridContainer();
   }
 
   componentWillUnmount() {
@@ -102,7 +115,6 @@ class SampleGridViewContainer extends React.Component {
     if(this.props.contextMenu.show) {
       this.props.showGenericContextMenu(false, null, 0, 0)
     }
-    e.preventDefault();
   }
 
 
@@ -118,6 +130,40 @@ class SampleGridViewContainer extends React.Component {
     }
     this.props.setViewMode(mode)
   }
+
+    /**
+   * Calculates the grid width
+   *
+   * return {number} width in pixels
+   */
+     calcGridWidth() {
+      // We know that the side menu is fixed width 65px and that the padding from
+      // bootstrap is 15px so content starts at 80px;
+  
+      // Get the viewportWidth
+      const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+  
+      // The full content width for this media (not forgeting the padding to the right 15px)
+      const fullContentWidth = viewportWidth - 100;
+  
+      // Each sample item is 190px wide, calculate maximum number of items for each row
+      const numCols = Math.floor(fullContentWidth / SAMPLE_ITEM_WIDTH);
+  
+      // Caculating the actual grid size, with space between sample items;
+      const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE) + 10;
+  
+      return [actualGridWidth, numCols];
+    }
+  
+  
+    /**
+     * Resizes the grid container element (with id smapleGridContainer)
+     */
+    resizeGridContainer() {
+      const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+      const width = Math.min(viewportWidth, this.calcGridWidth()[0] || 0);
+      document.querySelector('#sampleGridContainer').style.width = `${width - 38}px`;
+    }
 
 
   /**
@@ -448,8 +494,7 @@ class SampleGridViewContainer extends React.Component {
 
     let button = (
       <Button
-        className="btn btn-success"
-        variant=''
+        variant='success'
         onClick={this.startCollect}
         disabled={this.isCollectDisabled()}
         style={{ whiteSpace: 'nowrap'}}
@@ -461,8 +506,7 @@ class SampleGridViewContainer extends React.Component {
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       button = (
         <Button
-          variant=''
-          className="btn btn-danger"
+          variant='danger'
           onClick={this.props.sendStopQueue}
           style={{ marginLeft: '1em' }}
         >
@@ -478,23 +522,23 @@ class SampleGridViewContainer extends React.Component {
     const innerSearchIcon = (
       <DropdownButton
         variant='outline-secondary'
-        title="" id="filter-drop-down"
+        id="filter-drop-down"
       >
         <div style={{ padding: '1em 1em 0 1em', width: '350px' }}>
           <b>Filter <i className="fas fa-filter" /> </b>
           <hr />
           <Form.Group as={Row} size="small">
-              <Form.Label column sm="3"> Cell &nbsp;</Form.Label>
-              <Form.Label column sm="1"> : &nbsp;</Form.Label>
-              <Col sm="6">
-                <Form.Select
-                  id="cellFilter"
-                  value={this.getFilterOptionValue('cellFilter')}
-                  onChange={this.sampleGridFilter}
-                >
-                  {this.getCellFilterOptions()}
-                </Form.Select>
-              </Col>
+            <Form.Label column sm="3"> Cell &nbsp;</Form.Label>
+            <Form.Label column sm="1"> : &nbsp;</Form.Label>
+            <Col sm="6">
+              <Form.Select
+                id="cellFilter"
+                value={this.getFilterOptionValue('cellFilter')}
+                onChange={this.sampleGridFilter}
+              >
+                {this.getCellFilterOptions()}
+              </Form.Select>
+            </Col>
           </Form.Group>
           <Row className='mb-2'>
             <Col xs={6}>
@@ -571,7 +615,7 @@ class SampleGridViewContainer extends React.Component {
     );
 
     return (
-      <Container fluid id="sampleGridContainer" className="new-samples-grid-container mt-4">
+      <Container fluid id="sampleGridContainer" className="samples-grid-table-container mt-4">
         <ConfirmActionDialog
           title="Clear sample grid ?"
           message="This will remove all samples (and collections) from the grid,
@@ -586,56 +630,70 @@ class SampleGridViewContainer extends React.Component {
           </div>
           : null
         }
-        <Card className='new-samples-grid-card'>
-          <Card.Header onMouseDown={this.onMouseDown} className='new-samples-grid-card-header'>
-            <Row className="new-samples-grid-row-header">
+        <Card className='samples-grid-table-card'>
+          <Card.Header onMouseDown={this.onMouseDown} className='samples-grid-table-card-header'>
+            <Row className="samples-grid-table-row-header">
               <Col sm={4} className='d-flex'>
-                <Form>
-                  <SplitButton
+                <SplitButton
+                  variant='outline-secondary'
+                  id="split-button-sample-changer-selection"
+                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                  title="Get samples from SC"
+                  onClick={this.props.getSamples}
+                >
+                  <Dropdown.Item eventKey="2" onClick={this.showAddSampleForm}>
+                    Create new sample
+                  </Dropdown.Item>
+                </SplitButton>
+                <span style={{ marginLeft: '1.5em' }} />
+                <OverlayTrigger
+                  placement="bottom"
+                  overlay={(
+                    <Tooltip id="select-samples">
+                      Synchronise sample list with ISPyB
+                    </Tooltip>)}
+                >
+                  <Button variant='outline-secondary' onClick={this.syncSamples}>
+                    <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />
+                    ISPyB
+                  </Button>
+                </OverlayTrigger>
+                <span style={{ marginLeft: '1.5em' }} />
+                <OverlayTrigger
+                  placement="bottom"
+                  overlay={(
+                    <Tooltip id="select-samples">
+                      Remove all samples from sample list and queue
+                    </Tooltip>)}
+                >
+                  <Button
                     variant='outline-secondary'
-                    id="split-button-sample-changer-selection"
+                    onClick={this.props.confirmClearQueueShow}
                     disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                    title="Get samples from SC"
-                    onClick={this.props.getSamples}
                   >
-                    <Dropdown.Item eventKey="2" onClick={this.showAddSampleForm}>
-                      Create new sample
-                    </Dropdown.Item>
-                  </SplitButton>
-                  <span style={{ marginLeft: '1em' }} />
-                  <OverlayTrigger
-                    placement="bottom"
-                    overlay={(
-                      <Tooltip id="select-samples">
-                        Synchronise sample list with ISPyB
-                      </Tooltip>)}
-                  >
-                    <Button variant='outline-secondary' onClick={this.syncSamples}>
-                      <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />
-                      ISPyB
-                    </Button>
-                  </OverlayTrigger>
-                  <span style={{ marginLeft: '1em' }} />
-                  <OverlayTrigger
-                    placement="bottom"
-                    overlay={(
-                      <Tooltip id="select-samples">
-                        Remove all samples from sample list and queue
-                      </Tooltip>)}
-                  >
-                    <Button
-                      variant='outline-secondary'
-                      onClick={this.props.confirmClearQueueShow}
-                      disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                    >
-                      <i className="fas fa-minus" style={{ marginRight: '0.5em' }} />
-                      Clear sample list
-                    </Button>
-                  </OverlayTrigger>
-                </Form>
+                    <i className="fas fa-minus" style={{ marginRight: '0.5em' }} />
+                    Clear sample list
+                  </Button>
+                </OverlayTrigger>
+                <span style={{ marginLeft: '1.5em' }} />
+                <Dropdown>
+                  <Dropdown.Toggle variant="outline-secondary" id="dropdown-basic">
+                    <MdGridView size='1em' /> View Mode
+                  </Dropdown.Toggle>
+                  <Dropdown.Menu>
+                    {this.props.viewMode.options.map( (option) => (
+                      <Dropdown.Item
+                        key={option}
+                        onClick={() => this.setViewMode(option)}>
+                        {option}
+                      </Dropdown.Item>
+                    )
+                    )}
+                  </Dropdown.Menu>
+                </Dropdown>
               </Col>
-              <Col sm={5} className='d-flex me-auto'>
-              <span style={{ marginLeft: '2em' }} />
+              <Col md={{ span: 3, offset: 1 }} className='d-flex me-auto'>
+                <span style={{ marginLeft: '2em' }} />
                 <Form>
                   <Form.Group  as={Row} className="d-flex">
                     <Form.Label style={{ whiteSpace: 'nowrap', marginRight: '0px'}} className="d-flex" column sm="2">Filter :</Form.Label>
@@ -654,53 +712,51 @@ class SampleGridViewContainer extends React.Component {
                     </Col>
                   </Form.Group>
                 </Form>
-                <span style={{ marginLeft: '1em' }} />
-                <Form>
-                  <SplitButton
-                    id="pipeline-mode-dropdown"
-                    variant='outline-secondary'
-                    disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                    onClick={this.addSelectedSamplesToQueue}
-                    title={<span ><i className="fas fa-plus" /> Add to Queue</span>}
-                  >
-                    <Dropdown.Item eventKey="2" onClick={this.showDataCollectionForm}>
-                      Add Data collection
-                        </Dropdown.Item>
-                    <Dropdown.Item eventKey="3" onClick={this.showCharacterisationForm}>
-                      Add Characterisation
-                        </Dropdown.Item>
-                  </SplitButton>
-                </Form>
               </Col>
               <Col className='d-flex justify-content-end' sm={3}>
-                <Dropdown>
-                  <Dropdown.Toggle variant="outline-secondary" id="dropdown-basic">
-                    <MdGridView size='1em' /> View Mode
-                  </Dropdown.Toggle>
-                  <Dropdown.Menu>
-                    {this.props.viewMode.options.map( (option) => (
-                      <Dropdown.Item
-                        key={option}
-                        onClick={() => this.setViewMode(option)}>
-                        {option}
+                <SplitButton
+                  id="pipeline-mode-dropdown"
+                  variant='outline-secondary'
+                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
+                  onClick={this.addSelectedSamplesToQueue}
+                  title={<span ><i className="fas fa-plus" /> Add to Queue</span>}
+                >
+                  <Dropdown.Item eventKey="2" onClick={this.showDataCollectionForm}>
+                    Add Data collection
                       </Dropdown.Item>
-                    )
-                    )}
-                  </Dropdown.Menu>
-                </Dropdown>
+                  <Dropdown.Item eventKey="3" onClick={this.showCharacterisationForm}>
+                    Add Characterisation
+                      </Dropdown.Item>
+                </SplitButton>
                 <span style={{ marginLeft: '1em' }} />
-                <ButtonToolbar className="justify-content-end">
-                  <QueueSettings />
-                  <span style={{ marginLeft: '1em' }} />
-                  {this.collectButton()}
-                </ButtonToolbar>
-              </Col>
+                <QueueSettings />
+                <span style={{ marginLeft: '1em' }} />
+                {this.collectButton()}
+            </Col>
             </Row>
           </Card.Header>
          {this.props.sampleChanger.contents.children && this.props.order.length > 0 ?
          (
-          <Card.Body className='new-samples-grid-card-body'>
-            <NewSampleGridContainer
+          <Card.Body className='samples-grid-table-card-body'>
+            {this.props.viewMode.mode == 'Spring Grid'? 
+            (
+              <SampleGridContainer
+                addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
+                addSamplesToQueueParent = {this.addSamplesToQueue}
+                showCharacterisationForm={this.showCharacterisationForm}
+                showDataCollectionForm={this.showDataCollectionForm}
+                showWorkflowForm={this.showWorkflowForm}
+                inQueue={this.inQueue}
+                inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
+                removeSamplesFromQueue={this.removeSamplesFromQueue}
+                removeSelectedSamples={this.removeSelectedSamples}
+                removeSelectedTasks={this.removeSelectedTasks}
+                gridWidth={this.calcGridWidth()}
+              />
+            )
+            :
+            (
+            <SampleGridTableContainer
               addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
               addSamplesToQueue = {this.addSamplesToQueue}
               showCharacterisationForm={this.showCharacterisationForm}
@@ -711,7 +767,8 @@ class SampleGridViewContainer extends React.Component {
               removeSamplesFromQueue={this.removeSamplesFromQueue}
               removeSelectedSamples={this.removeSelectedSamples}
               removeSelectedTasks={this.removeSelectedTasks}
-            />
+            />)
+            }
           </Card.Body>
          )
          : null
@@ -745,7 +802,8 @@ function mapStateToProps(state) {
     order: state.sampleGrid.order,
     sampleChanger: state.sampleChanger,
     contextMenu: state.contextMenu.genericContextMenu,
-    general: state.general
+    general: state.general,
+    viewMode: state.sampleGrid.viewMode,
   };
 }
 
@@ -772,9 +830,9 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-SampleGridViewContainer = withRouter(SampleGridViewContainer);
+SampleListViewContainer = withRouter(SampleListViewContainer);
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(SampleGridViewContainer);
+)(SampleListViewContainer);

@@ -39,13 +39,13 @@ import { showTaskForm } from '../actions/taskForm';
 import { showDialog } from '../actions/general';
 
 
-import NewSampleFlexView from './NewSampleFlexView';
+import SampleFlexView from './SampleFlexView';
 
-import { SampleGridItem } from '../components/SampleGrid/NewSampleGridItem';
+import { SampleGridTableItem } from '../components/SampleGrid/SampleGridTableItem';
 
-import { TaskItem } from '../components/SampleGrid/NewTaskItem';
+import { TaskItem } from '../components/SampleGrid/TaskItem';
 
-class NewSampleGridContainer extends React.Component {
+class SampleGridTableContainer extends React.Component {
 
   constructor(props) {
     super(props);
@@ -477,11 +477,11 @@ class NewSampleGridContainer extends React.Component {
       const sample = props.sampleList[key];
       const picked= props.inQueue(sample.sampleID) && sample.checked
 
-      const classes = classNames('new-samples-grid-li',
+      const classes = classNames('samples-grid-table-li',
       { 
-        'new-samples-grid-item-selected': props.selected[sample.sampleID],
-        'new-samples-grid-item-to-be-collected': picked,
-        'new-samples-grid-item-collected': isCollected(sample) });
+        'samples-grid-table-item-selected': props.selected[sample.sampleID],
+        'samples-grid-table-item-to-be-collected': picked,
+        'samples-grid-table-item-collected': isCollected(sample) });
 
       const settings = {
         dots: false,
@@ -494,7 +494,7 @@ class NewSampleGridContainer extends React.Component {
       if (this.filter(key)) {
         if (sample.cell_no == cell && sample.puck_no == puck ) {
           const contextMenuID = this.props.sampleChanger.loadedSample.address == sample.sampleID ?
-          'new-samples-grid-context-menu-mounted' : 'new-samples-grid-context-menu';
+          'samples-grid-table-context-menu-mounted' : 'samples-grid-table-context-menu';
 
           sampleItemList.push(
             <div
@@ -503,7 +503,7 @@ class NewSampleGridContainer extends React.Component {
               onContextMenu={(e) => {this.displayContextMenu(e, contextMenuID, sample.sampleID)}}
               onClick={(e) => {this.selectItemUnderCursor(e, sample.sampleID)}}
             >
-              <SampleGridItem
+              <SampleGridTableItem
                   key={key}
                   itemKey={key}
                   pickButtonOnClickHandler={this.sampleItemPickButtonOnClickHandler}
@@ -514,7 +514,7 @@ class NewSampleGridContainer extends React.Component {
                   picked={picked}
                 >
                   <Slider
-                    className="new-samples-grid-item-tasks"
+                    className="samples-grid-table-item-tasks"
                     {...settings}
                   >
                     {sample.tasks.map((taskData, i) => (
@@ -528,7 +528,7 @@ class NewSampleGridContainer extends React.Component {
                       />))
                     }
                   </Slider>
-                </SampleGridItem>
+                </SampleGridTableItem>
             </div>
             );
           }
@@ -564,7 +564,7 @@ class NewSampleGridContainer extends React.Component {
       Object.values(sc.children).map((cell) => {
         if (this.props.filterOptions.cellFilter.toLowerCase() === cell.name
           || this.props.filterOptions.cellFilter.toLowerCase() === '') {
-          const cellMenuID = 'new-samples-grid-context-menu-cell'
+          const cellMenuID = 'samples-grid-table-context-menu-cell'
 
           // we check in among for each puck , if there are samples 
           // we won't display the cell / table  if all puck in the cell are empty 
@@ -580,7 +580,7 @@ class NewSampleGridContainer extends React.Component {
                   {this.itemsControls(this.getSampleListFilteredByCell(cell.name))}
                   <span
                     title='Cell Options'
-                    className='new-samples-grid-context-menu-icon'
+                    className='samples-grid-table-context-menu-icon'
                     onClick={(e) => {this.displayPuckCellContextMenu(e, cellMenuID, cell.name, null)}}
                   >
                     <BiMenu size='1.5em'/>
@@ -598,7 +598,7 @@ class NewSampleGridContainer extends React.Component {
                       <tr>
                         {cell.children.map((puck, idxth)=> {
                           if(this.getSampleItems(props, cell.name, idxth+1).length > 0) {
-                            const puckMenuID = 'new-samples-grid-context-menu-puck'
+                            const puckMenuID = 'samples-grid-table-context-menu-puck'
                             return(
                               <th key={`th-${puck.name}`} className='sample-items-table-row-header-th'>
                                 <span style={{ marginLeft: '5px', marginTop: '4px', float:'left'}}>
@@ -616,7 +616,7 @@ class NewSampleGridContainer extends React.Component {
                                 </span>
                                 <span
                                   title='Puck Options'
-                                  className='new-samples-grid-context-menu-icon'
+                                  className='samples-grid-table-context-menu-icon'
                                   onClick={(e) => {this.displayPuckCellContextMenu(e, puckMenuID, cell.name, idxth+1)}}
                                 >
                                   <BiMenu size='1.5em'/>
@@ -930,7 +930,7 @@ class NewSampleGridContainer extends React.Component {
 
   renderContextMenu (id) {
     let menu = <Dropdown.Item href="#/action-1">....</Dropdown.Item>;
-    if(id == 'new-samples-grid-context-menu') {
+    if(id == 'samples-grid-table-context-menu') {
       menu = (
         <>
         {this.sampleContextMenu()}
@@ -938,7 +938,7 @@ class NewSampleGridContainer extends React.Component {
         </>
       )
     }
-    else if(id == 'new-samples-grid-context-menu-mounted') {
+    else if(id == 'samples-grid-table-context-menu-mounted') {
       menu = (
         <>
           {this.sampleContextMenuMounted()}
@@ -946,7 +946,7 @@ class NewSampleGridContainer extends React.Component {
         </>
       )
     }
-    else if(id == 'new-samples-grid-context-menu-cell') {
+    else if(id == 'samples-grid-table-context-menu-cell') {
       menu = (
         <>
           <Dropdown.Header>Cell Actions</Dropdown.Header>
@@ -954,7 +954,7 @@ class NewSampleGridContainer extends React.Component {
         </>
       )
     }
-    else if(id == 'new-samples-grid-context-menu-puck') {
+    else if(id == 'samples-grid-table-context-menu-puck') {
       menu = (
         <>
           <Dropdown.Header>Puck Actions</Dropdown.Header>
@@ -989,14 +989,14 @@ class NewSampleGridContainer extends React.Component {
         {this.props.viewMode.mode == 'Flex Grid'?
           (
           <Row
-            className="new-samples-grid"
+            className="samples-grid-table"
             onMouseDown={this.onMouseDown}
             onMouseUp={this.onMouseUp}
             onMouseMove={this.onMouseMove}
             xs="auto"
           >
             <div className="selection-rubber-band" id="selectionRubberBand" />
-            <NewSampleFlexView
+            <SampleFlexView
               cellSampleList={this.getSampleListBydCell}
             />            
             <Col sm>
@@ -1008,7 +1008,7 @@ class NewSampleGridContainer extends React.Component {
           :
           (
             <Row
-              className="new-samples-grid"
+              className="samples-grid-table"
               onMouseDown={this.onMouseDown}
               onMouseUp={this.onMouseUp}
               onMouseMove={this.onMouseMove}
@@ -1065,9 +1065,9 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-NewSampleGridContainer = withRouter(NewSampleGridContainer);
+SampleGridTableContainer = withRouter(SampleGridTableContainer);
 
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(NewSampleGridContainer);
+)(SampleGridTableContainer);
