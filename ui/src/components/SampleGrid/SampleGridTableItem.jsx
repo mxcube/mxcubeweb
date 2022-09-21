@@ -8,10 +8,10 @@ import { isCollected } from '../../constants';
 
 import { BsSquare, BsCheck2Square  } from "react-icons/bs";
 import { MdContentCopy } from "react-icons/md";
-import './NewSampleGrid.css';
+import './SampleGridTable.css';
 
 
-export class SampleGridItem extends React.Component {
+export class SampleGridTableItem extends React.Component {
 
   constructor(props) {
     super(props);
@@ -70,7 +70,7 @@ export class SampleGridItem extends React.Component {
         <Button
           variant="content"
           disabled={this.props.current && this.props.picked}
-          className="new-samples-grid-item-button"
+          className="samples-grid-table-item-button"
           onClick={this.pickButtonOnClick}
           onMouseUp={this.pickButtonMouseUp}
           onMouseDown={this.pickButtonMouseDown}
@@ -175,10 +175,10 @@ export class SampleGridItem extends React.Component {
 
 
   render() {
-    const classes = classNames('new-samples-grid-item',
+    const classes = classNames('samples-grid-table-item',
       { 
-        'new-samples-grid-item-to-be-collected': this.props.picked,
-        'new-samples-grid-item-collected': isCollected(this.props.sampleData) });
+        'samples-grid-table-item-to-be-collected': this.props.picked,
+        'samples-grid-table-item-collected': isCollected(this.props.sampleData) });
 
     const scLocationClasses = classNames('sc_location', 'label', 'label-default',
       { 'label-custom-success': this.props.sampleData.loadable === true });
@@ -193,9 +193,9 @@ export class SampleGridItem extends React.Component {
         onClick={this.sampleItemOnClick}
       >
         <ListGroup.Item className={classes}>
-          <div className="new-samples-grid-item-top d-flex">
+          <div className="samples-grid-table-item-top d-flex">
             {this.itemControls()}
-            <div  className="div-new-samples-grid-item-top">
+            <div  className="div-samples-grid-table-item-top">
             <CopyToClipboard className="copy-link" text={this.sampleDisplayName()} onCopy={this.onCopy}>
                 <Button variant="content" className="btn-copy-link">
                   <MdContentCopy style={{ float: 'right'}} size=""/>
@@ -210,7 +210,7 @@ export class SampleGridItem extends React.Component {
                   <Popover id={this.sampleDisplayName()}>
                     <Popover.Header className='d-flex'>
                       <div>
-                        <b className='new-samples-grid-item-name-pt'>
+                        <b className='samples-grid-table-item-name-pt'>
                           {this.sampleDisplayName()}
                         </b>
                       </div>
@@ -225,7 +225,7 @@ export class SampleGridItem extends React.Component {
                   bg="light"
                   text="primary"
                   ref={(ref) => { this.pacronym = ref; }}
-                  className="new-samples-grid-item-name-protein-acronym ms-1"
+                  className="samples-grid-table-item-name-protein-acronym ms-1"
                   data-type="text" data-pk="1" data-url="/post" data-title="Enter protein acronym"
                 >
                   {this.sampleDisplayName()}
@@ -245,7 +245,7 @@ export class SampleGridItem extends React.Component {
 }
 
 
-SampleGridItem.defaultProps = {
+SampleGridTableItem.defaultProps = {
   itemKey: '',
   sampleData: {},
   queueOrder: [],

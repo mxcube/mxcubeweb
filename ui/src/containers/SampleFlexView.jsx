@@ -169,7 +169,7 @@ class NewSampleFlexView extends React.Component {
                   )
                 })}
                 <circle className='cell-cicle-center' r="5" cx="10" cy="10" />
-                <text x='10' y='10' fontSize="1" textAnchor="middle" fill="gray">Flex HCD</text>
+                <text x='10' y='10' fontSize="1" textAnchor="middle" fill="gray">Sample Changer</text>
               </svg>
             </div>
           </Collapsible>
