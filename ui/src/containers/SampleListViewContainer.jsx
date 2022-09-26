@@ -714,8 +714,7 @@ class SampleListViewContainer extends React.Component {
                     </Col>
                   </Form.Group>
                 </Form>
-              </Col>
-              <Col className='d-flex justify-content-end' sm={3}>
+                <span style={{ marginLeft: '1em' }} />
                 <SplitButton
                   id="pipeline-mode-dropdown"
                   variant='outline-secondary'
@@ -730,6 +729,8 @@ class SampleListViewContainer extends React.Component {
                     Add Characterisation
                       </Dropdown.Item>
                 </SplitButton>
+              </Col>
+              <Col className='d-flex justify-content-end' sm={3}>
                 <span style={{ marginLeft: '1em' }} />
                 <QueueSettings />
                 <span style={{ marginLeft: '1em' }} />
