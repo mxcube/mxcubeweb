@@ -124,16 +124,6 @@ def main(test=False):
         )
 
         cfg = Config(config_path)
-        server.init(cmdline_options, cfg, mxcube)
-        mxcube.init(
-            server,
-            cmdline_options.allow_remote,
-            cmdline_options.ra_timeout,
-            cmdline_options.video_device,
-            cmdline_options.log_file,
-            cmdline_options.log_level,
-            cfg,
-        )
 
         if test:
             cfg.flask.USER_DB_PATH = "/tmp/mxcube-test-user.db"
