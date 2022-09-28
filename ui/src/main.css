@@ -63,9 +63,6 @@ input[type="color"]:focus,
     max-width: 100%; /* Max Width of the popover (depending on the container!) */
   }
 
-.form-label {
-    /* white-space: nowrap; */
-}
 
 .nav-link {
 cursor: pointer;
