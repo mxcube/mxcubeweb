@@ -535,12 +535,12 @@ class SampleGridContainer extends React.Component {
     // Is sample already in the set of selected samples, add all those samples
     // to queue
     if (this.sampleItemIsSelected(sampleID)) {
-      this.props.inQueueDeleteElseAddSamples(Object.keys(this.props.selected));
+      this.props.inQueueDeleteElseAddSamples(Object.keys(this.props.selected), true);
     } else {
       // The sample is not in the set of selected samples (or no samples are
       // selected), select only sample with sampleID and add it queue
       this.props.selectSamples([sampleID]);
-      this.props.inQueueDeleteElseAddSamples([sampleID]);
+      this.props.inQueueDeleteElseAddSamples([sampleID], true);
     }
   }
 
