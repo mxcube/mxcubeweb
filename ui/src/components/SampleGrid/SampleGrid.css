@@ -142,6 +142,10 @@ button[disabled] {
   font-size: small;
   font-weight: bold;
   pointer-events: auto;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dm {
