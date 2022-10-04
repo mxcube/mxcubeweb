@@ -16,6 +16,7 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case 'SHOW_CONTEXT_MENU': {
       return {
+        ...state,
         show: action.show,
         shape: action.shape,
         x: action.x,
