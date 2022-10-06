@@ -95,6 +95,8 @@ class SampleListViewContainer extends React.Component {
 
   componentDidMount() {
     window.addEventListener('resize', this.onResize, false);
+    const localStorageViewMode = localStorage.getItem('view-mode');
+    this.setViewMode(localStorageViewMode || this.props.viewMode.mode);
     this.resizeGridContainer();
   }
 
@@ -128,6 +130,7 @@ class SampleListViewContainer extends React.Component {
     } else {
       this.props.filter({cellFilter: ""});
     }
+    localStorage.setItem('view-mode', mode);
     this.props.setViewMode(mode)
   }
 
@@ -806,7 +809,6 @@ function mapStateToProps(state) {
     sampleChanger: state.sampleChanger,
     contextMenu: state.contextMenu.genericContextMenu,
     general: state.general,
-    viewMode: state.sampleGrid.viewMode,
   };
 }
 
