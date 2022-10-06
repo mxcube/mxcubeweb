@@ -806,7 +806,6 @@ function mapStateToProps(state) {
     sampleChanger: state.sampleChanger,
     contextMenu: state.contextMenu.genericContextMenu,
     general: state.general,
-    viewMode: state.sampleGrid.viewMode,
   };
 }
 
