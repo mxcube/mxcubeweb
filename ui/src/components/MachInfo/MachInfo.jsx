@@ -31,7 +31,7 @@ export default class MachInfo extends React.Component {
       if (this.props.info.hasOwnProperty(propname)) {
         if (propname === 'attention') { continue; }
         propvalue = this.props.info[propname];
-        msg = <Row className='mb-1'> <Col sm={6}>{propname}</Col> <Col sm={3}> : </Col> <Col sm={3}>{propvalue}</Col></Row>;
+        msg = <Row className='mb-2'> <Col sm={3}>{propname}</Col> <Col sm={1}> : </Col> <Col sm={7}>{propvalue}</Col></Row>;
         popContent = <span>{popContent}{msg}</span>;
       }
     }
@@ -43,7 +43,7 @@ export default class MachInfo extends React.Component {
          <Popover.Header>
           {tooltipTitle}
          </Popover.Header>
-         <Popover.Body style={{ width: '180px' }}>
+         <Popover.Body style={{ width: '400px' }}>
           {popContent}
          </Popover.Body>
        </Popover>
