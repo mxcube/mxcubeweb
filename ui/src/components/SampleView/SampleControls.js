@@ -272,7 +272,7 @@ export default class SampleControls extends React.Component {
                       hardwareObjects.zoom.limits[1] - hardwareObjects.zoom.limits[0]
                     ).keys(),
                   ].map((i) => (
-                    <option>{hardwareObjects.zoom.limits[0] + i}</option>
+                    <option key={`volsettings-${i}`}>{hardwareObjects.zoom.limits[0] + i}</option>
                   ))}
                 </datalist>
                 <span className="sample-control-label">Zoom</span>
