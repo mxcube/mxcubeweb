@@ -12,6 +12,7 @@ export default class ApertureInput extends React.Component {
 
   sendAperture(event) {
     this.props.sendAperture(event.target.value);
+    debugger;
   }
 
   render() {
@@ -25,7 +26,7 @@ export default class ApertureInput extends React.Component {
         <Form.Select
           className={inputCSS}
           style={{ float: 'none' }}
-          defaultValue={this.props.aperture}
+          value={this.props.aperture}
           onChange={this.sendAperture}
         >
           {this.props.apertureList.map((option) => (
