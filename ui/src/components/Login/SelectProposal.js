@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import { Modal, ButtonToolbar, Button } from 'react-bootstrap';
-import BootstrapTable from 'react-bootstrap-table-next';
+import { Modal, ButtonToolbar, Button, Table } from 'react-bootstrap';
 
 class SelectProposal extends React.Component {
   constructor(props) {
@@ -10,10 +9,14 @@ class SelectProposal extends React.Component {
     this.onClickRow = this.onClickRow.bind(this);
     this.sendProposal = this.sendProposal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.state = {
+        pID: 0,
+    };
   }
 
-  onClickRow(event) {
-    this.props.selectProposal(event.Number);
+  onClickRow(prop) {
+    this.setState({ pID:  prop.proposalId});
+    this.props.selectProposal(prop.code + prop.number);
   }
 
   sendProposal() {
@@ -27,27 +30,15 @@ class SelectProposal extends React.Component {
   }
 
   render() {
-    const selectRowProp = {
-      mode: 'radio',
-      clickToSelect: true,
-      bgColor: '#d3d3d3',
-      onSelect: this.onClickRow,
-      clickToSelectAndEditCell: false,
-      hideSelectColumn: true,
-    };
-    const proposals = this.props.data.proposalList.map((prop) => ({
-      Number: prop.code + prop.number,
-      Person: prop.person,
-    }));
-    const columns = [{
-      dataField: 'Number',
-      text: 'Proposal Number',
-      sort: true
-    }, {
-      dataField: 'Person',
-      text: 'Person',
-      sort: true
-    }];
+    const proposals = this.props.data.proposalList.map((prop) =>
+    <tr key={prop.proposalId} style={this.state.pID === prop.proposalId ? { backgroundColor: '#d3d3d3'}: null} onClick={
+        ()=>
+        this.onClickRow(prop)
+        }>
+    <td>{prop.code + prop.number}</td>
+    <td>{prop.person}</td>
+    </tr>
+    );
 
     return (
       <Modal
@@ -60,14 +51,17 @@ class SelectProposal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <div>
-            <BootstrapTable
-              keyField="Number"
-              data={proposals}
-              bordered={false}
-              selectRow={selectRowProp}
-              columns={ columns }
-            >
-            </BootstrapTable>
+            <Table bordered hover>
+            <thead style={{overflow: 'auto'}}>
+              <tr>
+                <th>Proposal Number</th>
+                <th>Person</th>
+              </tr>
+            </thead>
+            <tbody>
+              {proposals}
+            </tbody>
+            </Table>
           </div>
         </Modal.Body>
         <Modal.Footer>
