@@ -33,6 +33,7 @@
     "react-chat-widget": "^2.1.4",
     "react-clipboard.js": "^2.0.16",
     "react-collapsible": "^2.10.0",
+    "react-contexify": "^5.0.0",
     "react-contextmenu": "^2.3.0",
     "react-dom": "^17.0.2",
     "react-draggable": "^4.4.4",
@@ -62,7 +63,7 @@
     "ws": "^8.5.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

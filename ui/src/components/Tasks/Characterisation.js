@@ -127,7 +127,7 @@ class Characterisation extends React.Component {
             <FieldsRow>
               <InputField propName="osc_range" type="number" label="Oscillation range" />
               <InputField
-                disabled={this.props.beamline.attributes.energy.readonly}
+                disabled={this.props.beamline.hardwareObjects.energy.readonly}
                 propName="energy"
                 type="number"
                 label="Energy"
@@ -426,10 +426,13 @@ Characterisation = connect((state) => {
     fname = `${prefix}_[RUN#]_[IMG#]`;
   }
 
+  const { type } = state.taskForm.taskData;
+  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
-    acqParametersLimits: state.taskForm.acqParametersLimits,
+    acqParametersLimits: limits,
     beamline: state.beamline,
     use_permitted_rotation: selector(state, 'use_permitted_rotation'),
     use_aimed_resolution: selector(state, 'use_aimed_resolution'),
@@ -443,16 +446,16 @@ Characterisation = connect((state) => {
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.attributes.resolution.value),
+        : state.beamline.hardwareObjects.resolution.value),
       energy: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.energy
-        : state.beamline.attributes.energy.value),
+        : state.beamline.hardwareObjects.energy.value),
       transmission: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.attributes.transmission.value),
+        : state.beamline.hardwareObjects.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.attributes.omega.value)
+        : state.beamline.hardwareObjects.omega.value)
     }
   };
 })(Characterisation);

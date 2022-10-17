@@ -11,26 +11,18 @@ const initialState = {
     helical: {},
     mesh: {},
     xrfscan: {},
-    interleaved: { subWedgeSize: 10 },
+    interleaved: { sub_wedge_size: 10 },
   },
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'SHOW_FORM': {
-      const { taskData } = action;
-      if (
-        Object.keys(action.taskData).length > 0 &&
-        action.taskData.parameters.shape === -1
-      ) {
-        taskData.parameters.shape = action.pointID;
-      }
-
       return {
         ...state,
         showForm: action.name,
         sampleIds: action.sampleIDs,
-        taskData: { ...taskData },
+        taskData: { ...action.taskData },
         pointID: action.pointID,
       };
     }
@@ -95,21 +87,9 @@ export default (state = initialState, action) => {
         defaultParameters: {
           ...state.defaultParameters,
           [type]: {
-            ...action.data,
+            ...state.defaultParameters[type],
+            "acq_parameters": { ...action.data },
           },
-        },
-      };
-    }
-    case 'SET_CURRENT_SAMPLE': {
-      return {
-        ...state,
-        defaultParameters: {
-          datacollection: { ...state.defaultParameters.datacollection },
-          characterisation: { ...state.defaultParameters.characterisation },
-          helical: { ...state.defaultParameters.helical },
-          mesh: { ...state.defaultParameters.mesh },
-          workflow: { ...state.defaultParameters.workflow },
-          interleaved: { ...state.defaultParameters.interleaved },
         },
       };
     }
@@ -120,60 +100,11 @@ export default (state = initialState, action) => {
       return {
         ...state,
         defaultParameters: {
-          datacollection: {
-            ...action.data.dcParameters,
-            ...state.defaultParameters.datacollection,
-          },
-          characterisation: {
-            ...action.data.charParameters,
-            ...state.defaultParameters.characterisation,
-          },
-          helical: {
-            ...action.data.dcParameters,
-            ...state.defaultParameters.helical,
-          },
-          mesh: {
-            ...action.data.meshParameters,
-            ...state.defaultParameters.meshParameters,
-          },
-          xrfscan: {
-            ...action.data.xrfParameters,
-            ...state.defaultParameters.xrfParameters,
-          },
-          workflow: {
-            ...action.data.dcParameters,
-            ...state.defaultParameters.workflow,
-          },
-          interleaved: { ...state.defaultParameters.interleaved },
+          ...action.data.taskParameters
         },
         initialParameters: {
-          datacollection: {
-            ...action.data.dcParameters,
-            ...state.defaultParameters.datacollection,
-          },
-          characterisation: {
-            ...action.data.charParameters,
-            ...state.defaultParameters.characterisation,
-          },
-          helical: {
-            ...action.data.dcParameters,
-            ...state.defaultParameters.helical,
-          },
-          mesh: {
-            ...action.data.meshParameters,
-            ...state.defaultParameters.meshParameters,
-          },
-          xrfscan: {
-            ...action.data.xrfParameters,
-            ...state.defaultParameters.xrfParameters,
-          },
-          workflow: {
-            ...action.data.dcParameters,
-            ...state.defaultParameters.workflow,
-          },
-          interleaved: { ...state.defaultParameters.interleaved },
+          ...action.data.taskParameters
         },
-        acqParametersLimits: { ...action.data.acqParametersLimits },
         fileSuffix: action.data.detector.fileSuffix,
       };
     }

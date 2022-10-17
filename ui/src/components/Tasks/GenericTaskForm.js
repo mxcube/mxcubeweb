@@ -8,6 +8,10 @@ import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import warn from './warning';
 
+import JSForm from '@rjsf/core';
+import classNames from 'classnames';
+import './style.css';
+
 import {
   FieldsHeader,
   StaticField,
@@ -19,7 +23,7 @@ import {
 
 import { SPACE_GROUPS } from '../../constants';
 
-class DataCollection extends React.Component {
+class GenericTaskForm extends React.Component {
   constructor(props) {
     super(props);
 
@@ -31,6 +35,7 @@ class DataCollection extends React.Component {
     this.addToQueue = this.addToQueue.bind(this);
     this.resetParameters = this.resetParameters.bind(this);
     this.defaultParameters = this.defaultParameters.bind(this);
+    this.jsformData = {};
   }
 
   submitAddToQueue() {
@@ -44,11 +49,10 @@ class DataCollection extends React.Component {
   addToQueue(runNow, params) {
     const parameters = {
       ...params,
-      type: 'DataCollection',
-      label: 'Data Collection',
-      helical: false,
-      mesh: false,
-      shape: this.props.pointID
+      ...this.jsformData,
+      label: params.name,
+      shape: this.props.pointID,
+      selection: this.props.taskData.parameters.selection
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -63,7 +67,8 @@ class DataCollection extends React.Component {
       'type',
       'shape',
       'label',
-      'helical'
+      'helical',
+      'selection'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -130,7 +135,7 @@ class DataCollection extends React.Component {
             disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
             onClick={this.submitRunNow}
           >
-             Run Now
+             Run Nowjson-schema-form-group-div
           </Button>
           <Button
             variant="primary"
@@ -156,20 +161,67 @@ class DataCollection extends React.Component {
     return foot;
   }
 
+  setConstraintsFromDefualts(schema){
+    const s = {...schema}
+
+    for (const key in this.props.initialValues) {
+      if (s.properties[key]) {
+        s.properties[key].default = this.props.initialValues[key]
+      }
+    }
+
+    for (const key in this.props.taskData.Arraylimits) {
+      if (s.properties[key]) {
+        s.properties[key].exclusiveMinimum = this.props.taskData.limits[key][0]
+        s.properties[key].exclusiveMaximum = this.props.taskData.limits[key][1]
+      }
+    }
+
+   return s;
+  }
+
   render() {
-    const energyScanResult = this.props.taskResult.energyScan.length > 0
-      ? this.props.taskResult.energyScan[this.props.taskResult.energyScan.length - 1] : [];
+    function columnsObjectFieldTemplate ({ properties, description }) {
+      return (
+        <div>
+          <div className='row'>
+            {properties.map(prop => {
+              const uiSchema = prop.content.props.uiSchema
+              const className = classNames('column', uiSchema['ui:column'] || 'col-6 json-schema-form-group-div')
+              return <div key={prop.content.key} className={className}>
+                {prop.content}
+              </div>
+            })}
+          </div>
+          {description}
+        </div>
+      )
+    }
 
-    const energyList = [];
+    const uiSchema = {
+      "ui:order": [
+        "num_images",
+        "exp_time",
+        "osc_range",
+        "osc_start",
+        "resolution",
+        "transmission",
+        "energy",
+        "*",
+      ],
+      "ui:submitButtonOptions": {
+         "norender": true,
+       }
+     };
 
-    Object.values(energyScanResult).forEach((result) => {
-      energyList.push(result);
-    });
+    const schema = this.setConstraintsFromDefualts (
+      this.props.schema.user_collection_parameters
+    )
 
     return (
       <DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
-          <Modal.Title>Standard Data Collection</Modal.Title>
+          <Modal.Title>{this.props.taskData.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body >
           <Form>
@@ -201,80 +253,17 @@ class DataCollection extends React.Component {
           </Form>
 
           <FieldsHeader title="Acquisition" />
-          <Form>
-            <FieldsRow>
-              <InputField propName="osc_range" type="number" label="Oscillation range" />
-              <InputField propName="first_image" type="number" label="First image" />
-            </FieldsRow>
-            <FieldsRow>
-              <InputField propName="osc_start" type="number" label="Oscillation start" />
-              <InputField propName="num_images" type="number" label="Number of images" />
-            </FieldsRow>
-            <FieldsRow>
-              <InputField propName="exp_time" type="number" label="Exposure time (s)" />
-              <InputField propName="transmission" type="number" label="Transmission" />
-            </FieldsRow>
-            <FieldsRow>
-              <InputField
-                disabled={this.props.beamline.hardwareObjects.energy.readonly}
-                propName="energy"
-                type="number"
-                label="Energy"
-              />
-              <InputField propName="resolution" type="number" label="Resolution" />
-            </FieldsRow>
-            { this.props.taskResult.energyScan.length > 0
-              ? (
-                <FieldsRow>
-                  <SelectField
-                    col1="6"
-                    col2="4"
-                    propName="energy"
-                    label="Energy scan result"
-                    list={energyList}
-                  />
-                </FieldsRow>
-              )
-              : null
-            }
-            <CollapsableRows>
-              <FieldsRow>
-                <InputField propName="kappa" type="number" label="Kappa" />
-                <InputField propName="kappa_phi" type="number" label="Phi" />
-              </FieldsRow>
-              <FieldsRow>
-                <SelectField
-                  propName="detector_mode"
-                  label="Detector mode"
-                  list={['0', 'C18', 'C12', 'C2']}
-                />
-              </FieldsRow>
-            </CollapsableRows>
-          </Form>
-
-          <FieldsHeader title="Processing" />
-          <CollapsableRows>
-            <Form>
-              <SelectField
-                col1="3"
-                col2="3"
-                propName="space_group"
-                label="Space group"
-                list={SPACE_GROUPS}
-              />
-              <Form.Label className='mb-2 mt-3'><b> Unit Cell: </b></Form.Label>
-              <FieldsRow>
-                <InputField col1="1" col2="5" propName="cellA" label="a" />
-                <InputField col1="1" col2="5" propName="cellB" label="b" />
-                <InputField col1="1" col2="5" propName="cellC" label="c" />
-              </FieldsRow>
-              <FieldsRow>
-                <InputField col1="1" col2="5" propName="cellAlpha" label="&alpha;" />
-                <InputField col1="1" col2="5" propName="cellBeta" label="&beta;" />
-                <InputField col1="1" col2="5" propName="cellGamma" label="&gamma;" />
-              </FieldsRow>
-            </Form>
-          </CollapsableRows>
+          <div className="json-schema-form-container">
+            <JSForm
+              liveValidate
+              schema={schema}
+              uiSchema={uiSchema}
+              onChange={({formData})=>{
+                this.jsformData = formData;
+              }}
+              ObjectFieldTemplate={columnsObjectFieldTemplate}
+            />
+          </div>
 
         </Modal.Body>
 
@@ -285,17 +274,16 @@ class DataCollection extends React.Component {
   }
 }
 
-DataCollection = reduxForm({
-  form: 'datacollection',
+GenericTaskForm = reduxForm({
+  form: 'GenericTaskForm',
   validate,
   warn
-})(DataCollection);
+})(GenericTaskForm);
 
-const selector = formValueSelector('datacollection');
+const selector = formValueSelector('GenericTaskForm');
 
-DataCollection = connect((state) => {
+GenericTaskForm = connect((state) => {
   const subdir = selector(state, 'subdir');
-
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
   if (typeof position === 'object') {
     const vals = Object.values(position).sort();
@@ -312,15 +300,18 @@ DataCollection = connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+  const limits = state.taskForm.defaultParameters[type].limits;
+  const schema = state.taskForm.defaultParameters[type].schema;
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: limits,
+    schema: schema,
     beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
+      type: type,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.resolution
@@ -336,6 +327,6 @@ DataCollection = connect((state) => {
         : state.beamline.hardwareObjects.omega.value)
     }
   };
-})(DataCollection);
+})(GenericTaskForm);
 
-export default DataCollection;
+export default GenericTaskForm;

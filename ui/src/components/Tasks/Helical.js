@@ -211,26 +211,29 @@ Helical = connect((state) => {
     fname = `${prefix}_[RUN#]_[IMG#]`;
   }
 
+  const { type } = state.taskForm.taskData;
+  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
-    acqParametersLimits: state.taskForm.acqParametersLimits,
+    acqParametersLimits: limits,
     beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.attributes.resolution.value),
+        : state.beamline.hardwareObjects.resolution.value),
       energy: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.energy
-        : state.beamline.attributes.energy.value),
+        : state.beamline.hardwareObjects.energy.value),
       transmission: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.attributes.transmission.value),
+        : state.beamline.hardwareObjects.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.attributes.omega.value)
+        : state.beamline.hardwareObjects.omega.value)
     }
   };
 })(Helical);
