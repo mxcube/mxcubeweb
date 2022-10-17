@@ -23,7 +23,7 @@ export default class MotorControl extends React.Component {
 
     return Object.values(this.props.uiproperties.components).
       slice(from, to_arg).map((motor_uiprop) => {
-        const motor = this.props.attributes[motor_uiprop.attribute];
+        const motor = this.props.hardwareObjects[motor_uiprop.attribute];
         return (
           <Col key={`mc-${motor_uiprop.attribute}`} sm={12}>
             <MotorInput
@@ -53,8 +53,8 @@ export default class MotorControl extends React.Component {
       this.props.uiproperties.components, { role: 'sample_vertical' }
     );
 
-    const sample_vertical = this.props.attributes[sample_vertical_uiprop.attribute];
-    const sample_horizontal = this.props.attributes[sample_horizontal_uiprop.attribute];
+    const sample_vertical = this.props.hardwareObjects[sample_vertical_uiprop.attribute];
+    const sample_horizontal = this.props.hardwareObjects[sample_horizontal_uiprop.attribute];
 
     return sample_vertical !== undefined && sample_horizontal !== undefined;
   }
@@ -94,8 +94,8 @@ export default class MotorControl extends React.Component {
       this.props.uiproperties.components, { role: 'sample_horizontal' }
     );
 
-    const sample_vertical = this.props.attributes[sample_vertical_uiprop.attribute];
-    const sample_horizontal = this.props.attributes[sample_horizontal_uiprop.attribute];
+    const sample_vertical = this.props.hardwareObjects[sample_vertical_uiprop.attribute];
+    const sample_horizontal = this.props.hardwareObjects[sample_horizontal_uiprop.attribute];
 
     const motors = {
       sample_vertical: Object.assign(sample_vertical_uiprop, sample_vertical),

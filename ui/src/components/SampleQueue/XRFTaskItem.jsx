@@ -268,7 +268,7 @@ export default class XRFTaskItem extends Component {
                     >
                       <b>Path:</b> {this.path(parameters)}
                       <br />
-                      <b>Count time:</b> {parameters.countTime}
+                      <b>Count time:</b> {parameters.exp_time}
                     </div>
                   </div>
                   {this.getResult(state)}

@@ -150,26 +150,29 @@ EnergyScan = connect(state => {
     position = `[${vals}]`;
   }
 
+  const { type } = state.taskForm.taskData;
+  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: state.taskForm.taskData.parameters.fileName,
     edge,
     element,
     wfname: state.taskForm.taskData.parameters.wfname,
-    acqParametersLimits: state.taskForm.acqParametersLimits,
+    acqParametersLimits: limits,
     suffix: fileSuffix,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.resolution :
-        state.beamline.attributes.resolution.value),
+        state.beamline.hardwareObjects.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value),
+        state.beamline.hardwareObjects.energy.value),
       transmission: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.transmission :
-        state.beamline.attributes.transmission.value)
+        state.beamline.hardwareObjects.transmission.value)
     }
   };
 })(EnergyScan);

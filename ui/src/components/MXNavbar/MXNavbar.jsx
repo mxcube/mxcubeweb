@@ -6,7 +6,6 @@ import './MXNavbar.css';
 
 
 class MXNavbar extends React.Component {
-
   constructor(props) {
     super(props);
     this.findProposal = this.findProposal.bind(this);
@@ -26,14 +25,14 @@ class MXNavbar extends React.Component {
     const raStyle = (this.props.user.inControl ? { color: 'white' } : {});
     const numObservers = this.props.remoteAccess.observers.length;
 
-    document.title = `MxCuBE-3 Proposal: ${this.props.selectedProposal}`;
+    document.title = `MxCuBE-Web Proposal: ${this.props.selectedProposal}`;
 
     return (
       <Navbar className='pt-1 pb-1' bg="dark" variant="dark" fixed="top" collapseOnSelect expand="lg">
         <Container fluid>
           <LinkContainer to="/remoteaccess">
             <Navbar.Brand>
-              MXCuBE3 <span className="brand-subtitle">{`(${this.props.selectedProposal} collecting)`}</span>
+              MXCuBE-Web <span className="brand-subtitle">({this.props.mode})</span>
             </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
@@ -69,7 +68,7 @@ class MXNavbar extends React.Component {
               </LinkContainer>
               <Button as={Nav.Link} className="nav-link" variant="Light" onClick={this.signOut}>
                 <span className="me-1 fas fa-lg fa-sign-out-alt" />
-                Sign out
+                Sign out {`(${this.props.selectedProposal})`}
               </Button>
             </Nav>
           </Navbar.Collapse>

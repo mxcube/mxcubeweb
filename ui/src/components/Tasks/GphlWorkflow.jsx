@@ -123,15 +123,14 @@ GphlWorkflow = connect(state => {
   const subdir = selector(state, 'subdir');
   const strategy_name = selector(state, 'strategy_name');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
-  // let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
-  // if (typeof position === 'object') {
-  //   const vals = Object.values(position).sort();
-  //   position = `[${vals}]`;
-  // }
+
+  const { type } = state.taskForm.taskData;
+  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     wfname: state.taskForm.taskData.parameters.wfname,
-    acqParametersLimits: state.taskForm.acqParametersLimits,
+    acqParametersLimits: limits,
     suffix: fileSuffix,
     strategy_name,
     initialValues: {
@@ -139,13 +138,13 @@ GphlWorkflow = connect(state => {
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.resolution :
-        state.beamline.attributes.resolution.value),
+        state.beamline.hardwareObjects.resolution.value),
       energy: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.energy :
-        state.beamline.attributes.energy.value),
+        state.beamline.hardwareObjects.energy.value),
       transmission: (state.taskForm.taskData.sampleID ?
         state.taskForm.taskData.parameters.transmission :
-        state.beamline.attributes.transmission.value)
+        state.beamline.hardwareObjects.transmission.value)
     }
   };
 })(GphlWorkflow);

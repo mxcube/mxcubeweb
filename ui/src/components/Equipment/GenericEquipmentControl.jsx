@@ -12,7 +12,7 @@ export default class GenericEquipmentControl extends React.Component {
   }
 
   renderParameters(key) {
-    const a = this.props.equipment.attributes;
+    const a = this.props.equipment.commands;
     const attr = a[key];
 
     if (attr.signature.length > 1) {
@@ -43,7 +43,7 @@ export default class GenericEquipmentControl extends React.Component {
   }
 
   renderInfo(key) {
-    const a = this.props.equipment.attributes;
+    const a = this.props.equipment.commands;
     const attr = a[key];
 
     if (attr.signature.length > 1) {
@@ -78,7 +78,7 @@ export default class GenericEquipmentControl extends React.Component {
   }
 
   getCommands() {
-    const a = this.props.equipment.attributes;
+    const a = this.props.equipment.commands;
 
     return Object.entries(a).map(([key, value]) => {
       return (

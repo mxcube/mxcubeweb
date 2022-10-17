@@ -17,7 +17,22 @@ export default class ContextMenu extends React.Component {
   }
 
   menuOptions() {
-    const workflowTasks = {
+    const bespokeTaskNames = [
+      "datacollection",
+      "characterisation",
+      "xrf",
+      "energy",
+      "mesh",
+      "helical",
+      "workflow",
+      "interleaved"
+    ];
+
+    const generalTaskNames = Object.keys(this.props.taskForm.defaultParameters).filter((tname) => (
+      !bespokeTaskNames.includes(tname)
+    ));
+
+    const genericTasks = {
       point: [], line: [], grid: [], none: []
     };
     let twoDPoints = [];
@@ -37,36 +52,80 @@ export default class ContextMenu extends React.Component {
         }];
     }
 
+    generalTaskNames.forEach((tname) => {
+      const task = this.props.taskForm.defaultParameters[tname];
+
+      if (task.requires.includes('point')) {
+        genericTasks.point.push({
+          text: task.name,
+          action: () => this.showModal("Generic", {
+            type: tname
+          }),
+          key: `${task.name}`
+        });
+      }
+
+      if (task.requires.includes('line')) {
+        genericTasks.line.push({
+          text: task.name,
+          action: () => this.showModal("Generic", {
+            type: tname
+          }),
+          key: `${task.name}`
+        });
+      }
+
+      if (task.requires.includes('grid')) {
+        genericTasks.grid.push({
+          text: task.name,
+          action: () => this.showModal("Generic", {
+            type: tname
+          }),
+          key: `${task.name}`
+        });
+      }
+
+      if (task.requires.includes('no_shape')) {
+        genericTasks.none.push({
+          text: task.name,
+          action: () => this.showModal("Generic", {
+            type: tname
+          }),
+          key: `${task.name}`
+        });
+      }
+    });
+
     Object.values(this.props.workflows).forEach((wf) => {
       if (wf.requires.includes('point')) {
         if (wf.wfpath === 'Gphl') {
-          workflowTasks.point.push({
+          genericTasks.point.push({
             text: wf.wfname,
             action: () => this.showModal('GphlWorkflow', wf),
             key: `wf-${wf.wfname}`
           });
 
         } else {
-          workflowTasks.point.push({
+          genericTasks.point.push({
             text: wf.wfname,
             action: () => this.showModal('Workflow', wf),
             key: `wf-${wf.wfname}`
           });
         }
       } else if (wf.requires.includes('line')) {
-        workflowTasks.line.push({
+        genericTasks.line.push({
           text: wf.wfname,
           action: () => this.createLine('Workflow', wf),
           key: `wf-${wf.wfname}`
         });
       } else if (wf.requires.includes('grid')) {
-        workflowTasks.grid.push({
+        genericTasks.grid.push({
           text: wf.wfname,
           action: () => this.showModal('Workflow', wf),
           key: `wf-${wf.wfname}`
         });
       } else {
-        workflowTasks.none.push({
+        genericTasks.none.push({
           text: wf.wfname,
           action: () => this.showModal('Workflow', wf),
           key: `wf-${wf.wfname}`
@@ -88,12 +147,12 @@ export default class ContextMenu extends React.Component {
         },
         {
           text: 'Add XRF Scan',
-          action: () => this.showModal('XRFScan'),
+          action: () => this.showModal('XRF'),
           key: 'xrf_scan'
         },
         {
           text: 'Add Energy Scan',
-          action: () => this.showModal('EnergyScan'),
+          action: () => this.showModal('Energy'),
           key: 'energy_scan'
         },
         {
@@ -105,8 +164,8 @@ export default class ContextMenu extends React.Component {
           text: 'divider',
           key: 6
         },
-        ...workflowTasks.point,
-        workflowTasks.point.length > 0 ? { text: 'divider', key: 7 } : {},
+        ...genericTasks.point,
+        genericTasks.point.length > 0 ? { text: 'divider', key: 7 } : {},
         { text: 'Delete Point', action: () => this.removeShape(), key: 8 },
       ],
       TMP: [
@@ -131,8 +190,8 @@ export default class ContextMenu extends React.Component {
           key: 'energy_scan'
         },
         { text: 'divider', key: 5 },
-        ...workflowTasks.point,
-        workflowTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
+        ...genericTasks.point,
+        genericTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
         { text: 'Save Point', action: () => this.savePoint(), key: 7 },
         { text: 'Delete Point', action: () => this.removeShape(), key: 8 }
       ],
@@ -147,7 +206,7 @@ export default class ContextMenu extends React.Component {
           action: () => this.showModal('Characterisation'),
           key: 'characterisation'
         },
-        ...workflowTasks.point,
+        ...genericTasks.point,
       ],
       HELICAL: [
         {
@@ -165,7 +224,7 @@ export default class ContextMenu extends React.Component {
           action: () => this.createLine('Helical'),
           key: 'helical'
         },
-        ...workflowTasks.line,
+        ...genericTasks.line,
       ],
       LINE: [
         {
@@ -173,8 +232,8 @@ export default class ContextMenu extends React.Component {
           action: () => this.showModal('Helical'),
           key: 'helical'
         },
-        ...workflowTasks.line,
-        workflowTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
+        ...genericTasks.line,
+        genericTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
         { text: 'Delete Line', action: () => this.removeShape(), key: 4 }
       ],
       GridGroup: [
@@ -188,8 +247,8 @@ export default class ContextMenu extends React.Component {
         },
         { text: 'Centring Point on cell', action: () => this.createCollectionOnCell(), key: 5 },
         { text: 'divider', key: 2 },
-        ...workflowTasks.grid,
-        workflowTasks.grid.length > 0 ? { text: 'divider', key: 3 } : {},
+        ...genericTasks.grid,
+        genericTasks.grid.length > 0 ? { text: 'divider', key: 3 } : {},
         { text: 'Delete', action: () => this.removeShape(), key: 4 }
       ],
       NONE: [
@@ -198,8 +257,8 @@ export default class ContextMenu extends React.Component {
         { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 },
         ...twoDPoints,
         { text: 'divider', key: 7 },
-        ...workflowTasks.none,
-        workflowTasks.grid.none > 0 ? { text: 'divider', key: 7 } : {},
+        ...genericTasks.none,
+        genericTasks.grid.none > 0 ? { text: 'divider', key: 7 } : {},
       ]
     };
 
@@ -220,12 +279,10 @@ export default class ContextMenu extends React.Component {
     return options;
   }
 
-  showModal(modalName, wf = {}, _shape = null, extraParams = {}) {
+  showModal(modalName, extraParams = {}, _shape = null) {
     const {
       sampleID, shape, sampleData, defaultParameters
     } = this.props;
-
-    Object.assign(defaultParameters, extraParams);
 
     const sid = _shape ? _shape.id : shape.id;
     if (Array.isArray(sid)) {
@@ -249,20 +306,26 @@ export default class ContextMenu extends React.Component {
       this.props.sampleActions.sendAcceptCentring();
     }
 
+    const type = modalName === "Generic" ? extraParams.type : modalName.toLowerCase()
+    const name = modalName === "Generic" ? defaultParameters[type].name: modalName.toLowerCase()
+    const params = (type in defaultParameters) ? defaultParameters[type].acq_parameters : {}
+
     this.props.showForm(
       modalName,
       [sampleID],
       {
         parameters:
         {
-          ...defaultParameters[modalName.toLowerCase()],
-          ...wf,
+          ...params,
+          ...extraParams,
           prefix: sampleData.defaultPrefix,
+          name: name,
           subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
           cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
           numRows: shape.gridData ? shape.gridData.numRows : 0,
           numCols: shape.gridData ? shape.gridData.numCols : 0
-        }
+        },
+        type: type,
       },
       sid
     );

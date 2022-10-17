@@ -24,7 +24,7 @@ class AddSample extends React.Component {
     let prefix = params.sampleName ? params.sampleName : 'noname';
 
     if (params.proteinAcronym && params.sampleName) {
-      prefix += `-${params.proteinAcronym}`;
+      prefix = `${params.proteinAcronym}-${prefix}`;
     }
 
     return {

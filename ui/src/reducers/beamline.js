@@ -2,17 +2,17 @@ import { STATE } from '../actions/beamline';
 import { RUNNING, MOTOR_STATE } from '../constants';
 
 /**
- *  Initial redux state for beamline attributes, object containing each beamline
+ *  Initial redux state for beamline hardwareObjects, object containing each beamline
  *  attribute (name, attribute object). Each attribute object in turn have the
  *  follwoing properties:
  *
  *     name:   name of beamline attribute
- *     value:  attributes current value
- *     state:  attributes current state, see STATE for more information
+ *     value:  hardwareObjects current value
+ *     state:  hardwareObjects current state, see STATE for more information
  *     msg:    arbitray message describing current state
  */
 export const INITIAL_STATE = {
-  attributes: {
+  hardwareObjects: {
     fast_shutter: {
       limits: [0, 1, 1],
       name: 'fast_shutter',
@@ -150,13 +150,13 @@ export default (state = INITIAL_STATE, action) => {
 
     case 'BL_ATTR_SET': {
       const attrData = Object.assign(
-        state.attributes[action.data.name] || {},
+        state.hardwareObjects[action.data.name] || {},
         action.data
       );
       return {
         ...state,
-        attributes: {
-          ...state.attributes,
+        hardwareObjects: {
+          ...state.hardwareObjects,
           [action.data.name]: attrData,
         },
       };
@@ -171,7 +171,7 @@ export default (state = INITIAL_STATE, action) => {
       };
     case 'BL_ATTR_SET_STATE':
       data = { ...state};
-      data.attributes[action.data.name].state = action.data.state;
+      data.hardwareObjects[action.data.name].state = action.data.state;
       return data;
 
     case 'SET_MOTOR_MOVING':
@@ -222,9 +222,9 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...INITIAL_STATE,
         //        motors: { ...INITIAL_STATE.motors, ...action.data.Motors },
-        attributes: {
+        hardwareObjects: {
           ...INITIAL_STATE.actuators,
-          ...action.data.beamlineSetup.attributes,
+          ...action.data.beamlineSetup.hardwareObjects,
         },
         //        motorsLimits: {
         //          ...INITIAL_STATE.motorsLimits,

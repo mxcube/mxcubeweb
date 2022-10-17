@@ -44,7 +44,7 @@ function requireAuth() {
   let state = store.getState();
   store.dispatch(getLoginInfo()).then(() => {
     state = store.getState();
-    if (state.login.loggedIn) {
+    if (state.login.loggedIn && !serverIO.initialized) {
       serverIO.connectStateSocket(statePersistor);
       serverIO.listen(store);
       store.dispatch(startSession());

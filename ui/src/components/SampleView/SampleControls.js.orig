@@ -272,7 +272,11 @@ export default class SampleControls extends React.Component {
                       hardwareObjects.zoom.limits[1] - hardwareObjects.zoom.limits[0]
                     ).keys(),
                   ].map((i) => (
+<<<<<<< HEAD
+                    <option key={`z-${attributes.zoom.limits[0] + i}`}>{attributes.zoom.limits[0] + i}</option>
+=======
                     <option>{hardwareObjects.zoom.limits[0] + i}</option>
+>>>>>>> Renamed "beamline attributes" to hardwareObjects
                   ))}
                 </datalist>
                 <span className="sample-control-label">Zoom</span>

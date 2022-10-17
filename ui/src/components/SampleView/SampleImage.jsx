@@ -396,7 +396,6 @@ export default class SampleImage extends React.Component {
     const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
     let ctxMenuObj = { type: 'NONE' };
     let objectFound = false;
-
     // Existing selection clicked
     if (
       group &&
@@ -408,9 +407,10 @@ export default class SampleImage extends React.Component {
 
       group.getObjects().forEach((obj) => {
         if (
-          !objectFound &&
-          obj.containsPoint(clickPoint, null, true) &&
-          obj.selectable
+           (!objectFound &&
+             obj.containsPoint(clickPoint, null, true) &&
+            obj.selectable) || 
+            obj.active
         ) {
           objectFound = true;
         }
@@ -475,7 +475,6 @@ export default class SampleImage extends React.Component {
           (obj.type === 'SAVED' || obj.type === 'TMP')
         ) {
           objectFound = true;
-
           this.selectShape([obj], e.ctrlKey);
           ctxMenuObj = obj;
         }
@@ -489,7 +488,6 @@ export default class SampleImage extends React.Component {
 
             if (obj.type === 'GridGroup') {
               let gridData = this.props.grids[obj.id];
-
               if (gridData) {
                 const cellCenter = this.getGridCellCenter(obj, clickPoint);
                 ctxMenuObj = {
@@ -547,6 +545,8 @@ export default class SampleImage extends React.Component {
       measureDistance,
       imageRatio,
       contextMenuVisible,
+      beamSize,
+      pixelsPerMm
     } = this.props;
 
     if (contextMenuVisible) {
@@ -565,6 +565,15 @@ export default class SampleImage extends React.Component {
       );
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
+    } else{
+      const cellSizeX = beamSize.x * pixelsPerMm[0] * imageRatio;
+      const cellSizeY = beamSize.y * pixelsPerMm[1] * imageRatio;
+  
+      const cellIdxX = parseInt(Math.floor(option.transform.offsetX/cellSizeX));
+      const cellIdxY = parseInt(Math.floor((option.transform.offsetY-20) /cellSizeY));
+      debugger;
+      console.log(cellIdxX);
+      console.log(cellIdxY);
     }
 
     if (
@@ -585,11 +594,11 @@ export default class SampleImage extends React.Component {
   wheel(e) {
     e.preventDefault();
     e.stopPropagation();
-    const { sampleActions, motorSteps, attributes } = this.props;
+    const { sampleActions, motorSteps, hardwareObjects } = this.props;
     const { sendMotorPosition, sendZoomPos } = sampleActions;
     const keyPressed = this._keyPressed;
 
-    const { phi, focus, zoom } = attributes;
+    const { phi, focus, zoom } = hardwareObjects;
 
     if (keyPressed === 'r' && phi.state === MOTOR_STATE.READY) {
       // then we rotate phi axis by the step size defined in its box
@@ -788,9 +797,9 @@ export default class SampleImage extends React.Component {
       />
     );
 
-    if (format === 'MPEG1') {
-      result = <canvas id="sample-img" className="img" />;
-    }
+    // if (format === 'MPEG1') {
+    //  result = <canvas id="sample-img" className="img" />;
+    // }
 
     return result;
   }
@@ -800,27 +809,29 @@ export default class SampleImage extends React.Component {
       const canvas = document.querySelector('#sample-img');
        
       let source = !process.env.VIDEO_STREAM_URL
-        ? `ws://${document.location.hostname}:4042/`
+        ? `http://${document.location.hostname}:4042/`
         : process.env.VIDEO_STREAM_URL;
       const streamOnLocalHost = process.env.VIDEO_STREAM_ON_LOCAL_HOST;
       /* eslint-enable no-undef */
 
       // Use local video stream if there is one
       if (document.location.hostname === 'localhost' && streamOnLocalHost) {
-        source = `ws://${document.location.hostname}:4042/`;
+        source = `http://${document.location.hostname}:4042/`;
       }
 
       source += this.props.videoHash;
 
-      if (this.props.videoFormat === 'MPEG1' && canvas) {
-        this.player = new jsmpeg.JSMpeg.Player(source, {
-          canvas,
-          decodeFirstFrame: false,
-          preserveDrawingBuffer: true,
-          protocols: [],
-        });
-        this.player.play();
-      }
+      // if (this.props.videoFormat === 'MPEG1' && canvas) {
+      //  this.player = new jsmpeg.JSMpeg.Player(source, {
+      //    canvas,
+      //    decodeFirstFrame: false,
+      //    preserveDrawingBuffer: true,
+      //    protocols: [],
+      //  });
+      //  this.player.play();
+      // }
+
+      canvas.src = source;
     }
   }
 

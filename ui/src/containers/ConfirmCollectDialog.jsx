@@ -93,21 +93,21 @@ export class ConfirmCollectDialog extends React.Component {
     const tableBody = document.querySelector('#table-body');
 
     if (tableHead && tableBody) {
-      const headerColWidthArray = Array.map(tableHead.children[0].children, (td) => (
+      const headerColWidthArray = Array.from(tableHead.children[0].children).map((td) => (
         td.getBoundingClientRect().width));
 
-      const bodyColWidthArray = Array.map(tableBody.children[0].children, (td) => (
+      const bodyColWidthArray = Array.from(tableBody.children[0].children).map((td) => (
         td.getBoundingClientRect().width));
 
       // Set the width of each collumn in the body to be atleast the width of the
       // corresponding collumn in the header
-      Array.map(tableBody.children, (tr) => Array.forEach(tr.children, (td, i) => {
+      Array.from(tableBody.children).map((tr) => Array.from(tr.children).forEach((td, i) => {
         const _td = td;
         _td.width = headerColWidthArray[i];
       }));
 
       // Update the header columns so that they match the content of the body
-      Array.forEach(tableHead.children[0].children, (th, i) => {
+      Array.from(tableHead.children[0].children).forEach((th, i) => {
         if (bodyColWidthArray[i] > th.getBoundingClientRect().width) {
           const _th = th;
           _th.width = bodyColWidthArray[i];
@@ -211,7 +211,7 @@ export class ConfirmCollectDialog extends React.Component {
             </thead>
             <tbody>
               <tr>
-                <td>{task.parameters.countTime}</td>
+                <td>{task.parameters.exp_time}</td>
               </tr>
             </tbody>
           </Table>
