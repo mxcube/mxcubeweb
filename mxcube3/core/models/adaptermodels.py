@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from typing import Tuple, List
+from typing import Tuple, List, Union
 from pydantic import BaseModel, Field
 
 
@@ -12,11 +12,8 @@ class HOModel(BaseModel):
     readonly: bool = Field(
         True, description="True if the object can only be read (not manipluated)"
     )
-    commands: tuple = Field(
-        ("set_value", "get_value"), description="List of commands avilable"
-    )
-
-    attributes: dict = {}
+    attributes: dict = Field({}, description="Data attributes")
+    commands: Union[dict, list] = Field({},description="Available methods")
 
     class Config:
         extra: "forbid"

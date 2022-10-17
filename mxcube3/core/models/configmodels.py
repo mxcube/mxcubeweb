@@ -53,7 +53,8 @@ class UserManagerConfigModel(BaseModel):
     users: List[UserManagerUserConfigModel]
 
 class ModeEnum(str, Enum):
-    SSX = 'SSX'
+    SSX_INJECTOR = 'SSX-INJECTOR'
+    SSX_CHIP = 'SSX-CHIP'
     OSC = 'OSC'
 
 class MXCUBEAppConfigModel(BaseModel):

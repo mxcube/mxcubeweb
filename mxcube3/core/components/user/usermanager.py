@@ -1,13 +1,12 @@
 import logging
 import json
 import uuid
-import datetime
 import time
+import datetime
 
 import flask
 import flask_security
 import flask_login
-import flask_socketio
 
 from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.models.usermodels import User
@@ -121,15 +120,15 @@ class BaseUserManager(ComponentBase):
 
     def handle_disconnect(self, username):
         time.sleep(120)
-
         user = self.get_user(username)
 
         if user.disconnect_timestamp:
             dt = datetime.datetime.now() - user.disconnect_timestamp
-
             # Disconnected for more than a minute
             if dt.seconds >= 120:
+
                 logging.getLogger("HWR").info("Client disconnected")
+                logging.getLogger("HWR").info(f"User {user.username} logged out")
 
                 user.active = False
                 self.update_user(user)
@@ -158,7 +157,7 @@ class BaseUserManager(ComponentBase):
 
             user = self.db_create_user(login_id, password, login_res)
             self.app.server.user_datastore.activate_user(user)
-            flask_security.login_user(user, remember=True)
+            flask_security.login_user(user, remember=False)
 
             # Important to make flask_security user tracking work
             self.app.server.security.datastore.commit()
@@ -219,6 +218,17 @@ class BaseUserManager(ComponentBase):
 
     def is_authenticated(self):
         return flask_login.current_user.is_authenticated()
+
+    def force_signout_user(self, username):
+        user = self.get_user(username)
+
+        if not user.in_control:
+            self.app.server.emit(
+                "forceSignoutObservers", room=user.socketio_session_id, namespace="/hwr"
+            )
+
+            self.app.server.user_datastore.deactivate_user(user)
+
 
     def login_info(self):
         res = {
@@ -294,7 +304,7 @@ class BaseUserManager(ComponentBase):
     def db_create_user(self, user, password, lims_data):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
-        username = f"{user}-{sid}"
+        username = f"{user}-{str(uuid.uuid4())}"
 
         # Make sure that the roles staff and incontrol always
         # exists

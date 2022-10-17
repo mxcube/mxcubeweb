@@ -1,4 +1,8 @@
+import typing
 import logging
+
+import pydantic
+import gevent
 
 from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.models.adaptermodels import HOModel, HOActuatorModel
@@ -6,6 +10,8 @@ from mxcube3.core.models.adaptermodels import HOModel, HOActuatorModel
 
 class AdapterBase:
     """Hardware Object Adapter Base class"""
+    ATTRIBUTES = []
+    METHODS = []
 
     def __init__(self, ho, role, app, **kwargs):
         """
@@ -43,7 +49,40 @@ class AdapterBase:
         pass
 
     def execute_command(self, cmd_name, args):
-        self._ho.execute_exported_command(cmd_name, args)
+        try:
+            self.ho.pydantic_model[cmd_name].validate(args)
+        except pydantic.ValidationError:
+            logging.getLogger("MX3.HWR").exception(f"Error when validating input {args} for command {cmd_name}")
+
+        task = gevent.spawn(self._ho.execute_exported_command, cmd_name, args)
+        task.call_args = {"cmd_name": cmd_name, "value": args}
+        task.link_value(self._command_success)
+
+    def _command_success(self, t):
+        value = t.value
+        attr = getattr(self._ho, t.call_args["cmd_name"])
+        model = self._model_from_typehint(attr)
+
+        try:
+            model["return"].validate({"return": value})
+        except pydantic.ValidationError as ex:
+            attr_name = t.call_args["cmd_name"]
+            logging.getLogger("MX3.HWR").exception(
+                f"Return value of {self._name}.{attr_name} is of wrong type"
+            )
+        else:
+            self.app.server.emit(
+                "hardware_object_command_return",
+                {"cmd_name": t.call_args["cmd_name"], "value": value},
+                namespace="/hwr"
+            )
+
+    def _command_exception(self, t):
+        self.app.server.emit(
+            "hardware_object_command_error",
+            {"cmd_name": t.call_args["cmd_name"], "value": t.exception},
+            namespace="/hwr"
+        )
 
     @property
     def adapter_type(self):
@@ -98,14 +137,71 @@ class AdapterBase:
         """
         return self._available
 
-    def attributes(self):
-        if getattr(self._ho, "pydantic_model", None):
-            return self._ho.exported_attributes
+    def _model_from_typehint(self, attr):
+        input_dict = {}
+        output_dict = {}
+
+        for _n, _t in typing.get_type_hints(attr).items():
+            if _n != "return":
+                input_dict[_n] = (_t, pydantic.Field(alias=_n))
+            else:
+                output_dict[_n] = (_t, pydantic.Field(alias=_n))
+
+        return {
+            "args": pydantic.create_model(attr.__name__, **input_dict),
+            "return": pydantic.create_model(attr.__name__, **output_dict),
+            "signature": list(input_dict.keys())
+        }
+
+    def _pydantic_model_for_command(self, cmd_name):
+        if cmd_name in self.METHODS:
+            return self._model_from_typehint(getattr(self, cmd_name, None))["args"]
         else:
-            return {}
+            return self._ho.pydantic_model[cmd_name]
+
+    def _exported_methods(self):
+        exported_methods = {}
+
+        # Get exported attributes from underlaying HardwareObject
+        if getattr(self._ho, "pydantic_model", None):
+            exported_methods = self._ho.exported_attributes
+
+        for method_name in self.METHODS:
+            attr = getattr(self, method_name, None)
+
+            if attr:
+                model = self._model_from_typehint(attr)
+                exported_methods[method_name] = {
+                    "signature": model["signature"],
+                    "schema": model["args"].schema()
+                }
+
+        return exported_methods
 
     def commands(self):
-        return ()
+        return self._exported_methods()
+
+    def attributes(self):
+        _attributes = {}
+
+        for attribute_name in self.ATTRIBUTES:
+            attr = getattr(self, attribute_name, None)
+
+            if attr:
+                model = self._model_from_typehint(attr)
+                value = attr()
+
+                try:
+                    model["return"].validate({"return": value})
+                except pydantic.ValidationError:
+                    logging.getLogger("MX3.HWR").exception(
+                        f"Return value of {self._name}.{attribute_name} is of wrong type"
+                    )
+                    _attributes[attribute_name] = {}
+                else:
+                    _attributes[attribute_name] = attr()
+
+        return _attributes
 
     def state_change(self, *args, **kwargs):
         """
@@ -129,7 +225,7 @@ class AdapterBase:
                 "available": self.available(),
                 "readonly": self.read_only(),
                 "commands": self.commands(),
-                "attributes": self.attributes(),
+                "attributes": self.attributes()
             }
 
         except Exception as ex:
@@ -144,6 +240,7 @@ class AdapterBase:
                 "type": "FLOAT",
                 "available": self.available(),
                 "readonly": False,
+                "commands": {},
                 "attributes": {}
             }
 

@@ -290,6 +290,17 @@ def init_route(app, server, url_prefix):
         resp.status_code = 200
         return resp
 
+    @bp.route("/available_tasks", methods=["GET"])
+    @server.restrict
+    def get_avilable_tasks():
+        """
+        Returns a list of all available tasks
+        """
+        resp = jsonify(app.queue.get_available_tasks())
+
+        resp.status_code = 200
+        return resp
+
     @bp.route("/char", methods=["GET"])
     @server.restrict
     def get_default_char_params():

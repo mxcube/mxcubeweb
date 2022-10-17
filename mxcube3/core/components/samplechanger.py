@@ -3,7 +3,7 @@ import logging
 import time
 import gevent
 
-from mxcubecore.HardwareObjects import queue_entry
+from mxcubecore import queue_entry
 from mxcubecore import HardwareRepository as HWR
 
 from mxcube3.core.components.component_base import ComponentBase
