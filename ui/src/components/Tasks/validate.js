@@ -75,10 +75,10 @@ const validate = (values, props) => {
     errors.resolution = 'Entered Resolution outside working range';
   }
 
-  if (energies.length > 2 && !(currEnergy > props.beamline.hardwareObjects.energy.limits[0]
-          && currEnergy < props.beamline.hardwareObjects.energy.limits[1])) {
-      errors.energy = `Entered Energy is outside working range [${props.attributes.energy.limits[0]},
-        ${props.attributes.energy.limits[0].toFixed(1)}]`;
+  if (energies.length >= 2 && !(currEnergy > props.beamline.hardwareObjects.energy.limits[0]
+      && currEnergy < props.beamline.hardwareObjects.energy.limits[1])) {
+      errors.energy = `Entered Energy is outside working range [${props.beamline.hardwareObjects.energy.limits[0]},
+        ${props.beamline.hardwareObjects.energy.limits[1]}]`;
     }
 
   if (!(currTransmission >= 0 && currTransmission <= 100)) {
