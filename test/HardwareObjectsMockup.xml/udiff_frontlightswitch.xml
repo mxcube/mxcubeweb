@@ -1,4 +1,4 @@
-<device class="ExporterNStateMockup">
+<device class="ExporterNStateMockup" global_role="frontlight_switch">
   <username>frontlight_switch</username>
   <exporter_address>wid30bmd:9001</exporter_address>
   <value_channel_name>FrontLightIsOn</value_channel_name>

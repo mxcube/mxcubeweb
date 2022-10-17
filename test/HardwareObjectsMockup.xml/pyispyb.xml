@@ -1,0 +1,9 @@
+<object class="PyISPyBClient">
+  <object role="session" href="/session"/>
+  <host>
+    http://py-ispyb-development:8000
+  </host>
+  <username>mxcube_service</username>
+  <password>dummy</password>
+  <plugin>dummy</plugin>
+</object>

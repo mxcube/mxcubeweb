@@ -1,3 +1,3 @@
-<equipment class = "SampleChangerMockup">
+<equipment class = "SampleChangerMockup" global_role="sample_changer">
  <!-- SC3 commands and channels -->
 </equipment>

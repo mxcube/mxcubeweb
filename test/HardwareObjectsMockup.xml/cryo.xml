@@ -1,6 +1,6 @@
-<device class ="ActuatorMockup">
+<device class ="ActuatorMockup" global_role="cryo">
     <actuator_name>Cryo</actuator_name>
-    <user_name>Cryo</user_name>
+    <username>Cryo</username>
     <read_only>True</read_only>
     <default_value>200</default_value>
 </device>

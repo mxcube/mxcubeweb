@@ -16,7 +16,8 @@ def test_beamline_get_all_attribute(client):
     """
     resp = client.get("/mxcube/api/v0.1/beamline/")
     data = json.loads(resp.data)
-    actual = list(data.get("attributes").keys())
+
+    actual = list(data.get("hardwareObjects").keys())
 
     expected = [
         "backlight",
@@ -50,7 +51,7 @@ def test_beamline_get_all_attribute(client):
         "zoom"
     ]
 
-    assert isinstance(data["attributes"], dict)
+    assert isinstance(data["hardwareObjects"], dict)
     assert isinstance(data["actionsList"], list)
     assert isinstance(data["path"], unicode)
     assert len(data["energyScanElements"]) == 31

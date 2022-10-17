@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
-<object class = "Session" role = "session">  
+<object class="Session" global_role="session">  
  <synchrotron_name>ESRF</synchrotron_name>
  <endstation_name>mxcube3test</endstation_name>
  <beamline_name>mxcube3test</beamline_name>

@@ -1,4 +1,4 @@
-<equipment class="EnergyMockup">
+<equipment class="EnergyMockup" global_role="energy">
   <username>energy</username>
   <mad>
     <defaultenergy>
