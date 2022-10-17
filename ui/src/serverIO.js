@@ -58,6 +58,7 @@ class ServerIO {
     this.uiStateSocket = null;
     this.hwrsid = null;
     this.connected = false;
+    this.initialized = false;
 
     this.uiStorage = {
       setItem: (key, value) => {
@@ -104,14 +105,6 @@ class ServerIO {
     });
   }
 
-  // setRemoteAccessMaster(name, cb) {
-  //   this.hwrSocket.emit('setRaMaster', { master: true, name }, cb);
-  // }
-
-  // setRemoteAccessObserver(name, cb) {
-  //   this.hwrSocket.emit('setRaObserver', { master: true, name }, cb);
-  // }
-
   disconnect() {
     this.hwrSocket.disconnect();
     this.hwrSocket.disconnect();
@@ -119,6 +112,7 @@ class ServerIO {
   }
 
   listen(store) {
+    this.initialized = true;
     this.dispatch = store.dispatch;
 
     this.hwrSocket = io.connect(
@@ -221,11 +215,7 @@ class ServerIO {
       }
     });
 
-    this.hwrSocket.on('add_task', (record, callback) => {
-      if (callback) {
-        callback();
-      }
-
+    this.hwrSocket.on('add_task', (record) => {
       this.dispatch(addTaskAction(record.tasks));
     });
 

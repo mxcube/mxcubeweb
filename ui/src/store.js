@@ -47,7 +47,6 @@ function initStore() {
       'form', 'general', 'logger', 'shapes',
       'sampleView', 'taskResult', 'sampleChangerMaintenance', 'uiproperties'],
     whitelist: ['login'],
-    // storage: new ServerStorage(serverIO) 
     storage, // TODO: Find a way to pass the server storage there instead of local storage, 
   }
 
@@ -60,7 +59,7 @@ function initStore() {
       enhancers.push(devToolsExtension());
     }
   }
-  
+
   const composedEnhancers = compose(applyMiddleware(...middleware), ...enhancers);
 
   const store = createStore(persistedReducer, composedEnhancers);
@@ -71,31 +70,7 @@ function initStore() {
 }
 
 function createServerStatePersistor(store, serverIO, cb) {
-  return persistStore(
-    store,
-    {
-      blacklist: [
-        'remoteAccess',
-        'beamline',
-        'sampleChanger',
-        'form',
-        'login',
-        'general',
-        'logger',
-        'shapes',
-        'sampleView',
-        'taskResult',
-        'sampleChangerMaintenance',
-        'uiproperties',
-      ],
-      storage: new ServerStorage(serverIO),
-    },
-    () => {
-       
-      // cb();
-      /* eslint-enable react/no-set-state */
-    }
-  );
+  return persistStore(store);
 }
 
 export const store = initStore();
