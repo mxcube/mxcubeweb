@@ -10,17 +10,18 @@ class SelectProposal extends React.Component {
     this.sendProposal = this.sendProposal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.state = {
-        pID: 0,
+        pId: 0,
+        pNumber: null,
     };
   }
 
   onClickRow(prop) {
-    this.setState({ pID:  prop.proposalId});
-    this.props.selectProposal(prop.code + prop.number);
+    this.setState({ pId:  prop.proposalId});
+    this.setState({ pNumber:  prop.code + prop.number});
   }
 
   sendProposal() {
-    this.props.sendSelectProposal();
+    this.props.sendSelectProposal(this.state.pNumber);
     this.props.hide();
   }
 
@@ -30,8 +31,9 @@ class SelectProposal extends React.Component {
   }
 
   render() {
-    const proposals = this.props.data.proposalList.map((prop) =>
-    <tr key={prop.proposalId} style={this.state.pID === prop.proposalId ? { backgroundColor: '#d3d3d3'}: null} onClick={
+    const sortedlist = this.props.data.proposalList.sort((a,b) => (a.number<b.number ? 1:-1))
+    const proposals = sortedlist.map((prop) =>
+    <tr key={prop.proposalId} style={this.state.pId === prop.proposalId ? { backgroundColor: '#d3d3d3'}: null} onClick={
         ()=>
         this.onClickRow(prop)
         }>
@@ -50,9 +52,9 @@ class SelectProposal extends React.Component {
           <Modal.Title>Select a proposal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>
+          <div style={{overflow: 'auto', height: '250px'}}>
             <Table bordered hover>
-            <thead style={{overflow: 'auto'}}>
+            <thead>
               <tr>
                 <th>Proposal Number</th>
                 <th>Person</th>
@@ -75,7 +77,7 @@ class SelectProposal extends React.Component {
             <Button
               variant="primary"
               className="pull-right"
-              disabled={typeof this.props.selectedProposal === 'undefined'}
+              disabled={this.state.pNumber === null}
               onClick={this.sendProposal}
             >
               Select Proposal

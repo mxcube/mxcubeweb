@@ -62,6 +62,7 @@ export function sendSelectProposal(number, navigate) {
         navigate('/login');
       } else {
         navigate('/');
+        dispatch(selectProposal(number));
       }
     });
   };
