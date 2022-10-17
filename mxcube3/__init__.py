@@ -50,17 +50,24 @@ def parse_args():
         default=f"{os.getcwd()}ui/build",
     )
 
-
     opt_parser.add_option(
         "-l",
         "--log-file",
         dest="log_file",
-        help="Hardware Repository log file name",
+        help="Log file name",
         default="",
     )
 
     opt_parser.add_option(
-        "-v",
+        "-L",
+        "--log-level",
+        dest="log_level",
+        help="Log level for thirdparty libraries, mxcube-server log level is always DEBUG ",
+        default="",
+    )
+
+    opt_parser.add_option(
+        "-d",
         "--video-device",
         dest="video_device",
         help="Video device, defaults to: No device",
@@ -113,6 +120,7 @@ def main(test=False):
             cmdline_options.ra_timeout,
             cmdline_options.video_device,
             cmdline_options.log_file,
+            cmdline_options.log_level,
             cfg,
         )
 

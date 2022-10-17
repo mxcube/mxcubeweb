@@ -53,7 +53,7 @@ class _BeamlineAdapter:
             _d = self.app.mxcubecore.get_adapter(attr_name).dict()
             attributes.update({attr_name: _d})
 
-        return {"attributes": attributes}
+        return {"hardwareObjects": attributes}
 
     def get_available_methods(self):
         """

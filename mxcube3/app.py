@@ -15,7 +15,7 @@ from logging.handlers import TimedRotatingFileHandler
 
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import removeLoggingHandlers
-from mxcubecore.HardwareObjects import queue_entry
+from mxcubecore import queue_entry
 from mxcubecore.utils.conversion import make_table
 
 from mxcube3.logging_handler import MX3LoggingHandler
@@ -111,13 +111,7 @@ class MXCUBECore:
 
     @staticmethod
     def _get_adapter_id(ho):
-        try:
-            if ho.username != None:
-                _id = ho.username
-            else:
-                _id = ho.name()[1:]
-        except:
-            _id = ho.name()[1:]
+        _id = ho.global_role
 
         return _id.replace(" ", "_").lower()
 
@@ -180,7 +174,7 @@ class MXCUBECore:
 
         print(
             make_table(
-                ["Name", "Adapter", "HO filename"],
+                ["Name (global_role)", "Adapter", "HO filename"],
                 [
                     [item["id"], item["adapter_cls"], item["ho"]]
                     for item in MXCUBECore.adapter_dict.values()
@@ -252,7 +246,7 @@ class MXCUBEApplication:
     server = None
 
     @staticmethod
-    def init(server, allow_remote, ra_timeout, video_device, log_fpath, cfg):
+    def init(server, allow_remote, ra_timeout, video_device, log_fpath, log_level, cfg):
         """
         Initializes application wide variables, sample video stream, and applies
 
@@ -274,7 +268,7 @@ class MXCUBEApplication:
         if video_device:
             MXCUBEApplication.init_sample_video(video_device)
 
-        MXCUBEApplication.init_logging(log_fpath)
+        MXCUBEApplication.init_logging(log_fpath, log_level)
 
         _UserManagerCls = import_component(
             cfg.app.usermanager, package="components.user"
@@ -347,7 +341,7 @@ class MXCUBEApplication:
             sys.excepthook(*sys.exc_info())
 
     @staticmethod
-    def init_logging(log_file):
+    def init_logging(log_file, log_level):
         """
         :param str log_file: Path to log file
 
@@ -365,9 +359,10 @@ class MXCUBEApplication:
             os.chmod(log_file, 0o666)
             log_file_handler.setFormatter(log_formatter)
 
-        root_logger = logging.getLogger()
-        root_logger.setLevel(logging.INFO)
-        root_logger.addHandler(NullHandler())
+
+        if log_level:
+            root_logger = logging.getLogger()
+            root_logger.setLevel(getattr(logging, log_level.upper(), "INFO"))
 
         custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
         custom_log_handler.setLevel(logging.DEBUG)
@@ -388,6 +383,7 @@ class MXCUBEApplication:
             mx3_hwr_logger,
             queue_logger,
         ):
+            logger.setLevel(logging.DEBUG)
             logger.addHandler(custom_log_handler)
             logger.addHandler(stdout_log_handler)
 

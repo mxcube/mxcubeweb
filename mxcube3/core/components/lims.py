@@ -9,7 +9,7 @@ import re
 import json
 
 from mxcubecore import HardwareRepository as HWR
-from mxcubecore.HardwareObjects import queue_model_objects as qmo
+from mxcubecore.model import queue_model_objects as qmo
 
 from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.util import fsutils
@@ -194,7 +194,6 @@ class Lims(ComponentBase):
         }
         """
         login_res = {}
-
         # If this is used often, it could be moved to a better place.
         ERROR_CODE = dict({"status": {"code": "0"}})
 

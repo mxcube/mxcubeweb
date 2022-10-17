@@ -5,7 +5,7 @@ import logging
 
 from flask import Blueprint, jsonify, Response, send_file, request, render_template
 
-from mxcubecore.HardwareObjects import queue_model_objects as qmo
+from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore import HardwareRepository as HWR
 
 from . import signals
