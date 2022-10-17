@@ -526,6 +526,7 @@ class SampleListViewContainer extends React.Component {
       <DropdownButton
         variant='outline-secondary'
         id="filter-drop-down"
+        title="Filter options"
       >
         <div style={{ padding: '1em 1em 0 1em', width: '350px' }}>
           <b>Filter <i className="fas fa-filter" /> </b>
@@ -697,11 +698,10 @@ class SampleListViewContainer extends React.Component {
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
-              <Col md={{ span: 3, offset: 1 }} className='d-flex me-auto'>
-                <span style={{ marginLeft: '2em' }} />
+              <Col md={{ span: 4, offset: 1 }} className='d-flex me-auto'>
                 <Form>
                   <Form.Group  as={Row} className="d-flex">
-                    <Form.Label style={{ whiteSpace: 'nowrap', marginRight: '0px'}} className="d-flex" column sm="2">Filter :</Form.Label>
+                    <Form.Label style={{ whiteSpace: 'nowrap'}} className="d-flex" column sm="2">Filter :</Form.Label>
                     <Col sm="9">
                       <InputGroup className={this.filterIsUsed() ? 'filter-input-active' : ''}>
                         <Form.Control
