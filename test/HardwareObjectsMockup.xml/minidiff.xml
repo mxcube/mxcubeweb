@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<equipment class="DiffractometerMockup">
+<equipment class="DiffractometerMockup" global_role="diffractometer">
   <username>diffractometer</username>
   <object role="focus" hwrid="./udiff_phix"></object>
   <object role="zoom" hwrid="./udiff_zoom"></object>
@@ -43,4 +43,5 @@
   <phaseList>["Transfer","Centring","BeamLocation", "DataCollection"]</phaseList>
   <headType>MiniKappa</headType>
   <exports>["abort", "status", "my_fancy_function", "my_other_funny_function"]</exports>
+  <chip_definition_file>oxford_chip_def.json</chip_definition_file>
 </equipment>

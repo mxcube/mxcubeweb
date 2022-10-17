@@ -1,4 +1,4 @@
-<device class="MotorMockup">
+<device class="MotorMockup" global_role="phiy">
   <username>PhiY</username>
   <exporter_address>130.235.94.124:9001</exporter_address>
   <motor_name>AlignmentY</motor_name>

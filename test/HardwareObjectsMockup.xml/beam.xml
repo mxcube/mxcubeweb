@@ -1,4 +1,4 @@
-<object class="BeamMockup">
+<object class="BeamMockup" global_role="beam">
     <username>beam</username>
     <device hwrid="/aperture" role="aperture" />
     <device hwrid="/slits" role="slits" />

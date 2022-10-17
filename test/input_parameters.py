@@ -269,4 +269,4 @@ default_mesh_params = {
     }
 }
 
-default_xrf_parameters = {"countTime": "5"}
+default_xrf_parameters = {"exp_time": "5"}

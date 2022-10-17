@@ -103,6 +103,7 @@ default_acquisition_parameters:
         osc_range: 1
         overlap: -89
         num_images: 4
+        shutterless: false
 
     mesh:
         # Defaults for 'advanced' acquisition. Missing values are taken from default
@@ -131,9 +132,11 @@ available_methods:
     datacollection: True
     characterisation: True
     helical: True
-    xrf_scan: True
-    energy_scan: True
-    mesh_scan: False
+    xrf: True
+    energy: True
+    mesh: True
+    ssx_chip_collection: True
+    test_collection: True
 
 undulators:
     - type: PPU35C_GAP

@@ -1,4 +1,4 @@
-<device class="mockup.MotorMockup">
+<device class="mockup.MotorMockup" global_role="beamstop_alignemnt_z">
   <username>Beamstop Alignment Z</username>
   <exporter_address>130.235.94.124:9001</exporter_address>
   <motor_name>BeamstopAlignmentZ</motor_name>

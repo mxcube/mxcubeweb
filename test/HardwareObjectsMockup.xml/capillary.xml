@@ -1,4 +1,4 @@
-<device class="ExporterNStateMockup">
+<device class="ExporterNStateMockup" global_role="capillary">
   <username>capillary</username>
   <values>{"IN": "BEAM", "OUT": "OFF"}</values>
   <use_hwstate>True</use_hwstate>
