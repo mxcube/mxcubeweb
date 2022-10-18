@@ -132,6 +132,7 @@ Workflow = connect(state => {
     filename: fname,
     wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: limits,
+    beamline: state.beamline,
     suffix: fileSuffix,
     initialValues: {
       ...state.taskForm.taskData.parameters,

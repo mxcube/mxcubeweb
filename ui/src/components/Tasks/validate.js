@@ -6,7 +6,6 @@ const validate = (values, props) => {
     // for some reason redux-form is loaded before the initial status
     return errors;
   }
-  // debugger;
   const currEnergy = Number.parseFloat(values.energy);
   const currRes = Number.parseFloat(values.resolution);
   const currTransmission = Number.parseFloat(values.transmission);
@@ -64,11 +63,13 @@ const validate = (values, props) => {
     errors.osc_start = emptyField;
   }
 
-  const exptimemin = props.acqParametersLimits.exposure_time[0];
-  const exptimemax = props.acqParametersLimits.exposure_time[1];
-  if (values.exp_time === '' || Number.parseFloat(values.exp_time, 10) > exptimemax
-      || Number.parseFloat(values.exp_time, 10) < exptimemin) {
-    errors.exp_time = 'Entered Exposure time out of allowed limit';
+  if (props.acqParametersLimits.exposure_time) {
+    const exptimemin = props.acqParametersLimits.exposure_time[0];
+    const exptimemax = props.acqParametersLimits.exposure_time[1];
+    if (values.exp_time === '' || Number.parseFloat(values.exp_time, 10) > exptimemax
+        || Number.parseFloat(values.exp_time, 10) < exptimemin) {
+      errors.exp_time = 'Entered Exposure time out of allowed limit';
+    }
   }
 
   if (!(currRes >= resMin && currRes <= resMax)) {
