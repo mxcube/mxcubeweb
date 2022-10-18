@@ -237,6 +237,7 @@ class DataCollection extends React.Component {
               )
               : null
             }
+            {/* <StaticField col1='3' col2='4' label="Dose Estimation " data='10.9898' /> */}
             <CollapsableRows>
               <FieldsRow>
                 <InputField propName="kappa" type="number" label="Kappa" />

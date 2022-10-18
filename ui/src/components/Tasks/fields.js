@@ -34,6 +34,20 @@ function errorIndicator(error, warning) {
   return icon;
 }
 
+function errorLabel(error, warning) {
+  let label = null;
+  if (error) {
+    label = (
+      <Form.Label style={{ color: 'red' }}>{error}</Form.Label>
+    );
+  } else if (warning) {
+    label = (
+      <Form.Label style={{ color: 'orange' }}>{warning}</Form.Label>
+    );
+  }
+  return label;
+}
+
 
 export function FieldsHeader({ title }) {
   return <Row >
@@ -50,15 +64,15 @@ export function FieldsHeader({ title }) {
   </Row>
 }
 
-export function StaticField({ label, data }) {
+export function StaticField({ label, data, col1, col2 }) {
   return <Form.Group as={Row} style={{ textAlign: 'left' }}>
-   <Form.Label column sm="2" >
+   <Form.Label column sm={col1 || 2} >
      <b>
         {label}
         :
       </b>
     </Form.Label>
-    <Form.Label className='form-label-StaticField' column sm="9">
+    <Form.Label className='form-label-StaticField' column sm={col2 || 9}>
       {data}
     </Form.Label>
   </Form.Group>
@@ -91,6 +105,13 @@ function ReduxInputField(prop) {
         </Col>
       ) : <Col sm={1}/>
         }
+      {prop.meta.error || prop.meta.warning
+      ? (
+        <Col sm={12}>
+          {errorLabel(prop.meta.error, prop.meta.warning)}
+        </Col>
+      ) : null
+      }
 
   </Form.Group>
 }

@@ -12,7 +12,6 @@ export default class ApertureInput extends React.Component {
 
   sendAperture(event) {
     this.props.sendAperture(event.target.value);
-    debugger;
   }
 
   render() {

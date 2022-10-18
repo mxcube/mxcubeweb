@@ -131,6 +131,7 @@ GphlWorkflow = connect(state => {
     path: `${state.login.rootPath}/${subdir}`,
     wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: limits,
+    beamline: state.beamline,
     suffix: fileSuffix,
     strategy_name,
     initialValues: {

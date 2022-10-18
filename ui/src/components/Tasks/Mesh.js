@@ -249,6 +249,7 @@ Mesh = connect((state) => {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: limits,
+    beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
