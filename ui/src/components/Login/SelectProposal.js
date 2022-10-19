@@ -74,7 +74,6 @@ class SelectProposal extends React.Component {
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <ButtonToolbar>
             <Button
               variant="outline-secondary"
               onClick={this.handleCancel}
@@ -89,7 +88,6 @@ class SelectProposal extends React.Component {
             >
               Select Proposal
             </Button>
-          </ButtonToolbar>
         </Modal.Footer>
       </Modal>
     );
