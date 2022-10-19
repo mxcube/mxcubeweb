@@ -16,7 +16,7 @@ import 'fabric';
 
 const jsmpeg = require('./jsmpeg.min.js');
 
-const {fabric} = window;
+const { fabric } = window;
 fabric.Group.prototype.hasControls = false;
 fabric.Group.prototype.hasBorders = false;
 
@@ -163,32 +163,32 @@ export default class SampleImage extends React.Component {
 
   onMouseMove(options) {
     if (this.props.clickCentring && this.props.clickCentringClicksLeft > 0) {
-        if (this.centringVerticalLine !== undefined) {
-          this.canvas.remove(this.centringVerticalLine);
+      if (this.centringVerticalLine !== undefined) {
+        this.canvas.remove(this.centringVerticalLine);
+      }
+
+      this.centringVerticalLine = makeCentringVerticalLine(
+        (options.e.layerX + 1.5) / this.props.imageRatio,
+        (options.e.layerY + 1) / this.props.imageRatio,
+        this.props.imageRatio,
+        this.canvas.height
+      );
+
+      if (this.props.clickCentringClicksLeft > 2) {
+        if (this.centringHorizontalLine !== undefined) {
+          // this.canvas.remove(this.centringHorizontalLine);
         }
 
-        this.centringVerticalLine = makeCentringVerticalLine(
+        this.centringHorizontalLine = makeCentringHorizontalLine(
           (options.e.layerX + 1.5) / this.props.imageRatio,
           (options.e.layerY + 1) / this.props.imageRatio,
           this.props.imageRatio,
-          this.canvas.height
+          this.canvas.width
         );
-
-        if (this.props.clickCentringClicksLeft > 2) {
-          if (this.centringHorizontalLine !== undefined) {
-            // this.canvas.remove(this.centringHorizontalLine);
-          }
-
-          this.centringHorizontalLine = makeCentringHorizontalLine(
-            (options.e.layerX + 1.5) / this.props.imageRatio,
-            (options.e.layerY + 1) / this.props.imageRatio,
-            this.props.imageRatio,
-            this.canvas.width
-          );
-        }
-
-        this.canvas.add(this.centringVerticalLine);
       }
+
+      this.canvas.add(this.centringVerticalLine);
+    }
 
     if (options.e.buttons > 0) {
       this.drawGridPlugin.update(
@@ -211,7 +211,7 @@ export default class SampleImage extends React.Component {
 
   setImageRatio() {
     if (this.props.autoScale) {
-      const {clientWidth} = document.querySelector('#outsideWrapper');
+      const { clientWidth } = document.querySelector('#outsideWrapper');
       this.props.sampleActions.setImageRatio(clientWidth);
     }
   }
@@ -407,10 +407,10 @@ export default class SampleImage extends React.Component {
 
       group.getObjects().forEach((obj) => {
         if (
-           (!objectFound &&
-             obj.containsPoint(clickPoint, null, true) &&
-            obj.selectable) || 
-            obj.active
+          (!objectFound &&
+            obj.containsPoint(clickPoint, null, true) &&
+            obj.selectable) ||
+          obj.active
         ) {
           objectFound = true;
         }
@@ -565,12 +565,12 @@ export default class SampleImage extends React.Component {
       );
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
-    } else{
+    } else {
       const cellSizeX = beamSize.x * pixelsPerMm[0] * imageRatio;
       const cellSizeY = beamSize.y * pixelsPerMm[1] * imageRatio;
-  
-      const cellIdxX = parseInt(Math.floor(option.transform.offsetX/cellSizeX));
-      const cellIdxY = parseInt(Math.floor((option.transform.offsetY-20) /cellSizeY));
+
+      const cellIdxX = parseInt(Math.floor(option.transform.offsetX / cellSizeX));
+      const cellIdxY = parseInt(Math.floor((option.transform.offsetY - 20) / cellSizeY));
       debugger;
       console.log(cellIdxX);
       console.log(cellIdxY);
@@ -779,7 +779,7 @@ export default class SampleImage extends React.Component {
           }}
           key={this.props.clickCentringClicksLeft}
           id="video-message-overlay"
-         />
+        />
       );
     }
 
@@ -797,17 +797,17 @@ export default class SampleImage extends React.Component {
       />
     );
 
-    // if (format === 'MPEG1') {
-    //  result = <canvas id="sample-img" className="img" />;
-    // }
+    if (format === 'MPEG1') {
+      result = <canvas id="sample-img" className="img" />;
+    }
 
     return result;
   }
 
   initJSMpeg() {
-    if (this.player === null) {
+    if (this.player === null && this.props.videoFormat === 'MPEG1') {
       const canvas = document.querySelector('#sample-img');
-       
+
       let source = !process.env.VIDEO_STREAM_URL
         ? `http://${document.location.hostname}:4042/`
         : process.env.VIDEO_STREAM_URL;
@@ -821,15 +821,15 @@ export default class SampleImage extends React.Component {
 
       source += this.props.videoHash;
 
-      // if (this.props.videoFormat === 'MPEG1' && canvas) {
-      //  this.player = new jsmpeg.JSMpeg.Player(source, {
-      //    canvas,
-      //    decodeFirstFrame: false,
-      //    preserveDrawingBuffer: true,
-      //    protocols: [],
-      //  });
-      //  this.player.play();
-      // }
+      if (canvas) {
+        this.player = new jsmpeg.JSMpeg.Player(source, {
+          canvas,
+          decodeFirstFrame: false,
+          preserveDrawingBuffer: true,
+          protocols: [],
+        });
+        this.player.play();
+      }
 
       canvas.src = source;
     }

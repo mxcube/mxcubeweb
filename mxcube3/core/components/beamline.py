@@ -165,6 +165,7 @@ class Beamline(ComponentBase):
             "scale": scale,
             "videoSizes": video_sizes,
             "videoHash": HWR.beamline.sample_view.camera.stream_hash,
+            "videoURL": self.app.CONFIG.app.VIDEO_STREAM_URL
         }
 
         data.update(beam_info_dict)
