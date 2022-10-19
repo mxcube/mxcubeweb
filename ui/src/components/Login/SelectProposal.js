@@ -10,14 +10,14 @@ class SelectProposal extends React.Component {
     this.sendProposal = this.sendProposal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.state = {
-        pId: 0,
-        pNumber: null,
+      pId: 0,
+      pNumber: null,
     };
   }
 
   onClickRow(prop) {
-    this.setState({ pId:  prop.proposalId});
-    this.setState({ pNumber:  prop.code + prop.number});
+    this.setState({ pId: prop.proposalId });
+    this.setState({ pNumber: prop.code + prop.number });
   }
 
   sendProposal() {
@@ -31,16 +31,24 @@ class SelectProposal extends React.Component {
   }
 
   render() {
-    const sortedlist = this.props.data.proposalList.sort((a,b) => (a.number<b.number ? 1:-1))
-    const proposals = sortedlist.map((prop) =>
-    <tr key={prop.proposalId} style={this.state.pId === prop.proposalId ? { backgroundColor: '#d3d3d3'}: null} onClick={
-        ()=>
-        this.onClickRow(prop)
-        }>
-    <td>{prop.code + prop.number}</td>
-    <td>{prop.person}</td>
-    </tr>
+    const sortedlist = this.props.data.proposalList.sort((a, b) =>
+      a.number < b.number ? 1 : -1
     );
+    const proposals = sortedlist.map((prop) => (
+      <tr
+        key={prop.proposalId}
+        style={
+          this.state.pId === prop.proposalId
+            ? { backgroundColor: '#d3d3d3' }
+            : null
+        }
+        onClick={() => this.onClickRow(prop)}
+      >
+        <td>{prop.code + prop.number}</td>
+        <td>{prop.title}</td>
+        <td>{prop.person}</td>
+      </tr>
+    ));
 
     return (
       <Modal
@@ -52,17 +60,16 @@ class SelectProposal extends React.Component {
           <Modal.Title>Select a proposal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{overflow: 'auto', height: '250px'}}>
+          <div style={{ overflow: 'auto', height: '550px' }}>
             <Table bordered hover>
-            <thead>
-              <tr>
-                <th>Proposal Number</th>
-                <th>Person</th>
-              </tr>
-            </thead>
-            <tbody>
-              {proposals}
-            </tbody>
+              <thead>
+                <tr>
+                  <th>Proposal Number</th>
+                  <th>Title</th>
+                  <th>Person</th>
+                </tr>
+              </thead>
+              <tbody>{proposals}</tbody>
             </Table>
           </div>
         </Modal.Body>
