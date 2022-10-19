@@ -247,6 +247,7 @@ class BaseUserManager(ComponentBase):
                     "code": prop["Proposal"]["code"],
                     "number": prop["Proposal"]["number"],
                     "proposalId": prop["Proposal"]["proposalId"],
+                    "title": prop["Proposal"]["title"],
                     "person": prop["Person"]["familyName"],
                 }
                 for prop in login_info.get("proposalList", [])

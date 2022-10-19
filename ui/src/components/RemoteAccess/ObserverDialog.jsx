@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, FormControl } from 'react-bootstrap';
 import { showObserverDialog, sendUpdateNickname } from '../../actions/remoteAccess';
 
 export class ObserverDialog extends React.Component {
@@ -29,7 +29,7 @@ export class ObserverDialog extends React.Component {
   }
 
   accept() {
-    const name = this.name.value;
+    const name = this.name ? this.name.value : this.props.login.loginID;
 
     if (name) {
       this.props.sendUpdateNickname(name);
@@ -61,20 +61,30 @@ export class ObserverDialog extends React.Component {
             {this.title()}
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          Someone else is currently using the beamline, you are going to be
-          logged in as an observer. You have to enter your name to be able to
-          continue.
-        </Modal.Body>
-        <Modal.Footer>
-          <Form.Control
-            ref={(ref) => { this.name = ref; }}
-            type="text"
-            default={this.props.login.selectedProposal}
-          />
-          <Button size='sm' variant='outline-secondary' onClick={this.accept}> OK </Button>
-        </Modal.Footer>
-      </Modal>);
+        <div>
+          <Modal.Body>
+            Someone else is currently using the beamline, you are going to be
+            logged in as an observer.{' '}
+            {this.props.login.loginType === 'User'
+              ? ''
+              : 'You have to enter your name to be able to continue.'}
+          </Modal.Body>
+          <Modal.Footer>
+            {this.props.login.loginType === 'User' ? null : (
+              <FormControl
+                inputRef={(ref) => {
+                  this.name = ref;
+                }}
+                type='text'
+                defaultValue={this.props.login.loginID}
+                render
+              />
+            )}
+            <Button onClick={this.accept}> OK </Button>
+          </Modal.Footer>
+        </div>
+      </Modal>
+    );
   }
 }
 

@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import { Modal, ButtonToolbar, Button } from 'react-bootstrap';
-import { BootstrapTable, TableHeaderColumn } from 'react-bootstrap-table';
+import { Modal, ButtonToolbar, Button, Table } from 'react-bootstrap';
 
 class SelectProposal extends React.Component {
   constructor(props) {
@@ -10,14 +9,19 @@ class SelectProposal extends React.Component {
     this.onClickRow = this.onClickRow.bind(this);
     this.sendProposal = this.sendProposal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
+    this.state = {
+      pId: 0,
+      pNumber: null,
+    };
   }
 
-  onClickRow(event) {
-    this.props.selectProposal(event.Number);
+  onClickRow(prop) {
+    this.setState({ pId: prop.proposalId });
+    this.setState({ pNumber: prop.code + prop.number });
   }
 
   sendProposal() {
-    this.props.sendSelectProposal();
+    this.props.sendSelectProposal(this.state.pNumber);
     this.props.hide();
   }
 
@@ -27,18 +31,24 @@ class SelectProposal extends React.Component {
   }
 
   render() {
-    const selectRowProp = {
-      mode: 'radio',
-      clickToSelect: true,
-      bgColor: '#d3d3d3',
-      onSelect: this.onClickRow,
-      clickToSelectAndEditCell: false,
-      hideSelectColumn: true,
-    };
-    const proposals = this.props.data.proposalList.map((prop) => ({
-      Number: prop.code + prop.number,
-      Person: prop.person,
-    }));
+    const sortedlist = this.props.data.proposalList.sort((a, b) =>
+      a.number < b.number ? 1 : -1
+    );
+    const proposals = sortedlist.map((prop) => (
+      <tr
+        key={prop.proposalId}
+        style={
+          this.state.pId === prop.proposalId
+            ? { backgroundColor: '#d3d3d3' }
+            : null
+        }
+        onClick={() => this.onClickRow(prop)}
+      >
+        <td>{prop.code + prop.number}</td>
+        <td>{prop.title}</td>
+        <td>{prop.person}</td>
+      </tr>
+    ));
 
     return (
       <Modal
@@ -50,23 +60,20 @@ class SelectProposal extends React.Component {
           <Modal.Title>Select a proposal</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div>
-            <BootstrapTable
-              data={proposals}
-              bordered={false}
-              selectRow={selectRowProp}
-            >
-              <TableHeaderColumn dataField="Number" isKey editable={false}>
-                Proposal Number
-              </TableHeaderColumn>
-              <TableHeaderColumn dataField="Person" editable={false}>
-                Person
-              </TableHeaderColumn>
-            </BootstrapTable>
+          <div style={{ overflow: 'auto', height: '550px' }}>
+            <Table bordered hover>
+              <thead>
+                <tr>
+                  <th>Proposal Number</th>
+                  <th>Title</th>
+                  <th>Person</th>
+                </tr>
+              </thead>
+              <tbody>{proposals}</tbody>
+            </Table>
           </div>
         </Modal.Body>
         <Modal.Footer>
-          <ButtonToolbar>
             <Button
               variant="outline-secondary"
               onClick={this.handleCancel}
@@ -76,12 +83,11 @@ class SelectProposal extends React.Component {
             <Button
               variant="primary"
               className="pull-right"
-              disabled={typeof this.props.selectedProposal === 'undefined'}
+              disabled={this.state.pNumber === null}
               onClick={this.sendProposal}
             >
               Select Proposal
             </Button>
-          </ButtonToolbar>
         </Modal.Footer>
       </Modal>
     );
