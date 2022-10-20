@@ -21,9 +21,6 @@ from mxcube3.server import Server
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
 
-mxcube = MXCUBEApplication()
-server = Server()
-
 
 def parse_args():
     XML_DIR = os.path.join(
@@ -92,6 +89,9 @@ def parse_args():
 def main(test=False):
     cmdline_options = parse_args()
     try:
+        mxcube = MXCUBEApplication()
+        server = Server()
+        
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing teh main config files.
