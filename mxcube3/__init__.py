@@ -90,9 +90,8 @@ def parse_args():
 
 
 def main(test=False):
+    cmdline_options = parse_args()
     try:
-        cmdline_options = parse_args()
-
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing teh main config files.
