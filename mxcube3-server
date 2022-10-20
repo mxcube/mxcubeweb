@@ -2,7 +2,6 @@
 
 import sys
 import os
-import redis
 
 # Temprorary solution while thinking about a better solution ...
 # The streaming realy is now located in a spearate directory structure
@@ -13,14 +12,5 @@ os.environ["NODE_PATH"] = os.path.abspath(
 )
 
 if __name__ == "__main__":
-    db = redis.Redis()
-
-    try:
-        db.ping()
-    except redis.RedisError:
-        print("No Redis server is running, exiting")
-        sys.exit(1)
-
     from mxcube3 import main
-
     main()

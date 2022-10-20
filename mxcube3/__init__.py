@@ -2,6 +2,7 @@ import sys
 import mock
 import os
 import traceback
+import redis
 
 from gevent import monkey
 
@@ -88,6 +89,15 @@ def parse_args():
 
 def main(test=False):
     cmdline_options = parse_args()
+
+    # Ping REDIS
+    db = redis.Redis()
+    try:
+        db.ping()
+    except redis.RedisError:
+        print("No Redis server is running, exiting")
+        sys.exit(1)
+
     try:
         mxcube = MXCUBEApplication()
         server = Server()
