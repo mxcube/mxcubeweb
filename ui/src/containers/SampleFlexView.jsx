@@ -38,16 +38,6 @@ class NewSampleFlexView extends React.Component {
     event.stopPropagation()
   }
 
-
-  setViewMode(mode) {
-    if (mode == 'Flex Grid' ) {
-      this.props.filter({cellFilter: "1"});
-    } else {
-      this.props.filter({cellFilter: ""});
-    }
-    this.props.setViewMode(mode)
-  }
-
   isCellSelected(cell) {
     let isCellSelected = false;
     if (this.props.filterOptions.cellFilter == cell) {
