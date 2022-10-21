@@ -969,6 +969,10 @@ class SampleGridTableContainer extends React.Component {
   render() {
     this.sampleItems = this.getSamplesList(this.props);
 
+    if(this.getSampleTable(this.props).length == 0) {
+      alert("Missing requiered parameters to display Samples in Grid Table! You will be redirect to Spring Grid View");
+      this.props.setViewMode('Spring Grid');
+    }
     return (
       <div>
         {this.props.contextMenu.show ?
@@ -1029,7 +1033,6 @@ class SampleGridTableContainer extends React.Component {
   }
 }
 
-//////
 /**
  * @property {Object} sampleList - list of samples
  * @property {array} order - order of samples within sample list
