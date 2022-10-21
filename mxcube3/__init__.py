@@ -2,6 +2,7 @@ import sys
 import mock
 import os
 import traceback
+import redis
 
 from gevent import monkey
 
@@ -12,8 +13,7 @@ from mxcubecore import HardwareRepository as HWR
 
 monkey.patch_all(thread=False)
 
-
-from optparse import OptionParser
+import argparse
 
 from mxcube3.config import Config
 from mxcube3.app import MXCUBEApplication
@@ -22,9 +22,6 @@ from mxcube3.server import Server
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
 
-mxcube = MXCUBEApplication()
-server = Server()
-
 
 def parse_args():
     XML_DIR = os.path.join(
@@ -32,9 +29,11 @@ def parse_args():
         "test/HardwareObjectsMockup.xml/",
     )
 
-    opt_parser = OptionParser()
+    opt_parser = argparse.ArgumentParser(
+        description="MXCube3 Backend server command line utility."
+    )
 
-    opt_parser.add_option(
+    opt_parser.add_argument(
         "-r",
         "--repository",
         dest="hwr_directory",
@@ -42,7 +41,7 @@ def parse_args():
         default=XML_DIR,
     )
 
-    opt_parser.add_option(
+    opt_parser.add_argument(
         "-s",
         "--static-folder",
         dest="static_folder",
@@ -51,7 +50,7 @@ def parse_args():
     )
 
 
-    opt_parser.add_option(
+    opt_parser.add_argument(
         "-l",
         "--log-file",
         dest="log_file",
@@ -59,7 +58,7 @@ def parse_args():
         default="",
     )
 
-    opt_parser.add_option(
+    opt_parser.add_argument(
         "-v",
         "--video-device",
         dest="video_device",
@@ -67,7 +66,7 @@ def parse_args():
         default="",
     )
 
-    opt_parser.add_option(
+    opt_parser.add_argument(
         "-w",
         "--ra",
         action="store_true",
@@ -76,7 +75,7 @@ def parse_args():
         default=False,
     )
 
-    opt_parser.add_option(
+    opt_parser.add_argument(
         "-t",
         "--ra-timeout",
         action="store_true",
@@ -89,9 +88,20 @@ def parse_args():
 
 
 def main(test=False):
-    try:
-        cmdline_options, args = parse_args()
+    cmdline_options = parse_args()
 
+    # Ping REDIS
+    db = redis.Redis()
+    try:
+        db.ping()
+    except redis.RedisError:
+        print("No Redis server is running, exiting")
+        sys.exit(1)
+
+    try:
+        mxcube = MXCUBEApplication()
+        server = Server()
+        
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing teh main config files.

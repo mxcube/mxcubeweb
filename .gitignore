@@ -69,3 +69,6 @@ yarn.lock
 /ui/package-lock.json
 
 ui/package-lock.json
+
+# Editors
+.vscode
