@@ -773,6 +773,7 @@ class SampleListViewContainer extends React.Component {
               removeSamplesFromQueue={this.removeSamplesFromQueue}
               removeSelectedSamples={this.removeSelectedSamples}
               removeSelectedTasks={this.removeSelectedTasks}
+              setViewMode={this.setViewMode}
             />)
             }
           </Card.Body>
