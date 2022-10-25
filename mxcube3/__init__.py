@@ -22,6 +22,9 @@ from mxcube3.server import Server
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
 
+server = None
+mxcube = None
+
 
 def parse_args():
     XML_DIR = os.path.join(
@@ -88,6 +91,9 @@ def parse_args():
 
 
 def main(test=False):
+    global mxcube
+    global server
+
     cmdline_options = parse_args()
 
     # Ping REDIS
