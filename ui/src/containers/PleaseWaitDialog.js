@@ -88,7 +88,7 @@ export class PleaseWaitDialog extends React.Component {
           <p>
             {this.getMessage()}
           </p>
-          <ProgressBar variant="primary" animated active now={100} />
+          <ProgressBar variant="primary" animated now={100} />
         </div>
       );
     }
