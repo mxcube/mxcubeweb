@@ -59,14 +59,14 @@ sample_view:
       suffix: mm
     -
       label: Sample Horizontal
-      attribute: sampx
+      attribute: phiz
       role: sample_horizontal
       step: 0.1
       precision: 3
       suffix: mm
     -
       label: Sample Vertical
-      attribute: sampy
+      attribute: phiy
       role: sample_vertical
       step: 0.1
       precision: 3
