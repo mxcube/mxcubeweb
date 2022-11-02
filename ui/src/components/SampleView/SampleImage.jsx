@@ -565,15 +565,6 @@ export default class SampleImage extends React.Component {
       );
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
-    } else {
-      const cellSizeX = beamSize.x * pixelsPerMm[0] * imageRatio;
-      const cellSizeY = beamSize.y * pixelsPerMm[1] * imageRatio;
-
-      const cellIdxX = parseInt(Math.floor(option.transform.offsetX / cellSizeX));
-      const cellIdxY = parseInt(Math.floor((option.transform.offsetY - 20) / cellSizeY));
-      debugger;
-      console.log(cellIdxX);
-      console.log(cellIdxY);
     }
 
     if (
