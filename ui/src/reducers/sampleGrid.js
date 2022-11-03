@@ -20,8 +20,9 @@ const INITIAL_STATE = {
   order: [],
   moving: {},
   viewMode: {
-    mode: 'Grid Table',
-    options: ['Grid Table', 'Flex Grid', 'Spring Grid']
+    mode: 'Table View',
+    options: ['Table View', 'Graphical View', 'Card View'],
+    ViewWithCellPuck: true
   },
   filterOptions: {
     text: '',
@@ -298,6 +299,9 @@ export default (state = INITIAL_STATE, action) => {
     // Change view mode 
     case 'SET_VIEW_MODE': {
       const viewMode = { ...state.viewMode};
+      if(action.ViewWithCellPuck != null) {
+        viewMode['ViewWithCellPuck'] = action.ViewWithCellPuck;
+      }
       viewMode['mode'] = action.mode;
       return { ...state,  viewMode };
     }
