@@ -46,7 +46,6 @@ import { showConfirmClearQueueDialog } from '../actions/general';
 import { showTaskForm } from '../actions/taskForm';
 
 import SampleGridTableContainer from './SampleGridTableContainer';
-// import SampleGridViewContainer from './SampleGridViewContainer';
 
 import SampleGridContainer from './SampleGridContainer';
 import { SAMPLE_ITEM_WIDTH,
@@ -124,14 +123,14 @@ class SampleListViewContainer extends React.Component {
     this.forceUpdate();
   }
 
-  setViewMode(mode) {
-    if (mode == 'Flex Grid' ) {
+  setViewMode(mode, ViewWithCellPuck = null) {
+    if (mode == 'Graphical View' ) {
       this.props.filter({cellFilter: "1"});
     } else {
       this.props.filter({cellFilter: ""});
     }
     localStorage.setItem('view-mode', mode);
-    this.props.setViewMode(mode)
+    this.props.setViewMode(mode, ViewWithCellPuck)
   }
 
     /**
@@ -204,7 +203,7 @@ class SampleListViewContainer extends React.Component {
       ));
     }
 
-    if(this.props.viewMode.mode !== 'Flex Grid') {
+    if(this.props.viewMode.mode !== 'Graphical View') {
       options.push((<option key="all" value="">ALL</option>));
     }
 
@@ -682,6 +681,8 @@ class SampleListViewContainer extends React.Component {
                   </Button>
                 </OverlayTrigger>
                 <span style={{ marginLeft: '1.5em' }} />
+                {this.props.viewMode.ViewWithCellPuck ?
+                (
                 <Dropdown>
                   <Dropdown.Toggle variant="outline-secondary" id="dropdown-basic">
                     <MdGridView size='1em' /> View Mode
@@ -697,6 +698,10 @@ class SampleListViewContainer extends React.Component {
                     )}
                   </Dropdown.Menu>
                 </Dropdown>
+                )
+                :
+                null
+              }
               </Col>
               <Col md={{ span: 4, offset: 1 }} className='d-flex me-auto'>
                 <Form>
@@ -744,7 +749,7 @@ class SampleListViewContainer extends React.Component {
          {this.props.sampleChanger.contents.children && this.props.order.length > 0 ?
          (
           <Card.Body className='samples-grid-table-card-body'>
-            {this.props.viewMode.mode == 'Spring Grid'? 
+            {this.props.viewMode.mode == 'Card View'? 
             (
               <SampleGridContainer
                 addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
@@ -817,7 +822,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     getSamples: () => dispatch(sendGetSampleList()),
-    setViewMode: (mode) => dispatch(setViewModeAction(mode)),
+    setViewMode: (mode, ViewWithCellPuck) => dispatch(setViewModeAction(mode, ViewWithCellPuck)),
     filter: (filterOptions) => dispatch(filterAction(filterOptions)),
     syncSamples: () => dispatch(sendSyncSamples()),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),

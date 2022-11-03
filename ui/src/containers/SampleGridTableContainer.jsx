@@ -970,8 +970,9 @@ class SampleGridTableContainer extends React.Component {
     this.sampleItems = this.getSamplesList(this.props);
 
     if(this.getSampleTable(this.props).length == 0) {
-      alert("Missing requiered parameters to display Samples in Grid Table! You will be redirect to Spring Grid View");
-      this.props.setViewMode('Spring Grid');
+      this.props.setViewMode('Card View', false);
+    } else {
+      this.props.setViewMode(this.props.viewMode.mode, true);
     }
     return (
       <div>
@@ -990,7 +991,7 @@ class SampleGridTableContainer extends React.Component {
           :
           null
         }
-        {this.props.viewMode.mode == 'Flex Grid'?
+        {this.props.viewMode.mode == 'Graphical View'?
           (
           <Row
             className="samples-grid-table"
