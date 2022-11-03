@@ -1,25 +1,4 @@
-<object class="ISPyBRestClient">
-  <restRoot>
-    <!--  http://py-ispyb-development:8080/ispyb/ispyb-ws/rest/ -->
-    https://ispyb.esrf.fr/ispyb/ispyb-ws/rest/
-  </restRoot>
-  <site>
-   ESRF
-  </site>
-  <api_url>
-   <!-- http://py-ispyb-development:8080/ispyb/ispyb-ws/rest/  -->
-    https://ispyb.esrf.fr/ispyb/ispyb-ws/rest/
-  </api_url>
-  <base_result_url>
-   http://exi.esrf.fr/mx
-  </base_result_url>
-  <restUserName>ispybws1</restUserName>
-  <restPass>I$pybws1</restPass>
-  <object role="session" href="/session"/>
-</object>
-
-
-<!--<object class="ISPyBRestClientMockup">
+<object class="ISPyBRestClientMockup">
   <restRoot>
    https://your.lims.org
   </restRoot>
@@ -35,4 +14,3 @@
   <object role="session" href="/session"/>
 
 </object>
--->

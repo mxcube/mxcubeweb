@@ -1,19 +1,4 @@
-<object class="ISPyBClient">
-  <object hwrid="/lims_rest" role="lims_rest"/>
-  <object hwrid="/pyispyb" role="pyispyb"/>
-  <object role="ldapServer" href="/ldapconnection"/>
-  <ws_root>
-  <!--  http://py-ispyb-development:8080/ispyb/ispyb-ws/ispybWS/ --> 
-  <!--  https://ispyb.esrf.fr/ispyb/ispyb-ws/ispybWS/ -->
-    http://py-ispyb-development:8080/ispyb/ispyb-ws/ispybWS/
-  </ws_root>
-  <ws_username>ispybws1</ws_username>
-  <ws_password>I$pybws1</ws_password>
-  <object role="session" href="/session"/>
-  <authServerType>ldap</authServerType>
-</object>
-
-<!-- <object class="ISPyBClientMockup">
+<object class="ISPyBClientMockup">
   <object hwrid="/lims_rest" role="lims_rest"/>
   <ws_root>
     https://your.lims.org
@@ -27,4 +12,3 @@
   <object role="session" href="/session"/>
   <object role="ldapServer" href="/ldapconnection"/>
 </object>
--->
