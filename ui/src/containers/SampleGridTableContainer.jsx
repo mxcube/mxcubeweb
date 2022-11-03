@@ -94,6 +94,12 @@ class SampleGridTableContainer extends React.Component {
     document.addEventListener('keydown', this.onKeyDown, false);
     document.addEventListener('click', this.onClick, false);
     window.addEventListener('scroll', this.onScroll);
+    
+    if(this.getSampleTable(this.props).length == 0) {
+      this.props.setViewMode('Card View', false);
+    } else {
+      this.props.setViewMode(this.props.viewMode.mode, true);
+    }
   }
 
 
@@ -968,12 +974,6 @@ class SampleGridTableContainer extends React.Component {
 
   render() {
     this.sampleItems = this.getSamplesList(this.props);
-
-    if(this.getSampleTable(this.props).length == 0) {
-      this.props.setViewMode('Card View', false);
-    } else {
-      this.props.setViewMode(this.props.viewMode.mode, true);
-    }
     return (
       <div>
         {this.props.contextMenu.show ?
