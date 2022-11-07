@@ -71,24 +71,24 @@ def create_set_route(app, server, bp, adapter, attr, name):
 
 
 def create_route(app, server, bp, adapter, obj, cmd_name):
-        route_url = f"/{obj}/command/{cmd_name}"
-        arg_schema = adapter._pydantic_model_for_command(cmd_name)
+    route_url = f"/{obj}/command/{cmd_name}"
+    arg_schema = adapter._pydantic_model_for_command(cmd_name)
 
-        @bp.route(route_url, endpoint=cmd_name, methods=["POST"])
-        @server.require_control
-        @server.restrict
-        @server.validate(json=arg_schema)
-        def set_func():
-            """
-            Tries to set < name > to value
-            Replies with status code 200 on success and 409 on exceptions.
-            """
-            args = request.get_json()
-            adapter = app.mxcubecore.get_adapter(obj.lower())
-            adapter.execute_command(cmd_name, args)
-            return make_response("{}", 200)
+    @bp.route(route_url, endpoint=cmd_name, methods=["POST"])
+    @server.require_control
+    @server.restrict
+    @server.validate(json=arg_schema)
+    def set_func():
+        """
+        Tries to set < name > to value
+        Replies with status code 200 on success and 409 on exceptions.
+        """
+        args = request.get_json()
+        adapter = app.mxcubecore.get_adapter(obj.lower())
+        adapter.execute_command(cmd_name, args)
+        return make_response("{}", 200)
 
-        set_func.__name__ = f"{obj}_{cmd_name}"
+    set_func.__name__ = f"{obj}_{cmd_name}"
 
 
 def add_adapter_routes(app, server, bp):
