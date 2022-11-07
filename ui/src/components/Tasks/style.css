@@ -38,7 +38,17 @@
     margin-right: 3em;
 }
 
+.json-schema-form-group-div select {
+    width: 7em;
+    margin-right: 3em;
+}
+
+
 .json-schema-form-group-div .checkbox>label {
     display: flex;
     flex-direction: row-reverse;
+}
+
+.json-schema-form-group-div .field-description {
+    display: none;
 }
