@@ -1,6 +1,4 @@
 import logging
-import datetime
-from turtle import pd
 
 from flask import Blueprint, jsonify, session
 from spectree import Response
@@ -52,7 +50,7 @@ def init_route(app, server, url_prefix):
         resp=Response(HTTP_200=ModeEnumModel)
     )
     def mxcube_mode():
-        return jsonify({"mode": app.CONFIG.app.mode})
+        return jsonify({"mode": app.CONFIG.app.mode})       
 
     @server.flask.before_request
     def before_request():
