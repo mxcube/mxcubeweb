@@ -52,7 +52,7 @@ def parse_args():
         default=f"{os.getcwd()}ui/build",
     )
 
-    opt_parser.add_option(
+    opt_parser.add_argument(
         "-l",
         "--log-file",
         dest="log_file",
@@ -60,7 +60,7 @@ def parse_args():
         default="",
     )
 
-    opt_parser.add_option(
+    opt_parser.add_argument(
         "-L",
         "--log-level",
         dest="log_level",
@@ -68,7 +68,7 @@ def parse_args():
         default="",
     )
 
-    opt_parser.add_option(
+    opt_parser.add_argument(
         "-d",
         "--video-device",
         dest="video_device",
