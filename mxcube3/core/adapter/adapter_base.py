@@ -163,9 +163,9 @@ class AdapterBase:
         exported_methods = {}
 
         # Get exported attributes from underlaying HardwareObject
-        if getattr(self._ho, "pydantic_model", None):
+        if self._ho.exported_attributes:        
             exported_methods = self._ho.exported_attributes
-
+        
         for method_name in self.METHODS:
             attr = getattr(self, method_name, None)
 
