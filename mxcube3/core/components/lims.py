@@ -369,21 +369,7 @@ class Lims(ComponentBase):
         return HWR.beamline.session.get_default_prefix(sample, generic_name)
 
     def get_default_subdir(self, sample_data):
-        subdir = ""
-
-        if isinstance(sample_data, dict):
-            sample_name = sample_data.get("sampleName", "")
-            protein_acronym = sample_data.get("proteinAcronym", "")
-        else:
-            sample_name = sample_data.name
-            protein_acronym = sample_data.crystals[0].protein_acronym
-
-        if protein_acronym:
-            subdir = "%s/%s-%s/" % (protein_acronym, protein_acronym, sample_name)
-        else:
-            subdir = "%s/" % sample_name
-
-        return subdir.replace(":", "-")
+        return HWR.beamline.session.get_default_subdir(sample_data)
 
     def get_dc_link(self, col_id):
         link = HWR.beamline.lims.lims_rest.dc_link(col_id)
