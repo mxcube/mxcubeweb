@@ -27,7 +27,6 @@ module.exports = createConfig({
     'import/no-anonymous-default-export': 'warn',
     'default-param-last': 'warn',
     'sonarjs/max-switch-cases': 'warn',
-    'import/no-anonymous-default-export': 'warn',
     'unicorn/prefer-spread': 'warn',
     'sonarjs/no-unused-collection': 'warn',
     'sonarjs/no-identical-functions': 'warn',
@@ -50,7 +49,6 @@ module.exports = createConfig({
     // Fixed by eslint --fix:
     'unicorn/prefer-switch': 'warn',
     'unicorn/explicit-length-check': 'warn',
-    'unicorn/prefer-switch': 'warn',
     'unicorn/prefer-set-has': 'warn',
     'unicorn/no-zero-fractions': 'warn',
     'unicorn/no-useless-spread': 'warn',
@@ -58,7 +56,6 @@ module.exports = createConfig({
     'unicorn/prefer-optional-catch-binding': 'warn',
     'unicorn/new-for-builtins': 'warn',
     'unicorn/prefer-array-find': 'warn',
-    'unicorn/prefer-optional-catch-binding': 'warn',
     'unicorn/catch-error-name': 'warn',
     'prefer-spread': 'warn',
     
@@ -66,7 +63,7 @@ module.exports = createConfig({
     // 'inclusive-language/use-inclusive-words': [
     //  'warn',
     //  { allowedTerms: ['whitelist'] },
-    //],
+    // ],
   },
   overrides: [
     {
@@ -75,7 +72,6 @@ module.exports = createConfig({
         'import/named': 'warn',
         'react/static-property-placement': 'warn',
         'jsx-a11y/anchor-has-content': 'warn',
-        'react/static-property-placement': 'warn',
         'jsx-a11y/no-autofocus': 'warn',
         'react/jsx-handler-names': 'off',
         'react/button-has-type': 'warn',
