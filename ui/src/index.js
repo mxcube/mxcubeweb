@@ -43,10 +43,13 @@ function requireAuth() {
   let state = store.getState();
   store.dispatch(getLoginInfo()).then(() => {
     state = store.getState();
-    if (state.login.loggedIn && !serverIO.initialized) {
+    if (state.login.loggedIn) {
+      store.dispatch(startSession());
+    }
+
+    if (state.login.loggedIn && serverIO.initialized) {
       serverIO.connectStateSocket(statePersistor);
       serverIO.listen(store);
-      store.dispatch(startSession());
     }
   });
   state = store.getState();
