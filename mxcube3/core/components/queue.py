@@ -1389,7 +1389,7 @@ class Queue(ComponentBase):
             "legacy_parameters": task["parameters"],
         })
 
-        entry = entry_cls(entry_cls.QMO(task_data=data))
+        entry = entry_cls(Mock(), entry_cls.QMO(task_data=data))
         entry.set_enabled(True)
         return entry.get_data_model(), entry
 
