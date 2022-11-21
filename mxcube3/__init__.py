@@ -22,8 +22,8 @@ from mxcube3.server import Server
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
 
-server = None
 mxcube = None
+server = None
 
 
 def parse_args():
@@ -103,9 +103,8 @@ def main(test=False):
 
     cmdline_options = parse_args()
 
-    # Ping REDIS
-    db = redis.Redis()
     try:
+        db = redis.Redis()
         db.ping()
     except redis.RedisError:
         print("No Redis server is running, exiting")
@@ -114,7 +113,7 @@ def main(test=False):
     try:
         mxcube = MXCUBEApplication()
         server = Server()
-        
+
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing teh main config files.
