@@ -299,7 +299,7 @@ export default (state = INITIAL_STATE, action) => {
     // Change view mode 
     case 'SET_VIEW_MODE': {
       const viewMode = { ...state.viewMode};
-      if(action.ViewWithCellPuck != null) {
+      if(action.ViewWithCellPuck !== null) {
         viewMode['ViewWithCellPuck'] = action.ViewWithCellPuck;
       }
       viewMode['mode'] = action.mode;

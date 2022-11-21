@@ -18,14 +18,6 @@ export default class MXContextMenu extends React.Component {
     this.hideContextMenu()
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.show) {
-      this.showContextMenu(nextProps.x, nextProps.y);
-    } else {
-      this.hideContextMenu();
-    }
-  }
-
   showContextMenu(x, y) {
     const contextMenu = document.querySelector('#generic-contextMenu');
     if (contextMenu) {

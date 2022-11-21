@@ -40,7 +40,7 @@ class NewSampleFlexView extends React.Component {
 
   isCellSelected(cell) {
     let isCellSelected = false;
-    if (this.props.filterOptions.cellFilter == cell) {
+    if (this.props.filterOptions.cellFilter === cell) {
       isCellSelected =  true;
     }
     return isCellSelected;

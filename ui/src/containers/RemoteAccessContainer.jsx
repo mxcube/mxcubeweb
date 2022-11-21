@@ -20,15 +20,13 @@ export class RemoteAccessContainer extends React.Component {
           <Card.Body>
             <Form.Check
               type="checkbox"
-              onClick={(e) => this.props.sendAllowRemote(e.target.checked)}
-              defaultChecked={this.props.remoteAccess.allowRemote}
+              onChange={(e) => this.props.sendAllowRemote(e.target.checked)}
               checked={this.props.remoteAccess.allowRemote}
               label="Enable remote access"
             />
             <Form.Check
               type="checkbox"
-              onClick={(e) => this.props.sendTimeoutGivesControl(e.target.checked)}
-              defaultChecked={this.props.remoteAccess.timeoutGivesControl}
+              onChange={(e) => this.props.sendTimeoutGivesControl(e.target.checked)}
               checked={this.props.remoteAccess.timeoutGivesControl}
               label="Timeout gives control"
             />
