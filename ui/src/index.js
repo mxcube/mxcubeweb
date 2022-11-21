@@ -3,7 +3,7 @@ import 'bootstrap/dist/css/bootstrap.css';
 import './main.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router , Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 
 import { Provider } from 'react-redux';
@@ -20,7 +20,7 @@ import { getLoginInfo, startSession } from './actions/login';
 import LoadingScreen from './components/LoadingScreen/LoadingScreen';
 
 
-import {store, statePersistor, localStatePersistor} from './store';
+import { store, statePersistor, localStatePersistor } from './store';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -47,9 +47,9 @@ function requireAuth() {
       store.dispatch(startSession());
     }
 
-    if (state.login.loggedIn && serverIO.initialized) {
-      serverIO.connectStateSocket(statePersistor);
+    if (state.login.loggedIn && !serverIO.initialized) {
       serverIO.listen(store);
+      serverIO.connectStateSocket(statePersistor);
     }
   });
   state = store.getState();
@@ -59,7 +59,7 @@ function requireAuth() {
 function PrivateOutlet() {
   const location = useLocation();
   const auth = requireAuth();
-  return auth ? <Outlet /> : <Navigate to="/login" state={{ from: location }}  replace />;
+  return auth ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
 }
 
 export default class App extends React.Component {
@@ -76,8 +76,8 @@ export default class App extends React.Component {
   }
 
   render() {
-    if (!this.state.initialized)  {
-      return (<LoadingScreen /> );
+    if (!this.state.initialized) {
+      return (<LoadingScreen />);
     }
 
     return (
@@ -85,7 +85,7 @@ export default class App extends React.Component {
         <PersistGate loading={null} persistor={localStatePersistor}>
           <Router>
             <Routes>
-              <Route path="/login" element={<LoginContainer />} /> 
+              <Route path="/login" element={<LoginContainer />} />
               <Route path="/" element={<PrivateOutlet />}>
                 <Route path="" element={<Main />}>
                   <Route index element={<SampleViewContainer />} />
