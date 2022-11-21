@@ -359,7 +359,6 @@ class MXCUBEApplication:
             os.chmod(log_file, 0o666)
             log_file_handler.setFormatter(log_formatter)
 
-
         if log_level:
             root_logger = logging.getLogger()
             root_logger.setLevel(getattr(logging, log_level.upper(), "INFO"))
@@ -384,11 +383,14 @@ class MXCUBEApplication:
             queue_logger,
         ):
             logger.setLevel(logging.DEBUG)
-            logger.addHandler(custom_log_handler)
+
+            logger.addHandler(custom_log_handler)      
             logger.addHandler(stdout_log_handler)
 
             if log_file:
                 logger.addHandler(log_file_handler)
+
+            logger.propagate = False
 
     @staticmethod
     def init_state_storage():
