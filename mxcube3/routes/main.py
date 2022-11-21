@@ -14,9 +14,10 @@ def init_route(app, server, url_prefix):
 
     @server.route("/samplegrid")
     @server.route("/datacollection")
-    @server.route("/samplechanger")
+    @server.route("/equipment")
     @server.route("/logging")
     @server.route("/remoteaccess")
+    @server.route("/help")
     @server.restrict
     def serve_static_file():
         logging.getLogger("HWR").info("[Main] Serving main page")
@@ -50,7 +51,8 @@ def init_route(app, server, url_prefix):
         resp=Response(HTTP_200=ModeEnumModel)
     )
     def mxcube_mode():
-        return jsonify({"mode": app.CONFIG.app.mode})       
+        return jsonify({"mode": app.CONFIG.app.mode})
+
 
     @server.flask.before_request
     def before_request():
