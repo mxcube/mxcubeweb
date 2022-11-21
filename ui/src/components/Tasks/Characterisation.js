@@ -67,18 +67,20 @@ class Characterisation extends React.Component {
     this.props.hide();
   }
 
-  resetParameters() {
-    this.props.reset();
+  resetParameters(form) {
+    this.props.reset(form.toLowerCase());
   }
 
   defaultParameters() {
+    const { type } = this.props.taskData;
     this.props.resetTaskParameters();
-    const { type } = this.props.taskData.parameters;
+    this.resetParameters(type);
     const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
+      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);
     });
   }
+
 
   render() {
     return (

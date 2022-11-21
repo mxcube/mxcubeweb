@@ -54,7 +54,7 @@ input[type="color"]:focus,
 }
 
 .modal-dialog {
-    width: fit-content;
+    width: min-content;
     max-width: 90%;
     min-width: 50%;
 }

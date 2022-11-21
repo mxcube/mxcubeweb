@@ -83,36 +83,41 @@ function ReduxInputField(prop) {
     as={Row}
     controlId={prop.input.name}
   >
-    <Form.Label
-    column sm={prop.col1 || 6}
-    style={{ textAlign: 'left', color: validation(prop.meta.error, prop.meta.warning) }}
-    >
-      {prop.label}
-    </Form.Label>
-    <Col sm={prop.col2 || 4}>
-      <Form.Control
-        disabled={prop.disabled}
-        value={prop.input.value}
-        onChange={prop.input.onChange}
-        {...prop}
-        style={{ borderColor: validation(prop.meta.error, prop.meta.warning) }}
-      />
-    </Col>
-    {prop.meta.error || prop.meta.warning
-      ? (
-        <Col sm={1} style={{ top: '7px', left: '-10px', position: 'relative' }}>
-          {errorIndicator(prop.meta.error, prop.meta.warning)}
-        </Col>
-      ) : <Col sm={1}/>
-        }
+    <Row>
+      <Form.Label
+      column sm={6}
+      style={{ textAlign: 'left', color: validation(prop.meta.error, prop.meta.warning) }}
+      >
+        {prop.label}
+      </Form.Label>
+      <Col sm={4}>
+        <Form.Control
+          disabled={prop.disabled}
+          value={prop.input.value}
+          onChange={prop.input.onChange}
+          {...prop}
+          style={{ borderColor: validation(prop.meta.error, prop.meta.warning) }}
+        />
+      </Col>
       {prop.meta.error || prop.meta.warning
-      ? (
-        <Col sm={12}>
-          {errorLabel(prop.meta.error, prop.meta.warning)}
-        </Col>
-      ) : null
+        ? (
+          <Col sm={1} style={{ top: '7px', left: '-10px', position: 'relative' }}>
+            {errorIndicator(prop.meta.error, prop.meta.warning)}
+          </Col>
+        ) : <Col sm={1}/>
       }
-
+    </Row>
+    <Row>
+      {prop.meta.error || prop.meta.warning
+        ? (
+          <Col >
+            <div>
+              {errorLabel(prop.meta.error, prop.meta.warning)}
+            </div>
+          </Col>
+        ) : <Col/>
+      }
+    </Row>
   </Form.Group>
 }
 

@@ -70,16 +70,17 @@ class DataCollection extends React.Component {
     this.props.hide();
   }
 
-  resetParameters() {
-    this.props.reset();
+  resetParameters(form) {
+    this.props.reset(form.toLowerCase());
   }
 
   defaultParameters() {
+    const { type } = this.props.taskData;
     this.props.resetTaskParameters();
-    const { type } = this.props.taskData.parameters;
+    this.resetParameters(type);
     const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
+      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);
     });
   }
 
@@ -237,7 +238,6 @@ class DataCollection extends React.Component {
               )
               : null
             }
-            {/* <StaticField col1='3' col2='4' label="Dose Estimation " data='10.9898' /> */}
             <CollapsableRows>
               <FieldsRow>
                 <InputField propName="kappa" type="number" label="Kappa" />
@@ -288,8 +288,8 @@ class DataCollection extends React.Component {
 
 DataCollection = reduxForm({
   form: 'datacollection',
-  validate,
-  warn
+  validate: validate,
+  warn: warn
 })(DataCollection);
 
 const selector = formValueSelector('datacollection');
