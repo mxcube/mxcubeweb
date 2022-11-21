@@ -1,4 +1,4 @@
-<device class="ExporterNStateMockup" global_role="beamstop">
+<device class="ExporterNStateMockup">
   <username>beamstop</username>
   <values>{"OUT": "OFF", "IN": "BEAM"}</values>
   <use_hwstate>True</use_hwstate>

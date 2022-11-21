@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button , Row, Col } from 'react-bootstrap';
+import { Button, Row, Col } from 'react-bootstrap';
 import MotorInput from '../MotorInput/MotorInput';
 import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
 import PhaseInput from './PhaseInput';
@@ -73,9 +73,9 @@ export default class MotorControl extends React.Component {
 
     return (
       <div>
-        { this.getMotorComponents(3, 8) }
+        {this.getMotorComponents(3, 8)}
         <div className="col-sm-12">
-          {process.env.phaseControl ? phaseControl : null }
+          {process.env.phaseControl ? phaseControl : null}
         </div>
       </div>
     );
@@ -114,7 +114,7 @@ export default class MotorControl extends React.Component {
             stop={_stop}
           />
         </div>
-        { this.state.showAll
+        {this.state.showAll
           ? (
             <div>
               <Button
@@ -129,7 +129,7 @@ export default class MotorControl extends React.Component {
 
                 <i style={{ marginLeft: '0.5em', }} className="fas fa-caret-up" />
               </Button>
-              { this.renderAllMotors() }
+              {this.renderAllMotors()}
             </div>
           )
           : (
@@ -142,7 +142,7 @@ export default class MotorControl extends React.Component {
               <i className="fas fa-cogs" />
               {' '}
               Show motors
-              <i style={{ marginLeft: '0.5em', }}  className="fas fa-caret-down" />
+              <i style={{ marginLeft: '0.5em', }} className="fas fa-caret-down" />
             </Button>
           )
         }
@@ -154,9 +154,9 @@ export default class MotorControl extends React.Component {
     return (
       <Row className="row">
         {this.getMotorComponents(0, 3)}
-        { this.horVerTranslationAvailable()
+        {this.horVerTranslationAvailable()
           ? this.renderTranslationCross() : this.renderAllMotors()
-            }
+        }
       </Row>
     );
   }

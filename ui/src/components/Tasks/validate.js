@@ -42,7 +42,7 @@ const validate = (values, props) => {
   }
 
   if (Number.parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images
-      || Number.parseInt(values.num_images, 10) < 1) {
+    || Number.parseInt(values.num_images, 10) < 1) {
     errors.num_images = 'Entered Number of images out of allowed range';
   }
 
@@ -67,7 +67,7 @@ const validate = (values, props) => {
     const exptimemin = props.acqParametersLimits.exposure_time[0];
     const exptimemax = props.acqParametersLimits.exposure_time[1];
     if (values.exp_time === '' || Number.parseFloat(values.exp_time, 10) > exptimemax
-        || Number.parseFloat(values.exp_time, 10) < exptimemin) {
+      || Number.parseFloat(values.exp_time, 10) < exptimemin) {
       errors.exp_time = 'Entered Exposure time out of allowed limit';
     }
   }
@@ -77,17 +77,17 @@ const validate = (values, props) => {
   }
 
   if (energies.length >= 2 && !(currEnergy > props.beamline.hardwareObjects.energy.limits[0]
-      && currEnergy < props.beamline.hardwareObjects.energy.limits[1])) {
-      errors.energy = `Entered Energy is outside working range [${props.beamline.hardwareObjects.energy.limits[0]},
+    && currEnergy < props.beamline.hardwareObjects.energy.limits[1])) {
+    errors.energy = `Entered Energy is outside working range [${props.beamline.hardwareObjects.energy.limits[0]},
         ${props.beamline.hardwareObjects.energy.limits[1]}]`;
-    }
+  }
 
   if (!(currTransmission >= 0 && currTransmission <= 100)) {
     errors.transmission = 'Entered Transmission is outside working range [0, 100]';
   }
 
   if (props.pointID !== -1 && props.pointID.includes('2D') && props.form === 'characterisation'
-      && Number.parseFloat(values.num_images) !== 1) {
+    && Number.parseFloat(values.num_images) !== 1) {
     errors.num_images = 'Only 1 image allowed when characterizing from a 2D-point';
   }
 

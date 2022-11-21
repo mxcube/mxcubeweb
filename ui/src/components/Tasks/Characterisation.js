@@ -364,16 +364,16 @@ class Characterisation extends React.Component {
             </Form>
           </CollapsableRows>
         </Modal.Body>
-        { this.props.taskData.state ? ''
+        {this.props.taskData.state ? ''
           : (
             <Modal.Footer>
-              <ButtonToolbar style={{ bottom: '0.8%', left: '1%'}} className="position-absolute">
+              <ButtonToolbar style={{ bottom: '0.8%', left: '1%' }} className="position-absolute">
                 <Button
                   size="sm"
                   variant="outline-secondary"
                   onClick={this.defaultParameters}
                 >
-              Default Parameters
+                  Default Parameters
                 </Button>
               </ButtonToolbar>
               <ButtonToolbar className="pull-right">
@@ -383,7 +383,7 @@ class Characterisation extends React.Component {
                   disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                   onClick={this.submitRunNow}
                 >
-                 Run Now
+                  Run Now
                 </Button>
                 <Button
                   size="sm"
@@ -397,7 +397,7 @@ class Characterisation extends React.Component {
               </ButtonToolbar>
             </Modal.Footer>
           )
-         }
+        }
       </DraggableModal>
     );
   }
@@ -457,7 +457,7 @@ Characterisation = connect((state) => {
         : state.beamline.hardwareObjects.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.hardwareObjects.omega.value)
+        : state.beamline.hardwareObjects["diffractometer.phi"].value)
     }
   };
 })(Characterisation);

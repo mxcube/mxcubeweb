@@ -1,4 +1,4 @@
-<device class = "ResolutionMockup" global_role="resolution">
+<device class = "ResolutionMockup">
   <username>Resolution</username>
   <object hwrid="/dtox" role="dtox"/>
   <object href="/energy" role="energy"/>

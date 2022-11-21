@@ -3,84 +3,84 @@ sample_view:
   components:
     -
       label: Omega
-      attribute: omega
+      attribute: diffractometer.phi
       role: omega
       step: 90
       precision: 2
       suffix: °
     -
       label: Kappa
-      attribute: kappa
+      attribute: diffractometer.kappa
       role: kappa
       step: 0.1
       precision: 1
       suffix: "°"          
     -
       label: Kappa Phi
-      attribute: kappa_phi
+      attribute: diffractometer.kappa_phi
       role: kappa_phi
       step: 0.1
       precision: 1
       suffix: °          
     -
       label: X
-      attribute: phix
+      attribute: diffractometer.phix
       role: phix
       step: 0.1
       precision: 3
       suffix: mm      
     -
       label: Y
-      attribute: phiy
+      attribute: diffractometer.phiy
       role: phiy
       step: 0.1
       precision: 3
       suffix: mm
     -
       label: Z
-      attribute: phiz
+      attribute: diffractometer.phiz
       role: phiz
       step: 0.1
       precision: 3
       suffix: mm
     -
       label: Samp-X
-      attribute: sampx
+      attribute: diffractometer.sampx
       role: sampx
       step: 0.1
       precision: 3
       suffix: mm
     -
       label: Samp-Y
-      attribute: sampy
+      attribute: diffractometer.sampy
       role: sampy
       step: 0.1
       precision: 3
       suffix: mm
     -
       label: Sample Horizontal
-      attribute: phiz
+      attribute: diffractometer.phiz
       role: sample_horizontal
       step: 0.1
       precision: 3
       suffix: mm
     -
       label: Sample Vertical
-      attribute: phiy
+      attribute: diffractometer.phiy
       role: sample_vertical
       step: 0.1
       precision: 3
       suffix: mm
     -
       label: Zoom
-      attribute: zoom
+      attribute: diffractometer.zoom
       role: zoom
       step: 1
       precision: 1
       suffix: mm
     -
       label: Focus
-      attribute: sampx
+      attribute: diffractometer.sampx
       role: focus
       step: 0.1
       precision: 3
@@ -135,7 +135,7 @@ beamline_setup:
       suffix: Å
     -
       label: Detector
-      attribute: detector_distance
+      attribute: detector.detector_distance
       step: 0.1
       precision: 1
       suffix: mm 

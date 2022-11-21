@@ -1,4 +1,4 @@
-<object class="SlitsMockup" global_role="slits">
+<object class="SlitsMockup">
     <gapH>
        <stepSize>0.0050</stepSize>
        <minGap>0.005</minGap>

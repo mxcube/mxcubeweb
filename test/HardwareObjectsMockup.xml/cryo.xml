@@ -1,4 +1,4 @@
-<device class ="ActuatorMockup" global_role="cryo">
+<device class ="ActuatorMockup">
     <actuator_name>Cryo</actuator_name>
     <username>Cryo</username>
     <read_only>True</read_only>

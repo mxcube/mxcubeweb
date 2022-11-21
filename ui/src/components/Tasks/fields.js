@@ -24,11 +24,11 @@ function errorIndicator(error, warning) {
   let icon = null;
   if (error) {
     icon = (
-      <i title={error}><TiTimes size='1.3em' color='red'/></i>
+      <i title={error}><TiTimes size='1.3em' color='red' /></i>
     );
   } else if (warning) {
     icon = (
-      <i title={warning}><TiWarning size='1.3em' color='orange'/></i>
+      <i title={warning}><TiWarning size='1.3em' color='orange' /></i>
     );
   }
   return icon;
@@ -51,12 +51,12 @@ function errorLabel(error, warning) {
 
 export function FieldsHeader({ title }) {
   return <Row >
-    <Col sm={12} style={{  marginTop: '0.5em', marginBottom: '0.5em' }}>
-      <hr style={{ marginBottom: '-12px',  }} />
+    <Col sm={12} style={{ marginTop: '0.5em', marginBottom: '0.5em' }}>
+      <hr style={{ marginBottom: '-12px', }} />
       <center>
         <div>
           <b style={{ position: 'relative', padding: '0.5em', backgroundColor: 'white' }}>
-           {title} 
+            {title}
           </b>
         </div>
       </center>
@@ -66,8 +66,8 @@ export function FieldsHeader({ title }) {
 
 export function StaticField({ label, data, col1, col2 }) {
   return <Form.Group as={Row} style={{ textAlign: 'left' }}>
-   <Form.Label column sm={col1 || 2} >
-     <b>
+    <Form.Label column sm={col1 || 2} >
+      <b>
         {label}
         :
       </b>
@@ -80,17 +80,16 @@ export function StaticField({ label, data, col1, col2 }) {
 
 function ReduxInputField(prop) {
   return <Form.Group
-    as={Row}
     controlId={prop.input.name}
   >
     <Row>
       <Form.Label
-      column sm={6}
-      style={{ textAlign: 'left', color: validation(prop.meta.error, prop.meta.warning) }}
+        column sm={prop.col1 || 6}
+        style={{ textAlign: 'left', color: validation(prop.meta.error, prop.meta.warning) }}
       >
         {prop.label}
       </Form.Label>
-      <Col sm={4}>
+      <Col sm={prop.col2 || 4}>
         <Form.Control
           disabled={prop.disabled}
           value={prop.input.value}
@@ -104,21 +103,20 @@ function ReduxInputField(prop) {
           <Col sm={1} style={{ top: '7px', left: '-10px', position: 'relative' }}>
             {errorIndicator(prop.meta.error, prop.meta.warning)}
           </Col>
-        ) : <Col sm={1}/>
+        ) : <Col sm={1} />
       }
     </Row>
-    <Row>
-      {prop.meta.error || prop.meta.warning
-        ? (
-          <Col >
-            <div>
-              {errorLabel(prop.meta.error, prop.meta.warning)}
-            </div>
+    {prop.meta.error || prop.meta.warning
+      ? (
+        <Row>
+          <Col sm={12}>
+            {errorLabel(prop.meta.error, prop.meta.warning)}
           </Col>
-        ) : <Col/>
-      }
-    </Row>
-  </Form.Group>
+        </Row>
+      ) : null
+    }
+
+  </Form.Group >
 }
 
 export function InputField(prop) {
@@ -174,7 +172,7 @@ export function SelectField({
     name={propName}
     component={prop => (
       <Form.Group as={Row} controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
-        <Form.Label column sm={col1 || 6} style={{ textAlign: 'left'}}>
+        <Form.Label column sm={col1 || 6} style={{ textAlign: 'left' }}>
           {label}
         </Form.Label>
         <Col sm={col2 || 4}>
@@ -206,11 +204,11 @@ export function FieldsRow({ children }) {
         {children}
       </Col>
     )
-     }
+    }
   </Row>
 }
 
- 
+
 export class CollapsableRows extends React.Component {
   constructor(props) {
     super(props);
@@ -224,7 +222,7 @@ export class CollapsableRows extends React.Component {
         <Row>
           <Col sm={12}>
             <center>
-              { this.state.collapsed
+              {this.state.collapsed
                 ? (
                   <Button
                     variant="link"
@@ -241,15 +239,15 @@ export class CollapsableRows extends React.Component {
                     onClick={() => { this.setState({ collapsed: true }); }}
                   >
                     <a>
-                  Hide
+                      Hide
                     </a>
                   </Button>
                 )
-            }
+              }
             </center>
           </Col>
         </Row>
-        { this.state.collapsed ? '' : this.props.children }
+        {this.state.collapsed ? '' : this.props.children}
       </div>
     );
   }

@@ -179,16 +179,16 @@ class Mesh extends React.Component {
 
           <FieldsHeader title="Processing" />
         </Modal.Body>
-        { this.props.taskData.state ? ''
+        {this.props.taskData.state ? ''
           : (
             <Modal.Footer>
-              <ButtonToolbar style={{ bottom: '15px', left: '10px'}} className="position-absolute">
+              <ButtonToolbar style={{ bottom: '15px', left: '10px' }} className="position-absolute">
                 <Button
                   size="sm"
                   variant="outline-secondary"
                   onClick={this.defaultParameters}
                 >
-               Default Parameters
+                  Default Parameters
                 </Button>
                 <Button
                   className='ms-3'
@@ -196,7 +196,7 @@ class Mesh extends React.Component {
                   variant="outline-secondary"
                   onClick={this.resetParameters}
                 >
-               Reset Form
+                  Reset Form
                 </Button>
               </ButtonToolbar>
               <ButtonToolbar className="pull-right">
@@ -205,7 +205,7 @@ class Mesh extends React.Component {
                   disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                   onClick={this.submitRunNow}
                 >
-                 Run Now
+                  Run Now
                 </Button>
                 <Button
                   className='ms-3'
@@ -218,7 +218,7 @@ class Mesh extends React.Component {
               </ButtonToolbar>
             </Modal.Footer>
           )
-       }
+        }
       </DraggableModal>
     );
   }
@@ -246,7 +246,6 @@ Mesh = connect((state) => {
 
   const { type } = state.taskForm.taskData;
   const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
-
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
@@ -264,7 +263,7 @@ Mesh = connect((state) => {
       transmission: (state.taskForm.taskData.sampleID
         ? state.taskForm.taskData.parameters.transmission
         : state.beamline.hardwareObjects.transmission.value),
-      osc_start: state.beamline.hardwareObjects.omega.value
+      osc_start: state.beamline.hardwareObjects["diffractometer.phi"].value
     }
   };
 })(Mesh);

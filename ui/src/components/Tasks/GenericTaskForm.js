@@ -7,7 +7,6 @@ import {
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import warn from './warning';
-
 import JSForm from '@rjsf/core';
 import classNames from 'classnames';
 import './style.css';
@@ -16,9 +15,6 @@ import {
   FieldsHeader,
   StaticField,
   InputField,
-  SelectField,
-  FieldsRow,
-  CollapsableRows
 } from './fields';
 
 import { SPACE_GROUPS } from '../../constants';
@@ -94,13 +90,13 @@ class GenericTaskForm extends React.Component {
     return (
       <Modal.Footer>
         <div className="input-group-btn d-flex">
-          <ButtonToolbar style={{ bottom: '15px', left: '10px'}} className="position-absolute">
+          <ButtonToolbar style={{ bottom: '15px', left: '10px' }} className="position-absolute">
             <Button
               size="sm"
               variant="outline-secondary"
               onClick={this.defaultParameters}
             >
-             Default Parameters
+              Default Parameters
             </Button>
           </ButtonToolbar>
           <ButtonToolbar>
@@ -111,7 +107,7 @@ class GenericTaskForm extends React.Component {
               disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
               onClick={this.submitRunNow}
             >
-             Run Now
+              Run Now
             </Button>
             <Button
               size="sm"
@@ -137,7 +133,7 @@ class GenericTaskForm extends React.Component {
             disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
             onClick={this.submitRunNow}
           >
-             Run Nowjson-schema-form-group-div
+            Run Nowjson-schema-form-group-div
           </Button>
           <Button
             variant="primary"
@@ -163,8 +159,8 @@ class GenericTaskForm extends React.Component {
     return foot;
   }
 
-  setConstraintsFromDefualts(schema){
-    const s = {...schema}
+  setConstraintsFromDefualts(schema) {
+    const s = { ...schema }
 
     for (const key in this.props.initialValues) {
       if (s.properties[key]) {
@@ -179,11 +175,11 @@ class GenericTaskForm extends React.Component {
       }
     }
 
-   return s;
+    return s;
   }
 
   render() {
-    function columnsObjectFieldTemplate ({ properties, description }) {
+    function columnsObjectFieldTemplate({ properties, description }) {
       return (
         <div>
           <div className='row'>
@@ -212,11 +208,11 @@ class GenericTaskForm extends React.Component {
         "*",
       ],
       "ui:submitButtonOptions": {
-         "norender": true,
-       }
-     };
+        "norender": true,
+      }
+    };
 
-    const schema = this.setConstraintsFromDefualts (
+    const schema = this.setConstraintsFromDefualts(
       this.props.schema.user_collection_parameters
     )
 
@@ -260,7 +256,7 @@ class GenericTaskForm extends React.Component {
               liveValidate
               schema={schema}
               uiSchema={uiSchema}
-              onChange={({formData})=>{
+              onChange={({ formData }) => {
                 this.jsformData = formData;
               }}
               ObjectFieldTemplate={columnsObjectFieldTemplate}
@@ -269,7 +265,7 @@ class GenericTaskForm extends React.Component {
 
         </Modal.Body>
 
-        { this.props.taskData.state ? '' : this.showFooter() }
+        {this.props.taskData.state ? '' : this.showFooter()}
 
       </DraggableModal>
     );
@@ -326,7 +322,7 @@ GenericTaskForm = connect((state) => {
         : state.beamline.hardwareObjects.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.hardwareObjects.omega.value)
+        : state.beamline.hardwareObjects["diffractometer.phi"].value)
     }
   };
 })(GenericTaskForm);

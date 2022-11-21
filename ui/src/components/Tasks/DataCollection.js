@@ -88,13 +88,13 @@ class DataCollection extends React.Component {
     return (
       <Modal.Footer>
         <div className="input-group-btn d-flex">
-          <ButtonToolbar style={{ bottom: '15px', left: '10px'}} className="position-absolute">
+          <ButtonToolbar style={{ bottom: '15px', left: '10px' }} className="position-absolute">
             <Button
               size="sm"
               variant="outline-secondary"
               onClick={this.defaultParameters}
             >
-             Default Parameters
+              Default Parameters
             </Button>
           </ButtonToolbar>
           <ButtonToolbar>
@@ -105,7 +105,7 @@ class DataCollection extends React.Component {
               disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
               onClick={this.submitRunNow}
             >
-             Run Now
+              Run Now
             </Button>
             <Button
               size="sm"
@@ -131,7 +131,7 @@ class DataCollection extends React.Component {
             disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
             onClick={this.submitRunNow}
           >
-             Run Now
+            Run Now
           </Button>
           <Button
             variant="primary"
@@ -224,7 +224,7 @@ class DataCollection extends React.Component {
               />
               <InputField propName="resolution" type="number" label="Resolution" />
             </FieldsRow>
-            { this.props.taskResult.energyScan.length > 0
+            {this.props.taskResult.energyScan.length > 0
               ? (
                 <FieldsRow>
                   <SelectField
@@ -279,7 +279,7 @@ class DataCollection extends React.Component {
 
         </Modal.Body>
 
-        { this.props.taskData.state ? '' : this.showFooter() }
+        {this.props.taskData.state ? '' : this.showFooter()}
 
       </DraggableModal>
     );
@@ -334,7 +334,7 @@ DataCollection = connect((state) => {
         : state.beamline.hardwareObjects.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.hardwareObjects.omega.value)
+        : state.beamline.hardwareObjects["diffractometer.phi"].value)
     }
   };
 })(DataCollection);

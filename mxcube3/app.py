@@ -10,7 +10,7 @@ import atexit
 import json
 
 from pathlib import Path
-from logging import StreamHandler, NullHandler
+from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 
 from mxcubecore import HardwareRepository as HWR
@@ -111,12 +111,12 @@ class MXCUBECore:
 
     @staticmethod
     def _get_adapter_id(ho):
-        _id = ho.global_role
+        _id = HWR.beamline.get_id(ho)
 
         return _id.replace(" ", "_").lower()
 
     @staticmethod
-    def _add_adapter(_id, adapter_cls, ho, adapter_instance):
+    def _add_adapter(_id, adapter_cls, ho, adapter_instance): 
         if _id not in MXCUBECore.adapter_dict:
             MXCUBECore.adapter_dict[_id] = {
                 "id": str(_id),
@@ -136,9 +136,6 @@ class MXCUBECore:
     @staticmethod
     def adapt_hardware_objects(app):
         adapter_config = app.CONFIG.app.adapter_properties
-
-        # NB. We should investigate why the list hardware_objects
-        # is updated internaly in mxcubecore
         hwobject_list = [item for item in MXCUBECore.hwr.hardware_objects]
 
         for ho_name in hwobject_list:
@@ -150,7 +147,7 @@ class MXCUBECore:
             if not ho:
                 continue
 
-            _id = MXCUBECore._get_adapter_id(ho)
+            _id = HWR.beamline.get_id(ho)
 
             # Try to use the interface exposed by abstract classes in mxcubecore to adapt
             # the object
@@ -174,7 +171,7 @@ class MXCUBECore:
 
         print(
             make_table(
-                ["Name (global_role)", "Adapter", "HO filename"],
+                ["Beamline attribute (id)", "Adapter", "HO filename"],
                 [
                     [item["id"], item["adapter_cls"], item["ho"]]
                     for item in MXCUBECore.adapter_dict.values()

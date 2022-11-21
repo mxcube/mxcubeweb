@@ -15,7 +15,7 @@ server:
 
 mxcube:
   VIDEO_FORMAT: MJPEG
-  VIDEO_STREAM_URL: "http://localhost:4042"
+  #VIDEO_STREAM_URL: "http://localhost:4042"
   # Mode, SSX-CHIP, SSX-INJECTOR, OSC
   mode: SSX-CHIP
 

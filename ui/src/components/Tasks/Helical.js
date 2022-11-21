@@ -92,21 +92,21 @@ class Helical extends React.Component {
           <Form>
             <StaticField label="Path" data={this.props.path} />
             <Row className='mt-3'>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
+              <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
             </Row>
-            <Row  className='mt-3'>
+            <Row className='mt-3'>
               <InputField propName="prefix" label="Prefix" col1="4" col2="7" />
             </Row>
-            <Row  className='mt-3 mb-3'>
+            <Row className='mt-3 mb-3'>
               {this.props.taskData.sampleID
                 ? (
-                    <InputField
-                      propName="run_number"
-                      disabled
-                      label="Run number"
-                      col1="4"
-                      col2="7"
-                    />
+                  <InputField
+                    propName="run_number"
+                    disabled
+                    label="Run number"
+                    col1="4"
+                    col2="7"
+                  />
                 )
                 : null}
             </Row>
@@ -157,7 +157,7 @@ class Helical extends React.Component {
 
           <FieldsHeader title="Processing" />
         </Modal.Body>
-        { this.props.taskData.state ? ''
+        {this.props.taskData.state ? ''
           : (
             <Modal.Footer>
               <ButtonToolbar className="pull-left">
@@ -166,7 +166,7 @@ class Helical extends React.Component {
                   variant="outline-secondary"
                   onClick={this.defaultParameters}
                 >
-                 Default Parameters
+                  Default Parameters
                 </Button>
               </ButtonToolbar>
               <ButtonToolbar className="pull-right">
@@ -175,7 +175,7 @@ class Helical extends React.Component {
                   disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                   onClick={this.submitRunNow}
                 >
-                 Run Now
+                  Run Now
                 </Button>
                 <Button
                   className='ms-3'
@@ -188,7 +188,7 @@ class Helical extends React.Component {
               </ButtonToolbar>
             </Modal.Footer>
           )
-       }
+        }
       </DraggableModal>
     );
   }
@@ -235,7 +235,7 @@ Helical = connect((state) => {
         : state.beamline.hardwareObjects.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.hardwareObjects.omega.value)
+        : state.beamline.hardwareObjects["diffractometer.phi"].value)
     }
   };
 })(Helical);

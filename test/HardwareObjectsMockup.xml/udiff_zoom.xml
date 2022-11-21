@@ -1,4 +1,4 @@
-<device class="MicrodiffZoomMockup" global_role="zoom">
+<device class="MicrodiffZoomMockup">
   <username>zoom</username>
   <motor_name>zoom</motor_name>
   <exporter_address>130.235.94.124:9001</exporter_address>

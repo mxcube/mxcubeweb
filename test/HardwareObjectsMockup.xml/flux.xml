@@ -1,4 +1,4 @@
-<object class="FluxMockup" global_role="flux">
+<object class="FluxMockup">
    <object href="/transmission" role="transmission"/>
    <object href="/beam" role="beam_info"/>
    <defaultFlux>2.3e+12</defaultFlux>
