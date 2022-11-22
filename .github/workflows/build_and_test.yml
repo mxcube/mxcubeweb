@@ -23,7 +23,7 @@ jobs:
     - name: Start Redis
       uses: supercharge/redis-github-action@1.4.0
       with:
-        redis-version: ${{ matrix.redis-version }}
+        redis-version: 5
     - name: Install dependencies
       run: |
         conda env update --file conda-environment.yml --name base
