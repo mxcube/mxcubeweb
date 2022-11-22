@@ -20,35 +20,34 @@ def test_beamline_get_all_attribute(client):
     actual = list(data.get("hardwareObjects").keys())
 
     expected = [
-        "backlight",
-        "backlight_switch",
         "beam",
-        "beamstop",
-        "beamstop_alignemnt_x",
-        "capillary",
         "detector",
-        "detector_distance",
+        "detector.detector_distance",
         "diffractometer",
+        "diffractometer.backlight",
+        "diffractometer.backlightswitch",
+        "diffractometer.beamstop",
+        "diffractometer.beamstop_distance",
+        "diffractometer.capillary",
+        "diffractometer.frontlight",
+        "diffractometer.frontlightswitch",
+        "diffractometer.kappa",
+        "diffractometer.kappa_phi",
+        "diffractometer.phi",
+        "diffractometer.phix",
+        "diffractometer.phiy",
+        "diffractometer.phiz",
+        "diffractometer.sampx",
+        "diffractometer.sampy",
+        "diffractometer.zoom",
         "energy",
         "energy.wavelength",
         "fast_shutter",
         "flux",
-        "frontlight",
-        "frontlight_switch",
-        "kappa",
-        "kappa_phi",
         "machine_info",
-        "microdiff_light",
-        "omega",
-        "phix",
-        "phiy",
-        "phiz",
         "resolution",
         "safety_shutter",
-        "sampx",
-        "sampy",
         "transmission",
-        "zoom"
     ]
 
     assert isinstance(data["hardwareObjects"], dict)
@@ -67,18 +66,17 @@ def test_beamline_get_attribute(client):
     """
     bl_attrs = [
         ("safety_shutter", "nstate"),
-        ("capillary", "nstate"),
-        ("beamstop", "nstate"),
+        ("diffractometer.capillary", "nstate"),
+        ("diffractometer.beamstop", "nstate"),
         ("fast_shutter", "nstate"),
         ("resolution", "motor"),
         ("energy", "motor"),
         ("flux", "actuator"),
         ("transmission", "motor"),
-        ("detector_distance", "motor"),
+        ("detector.detector_distance", "motor"),
     ]
 
     for name, adapter_type in bl_attrs:
-        print(name)
         resp = client.get(f"/mxcube/api/v0.1/beamline/{adapter_type}/{name}")
         data = json.loads(resp.data)
 
@@ -90,6 +88,7 @@ def test_beamline_get_attribute(client):
 
         assert data["available"] == True
         assert resp.status_code == 200
+
 
 def test_beamline_set_attribute(client):
     """
@@ -104,9 +103,9 @@ def test_beamline_set_attribute(client):
         ("energy", "motor"),
         ("transmission", "motor"),
         ("safety_shutter", "nstate"),
-        ("beamstop", "nstate"),
+        ("diffractometer.beamstop", "nstate"),
         ("fast_shutter", "nstate"),
-        ("detector_distance", "motor"),
+        ("detector.detector_distance", "motor"),
     ]
 
     for (name, adapter_type) in bl_attrs:
