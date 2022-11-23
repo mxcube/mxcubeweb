@@ -63,6 +63,7 @@ class EquipmentContainer extends React.Component {
                       return (<GenericEquipmentControl
                         equipment={obj}
                         executeCommand={this.props.executeCommand}
+                        key={key}
                       />)
                     } 
                       return null;
