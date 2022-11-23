@@ -13,8 +13,8 @@
 }
 
 .samples-grid-table-card-header{
-  margin-left: 2.5em;
-  margin-right: 2.5em;
+  margin-left: 0.5em;
+  margin-right: 0.5em;
 
 }
 
@@ -86,7 +86,7 @@
 }
 
 .samples-grid-table-li {
-  width: 340px;
+  /* width: 340px; */
   margin: auto auto 6px auto;
   z-index: 2 !important;
   list-style-type: none;
@@ -152,7 +152,7 @@ button[disabled] {
 
 
 .samples-grid-table-item-tasks {
-  width: 312px;
+  max-width: 265px;
   height: 26px;
   padding-left: 26px;
 }

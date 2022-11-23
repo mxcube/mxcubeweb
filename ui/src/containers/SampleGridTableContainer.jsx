@@ -493,8 +493,8 @@ class SampleGridTableContainer extends React.Component {
         dots: false,
         infinite: false,
         speed: 100,
-        slidesToShow: 7,
-        slidesToScroll: 7
+        slidesToShow: 6,
+        slidesToScroll: 6
       };
 
       if (this.filter(key)) {
