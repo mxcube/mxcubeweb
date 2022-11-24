@@ -46,6 +46,6 @@ dependencies:
       - git+https://github.com/marcus-oscarsson/python-v4l2.git
       - Louie-latest
       - spectree
-      - git+https://github.com/mxcube/mxcubecore.git
+      - git+https://github.com/mxcube/mxcubecore.git@develop
       - flask-security-too
       - gipc
