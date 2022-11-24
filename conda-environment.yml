@@ -41,6 +41,7 @@ dependencies:
   - psutil
 
   - pip:
+      - devtools
       - Flask-Session==0.3.2
       - Flask-Login==0.5.0
       - git+https://github.com/marcus-oscarsson/python-v4l2.git
