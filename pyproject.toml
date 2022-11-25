@@ -1,0 +1,82 @@
+[tool.poetry]
+name = "mxcube3"
+version = "1.0.0"
+license = "LGPL-3.0-or-later"
+description = "MXCuBE Web user interface"
+authors = ["The MXCuBE collaboration <mxcube@esrf.fr>"]
+maintainers = [
+    "MXCuBE collaboration <mxcube@esrf.fr>",
+]
+readme = "README.md"
+homepage = "http://github.com/mxcube/mxcubeweb"
+repository = "http://github.com/mxcube/mxcubeweb"
+documentation = ""
+keywords = ["mxcube", "mxcube3", "mxcubeweb"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering",
+]
+
+[tool.poetry.dependencies]
+python = ">=3.8,<3.11"
+gevent = "21.12.0"
+Flask = "^2.2.2"
+Flask-SocketIO = "^5.3.2"
+flask-sqlalchemy = "^3.0.2"
+Flask-Security-Too = "^5.0.2"
+spectree = "^1.0.2"
+mock = "^4.0.3"
+"ruamel.yaml" = "^0.17.21"
+scandir = "^1.10.0"
+redis = "^4.3.5"
+tzlocal = "^4.2"
+devtools = "^0.9.0"
+jsonschema = "^4.17.1"
+pydantic = "^1.10.2"
+PyDispatcher = "^2.0.6"
+
+mxcubecore = { git = "https://github.com/mxcube/mxcubecore.git", branch = "mo-poetry" }
+PyTango = { version = "9.3.5", optional = true }
+lucid3 = { git = "https://github.com/mxcube/lucid3.git", branch = "master", optional = true }
+pytz = "^2022.6"
+gevent-websocket = "^0.10.1"
+
+
+[tool.poetry.dev-dependencies]
+pylint = [ { version = "==2.13.9", python = "<=3.7.1" }, { version = "2.15.3", python = ">=3.8" } ]
+pre-commit = "2.20.0"
+pytest = "7.1.3"
+pytest-cov = "4.0.0"
+
+[tool.poetry.extras]
+gphl = ["py4j", "f90nml"]
+tango = ["PyTango"]
+lucid3 = ["lucid3"]
+
+[tool.black]
+line-length = 88
+include = '\.pyi?$'
+exclude = '''
+/(
+    \.git
+  | \.hg
+  | \.mypy_cache
+  | \.tox
+  | \.venv
+  | _build
+  | buck-out
+  | build
+  | dist
+)/
+'''
+
+[build-system]
+requires = ["poetry-core>=1.0.0", "setuptools>=45", "setuptools_scm[toml]>=6.2"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+mxcubeweb-server = 'mxcube3:main'
