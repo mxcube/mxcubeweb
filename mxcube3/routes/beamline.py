@@ -95,7 +95,6 @@ def add_adapter_routes(app, server, bp):
 
     for _id, a in app.mxcubecore.adapter_dict.items():
         adapter = a["adapter"]
-        atype = adapter.adapter_type.lower()
 
         # Only add the route once for each type (class) of adapter
         if adapter.adapter_type not in adapter_type_list:

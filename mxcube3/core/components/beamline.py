@@ -23,7 +23,7 @@ class Beamline(ComponentBase):
                     beamInfo.connect(beamInfo, sig, signals.beam_changed)
             else:
                 logging.getLogger("MX3.HWR").error("beam_info is not defined")
-        except Exception as ex:
+        except Exception:
             msg = "error connecting to beamline_adapter/beam_info hardware object "
             msg += "signals"
             logging.getLogger("MX3.HWR").exception(msg)
@@ -42,7 +42,7 @@ class Beamline(ComponentBase):
                 logging.getLogger("MX3.HWR").error(
                     "beamline_actions hardware object is not defined"
                 )
-        except Exception as ex:
+        except Exception:
             msg = "error connecting to beamline actions hardware object signals"
             logging.getLogger("MX3.HWR").exception(msg)
 

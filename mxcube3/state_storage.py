@@ -35,7 +35,6 @@ def init():
     def ui_state_update(key_val):
         key, val = key_val
         mxcube.UI_STATE[key.replace("reduxPersist:", "")] = json.loads(val)
-        operator = mxcube.usermanager.get_operator()
 
         emit(
             "state_update",

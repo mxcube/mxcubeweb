@@ -31,7 +31,6 @@ def start(device, scale, _hash):
     fpath = os.path.dirname(__file__)
     websocket_relay_js = os.path.join(fpath, "websocket-relay.js")
 
-    FNULL = open(os.devnull, "w")
 
     relay = subprocess.Popen(
         ["node", websocket_relay_js, _hash, "4041", "4042"], shell=False

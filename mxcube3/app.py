@@ -410,7 +410,7 @@ class MXCUBEApplication:
                     adapter = mxcore.get_adapter(component_data.attribute)
                     adapter_cls_name = type(adapter).__name__
                     value_type = adapter.adapter_type
-                except AttributeError as ex:
+                except AttributeError:
                     adapter_cls_name = ""
                     value_type = ""
                 else:
