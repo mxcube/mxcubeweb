@@ -276,7 +276,9 @@ class Lims(ComponentBase):
         """
         limsdata = json.loads(current_user.limsdata)
 
-        logging.getLogger("MX3.HWR").info("[LIMS] Searching for proposal: %s" % proposal)
+        logging.getLogger("MX3.HWR").info(
+            "[LIMS] Searching for proposal: %s" % proposal
+        )
         for prop in limsdata.get("proposalList", []):
             _p = "%s%s" % (
                 prop.get("Proposal").get("code", "").lower(),

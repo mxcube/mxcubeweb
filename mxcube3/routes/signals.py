@@ -20,9 +20,7 @@ from mxcubecore import HardwareRepository as HWR
 
 
 def last_queue_node():
-    node = HWR.beamline.queue_manager._current_queue_entries[
-        -1
-    ].get_data_model()
+    node = HWR.beamline.queue_manager._current_queue_entries[-1].get_data_model()
 
     # Reference collections are orphans, the node we want is the
     # characterisation not the reference collection itself
@@ -645,9 +643,7 @@ def beamline_action_failed(name):
 
 
 def safety_shutter_state_changed(values):
-    ho = BeamlineAdapter(HWR.beamline).get_object_by_role(
-        "safety_shutter"
-    )
+    ho = BeamlineAdapter(HWR.beamline).get_object_by_role("safety_shutter")
     data = ho.dict()
     try:
         server.emit("beamline_value_change", data, namespace="/hwr")

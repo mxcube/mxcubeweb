@@ -14,7 +14,6 @@ from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubecore import HardwareRepository as HWR
 
 
-
 def create_get_route(app, server, bp, adapter, attr, name):
     atype = adapter.adapter_type.lower()
     func = getattr(adapter, attr)
@@ -28,11 +27,10 @@ def create_get_route(app, server, bp, adapter, attr, name):
 
         @bp.route(route_url, endpoint=endpoint, methods=["GET"])
         @server.restrict
-        @server.validate(
-            resp=spectree.Response(HTTP_200=get_type_hint["return"]))
+        @server.validate(resp=spectree.Response(HTTP_200=get_type_hint["return"]))
         def get_func(name):
             """
-            Retrieves value of attribute < name > 
+            Retrieves value of attribute < name >
             Replies with status code 200 on success and 409 on exceptions.
             """
             return jsonify(
@@ -137,6 +135,7 @@ def add_adapter_routes(app, server, bp):
 
         for cmd_name in exported_methods.keys():
             create_route(app, server, bp, adapter, _id, cmd_name)
+
 
 def init_route(app, server, url_prefix):
     bp = Blueprint("beamline", __name__, url_prefix=url_prefix)

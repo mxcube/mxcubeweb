@@ -108,5 +108,4 @@ def init_route(app, server, url_prefix):
     def network_ws_disconnect():
         pass
 
-
     return bp

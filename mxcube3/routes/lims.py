@@ -90,8 +90,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/results", methods=["POST"])
     @server.restrict
     def get_results():
-        """
-        """
+        """ """
         qid = request.get_json().get("qid", None)
         r = jsonify({"result": ""})
 

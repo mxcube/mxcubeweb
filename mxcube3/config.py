@@ -9,7 +9,7 @@ from mxcube3.core.models.configmodels import (
     UIPropertiesListModel,
     AppConfigModel,
     FlaskConfigModel,
-    MXCUBEAppConfigModel
+    MXCUBEAppConfigModel,
 )
 
 

@@ -436,7 +436,7 @@ class SampleView(ComponentBase):
             logging.getLogger("user_level_log").info("User canceled centring")
             HWR.beamline.diffractometer.cancel_centring_method()
             self.centring_remove_current_point()
-        except:
+        except BaseException:
             logging.getLogger("MX3.HWR").warning("Canceling centring failed")
 
     def centring_handle_click(self, x, y):

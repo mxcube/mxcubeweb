@@ -3,7 +3,6 @@ from flask import Blueprint, Response, jsonify, request
 from mxcubecore import HardwareRepository as HWR
 
 
-
 def init_route(app, server, url_prefix):
     bp = Blueprint("sample_changer", __name__, url_prefix=url_prefix)
 

@@ -116,7 +116,7 @@ class MXCUBECore:
         return _id.replace(" ", "_").lower()
 
     @staticmethod
-    def _add_adapter(_id, adapter_cls, ho, adapter_instance): 
+    def _add_adapter(_id, adapter_cls, ho, adapter_instance):
         if _id not in MXCUBECore.adapter_dict:
             MXCUBECore.adapter_dict[_id] = {
                 "id": str(_id),
@@ -157,7 +157,7 @@ class MXCUBECore:
                 try:
                     adapter_instance = adapter_cls(ho, _id, app, **dict(adapter_config))
                     logging.getLogger("MX3.HWR").info("Added adapter for %s" % _id)
-                except:
+                except BaseException:
                     logging.getLogger("MX3.HWR").exception(
                         "Could not add adapter for %s" % _id
                     )
@@ -381,7 +381,7 @@ class MXCUBEApplication:
         ):
             logger.setLevel(logging.DEBUG)
 
-            logger.addHandler(custom_log_handler)      
+            logger.addHandler(custom_log_handler)
             logger.addHandler(stdout_log_handler)
 
             if log_file:
@@ -422,7 +422,10 @@ class MXCUBEApplication:
                 if not component_data.value_type:
                     component_data.value_type = value_type
 
-        return {key: value.dict() for (key, value) in MXCUBEApplication.CONFIG.app.ui_properties.items()}
+        return {
+            key: value.dict()
+            for (key, value) in MXCUBEApplication.CONFIG.app.ui_properties.items()
+        }
 
     @staticmethod
     def save_settings():

@@ -75,8 +75,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/camera", methods=["POST"])
     @server.restrict
     def set_image_size():
-        """
-        """
+        """ """
         params = request.get_json()
 
         res = app.sample_view.set_image_size(
@@ -284,13 +283,13 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def move_motor(motid, newpos):
         """
-            Move or Stop the given motor.
-            :parameter motid: motor name, 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom',
-            'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight',
-            'Sampx', 'Sampy'
-            :parameter newpos: new position, double, stop: string
-            :statuscode: 200: no error
-            :statuscode: 409: error
+        Move or Stop the given motor.
+        :parameter motid: motor name, 'Phi', 'Focus', 'PhiZ', 'PhiY', 'Zoom',
+        'BackLightSwitch','BackLight','FrontLightSwitch', 'FrontLight',
+        'Sampx', 'Sampy'
+        :parameter newpos: new position, double, stop: string
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
 
         try:

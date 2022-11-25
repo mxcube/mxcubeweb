@@ -352,7 +352,7 @@ class Queue(ComponentBase):
         # Always add link to data, (no request made)
         limsres["limsTaskLink"] = self.app.lims.get_dc_link(lims_id)
 
-        dtype_label =  qme.EXPERIMENT_TYPE._fields[node.experiment_type]
+        dtype_label = qme.EXPERIMENT_TYPE._fields[node.experiment_type]
         dtype_label = "OSC" if dtype_label == "NATIVE" else dtype_label
 
         res = {
@@ -726,7 +726,9 @@ class Queue(ComponentBase):
             elif isinstance(node, qmo.TaskGroup) and node.interleave_num_images:
                 result.append(self._handle_interleaved(sample_node, node))
             elif isinstance(node, qmo.TaskNode) and node.task_data:
-                result.append(self._handle_task_node(sample_node, node, include_lims_data))
+                result.append(
+                    self._handle_task_node(sample_node, node, include_lims_data)
+                )
             else:
                 result.extend(self.queue_to_dict_rec(node, include_lims_data))
 
@@ -996,7 +998,6 @@ class Queue(ComponentBase):
             else:
                 self.add_queue_entry(sample_node_id, item, item_t)
 
-
     def add_sample(self, sample_id, item):
         """
         Adds a sample with sample id <sample_id> the queue.
@@ -1110,13 +1111,13 @@ class Queue(ComponentBase):
                 "mesh_center", "top-left"
             )
             if mesh_center == "top-left":
-                acq.acquisition_parameters.centred_position = grid.get_centred_positions()[
-                    0
-                ]
+                acq.acquisition_parameters.centred_position = (
+                    grid.get_centred_positions()[0]
+                )
             else:
-                acq.acquisition_parameters.centred_position = grid.get_centred_positions()[
-                    1
-                ]
+                acq.acquisition_parameters.centred_position = (
+                    grid.get_centred_positions()[1]
+                )
             acq.acquisition_parameters.mesh_steps = grid.get_num_lines()
             acq.acquisition_parameters.num_images = task_data["parameters"][
                 "num_images"
@@ -1377,15 +1378,17 @@ class Queue(ComponentBase):
         Return:
             (tuple): (model, entry)
         """
-        queue_entry_name = task_name.title().replace("_", "")+"QueueEntry"
+        queue_entry_name = task_name.title().replace("_", "") + "QueueEntry"
         entry_cls = getattr(qe, queue_entry_name)
-        data = entry_cls.DATA_MODEL(**{
-            "path_parameters": task["parameters"],
-            "common_parameters": task["parameters"],
-            "user_collection_parameters": task["parameters"],
-            "collection_parameters": task["parameters"],
-            "legacy_parameters": task["parameters"],
-        })
+        data = entry_cls.DATA_MODEL(
+            **{
+                "path_parameters": task["parameters"],
+                "common_parameters": task["parameters"],
+                "user_collection_parameters": task["parameters"],
+                "collection_parameters": task["parameters"],
+                "legacy_parameters": task["parameters"],
+            }
+        )
 
         entry = entry_cls(Mock(), entry_cls.QMO(task_data=data))
         entry.set_enabled(True)
@@ -1416,7 +1419,7 @@ class Queue(ComponentBase):
         :rtype: Tuple
         """
         from mxcubecore.HardwareObjects.Gphl.GphlQueueEntry import (
-            GphlWorkflowQueueEntry
+            GphlWorkflowQueueEntry,
         )
 
         dc_model = qmo.GphlWorkflow()
@@ -2012,7 +2015,9 @@ class Queue(ComponentBase):
         """
         self.app.AUTO_MOUNT_SAMPLE = automount
 
-    def get_auto_mount_sample(self,):
+    def get_auto_mount_sample(
+        self,
+    ):
         """
         :returns: Returns auto mount flag
         :rtype: bool
@@ -2043,7 +2048,7 @@ class Queue(ComponentBase):
     def is_interleaved(self, node):
         return (
             hasattr(node, "interleave_num_images")
-            and node.interleave_num_images != None
+            and node.interleave_num_images is not None
             and node.interleave_num_images > 0
         )
 
@@ -2075,7 +2080,8 @@ class Queue(ComponentBase):
                     self.execute_entry_with_id(sid)
             else:
                 # Making sure all sample entries are enabled before running the
-                # queue self.app.queue.enable_sample_entries(queue["sample_order"], True)
+                # queue self.app.queue.enable_sample_entries(queue["sample_order"],
+                # True)
                 HWR.beamline.queue_manager.set_pause(False)
                 HWR.beamline.queue_manager.execute()
 
@@ -2145,7 +2151,9 @@ class Queue(ComponentBase):
 
         return msg
 
-    def queue_clear(self,):
+    def queue_clear(
+        self,
+    ):
         self.app.lims.init_sample_list()
         self.clear_queue()
         msg = "[QUEUE] Cleared  " + str(HWR.beamline.queue_model.get_model_root()._name)
@@ -2413,7 +2421,9 @@ class Queue(ComponentBase):
         return {"exp_time": int_time}
 
     def get_default_task_parameters(self, task_name):
-        acq_parameters = HWR.beamline.get_default_acquisition_parameters(task_name).as_dict()
+        acq_parameters = HWR.beamline.get_default_acquisition_parameters(
+            task_name
+        ).as_dict()
 
         queue_entry = qe.get_queue_entry_from_task_name(task_name)
         data_model = getattr(queue_entry, "DATA_MODEL", None)
@@ -2421,12 +2431,12 @@ class Queue(ComponentBase):
         display_name = getattr(queue_entry, "NAME", None)
         # NB This logic should be moved so that the defualt parameters for
         # a task can be retreived from one place.
-        
+
         if task_name == "characterisation":
             acq_parameters.update(
                 HWR.beamline.characterisation.get_default_characterisation_parameters().as_dict()
             )
-            
+
         schema = self.get_task_schema(data_model) if data_model else {}
 
         return {
@@ -2445,18 +2455,27 @@ class Queue(ComponentBase):
             "requires": requires if requires else [],
             "name": display_name if display_name else task_name,
             "queue_entry": task_name,
-            "schema": schema
+            "schema": schema,
         }
 
     def get_task_schema(self, data_model):
         return {
-            "path_parameters": data_model.__signature__.parameters["path_parameters"].annotation.schema(),
-            "common_parameters": data_model.__signature__.parameters["common_parameters"].annotation.schema(),
-            "collection_parameters": data_model.__signature__.parameters["collection_parameters"].annotation.schema(),
-            "user_collection_parameters": data_model.__signature__.parameters["user_collection_parameters"].annotation.schema(),
-            "legacy_parameters": data_model.__signature__.parameters["legacy_parameters"].annotation.schema()
+            "path_parameters": data_model.__signature__.parameters[
+                "path_parameters"
+            ].annotation.schema(),
+            "common_parameters": data_model.__signature__.parameters[
+                "common_parameters"
+            ].annotation.schema(),
+            "collection_parameters": data_model.__signature__.parameters[
+                "collection_parameters"
+            ].annotation.schema(),
+            "user_collection_parameters": data_model.__signature__.parameters[
+                "user_collection_parameters"
+            ].annotation.schema(),
+            "legacy_parameters": data_model.__signature__.parameters[
+                "legacy_parameters"
+            ].annotation.schema(),
         }
-
 
     def get_available_tasks(self):
         task_info = {}

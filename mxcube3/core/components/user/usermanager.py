@@ -104,7 +104,9 @@ class BaseUserManager(ComponentBase):
         # in control
         if not active_in_control:
             if HWR.beamline.lims.loginType.lower() != "user":
-                flask_login.current_user.nickname = self.app.lims.get_proposal(flask_login.current_user)
+                flask_login.current_user.nickname = self.app.lims.get_proposal(
+                    flask_login.current_user
+                )
             else:
                 flask_login.current_user.nickname = flask_login.current_user.username
 
@@ -114,9 +116,7 @@ class BaseUserManager(ComponentBase):
         for _u in User.query.all():
             if _u.is_authenticated and _u.in_control:
                 if HWR.beamline.lims.loginType.lower() != "user":
-                    self.app.lims.select_proposal(
-                        self.app.lims.get_proposal(_u)
-                    )
+                    self.app.lims.select_proposal(self.app.lims.get_proposal(_u))
 
     def handle_disconnect(self, username):
         time.sleep(120)
@@ -229,7 +229,6 @@ class BaseUserManager(ComponentBase):
 
             self.app.server.user_datastore.deactivate_user(user)
 
-
     def login_info(self):
         res = {
             "synchrotronName": HWR.beamline.session.synchrotron_name,
@@ -323,7 +322,7 @@ class BaseUserManager(ComponentBase):
                 session_id=sid,
                 selected_proposal=user,
                 limsdata=json.dumps(lims_data),
-                roles=self._get_configured_roles(user)
+                roles=self._get_configured_roles(user),
             )
         else:
             _u.limsdata = json.dumps(lims_data)

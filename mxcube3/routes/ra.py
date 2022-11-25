@@ -23,8 +23,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/request_control", methods=["POST"])
     @server.restrict
     def request_control():
-        """
-        """
+        """ """
 
         @copy_current_request_context
         def handle_timeout_gives_control(sid, timeout=30):
@@ -57,8 +56,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/take_control", methods=["POST"])
     @server.restrict
     def take_control():
-        """
-        """
+        """ """
         # Already master do nothing
         if app.usermanager.is_operator():
             return make_response("", 200)
@@ -75,8 +73,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/give_control", methods=["POST"])
     @server.restrict
     def give_control():
-        """
-        """
+        """ """
         username = request.get_json().get("username")
         toggle_operator(username, "You were given control")
 
@@ -85,8 +82,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/update_user_nickname", methods=["POST"])
     @server.restrict
     def update_user_nickname():
-        """
-        """
+        """ """
         name = request.get_json().get("name")
         current_user.nickname = name
         app.usermanager.update_user(current_user)
@@ -97,8 +93,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/logout_user", methods=["POST"])
     @server.restrict
     def logout_user():
-        """
-        """
+        """ """
         username = request.get_json().get("username")
         app.usermanager.force_signout_user(username)
         return make_response("", 200)
@@ -123,8 +118,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/", methods=["GET"])
     @server.restrict
     def rasettings():
-        """
-        """
+        """ """
         data = {
             "observers": [_u.todict() for _u in app.usermanager.get_observers()],
             "allowRemote": app.ALLOW_REMOTE,
@@ -136,8 +130,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/allow_remote", methods=["POST"])
     @server.restrict
     def allow_remote():
-        """
-        """
+        """ """
         allow = request.get_json().get("allow")
 
         if app.ALLOW_REMOTE and allow == False:
@@ -150,8 +143,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/timeout_gives_control", methods=["POST"])
     @server.restrict
     def timeout_gives_control():
-        """
-        """
+        """ """
         control = request.get_json().get("timeoutGivesControl")
         app.TIMEOUT_GIVES_CONTROL = control
 
@@ -169,8 +161,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/request_control_response", methods=["POST"])
     @server.restrict
     def request_control_response():
-        """
-        """
+        """ """
         data = request.get_json()
         new_op = observer_requesting_control()
 
@@ -207,12 +198,10 @@ def init_route(app, server, url_prefix):
         current_user.socketio_session_id = request.sid
         app.usermanager.update_user(current_user)
 
-
     @server.flask_socketio.on("disconnect", namespace="/hwr")
     def disconnect():
         current_user.disconnect_timestamp = datetime.now()
         app.usermanager.update_user(current_user)
-        #gevent.spawn(app.usermanager.handle_disconnect, current_user.username)
-
+        # gevent.spawn(app.usermanager.handle_disconnect, current_user.username)
 
     return bp

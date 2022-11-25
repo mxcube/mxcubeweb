@@ -27,8 +27,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/diff_plan/<sid>", methods=["GET"])
     @server.restrict
     def create_diff_plan(sid):
-        """Juts for creating a diff plan as if it were created by edna and so on.
-        """
+        """Juts for creating a diff plan as if it were created by edna and so on."""
 
         acq_parameters = HWR.beamline.get_default_acquisition_parameters()
         ftype = HWR.beamline.detector_hwobj.get_property("file_suffix")

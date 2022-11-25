@@ -25,5 +25,4 @@ class DiffractometerAdapter(AdapterBase):
         data = self._ho.get_head_configuration()
         data = data.dict() if data else {}
 
-        return  data
-
+        return data
