@@ -157,7 +157,7 @@ class MXCUBECore:
                 try:
                     adapter_instance = adapter_cls(ho, _id, app, **dict(adapter_config))
                     logging.getLogger("MX3.HWR").info("Added adapter for %s" % _id)
-                except BaseException:
+                except Exception:
                     logging.getLogger("MX3.HWR").exception(
                         "Could not add adapter for %s" % _id
                     )

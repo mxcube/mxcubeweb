@@ -222,7 +222,7 @@ class Queue(ComponentBase):
         """
         try:
             node, entry = self.get_entry(node_id)
-        except BaseException:
+        except Exception:
             return (True, UNCOLLECTED)
 
         enabled = node.is_enabled()
@@ -1892,7 +1892,7 @@ class Queue(ComponentBase):
 
                 try:
                     self.app.sample_changer.mount_sample_clean_up(current_queue[sid])
-                except BaseException:
+                except Exception:
                     HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
                 else:
                     HWR.beamline.queue_manager.emit("queue_stopped", (None,))
@@ -1919,7 +1919,7 @@ class Queue(ComponentBase):
 
             try:
                 HWR.beamline.queue_manager.execute(entry)
-            except BaseException:
+            except Exception:
                 HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
 
     def init_signals(self, queue):

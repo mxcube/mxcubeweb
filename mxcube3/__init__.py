@@ -137,7 +137,7 @@ def main(test=False):
         )
 
         server.register_routes(mxcube)
-    except BaseException:
+    except Exception:
         traceback.print_exc()
         raise
 

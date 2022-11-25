@@ -221,7 +221,7 @@ def get_task_state(entry):
 
     try:
         limsres = HWR.beamline.lims.lims_rest.get_dc(lims_id)
-    except BaseException:
+    except Exception:
         limsres = {}
 
     try:
@@ -252,7 +252,7 @@ def update_task_result(entry):
 
     try:
         limsres = HWR.beamline.lims_rest.get_dc(lims_id)
-    except BaseException:
+    except Exception:
         limsres = {}
 
     try:
@@ -393,7 +393,7 @@ def collect_oscillation_failed(
     if not mxcube.queue.is_interleaved(node["node"]):
         try:
             HWR.beamline.lims_rest.get_dc(lims_id)
-        except BaseException:
+        except Exception:
             pass
 
         msg = {

@@ -53,7 +53,7 @@ class NStateAdapter(ActuatorAdapterBase):
     def msg(self):
         try:
             msg = self._ho.get_value().name
-        except BaseException:
+        except Exception:
             msg = "---"
             logging.getLogger("MX3.HWR").error(
                 "Failed to get beamline attribute message"

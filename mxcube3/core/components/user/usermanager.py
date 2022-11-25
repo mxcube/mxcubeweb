@@ -149,7 +149,7 @@ class BaseUserManager(ComponentBase):
     def login(self, login_id, password):
         try:
             login_res = self._login(login_id, password)
-        except BaseException:
+        except Exception:
             raise
         else:
             if not "sid" in flask.session:

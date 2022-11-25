@@ -312,7 +312,7 @@ class SampleChanger(ComponentBase):
     def get_global_state(self):
         try:
             return HWR.beamline.sample_changer_maintenance.get_global_state()
-        except BaseException:
+        except Exception:
             return "OFFLINE", "OFFLINE", "OFFLINE"
 
     def get_initial_state(self):
@@ -334,7 +334,7 @@ class SampleChanger(ComponentBase):
 
         try:
             state = HWR.beamline.sample_changer.get_status().upper()
-        except BaseException:
+        except Exception:
             state = "OFFLINE"
 
         initial_state = {
@@ -472,7 +472,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                         )
                     else:
                         raise RuntimeError("Could not center sample")
-            except BaseException:
+            except Exception:
                 import traceback
 
                 log.info("centring did not pass %s" % traceback.format_exc())

@@ -17,7 +17,7 @@ class DataPublisherAdapter(AdapterBase):
             ho.connect("data", self._new_data_handler)
             ho.connect("start", self._update_publisher_handler)
             ho.connect("end", self._update_publisher_handler)
-        except BaseException:
+        except Exception:
             msg = "Could not initialize DataPublisherAdapter"
             logging.getLogger("MX3.HWR").exception(msg)
         else:

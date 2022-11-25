@@ -24,7 +24,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
         try:
             ho.connect("energyChanged", self._value_change)
             ho.connect("stateChanged", self.state_change)
-        except BaseException:
+        except Exception:
             pass
 
     @RateLimited(6)
@@ -46,7 +46,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
         try:
             self._ho.set_wavelength(float(value.value))
             return self.get_value()
-        except BaseException:
+        except Exception:
             raise
 
     def _get_value(self) -> FloatValueModel:

@@ -199,7 +199,7 @@ class Lims(ComponentBase):
 
         try:
             HWR.beamline.lims.lims_rest.authenticate(loginID, password)
-        except BaseException:
+        except Exception:
             logging.getLogger("MX3.HWR").error("[LIMS-REST] Could not authenticate")
             return ERROR_CODE
 
@@ -208,7 +208,7 @@ class Lims(ComponentBase):
                 connection_ok = HWR.beamline.lims.echo()
                 if not connection_ok:
                     HWR.beamline.lims.init()
-            except BaseException:
+            except Exception:
                 msg = "[LIMS] Connection Error!"
                 logging.getLogger("MX3.HWR").error(msg)
                 return ERROR_CODE
@@ -221,7 +221,7 @@ class Lims(ComponentBase):
                     % (loginID, proposals)
                 )
                 session["proposal_list"] = copy.deepcopy(proposals)
-            except BaseException:
+            except Exception:
                 logging.getLogger("MX3.HWR").error(
                     "[LIMS] Could not retreive proposal list, %s" % sys.exc_info()[1]
                 )
@@ -248,7 +248,7 @@ class Lims(ComponentBase):
                     login_res["Proposal"]["code"], login_res["Proposal"]["number"]
                 )
 
-            except BaseException:
+            except Exception:
                 logging.getLogger("MX3.HWR").error("[LIMS] Could not login to LIMS")
                 return ERROR_CODE
 
@@ -339,7 +339,7 @@ class Lims(ComponentBase):
                         "[LIMS] Creating data directories for proposal %s" % proposal
                     )
                     HWR.beamline.session.prepare_directories(proposal_info)
-                except BaseException:
+                except Exception:
                     logging.getLogger("MX3.HWR").info(
                         "[LIMS] Error creating data directories, %s" % sys.exc_info()[1]
                     )
@@ -438,7 +438,7 @@ class Lims(ComponentBase):
                 lims_location = sample_info[
                     "containerSampleChangerLocation"
                 ] + ":%02d" % int(sample_info["sampleLocation"])
-            except BaseException:
+            except Exception:
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Could not parse sample loaction from LIMS, (perhaps not set ?)"
                 )
