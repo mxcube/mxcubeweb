@@ -1,7 +1,6 @@
 import pathlib
 
 from pydantic import BaseModel, Field
-from spectree import Response
 
 
 class VersionModel(BaseModel):

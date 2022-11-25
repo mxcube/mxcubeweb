@@ -2,8 +2,6 @@
 import os
 import json
 import pickle as pickle
-import queue
-from matplotlib.style import available
 import redis
 import itertools
 import logging

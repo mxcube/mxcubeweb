@@ -1,7 +1,6 @@
-from flask_socketio import emit, join_room, leave_room
+from flask_socketio import emit
 from mxcube3 import server
 from mxcube3 import mxcube
-from flask_login import current_user
 
 import json
 

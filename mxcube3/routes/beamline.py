@@ -13,7 +13,6 @@ from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 
 from mxcubecore import HardwareRepository as HWR
 
-from mxcube3.core.util.adapterutils import export
 
 
 def create_get_route(app, server, bp, adapter, attr, name):

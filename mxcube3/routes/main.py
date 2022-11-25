@@ -1,8 +1,7 @@
 import logging
 
-from flask import Blueprint, jsonify, session
+from flask import Blueprint, jsonify
 from spectree import Response
-from flask_login import current_user
 
 from mxcube3 import version
 from mxcube3.core.models.generic import VersionModel

@@ -4,7 +4,6 @@ import os
 import subprocess
 import sys
 import time
-import uuid
 
 
 def monitor(*processes):

@@ -7,7 +7,6 @@ from mxcube3 import mxcube
 from flask import Response
 
 from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
-from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcube3.core.components.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
@@ -15,7 +14,6 @@ from mxcube3.core.components.queue import READY, RUNNING, FAILED, COLLECTED, WAR
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore import queue_entry as qe
 
-from mxcube3.core.util.convertutils import to_camel
 from mxcube3.core.util.networkutils import RateLimited
 
 from mxcubecore import HardwareRepository as HWR

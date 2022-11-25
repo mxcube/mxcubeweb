@@ -1,4 +1,3 @@
-from pathlib import Path
 from flask import Blueprint, jsonify
 from mxcube3.core.models.generic import PathModel, Response
 

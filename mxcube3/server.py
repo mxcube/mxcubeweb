@@ -4,7 +4,6 @@ import signal
 import atexit
 import os
 import time
-from datetime import timedelta
 
 import gevent
 
