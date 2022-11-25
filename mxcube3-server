@@ -2,15 +2,8 @@
 
 import sys
 import os
+from mxcube3 import main
 
-# Temprorary solution while thinking about a better solution ...
-# The streaming realy is now located in a spearate directory structure
-# as its part of the mxcubecore module. So we need to add NODE_PATH
-# so that all the depdencies are found 
-os.environ["NODE_PATH"] = os.path.abspath(
-    os.path.join(os.path.dirname(os.path.realpath(__file__)), "./node_modules")
-)
 
 if __name__ == "__main__":
-    from mxcube3 import main
     main()
