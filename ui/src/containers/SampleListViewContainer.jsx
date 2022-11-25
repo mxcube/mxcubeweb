@@ -240,7 +240,7 @@ class SampleListViewContainer extends React.Component {
 
       const type = formName === "Generic" ? extraParams.type : formName.toLowerCase();
       const params = (formName !== "Workflow") ? this.props.defaultParameters[type].acq_parameters : 
-        this.props.defaultParameters["datacollection"].acq_parameters;
+        this.props.defaultParameters.datacollection.acq_parameters;
 
       const parameters = {
         parameters: {
@@ -251,7 +251,7 @@ class SampleListViewContainer extends React.Component {
           subdir,
           shape: -1
         },
-        type: type
+        type
       };
 
       const selected = [];

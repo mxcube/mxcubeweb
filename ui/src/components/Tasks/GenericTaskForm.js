@@ -184,7 +184,7 @@ class GenericTaskForm extends React.Component {
         <div>
           <div className='row'>
             {properties.map(prop => {
-              const uiSchema = prop.content.props.uiSchema
+              const {uiSchema} = prop.content.props
               const className = classNames('column', uiSchema['ui:column'] || 'col-6 json-schema-form-group-div')
               return <div key={prop.content.key} className={className}>
                 {prop.content}
@@ -298,18 +298,18 @@ GenericTaskForm = connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const limits = state.taskForm.defaultParameters[type].limits;
-  const schema = state.taskForm.defaultParameters[type].schema;
+  const {limits} = state.taskForm.defaultParameters[type];
+  const {schema} = state.taskForm.defaultParameters[type];
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: limits,
-    schema: schema,
+    schema,
     beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
-      type: type,
+      type,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.resolution

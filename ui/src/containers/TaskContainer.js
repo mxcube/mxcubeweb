@@ -109,7 +109,8 @@ class TaskContainer extends React.Component {
       }
     });
 
-    if (this.props.showForm === 'Characterisation') {
+    switch (this.props.showForm) {
+    case 'Characterisation': {
       return (
         <Characterisation
           show
@@ -124,7 +125,8 @@ class TaskContainer extends React.Component {
           resetTaskParameters={this.props.resetTaskParameters}
         />
       );
-    } else if (this.props.showForm === 'DataCollection') {
+    }
+    case 'DataCollection': {
       return (
         <DataCollection
           show
@@ -141,7 +143,8 @@ class TaskContainer extends React.Component {
           taskResult={this.props.taskResult}
         />
       );
-    } else if (this.props.showForm === 'Helical') {
+    }
+    case 'Helical': {
       return (
         <Helical
           show
@@ -158,7 +161,8 @@ class TaskContainer extends React.Component {
           resetTaskParameters={this.props.resetTaskParameters}
         />
       );
-    } else if (this.props.showForm === 'Mesh') {
+    }
+    case 'Mesh': {
       return (
         <Mesh
           show
@@ -174,7 +178,8 @@ class TaskContainer extends React.Component {
           resetTaskParameters={this.props.resetTaskParameters}
         />
       );
-    } else if (this.props.showForm === 'AddSample') {
+    }
+    case 'AddSample': {
       return (
         <AddSample
           show
@@ -183,7 +188,8 @@ class TaskContainer extends React.Component {
           addAndMount={this.addSampleAndMount}
         />
       );
-    } else if (this.props.showForm === 'Workflow') {
+    }
+    case 'Workflow': {
       return (
         <Workflow
           show
@@ -195,7 +201,8 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
         />
       );
-    } else if (this.props.showForm === 'GphlWorkflow') {
+    }
+    case 'GphlWorkflow': {
       return (
         <GphlWorkflow
           show
@@ -207,7 +214,8 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
         />
       );
-    } else if (this.props.showForm === 'Interleaved') {
+    }
+    case 'Interleaved': {
       return (
         <Interleaved
           show
@@ -218,7 +226,8 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
         />
       );
-    } else if (this.props.showForm === 'XRF') {
+    }
+    case 'XRF': {
       return (
         <XRFScan
           show
@@ -230,7 +239,8 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
         />
       );
-    } else if (this.props.showForm === 'Energy') {
+    }
+    case 'Energy': {
       return (
         <EnergyScan
           show
@@ -243,7 +253,8 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
         />
       );
-    } else if (this.props.showForm === 'Generic') {
+    }
+    case 'Generic': {
       return (
         <GenericTaskForm
           show
@@ -256,6 +267,8 @@ class TaskContainer extends React.Component {
           rootPath={this.props.path}
         />
       );
+    }
+    // No default
     }
 
     return null;

@@ -26,10 +26,10 @@ export default (state = initialState, action) => {
     case 'SHOW_GENERIC_CONTEXT_MENU': {
       const genericContextMenu = { ...state.genericContextMenu};
 
-      genericContextMenu['id'] = action.id;
-      genericContextMenu['show'] = action.show;
-      genericContextMenu['x'] = action.x;
-      genericContextMenu['y'] = action.y;
+      genericContextMenu.id = action.id;
+      genericContextMenu.show = action.show;
+      genericContextMenu.x = action.x;
+      genericContextMenu.y = action.y;
 
       return { ...state,  genericContextMenu };
     }

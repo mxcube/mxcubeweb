@@ -93,21 +93,21 @@ export class ConfirmCollectDialog extends React.Component {
     const tableBody = document.querySelector('#table-body');
 
     if (tableHead && tableBody) {
-      const headerColWidthArray = Array.from(tableHead.children[0].children).map((td) => (
+      const headerColWidthArray = [...tableHead.children[0].children].map((td) => (
         td.getBoundingClientRect().width));
 
-      const bodyColWidthArray = Array.from(tableBody.children[0].children).map((td) => (
+      const bodyColWidthArray = [...tableBody.children[0].children].map((td) => (
         td.getBoundingClientRect().width));
 
       // Set the width of each collumn in the body to be atleast the width of the
       // corresponding collumn in the header
-      Array.from(tableBody.children).map((tr) => Array.from(tr.children).forEach((td, i) => {
+      [...tableBody.children].map((tr) => [...tr.children].forEach((td, i) => {
         const _td = td;
         _td.width = headerColWidthArray[i];
       }));
 
       // Update the header columns so that they match the content of the body
-      Array.from(tableHead.children[0].children).forEach((th, i) => {
+      [...tableHead.children[0].children].forEach((th, i) => {
         if (bodyColWidthArray[i] > th.getBoundingClientRect().width) {
           const _th = th;
           _th.width = bodyColWidthArray[i];
@@ -345,14 +345,14 @@ export class ConfirmCollectDialog extends React.Component {
                 type="checkbox"
                 defaultChecked={this.props.queue.centringMethod === AUTO_LOOP_CENTRING}
                 onClick={this.autoLoopCentringOnClick}
-                id={'auto-lopp-centring'}
+                id="auto-lopp-centring"
                 label="Auto loop centring"
               />
               { autoMountNext ?
                   <Form.Check
                     className='mb-2'
                     type="checkbox"
-                    id={'auto-mount-next'}
+                    id="auto-mount-next"
                     defaultChecked={this.props.queue.autoMountNext}
                     onClick={this.autoMountNextOnClick}
                     label="Auto mount next sample"

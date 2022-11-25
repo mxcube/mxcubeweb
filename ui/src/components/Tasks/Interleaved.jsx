@@ -265,7 +265,7 @@ Interleaved = connect(state => {
   const {wedges} = state.taskForm.taskData.parameters;
 
   const { type } = state.taskForm.taskData;
-  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+  const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
     acqParametersLimits: limits,
