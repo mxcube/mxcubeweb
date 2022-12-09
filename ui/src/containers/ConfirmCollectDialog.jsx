@@ -93,21 +93,21 @@ export class ConfirmCollectDialog extends React.Component {
     const tableBody = document.querySelector('#table-body');
 
     if (tableHead && tableBody) {
-      const headerColWidthArray = Array.map(tableHead.children[0].children, (td) => (
+      const headerColWidthArray = Array.from(tableHead.children[0].children).map((td) => (
         td.getBoundingClientRect().width));
 
-      const bodyColWidthArray = Array.map(tableBody.children[0].children, (td) => (
+      const bodyColWidthArray = Array.from(tableBody.children[0].children).map((td) => (
         td.getBoundingClientRect().width));
 
       // Set the width of each collumn in the body to be atleast the width of the
       // corresponding collumn in the header
-      Array.map(tableBody.children, (tr) => Array.forEach(tr.children, (td, i) => {
+      Array.from(tableBody.children).map((tr) => Array.from(tr.children).forEach((td, i) => {
         const _td = td;
         _td.width = headerColWidthArray[i];
       }));
 
       // Update the header columns so that they match the content of the body
-      Array.forEach(tableHead.children[0].children, (th, i) => {
+      Array.from(tableHead.children[0].children).forEach((th, i) => {
         if (bodyColWidthArray[i] > th.getBoundingClientRect().width) {
           const _th = th;
           _th.width = bodyColWidthArray[i];
@@ -211,7 +211,7 @@ export class ConfirmCollectDialog extends React.Component {
             </thead>
             <tbody>
               <tr>
-                <td>{task.parameters.countTime}</td>
+                <td>{task.parameters.exp_time}</td>
               </tr>
             </tbody>
           </Table>
@@ -274,7 +274,7 @@ export class ConfirmCollectDialog extends React.Component {
     if (summary.numTasks > 0) {
       table = (
         <div className="scroll">
-        <Table striped bordered hover>
+        <Table responsive striped bordered hover>
           <thead id="table-head">
             <tr>
               <th>Type</th>
@@ -345,12 +345,14 @@ export class ConfirmCollectDialog extends React.Component {
                 type="checkbox"
                 defaultChecked={this.props.queue.centringMethod === AUTO_LOOP_CENTRING}
                 onClick={this.autoLoopCentringOnClick}
+                id={'auto-lopp-centring'}
                 label="Auto loop centring"
               />
               { autoMountNext ?
                   <Form.Check
                     className='mb-2'
                     type="checkbox"
+                    id={'auto-mount-next'}
                     defaultChecked={this.props.queue.autoMountNext}
                     onClick={this.autoMountNextOnClick}
                     label="Auto mount next sample"

@@ -97,7 +97,7 @@ class Interleaved extends React.Component {
       shape: this.props.shapeId,
       suffix: this.props.suffix,
       taskIndexList: this.props.taskIndexList,
-      swNumImages: this.props.subWedgeSize,
+      swNumImages: this.props.sub_wedge_size,
       wedges: this.props.wedges
     };
 
@@ -261,11 +261,14 @@ const selector = formValueSelector('workflow');
 Interleaved = connect(state => {
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   const shapeId = state.taskForm.pointID;
-  const subWedgeSize = selector(state, 'subWedgeSize');
+  const subWedgeSize = selector(state, 'sub_wedge_size');
   const {wedges} = state.taskForm.taskData.parameters;
 
+  const { type } = state.taskForm.taskData;
+  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+
   return {
-    acqParametersLimits: state.taskForm.acqParametersLimits,
+    acqParametersLimits: limits,
     wedges,
     taskIndexList: state.taskForm.taskData.parameters.taskIndexList,
     subWedgeObject: getSubWedges(subWedgeSize || 10, wedges),
@@ -273,7 +276,7 @@ Interleaved = connect(state => {
     suffix: fileSuffix,
     subWedgeSize,
     initialValues: {
-      subWedgeSize: state.taskForm.defaultParameters.interleaved.subWedgeSize
+      subWedgeSize: state.taskForm.defaultParameters.datacollection.sub_wedge_size
     }
   };
 })(Interleaved);

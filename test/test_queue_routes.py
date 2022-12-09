@@ -86,6 +86,8 @@ def test_queue_start(client):
     resp = client.put("/mxcube/api/v0.1/queue/unpause")
     assert resp.status_code == 200
 
+    time.sleep(1)
+
     resp = client.get("/mxcube/api/v0.1/queue/queue_state")
     assert (
         resp.status_code == 200

@@ -217,8 +217,16 @@ class SampleGridContainer extends React.Component {
     if (this.props.queue.queueStatus === QUEUE_RUNNING) {
       menuEl.style.display = 'none';
     } else if (e.target.className.includes('samples-grid-item') && e.button === 2) {
-      menuEl.style.top = `${e.pageY}px`;
-      menuEl.style.left = `${e.pageX}px`;
+      const windowWidth = document.body.offsetWidth;
+      const menuEndPos = e.pageX + menuEl.offsetWidth;
+
+      let posxoffset = 10;
+      if (menuEndPos > windowWidth) {
+        posxoffset = menuEl.offsetWidth;
+      }
+
+      menuEl.style.top = `${e.pageY -60}px`;
+      menuEl.style.left = `${e.pageX - posxoffset}px`;
       menuEl.style.display = 'block';
       document.getElementById(contextMenuToHide).style.display = 'none';
       res = false;
@@ -416,7 +424,7 @@ class SampleGridContainer extends React.Component {
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
-      fi &= locationFilter.startsWith(this.props.filterOptions.puckFilter.toLowerCase());
+      fi &= locationFilter.startsWith(this.props.filterOptions.cellFilter.toLowerCase());
       fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
       fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
       fi &= this.mutualExclusiveFilterOption(sample, 'limsSamples', '', hasLimsData);
@@ -527,12 +535,12 @@ class SampleGridContainer extends React.Component {
     // Is sample already in the set of selected samples, add all those samples
     // to queue
     if (this.sampleItemIsSelected(sampleID)) {
-      this.props.inQueueDeleteElseAddSamples(Object.keys(this.props.selected));
+      this.props.inQueueDeleteElseAddSamples(Object.keys(this.props.selected), true);
     } else {
       // The sample is not in the set of selected samples (or no samples are
       // selected), select only sample with sampleID and add it queue
       this.props.selectSamples([sampleID]);
-      this.props.inQueueDeleteElseAddSamples([sampleID]);
+      this.props.inQueueDeleteElseAddSamples([sampleID], true);
     }
   }
 

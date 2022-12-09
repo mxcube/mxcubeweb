@@ -1,27 +1,9 @@
-.collect-confirm-dialog {
-  width: 60%;
-}
 
 #collect-confirm-dialog-popover {
   width: auto;
   max-width: 80%;
 }
 
-.scroll table {
-  width: auto;
-  border-spacing: 0;
-  border: 0px;
-  border-top: 1px solid #ddd;
-}
-
-.scroll tbody,
-.scroll thead {
-  display: block;
-}
-
-.scroll thead tr th {
-  border-right: 1px solid #ddd;
-}
 
 .scroll tbody {
   max-height: 500px;

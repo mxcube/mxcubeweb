@@ -19,13 +19,18 @@ const INITIAL_STATE = {
   sampleList: {},
   order: [],
   moving: {},
+  viewMode: {
+    mode: 'Table View',
+    options: ['Table View', 'Graphical View', 'Card View'],
+    ViewWithCellPuck: true
+  },
   filterOptions: {
     text: '',
     inQueue: false,
     notInQueue: false,
     collected: false,
     notCollected: false,
-    puckFilter: '',
+    cellFilter: '',
     limsFilter: false,
     useFilter: false,
   },
@@ -291,6 +296,16 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, sampleList};
     }
+    // Change view mode 
+    case 'SET_VIEW_MODE': {
+      const viewMode = { ...state.viewMode};
+      if(action.ViewWithCellPuck !== null) {
+        viewMode['ViewWithCellPuck'] = action.ViewWithCellPuck;
+      }
+      viewMode['mode'] = action.mode;
+      return { ...state,  viewMode };
+    }
+
     case 'SET_SAMPLE_ATTRIBUTE': {
       const sampleList = { ...state.sampleList};
       sampleList[action.sampleID][action.attr] = action.value;

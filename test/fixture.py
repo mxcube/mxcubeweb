@@ -49,7 +49,7 @@ def client():
 
     data = json.dumps({"proposal": "idtest0", "password": "sUpErSaFe"})
 
-    resp = client.post("/mxcube/api/v0.1/login/", data=data, content_type="application/json")
+    client.post("/mxcube/api/v0.1/login/", data=data, content_type="application/json")
 
     resp = client.post(
         "/mxcube/api/v0.1/queue/",

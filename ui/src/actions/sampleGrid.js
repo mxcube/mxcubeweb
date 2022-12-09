@@ -10,6 +10,16 @@ export function clearSampleGrid() {
   return { type: 'CLEAR_SAMPLE_GRID' };
 }
 
+export function showGenericContextMenu(show, id, x = 0, y = 0) {
+  return {
+    type: 'SHOW_GENERIC_CONTEXT_MENU',
+    show,
+    id,
+    x,
+    y,
+  };
+}
+
 export function addSamplesToList(samplesData) {
   return function (dispatch, getState) {
     // find last manually mounted sample id
@@ -26,6 +36,8 @@ export function addSamplesToList(samplesData) {
       if (!sampleData.sampleID) {
         lastSampleID++;
         sampleData.sampleID = lastSampleID.toString();
+        sampleData['cell_no'] = 1
+        sampleData['puck_no'] = 1
       }
     }
 
@@ -63,6 +75,10 @@ export function selectSamplesAction(keys, selected = true) {
 
 export function toggleSelectedAction(sampleID) {
   return { type: 'TOGGLE_SELECTED_SAMPLE', sampleID };
+}
+
+export function setViewModeAction(mode, ViewWithCellPuck) {
+  return { type: 'SET_VIEW_MODE', mode, ViewWithCellPuck };
 }
 
 export function filterAction(filterOptions) {

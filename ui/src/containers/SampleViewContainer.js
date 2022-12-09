@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-
 import { Row, Col, Container } from 'react-bootstrap';
-
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import ApertureInput from '../components/SampleView/ApertureInput';
+import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as SampleViewActions from '../actions/sampleview';
 import * as GeneralActions from '../actions/general';
@@ -19,7 +18,8 @@ import { QUEUE_RUNNING } from '../constants';
 import {
   sendSetAttribute,
   sendAbortCurrentAction,
-  setBeamlineAttribute
+  setBeamlineAttribute,
+  sendDisplayImage
 } from '../actions/beamline';
 
 
@@ -91,12 +91,26 @@ class SampleViewContainer extends Component {
               sm={1}
               style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
             >
-              {apertureControl}
+             {apertureControl}
+             { this.props.mode === 'SSX-CHIP' ?
+               (<SSXChipControl
+                 showForm={this.props.showForm}
+                 sampleID={sampleID}
+                 sampleData={this.props.sampleList[sampleID]}
+                 defaultParameters={this.props.defaultParameters}
+                 groupFolder={this.props.groupFolder}
+                 hardwareObjects={this.props.hardwareObjects}
+                 sampleActions={this.props.sampleViewActions}
+                 grids={grids}
+                 selectedGrids={selectedGrids}
+                />
+               ) : null
+              }
               <MotorControl
                 save={this.props.sendSetAttribute}
                 saveStep={setStepSize}
                 uiproperties={uiproperties.sample_view}
-                attributes={this.props.attributes}
+                hardwareObjects={this.props.hardwareObjects}
                 motorsDisabled={this.props.motorInputDisable
                                   || this.props.queueState === QUEUE_RUNNING}
                 steps={motorSteps}
@@ -120,13 +134,14 @@ class SampleViewContainer extends Component {
                 savedPointId={this.props.sampleViewState.savedPointId}
                 groupFolder={this.props.groupFolder}
                 clickCentring={this.props.sampleViewState.clickCentring}
+                taskForm={this.props.taskForm}
               />
               <SampleImage
                 generalActions={this.props.generalActions}
                 sampleActions={this.props.sampleViewActions}
                 {...this.props.sampleViewState}
                 uiproperties={uiproperties.sample_view}
-                attributes={this.props.attributes}
+                hardwareObjects={this.props.hardwareObjects}
                 steps={motorSteps}
                 imageRatio={imageRatio * sourceScale}
                 contextMenuVisible={this.props.contextMenu.show}
@@ -145,6 +160,7 @@ class SampleViewContainer extends Component {
                 sendSetAttribute={this.props.sendSetAttribute}
                 sendAbortCurrentAction={this.props.sendAbortCurrentAction}
                 setBeamlineAttribute={this.props.setBeamlineAttribute}
+                sendDisplayImage={this.props.sendDisplayImage}
               />
             </Col>
             <Col sm={4} style={{ display: 'flex' }}>
@@ -166,7 +182,7 @@ function mapStateToProps(state) {
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     motorInputDisable: state.beamline.motorInputDisable,
-    attributes: state.beamline.attributes,
+    hardwareObjects: state.beamline.hardwareObjects,
     availableMethods: state.beamline.availableMethods,
     defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,
@@ -176,6 +192,8 @@ function mapStateToProps(state) {
     proposal: state.login.selectedProposal,
     remoteAccess: state.remoteAccess,
     uiproperties: state.uiproperties,
+    taskForm: state.taskForm,
+    mode: state.general.mode
   };
 }
 
@@ -187,7 +205,8 @@ function mapDispatchToProps(dispatch) {
     generalActions: bindActionCreators(GeneralActions, dispatch),
     sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
     sendAbortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch),
-    setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch)
+    setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
+    sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch)
   };
 }
 

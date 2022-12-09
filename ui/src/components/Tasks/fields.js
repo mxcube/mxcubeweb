@@ -24,25 +24,39 @@ function errorIndicator(error, warning) {
   let icon = null;
   if (error) {
     icon = (
-      <i title={error}><TiTimes size='1.3em' color='red'/></i>
+      <i title={error}><TiTimes size='1.3em' color='red' /></i>
     );
   } else if (warning) {
     icon = (
-      <i title={warning}><TiWarning size='1.3em' color='orange'/></i>
+      <i title={warning}><TiWarning size='1.3em' color='orange' /></i>
     );
   }
   return icon;
 }
 
+function errorLabel(error, warning) {
+  let label = null;
+  if (error) {
+    label = (
+      <Form.Label style={{ color: 'red' }}>{error}</Form.Label>
+    );
+  } else if (warning) {
+    label = (
+      <Form.Label style={{ color: 'orange' }}>{warning}</Form.Label>
+    );
+  }
+  return label;
+}
+
 
 export function FieldsHeader({ title }) {
   return <Row >
-    <Col sm={12} style={{  marginTop: '0.5em', marginBottom: '0.5em' }}>
-      <hr style={{ marginBottom: '-12px',  }} />
+    <Col sm={12} style={{ marginTop: '0.5em', marginBottom: '0.5em' }}>
+      <hr style={{ marginBottom: '-12px', }} />
       <center>
         <div>
           <b style={{ position: 'relative', padding: '0.5em', backgroundColor: 'white' }}>
-           {title} 
+            {title}
           </b>
         </div>
       </center>
@@ -50,15 +64,15 @@ export function FieldsHeader({ title }) {
   </Row>
 }
 
-export function StaticField({ label, data }) {
+export function StaticField({ label, data, col1, col2 }) {
   return <Form.Group as={Row} style={{ textAlign: 'left' }}>
-   <Form.Label column sm="2" >
-     <b>
+    <Form.Label column sm={col1 || 2} >
+      <b>
         {label}
         :
       </b>
     </Form.Label>
-    <Form.Label className='form-label-StaticField' column sm="9">
+    <Form.Label className='form-label-StaticField' column sm={col2 || 9}>
       {data}
     </Form.Label>
   </Form.Group>
@@ -66,33 +80,43 @@ export function StaticField({ label, data }) {
 
 function ReduxInputField(prop) {
   return <Form.Group
-    as={Row}
     controlId={prop.input.name}
   >
-    <Form.Label
-    column sm={prop.col1 || 6}
-    style={{ textAlign: 'left', color: validation(prop.meta.error, prop.meta.warning) }}
-    >
-      {prop.label}
-    </Form.Label>
-    <Col sm={prop.col2 || 4}>
-      <Form.Control
-        disabled={prop.disabled}
-        value={prop.input.value}
-        onChange={prop.input.onChange}
-        {...prop}
-        style={{ borderColor: validation(prop.meta.error, prop.meta.warning) }}
-      />
-    </Col>
+    <Row>
+      <Form.Label
+        column sm={prop.col1 || 6}
+        style={{ textAlign: 'left', color: validation(prop.meta.error, prop.meta.warning) }}
+      >
+        {prop.label}
+      </Form.Label>
+      <Col sm={prop.col2 || 4}>
+        <Form.Control
+          disabled={prop.disabled}
+          value={prop.input.value}
+          onChange={prop.input.onChange}
+          {...prop}
+          style={{ borderColor: validation(prop.meta.error, prop.meta.warning) }}
+        />
+      </Col>
+      {prop.meta.error || prop.meta.warning
+        ? (
+          <Col sm={1} style={{ top: '7px', left: '-10px', position: 'relative' }}>
+            {errorIndicator(prop.meta.error, prop.meta.warning)}
+          </Col>
+        ) : <Col sm={1} />
+      }
+    </Row>
     {prop.meta.error || prop.meta.warning
       ? (
-        <Col sm={1} style={{ top: '7px', left: '-10px', position: 'relative' }}>
-          {errorIndicator(prop.meta.error, prop.meta.warning)}
-        </Col>
-      ) : <Col sm={1}/>
-        }
+        <Row>
+          <Col sm={12}>
+            {errorLabel(prop.meta.error, prop.meta.warning)}
+          </Col>
+        </Row>
+      ) : null
+    }
 
-  </Form.Group>
+  </Form.Group >
 }
 
 export function InputField(prop) {
@@ -148,7 +172,7 @@ export function SelectField({
     name={propName}
     component={prop => (
       <Form.Group as={Row} controlId={prop.input.name} validationState={prop.meta.error ? 'error' : null}>
-        <Form.Label column sm={col1 || 6} style={{ textAlign: 'left'}}>
+        <Form.Label column sm={col1 || 6} style={{ textAlign: 'left' }}>
           {label}
         </Form.Label>
         <Col sm={col2 || 4}>
@@ -180,11 +204,11 @@ export function FieldsRow({ children }) {
         {children}
       </Col>
     )
-     }
+    }
   </Row>
 }
 
- 
+
 export class CollapsableRows extends React.Component {
   constructor(props) {
     super(props);
@@ -198,7 +222,7 @@ export class CollapsableRows extends React.Component {
         <Row>
           <Col sm={12}>
             <center>
-              { this.state.collapsed
+              {this.state.collapsed
                 ? (
                   <Button
                     variant="link"
@@ -215,15 +239,15 @@ export class CollapsableRows extends React.Component {
                     onClick={() => { this.setState({ collapsed: true }); }}
                   >
                     <a>
-                  Hide
+                      Hide
                     </a>
                   </Button>
                 )
-            }
+              }
             </center>
           </Col>
         </Row>
-        { this.state.collapsed ? '' : this.props.children }
+        {this.state.collapsed ? '' : this.props.children}
       </div>
     );
   }

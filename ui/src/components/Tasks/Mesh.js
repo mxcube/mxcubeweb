@@ -81,18 +81,20 @@ class Mesh extends React.Component {
     this.props.hide();
   }
 
-  resetParameters() {
-    this.props.reset();
+  resetParameters(form) {
+    this.props.reset(form.toLowerCase());
   }
 
   defaultParameters() {
+    const { type } = this.props.taskData;
     this.props.resetTaskParameters();
-    const { type } = this.props.taskData.parameters;
+    this.resetParameters(type);
     const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
+      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);
     });
   }
+
 
   render() {
     return (
@@ -177,16 +179,16 @@ class Mesh extends React.Component {
 
           <FieldsHeader title="Processing" />
         </Modal.Body>
-        { this.props.taskData.state ? ''
+        {this.props.taskData.state ? ''
           : (
             <Modal.Footer>
-              <ButtonToolbar style={{ bottom: '15px', left: '10px'}} className="position-absolute">
+              <ButtonToolbar style={{ bottom: '15px', left: '10px' }} className="position-absolute">
                 <Button
                   size="sm"
                   variant="outline-secondary"
                   onClick={this.defaultParameters}
                 >
-               Default Parameters
+                  Default Parameters
                 </Button>
                 <Button
                   className='ms-3'
@@ -194,7 +196,7 @@ class Mesh extends React.Component {
                   variant="outline-secondary"
                   onClick={this.resetParameters}
                 >
-               Reset Form
+                  Reset Form
                 </Button>
               </ButtonToolbar>
               <ButtonToolbar className="pull-right">
@@ -203,7 +205,7 @@ class Mesh extends React.Component {
                   disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                   onClick={this.submitRunNow}
                 >
-                 Run Now
+                  Run Now
                 </Button>
                 <Button
                   className='ms-3'
@@ -216,7 +218,7 @@ class Mesh extends React.Component {
               </ButtonToolbar>
             </Modal.Footer>
           )
-       }
+        }
       </DraggableModal>
     );
   }
@@ -242,23 +244,26 @@ Mesh = connect((state) => {
     fname = `${prefix}_[RUN#]_[IMG#]`;
   }
 
+  const { type } = state.taskForm.taskData;
+  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
-    acqParametersLimits: state.taskForm.acqParametersLimits,
+    acqParametersLimits: limits,
+    beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.taskData.sampleID
         ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.attributes.resolution.value),
+        : state.beamline.hardwareObjects.resolution.value),
       energy: (state.taskForm.taskData.sampleID
         ? state.taskForm.taskData.parameters.energy
-        : state.beamline.attributes.energy.value),
+        : state.beamline.hardwareObjects.energy.value),
       transmission: (state.taskForm.taskData.sampleID
         ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.attributes.transmission.value),
-      osc_start: state.beamline.attributes.omega.value
+        : state.beamline.hardwareObjects.transmission.value),
+      osc_start: state.beamline.hardwareObjects["diffractometer.phi"].value
     }
   };
 })(Mesh);

@@ -71,24 +71,24 @@ def create_set_route(app, server, bp, adapter, attr, name):
 
 
 def create_route(app, server, bp, adapter, obj, cmd_name):
-        route_url = f"/{obj}/command/{cmd_name}"
-        arg_schema = adapter._ho.pydantic_model[cmd_name]
+    route_url = f"/{obj}/command/{cmd_name}"
+    arg_schema = adapter._pydantic_model_for_command(cmd_name)
 
-        @bp.route(route_url, endpoint=cmd_name, methods=["POST"])
-        @server.require_control
-        @server.restrict
-        @server.validate(json=arg_schema)
-        def set_func():
-            """
-            Tries to set < name > to value
-            Replies with status code 200 on success and 409 on exceptions.
-            """
-            args = request.get_json()
-            adapter = app.mxcubecore.get_adapter(obj.lower())
-            adapter.execute_command(cmd_name, args)
-            return make_response("{}", 200)
+    @bp.route(route_url, endpoint=cmd_name, methods=["POST"])
+    @server.require_control
+    @server.restrict
+    @server.validate(json=arg_schema)
+    def set_func():
+        """
+        Tries to set < name > to value
+        Replies with status code 200 on success and 409 on exceptions.
+        """
+        args = request.get_json()
+        adapter = app.mxcubecore.get_adapter(obj.lower())
+        adapter.execute_command(cmd_name, args)
+        return make_response("{}", 200)
 
-        set_func.__name__ = f"{obj}_{cmd_name}"
+    set_func.__name__ = f"{obj}_{cmd_name}"
 
 
 def add_adapter_routes(app, server, bp):
@@ -125,11 +125,6 @@ def add_adapter_routes(app, server, bp):
             # Map all other functions starting with prefix get_ or set_ and
             # flagged with the @export
             for attr in dir(adapter):
-                func = getattr(adapter, attr)
-
-                if not hasattr(func, "_export"):
-                    continue
-
                 if attr.startswith("get"):
                     create_get_route(
                         app, server, bp, adapter, attr, attr.replace("get_", "")
@@ -140,10 +135,10 @@ def add_adapter_routes(app, server, bp):
                         app, server, bp, adapter, attr, attr.replace("set_", "")
                     )
 
-        if adapter._ho.exported_attributes:
-            print(adapter._ho.exported_attributes)
-            for cmd_name in adapter._ho.exported_attributes.keys():
-                create_route(app, server, bp, adapter, _id, cmd_name)
+        exported_methods = adapter._exported_methods()
+
+        for cmd_name in exported_methods.keys():
+            create_route(app, server, bp, adapter, _id, cmd_name)
 
 def init_route(app, server, url_prefix):
     bp = Blueprint("beamline", __name__, url_prefix=url_prefix)

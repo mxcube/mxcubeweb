@@ -24,7 +24,7 @@ class AddSample extends React.Component {
     let prefix = params.sampleName ? params.sampleName : 'noname';
 
     if (params.proteinAcronym && params.sampleName) {
-      prefix += `-${params.proteinAcronym}`;
+      prefix = `${params.proteinAcronym}-${prefix}`;
     }
 
     return {
@@ -69,7 +69,12 @@ class AddSample extends React.Component {
 
   render() {
     return (
-      <Modal show={this.props.show} onHide={this.handleCancel} style={{ minWidth: '795px'}}>
+      <Modal
+        // fullscreen
+        show={this.props.show}
+        onHide={this.handleCancel}
+        // style={{ width: '60%', height: '20%'}}
+      >
         <Modal.Header closeButton>
           <Modal.Title>Add Sample Manually</Modal.Title>
         </Modal.Header>

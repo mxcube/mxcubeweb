@@ -12,3 +12,43 @@
 .col-form-label{
     margin-right: 10px!important;
 }
+
+.json-schema-form-container .rjsf #root__title{
+    display: none;
+  }
+
+.json-schema-form-container .rjsf [type=submit]{
+    display: none;
+}
+
+.json-schema-form-group-div .form-group {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1em;
+}
+
+.json-schema-form-group-div label {
+    font-weight: bolder;
+}
+
+.json-schema-form-group-div input {
+    width: 7em;
+    margin-right: 3em;
+}
+
+.json-schema-form-group-div select {
+    width: 7em;
+    margin-right: 3em;
+}
+
+
+.json-schema-form-group-div .checkbox>label {
+    display: flex;
+    flex-direction: row-reverse;
+}
+
+.json-schema-form-group-div .field-description {
+    display: none;
+}

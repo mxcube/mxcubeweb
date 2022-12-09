@@ -13,7 +13,7 @@ import base64
 
 from mxcube3.core.util.convertutils import to_camel, from_camel
 
-from mxcubecore.HardwareObjects.queue_entry import CENTRING_METHOD
+from mxcubecore.queue_entry.base_queue_entry import CENTRING_METHOD
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 from mxcubecore.HardwareObjects.abstract.AbstractNState import AbstractNState
 

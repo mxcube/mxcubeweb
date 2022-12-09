@@ -17,6 +17,7 @@ export class SampleChangerActionButton extends React.Component {
 
     return (
       <Button
+        key={this.props.label}
         variant='outline-secondary'
         disabled={disabled}
         onClick={() => this.props.send_command(this.props.cmd, this.props.args)}
@@ -49,6 +50,7 @@ export default class SampleChangerMaintenance extends React.Component {
         args: cmdinfo[3],
         enabled: this.props.commands_state[cmdinfo[0]],
         send_command: this.props.send_command,
+        key: cmdinfo[1]
       });
   }
 
@@ -62,7 +64,8 @@ export default class SampleChangerMaintenance extends React.Component {
     return React.createElement(SampleChangerActionGroup,
       {
         name: grpinfo[0],
-        buttons: butgrp
+        buttons: butgrp,
+        key: grpinfo[0]
       });
   }
 

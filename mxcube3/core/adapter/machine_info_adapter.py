@@ -35,7 +35,7 @@ class MachineInfoAdapter(ActuatorAdapterBase):
 
     def get_message(self):
         try:
-            message = self._ho.getMessage()
+            message = self._ho.get_message()
         except (TypeError, AttributeError):
             message = ""
 
@@ -43,7 +43,7 @@ class MachineInfoAdapter(ActuatorAdapterBase):
 
     def get_current(self):
         try:
-            current = self._ho.getCurrent()
+            current = self._ho.get_current()
             current = (
                 current
                 if isinstance(current, str)
@@ -56,7 +56,7 @@ class MachineInfoAdapter(ActuatorAdapterBase):
 
     def get_fill_mode(self):
         try:
-            fmode = self._ho.getFillMode()
+            fmode = self._ho.get_fill_mode()
         except (TypeError, AttributeError):
             fmode = ""
 

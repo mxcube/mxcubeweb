@@ -6,7 +6,7 @@
   <object href="/lims" role="dbserver"/>
 
   <object href="/energy" role="energy"/>
-  <object href="/attenuators" role="transmission"/>
+  <object href="/transmission" role="transmission"/>
   <object href="/detector" role="detector"/>
   <object href="/resolution" role="resolution"/>
 

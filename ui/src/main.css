@@ -1,10 +1,12 @@
 .popover {
     width: auto !important;
+    z-index: 1040;
 }
 
-.modal-dialog {
-    margin: 130px auto;
+#test {
+  min-width: fit-content;
 }
+
 
 #loading {
     margin-top: 20%;
@@ -48,17 +50,19 @@ input[type="color"]:focus,
 
 
 .modal {
-    height: 100vh!important;
+    height: 100vh;
 }
 
-.modal-content {
-    min-width: 860px;
-    width: fit-content;
+.modal-dialog {
+    width: min-content;
+    max-width: 90%;
+    min-width: 50%;
 }
 
-.form-label {
-    /* white-space: nowrap; */
-}
+.popover{
+    max-width: 100%; /* Max Width of the popover (depending on the container!) */
+  }
+
 
 .nav-link {
 cursor: pointer;
@@ -106,4 +110,8 @@ cursor: pointer;
     box-shadow: none!important;
     background: transparent;
     color: #000000;
+  }
+
+  .nowrap-style {
+    white-space: nowrap;
   }

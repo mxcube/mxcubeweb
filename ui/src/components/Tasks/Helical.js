@@ -66,18 +66,20 @@ class Helical extends React.Component {
     this.props.hide();
   }
 
-  resetParameters() {
-    this.props.reset();
+  resetParameters(form) {
+    this.props.reset(form.toLowerCase());
   }
 
   defaultParameters() {
+    const { type } = this.props.taskData;
     this.props.resetTaskParameters();
-    const { type } = this.props.taskData.parameters;
+    this.resetParameters(type);
     const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
+      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);
     });
   }
+
 
   render() {
     return (
@@ -90,21 +92,21 @@ class Helical extends React.Component {
           <Form>
             <StaticField label="Path" data={this.props.path} />
             <Row className='mt-3'>
-                <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
+              <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
             </Row>
-            <Row  className='mt-3'>
+            <Row className='mt-3'>
               <InputField propName="prefix" label="Prefix" col1="4" col2="7" />
             </Row>
-            <Row  className='mt-3 mb-3'>
+            <Row className='mt-3 mb-3'>
               {this.props.taskData.sampleID
                 ? (
-                    <InputField
-                      propName="run_number"
-                      disabled
-                      label="Run number"
-                      col1="4"
-                      col2="7"
-                    />
+                  <InputField
+                    propName="run_number"
+                    disabled
+                    label="Run number"
+                    col1="4"
+                    col2="7"
+                  />
                 )
                 : null}
             </Row>
@@ -155,7 +157,7 @@ class Helical extends React.Component {
 
           <FieldsHeader title="Processing" />
         </Modal.Body>
-        { this.props.taskData.state ? ''
+        {this.props.taskData.state ? ''
           : (
             <Modal.Footer>
               <ButtonToolbar className="pull-left">
@@ -164,7 +166,7 @@ class Helical extends React.Component {
                   variant="outline-secondary"
                   onClick={this.defaultParameters}
                 >
-                 Default Parameters
+                  Default Parameters
                 </Button>
               </ButtonToolbar>
               <ButtonToolbar className="pull-right">
@@ -173,7 +175,7 @@ class Helical extends React.Component {
                   disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                   onClick={this.submitRunNow}
                 >
-                 Run Now
+                  Run Now
                 </Button>
                 <Button
                   className='ms-3'
@@ -186,7 +188,7 @@ class Helical extends React.Component {
               </ButtonToolbar>
             </Modal.Footer>
           )
-       }
+        }
       </DraggableModal>
     );
   }
@@ -211,26 +213,29 @@ Helical = connect((state) => {
     fname = `${prefix}_[RUN#]_[IMG#]`;
   }
 
+  const { type } = state.taskForm.taskData;
+  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
-    acqParametersLimits: state.taskForm.acqParametersLimits,
+    acqParametersLimits: limits,
     beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.attributes.resolution.value),
+        : state.beamline.hardwareObjects.resolution.value),
       energy: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.energy
-        : state.beamline.attributes.energy.value),
+        : state.beamline.hardwareObjects.energy.value),
       transmission: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.attributes.transmission.value),
+        : state.beamline.hardwareObjects.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.attributes.omega.value)
+        : state.beamline.hardwareObjects["diffractometer.phi"].value)
     }
   };
 })(Helical);

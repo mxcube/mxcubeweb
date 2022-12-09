@@ -35,7 +35,7 @@ export function busyStateAction(name) {
   };
 }
 
-export function sendGetAllAttributes() {
+export function sendGetAllhardwareObjects() {
   const url = 'mxcube/api/v0.1/beamline/';
 
   return (dispatch) => {
@@ -67,7 +67,7 @@ export function sendSetAttribute(name, value) {
   return (dispatch, getState) => {
     dispatch(busyStateAction(name));
     const state = getState();
-    const type = state.beamline.attributes[name].type.toLowerCase();
+    const type = state.beamline.hardwareObjects[name].type.toLowerCase();
     const url = `mxcube/api/v0.1/beamline/${type}/value/${name}`;
 
     fetch(url, {
@@ -120,4 +120,17 @@ export function sendPrepareForNewSample() {
       },
     });
   };
+}
+
+export function sendDisplayImage(path) {
+  return () => {
+    fetch(`mxcube/api/v0.1/detector/display_image/?path=${path}`, {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+    });
+  }
 }

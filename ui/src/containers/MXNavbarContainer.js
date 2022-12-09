@@ -14,6 +14,7 @@ class MXNavbarContainer extends React.Component {
         location={this.props.location}
         setAutomatic={this.props.setAutomatic}
         remoteAccess={this.props.remoteAccess}
+        mode={this.props.mode}
       />
     );
   }
@@ -24,7 +25,7 @@ function mapStateToProps(state) {
     user: state.login.user,
     loggedIn: state.login.loggedIn,
     selectedProposal: state.login.selectedProposal,
-    mode: state.queue.automatic,
+    mode: state.general.mode,
     remoteAccess: state.remoteAccess
   };
 }

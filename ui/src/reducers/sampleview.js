@@ -8,6 +8,7 @@ const initialState = {
   height: 493,
   videoFormat: 'MJPEG',
   videoHash: '',
+  videoURL: '',
   sourceIsScalable: false,
   videoSizes: [],
   autoScale: true,
@@ -63,12 +64,12 @@ export default (state = initialState, action) => {
       return state.clickCentringPoints.length === 2
         ? { ...state, clickCentring: false, clickCentringPoints: [] }
         : {
-            ...state,
-            clickCentringPoints: [
-              ...state.clickCentringPoints,
-              { x: action.x, y: action.y },
-            ],
-          };
+          ...state,
+          clickCentringPoints: [
+            ...state.clickCentringPoints,
+            { x: action.x, y: action.y },
+          ],
+        };
     }
     case 'DRAW_GRID': {
       let { selectedGrids } = state;
@@ -88,12 +89,12 @@ export default (state = initialState, action) => {
       return state.distancePoints.length === 2
         ? { ...state, measureDistance: false, distancePoints: [] }
         : {
-            ...state,
-            distancePoints: [
-              ...state.distancePoints,
-              { x: action.x, y: action.y },
-            ],
-          };
+          ...state,
+          distancePoints: [
+            ...state.distancePoints,
+            { x: action.x, y: action.y },
+          ],
+        };
     }
     case 'SAVE_IMAGE_SIZE': {
       return {
@@ -169,24 +170,30 @@ export default (state = initialState, action) => {
       return { ...state, selectedShapes };
     }
     case 'CLEAR_ALL': {
-      return { ...state, distancePoints: [],
+      return {
+        ...state, distancePoints: [],
         clickCentringPoints: [],
         gridList: [],
         gridCount: 0,
-        selectedShapes: [],};
+        selectedShapes: [],
+      };
     }
     case 'SET_CURRENT_SAMPLE': {
-      return { ...state, distancePoints: [],
+      return {
+        ...state, distancePoints: [],
         clickCentringPoints: [],
         gridList: [],
         gridCount: 0,
-        selectedShapes: [],};
+        selectedShapes: [],
+      };
     }
     case 'CLEAR_QUEUE': {
-      return { ...state, distancePoints: [],
+      return {
+        ...state, distancePoints: [],
         clickCentringPoints: [],
         gridList: [],
-        gridCount: 0,};
+        gridCount: 0,
+      };
     }
     case 'SET_INITIAL_STATE': {
       return {
@@ -197,6 +204,7 @@ export default (state = initialState, action) => {
         videoSizes: action.data.Camera.videoSizes,
         sourceIsScalable: action.data.Camera.sourceIsScalable,
         videoHash: action.data.Camera.videoHash,
+        videoURL: action.data.Camera.videoURL,
         apertureList: action.data.beamInfo.apertureList,
         currentAperture: action.data.beamInfo.currentAperture,
         beamPosition: action.data.beamInfo.position,

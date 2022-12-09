@@ -67,18 +67,20 @@ class Characterisation extends React.Component {
     this.props.hide();
   }
 
-  resetParameters() {
-    this.props.reset();
+  resetParameters(form) {
+    this.props.reset(form.toLowerCase());
   }
 
   defaultParameters() {
+    const { type } = this.props.taskData;
     this.props.resetTaskParameters();
-    const { type } = this.props.taskData.parameters;
+    this.resetParameters(type);
     const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
+      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);
     });
   }
+
 
   render() {
     return (
@@ -127,7 +129,7 @@ class Characterisation extends React.Component {
             <FieldsRow>
               <InputField propName="osc_range" type="number" label="Oscillation range" />
               <InputField
-                disabled={this.props.beamline.attributes.energy.readonly}
+                disabled={this.props.beamline.hardwareObjects.energy.readonly}
                 propName="energy"
                 type="number"
                 label="Energy"
@@ -362,16 +364,16 @@ class Characterisation extends React.Component {
             </Form>
           </CollapsableRows>
         </Modal.Body>
-        { this.props.taskData.state ? ''
+        {this.props.taskData.state ? ''
           : (
             <Modal.Footer>
-              <ButtonToolbar style={{ bottom: '0.8%', left: '1%'}} className="position-absolute">
+              <ButtonToolbar style={{ bottom: '0.8%', left: '1%' }} className="position-absolute">
                 <Button
                   size="sm"
                   variant="outline-secondary"
                   onClick={this.defaultParameters}
                 >
-              Default Parameters
+                  Default Parameters
                 </Button>
               </ButtonToolbar>
               <ButtonToolbar className="pull-right">
@@ -381,7 +383,7 @@ class Characterisation extends React.Component {
                   disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                   onClick={this.submitRunNow}
                 >
-                 Run Now
+                  Run Now
                 </Button>
                 <Button
                   size="sm"
@@ -395,7 +397,7 @@ class Characterisation extends React.Component {
               </ButtonToolbar>
             </Modal.Footer>
           )
-         }
+        }
       </DraggableModal>
     );
   }
@@ -426,10 +428,13 @@ Characterisation = connect((state) => {
     fname = `${prefix}_[RUN#]_[IMG#]`;
   }
 
+  const { type } = state.taskForm.taskData;
+  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
-    acqParametersLimits: state.taskForm.acqParametersLimits,
+    acqParametersLimits: limits,
     beamline: state.beamline,
     use_permitted_rotation: selector(state, 'use_permitted_rotation'),
     use_aimed_resolution: selector(state, 'use_aimed_resolution'),
@@ -443,16 +448,16 @@ Characterisation = connect((state) => {
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.attributes.resolution.value),
+        : state.beamline.hardwareObjects.resolution.value),
       energy: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.energy
-        : state.beamline.attributes.energy.value),
+        : state.beamline.hardwareObjects.energy.value),
       transmission: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.attributes.transmission.value),
+        : state.beamline.hardwareObjects.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.attributes.omega.value)
+        : state.beamline.hardwareObjects["diffractometer.phi"].value)
     }
   };
 })(Characterisation);

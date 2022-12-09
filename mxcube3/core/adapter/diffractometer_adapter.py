@@ -2,6 +2,8 @@ from mxcube3.core.adapter.adapter_base import AdapterBase
 
 
 class DiffractometerAdapter(AdapterBase):
+    ATTRIBUTES = ["head_configuration"]
+
     def __init__(self, ho, *args, **kwargs):
         """
         Args:
@@ -18,3 +20,10 @@ class DiffractometerAdapter(AdapterBase):
 
     def state(self):
         return "READY" if self._ho.is_ready() else "BUSY"
+
+    def head_configuration(self) -> dict:
+        data = self._ho.get_head_configuration()
+        data = data.dict() if data else {}
+
+        return  data
+

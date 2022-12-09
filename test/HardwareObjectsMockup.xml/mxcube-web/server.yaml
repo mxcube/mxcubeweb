@@ -3,21 +3,26 @@ server:
   SECURITY_PASSWORD_SALT: "ASALT"
   SESSION_TYPE: "redis"
   SESSION_KEY_PREFIX: "mxcube:session:"
+  SESSION_PERMANENT: True
+  PERMANENT_SESSION_LIFETIME: 60
+
   DEBUG: False
   STREAMED_VIDEO: True
 
   ALLOWED_CORS_ORIGINS:
     - "http://localhost:8081"
+    - "http://localhost:3000" 
 
 mxcube:
   VIDEO_FORMAT: MJPEG
-  # Mode, SSX, OSC
-  mode: SSX
+  #VIDEO_STREAM_URL: "http://localhost:4042"
+  # Mode, SSX-CHIP, SSX-INJECTOR, OSC
+  mode: SSX-CHIP
 
   usermanager:
     class: UserManager
     inhouse_is_staff: True
     users:
       -
-        username: opid0
+        username: opid291
         role: staff

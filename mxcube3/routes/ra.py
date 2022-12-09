@@ -100,12 +100,7 @@ def init_route(app, server, url_prefix):
         """
         """
         username = request.get_json().get("username")
-        user = app.usermanager.get_user(username)
-        if not user.in_control:
-            server.emit(
-                "forceSignoutObservers", room=user.socketio_session_id, namespace="/hwr"
-            )
-
+        app.usermanager.force_signout_user(username)
         return make_response("", 200)
 
     def toggle_operator(username, message):
@@ -215,11 +210,9 @@ def init_route(app, server, url_prefix):
 
     @server.flask_socketio.on("disconnect", namespace="/hwr")
     def disconnect():
-        return
-        # Update in socket-io library seems to create unepected disconnects.
         current_user.disconnect_timestamp = datetime.now()
         app.usermanager.update_user(current_user)
-        gevent.spawn(app.usermanager.handle_disconnect, current_user.username)
+        #gevent.spawn(app.usermanager.handle_disconnect, current_user.username)
 
 
     return bp

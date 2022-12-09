@@ -246,7 +246,8 @@ export default class SampleChanger extends React.Component {
           select: this.props.select,
           status: node.status,
           scan: this.props.scan,
-          refresh: this.props.refresh
+          refresh: this.props.refresh,
+          key: node.name
         },
         childNodes);
     }
@@ -257,7 +258,8 @@ export default class SampleChanger extends React.Component {
         dm: node.id,
         load: this.props.load,
         status: node.status,
-        unload: this.props.unload
+        unload: this.props.unload,
+        key: node.name
       });
   }
 

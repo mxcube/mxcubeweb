@@ -33,7 +33,9 @@
     "react-chat-widget": "^2.1.4",
     "react-clipboard.js": "^2.0.16",
     "react-collapsible": "^2.10.0",
+    "react-contexify": "^5.0.0",
     "react-contextmenu": "^2.3.0",
+    "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "^17.0.2",
     "react-draggable": "^4.4.4",
     "react-icons": "^4.3.1",
@@ -44,6 +46,7 @@
     "react-router-bootstrap": "^0.26.1",
     "react-router-dom": "^6.2.2",
     "react-scripts": "5.0.0",
+    "react-slick": "^0.29.0",
     "react-sticky": "^6.0.3",
     "react-stonecutter": "^0.3.9",
     "redux": "4.1.2",
@@ -54,6 +57,7 @@
     "redux-thunk": "^2.4.1",
     "sass": "^1.51.0",
     "shortid": "^2.2.6",
+    "slick-carousel": "^1.8.1",
     "socket.io-client": "^2.3.0",
     "underscore": "^1.8.3",
     "web-vitals": "^2.1.4",
@@ -62,7 +66,7 @@
     "ws": "^8.5.0"
   },
   "scripts": {
-    "start": "react-scripts start",
+    "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
@@ -90,6 +94,7 @@
     "concurrently": "^7.0.0",
     "eslint": "^8.10.0",
     "eslint-config-galex": "^3.6.5",
+    "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-jest": "^26.1.1",
     "less": "^4.1.2",
     "less-watch-compiler": "^1.16.3",

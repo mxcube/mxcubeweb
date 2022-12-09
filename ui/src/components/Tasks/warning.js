@@ -1,19 +1,19 @@
 const warn = (values, props) => {
   const warnings = {};
-  if (!props.attributes) {
+  if (!props.beamline.hardwareObjects) {
     // for some reason redux-form is loaded before the initial status
     return warnings;
   }
   const energy = Number.parseFloat(values.energy);
-  const blEnergy = Number.parseFloat(props.attributes.energy.value);
+  const blEnergy = Number.parseFloat(props.beamline.hardwareObjects.energy.value);
   const energyThreshold = blEnergy * 0.01;
 
   const resolution = Number.parseFloat(values.resolution);
-  const blResolution = Number.parseFloat(props.attributes.resolution.value);
+  const blResolution = Number.parseFloat(props.beamline.hardwareObjects.resolution.value);
   const resThreshold = blResolution * 0.01;
 
   const trans = Number.parseFloat(values.transmission);
-  const blTrans = Number.parseFloat(props.attributes.transmission.value);
+  const blTrans = Number.parseFloat(props.beamline.hardwareObjects.transmission.value);
   const transThreshold = blTrans * 0.01;
 
   if (
@@ -36,9 +36,9 @@ const warn = (values, props) => {
       'Entered transmission is different from current transmission';
   }
 
-  if (props.beamline.attributes.omega.value !== Number.parseFloat(values.osc_start)) {
+  if (props.beamline.hardwareObjects["diffractometer.phi"].value !== Number.parseFloat(values.osc_start)) {
     warnings.osc_start =
-      'Oscillation start angle is different from current omega';
+      'Entered Oscillation start angle is different from current omega';
   }
 
   if (

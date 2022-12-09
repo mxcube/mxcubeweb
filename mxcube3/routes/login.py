@@ -101,12 +101,12 @@ def init_route(app, server, url_prefix):
     @server.flask_socketio.on("connect", namespace="/network")
     @server.ws_restrict
     def network_ws_connect():
-        # msg = "Client with sid %s connected" % str(request.sid)
         msg = "Client connected"
         logging.getLogger("MX3.HWR").info(msg)
 
     @server.flask_socketio.on("disconnect", namespace="/network")
     def network_ws_disconnect():
         pass
+
 
     return bp

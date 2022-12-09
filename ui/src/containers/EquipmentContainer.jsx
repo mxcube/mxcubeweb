@@ -57,12 +57,13 @@ class EquipmentContainer extends React.Component {
             </Row>
             <Row>
               <Col sm={12}>
-                { Object.entries(this.props.beamline.attributes).map(([key, value]) => {
-                    const obj = this.props.beamline.attributes[key];
-                    if (Object.values(obj.attributes).length > 0) {
+                { Object.entries(this.props.beamline.hardwareObjects).map(([key, value]) => {
+                    const obj = this.props.beamline.hardwareObjects[key];
+                    if (!Array.isArray(obj.commands) && Object.values(obj.commands).length > 0) {
                       return (<GenericEquipmentControl
                         equipment={obj}
                         executeCommand={this.props.executeCommand}
+                        key={key}
                       />)
                     } 
                       return null;

@@ -12,7 +12,7 @@ export default class GenericEquipmentControl extends React.Component {
   }
 
   renderParameters(key) {
-    const a = this.props.equipment.attributes;
+    const a = this.props.equipment.commands;
     const attr = a[key];
 
     if (attr.signature.length > 1) {
@@ -43,7 +43,7 @@ export default class GenericEquipmentControl extends React.Component {
   }
 
   renderInfo(key) {
-    const a = this.props.equipment.attributes;
+    const a = this.props.equipment.commands;
     const attr = a[key];
 
     if (attr.signature.length > 1) {
@@ -78,25 +78,24 @@ export default class GenericEquipmentControl extends React.Component {
   }
 
   getCommands() {
-    const a = this.props.equipment.attributes;
+    const a = this.props.equipment.commands;
 
     return Object.entries(a).map(([key, value]) => {
       return (
-        <div className='mb-3'>
-        <Collapsible
-          trigger={<div> <b>Command: {key}</b> {this.getCollapsibleHeaderClose('generic-equipment-arrow-c')}</div>}
-          triggerWhenOpen={<div> <b>Command: {key}</b> {this.getCollapsibleHeaderOpen('generic-equipment-arrow-c')}</div>}
-        >
-        <Row className='generic-equipment-collapsible-child-content'>
-          <Col className="col-xs-6"> 
-            {this.renderParameters(key)}
-          </Col>
-          <Col className="col-xs-6">
-            {this.renderInfo(key)}
-          </Col>
-        </Row>
-       </Collapsible>
-
+        <div key={`${this.props.equipment.name}-${key}`} className='mb-3'>
+          <Collapsible
+            trigger={<div> <b>Command: {key}</b> {this.getCollapsibleHeaderClose('collapsible-arrow-c')}</div>}
+            triggerWhenOpen={<div> <b>Command: {key}</b> {this.getCollapsibleHeaderOpen('collapsible-arrow-c')}</div>}
+          >
+          <Row className='generic-equipment-collapsible-child-content'>
+            <Col className="col-xs-6"> 
+              {this.renderParameters(key)}
+            </Col>
+            <Col className="col-xs-6">
+              {this.renderInfo(key)}
+            </Col>
+          </Row>
+        </Collapsible>
         </div>
 
       );

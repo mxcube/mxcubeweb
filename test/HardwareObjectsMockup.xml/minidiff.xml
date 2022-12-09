@@ -4,6 +4,7 @@
   <object role="focus" hwrid="./udiff_phix"></object>
   <object role="zoom" hwrid="./udiff_zoom"></object>
   <object role="phi" hwrid="./udiff_omega"></object>
+  <object role="phix" hwrid="./udiff_phix"></object>
   <object role="phiy" hwrid="./udiff_phiy"></object>
   <object role="phiz" hwrid="./udiff_phiz"></object>
   <object role="sampx" hwrid="./udiff_sampx"></object>
@@ -18,9 +19,6 @@
   <object role="frontlightswitch" href="./udiff_frontlightswitch"/>
 
   <object role="beamstop_distance" hwrid="./beamstop_alignment_x"></object>
-
-  <object role="sample_vertical" hwrid="/udiff_sampx"/>
-  <object role="sample_horizontal" hwrid="/udiff_sampy"/>
 
   <object role="beamstop" href="/beamstop"/>
   <object role="aperture" href="/aperture"/>
@@ -37,10 +35,8 @@
   <!-- MD3 -->
   <grid_direction>{"fast": (0, 1), "slow": (1, 0), "omega_ref": 0}</grid_direction>
 
-  <object role="camera" hwrid="./md_camera"></object>
-  <object role="samplechanger" hwrid="./sc"></object>
-
   <phaseList>["Transfer","Centring","BeamLocation", "DataCollection"]</phaseList>
   <headType>MiniKappa</headType>
   <exports>["abort", "status", "my_fancy_function", "my_other_funny_function"]</exports>
+  <chip_definition_file>oxford_chip_def.json</chip_definition_file>
 </equipment>

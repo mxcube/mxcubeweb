@@ -2,20 +2,25 @@
 import os
 import json
 import pickle as pickle
+import queue
+from matplotlib.style import available
 import redis
 import itertools
 import logging
 import re
+import json
 
 from mock import Mock
 
 from flask_login import current_user
 
 from mxcubecore import HardwareRepository as HWR
-from mxcubecore.HardwareObjects import queue_model_objects as qmo
-from mxcubecore.HardwareObjects import queue_entry as qe
-from mxcubecore.HardwareObjects import queue_model_enumerables as qme
-from mxcubecore.HardwareObjects.base_queue_entry import QUEUE_ENTRY_STATUS
+
+from mxcubecore.model import queue_model_objects as qmo
+from mxcubecore.model import queue_model_enumerables as qme
+
+from mxcubecore import queue_entry as qe
+from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
 
 from mxcubecore.HardwareObjects.Gphl import GphlQueueEntry
 
@@ -274,6 +279,42 @@ class Queue(ComponentBase):
 
         return res
 
+    def _handle_task_node(self, sample_node, node, include_lims_data=False):
+        parameters = {
+            **node.task_data.collection_parameters.dict(),
+            **node.task_data.user_collection_parameters.dict(),
+            **node.task_data.path_parameters.dict(),
+            **node.task_data.common_parameters.dict(),
+            **node.task_data.legacy_parameters.dict(),
+        }
+        pt = node.acquisitions[0].path_template
+        parameters["path"] = pt.directory
+
+        parameters["subdir"] = os.path.join(
+            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
+        ).lstrip("/")
+
+        parameters["fileName"] = pt.get_image_file_name().replace(
+            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+        )
+
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
+
+        return {
+            "label": parameters["label"],
+            "type": parameters["type"],
+            "parameters": parameters,
+            "sampleID": sample_node.loc_str,
+            "sampleQueueID": sample_node._node_id,
+            "taskIndex": self.node_index(node)["idx"],
+            "queueID": node._node_id,
+            "checked": node.is_enabled(),
+            "state": self.get_node_state(node._node_id)[1],
+            "limsResultData": "",
+        }
+
     def _handle_dc(self, sample_node, node, include_lims_data=False):
         parameters = node.as_dict()
         parameters["shape"] = getattr(node, "shape", "")
@@ -313,8 +354,11 @@ class Queue(ComponentBase):
         # Always add link to data, (no request made)
         limsres["limsTaskLink"] = self.app.lims.get_dc_link(lims_id)
 
+        dtype_label =  qme.EXPERIMENT_TYPE._fields[node.experiment_type]
+        dtype_label = "OSC" if dtype_label == "NATIVE" else dtype_label
+
         res = {
-            "label": "Data Collection",
+            "label": dtype_label + " (" + parameters["fileName"] + ")",
             "type": "DataCollection",
             "parameters": parameters,
             "sampleID": sample_node.loc_str,
@@ -434,7 +478,7 @@ class Queue(ComponentBase):
     def _handle_xrf(self, sample_node, node):
         queueID = node._node_id
         enabled, state = self.get_node_state(queueID)
-        parameters = {"countTime": node.count_time, "shape": node.shape}
+        parameters = {"countTime": node.exp_time, "shape": node.shape}
         parameters.update(node.path_template.as_dict())
         parameters["path"] = parameters["directory"]
 
@@ -683,6 +727,8 @@ class Queue(ComponentBase):
                 result.append(self._handle_energy_scan(sample_node, node))
             elif isinstance(node, qmo.TaskGroup) and node.interleave_num_images:
                 result.append(self._handle_interleaved(sample_node, node))
+            elif isinstance(node, qmo.TaskNode) and node.task_data:
+                result.append(self._handle_task_node(sample_node, node, include_lims_data))
             else:
                 result.extend(self.queue_to_dict_rec(node, include_lims_data))
 
@@ -947,6 +993,11 @@ class Queue(ComponentBase):
                 self.add_xrf_scan(sample_node_id, item)
             elif item_t == "EnergyScan":
                 self.add_energy_scan(sample_node_id, item)
+            elif item_t == "Sample":
+                pass
+            else:
+                self.add_queue_entry(sample_node_id, item, item_t)
+
 
     def add_sample(self, sample_id, item):
         """
@@ -1248,7 +1299,7 @@ class Queue(ComponentBase):
             model.path_template.run_number = self.get_run_number(model.path_template)
 
         # Set count time, and if any, other paramters
-        model.count_time = params.get("countTime", 0)
+        model.count_time = params.get("exp_time", 0)
 
         # MXCuBE3 specific shape attribute
         model.shape = params["shape"]
@@ -1319,6 +1370,28 @@ class Queue(ComponentBase):
         dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
 
         return dc_model, dc_entry
+
+    def _create_queue_entry(self, task, task_name):
+        """Creates a queue entry and its corresponding data model
+
+        Args:
+            task (dict): Collection parameters
+        Return:
+            (tuple): (model, entry)
+        """
+        queue_entry_name = task_name.title().replace("_", "")+"QueueEntry"
+        entry_cls = getattr(qe, queue_entry_name)
+        data = entry_cls.DATA_MODEL(**{
+            "path_parameters": task["parameters"],
+            "common_parameters": task["parameters"],
+            "user_collection_parameters": task["parameters"],
+            "collection_parameters": task["parameters"],
+            "legacy_parameters": task["parameters"],
+        })
+
+        entry = entry_cls(Mock(), entry_cls.QMO(task_data=data))
+        entry.set_enabled(True)
+        return entry.get_data_model(), entry
 
     def _create_wf(self, task):
         """
@@ -1459,6 +1532,66 @@ class Queue(ComponentBase):
         group_entry.enqueue(dc_entry)
 
         return dc_model._node_id
+
+    def add_queue_entry(self, node_id, task, task_name):
+        """Adds a queue entry to the sample with id <node_id>
+
+        Args:
+            node_id (int): id of the sample to which the task belongs
+            task (dict): task data
+            task_name (str): The task name
+        """
+        sample_model, sample_entry = self.get_entry(node_id)
+        model, entry = self._create_queue_entry(task, task_name)
+
+        acq = model.acquisitions[0]
+        params = task["parameters"]
+
+        ftype = HWR.beamline.detector.get_property("file_suffix")
+        ftype = ftype if ftype else ".?"
+
+        acq.path_template.set_from_dict(params)
+        # certain attributes have to be updated explicitly,
+        # like precision, suffix ...
+        acq.path_template.start_num = params["first_image"]
+        acq.path_template.num_files = params["num_images"]
+        acq.path_template.suffix = ftype
+        acq.path_template.precision = "0" + str(
+            HWR.beamline.session["file_info"].get_property("precision", 4)
+        )
+
+        if params["prefix"]:
+            acq.path_template.base_prefix = params["prefix"]
+        else:
+            acq.path_template.base_prefix = HWR.beamline.session.get_default_prefix(
+                sample_model
+            )
+
+        full_path = os.path.join(
+            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
+        )
+
+        acq.path_template.directory = full_path
+
+        process_path = os.path.join(
+            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
+        )
+        acq.path_template.process_directory = process_path
+
+        model.shape = params["shape"]
+
+        group_model = qmo.TaskGroup()
+        group_model.set_origin(ORIGIN_MX3)
+        group_model.set_enabled(True)
+        HWR.beamline.queue_model.add_child(sample_model, group_model)
+        HWR.beamline.queue_model.add_child(group_model, model)
+
+        group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+        group_entry.set_enabled(True)
+        sample_entry.enqueue(group_entry)
+        group_entry.enqueue(entry)
+
+        return model._node_id
 
     def add_workflow(self, node_id, task):
         """
@@ -1679,7 +1812,6 @@ class Queue(ComponentBase):
 
             elif isinstance(child, qmo.GphlWorkflow):
                 # Added olofsvensson 20220504
-                # import pdb; pdb.set_trace()
                 entry = GphlQueueEntry.GphlWorkflowQueueEntry(Mock(), child)
                 self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
@@ -2280,7 +2412,62 @@ class Queue(ComponentBase):
             msg += "cannot get default values for XRF"
             logging.getLogger("MX3.HWR").error(msg)
 
-        return {"countTime": int_time}
+        return {"exp_time": int_time}
+
+    def get_default_task_parameters(self, task_name):
+        acq_parameters = HWR.beamline.get_default_acquisition_parameters(task_name).as_dict()
+
+        queue_entry = qe.get_queue_entry_from_task_name(task_name)
+        data_model = getattr(queue_entry, "DATA_MODEL", None)
+        requires = getattr(queue_entry, "REQUIRES", None)
+        display_name = getattr(queue_entry, "NAME", None)
+        # NB This logic should be moved so that the defualt parameters for
+        # a task can be retreived from one place.
+        
+        if task_name == "characterisation":
+            acq_parameters.update(
+                HWR.beamline.characterisation.get_default_characterisation_parameters().as_dict()
+            )
+            
+        schema = self.get_task_schema(data_model) if data_model else {}
+
+        return {
+            "acq_parameters": {
+                **acq_parameters,
+                "inverse_beam": False,
+                "take_dark_current": True,
+                "skip_existing_images": False,
+                "take_snapshots": True,
+                "helical": False,
+                "mesh": False,
+                "prefixTemplate": "{PREFIX}_{POSITION}",
+                "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
+            },
+            "limits": HWR.beamline.acquisition_limit_values,
+            "requires": requires if requires else [],
+            "name": display_name if display_name else task_name,
+            "queue_entry": task_name,
+            "schema": schema
+        }
+
+    def get_task_schema(self, data_model):
+        return {
+            "path_parameters": data_model.__signature__.parameters["path_parameters"].annotation.schema(),
+            "common_parameters": data_model.__signature__.parameters["common_parameters"].annotation.schema(),
+            "collection_parameters": data_model.__signature__.parameters["collection_parameters"].annotation.schema(),
+            "user_collection_parameters": data_model.__signature__.parameters["user_collection_parameters"].annotation.schema(),
+            "legacy_parameters": data_model.__signature__.parameters["legacy_parameters"].annotation.schema()
+        }
+
+
+    def get_available_tasks(self):
+        task_info = {}
+
+        for task, available in HWR.beamline.available_methods.items():
+            if available:
+                task_info[task] = self.get_default_task_parameters(task)
+
+        return task_info
 
     def get_sample(self, _id):
         sample = self.queue_to_dict().get(_id, None)

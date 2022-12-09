@@ -103,7 +103,7 @@ export class HelpContainer extends React.Component {
               </Card>
               <Card className="mb-2">
                 <Card.Header>
-                  <span>About MXCuBE3</span>
+                  <span>About MXCuBE-Web</span>
                 </Card.Header>
                 <Card.Body>
               <span>

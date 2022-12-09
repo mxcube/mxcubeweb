@@ -136,31 +136,7 @@ export function getInitialState() {
         'Content-type': 'application/json',
       },
     });
-    const dcParameters = fetch('mxcube/api/v0.1/queue/dc', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const charParameters = fetch('mxcube/api/v0.1/queue/char_acq', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const meshParameters = fetch('mxcube/api/v0.1/queue/mesh', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const xrfParameters = fetch('mxcube/api/v0.1/queue/xrf', {
+    const taskParameters = fetch('mxcube/api/v0.1/queue/available_tasks', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -277,32 +253,10 @@ export function getInitialState() {
           state.detector = json;
         })
         .catch(notify),
-      dcParameters
+      taskParameters
         .then(parse)
         .then((json) => {
-          state.dcParameters = json.acq_parameters;
-          return json;
-        })
-        .then((json) => {
-          state.acqParametersLimits = json.limits;
-        })
-        .catch(notify),
-      charParameters
-        .then(parse)
-        .then((json) => {
-          state.charParameters = json.acq_parameters;
-        })
-        .catch(notify),
-      meshParameters
-        .then(parse)
-        .then((json) => {
-          state.meshParameters = json.acq_parameters;
-        })
-        .catch(notify),
-      xrfParameters
-        .then(parse)
-        .then((json) => {
-          state.xrfParameters = json;
+          state.taskParameters = json;
         })
         .catch(notify),
       savedShapes

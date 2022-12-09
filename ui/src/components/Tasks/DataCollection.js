@@ -70,16 +70,17 @@ class DataCollection extends React.Component {
     this.props.hide();
   }
 
-  resetParameters() {
-    this.props.reset();
+  resetParameters(form) {
+    this.props.reset(form.toLowerCase());
   }
 
   defaultParameters() {
+    const { type } = this.props.taskData;
     this.props.resetTaskParameters();
-    const { type } = this.props.taskData.parameters;
+    this.resetParameters(type);
     const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(field, this.props.initialParameters[type.toLowerCase()][field]);
+      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);
     });
   }
 
@@ -87,13 +88,13 @@ class DataCollection extends React.Component {
     return (
       <Modal.Footer>
         <div className="input-group-btn d-flex">
-          <ButtonToolbar style={{ bottom: '15px', left: '10px'}} className="position-absolute">
+          <ButtonToolbar style={{ bottom: '15px', left: '10px' }} className="position-absolute">
             <Button
               size="sm"
               variant="outline-secondary"
               onClick={this.defaultParameters}
             >
-             Default Parameters
+              Default Parameters
             </Button>
           </ButtonToolbar>
           <ButtonToolbar>
@@ -104,7 +105,7 @@ class DataCollection extends React.Component {
               disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
               onClick={this.submitRunNow}
             >
-             Run Now
+              Run Now
             </Button>
             <Button
               size="sm"
@@ -130,7 +131,7 @@ class DataCollection extends React.Component {
             disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
             onClick={this.submitRunNow}
           >
-             Run Now
+            Run Now
           </Button>
           <Button
             variant="primary"
@@ -216,14 +217,14 @@ class DataCollection extends React.Component {
             </FieldsRow>
             <FieldsRow>
               <InputField
-                disabled={this.props.beamline.attributes.energy.readonly}
+                disabled={this.props.beamline.hardwareObjects.energy.readonly}
                 propName="energy"
                 type="number"
                 label="Energy"
               />
               <InputField propName="resolution" type="number" label="Resolution" />
             </FieldsRow>
-            { this.props.taskResult.energyScan.length > 0
+            {this.props.taskResult.energyScan.length > 0
               ? (
                 <FieldsRow>
                   <SelectField
@@ -278,7 +279,7 @@ class DataCollection extends React.Component {
 
         </Modal.Body>
 
-        { this.props.taskData.state ? '' : this.showFooter() }
+        {this.props.taskData.state ? '' : this.showFooter()}
 
       </DraggableModal>
     );
@@ -287,8 +288,8 @@ class DataCollection extends React.Component {
 
 DataCollection = reduxForm({
   form: 'datacollection',
-  validate,
-  warn
+  validate: validate,
+  warn: warn
 })(DataCollection);
 
 const selector = formValueSelector('datacollection');
@@ -311,26 +312,29 @@ DataCollection = connect((state) => {
     fname = `${prefix}_[RUN#]_[IMG#]`;
   }
 
+  const { type } = state.taskForm.taskData;
+  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
-    acqParametersLimits: state.taskForm.acqParametersLimits,
+    acqParametersLimits: limits,
     beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.attributes.resolution.value),
+        : state.beamline.hardwareObjects.resolution.value),
       energy: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.energy
-        : state.beamline.attributes.energy.value),
+        : state.beamline.hardwareObjects.energy.value),
       transmission: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.attributes.transmission.value),
+        : state.beamline.hardwareObjects.transmission.value),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.attributes.omega.value)
+        : state.beamline.hardwareObjects["diffractometer.phi"].value)
     }
   };
 })(DataCollection);

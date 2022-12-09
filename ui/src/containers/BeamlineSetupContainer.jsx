@@ -15,7 +15,7 @@ import * as SampleViewActions from '../actions/sampleview';
 import { find, filter } from 'lodash';
 
 import {
-  sendGetAllAttributes,
+  sendGetAllhardwareObjects,
   sendSetAttribute,
   sendAbortCurrentAction
 } from '../actions/beamline';
@@ -33,7 +33,7 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   // componentDidMount() {
-  // this.props.getAllAttributes();
+  // this.props.getAllhardwareObjects();
   // }
 
 
@@ -52,11 +52,11 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   beamstopAlignmentOverlay() {
-    const {attributes} = this.props.beamline;
+    const {hardwareObjects} = this.props.beamline;
     const motorInputList = [];
     let popover = null;
 
-    const motor = attributes.beamstop_alignemnt_x;
+    const motor = hardwareObjects.beamstop_alignemnt_x;
     const step = this.props.sampleview.motorSteps.beamstop_distance;
 
     if (motor !== undefined && motor.state !== 0) {
@@ -93,8 +93,8 @@ class BeamlineSetupContainer extends React.Component {
     if (uiproperties.hasOwnProperty('beamline_setup')) {
       const blsetup_properties = uiproperties.beamline_setup.components;
 
-      for (const key in this.props.beamline.attributes) {
-        if (this.props.beamline.attributes[key] !== undefined) {
+      for (const key in this.props.beamline.hardwareObjects) {
+        if (this.props.beamline.hardwareObjects[key] !== undefined) {
           const uiprop = find(blsetup_properties, { attribute: key });
 
           if (uiprop !== undefined && uiprop.value_type === 'NSTATE') {
@@ -102,11 +102,11 @@ class BeamlineSetupContainer extends React.Component {
                 acts.push(
                 <Nav.Item key={key} className="ms-3">
                     <InOutSwitch
-                      onText={ this.props.beamline.attributes[key].commands[0] }
-                      offText={ this.props.beamline.attributes[key].commands[1] }
+                      onText={ this.props.beamline.hardwareObjects[key].commands[0] }
+                      offText={ this.props.beamline.hardwareObjects[key].commands[1] }
                       labelText={ uiprop.label }
                       pkey={ key }
-                      data={ this.props.beamline.attributes[key] }
+                      data={ this.props.beamline.hardwareObjects[key] }
                       onSave={ this.setAttribute }
                       optionsOverlay={ this.beamstopAlignmentOverlay() }
                     />
@@ -116,11 +116,11 @@ class BeamlineSetupContainer extends React.Component {
                 acts.push(
                   <Nav.Item key={key} className="ms-3">
                     <InOutSwitch
-                      onText={ this.props.beamline.attributes[key].commands[0] }
-                      offText={ this.props.beamline.attributes[key].commands[1] }
+                      onText={ this.props.beamline.hardwareObjects[key].commands[0] }
+                      offText={ this.props.beamline.hardwareObjects[key].commands[1] }
                       labelText={ uiprop.label }
                       pkey={ key }
-                      data={ this.props.beamline.attributes[key] }
+                      data={ this.props.beamline.hardwareObjects[key] }
                       onSave={ this.setAttribute }
                     />
                   </Nav.Item>
@@ -135,14 +135,14 @@ class BeamlineSetupContainer extends React.Component {
 
 
   dmState() {
-    return this.props.beamline.attributes.diffractometer.state;
+    return this.props.beamline.hardwareObjects.diffractometer.state;
   }
 
   render_table_row(uiprop_list) {
     const components = [];
 
     for (const uiprop of uiprop_list) {
-      const beamline_attribute = this.props.beamline.attributes[uiprop.attribute];
+      const beamline_attribute = this.props.beamline.hardwareObjects[uiprop.attribute];
 
       components.push(
         <td key={`bs-name-${uiprop.label}`} className='d-flex pt-1' style={{ border: '0px', paddingLeft: '0.5em' }}>
@@ -243,7 +243,7 @@ class BeamlineSetupContainer extends React.Component {
             <Nav.Item>
              <DeviceState
                 labelText="Detector"
-                data = { this.props.beamline.attributes.detector.state.acq_satus }
+                data = { this.props.beamline.hardwareObjects.detector.state.acq_satus }
               />
             </Nav.Item>
           </Nav>
@@ -262,9 +262,9 @@ class BeamlineSetupContainer extends React.Component {
           <Nav className="">
             <Nav.Item>
              <span className="blstatus-item">
-              { this.props.beamline.attributes.machine_info ?
+              { this.props.beamline.hardwareObjects.machine_info ?
                   <MachInfo
-                    info={this.props.beamline.attributes.machine_info.value}
+                    info={this.props.beamline.hardwareObjects.machine_info.value}
                   />
                   :
                   null
@@ -291,7 +291,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    getAllAttributes: bindActionCreators(sendGetAllAttributes, dispatch),
+    getAllhardwareObjects: bindActionCreators(sendGetAllhardwareObjects, dispatch),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     setAttribute: bindActionCreators(sendSetAttribute, dispatch),
     sendCommand: bindActionCreators(sendCommand, dispatch),

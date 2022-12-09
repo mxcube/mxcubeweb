@@ -144,7 +144,7 @@ export function doSignOut(navigate) {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());
-      navigate('/login');
+      navigate && navigate('/login');
       serverIO.disconnect();
     });
   };

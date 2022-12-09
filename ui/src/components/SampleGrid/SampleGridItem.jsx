@@ -341,9 +341,9 @@ export class SampleGridItem extends React.Component {
         </OverlayTrigger>
         </div>
         {this.seqId()}
-        <Row className="samples-grid-item-tasks">
+        <div className="samples-grid-item-tasks">
           { this.props.children }
-        </Row>
+        </div>
       </div>
     );
   }

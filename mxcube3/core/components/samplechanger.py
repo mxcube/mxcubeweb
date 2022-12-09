@@ -3,7 +3,7 @@ import logging
 import time
 import gevent
 
-from mxcubecore.HardwareObjects import queue_entry
+from mxcubecore import queue_entry
 from mxcubecore import HardwareRepository as HWR
 
 from mxcube3.core.components.component_base import ComponentBase
@@ -64,6 +64,8 @@ class SampleChanger(ComponentBase):
                 "state": state,
                 "tasks": [],
                 "type": "Sample",
+                'cell_no': s.get_cell_no() if hasattr(s, 'get_cell_no') else '',
+                'puck_no': s.get_basket_no() if hasattr(s, 'get_basket_no') else ''
             }
             order.append(coords)
             samplesByCoords[coords] = sample_data["sampleID"]
@@ -388,17 +390,18 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         if sample_mount_device.__TYPE__ in ["Marvin", "CATS"]:
             element = "%d:%02d" % loc
             sample = {"location": element, "sampleID": element}
-            HWR.beamline.sample_changer.mount_sample_clean_up(sample)
+            mxcube.sample_changer.mount_sample_clean_up(sample)
         elif sample_mount_device.__TYPE__ == "PlateManipulator":
             sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
-            HWR.beamline.sample_changer.mount_sample_clean_up(sample)
+            mxcube.sample_changer.mount_sample_clean_up(sample)
         else:
             sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
 
             try:
-                res = HWR.beamline.sample_changer.mount_sample_clean_up(sample)
+                res = mxcube.sample_changer.mount_sample_clean_up(sample)
             except RuntimeError:
                 res = False
+            logging.getLogger("user_level_log").info("Sample loading res: %s" %str(res))
 
             if res == False:
                 # WARNING: explicit test of False return value.
@@ -477,4 +480,4 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
 
 def patch_queue_entry_mount_sample():
     # Important, patch queue_entry.mount_sample with the mount_sample defined above
-    queue_entry.mount_sample = queue_mount_sample
+    queue_entry.base_queue_entry.mount_sample = queue_mount_sample

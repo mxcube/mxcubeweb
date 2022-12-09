@@ -22,8 +22,8 @@ from mxcube3.server import Server
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
 
-server = None
 mxcube = None
+server = None
 
 
 def parse_args():
@@ -33,7 +33,7 @@ def parse_args():
     )
 
     opt_parser = argparse.ArgumentParser(
-        description="MXCube3 Backend server command line utility."
+        description="mxcube-web Backend server command line utility."
     )
 
     opt_parser.add_argument(
@@ -52,17 +52,24 @@ def parse_args():
         default=f"{os.getcwd()}ui/build",
     )
 
-
     opt_parser.add_argument(
         "-l",
         "--log-file",
         dest="log_file",
-        help="Hardware Repository log file name",
+        help="Log file name",
         default="",
     )
 
     opt_parser.add_argument(
-        "-v",
+        "-L",
+        "--log-level",
+        dest="log_level",
+        help="Log level for thirdparty libraries, mxcube-server log level is always DEBUG ",
+        default="",
+    )
+
+    opt_parser.add_argument(
+        "-d",
         "--video-device",
         dest="video_device",
         help="Video device, defaults to: No device",
@@ -96,9 +103,8 @@ def main(test=False):
 
     cmdline_options = parse_args()
 
-    # Ping REDIS
-    db = redis.Redis()
     try:
+        db = redis.Redis()
         db.ping()
     except redis.RedisError:
         print("No Redis server is running, exiting")
@@ -107,7 +113,7 @@ def main(test=False):
     try:
         mxcube = MXCUBEApplication()
         server = Server()
-        
+
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing teh main config files.
@@ -129,6 +135,7 @@ def main(test=False):
             cmdline_options.ra_timeout,
             cmdline_options.video_device,
             cmdline_options.log_file,
+            cmdline_options.log_level,
             cfg,
         )
 

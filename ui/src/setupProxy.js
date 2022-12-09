@@ -5,7 +5,6 @@ module.exports = function(app) {
     '/mxcube/api',
     createProxyMiddleware({
       target: 'http://localhost:8081',
-      xfwd: true,
       ws: false
     })
   );
@@ -13,7 +12,7 @@ module.exports = function(app) {
     '/socket.io/*',
     createProxyMiddleware({
       target: 'http://localhost:8081',
-      ws: true
+      ws: false
     })
   );
 };
