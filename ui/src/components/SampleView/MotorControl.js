@@ -75,7 +75,7 @@ export default class MotorControl extends React.Component {
       <div>
         {this.getMotorComponents(3, 8)}
         <div className="col-sm-12">
-          {process.env.phaseControl ? phaseControl : null}
+          {process.env.REACT_APP_PHASECONTROL ? phaseControl : null}
         </div>
       </div>
     );

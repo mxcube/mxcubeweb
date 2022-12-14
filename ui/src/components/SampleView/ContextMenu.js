@@ -37,7 +37,7 @@ export default class ContextMenu extends React.Component {
     };
     let twoDPoints = [];
 
-    if (process.env.use2dCenteredPoints) {
+    if (process.env.REACT_APP_USE2DCENTEREDPOINTS) {
       twoDPoints = [{ text: 'divider', key: 4 },
         {
           text: 'Data Collection (Limited OSC)',

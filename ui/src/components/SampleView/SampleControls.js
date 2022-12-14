@@ -200,7 +200,7 @@ export default class SampleControls extends React.Component {
               />
               <span className="sample-control-label">3-click Centring</span>
             </li>
-            {process.env.focusControlOnCanvas
+            {process.env.REACT_APP_FOCUSCONTROLONCANVAS
               ? (
                 <li>
                   <OverlayTrigger
