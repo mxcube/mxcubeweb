@@ -51,7 +51,7 @@ export default class SampleImage extends React.Component {
     this.toggleGridVisibility = this.toggleGridVisibility.bind(this);
     this.canvas = {};
     this.drawGridPlugin = new DrawGridPlugin();
-    this.drawGridPlugin.setGridResultFormat(process.env.meshResultFormat);
+    this.drawGridPlugin.setGridResultFormat(process.env.REACT_APP_MESHRESULTFORMAT);
     this._keyPressed = null;
     this.gridStarted = false;
     this.girdOrigin = null;
