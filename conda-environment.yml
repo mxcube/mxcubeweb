@@ -2,6 +2,7 @@ name: mxcubeweb
 channels:
   - conda-forge
 dependencies:
+  - python >3.8,<3.11
   - openldap
   - pip
   - poetry
