@@ -2015,9 +2015,7 @@ class Queue(ComponentBase):
         """
         self.app.AUTO_MOUNT_SAMPLE = automount
 
-    def get_auto_mount_sample(
-        self,
-    ):
+    def get_auto_mount_sample(self):
         """
         :returns: Returns auto mount flag
         :rtype: bool
