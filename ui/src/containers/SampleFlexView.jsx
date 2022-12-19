@@ -40,7 +40,7 @@ class NewSampleFlexView extends React.Component {
 
   isCellSelected(cell) {
     let isCellSelected = false;
-    if (+this.props.filterOptions.cellFilter === cell) {
+    if (Number(this.props.filterOptions.cellFilter) === cell) {
       isCellSelected =  true;
     }
     return isCellSelected;
@@ -65,8 +65,7 @@ class NewSampleFlexView extends React.Component {
     const disableClasse =  this.props.cellSampleList(idx + 1)[0].length > 0 ?
       'has-sample' : 'empty-cell';
 
-    const disabled =  this.props.cellSampleList(idx + 1)[0].length > 0 ?
-    false : true;
+    const disabled =  this.props.cellSampleList(idx + 1)[0].length <= 0;
 
     return (
       <g 

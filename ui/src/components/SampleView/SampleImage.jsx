@@ -785,20 +785,16 @@ export default class SampleImage extends React.Component {
     }
 
     // Default to MJPEG
-    let result = (
-      <img
-        id="sample-img"
-        className="img"
-        src={source}
-        alt="SampleView"
-      />
-    );
-
     // if (format === 'MPEG1') {
     //  result = <canvas id="sample-img" className="img" />;
     // }
 
-    return result;
+    return <img
+        id="sample-img"
+        className="img"
+        src={source}
+        alt="SampleView"
+      />;
   }
 
   initJSMpeg() {

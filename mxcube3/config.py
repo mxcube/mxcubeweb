@@ -9,7 +9,7 @@ from mxcube3.core.models.configmodels import (
     UIPropertiesListModel,
     AppConfigModel,
     FlaskConfigModel,
-    MXCUBEAppConfigModel
+    MXCUBEAppConfigModel,
 )
 
 
@@ -21,7 +21,7 @@ class ConfigLoader:
             config = ruamel.yaml.load(f.read(), ruamel.yaml.RoundTripLoader)
             try:
                 model = schema.parse_obj(config)
-            except ValidationError as ex:
+            except ValidationError:
                 logging.getLogger("HWR").error(f"Validation error in {path}:")
                 logging.getLogger("HWR").exception("")
                 sys.exit(-1)

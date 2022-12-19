@@ -17,7 +17,7 @@ export default class ContextMenu extends React.Component {
   }
 
   menuOptions() {
-    const bespokeTaskNames = [
+    const bespokeTaskNames = new Set([
       "datacollection",
       "characterisation",
       "xrf",
@@ -26,10 +26,10 @@ export default class ContextMenu extends React.Component {
       "helical",
       "workflow",
       "interleaved"
-    ];
+    ]);
 
     const generalTaskNames = Object.keys(this.props.taskForm.defaultParameters).filter((tname) => (
-      !bespokeTaskNames.includes(tname)
+      !bespokeTaskNames.has(tname)
     ));
 
     const genericTasks = {
@@ -318,13 +318,13 @@ export default class ContextMenu extends React.Component {
           ...params,
           ...extraParams,
           prefix: sampleData.defaultPrefix,
-          name: name,
+          name,
           subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
           cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
           numRows: shape.gridData ? shape.gridData.numRows : 0,
           numCols: shape.gridData ? shape.gridData.numCols : 0
         },
-        type: type,
+        type,
       },
       sid
     );

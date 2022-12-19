@@ -1,3 +1,7 @@
+from mxcube3.server import Server
+from mxcube3.app import MXCUBEApplication
+from mxcube3.config import Config
+import argparse
 import sys
 import mock
 import os
@@ -13,11 +17,6 @@ from mxcubecore import HardwareRepository as HWR
 
 monkey.patch_all(thread=False)
 
-import argparse
-
-from mxcube3.config import Config
-from mxcube3.app import MXCUBEApplication
-from mxcube3.server import Server
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
@@ -119,9 +118,7 @@ def main(test=False):
         # without continuously editing teh main config files.
         # Note that the machinery was all there in the core alrady. rhfogh.
         HWR.init_hardware_repository(cmdline_options.hwr_directory)
-        config_path = HWR.get_hardware_repository().find_in_repository(
-            "mxcube-web"
-        )
+        config_path = HWR.get_hardware_repository().find_in_repository("mxcube-web")
 
         cfg = Config(config_path)
 
@@ -140,7 +137,7 @@ def main(test=False):
         )
 
         server.register_routes(mxcube)
-    except:
+    except Exception:
         traceback.print_exc()
         raise
 
@@ -148,6 +145,7 @@ def main(test=False):
         server.run()
     else:
         return server
+
 
 if __name__ == "__main__":
     main()

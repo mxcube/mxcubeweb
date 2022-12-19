@@ -2,7 +2,10 @@ from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.util.adapterutils import export
 from mxcube3.core.util.networkutils import RateLimited
 
-from mxcube3.core.models.adaptermodels import HOActuatorValueChangeModel, FloatValueModel
+from mxcube3.core.models.adaptermodels import (
+    HOActuatorValueChangeModel,
+    FloatValueModel,
+)
 
 
 class ActuatorAdapter(ActuatorAdapterBase):
@@ -28,7 +31,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
         try:
             ho.connect("valueChanged", self._value_change)
             ho.connect("stateChanged", self.state_change)
-        except BaseException:
+        except Exception:
             pass
 
     def _value_change(self, *args, **kwargs):
@@ -48,7 +51,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
         """
         try:
             self._ho.set_value(float(value.value))
-        except BaseException:
+        except Exception:
             raise
 
     @export

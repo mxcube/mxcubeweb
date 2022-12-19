@@ -8,6 +8,7 @@ from flask_security import SQLAlchemySessionUserDatastore
 
 Base = declarative_base()
 
+
 def init_db(path):
     engine = create_engine(f"sqlite:///{path}")
     db_session = scoped_session(
@@ -57,4 +58,3 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
                     user.roles.append(self.find_role(role))
 
         self.commit()
-

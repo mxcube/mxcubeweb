@@ -45,7 +45,7 @@ export default class SampleChangerSwitch extends React.Component {
 
 
   render() {
-    const showOvelay = this.state.showOvelay;
+    const {showOvelay} = this.state;
     let msgBgStyle = 'warning';
 
     if (this.props.data === 'READY') {

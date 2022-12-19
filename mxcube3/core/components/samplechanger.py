@@ -64,8 +64,8 @@ class SampleChanger(ComponentBase):
                 "state": state,
                 "tasks": [],
                 "type": "Sample",
-                'cell_no': s.get_cell_no() if hasattr(s, 'get_cell_no') else '',
-                'puck_no': s.get_basket_no() if hasattr(s, 'get_basket_no') else ''
+                "cell_no": s.get_cell_no() if hasattr(s, "get_cell_no") else "",
+                "puck_no": s.get_basket_no() if hasattr(s, "get_basket_no") else "",
             }
             order.append(coords)
             samplesByCoords[coords] = sample_data["sampleID"]
@@ -312,7 +312,7 @@ class SampleChanger(ComponentBase):
     def get_global_state(self):
         try:
             return HWR.beamline.sample_changer_maintenance.get_global_state()
-        except:
+        except Exception:
             return "OFFLINE", "OFFLINE", "OFFLINE"
 
     def get_initial_state(self):
@@ -334,7 +334,7 @@ class SampleChanger(ComponentBase):
 
         try:
             state = HWR.beamline.sample_changer.get_status().upper()
-        except:
+        except Exception:
             state = "OFFLINE"
 
         initial_state = {
@@ -401,7 +401,9 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                 res = mxcube.sample_changer.mount_sample_clean_up(sample)
             except RuntimeError:
                 res = False
-            logging.getLogger("user_level_log").info("Sample loading res: %s" %str(res))
+            logging.getLogger("user_level_log").info(
+                "Sample loading res: %s" % str(res)
+            )
 
             if res == False:
                 # WARNING: explicit test of False return value.
@@ -470,7 +472,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                         )
                     else:
                         raise RuntimeError("Could not center sample")
-            except BaseException:
+            except Exception:
                 import traceback
 
                 log.info("centring did not pass %s" % traceback.format_exc())

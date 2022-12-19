@@ -10,6 +10,7 @@ from mxcube3.core.models.adaptermodels import HOModel, HOActuatorModel
 
 class AdapterBase:
     """Hardware Object Adapter Base class"""
+
     ATTRIBUTES = []
     METHODS = []
 
@@ -52,7 +53,9 @@ class AdapterBase:
         try:
             self.ho.pydantic_model[cmd_name].validate(args)
         except pydantic.ValidationError:
-            logging.getLogger("MX3.HWR").exception(f"Error when validating input {args} for command {cmd_name}")
+            logging.getLogger("MX3.HWR").exception(
+                f"Error when validating input {args} for command {cmd_name}"
+            )
 
         task = gevent.spawn(self._ho.execute_exported_command, cmd_name, args)
         task.call_args = {"cmd_name": cmd_name, "value": args}
@@ -74,21 +77,21 @@ class AdapterBase:
             self.app.server.emit(
                 "hardware_object_command_return",
                 {"cmd_name": t.call_args["cmd_name"], "value": value},
-                namespace="/hwr"
+                namespace="/hwr",
             )
 
     def _command_exception(self, t):
         self.app.server.emit(
             "hardware_object_command_error",
             {"cmd_name": t.call_args["cmd_name"], "value": t.exception},
-            namespace="/hwr"
+            namespace="/hwr",
         )
 
     @property
     def adapter_type(self):
         """
         Returns:
-            (str): The data type of the value 
+            (str): The data type of the value
         """
         return self._type
 
@@ -114,7 +117,7 @@ class AdapterBase:
     # Abstract method
     def msg(self):
         """
-        Returns a message describing the current state. should be used to communicate 
+        Returns a message describing the current state. should be used to communicate
         details of the state to the user.
         Returns:
             (str): The message string.
@@ -150,7 +153,7 @@ class AdapterBase:
         return {
             "args": pydantic.create_model(attr.__name__, **input_dict),
             "return": pydantic.create_model(attr.__name__, **output_dict),
-            "signature": list(input_dict.keys())
+            "signature": list(input_dict.keys()),
         }
 
     def _pydantic_model_for_command(self, cmd_name):
@@ -163,9 +166,9 @@ class AdapterBase:
         exported_methods = {}
 
         # Get exported attributes from underlaying HardwareObject
-        if self._ho.exported_attributes:        
+        if self._ho.exported_attributes:
             exported_methods = self._ho.exported_attributes
-        
+
         for method_name in self.METHODS:
             attr = getattr(self, method_name, None)
 
@@ -173,7 +176,7 @@ class AdapterBase:
                 model = self._model_from_typehint(attr)
                 exported_methods[method_name] = {
                     "signature": model["signature"],
-                    "schema": model["args"].schema()
+                    "schema": model["args"].schema(),
                 }
 
         return exported_methods
@@ -225,7 +228,7 @@ class AdapterBase:
                 "available": self.available(),
                 "readonly": self.read_only(),
                 "commands": self.commands(),
-                "attributes": self.attributes()
+                "attributes": self.attributes(),
             }
 
         except Exception as ex:
@@ -241,7 +244,7 @@ class AdapterBase:
                 "available": self.available(),
                 "readonly": False,
                 "commands": {},
-                "attributes": {}
+                "attributes": {},
             }
 
             logging.getLogger("MX3.HWR").exception(

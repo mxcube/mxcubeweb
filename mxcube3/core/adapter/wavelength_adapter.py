@@ -1,7 +1,10 @@
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.util.networkutils import RateLimited
 
-from mxcube3.core.models.adaptermodels import FloatValueModel, HOActuatorValueChangeModel
+from mxcube3.core.models.adaptermodels import (
+    FloatValueModel,
+    HOActuatorValueChangeModel,
+)
 
 
 class WavelengthAdapter(ActuatorAdapterBase):
@@ -21,7 +24,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
         try:
             ho.connect("energyChanged", self._value_change)
             ho.connect("stateChanged", self.state_change)
-        except BaseException:
+        except Exception:
             pass
 
     @RateLimited(6)
@@ -43,7 +46,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
         try:
             self._ho.set_wavelength(float(value.value))
             return self.get_value()
-        except BaseException:
+        except Exception:
             raise
 
     def _get_value(self) -> FloatValueModel:
@@ -71,7 +74,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
     def stop(self):
         """
         Stop the execution.
-       """
+        """
         self._ho.abort()
 
     def limits(self):

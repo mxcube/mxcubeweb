@@ -18,7 +18,7 @@ class FluxAdapter(ActuatorAdapterBase):
 
         try:
             ho.connect("valueChanged", self._value_change)
-        except BaseException:
+        except Exception:
             pass
 
     @RateLimited(6)
@@ -38,7 +38,7 @@ class FluxAdapter(ActuatorAdapterBase):
         try:
             # value = self._ho.current_flux
             value = "{:.2E}".format(Decimal(self._ho.get_value()))
-        except BaseException:
+        except Exception:
             value = "0"
 
         return value

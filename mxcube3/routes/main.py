@@ -1,8 +1,7 @@
 import logging
 
-from flask import Blueprint, jsonify, session
+from flask import Blueprint, jsonify
 from spectree import Response
-from flask_login import current_user
 
 from mxcube3 import version
 from mxcube3.core.models.generic import VersionModel
@@ -31,28 +30,21 @@ def init_route(app, server, url_prefix):
 
     @bp.route("/uiproperties")
     @server.restrict
-    @server.validate(
-        resp=Response(HTTP_200=UIPropertiesListModel)
-    )
+    @server.validate(resp=Response(HTTP_200=UIPropertiesListModel))
     def get_ui_properties():
         return app.get_ui_properties()
 
     @bp.route("/version")
     @server.restrict
-    @server.validate(
-        resp=Response(HTTP_200=VersionModel)
-    )
+    @server.validate(resp=Response(HTTP_200=VersionModel))
     def mxcube_version():
         return jsonify({"version": version.__version__})
 
     @bp.route("/mode")
     @server.restrict
-    @server.validate(
-        resp=Response(HTTP_200=ModeEnumModel)
-    )
+    @server.validate(resp=Response(HTTP_200=ModeEnumModel))
     def mxcube_mode():
         return jsonify({"mode": app.CONFIG.app.mode})
-
 
     @server.flask.before_request
     def before_request():

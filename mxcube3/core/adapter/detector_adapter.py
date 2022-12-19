@@ -1,5 +1,4 @@
 from mxcube3.core.adapter.adapter_base import AdapterBase
-from mxcube3.core.adapter.motor_adapter import MotorAdapter
 
 
 class DetectorAdapter(AdapterBase):

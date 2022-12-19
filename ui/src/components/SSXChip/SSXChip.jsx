@@ -389,7 +389,7 @@ export default class SSXChip extends React.Component {
     });
 
     this.freeFormCanvas.on('mouse:move', (event) => {
-      if (!this.isDown && !event.e.altKey) return;
+      if (!this.isDown && !event.e.altKey) {return;}
 
       const mouse = this.freeFormCanvas.getPointer(event);
       const rect = this.freeFormCanvas.getActiveObject(); 

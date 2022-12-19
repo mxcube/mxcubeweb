@@ -245,7 +245,7 @@ Mesh = connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+  const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,

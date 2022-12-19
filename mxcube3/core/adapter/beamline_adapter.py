@@ -85,7 +85,7 @@ class _BeamlineAdapter:
             if isinstance(value, str) and "," in value:
                 try:
                     limits[key] = list(map(float, _limits[key].split(",")))
-                except BaseException:
+                except Exception:
                     msg = "[BEAMLINE_ADAPTER] Could not get limits for %s," % key
                     msg += " using -10000, 10000"
                     logging.getLogger("MX3.HWR").info(msg)

@@ -4,7 +4,9 @@ from typing import List, Dict, Optional
 
 
 class FlaskConfigModel(BaseModel):
-    SECRET_KEY: str = Field(b"o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c", description="Flask secret key")
+    SECRET_KEY: str = Field(
+        b"o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c", description="Flask secret key"
+    )
     SESSION_TYPE: str = Field("redis", description="Flask session type")
     SESSION_KEY_PREFIX: str = Field("mxcube:session:", description="Session prefix")
     DEBUG: bool = Field(False, description="")
@@ -13,6 +15,7 @@ class FlaskConfigModel(BaseModel):
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
     SECURITY_TRACKABLE: bool = Field(True, description="")
     USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
+
 
 class UIComponentModel(BaseModel):
     label: str
@@ -45,17 +48,18 @@ class UserManagerUserConfigModel(BaseModel):
 class UserManagerConfigModel(BaseModel):
     class_name: str = Field(
         "UserManager", description="UserManager class", alias="class"
-        )
+    )
     inhouse_is_staff: bool = Field(
-        True,
-        description="Treat users defined as inhouse in session.xml as staff"
+        True, description="Treat users defined as inhouse in session.xml as staff"
     )
     users: List[UserManagerUserConfigModel]
 
+
 class ModeEnum(str, Enum):
-    SSX_INJECTOR = 'SSX-INJECTOR'
-    SSX_CHIP = 'SSX-CHIP'
-    OSC = 'OSC'
+    SSX_INJECTOR = "SSX-INJECTOR"
+    SSX_CHIP = "SSX-CHIP"
+    OSC = "OSC"
+
 
 class MXCUBEAppConfigModel(BaseModel):
     VIDEO_FORMAT: str = Field("MPEG1", description="Video format MPEG1 or MJPEG")
@@ -65,11 +69,11 @@ class MXCUBEAppConfigModel(BaseModel):
     ui_properties: Dict[str, UIPropertiesModel] = {}
     adapter_properties: List = []
 
+
 class ModeEnumModel(BaseModel):
     mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
+
 
 class AppConfigModel(BaseModel):
     server: FlaskConfigModel
     mxcube: MXCUBEAppConfigModel
-
-

@@ -71,16 +71,12 @@ class SampleView(ComponentBase):
         self._click_count += 1
 
     def centring_remove_current_point(self):
-        from mxcube3.routes import signals
-
         if self._centring_point_id:
             HWR.beamline.sample_view.delete_shape(self._centring_point_id)
             self._emit_shapes_updated()
             self._centring_point_id = None
 
     def centring_add_current_point(self, *args):
-        from mxcube3.routes import signals
-
         shape = HWR.beamline.sample_view.get_shape(self._centring_point_id)
 
         # There is no current centered point shape when the centring is done
@@ -103,8 +99,6 @@ class SampleView(ComponentBase):
             self._centring_point_id = None
 
     def centring_update_current_point(self, motor_positions, x, y):
-        from mxcube3.routes import signals
-
         point = HWR.beamline.sample_view.get_shape(self._centring_point_id)
 
         if point:
@@ -442,7 +436,7 @@ class SampleView(ComponentBase):
             logging.getLogger("user_level_log").info("User canceled centring")
             HWR.beamline.diffractometer.cancel_centring_method()
             self.centring_remove_current_point()
-        except:
+        except Exception:
             logging.getLogger("MX3.HWR").warning("Canceling centring failed")
 
     def centring_handle_click(self, x, y):

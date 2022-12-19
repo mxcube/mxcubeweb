@@ -80,13 +80,9 @@ export class SampleGridTableItem extends React.Component {
       </OverlayTrigger>
     );
 
-    let content = (
-      <div className="samples-item-controls-container">
+    return <div className="samples-item-controls-container">
         {pickButton}
-      </div>
-    );
-
-    return content;
+      </div>;
   }
 
 

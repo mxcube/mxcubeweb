@@ -1,6 +1,5 @@
 import logging
 import traceback
-from flask_login import current_user
 
 
 class MX3LoggingHandler(logging.handlers.BufferingHandler):

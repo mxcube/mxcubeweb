@@ -3,7 +3,11 @@ import logging
 from enum import Enum
 
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcube3.core.models.adaptermodels import NStateModel, HOActuatorValueChangeModel, StrValueModel
+from mxcube3.core.models.adaptermodels import (
+    NStateModel,
+    HOActuatorValueChangeModel,
+    StrValueModel,
+)
 
 
 class BeamlineActionAdapter(ActuatorAdapterBase):
@@ -28,9 +32,10 @@ class BeamlineActionAdapter(ActuatorAdapterBase):
 
     def commands(self):
         method_list = [
-            attribute for attribute in dir(self._ho.__class__) if
-            callable(getattr(self._ho.__class__, attribute)) and
-            attribute.startswith('_') is False
+            attribute
+            for attribute in dir(self._ho.__class__)
+            if callable(getattr(self._ho.__class__, attribute))
+            and attribute.startswith("_") is False
         ]
 
         return method_list
@@ -44,7 +49,7 @@ class BeamlineActionAdapter(ActuatorAdapterBase):
     def msg(self):
         try:
             msg = self._ho.get_value().name
-        except BaseException:
+        except Exception:
             msg = "---"
             logging.getLogger("MX3.HWR").error(
                 "Failed to get beamline attribute message"

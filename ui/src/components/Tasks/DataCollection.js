@@ -288,8 +288,8 @@ class DataCollection extends React.Component {
 
 DataCollection = reduxForm({
   form: 'datacollection',
-  validate: validate,
-  warn: warn
+  validate,
+  warn
 })(DataCollection);
 
 const selector = formValueSelector('datacollection');
@@ -313,7 +313,7 @@ DataCollection = connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const limits = state.taskForm.defaultParameters[type.toLowerCase()].limits;
+  const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
     path: `${state.login.rootPath}/${subdir}`,

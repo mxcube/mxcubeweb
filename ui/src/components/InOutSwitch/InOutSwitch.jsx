@@ -82,7 +82,7 @@ export default class InOutSwitch extends React.Component {
 
 
   renderLabel() {
-    const showLabelOvelay = this.state.showLabelOvelay;
+    const {showLabelOvelay} = this.state;
     let optionsLabel = (
       <Badge
         bg="secondary"
@@ -116,7 +116,7 @@ export default class InOutSwitch extends React.Component {
   }
 
   render() {
-    const showValueOvelay = this.state.showValueOvelay;
+    const {showValueOvelay} = this.state;
     let msgBgStyle = 'warning';
     if (this.props.data.value === this.props.onText) {
       msgBgStyle = 'success';

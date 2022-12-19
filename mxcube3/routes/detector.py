@@ -1,6 +1,6 @@
-from pathlib import Path
 from flask import Blueprint, jsonify
 from mxcube3.core.models.generic import PathModel, Response
+
 
 def init_route(app, server, url_prefix):
     bp = Blueprint("detector", __name__, url_prefix=url_prefix)
@@ -23,9 +23,8 @@ def init_route(app, server, url_prefix):
     @bp.route("/display_image/", methods=["GET"])
     @server.restrict
     @server.validate(resp=Response(HTTP_200=""))
-    def display_image(query:PathModel):
+    def display_image(query: PathModel):
         print(f"adxv display {str(query.path)}")
         return ""
-
 
     return bp

@@ -13,7 +13,7 @@ class HOModel(BaseModel):
         True, description="True if the object can only be read (not manipluated)"
     )
     attributes: dict = Field({}, description="Data attributes")
-    commands: Union[dict, list] = Field({},description="Available methods")
+    commands: Union[dict, list] = Field({}, description="Available methods")
 
     class Config:
         extra: "forbid"

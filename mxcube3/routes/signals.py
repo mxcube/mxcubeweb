@@ -7,7 +7,6 @@ from mxcube3 import mxcube
 from flask import Response
 
 from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
-from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcube3.core.components.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
@@ -15,16 +14,13 @@ from mxcube3.core.components.queue import READY, RUNNING, FAILED, COLLECTED, WAR
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore import queue_entry as qe
 
-from mxcube3.core.util.convertutils import to_camel
 from mxcube3.core.util.networkutils import RateLimited
 
 from mxcubecore import HardwareRepository as HWR
 
 
 def last_queue_node():
-    node = HWR.beamline.queue_manager._current_queue_entries[
-        -1
-    ].get_data_model()
+    node = HWR.beamline.queue_manager._current_queue_entries[-1].get_data_model()
 
     # Reference collections are orphans, the node we want is the
     # characterisation not the reference collection itself
@@ -225,7 +221,7 @@ def get_task_state(entry):
 
     try:
         limsres = HWR.beamline.lims.lims_rest.get_dc(lims_id)
-    except BaseException:
+    except Exception:
         limsres = {}
 
     try:
@@ -256,7 +252,7 @@ def update_task_result(entry):
 
     try:
         limsres = HWR.beamline.lims_rest.get_dc(lims_id)
-    except BaseException:
+    except Exception:
         limsres = {}
 
     try:
@@ -397,7 +393,7 @@ def collect_oscillation_failed(
     if not mxcube.queue.is_interleaved(node["node"]):
         try:
             HWR.beamline.lims_rest.get_dc(lims_id)
-        except BaseException:
+        except Exception:
             pass
 
         msg = {
@@ -647,9 +643,7 @@ def beamline_action_failed(name):
 
 
 def safety_shutter_state_changed(values):
-    ho = BeamlineAdapter(HWR.beamline).get_object_by_role(
-        "safety_shutter"
-    )
+    ho = BeamlineAdapter(HWR.beamline).get_object_by_role("safety_shutter")
     data = ho.dict()
     try:
         server.emit("beamline_value_change", data, namespace="/hwr")

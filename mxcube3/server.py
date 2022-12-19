@@ -4,7 +4,6 @@ import signal
 import atexit
 import os
 import time
-from datetime import timedelta
 
 import gevent
 
@@ -64,15 +63,13 @@ class Server:
             __name__,
             static_folder=cmdline_options.static_folder,
             static_url_path="",
-            template_folder=template_dir
+            template_folder=template_dir,
         )
         Server.flask.wsgi_app = ProxyFix(Server.flask.wsgi_app)
         Server.flask.config.from_object(cfg.flask)
         Server.flask.register_error_handler(Exception, Server.exception_handler)
 
-        db_session = init_db(
-            cfg.flask.USER_DB_PATH
-        )
+        db_session = init_db(cfg.flask.USER_DB_PATH)
         Server.user_datastore = UserDatastore(
             db_session, User, Role, message_model=Message
         )
@@ -121,13 +118,12 @@ class Server:
                 if not hasattr(function, "tags"):
                     function.tags = [bp.name.title().replace("_", " ")]
 
-
     @staticmethod
     def register_routes(mxcube):
         from mxcube3.routes.beamline import init_route as init_beamline_route
         from mxcube3.routes.detector import init_route as init_detector_route
         from mxcube3.routes.diffractometer import (
-            init_route as init_diffractometer_route
+            init_route as init_diffractometer_route,
         )
         from mxcube3.routes.lims import init_route as init_lims_route
         from mxcube3.routes.log import init_route as init_log_route
@@ -154,33 +150,19 @@ class Server:
             init_diffractometer_route, mxcube, f"{url_root_prefix}/diffractometer"
         )
 
-        Server._register_route(
-            init_lims_route, mxcube, f"{url_root_prefix}/lims"
-        )
+        Server._register_route(init_lims_route, mxcube, f"{url_root_prefix}/lims")
 
-        Server._register_route(
-            init_log_route, mxcube, f"{url_root_prefix}/log"
-        )
+        Server._register_route(init_log_route, mxcube, f"{url_root_prefix}/log")
 
-        Server._register_route(
-            init_login_route, mxcube, f"{url_root_prefix}/login"
-        )
+        Server._register_route(init_login_route, mxcube, f"{url_root_prefix}/login")
 
-        Server._register_route(
-            init_main_route, mxcube, f"{url_root_prefix}"
-        )
+        Server._register_route(init_main_route, mxcube, f"{url_root_prefix}")
 
-        Server._register_route(
-            init_mockups_route, mxcube, f"{url_root_prefix}/mockups"
-        )
+        Server._register_route(init_mockups_route, mxcube, f"{url_root_prefix}/mockups")
 
-        Server._register_route(
-            init_queue_route, mxcube, f"{url_root_prefix}/queue"
-        )
+        Server._register_route(init_queue_route, mxcube, f"{url_root_prefix}/queue")
 
-        Server._register_route(
-            init_ra_route, mxcube, f"{url_root_prefix}/ra"
-        )
+        Server._register_route(init_ra_route, mxcube, f"{url_root_prefix}/ra")
 
         Server._register_route(
             init_sampleview_route, mxcube, f"{url_root_prefix}/sampleview"

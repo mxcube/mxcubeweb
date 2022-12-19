@@ -23,7 +23,7 @@ class Beamline(ComponentBase):
                     beamInfo.connect(beamInfo, sig, signals.beam_changed)
             else:
                 logging.getLogger("MX3.HWR").error("beam_info is not defined")
-        except Exception as ex:
+        except Exception:
             msg = "error connecting to beamline_adapter/beam_info hardware object "
             msg += "signals"
             logging.getLogger("MX3.HWR").exception(msg)
@@ -31,8 +31,10 @@ class Beamline(ComponentBase):
 
             actions = HWR.beamline.beamline_actions
             if actions is not None:
-                cmds = HWR.beamline.beamline_actions.get_commands() +\
-                    HWR.beamline.beamline_actions.get_annotated_commands()
+                cmds = (
+                    HWR.beamline.beamline_actions.get_commands()
+                    + HWR.beamline.beamline_actions.get_annotated_commands()
+                )
                 for cmd in cmds:
                     cmd.connect("commandBeginWaitReply", signals.beamline_action_start)
                     cmd.connect("commandReplyArrived", signals.beamline_action_done)
@@ -42,7 +44,7 @@ class Beamline(ComponentBase):
                 logging.getLogger("MX3.HWR").error(
                     "beamline_actions hardware object is not defined"
                 )
-        except Exception as ex:
+        except Exception:
             msg = "error connecting to beamline actions hardware object signals"
             logging.getLogger("MX3.HWR").exception(msg)
 
@@ -165,7 +167,7 @@ class Beamline(ComponentBase):
             "scale": scale,
             "videoSizes": video_sizes,
             "videoHash": HWR.beamline.sample_view.camera.stream_hash,
-            "videoURL": self.app.CONFIG.app.VIDEO_STREAM_URL
+            "videoURL": self.app.CONFIG.app.VIDEO_STREAM_URL,
         }
 
         data.update(beam_info_dict)
@@ -232,12 +234,16 @@ class Beamline(ComponentBase):
                         "name": cmd_name,
                         "username": cmd_object.name(),
                         "state": READY,
-                        "arguments": beamline_actions.exported_attributes[cmd_name]["signature"],
+                        "arguments": beamline_actions.exported_attributes[cmd_name][
+                            "signature"
+                        ],
                         "argument_type": "JSONSchema",
-                        "schema": beamline_actions.exported_attributes[cmd_name]["schema"],
+                        "schema": beamline_actions.exported_attributes[cmd_name][
+                            "schema"
+                        ],
                         "messages": [],
                         "type": "JSONSchema",
-                        "data": ""
+                        "data": "",
                     }
                 )
 
