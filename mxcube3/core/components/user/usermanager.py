@@ -117,6 +117,8 @@ class BaseUserManager(ComponentBase):
             if _u.is_authenticated and _u.in_control:
                 if HWR.beamline.lims.loginType.lower() != "user":
                     self.app.lims.select_proposal(self.app.lims.get_proposal(_u))
+                elif _u.selected_proposal is not None:
+                    self.app.lims.select_proposal(_u.selected_proposal)
 
     def handle_disconnect(self, username):
         time.sleep(120)
@@ -315,12 +317,17 @@ class BaseUserManager(ComponentBase):
         _u = user_datastore.find_user(username=username)
 
         if not _u:
+            if HWR.beamline.lims.loginType.lower() != "user":
+                selected_proposal = user
+            else:
+                selected_proposal = None
+
             user_datastore.create_user(
                 username=username,
                 password=flask_security.hash_password("password"),
                 nickname=user,
                 session_id=sid,
-                selected_proposal=user,
+                selected_proposal=selected_proposal,
                 limsdata=json.dumps(lims_data),
                 roles=self._get_configured_roles(user),
             )
