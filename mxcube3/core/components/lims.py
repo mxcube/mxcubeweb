@@ -351,6 +351,10 @@ class Lims(ComponentBase):
                 ftype = HWR.beamline.detector.get_property("file_suffix")
                 self.app.INITIAL_FILE_LIST = fsutils.scantree(root_path, [ftype])
 
+            # save selected proposal in users db
+            current_user.selected_proposal = proposal
+            self.app.usermanager.update_user(current_user)
+
             logging.getLogger("user_log").info("[LIMS] Proposal selected.")
 
             return True
