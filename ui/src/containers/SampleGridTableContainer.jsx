@@ -164,6 +164,10 @@ class SampleGridTableContainer extends React.Component {
    */
   checkForOverlap(el1, el2) {
     let result = false;
+    
+    if (el2 === null || el1 === null) {
+      return false;
+    }
     const bounds1 = el1.getBoundingClientRect();
     const bounds2 = el2.getBoundingClientRect();
 
@@ -997,6 +1001,7 @@ class SampleGridTableContainer extends React.Component {
           :
           null
         }
+        <div className="selection-rubber-band" id="selectionRubberBand" />
         {this.props.viewMode.mode == 'Graphical View'?
           (
           <Row
@@ -1006,11 +1011,10 @@ class SampleGridTableContainer extends React.Component {
             onMouseMove={this.onMouseMove}
             xs="auto"
           >
-            <div className="selection-rubber-band" id="selectionRubberBand" />
             <SampleFlexView
               cellSampleList={this.getSampleListBydCell}
             />            
-            <Col sm={7}>
+            <Col sm>
               {this.getSampleTable(this.props)}
             </Col>
 
@@ -1025,7 +1029,6 @@ class SampleGridTableContainer extends React.Component {
               onMouseMove={this.onMouseMove}
               xs="auto"
             >
-              <div className="selection-rubber-band" id="selectionRubberBand" />
               {/* if nb of puck is <= to 3 we order Cell Table by  pair on right Col and odd on Left */}
               {nb_puck <= 3 ?
                 <>
