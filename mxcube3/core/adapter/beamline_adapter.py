@@ -39,15 +39,11 @@ class _BeamlineAdapter:
             )
 
     def wf_parameters_needed(self, params):
-        for val in params:
-            print ('-->', val)
         self.app.server.emit(
             "workflowParametersDialog", params, broadcast=True, namespace="/hwr"
         )
 
     def gphl_wf_parameters_needed(self, params):
-        for val in params:
-            print ('-->', val)
         self.app.server.emit(
             "gphlWorkflowParametersDialog", params, broadcast=True, namespace="/hwr"
         )
