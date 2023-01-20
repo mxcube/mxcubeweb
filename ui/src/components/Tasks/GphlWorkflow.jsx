@@ -124,11 +124,21 @@ GphlWorkflow = connect(state => {
   const strategy_name = selector(state, 'strategy_name');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
 
+  let fname = '';
+
+  if (state.taskForm.sampleID) {
+    fname = state.taskForm.taskData.parameters.fileName;
+  } else {
+    const prefix = selector(state, 'prefix');
+    fname = `${prefix}_[RUN#]_[IMG#]`;
+  }
+
   const { type } = state.taskForm.taskData;
   const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
+    filename: fname,
     wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: limits,
     beamline: state.beamline,
