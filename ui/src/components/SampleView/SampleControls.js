@@ -174,6 +174,7 @@ export default class SampleControls extends React.Component {
                 title="Take snapshot"
                 className="fas fa-camera sample-control"
                 onClick={this.takeSnapShot}
+                target="_blank"
                 download
               />
               <span className="sample-control-label">Snapshot</span>
