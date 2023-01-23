@@ -65,10 +65,23 @@ export default class SampleControls extends React.Component {
   }
 
   takeSnapShot() {
+    /* eslint-disable unicorn/consistent-function-scoping */
+    function imageEpolog(props) {
+      const sampleID = props.current.sampleID;
+
+      if (sampleID in props.sampleList)
+      {
+        return props.sampleList[sampleID].sampleName;
+      }
+
+      /* handle the case when sample is not mounted */
+      return "no-sample";
+    }
+
     const img = this.doTakeSnapshot();
+    const filename = `${this.props.proposal}-${imageEpolog(this.props)}.jpeg`;
+
     document.querySelector('#downloadLink').href = img.mime + img.data;
-    const { sampleName } = this.props.sampleList[this.props.current.sampleID];
-    const filename = `${this.props.proposal}-${sampleName}.jpeg`;
     document.querySelector('#downloadLink').download = filename;
   }
 
