@@ -105,7 +105,6 @@ class HttpStreamer:
 class SampleView(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
-        self._sample_image = None
         self._click_count = 0
         self._click_limit = 3
         self._centring_point_id = None
@@ -236,59 +235,6 @@ class SampleView(ComponentBase):
         dm.connect("centringAccepted", self.centring_add_current_point)
         HWR.beamline.sample_view.connect("newGridResult", self.handle_grid_result)
         self._click_limit = int(HWR.beamline.click_centring_num_clicks or 3)
-
-    def new_sample_video_frame_received(self, img, width, height, *args, **kwargs):
-        """
-        Executed when a new image is received, update the centred positions
-        and set the gevent so the new image can be sent.
-        """
-        # Assume that we are gettign a qimage if we are not getting a str,
-        # to be able to handle data sent by hardware objects used in MxCuBE 2.x
-        # Passed as str in Python 2.7 and bytes in Python 3
-        if isinstance(img, str):
-            img = img
-        elif isinstance(img, bytes):
-            img = img
-        else:
-            rawdata = img.bits().asstring(img.numBytes())
-            strbuf = StringIO()
-            image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
-            (r, g, b, a) = image.split()
-            image = PIL.Image.merge("RGB", (b, g, r))
-            image.save(strbuf, "JPEG")
-            img = strbuf.get_value()
-
-        self._sample_image = img
-
-        HWR.beamline.sample_view.camera.new_frame.set()
-        HWR.beamline.sample_view.camera.new_frame.clear()
-
-    def stream_video(self, camera):
-        """it just send a message to the client so it knows that there is a new
-        image. A HO is supplying that image
-        """
-        HWR.beamline.sample_view.camera.new_frame = gevent.event.Event()
-
-        try:
-            HWR.beamline.sample_view.camera.disconnect(
-                "imageReceived", self.new_sample_video_frame_received
-            )
-        except KeyError:
-            pass
-
-        HWR.beamline.sample_view.camera.connect(
-            "imageReceived", self.new_sample_video_frame_received
-        )
-
-        while True:
-            try:
-                camera.new_frame.wait()
-                yield (
-                    b"--frame\r\n"
-                    b"--!>\nContent-type: image/jpeg\n\n" + self._sample_image + b"\r\n"
-                )
-            except Exception:
-                pass
 
     def set_image_size(self, width, height):
         HWR.beamline.sample_view.camera.restart_streaming((width, height))
