@@ -19,10 +19,7 @@ def init_route(app, server, url_prefix):
         if app.CONFIG.app.VIDEO_FORMAT == "MPEG1":
             result = Response(status=200)
         else:
-            frame = app.sample_view.stream_video(HWR.beamline.sample_view.camera)
-            result = Response(
-                frame, mimetype='multipart/x-mixed-replace; boundary="!>"'
-            )
+            result = app.sample_view.http_streamer.get_response()
 
         return result
 
