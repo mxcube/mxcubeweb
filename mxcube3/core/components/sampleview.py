@@ -8,6 +8,8 @@ import inspect
 import PIL
 import gevent.event
 
+from flask import Response
+
 from io import StringIO
 import base64
 
@@ -27,13 +29,86 @@ SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None
 
 
+class HttpStreamer:
+    """
+    Implements 'MJPEG' streaming from the sample view camera.
+
+    Provides get_response() method, that creates a Response object,
+    that will stream JPEG images from the sample view camera,
+    in 'multipart' HTTP response format.
+    """
+    def __init__(self):
+        self._new_frame = gevent.event.Event()
+        self._sample_image = None
+        self._clients = 0
+
+    def _client_connected(self):
+        if self._clients == 0:
+            # first client connected,
+            # start listening to frames from sample camera
+            HWR.beamline.sample_view.camera.connect(
+                "imageReceived", self._new_frame_received
+            )
+
+        self._clients += 1
+
+    def _client_disconnected(self):
+        self._clients -= 1
+        if self._clients == 0:
+            # last client disconnected,
+            # disconnect from the sample camera
+            HWR.beamline.sample_view.camera.disconnect(
+                "imageReceived", self._new_frame_received
+            )
+
+    def _new_frame_received(self, img, width, height, *args, **kwargs):
+        if isinstance(img, str):
+            img = img
+        elif isinstance(img, bytes):
+            img = img
+        else:
+            rawdata = img.bits().asstring(img.numBytes())
+            strbuf = StringIO()
+            image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
+            (r, g, b, a) = image.split()
+            image = PIL.Image.merge("RGB", (b, g, r))
+            image.save(strbuf, "JPEG")
+            img = strbuf.get_value()
+
+        self._sample_image = img
+
+        # signal clients that there is a new frame available
+        self._new_frame.set()
+        self._new_frame.clear()
+
+    def get_response(self) -> Response:
+        """
+        build new Response object, that will send frames to the client
+        """
+        def frames():
+            while True:
+                self._new_frame.wait()
+                yield (
+                    b"--frame\r\n"
+                    b"--!>\nContent-type: image/jpeg\n\n" + self._sample_image + b"\r\n"
+                )
+
+        self._client_connected()
+
+        response = Response(frames(), mimetype='multipart/x-mixed-replace; boundary="!>"')
+        # keep track of when client stops reading the stream
+        response.call_on_close(self._client_disconnected)
+
+        return response
+
+
 class SampleView(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
-        self._sample_image = None
         self._click_count = 0
         self._click_limit = 3
         self._centring_point_id = None
+        self.http_streamer = HttpStreamer()
 
         enable_snapshots(
             HWR.beamline.collect, HWR.beamline.diffractometer, HWR.beamline.sample_view
@@ -160,59 +235,6 @@ class SampleView(ComponentBase):
         dm.connect("centringAccepted", self.centring_add_current_point)
         HWR.beamline.sample_view.connect("newGridResult", self.handle_grid_result)
         self._click_limit = int(HWR.beamline.click_centring_num_clicks or 3)
-
-    def new_sample_video_frame_received(self, img, width, height, *args, **kwargs):
-        """
-        Executed when a new image is received, update the centred positions
-        and set the gevent so the new image can be sent.
-        """
-        # Assume that we are gettign a qimage if we are not getting a str,
-        # to be able to handle data sent by hardware objects used in MxCuBE 2.x
-        # Passed as str in Python 2.7 and bytes in Python 3
-        if isinstance(img, str):
-            img = img
-        elif isinstance(img, bytes):
-            img = img
-        else:
-            rawdata = img.bits().asstring(img.numBytes())
-            strbuf = StringIO()
-            image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
-            (r, g, b, a) = image.split()
-            image = PIL.Image.merge("RGB", (b, g, r))
-            image.save(strbuf, "JPEG")
-            img = strbuf.get_value()
-
-        self._sample_image = img
-
-        HWR.beamline.sample_view.camera.new_frame.set()
-        HWR.beamline.sample_view.camera.new_frame.clear()
-
-    def stream_video(self, camera):
-        """it just send a message to the client so it knows that there is a new
-        image. A HO is supplying that image
-        """
-        HWR.beamline.sample_view.camera.new_frame = gevent.event.Event()
-
-        try:
-            HWR.beamline.sample_view.camera.disconnect(
-                "imageReceived", self.new_sample_video_frame_received
-            )
-        except KeyError:
-            pass
-
-        HWR.beamline.sample_view.camera.connect(
-            "imageReceived", self.new_sample_video_frame_received
-        )
-
-        while True:
-            try:
-                camera.new_frame.wait()
-                yield (
-                    b"--frame\r\n"
-                    b"--!>\nContent-type: image/jpeg\n\n" + self._sample_image + b"\r\n"
-                )
-            except Exception:
-                pass
 
     def set_image_size(self, width, height):
         HWR.beamline.sample_view.camera.restart_streaming((width, height))
