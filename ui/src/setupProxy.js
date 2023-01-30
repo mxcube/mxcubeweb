@@ -4,14 +4,14 @@ module.exports = function(app) {
   app.use(
     '/mxcube/api',
     createProxyMiddleware({
-      target: 'http://localhost:8081',
+      target: 'http://127.0.0.1:8081',
       ws: false
     })
   );
   app.use(
     '/socket.io/*',
     createProxyMiddleware({
-      target: 'http://localhost:8081',
+      target: 'http://127.0.0.1:8081',
       ws: false
     })
   );
