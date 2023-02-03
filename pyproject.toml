@@ -41,6 +41,9 @@ PyDispatcher = "^2.0.6"
 pytz = "^2022.6"
 tzlocal = "^4.2"
 mxcubecore = { git = "https://github.com/mxcube/mxcubecore.git", branch = "develop" }
+python-ldap = "3.3.1"
+py4j = "^0.10.9.7"
+f90nml = "^1.4.3"
 
 [tool.poetry.dev-dependencies]
 pylint = [ { version = "==2.13.9", python = "<=3.7.1" }, { version = "2.15.3", python = ">=3.8" } ]
