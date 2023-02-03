@@ -65,10 +65,10 @@ export function removeSamplesFromQueueAction(sampleIDList) {
   return { type: 'REMOVE_SAMPLES_FROM_QUEUE', sampleIDList };
 }
 
-export function setSampleAttribute(sampleID, attr, value) {
+export function setSampleAttribute(sampleIDList, attr, value) {
   return {
     type: 'SET_SAMPLE_ATTRIBUTE',
-    sampleID,
+    sampleIDList,
     attr,
     value,
   };
@@ -388,9 +388,8 @@ export function setEnabledSample(sampleIDList, value) {
             showErrorPanel(true, 'Server refused to set item enabled flag')
           );
         } else {
+          dispatch(setSampleAttribute(sampleIDList, 'checked', value));
           sampleIDList.forEach((sid) => {
-            dispatch(setSampleAttribute(sid, 'checked', value));
-
             // If sample is loaded by SC, set as current
             if (state.sampleChanger.loadedSample.address === sid && value) {
               dispatch(setCurrentSample(sid));
@@ -399,11 +398,10 @@ export function setEnabledSample(sampleIDList, value) {
             if (state.sampleChanger.loadedSample.address === sid && !value) {
               dispatch(setCurrentSample(''));
             }
-
-            if (!value && state.queue.queue.includes(sid)) {
-              dispatch(removeSamplesFromQueueAction([sid]));
-            }
           });
+          if (!value) {
+            dispatch(removeSamplesFromQueueAction(sampleIDList));
+          }
         }
       })
       .catch(() => queueLoading(false))

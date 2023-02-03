@@ -255,7 +255,7 @@ class ServerIO {
       }
 
       if (record.Signal === 'DisableSample') {
-        this.dispatch(setSampleAttribute(record.sampleID, 'checked', false));
+        this.dispatch(setSampleAttribute([record.sampleID], 'checked', false));
       } else {
         this.dispatch(setStatus(record.Signal));
       }

@@ -304,7 +304,10 @@ export default (state = INITIAL_STATE, action) => {
 
     case 'SET_SAMPLE_ATTRIBUTE': {
       const sampleList = { ...state.sampleList};
-      sampleList[action.sampleID][action.attr] = action.value;
+      action.sampleIDList.forEach((sid) => {
+        sampleList[sid][action.attr] = action.value;
+      });
+
       return { ...state, sampleList };
     }
     // Toggles a samples movable flag

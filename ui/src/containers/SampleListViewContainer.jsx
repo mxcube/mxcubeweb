@@ -342,7 +342,6 @@ class SampleListViewContainer extends React.Component {
 
     if (samplesToRemove.length > 0) {
       this.props.setEnabledSample(samplesToRemove, false);
-      // this.props.deleteSamplesFromQueue(samplesToRemove);
     }
     if (addSamples && samples.length > 0) { this.addSamplesToQueue(samples); }
   }
@@ -358,7 +357,6 @@ class SampleListViewContainer extends React.Component {
       }
     }
     this.props.setEnabledSample(samplesToRemove, false);
-    // this.props.deleteSamplesFromQueue(samplesToRemove);
   }
 
   /**
