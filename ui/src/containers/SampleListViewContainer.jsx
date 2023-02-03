@@ -38,6 +38,7 @@ import {
   addSamplesToQueue,
   sendStopQueue,
   deleteTask,
+  deleteTaskList
 } from '../actions/queue';
 
 import { showConfirmCollectDialog } from '../actions/queueGUI';
@@ -377,11 +378,8 @@ class SampleListViewContainer extends React.Component {
    * Removes all tasks of selected samples
    */
   removeSelectedTasks() {
-    for (const sampleID of Object.keys(this.props.selected)) {
-      this.props.sampleList[sampleID].tasks.forEach(() => {
-        this.props.deleteTask(sampleID, 0);
-      });
-    }
+    const selectedSamplesID = Object.keys(this.props.selected);
+    this.props.deleteTaskList(selectedSamplesID, 0);
   }
 
 
@@ -755,6 +753,7 @@ function mapDispatchToProps(dispatch) {
     deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
     setEnabledSample: (qidList, value) => dispatch(setEnabledSample(qidList, value)),
     deleteTask: (qid, taskIndex) => dispatch(deleteTask(qid, taskIndex)),
+    deleteTaskList: (sampleIDList, taskIndex) => dispatch(deleteTaskList(sampleIDList, taskIndex)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
     sendStopQueue: () => dispatch(sendStopQueue()),

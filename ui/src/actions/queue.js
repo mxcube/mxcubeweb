@@ -430,6 +430,33 @@ export function deleteTask(sampleID, taskIndex) {
   };
 }
 
+export function deleteTaskList(sampleIDList, taskIndex) {
+  return function (dispatch, getState) {
+    const state = getState();
+    // const itemPosList =[];
+    sampleIDList.forEach((sid) => {
+      state.sampleGrid.sampleList[sid].tasks.forEach((task) => {
+        // itemPosList.push([sid, tindex])
+        if (task.state === TASK_UNCOLLECTED) {
+          dispatch(queueLoading(true));
+          sendDeleteQueueItem([[sid, taskIndex]]).then((response) => {
+            if (response.status >= 400) {
+              dispatch(showErrorPanel(true, 'Server refused to delete task'));
+            } else {
+              dispatch(removeTaskAction(sid, taskIndex, task.queueID));
+            }
+          }).then(() => {
+            if (sampleIDList[sampleIDList.length -1] === sid) {
+              dispatch(queueLoading(false));
+            }
+          });
+        }
+
+      });
+    });
+  };
+}
+
 export function addTaskAction(tasks) {
   return { type: 'ADD_TASKS', tasks };
 }
