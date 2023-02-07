@@ -8,6 +8,7 @@ import {
   sendSelectProposal,
   hideProposalsForm,
 } from '../actions/login';
+import { hideTaskParametersForm } from '../actions/taskForm';
 import { setLoading } from '../actions/general';
 import Login from '../components/Login/Login';
 
@@ -34,6 +35,7 @@ function mapDispatchToProps(dispatch) {
     setLoading: bindActionCreators(setLoading, dispatch),
     selectProposal: bindActionCreators(selectProposal, dispatch),
     sendSelectProposal: bindActionCreators(sendSelectProposal, dispatch),
+    hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
     hideProposalsForm: bindActionCreators(hideProposalsForm, dispatch),
   };
 }
