@@ -12,6 +12,12 @@ def init_route(app, server, url_prefix):
         app.sample_changer.get_sample_list()
         return jsonify(app.lims.sample_list_get())
 
+    @bp.route("/sync_with_crims", methods=["GET"])
+    @server.require_control
+    @server.restrict
+    def sync_with_crims():
+        return app.sample_changer.sync_with_crims()
+
     @bp.route("/state", methods=["GET"])
     @server.restrict
     def get_sc_state():
