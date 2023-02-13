@@ -1,6 +1,6 @@
 import logging
 
-from flask import Blueprint, request, jsonify, make_response, redirect
+from flask import Blueprint, request, jsonify, make_response, redirect, session
 from flask_login import current_user
 
 from mxcube3.core.util import networkutils
@@ -45,6 +45,8 @@ def init_route(app, server, url_prefix):
             msg = "[LOGIN] User %s could not login (%s)" % (login_id, str(ex))
             logging.getLogger("MX3.HWR").info(msg)
             res = deny_access(str(ex))
+
+        session.permanent = True
 
         return res
 
