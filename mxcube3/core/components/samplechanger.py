@@ -350,6 +350,34 @@ class SampleChanger(ComponentBase):
 
         return initial_state
 
+    def sync_with_crims():
+        """
+        To be use mostly when Diffractometer is in plate mode
+        This retun a List of cristal dict available in Crims that have been Harvested  
+        With this user can visualize easier where the crystal are in Plate GUI  
+        """
+        xtal_list = []
+        try:
+            processing_plan = HWR.beamline.sample_changer.sync_with_crims()
+            for x in processing_plan.plate.xtal_list:
+                response = {
+                    "crystal_uuid": x.crystal_uuid,
+                    "row": x.row,
+                    "column": x.column,
+                    "shelf": x.shelf,
+                    "offset_x": x.offset_x,
+                    "offset_y": x.offset_y,
+                    "image_url": x.image_url,
+                    "image_date": x.image_date,
+                    "sample": x.sample
+                }
+                xtal_list.append(response)
+            res = {"xtal_list": xtal_list}
+            return res
+        except Exception:
+            logging.getLogger("MX3.HWR").exception("Could not get cristal List")
+            return {"xtal_list": xtal_list}
+
 
 def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     from mxcube3.routes import signals
