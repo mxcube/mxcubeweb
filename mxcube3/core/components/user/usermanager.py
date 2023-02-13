@@ -41,18 +41,8 @@ class BaseUserManager(ComponentBase):
         return getattr(flask_login.current_user, "in_control", False)
 
     def logged_in_users(self, exclude_inhouse=False):
-        users = [user["loginID"] for user in self.app.USERS.values()]
 
-        if exclude_inhouse:
-            if isinstance(HWR.beamline.session.in_house_users[0], tuple):
-                ih_users = [
-                    "%s%s" % (p, c) for (p, c) in HWR.beamline.session.in_house_users
-                ]
-            else:
-                ih_users = HWR.beamline.session.in_house_users
-            users = [user for user in users if user not in ih_users]
-
-        return users
+        return [_u.username for _u in User.query.all()]
 
     def get_user(self, username):
         user = None
@@ -306,6 +296,8 @@ class BaseUserManager(ComponentBase):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
         username = f"{user}-{str(uuid.uuid4())}"
+        if HWR.beamline.lims.loginType.lower() == "user":
+            username = f"{user}"
 
         # Make sure that the roles staff and incontrol always
         # exists
@@ -374,6 +366,9 @@ class UserManager(BaseUserManager):
         }
 
         _users = self.logged_in_users(exclude_inhouse=True)
+
+        if login_id in _users:
+            raise Exception("Login rejected, you are already logged in")
 
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):

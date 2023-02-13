@@ -52,7 +52,7 @@ class LoginComponent extends React.Component {
         { this.props.showProposalsForm ?
           <SelectProposal
             show
-            hide={this.props.hideTaskParametersForm}
+            hide={this.props.hideProposalsForm}
             data={this.props.data}
             selectedProposal={this.props.selectedProposal}
             selectProposal={this.props.selectProposal}
@@ -114,7 +114,7 @@ class LoginComponent extends React.Component {
                   <Button type="submit" size="lg" className="primary" >Sign in</Button>
                 </Col>
               </Row>
-              {(this.props.showError ? <Alert variant="danger"><h4>Login failed</h4></Alert> : '')}
+              {(this.props.showError ? <Alert variant="danger"><h4>{this.props.errorMessage}</h4></Alert> : '')}
             </Form>
           </Col>
         </Row>

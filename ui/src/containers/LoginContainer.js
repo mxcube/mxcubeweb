@@ -8,7 +8,6 @@ import {
   sendSelectProposal,
   hideProposalsForm,
 } from '../actions/login';
-import { hideTaskParametersForm } from '../actions/taskForm';
 import { setLoading } from '../actions/general';
 import Login from '../components/Login/Login';
 
@@ -22,6 +21,7 @@ function mapStateToProps(state) {
   return {
     loading: state.general.loading,
     showError: state.general.showErrorPanel,
+    errorMessage: state.general.errorMessage,
     showProposalsForm: state.login.showProposalsForm,
     data: state.login,
     selectedProposal: state.login.selectedProposal,
@@ -35,7 +35,6 @@ function mapDispatchToProps(dispatch) {
     setLoading: bindActionCreators(setLoading, dispatch),
     selectProposal: bindActionCreators(selectProposal, dispatch),
     sendSelectProposal: bindActionCreators(sendSelectProposal, dispatch),
-    hideTaskParametersForm: bindActionCreators(hideTaskParametersForm, dispatch),
     hideProposalsForm: bindActionCreators(hideProposalsForm, dispatch),
   };
 }
