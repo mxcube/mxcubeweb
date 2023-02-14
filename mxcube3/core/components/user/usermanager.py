@@ -40,9 +40,8 @@ class BaseUserManager(ComponentBase):
     def is_operator(self):
         return getattr(flask_login.current_user, "in_control", False)
 
-    def logged_in_users(self, exclude_inhouse=False):
-
-        return [_u.username for _u in User.query.all()]
+    def active_logged_in_users(self):
+        return [_u.username for _u in User.query.all() if _u.active]
 
     def get_user(self, username):
         user = None
@@ -365,7 +364,7 @@ class UserManager(BaseUserManager):
             "inhouse": inhouse,
         }
 
-        _users = self.logged_in_users(exclude_inhouse=True)
+        _users = self.active_logged_in_users()
 
         if login_id in _users:
             raise Exception("Login rejected, you are already logged in")
