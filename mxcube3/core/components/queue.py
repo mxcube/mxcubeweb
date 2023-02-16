@@ -59,8 +59,10 @@ class Queue(ComponentBase):
                     % path
                 )
                 path, run_number, image_number = (path, 0, 0)
-
-            prefix_path_dict[path] = run_number
+            if path in prefix_path_dict:
+                prefix_path_dict[path] = max(prefix_path_dict[path], run_number)
+            else:
+                prefix_path_dict[path] = run_number
 
         return prefix_path_dict
 
