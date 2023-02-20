@@ -15,7 +15,6 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def mockup_ready():
         logging.getLogger("HWR").info("[Routes] Called mockup ready")
-        print((app.mxcubecore.resolution.get_value()))
         return str(app.resolution.isReady())
 
     @bp.route("/newres/<int:newres>", methods=["PUT"])

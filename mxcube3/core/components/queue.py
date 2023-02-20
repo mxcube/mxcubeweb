@@ -713,7 +713,9 @@ class Queue(ComponentBase):
 
             elif isinstance(node, qmo.Characterisation):
                 result.append(self._handle_char(sample_node, node, include_lims_data))
-            elif isinstance(node, qmo.DataCollection):
+            elif (
+                node.__class__ is qmo.DataCollection
+            ):  # isinstance(node, qmo.DataCollection):
                 result.append(self._handle_dc(sample_node, node, include_lims_data))
             elif isinstance(node, qmo.Workflow):
                 result.append(self._handle_wf(sample_node, node, include_lims_data))
@@ -2291,135 +2293,6 @@ class Queue(ComponentBase):
 
         return {"QueueId": new_node, "Type": "Centring", "Params": params}
 
-    def get_default_dc_params(self):
-        """
-        returns the default values for an acquisition (data collection).
-        """
-        acq_parameters = HWR.beamline.get_default_acquisition_parameters()
-        ftype = HWR.beamline.detector.get_property("file_suffix")
-        ftype = ftype if ftype else ".?"
-
-        return {
-            "acq_parameters": {
-                "first_image": acq_parameters.first_image,
-                "num_images": acq_parameters.num_images,
-                "osc_start": acq_parameters.osc_start,
-                "osc_range": acq_parameters.osc_range,
-                "kappa": acq_parameters.kappa,
-                "kappa_phi": acq_parameters.kappa_phi,
-                "overlap": acq_parameters.overlap,
-                "exp_time": acq_parameters.exp_time,
-                "num_passes": acq_parameters.num_passes,
-                "resolution": acq_parameters.resolution,
-                "energy": acq_parameters.energy,
-                "transmission": acq_parameters.transmission,
-                "shutterless": acq_parameters.shutterless,
-                "detector_mode": acq_parameters.detector_mode,
-                "inverse_beam": False,
-                "take_dark_current": True,
-                "skip_existing_images": False,
-                "take_snapshots": True,
-                "helical": False,
-                "mesh": False,
-                "prefixTemplate": "{PREFIX}_{POSITION}",
-                "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
-            },
-            "limits": HWR.beamline.acquisition_limit_values,
-        }
-
-    def get_default_char_acq_params(self):
-        """
-        returns the default values for a characterisation acquisition.
-        TODO: implement as_dict in the qmo.AcquisitionParameters
-        """
-        acq_parameters = HWR.beamline.get_default_acquisition_parameters(
-            "characterisation"
-        )
-        ftype = HWR.beamline.detector.get_property("file_suffix")
-        ftype = ftype if ftype else ".?"
-        char_defaults = (
-            HWR.beamline.characterisation.get_default_characterisation_parameters().as_dict()
-        )
-
-        acq_defaults = {
-            "first_image": acq_parameters.first_image,
-            "num_images": acq_parameters.num_images,
-            "osc_start": acq_parameters.osc_start,
-            "osc_range": acq_parameters.osc_range,
-            "kappa": acq_parameters.kappa,
-            "kappa_phi": acq_parameters.kappa_phi,
-            "overlap": acq_parameters.overlap,
-            "exp_time": acq_parameters.exp_time,
-            "num_passes": acq_parameters.num_passes,
-            "resolution": acq_parameters.resolution,
-            "energy": acq_parameters.energy,
-            "transmission": acq_parameters.transmission,
-            "shutterless": False,
-            "detector_mode": acq_parameters.detector_mode,
-            "inverse_beam": False,
-            "take_dark_current": True,
-            "skip_existing_images": False,
-            "take_snapshots": True,
-            "prefixTemplate": "{PREFIX}_{POSITION}",
-            "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
-        }
-
-        char_defaults.update(acq_defaults)
-
-        return {"acq_parameters": char_defaults}
-
-    def get_default_mesh_params(self):
-        """
-        returns the default values for a mesh.
-        """
-        acq_parameters = HWR.beamline.get_default_acquisition_parameters("mesh")
-
-        return {
-            "acq_parameters": {
-                "first_image": acq_parameters.first_image,
-                "num_images": acq_parameters.num_images,
-                "osc_start": acq_parameters.osc_start,
-                "osc_range": acq_parameters.osc_range,
-                "kappa": acq_parameters.kappa,
-                "kappa_phi": acq_parameters.kappa_phi,
-                "overlap": acq_parameters.overlap,
-                "exp_time": acq_parameters.exp_time,
-                "num_passes": acq_parameters.num_passes,
-                "resolution": acq_parameters.resolution,
-                "energy": acq_parameters.energy,
-                "transmission": acq_parameters.transmission,
-                "shutterless": acq_parameters.shutterless,
-                "detector_mode": acq_parameters.detector_mode,
-                "inverse_beam": False,
-                "take_dark_current": True,
-                "skip_existing_images": False,
-                "take_snapshots": True,
-                "cell_counting": acq_parameters.cell_counting,
-                "cell_spacing": acq_parameters.cell_spacing,
-                "prefixTemplate": "{PREFIX}_{POSITION}",
-                "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
-            }
-        }
-
-    def get_default_xrf_parameters(self):
-        int_time = 5
-
-        try:
-            int_time = HWR.beamline.xrf_spectrum.get_property(
-                "default_integration_time", "5"
-            ).strip()
-            try:
-                int(int_time)
-            except ValueError:
-                pass
-
-        except Exception:
-            msg = "Failed to get object with role: xrf_spectrum. "
-            msg += "cannot get default values for XRF"
-            logging.getLogger("MX3.HWR").error(msg)
-
-        return {"exp_time": int_time}
-
     def get_default_task_parameters(self, task_name):
         acq_parameters = HWR.beamline.get_default_acquisition_parameters(
             task_name
@@ -2439,6 +2312,14 @@ class Queue(ComponentBase):
 
         schema = self.get_task_schema(data_model) if data_model else {}
 
+        if schema:
+            for parameter_group in schema.values():
+                for parameter_name, parameter_data in parameter_group[
+                    "properties"
+                ].items():
+                    if "default" in parameter_data:
+                        acq_parameters[parameter_name] = parameter_data["default"]
+
         return {
             "acq_parameters": {
                 **acq_parameters,
@@ -2449,7 +2330,8 @@ class Queue(ComponentBase):
                 "helical": False,
                 "mesh": False,
                 "prefixTemplate": "{PREFIX}_{POSITION}",
-                "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
+                "subDirTemplate": "{NAME}",
+                "experiment_type": "",
             },
             "limits": HWR.beamline.acquisition_limit_values,
             "requires": requires if requires else [],

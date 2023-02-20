@@ -267,29 +267,6 @@ def init_route(app, server, url_prefix):
         app.queue.toggle_node(int(node_id))
         return Response(status=200)
 
-    @bp.route("/dc", methods=["GET"])
-    @server.restrict
-    def get_default_dc_params():
-        """
-        returns the default values for an acquisition (data collection).
-        """
-        resp = jsonify(app.queue.get_default_dc_params())
-
-        resp.status_code = 200
-        return resp
-
-    @bp.route("/char_acq", methods=["GET"])
-    @server.restrict
-    def get_default_char_acq_params():
-        """
-        returns the default values for a characterisation acquisition.
-        TODO: implement as_dict in the qmo.AcquisitionParameters
-        """
-        resp = jsonify(app.queue.get_default_char_acq_params())
-
-        resp.status_code = 200
-        return resp
-
     @bp.route("/available_tasks", methods=["GET"])
     @server.restrict
     def get_avilable_tasks():
@@ -298,39 +275,6 @@ def init_route(app, server, url_prefix):
         """
         resp = jsonify(app.queue.get_available_tasks())
 
-        resp.status_code = 200
-        return resp
-
-    @bp.route("/char", methods=["GET"])
-    @server.restrict
-    def get_default_char_params():
-        """
-        returns the default values for a characterisation.
-        """
-        p = (
-            HWR.beamline.characterisation.get_default_characterisation_parameters().as_dict()
-        )
-        resp = jsonify(p)
-        resp.status_code = 200
-        return resp
-
-    @bp.route("/mesh", methods=["GET"])
-    @server.restrict
-    def get_default_mesh_params():
-        """
-        returns the default values for a mesh.
-        """
-        resp = jsonify(app.queue.get_default_mesh_params())
-        resp.status_code = 200
-        return resp
-
-    @bp.route("/xrf", methods=["GET"])
-    @server.restrict
-    def get_default_xrf_parameters():
-        """
-        returns the default values for a xrf scan
-        """
-        resp = jsonify(app.queue.get_default_xrf_parameters())
         resp.status_code = 200
         return resp
 
