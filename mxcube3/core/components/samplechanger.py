@@ -64,8 +64,8 @@ class SampleChanger(ComponentBase):
                 "state": state,
                 "tasks": [],
                 "type": "Sample",
-                "cell_no": s.get_cell_no() if hasattr(s, "get_cell_no") else "",
-                "puck_no": s.get_basket_no() if hasattr(s, "get_basket_no") else "",
+                "cell_no": s.get_cell_no() if hasattr(s, "get_cell_no") else 1,
+                "puck_no": s.get_basket_no() if hasattr(s, "get_basket_no") else 1,
             }
             order.append(coords)
             samplesByCoords[coords] = sample_data["sampleID"]
