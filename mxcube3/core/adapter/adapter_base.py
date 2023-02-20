@@ -51,19 +51,32 @@ class AdapterBase:
 
     def execute_command(self, cmd_name, args):
         try:
-            self.ho.pydantic_model[cmd_name].validate(args)
+            self._pydantic_model_for_command(cmd_name).validate(args)
         except pydantic.ValidationError:
             logging.getLogger("MX3.HWR").exception(
                 f"Error when validating input {args} for command {cmd_name}"
             )
 
-        task = gevent.spawn(self._ho.execute_exported_command, cmd_name, args)
+        task = gevent.spawn(self._execute_command, cmd_name, args)
         task.call_args = {"cmd_name": cmd_name, "value": args}
         task.link_value(self._command_success)
 
+    def _execute_command(self, cmd_name, args):
+        _cmd = getattr(self, cmd_name, None)
+        logging.getLogger("MX3.HWR").info(
+             f"Calling {self._name}.{cmd_name} with {args}"
+        )
+
+        if _cmd:
+            return _cmd(**args)
+        else:
+            return self._ho.execute_exported_command(cmd_name, args)
+
+
     def _command_success(self, t):
         value = t.value
-        attr = getattr(self._ho, t.call_args["cmd_name"])
+        cmd_name = t.call_args["cmd_name"]
+        attr = getattr(self._ho, cmd_name)
         model = self._model_from_typehint(attr)
 
         try:
@@ -74,11 +87,16 @@ class AdapterBase:
                 f"Return value of {self._name}.{attr_name} is of wrong type"
             )
         else:
+            logging.getLogger("MX3.HWR").info(
+                f"{self._name}.{cmd_name} returned {value}"
+            )
             self.app.server.emit(
                 "hardware_object_command_return",
-                {"cmd_name": t.call_args["cmd_name"], "value": value},
+                {"cmd_name": cmd_name, "value": value},
                 namespace="/hwr",
             )
+
+            self.emit_ho_changed()
 
     def _command_exception(self, t):
         self.app.server.emit(
@@ -176,7 +194,8 @@ class AdapterBase:
                 model = self._model_from_typehint(attr)
                 exported_methods[method_name] = {
                     "signature": model["signature"],
-                    "schema": model["args"].schema(),
+                    "schema": model["args"].schema_json(),
+                    "display": False
                 }
 
         return exported_methods
@@ -206,6 +225,15 @@ class AdapterBase:
 
         return _attributes
 
+    def emit_ho_changed(self, *args, **kwargs):
+        """
+        Signal handler to be used for sending the entire object to the client via
+        socketIO
+        """
+        self.app.server.emit("beamline_value_change", self.dict(), namespace="/hwr")
+
+    # NB, This implimentation should be changed so that it only emits the actual state
+    # change, the method "emit_ho_changed" should be used to emit the entire object.
     def state_change(self, *args, **kwargs):
         """
         Signal handler to be used for sending the state to the client via
