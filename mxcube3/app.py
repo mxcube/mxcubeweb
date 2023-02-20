@@ -14,7 +14,7 @@ from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 
 from mxcubecore import HardwareRepository as HWR
-from mxcubecore import removeLoggingHandlers
+from mxcubecore import removeLoggingHandlers, ColorFormatter
 from mxcubecore import queue_entry
 from mxcubecore.utils.conversion import make_table
 
@@ -347,7 +347,7 @@ class MXCUBEApplication:
         removeLoggingHandlers()
 
         fmt = "%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s"
-        log_formatter = logging.Formatter(fmt)
+        log_formatter = ColorFormatter(fmt)
 
         if log_file:
             log_file_handler = TimedRotatingFileHandler(
@@ -411,6 +411,12 @@ class MXCUBEApplication:
                     adapter_cls_name = type(adapter).__name__
                     value_type = adapter.adapter_type
                 except AttributeError:
+                    msg = f"{component_data.attribute} not accessible via Beamline object. "
+                    msg += f"Verify that beamline.{component_data.attribute} is valid and/or "
+                    msg += f"{component_data.attribute} accessible via get_role "
+                    msg += "check ui.yaml configuration file. " 
+                    msg += "(attribute will NOT be avilable in UI)"
+                    logging.getLogger("HWR").warning(msg)
                     adapter_cls_name = ""
                     value_type = ""
                 else:
