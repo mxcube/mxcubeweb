@@ -10,7 +10,6 @@ class FlaskConfigModel(BaseModel):
     SESSION_TYPE: str = Field("redis", description="Flask session type")
     SESSION_KEY_PREFIX: str = Field("mxcube:session:", description="Session prefix")
     DEBUG: bool = Field(False, description="")
-    STREAMED_VIDEO: bool = Field(True, description="")
     ALLOWED_CORS_ORIGINS: List[str] = Field(["*"], description="")
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
     SECURITY_TRACKABLE: bool = Field(True, description="")
@@ -66,6 +65,10 @@ class ModeEnum(str, Enum):
 class MXCUBEAppConfigModel(BaseModel):
     VIDEO_FORMAT: str = Field("MPEG1", description="Video format MPEG1 or MJPEG")
     VIDEO_STREAM_URL: str = Field("", description="Video stream URL")
+    USE_EXTERNAL_STREAMER: bool = Field(
+        False,
+        description="True to use video stream produced by external software, false otherwise",
+    )
     mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
     usermanager: UserManagerConfigModel
     ui_properties: Dict[str, UIPropertiesModel] = {}

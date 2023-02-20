@@ -243,14 +243,13 @@ class MXCUBEApplication:
     server = None
 
     @staticmethod
-    def init(server, allow_remote, ra_timeout, video_device, log_fpath, log_level, cfg):
+    def init(server, allow_remote, ra_timeout, log_fpath, log_level, cfg):
         """
         Initializes application wide variables, sample video stream, and applies
 
         :param hwr: HardwareRepository module
         :param bool allow_remote: Allow remote usage, True else False
         :param bool ra_timeout: Timeout gives control, True else False
-        :param bool video_device: Path to video device
 
         :return None:
         """
@@ -262,8 +261,8 @@ class MXCUBEApplication:
 
         MXCUBEApplication.mxcubecore.init(MXCUBEApplication)
 
-        if video_device:
-            MXCUBEApplication.init_sample_video(video_device)
+        if cfg.app.USE_EXTERNAL_STREAMER:
+            MXCUBEApplication.init_sample_video()
 
         MXCUBEApplication.init_logging(log_fpath, log_level)
 
@@ -291,16 +290,9 @@ class MXCUBEApplication:
         # MXCUBEApplication.load_settings()
 
     @staticmethod
-    def init_sample_video(video_device):
+    def init_sample_video():
         """
-        Initializes video streaming from video device <video_device>, relies on
-        v4l2loopback kernel module to write the sample video stream to
-        <video_device>.
-
-        The streaming is handled by the streaming module
-
-        :param str video_device: Path to video device, i.e. /dev/videoX
-
+        Initializes video streaming
         :return: None
         """
         try:
