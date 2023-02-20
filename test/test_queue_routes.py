@@ -9,7 +9,6 @@ from input_parameters import (
     test_edit_task,
     default_dc_params,
     default_char_acq_params,
-    default_char_params,
     default_mesh_params,
     default_xrf_parameters,
 )
@@ -386,8 +385,8 @@ def test_queue_set_sample_order(client):
 def test_get_default_dc_params(client):
     """Test if we get the right default data collection params."""
 
-    resp = client.get("/mxcube/api/v0.1/queue/dc")
-    actual = json.loads(resp.data)
+    resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
+    actual = json.loads(resp.data)["datacollection"]
 
     # some values are taken from current value/position which is random, so ignore those
     actual["acq_parameters"].pop("osc_start")
@@ -400,46 +399,26 @@ def test_get_default_dc_params(client):
 
 def test_get_default_char_acq_params(client):
     """Test if we get the right default characterisation acq params."""
-    resp = client.get("/mxcube/api/v0.1/queue/char_acq")
-    actual = json.loads(resp.data)
+    resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
+    actual = json.loads(resp.data)["characterisation"]
 
-    # some values are taken from current value/position which is random, so ignore those
-    actual["acq_parameters"].pop("osc_start")
-    actual["acq_parameters"].pop("energy")
-    actual["acq_parameters"].pop("resolution")
-    actual["acq_parameters"].pop("transmission")
     assert resp.status_code == 200 and actual == default_char_acq_params
-
-
-def test_get_default_char_params(client):
-    """Test if we get the right default characterisation params."""
-
-    resp = client.get("/mxcube/api/v0.1/queue/char")
-    actual = json.loads(resp.data)
-    assert resp.status_code == 200 and actual == default_char_params
 
 
 def test_get_default_mesh_params(client):
     """Test if we get the right default mesh params."""
 
-    resp = client.get("/mxcube/api/v0.1/queue/mesh")
-    actual = json.loads(resp.data)
-
-    # some values are taken from current value/position which is random, so ignore those
-    actual["acq_parameters"].pop("osc_start")
-    actual["acq_parameters"].pop("energy")
-    actual["acq_parameters"].pop("resolution")
-    actual["acq_parameters"].pop("transmission")
+    resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
+    actual = json.loads(resp.data)["mesh"]
 
     assert resp.status_code == 200 and actual == default_mesh_params
 
 
 def test_get_default_xrf_parameters(client):
     """Test if we get the right default xrf params."""
-
-    resp = client.get("/mxcube/api/v0.1/queue/xrf")
-    actual = json.loads(resp.data)
-    assert resp.status_code == 200 and json.loads(resp.data) == default_xrf_parameters
+    resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
+    actual = json.loads(resp.data)["xrf"]
+    assert resp.status_code == 200 and actual == default_xrf_parameters
 
 
 def test_set_automount(client):

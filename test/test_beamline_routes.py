@@ -21,6 +21,7 @@ def test_beamline_get_all_attribute(client):
 
     expected = [
         "beam",
+        "cryo",
         "detector",
         "detector.detector_distance",
         "diffractometer",
