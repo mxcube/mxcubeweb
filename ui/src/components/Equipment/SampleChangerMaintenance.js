@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, ButtonGroup, Card } from 'react-bootstrap';
 
 import './SampleChanger.css';
-import '../context-menu-style.css';
  
 
 export class SampleChangerActionButton extends React.Component {

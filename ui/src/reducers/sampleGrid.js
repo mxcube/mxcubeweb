@@ -21,8 +21,7 @@ const INITIAL_STATE = {
   moving: {},
   viewMode: {
     mode: 'Table View',
-    options: ['Table View', 'Graphical View', 'Card View'],
-    ViewWithCellPuck: true
+    options: ['Table View', 'Graphical View'],
   },
   filterOptions: {
     text: '',
@@ -299,9 +298,6 @@ export default (state = INITIAL_STATE, action) => {
     // Change view mode 
     case 'SET_VIEW_MODE': {
       const viewMode = { ...state.viewMode};
-      if(action.ViewWithCellPuck !== null) {
-        viewMode.ViewWithCellPuck = action.ViewWithCellPuck;
-      }
       viewMode.mode = action.mode;
       return { ...state,  viewMode };
     }

@@ -1,9 +1,6 @@
 import React from 'react';
 import { Alert } from 'react-bootstrap';
-
-import '../context-menu-style.css';
  
-
 export default class EquipmentState extends React.Component {
   render() {
     let titleBackground;
