@@ -1,10 +1,10 @@
 {
     "head_type": "CHIP",
-    "holder_type": "KNOWN_GEOMETRY",
+    "holder_type": "FREE_GEOMETRY",
     "holder_brand": "Oxford Chip",
     "holder_size": [
-        30,
-        30
+        30.0,
+        30.0
     ],
     "sections": [
         {
@@ -12,13 +12,13 @@
                 0,
                 0
             ],
-            "block_spacing": [
-                15,
-                15
-            ],
             "block_size": [
-                30,
-                30
+                30.0,
+                30.0
+            ],
+            "block_spacing": [
+                15.0,
+                15.0
             ],
             "block_shape": "RECTANGULAR",
             "number_of_rows": 6,
@@ -44,5 +44,22 @@
                 20
             ]
         }
-    ]
+    ],
+    "calibration_data": {
+        "top_left": [
+            0,
+            0,
+            0
+        ],
+        "top_right": [
+            0,
+            0,
+            0
+        ],
+        "bottom_left": [
+            0,
+            0,
+            0
+        ]
+    }
 }

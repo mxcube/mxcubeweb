@@ -132,7 +132,6 @@ class Interleaved extends React.Component {
           <Form>
             <Table
               striped
-              condensed
               bordered
               hover
               style={{ fontSize: 'smaller', marginBottom: '0px' }}
@@ -189,7 +188,6 @@ class Interleaved extends React.Component {
             <div style={{ overflowY: 'scroll', height: '400px' }}>
             <Table
               striped
-              condensed
               bordered
               hover
               style={{ fontSize: 'smaller', marginBottom: '0px' }}

@@ -1,8 +1,11 @@
 import React from 'react';
+import { Row, Col, Form, Button, Card } from 'react-bootstrap';
 import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 import 'fabric';
 import './ssxchipcontrol.css';
 import "react-contexify/dist/ReactContexify.css";
+
+import MotorInputContainer from '../../containers/MotorInputContainer';
 
 const { fabric } = window;
 
@@ -30,7 +33,7 @@ function _GridData(fabricObject) {
 
 function ChipContextMenu(props) {
   return (
-    <Menu  id="chip-context-menu">
+    <Menu id="chip-context-menu">
       <li role="heading" aria-level="2" className="dropdown-header">
         <b>
           Chip
@@ -65,6 +68,21 @@ export default class SSXChip extends React.Component {
     this.detailCanvas = null;
     this.freeFormCanvas = null;
     this.handleKeyDown = this.handleKeyDown.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+
+
+    this.state = {
+      top_left_x: this.props.currentChipLayout.calibration_data.top_left[0],
+      top_left_y: this.props.currentChipLayout.calibration_data.top_left[1],
+      top_left_z: this.props.currentChipLayout.calibration_data.top_left[1],
+      top_right_x: this.props.currentChipLayout.calibration_data.top_right[0],
+      top_right_y: this.props.currentChipLayout.calibration_data.top_right[0],
+      top_left_z: this.props.currentChipLayout.calibration_data.top_right[1],
+      bottom_left_x: this.props.currentChipLayout.calibration_data.bottom_left[0],
+      bottom_left_y: this.props.currentChipLayout.calibration_data.bottom_left[0],
+      bottom_left_z: this.props.currentChipLayout.calibration_data.bottom_left[1],
+      currentLayoutName: this.props.currentLayoutName
+    }
 
     // Fix
     this.rect = null;
@@ -80,6 +98,27 @@ export default class SSXChip extends React.Component {
     }
 
     return false;
+  }
+
+  handleInputValueChange(key, event) {
+    this.setState({ [key]: event.target.value });
+  }
+
+  handleSubmit(key, e) {
+    if (key === "top_left") {
+      this.props.sendSetAttribute(this.props.sampleMotorVerticalName, this.state.top_left_x);
+      this.props.sendSetAttribute(this.props.sampleMotorHorizontalName, this.state.top_left_y);
+    } else if (key === "top_right") {
+      this.props.sendSetAttribute(this.props.sampleMotorVerticalName, this.state.top_right_x);
+      this.props.sendSetAttribute(this.props.sampleMotorHorizontalName, this.state.top_right_y);
+    } else if (key === "set_layout") {
+      this.setState({ currentLayoutName: e.target.value })
+      this.props.sendExecuteCommand(
+        "diffractometer",
+        "set_chip_layout", {
+        "layout_name": e.target.value
+      });
+    }
   }
 
   showContextMenu(event, selection) {
@@ -105,15 +144,15 @@ export default class SSXChip extends React.Component {
     blockSizeY,
     spacing,
     offset,
-    rowLabels=[],
-    colLabels=[],
+    rowLabels = [],
+    colLabels = [],
   ) {
     const objects = [];
 
     objects.push(
       new fabric.Rect({
         top: 0,
-        left: 0 ,
+        left: 0,
         width: chipSizeX,
         height: chipSizeY,
         selectable: false,
@@ -134,7 +173,7 @@ export default class SSXChip extends React.Component {
 
     // Add lables
 
-    for(let ci=0; ci < cols; ci++) {
+    for (let ci = 0; ci < cols; ci++) {
       let label = (ci + 1).toString();
 
       if (colLabels.length > 0) {
@@ -142,9 +181,9 @@ export default class SSXChip extends React.Component {
       }
 
       objects.push(
-        new fabric.Text(label,{
+        new fabric.Text(label, {
           top: offset / 2,
-          left: (ci*(blockSizeX+spacing)) + offset + blockSizeX + blockSizeX/4,
+          left: (ci * (blockSizeX + spacing)) + offset + blockSizeX + blockSizeX / 4,
           fontSize: blockSizeX * 0.7,
           fontFamily: "arial",
           fill: '#f55',
@@ -165,7 +204,7 @@ export default class SSXChip extends React.Component {
       );
     }
 
-    for (let ri=0; ri < rows; ri++) {
+    for (let ri = 0; ri < rows; ri++) {
       let label = (ri + 1).toString();
 
       if (colLabels.length > 0) {
@@ -173,8 +212,8 @@ export default class SSXChip extends React.Component {
       }
 
       objects.push(
-        new fabric.Text(label,{
-          top: ri*(blockSizeY+spacing) + offset + blockSizeY,
+        new fabric.Text(label, {
+          top: ri * (blockSizeY + spacing) + offset + blockSizeY,
           left: offset / 2,
           fontSize: blockSizeX * 0.7,
           fontFamily: "arial",
@@ -196,12 +235,12 @@ export default class SSXChip extends React.Component {
       );
     }
 
-    for (let ri=0; ri < rows; ri++) {
-      for(let ci=0; ci < cols; ci++) {
+    for (let ri = 0; ri < rows; ri++) {
+      for (let ci = 0; ci < cols; ci++) {
         objects.push(
           new fabric.Rect({
-            top: ri*(blockSizeY+spacing) + offset + blockSizeY,
-            left: (ci*(blockSizeX+spacing)) + offset + blockSizeX,
+            top: ri * (blockSizeY + spacing) + offset + blockSizeY,
+            left: (ci * (blockSizeX + spacing)) + offset + blockSizeX,
             width: blockSizeX,
             height: blockSizeY,
             fontFamily: "arial",
@@ -231,9 +270,9 @@ export default class SSXChip extends React.Component {
     document.removeEventListener("keydown", this.handleKeyDown);
   }
 
-  componentDidMount() {
-    document.addEventListener("keydown", this.handleKeyDown);
-    const chipConfig = this.props.headConfiguration.sections[0]
+  initChipCanvas() {
+    const chipConfig = this.props.currentChipLayout.sections[0]
+
     const numRows = chipConfig.number_of_rows;
     const numCols = chipConfig.number_of_collumns;
     const blockSizeX = chipConfig.block_size[0];
@@ -244,7 +283,7 @@ export default class SSXChip extends React.Component {
     const offset = chipConfig.block_spacing[0];
     const spacing = chipConfig.block_spacing[0];
 
-    const numTargetsX  = chipConfig.targets_per_block[0];
+    const numTargetsX = chipConfig.targets_per_block[0];
     const numTargetsY = chipConfig.targets_per_block[1];
 
     const canvasWidth = numCols * (blockSizeX + spacing) + offset + blockSizeX;
@@ -274,41 +313,29 @@ export default class SSXChip extends React.Component {
       renderOnAddRemove: false,
     });
 
-    const freeFormCanvas = new fabric.Canvas('chip-free-form-canvas', {
-      width: canvasWidth,
-      height: canvasHeight,
-      backgroundColor: "#CCC",
-      preserveObjectStacking: true,
-      altSelectionKey: "ctrlKey",
-      selectionKey: 'ctrlKey',
-      fireRightClick: true,
-      stopContextMenu: true,
-      renderOnAddRemove: false,
-    });
 
     this.fc = canvas;
     this.detailCanvas = detailCanvas
-    this.freeFormCanvas = freeFormCanvas
 
     this.fc.on('mouse:down', (event) => {
       const object = canvas.findTarget(event.e);
 
-      if(event.button === 3) {
-          let selection = [];
+      if (event.button === 3) {
+        let selection = [];
 
-          if (object.type === "BLOCK") {
-            selection.push([object.objectIndex]);
-          }
+        if (object.type === "BLOCK") {
+          selection.push([object.objectIndex]);
+        }
 
-          if (object.type === "activeSelection") {
-            selection = object._objects.map((o) => o.objectIndex);
-          }
+        if (object.type === "activeSelection") {
+          selection = object._objects.map((o) => o.objectIndex);
+        }
 
-          if (selection.length > 0) {
-            this.fc.setActiveObject(object);
-            this.fc.requestRenderAll();
-            this.showContextMenu(event, selection);
-          }
+        if (selection.length > 0) {
+          this.fc.setActiveObject(object);
+          this.fc.requestRenderAll();
+          this.showContextMenu(event, selection);
+        }
       }
     });
 
@@ -316,7 +343,7 @@ export default class SSXChip extends React.Component {
       if (selected.some(obj => obj.lockMovementX)) {
         target.lockMovementX = true;
       }
-        if (selected.some(obj => obj.lockMovementY)) {
+      if (selected.some(obj => obj.lockMovementY)) {
         target.lockMovementY = true;
       }
     });
@@ -325,14 +352,14 @@ export default class SSXChip extends React.Component {
       if (selected.some(obj => obj.lockMovementX)) {
         target.lockMovementX = true;
       }
-        if (selected.some(obj => obj.lockMovementY)) {
+      if (selected.some(obj => obj.lockMovementY)) {
         target.lockMovementY = true;
       }
     });
 
-//    this.fc.on('mouse:dblclick', (event) => {
-//      const object = canvas.findTarget(event.e);
-//    });
+    //    this.fc.on('mouse:dblclick', (event) => {
+    //      const object = canvas.findTarget(event.e);
+    //    });
 
     this.fc.add(...this.renderChip(
       canvasWidth,
@@ -354,12 +381,29 @@ export default class SSXChip extends React.Component {
       canvasHeight,
       numTargetsX,
       numTargetsX,
-      (canvasWidth / numTargetsX) - (spacing / numTargetsX)*4,
-      (canvasHeight / numTargetsY) - (spacing / numTargetsY)*4,
+      (canvasWidth / numTargetsX) - (spacing / numTargetsX) * 4,
+      (canvasHeight / numTargetsY) - (spacing / numTargetsY) * 4,
       spacing / numTargetsX,
       offset
     ));
     this.detailCanvas.renderAll();
+  }
+
+  initFoilCanvas() {
+    const freeFormCanvas = new fabric.Canvas('chip-free-form-canvas', {
+      width: 500,
+      height: 500,
+      backgroundColor: "#CCC",
+      preserveObjectStacking: true,
+      altSelectionKey: "ctrlKey",
+      selectionKey: 'ctrlKey',
+      fireRightClick: true,
+      stopContextMenu: true,
+      renderOnAddRemove: false,
+    });
+
+    this.freeFormCanvas = freeFormCanvas
+
 
     this.freeFormCanvas.on('mouse:down', (event) => {
       const pointer = this.freeFormCanvas.getPointer(event.e);
@@ -371,15 +415,15 @@ export default class SSXChip extends React.Component {
 
       console.log(pointer);
       this.rect = new fabric.Rect({
-          left: pointer.x,
-          top: pointer.y,
-          originX: 'left',
-          originY: 'top',
-          width: 0,
-          height: 0,
-          angle: 0,
-          fill: 'rgba(255,0,0,0.5)',
-          transparentCorners: false
+        left: pointer.x,
+        top: pointer.y,
+        originX: 'left',
+        originY: 'top',
+        width: 0,
+        height: 0,
+        angle: 0,
+        fill: 'rgba(255,0,0,0.5)',
+        transparentCorners: false
       });
 
 
@@ -389,16 +433,16 @@ export default class SSXChip extends React.Component {
     });
 
     this.freeFormCanvas.on('mouse:move', (event) => {
-      if (!this.isDown && !event.e.altKey) {return;}
+      if (!this.isDown && !event.e.altKey) { return; }
 
       const mouse = this.freeFormCanvas.getPointer(event);
-      const rect = this.freeFormCanvas.getActiveObject(); 
+      const rect = this.freeFormCanvas.getActiveObject();
 
       const w = Math.abs(mouse.x - rect.left);
       const h = Math.abs(mouse.y - rect.top);
-  
+
       if (!w || !h) {
-          return;
+        return;
       }
 
       rect.set('width', w).set('height', h);
@@ -417,7 +461,7 @@ export default class SSXChip extends React.Component {
       }
     });
 
-    this.props.gridList.map((gridData)=>{
+    this.props.gridList.map((gridData) => {
       this.freeFormCanvas.add(
         new fabric.Rect({
           left: gridData.screenCoord[1],
@@ -429,36 +473,266 @@ export default class SSXChip extends React.Component {
           angle: 0,
           fill: 'rgba(255,0,0,0.5)',
           transparentCorners: false
-      })
+        })
       )
     })
 
     this.freeFormCanvas.renderAll();
   }
 
-  render() { 
+  componentDidMount() {
+    document.addEventListener("keydown", this.handleKeyDown);
+    const holderType = this.props.currentChipLayout.holder_type;
+
+    if (holderType === "KNOWN_GEOMETRY") {
+      this.initChipCanvas()
+    } else if (holderType === "FREE_GEOMETRY") {
+      this.initFoilCanvas()
+    }
+  }
+
+  componentDidUpdate() {
+    const holderType = this.props.currentChipLayout.holder_type;
+
+    if (holderType === "KNOWN_GEOMETRY") {
+      this.initChipCanvas()
+    } else if (holderType === "FREE_GEOMETRY") {
+      this.initFoilCanvas()
+    }
+  }
+
+
+  renderChipInterface() {
+    return ([
+      <div className="chip-canvas-container">
+        <canvas
+          id="chip-canvas"
+          ref={this.canvasRef}
+        />
+        <ChipContextMenu {...this.props} />
+      </div>,
+      <div className="chip-detial-canvas-container">
+        <canvas
+          id="chip-detail-canvas"
+          ref={this.detailCanvasRef}
+        />
+      </div>
+    ]);
+  }
+
+  render() {
+    const holderType = this.props.currentChipLayout.holder_type;
+
+    const chipVisible = holderType === "KNOWN_GEOMETRY" ? "" : "d-none";
+    const foilVisible = holderType === "FREE_GEOMETRY" ? "" : "d-none";
+
     return (
       <div className="chip-container">
-        <div className="chip-canvas-container">
-          <canvas
-            id="chip-canvas" 
-            ref={this.canvasRef}
-          />
-          <ChipContextMenu {...this.props}/>
-        </div>
-        <div className="chip-detial-canvas-container">
-          <canvas
-            id="chip-detail-canvas"
-            ref={this.detailCanvasRef}
-          />
-        </div>
-        <div className="chip-free-form-canvas-container">
-          <canvas
-            id="chip-free-form-canvas"
-            ref={this.freeFormCanvasRef}
-          />
-        </div>
-    </div>
+        <Row>
+          <Col>
+            <div className={chipVisible}>
+              <div className='chip-canvas-container'>
+                <canvas
+                  id="chip-canvas"
+                  ref={this.canvasRef}
+                />
+                <ChipContextMenu {...this.props} />
+              </div>
+              <div className="chip-detial-canvas-container">
+                <canvas
+                  id="chip-detail-canvas"
+                  ref={this.detailCanvasRef}
+                />
+              </div>
+            </div>
+            <div className={foilVisible}>
+              <div className='chip-free-form-canvas-container'>
+                <canvas
+                  id="chip-free-form-canvas"
+                  ref={this.freeFormCanvasRef}
+                />
+              </div>
+            </div>
+          </Col>
+          <Col>
+            <Card>
+              <Card.Body>
+                <div>
+                  <h5>
+                    Current position:
+                  </h5>
+                  <Row>
+                    <Col className="col-sm-auto pe-0">
+                      <MotorInputContainer component={"sample_view"} role={"sample_vertical"} />
+                    </Col>
+                    <Col className="col-sm-auto pe-0">
+                      <MotorInputContainer component={"sample_view"} role={"sample_horizontal"} />
+                    </Col>
+                  </Row>
+                </div>
+                <div>
+                </div>
+              </Card.Body>
+            </Card>
+            <Card>
+              <Card.Body>
+                <div>
+
+                  <Row>
+                    <Form>
+                      <Form.Group as={Row} className="gx-4">
+                        <Form.Label column className="col-sm-auto pe-0">
+                          <h5>Current chip layout:</h5>
+                        </Form.Label>
+                        <Col xs={6}>
+                          <Form.Select
+                            onChange={(event) => this.handleSubmit("set_layout", event)}
+                            value={this.state.currentLayoutName}
+                          >
+                            {this.props.availableChipLayoutList.map((item) => (<option value={item}>{item}</option>))}
+                          </Form.Select>
+                        </Col>
+                      </Form.Group>
+                    </Form>
+                  </Row>
+                </div>
+                <div>
+                  <h5>
+                    Top left:
+                  </h5>
+                  <Form>
+                    <Form.Group as={Row} className="gx-4">
+                      <Form.Label column className="col-sm-auto pe-0">
+                        <strong>X:</strong>
+                      </Form.Label>
+                      <Col xs={2}>
+                        <Form.Control
+                          onChange={(event) => this.handleInputValueChange("top_left_x", event)}
+                          value={this.state.top_left_x}
+                          id="top_left_x"
+                        />
+                      </Col>
+                      <Form.Label column className="col-sm-auto pe-0">
+                        <strong>Y:</strong>
+                      </Form.Label>
+                      <Col xs={2}>
+                        <Form.Control
+                          onChange={(event) => this.handleInputValueChange("top_left_y", event)}
+                          value={this.state.top_left_y}
+                          id="top_left_y"
+                        />
+                      </Col>
+                      <Form.Label column className="col-sm-auto pe-0">
+                        <strong>Z:</strong>
+                      </Form.Label>
+                      <Col xs={2}>
+                        <Form.Control
+                          onChange={(event) => this.handleInputValueChange("top_left_z", event)}
+                          value={this.state.top_left_y}
+                          id="top_left_z"
+                        />
+                      </Col>
+                      <Col className="d-flex  justify-content-end">
+                        <Button onClick={(e) => this.handleSubmit("top_left", e)}>
+                          Go to
+                        </Button>
+                      </Col>
+                    </Form.Group>
+                  </Form>
+                </div>
+                <div>
+                  <h5>
+                    Top right:
+                  </h5>
+                  <Form>
+                    <Form.Group as={Row} className="mb-3 gx-4">
+                      <Form.Label column className="col-sm-auto pe-0">
+                        <strong>X:</strong>
+                      </Form.Label>
+                      <Col xs={2}>
+                        <Form.Control
+                          onChange={(event) => this.handleInputValueChange("top_right_x", event)}
+                          value={this.state.top_right_x}
+                          id="top_right_x"
+                        />
+                      </Col>
+                      <Form.Label column className="col-sm-auto pe-0">
+                        <strong>Y:</strong>
+                      </Form.Label>
+                      <Col xs={2}>
+                        <Form.Control
+                          onChange={(event) => this.handleInputValueChange("top_right_y", event)}
+                          value={this.state.top_right_y}
+                          id="top_right_y"
+                        />
+                      </Col>
+                      <Form.Label column className="col-sm-auto pe-0">
+                        <strong>Z:</strong>
+                      </Form.Label>
+                      <Col xs={2}>
+                        <Form.Control
+                          onChange={(event) => this.handleInputValueChange("top_right_z", event)}
+                          value={this.state.top_right_y}
+                          id="top_right_z"
+                        />
+                      </Col>
+                      <Col className="d-flex justify-content-end">
+                        <Button onClick={(e) => this.handleSubmit("top_right", e)}>
+                          Go to
+                        </Button>
+                      </Col>
+                    </Form.Group>
+                  </Form>
+                </div>
+                <div>
+                  <h5>
+                    Bottom left:
+                  </h5>
+                  <Form>
+                    <Form.Group as={Row} className="mb-3 gx-4">
+                      <Form.Label column className="col-sm-auto pe-0">
+                        <strong>X:</strong>
+                      </Form.Label>
+                      <Col xs={2}>
+                        <Form.Control
+                          onChange={(event) => this.handleInputValueChange("bottom_left_x", event)}
+                          value={this.state.top_right_x}
+                          id="bottom_left_x"
+                        />
+                      </Col>
+                      <Form.Label column className="col-sm-auto pe-0">
+                        <strong>Y:</strong>
+                      </Form.Label>
+                      <Col xs={2}>
+                        <Form.Control
+                          onChange={(event) => this.handleInputValueChange("bottom_left_y", event)}
+                          value={this.state.top_right_y}
+                          id="bottom_left_y"
+                        />
+                      </Col>
+                      <Form.Label column className="col-sm-auto pe-0">
+                        <strong>Z:</strong>
+                      </Form.Label>
+                      <Col xs={2}>
+                        <Form.Control
+                          onChange={(event) => this.handleInputValueChange("bottom_left_z", event)}
+                          value={this.state.top_right_y}
+                          id="bottom_left_z"
+                        />
+                      </Col>
+                      <Col className="d-flex justify-content-end">
+                        <Button onClick={(e) => this.handleSubmit("bottom_left", e)}>
+                          Go to
+                        </Button>
+                      </Col>
+                    </Form.Group>
+                  </Form>
+                </div>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row >
+      </div >
     );
   }
 }

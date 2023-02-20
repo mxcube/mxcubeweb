@@ -138,7 +138,6 @@ export default class GridForm extends React.Component {
               striped
               hover
               responsive
-              condensed
             >
               <thead>
                 <tr>

@@ -17,7 +17,7 @@ export default class SSXChipControl extends React.Component {
     this.handleUpdateGrid = this.handleUpdateGrid.bind(this);
   }
 
-  handleAddTask(triggerEvent, event, props, data ) {
+  handleAddTask(triggerEvent, event, props, data) {
     const { sampleID, sampleData, defaultParameters } = this.props;
     const sid = -1;
 
@@ -26,7 +26,7 @@ export default class SSXChipControl extends React.Component {
       [sampleID],
       {
         parameters: {
-          ...defaultParameters.ssx_chip_collection.acq_parameters,
+          ...defaultParameters.ssx_chip_collection_lima2.acq_parameters,
           name: "SSX Collection",
           prefix: sampleData.defaultPrefix,
           subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
@@ -35,13 +35,13 @@ export default class SSXChipControl extends React.Component {
           numCols: 0,
           selection: triggerEvent.props.selection
         },
-        type: "ssx_chip_collection"
+        type: "ssx_chip_collection_lima2"
       },
       sid
     );
   }
 
-  handleAddGrid(data){
+  handleAddGrid(data) {
     this.props.sampleActions.sendAddShape({ t: 'G', ...data });
   }
 
@@ -50,26 +50,46 @@ export default class SSXChipControl extends React.Component {
   }
 
   handleUpdateGrid(data) {
-  
+
   }
 
   renderChip() {
     const headConfiguration = this.props.hardwareObjects.
       diffractometer.attributes.head_configuration ?? {};
 
+    const chipLayout = headConfiguration.available[
+      headConfiguration.current
+    ];
+
+    const sampleVerticalUiProp = this.props.uiproperties.components.find(
+      el => el.role === "sample_vertical"
+    );
+
+    const sampleHorizontalUiProp = this.props.uiproperties.components.find(
+      el => el.role === "sample_horizontal"
+    );
+
+
     return (
       <Popover id="test">
         <Popover.Header>
           <b>Chip</b>
         </Popover.Header>
+
         <Popover.Body>
           <SSXChip
-            headConfiguration={headConfiguration}
+            currentChipLayout={chipLayout}
+            currentLayoutName={headConfiguration.current}
+            availableChipLayoutList={Object.keys(headConfiguration.available)}
             onAddTask={this.handleAddTask}
             onAddGrid={this.handleAddGrid}
             onRemoveGrid={this.handleRemoveGrid}
             onUpdateGrid={this.handleUpdateGrid}
             gridList={Object.values(this.props.grids)}
+            sampleMotorVerticalName={sampleVerticalUiProp.attribute}
+            sampleMotorHorizontalName={sampleHorizontalUiProp.attribute}
+            sendSetAttribute={this.props.sendSetAttribute}
+            sendExecuteCommand={this.props.sendExecuteCommand}
           />
         </Popover.Body>
       </Popover>
@@ -79,7 +99,7 @@ export default class SSXChipControl extends React.Component {
 
   render() {
     return (
-      <div style={{marginBottom: '1em'}}>
+      <div style={{ marginBottom: '1em' }}>
         <span className='chip-title'>Chip (Diamond Chip):</span>
         <OverlayTrigger
           trigger="click"
