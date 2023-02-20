@@ -38,9 +38,10 @@ def init_route(app, server, url_prefix):
         params = request.get_json()
         login_id = params.get("proposal", "")
         password = params.get("password", "")
+        previousUser = params.get("previousUser", "")
 
         try:
-            res = jsonify(app.usermanager.login(login_id, password))
+            res = jsonify(app.usermanager.login(login_id, password, previousUser))
         except Exception as ex:
             msg = "[LOGIN] User %s could not login (%s)" % (login_id, str(ex))
             logging.getLogger("MX3.HWR").info(msg)
