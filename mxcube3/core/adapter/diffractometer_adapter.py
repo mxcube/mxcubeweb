@@ -3,6 +3,7 @@ from mxcube3.core.adapter.adapter_base import AdapterBase
 
 class DiffractometerAdapter(AdapterBase):
     ATTRIBUTES = ["head_configuration"]
+    METHODS = ["set_chip_layout"]
 
     def __init__(self, ho, *args, **kwargs):
         """
@@ -26,3 +27,10 @@ class DiffractometerAdapter(AdapterBase):
         data = data.dict() if data else {}
 
         return data
+
+    def set_chip_layout(
+        self,
+        layout_name: str,
+    ) -> bool:
+        self._ho.set_chip_layout(layout_name)
+        return True
