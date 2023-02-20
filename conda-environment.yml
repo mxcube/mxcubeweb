@@ -4,6 +4,7 @@ channels:
 dependencies:
   - python >=3.8,<3.11
   - openldap
+  - python-ldap=3.4.0
   - pip
   - poetry
   - nodejs
