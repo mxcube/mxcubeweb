@@ -374,12 +374,16 @@ class Beamline(ComponentBase):
         return ret
 
     def get_detector_info(self):
-        filetype = HWR.beamline.detector.get_property("file_suffix")
+
+        try:
+            filetype = HWR.beamline.detector.get_property("file_suffix")
+        except Exception:
+            filetype = None
 
         if filetype is None:
             filetype = "cbf"
             logging.getLogger("MX3.HWR").warning(
-                "Detector file format not specified. Setting as cbf."
+                "Detector file format not specified. Using cbf."
             )
 
         return filetype
