@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Row, Col, Container } from 'react-bootstrap';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
+import PhaseInput from '../components/SampleView/PhaseInput';
 import ApertureInput from '../components/SampleView/ApertureInput';
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import ContextMenu from '../components/SampleView/ContextMenu';
@@ -68,6 +69,17 @@ class SampleViewContainer extends Component {
       }
     });
 
+    const phaseControl = (
+      <div>
+        <p className="motor-name">Phase Control:</p>
+        <PhaseInput
+          phase={this.props.sampleViewState.currentPhase}
+          phaseList={this.props.sampleViewState.phaseList}
+          sendPhase={this.props.sampleViewActions.sendCurrentPhase}
+        />
+      </div>
+    );
+
     const apertureControl = (
       <div>
         <p className="motor-name">Beam size:</p>
@@ -91,6 +103,7 @@ class SampleViewContainer extends Component {
               sm={1}
               style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
             >
+            {process.env.REACT_APP_PHASECONTROL ? phaseControl : null}
              {apertureControl}
              { this.props.mode === 'SSX-CHIP' ?
                (<SSXChipControl
