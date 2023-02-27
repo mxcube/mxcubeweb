@@ -1,3 +1,6 @@
+from gevent import monkey
+monkey.patch_all(thread=False)
+
 from mxcube3.server import Server
 from mxcube3.app import MXCUBEApplication
 from mxcube3.config import Config
@@ -8,15 +11,7 @@ import os
 import traceback
 import redis
 
-from gevent import monkey
-
-# NB HardwareRepository must be imported *before* the gevent monkeypatching
-# in order to set the unpatched version of socket for use elseqhere
-# See HardwareRepository.original_socket
 from mxcubecore import HardwareRepository as HWR
-
-monkey.patch_all(thread=False)
-
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
