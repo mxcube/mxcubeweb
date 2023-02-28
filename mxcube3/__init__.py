@@ -1,15 +1,16 @@
+import argparse
+import mock
+import os
+import redis
+import sys
+import traceback
+
 from gevent import monkey
 monkey.patch_all(thread=False)
 
 from mxcube3.server import Server
 from mxcube3.app import MXCUBEApplication
 from mxcube3.config import Config
-import argparse
-import sys
-import mock
-import os
-import traceback
-import redis
 
 from mxcubecore import HardwareRepository as HWR
 
