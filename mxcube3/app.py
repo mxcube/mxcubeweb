@@ -262,7 +262,7 @@ class MXCUBEApplication:
         MXCUBEApplication.mxcubecore.init(MXCUBEApplication)
 
         if cfg.app.USE_EXTERNAL_STREAMER:
-            MXCUBEApplication.init_sample_video()
+            MXCUBEApplication.init_sample_video(cfg.app.VIDEO_FORMAT)
 
         MXCUBEApplication.init_logging(log_fpath, log_level)
 
@@ -290,13 +290,13 @@ class MXCUBEApplication:
         # MXCUBEApplication.load_settings()
 
     @staticmethod
-    def init_sample_video():
+    def init_sample_video(format):
         """
         Initializes video streaming
         :return: None
         """
         try:
-            HWR.beamline.sample_view.camera.start_streaming()
+            HWR.beamline.sample_view.camera.start_streaming(format)
         except Exception as ex:
             msg = "Could not initialize video, error was: "
             msg += str(ex)
