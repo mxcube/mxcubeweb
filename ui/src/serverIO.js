@@ -106,8 +106,9 @@ class ServerIO {
   }
 
   disconnect() {
+    this.connected = false;
     this.hwrSocket.disconnect();
-    this.hwrSocket.disconnect();
+    this.networkSocket.disconnect();
     this.loggingSocket.disconnect();
   }
 

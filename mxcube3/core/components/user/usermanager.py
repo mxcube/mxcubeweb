@@ -7,6 +7,7 @@ import datetime
 import flask
 import flask_security
 import flask_login
+from flask_login import current_user
 
 from mxcube3.core.components.component_base import ComponentBase
 from mxcube3.core.models.usermodels import User
@@ -38,21 +39,10 @@ class BaseUserManager(ComponentBase):
         return user
 
     def is_operator(self):
-        return getattr(flask_login.current_user, "in_control", False)
+        return getattr(current_user, "in_control", False)
 
-    def logged_in_users(self, exclude_inhouse=False):
-        users = [user["loginID"] for user in self.app.USERS.values()]
-
-        if exclude_inhouse:
-            if isinstance(HWR.beamline.session.in_house_users[0], tuple):
-                ih_users = [
-                    "%s%s" % (p, c) for (p, c) in HWR.beamline.session.in_house_users
-                ]
-            else:
-                ih_users = HWR.beamline.session.in_house_users
-            users = [user for user in users if user not in ih_users]
-
-        return users
+    def active_logged_in_users(self):
+        return [_u.username for _u in User.query.all() if _u.active]
 
     def get_user(self, username):
         user = None
@@ -98,19 +88,19 @@ class BaseUserManager(ComponentBase):
         # If new login and new observer login, clear nickname
         # so that the user get an opertunity to set one
         if new_login:
-            flask_login.current_user.nickname = ""
+            current_user.nickname = ""
 
         # If no user is currently in control set this user to be
         # in control
         if not active_in_control:
             if HWR.beamline.lims.loginType.lower() != "user":
-                flask_login.current_user.nickname = self.app.lims.get_proposal(
-                    flask_login.current_user
+                current_user.nickname = self.app.lims.get_proposal(
+                    current_user
                 )
             else:
-                flask_login.current_user.nickname = flask_login.current_user.username
+                current_user.nickname = current_user.username
 
-            self.db_set_in_control(flask_login.current_user, True)
+            self.db_set_in_control(current_user, True)
 
         # Set active proposal to that of the active user
         for _u in User.query.all():
@@ -193,7 +183,7 @@ class BaseUserManager(ComponentBase):
 
     def signout(self):
         self._signout()
-        user = flask_login.current_user
+        user = current_user
 
         # If operator logs out clear queue and sample list
         if self.is_operator():
@@ -209,7 +199,7 @@ class BaseUserManager(ComponentBase):
 
             self.app.CURRENTLY_MOUNTED_SAMPLE = ""
 
-            self.db_set_in_control(flask_login.current_user, False)
+            self.db_set_in_control(current_user, False)
 
             msg = "User %s signed out" % user.username
             logging.getLogger("MX3.HWR").info(msg)
@@ -219,7 +209,7 @@ class BaseUserManager(ComponentBase):
         self.emit_observers_changed()
 
     def is_authenticated(self):
-        return flask_login.current_user.is_authenticated()
+        return current_user.is_authenticated()
 
     def force_signout_user(self, username):
         user = self.get_user(username)
@@ -248,8 +238,8 @@ class BaseUserManager(ComponentBase):
             },
         }
 
-        if not flask_login.current_user.is_anonymous:
-            login_info = convert_to_dict(json.loads(flask_login.current_user.limsdata))
+        if not current_user.is_anonymous:
+            login_info = convert_to_dict(json.loads(current_user.limsdata))
 
             self.update_operator()
 
@@ -271,7 +261,7 @@ class BaseUserManager(ComponentBase):
                 "loginType": HWR.beamline.lims.loginType.title(),
                 "proposalList": proposal_list,
                 "rootPath": HWR.beamline.session.get_base_image_directory(),
-                "user": flask_login.current_user.todict(),
+                "user": current_user.todict(),
             }
 
             res["selectedProposal"] = "%s%s" % (
@@ -281,7 +271,7 @@ class BaseUserManager(ComponentBase):
 
             res["selectedProposalID"] = HWR.beamline.session.proposal_id
 
-        return flask_login.current_user, res
+        return current_user, res
 
     def update_user(self, user):
         self.app.server.user_datastore.put(user)
@@ -306,6 +296,8 @@ class BaseUserManager(ComponentBase):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
         username = f"{user}-{str(uuid.uuid4())}"
+        if HWR.beamline.lims.loginType.lower() == "user":
+            username = f"{user}"
 
         # Make sure that the roles staff and incontrol always
         # exists
@@ -373,17 +365,31 @@ class UserManager(BaseUserManager):
             "inhouse": inhouse,
         }
 
-        _users = self.logged_in_users(exclude_inhouse=True)
+        active_users = self.active_logged_in_users()
+
+        if login_id in active_users:
+            if current_user.is_anonymous:
+                raise Exception("Login rejected, you are already logged in somewhere else")
+            else:
+                if current_user.username == login_id:
+                    raise Exception("You are already logged in here")
+                else:
+                    raise Exception("Login rejected, you are already logged in somewhere else\nand Another user is already logged in here")
 
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
             raise Exception("In-house only allowed from localhost")
 
         # Only allow other users to log-in if they are from the same proposal
-        if (not inhouse) and _users and (login_id not in _users):
+        if (not inhouse) and active_users and (login_id not in active_users) and HWR.beamline.lims.loginType.lower() != "user":
             raise Exception("Another user is already logged in")
 
-        # Only allow local login when remote is disabled
+        # Only allow if no one else is logged in here
+        if not current_user.is_anonymous:
+            if active_users and current_user.username != login_id and HWR.beamline.lims.loginType.lower() == "user":
+                raise Exception("Another user is already logged in here")
+
+        # Only allow local login when remote is disabledf
         if not self.app.ALLOW_REMOTE and not is_local_host():
             raise Exception("Remote access disabled")
 

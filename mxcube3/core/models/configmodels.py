@@ -1,7 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
-
+import datetime
 
 class FlaskConfigModel(BaseModel):
     SECRET_KEY: str = Field(
@@ -15,6 +15,8 @@ class FlaskConfigModel(BaseModel):
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
     SECURITY_TRACKABLE: bool = Field(True, description="")
     USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
+    PERMANENT_SESSION_LIFETIME: datetime.timedelta
+    SESSION_PERMANENT: bool = Field(True, description="")
 
 
 class UIComponentModel(BaseModel):

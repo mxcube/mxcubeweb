@@ -200,6 +200,8 @@ def init_route(app, server, url_prefix):
 
     @server.flask_socketio.on("disconnect", namespace="/hwr")
     def disconnect():
+        if current_user.is_anonymous:
+            return
         current_user.disconnect_timestamp = datetime.now()
         app.usermanager.update_user(current_user)
         # gevent.spawn(app.usermanager.handle_disconnect, current_user.username)

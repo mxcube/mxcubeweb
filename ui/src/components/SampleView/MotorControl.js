@@ -24,6 +24,9 @@ export default class MotorControl extends React.Component {
     return Object.values(this.props.uiproperties.components).
       slice(from, to_arg).map((motor_uiprop) => {
         const motor = this.props.hardwareObjects[motor_uiprop.attribute];
+        if (typeof(motor) === 'undefined') {
+          return null;
+        }
         return (
           <Col key={`mc-${motor_uiprop.attribute}`} sm={12}>
             <MotorInput
@@ -60,23 +63,9 @@ export default class MotorControl extends React.Component {
   }
 
   renderAllMotors() {
-    const phaseControl = (
-      <div>
-        <p className="motor-name">Phase Control:</p>
-        <PhaseInput
-          phase={this.props.sampleViewState.currentPhase}
-          phaseList={this.props.sampleViewState.phaseList}
-          sendPhase={this.props.sampleViewActions.sendCurrentPhase}
-        />
-      </div>
-    );
-
     return (
       <div>
         {this.getMotorComponents(3, 8)}
-        <div className="col-sm-12">
-          {process.env.REACT_APP_PHASECONTROL ? phaseControl : null}
-        </div>
       </div>
     );
   }
