@@ -1,3 +1,4 @@
+import inspect
 import traceback
 import typing
 import logging
@@ -176,6 +177,9 @@ class AdapterBase:
             if _n != "return":
                 input_dict[_n] = (_t, pydantic.Field(alias=_n))
             else:
+                if not inspect.isclass(_t):
+                    _t = _t.__class__
+
                 output_dict[_n] = (_t, pydantic.Field(alias=_n))
 
         return {
@@ -346,9 +350,7 @@ class ActuatorAdapterBase(AdapterBase):
         Signal handler to be used for sending values to the client via
         socketIO.
         """
-        #data = {"name": self._name, "value": args[0]}
         self.emit_ho_value_changed(args[0])
-        #self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
 
     # Abstract method
     def set_value(self, value):

@@ -57,9 +57,7 @@ export default class SSXChipControl extends React.Component {
     const headConfiguration = this.props.hardwareObjects.
       diffractometer.attributes.head_configuration ?? {};
 
-    const chipLayout = headConfiguration.available[
-      headConfiguration.current
-    ];
+    const chipLayoutList = headConfiguration.available;
 
     const sampleVerticalUiProp = this.props.uiproperties.components.find(
       el => el.role === "sample_vertical"
@@ -69,7 +67,6 @@ export default class SSXChipControl extends React.Component {
       el => el.role === "sample_horizontal"
     );
 
-
     return (
       <Popover id="test">
         <Popover.Header>
@@ -78,7 +75,7 @@ export default class SSXChipControl extends React.Component {
 
         <Popover.Body>
           <SSXChip
-            currentChipLayout={chipLayout}
+            chipLayoutList={chipLayoutList}
             currentLayoutName={headConfiguration.current}
             availableChipLayoutList={Object.keys(headConfiguration.available)}
             onAddTask={this.handleAddTask}
