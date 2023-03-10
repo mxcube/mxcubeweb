@@ -147,8 +147,8 @@ class PlateManipulator extends React.Component {
             x={x}
             y={y - d * drop}
             style={{
-              fill: `${this.props.selectedRow}${this.props.selectedCol}:${drop}-0` === this.props.loadedSample.address ? '#ef9a9a' : '#9e9e9e',
-              // fill: Number(loadedDrop) === drop ? '#ef9a9a' : '#9e9e9e',
+              // fill: `${this.props.selectedRow}${this.props.selectedCol}:${drop}-0` === this.props.loadedSample.address ? '#ef9a9a' : '#9e9e9e',
+              fill: Number(loadedDrop) === drop ? '#ef9a9a' : '#9e9e9e',
               stroke: drop === this.props.selectedDrop ? '#0177fdad' : '#888888',
               strokeWidth: drop === this.props.selectedDrop ? '2' : '1',
             }}
