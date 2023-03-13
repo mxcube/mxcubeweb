@@ -138,7 +138,7 @@ class BaseUserManager(ComponentBase):
     def _login(self, login_id, password):
         pass
 
-    def login(self, login_id: str, password: str, previousUser: str):
+    def login(self, login_id: str, password: str):
         try:
             login_res = self._login(login_id, password)
         except Exception:
@@ -147,7 +147,7 @@ class BaseUserManager(ComponentBase):
             if not "sid" in flask.session:
                 flask.session["sid"] = str(uuid.uuid4())
 
-            user = self.db_create_user(login_id, password, login_res, previousUser)
+            user = self.db_create_user(login_id, password, login_res)
             self.app.server.user_datastore.activate_user(user)
             flask_security.login_user(user, remember=False)
 
