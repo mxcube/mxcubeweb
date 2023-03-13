@@ -12,6 +12,7 @@ class DiffractometerAdapter(AdapterBase):
         """
         super(DiffractometerAdapter, self).__init__(ho, *args, **kwargs)
         ho.connect("stateChanged", self._state_change)
+        ho.connect("valueChanged", self._state_change)
 
     def _state_change(self, *args, **kwargs):
         self.state_change(**kwargs)

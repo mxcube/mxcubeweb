@@ -7,17 +7,27 @@ export const STATE = {
 };
 
 // Action types
-export const BL_ATTR_SET = 'BL_ATTR_SET';
+export const BL_UPDATE_HARDWARE_OBJECT = 'BL_UPDATE_HARDWARE_OBJECT';
+export const BL_UPDATE_HARDWARE_OBJECT_ATTRIBUTE = "BL_UPDATE_HARDWARE_OBJECT_ATTRIBUTE";
+export const BL_UPDATE_HARDWARE_OBJECT_VALUE = "BL_UPDATE_HARDWARE_OBJECT_VALUE"
 export const BL_ATTR_GET_ALL = 'BL_ATTR_GET_ALL';
-export const BL_ATTR_SET_STATE = 'BL_ATTR_SET_STATE';
+export const BL_UPDATE_HARDWARE_OBJECT_STATE = 'BL_UPDATE_HARDWARE_OBJECT_STATE';
 export const BL_ATTR_MOV_SET_STATE = 'BL_ATTR_MOV_SET_STATE';
 export const BL_ATTR_ACT_SET_STATE = 'BL_ATTR_ACT_SET_STATE';
 export const BL_MACH_INFO = 'BL_MACH_INFO';
 export const BL_ATTR_MOV_SET = 'BL_ATTR_MOV_SET';
 export const BL_ATTR_ACT_SET = 'BL_ATTR_ACT_SET';
 
-export function setBeamlineAttrAction(data) {
-  return { type: BL_ATTR_SET, data };
+export function updateBeamlineHardwareObjectAction(data) {
+  return { type: BL_UPDATE_HARDWARE_OBJECT, data };
+}
+
+export function updateBeamlineHardwareObjectAttributeAction(data) {
+  return { type: BL_UPDATE_HARDWARE_OBJECT_ATTRIBUTE, data };
+}
+
+export function updateBeamlineHardwareObjectValueAction(data) {
+  return { type: BL_UPDATE_HARDWARE_OBJECT_VALUE, data };
 }
 
 export function getBeamlineAttrsAction(data) {
@@ -30,7 +40,7 @@ export function setMachInfo(info) {
 
 export function busyStateAction(name) {
   return {
-    type: BL_ATTR_SET_STATE,
+    type: BL_UPDATE_HARDWARE_OBJECT_STATE,
     data: { name, state: STATE.BUSY },
   };
 }
@@ -60,7 +70,7 @@ export function sendGetAllhardwareObjects() {
 }
 
 export function setBeamlineAttribute(name, value) {
-  return setBeamlineAttrAction({ name, value });
+  return updateBeamlineHardwareObjectAction({ name, value });
 }
 
 export function sendSetAttribute(name, value) {
@@ -91,7 +101,7 @@ export function executeCommand(obj, name, args) {
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
-      body: JSON.stringify({...args}),
+      body: JSON.stringify({ ...args }),
     });
   }
 }

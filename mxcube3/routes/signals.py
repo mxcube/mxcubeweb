@@ -646,7 +646,7 @@ def safety_shutter_state_changed(values):
     ho = BeamlineAdapter(HWR.beamline).get_object_by_role("safety_shutter")
     data = ho.dict()
     try:
-        server.emit("beamline_value_change", data, namespace="/hwr")
+        server.emit("hardware_object_changed", data, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").error("error sending message: %s" + str(data))
 

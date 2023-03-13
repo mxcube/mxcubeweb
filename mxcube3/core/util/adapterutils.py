@@ -18,8 +18,12 @@ def get_adapter_cls_from_hardware_object(ho):
     )
 
     from mxcubecore.HardwareObjects import MiniDiff, GenericDiffractometer
-
-    from mxcubecore.HardwareObjects import DataPublisher
+ 
+    # This needs to be a direct import of DataPublisher otherwise the 
+    # is instance check below fails due to different "import paths" It
+    # inly works because mxcubecore adds mxcubecore.HardwareObjects to
+    # sys path in __init__.py
+    import DataPublisher
 
     from mxcube3.core.adapter.actuator_adapter import ActuatorAdapter
     from mxcube3.core.adapter.motor_adapter import MotorAdapter

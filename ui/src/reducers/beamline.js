@@ -146,9 +146,9 @@ export default (state = INITIAL_STATE, action) => {
 
   switch (action.type) {
     case 'BL_ATTR_GET_ALL':
-      return { ...state, ...action.data};
+      return { ...state, ...action.data };
 
-    case 'BL_ATTR_SET': {
+    case 'BL_UPDATE_HARDWARE_OBJECT': {
       const attrData = Object.assign(
         state.hardwareObjects[action.data.name] || {},
         action.data
@@ -161,6 +161,41 @@ export default (state = INITIAL_STATE, action) => {
         },
       };
     }
+    case 'BL_UPDATE_HARDWARE_OBJECT_ATTRIBUTE': {
+      let data = state.hardwareObjects[action.data.name]["attributes"][action.data.attribute]
+
+      if (Array.isArray(data) && action.data.operation === 'UPDATE') {
+        data = [...data, action.data.value];
+      } else if (typeof (data) === 'object' && data.operation === 'UPDATE') {
+        data = Object.assign(...data, action.data.value);
+      } else {
+        data = action.data.value;
+      }
+
+      return {
+        ...state,
+        hardwareObjects: {
+          ...state.hardwareObjects,
+          [action.data.name]: {
+            ...state.hardwareObjects[action.data.name], ["attributes"]: {
+              ...state.hardwareObjects[action.data.name]["attributes"],
+              [action.data.attribute]: data,
+            },
+          },
+        },
+      };
+    }
+    case 'BL_UPDATE_HARDWARE_OBJECT_VALUE': {
+      return {
+        ...state,
+        hardwareObjects: {
+          ...state.hardwareObjects,
+          [action.data.name]: {
+            ...state.hardwareObjects[action.data.name], ["value"]: action.data.value,
+          },
+        },
+      };
+    }
     case 'BL_ACT_SET':
       return {
         ...state,
@@ -169,8 +204,8 @@ export default (state = INITIAL_STATE, action) => {
           [action.data.name]: action.data,
         },
       };
-    case 'BL_ATTR_SET_STATE':
-      data = { ...state};
+    case 'BL_UPDATE_HARDWARE_OBJECT_STATE':
+      data = { ...state };
       data.hardwareObjects[action.data.name].state = action.data.state;
       return data;
 
@@ -303,7 +338,7 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         currentBeamlineAction: {
-          
+
           ...JSON.parse(JSON.stringify(state.currentBeamlineAction)),
           show: false
         },

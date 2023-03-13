@@ -12,7 +12,12 @@ import {
   videoMessageOverlay,
   setCurrentPhase,
 } from './actions/sampleview';
-import { setBeamlineAttrAction, setMachInfo } from './actions/beamline';
+import {
+  updateBeamlineHardwareObjectAction,
+  updateBeamlineHardwareObjectValueAction,
+  updateBeamlineHardwareObjectAttributeAction,
+  setMachInfo
+} from './actions/beamline';
 import {
   setActionState,
   addUserMessage,
@@ -162,8 +167,16 @@ class ServerIO {
       this.dispatch(setMachInfo(info));
     });
 
-    this.hwrSocket.on('beamline_value_change', (data) => {
-      this.dispatch(setBeamlineAttrAction(data));
+    this.hwrSocket.on('hardware_object_changed', (data) => {
+      this.dispatch(updateBeamlineHardwareObjectAction(data));
+    });
+
+    this.hwrSocket.on('hardware_object_attribute_changed', (data) => {
+      this.dispatch(updateBeamlineHardwareObjectAttributeAction(data));
+    });
+
+    this.hwrSocket.on('hardware_object_value_changed', (data) => {
+      this.dispatch(updateBeamlineHardwareObjectValueAction(data));
     });
 
     this.hwrSocket.on('grid_result_available', (data) => {
@@ -241,66 +254,66 @@ class ServerIO {
 
     this.hwrSocket.on('sc', (record) => {
       switch (record.signal) {
-      case 'operatingSampleChanger': {
-        this.dispatch(
-          setLoading(
-            true,
-            'Sample changer in operation',
-            record.message,
-            true,
-            () => this.dispatch(sendStopQueue())
-          )
-        );
-      
-      break;
-      }
-      case 'loadingSample': 
-      case 'loadedSample': {
-        this.dispatch(
-          setLoading(
-            true,
-            `Loading sample ${record.location}`,
-            record.message,
-            true,
-            () => this.dispatch(sendStopQueue())
-          )
-        );
-      
-      break;
-      }
-      case 'unLoadingSample': 
-      case 'unLoadedSample': {
-        this.dispatch(
-          setLoading(
-            true,
-            `Unloading sample ${record.location}`,
-            record.message,
-            true,
-            () => this.dispatch(sendStopQueue())
-          )
-        );
-      
-      break;
-      }
-      case 'loadReady': {
-        this.dispatch(
-          setLoading(false, 'SC Ready', record.message, true, () =>
-            this.dispatch(sendStopQueue())
-          )
-        );
-      
-      break;
-      }
-      case 'inSafeArea': {
-        this.dispatch(
-          setLoading(false, 'SC Safe', record.message, true, () =>
-            this.dispatch(sendStopQueue())
-          )
-        );
-      
-      break;
-      }
-      // No default
+        case 'operatingSampleChanger': {
+          this.dispatch(
+            setLoading(
+              true,
+              'Sample changer in operation',
+              record.message,
+              true,
+              () => this.dispatch(sendStopQueue())
+            )
+          );
+
+          break;
+        }
+        case 'loadingSample':
+        case 'loadedSample': {
+          this.dispatch(
+            setLoading(
+              true,
+              `Loading sample ${record.location}`,
+              record.message,
+              true,
+              () => this.dispatch(sendStopQueue())
+            )
+          );
+
+          break;
+        }
+        case 'unLoadingSample':
+        case 'unLoadedSample': {
+          this.dispatch(
+            setLoading(
+              true,
+              `Unloading sample ${record.location}`,
+              record.message,
+              true,
+              () => this.dispatch(sendStopQueue())
+            )
+          );
+
+          break;
+        }
+        case 'loadReady': {
+          this.dispatch(
+            setLoading(false, 'SC Ready', record.message, true, () =>
+              this.dispatch(sendStopQueue())
+            )
+          );
+
+          break;
+        }
+        case 'inSafeArea': {
+          this.dispatch(
+            setLoading(false, 'SC Safe', record.message, true, () =>
+              this.dispatch(sendStopQueue())
+            )
+          );
+
+          break;
+        }
+        // No default
       }
     });
 

@@ -1,5 +1,9 @@
-.generic-equipment-container .rjsf #root__title{
+.generic-equipment-container .rjsf #root__title {
   display: none;
+}
+
+#equipment-popover {
+  min-width: 60em;
 }
 
 .generic-equipment-container-collapsible {
@@ -11,7 +15,7 @@
   border: 0px;
 }
 
-.generic-equipment-arrow-p{
+.generic-equipment-arrow-p {
   position: relative;
   bottom: 35px;
   float: right;
@@ -19,28 +23,28 @@
   margin-right: 20px;
 }
 
-.collapsible-arrow-c{
+.collapsible-arrow-c {
   float: right;
   margin-right: 10px;
   margin-left: auto;
   margin-top: 4px;
 }
 
-.generic-equipment-collapsible-child-content{
+.generic-equipment-collapsible-child-content {
   margin-bottom: 0.5rem;
 }
 
 
-.custom-accordion-header >  .accordion-button:not(.collapsed) {
+.custom-accordion-header>.accordion-button:not(.collapsed) {
   background-color: #ffffff !important;
   box-shadow: none !important;
 }
 
-.custom-accordion-header-child >  .accordion-button:not(.collapsed) {
+.custom-accordion-header-child>.accordion-button:not(.collapsed) {
   /* background-color: #ffffff !important; */
   box-shadow: 0px !important;
 }
 
 .accordion-button:focus {
-  box-shadow:none !important;
+  box-shadow: none !important;
 }
