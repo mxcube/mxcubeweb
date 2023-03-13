@@ -210,7 +210,7 @@ def test_queue_enable_item(client):
 
 
 def test_queue_swap_task_item(client):
-    """Test if we can swap tasks in a sample in queue. Two tasks are added with a different param and then swaped and tested"""   
+    """Test if we can swap tasks in a sample in queue. Two tasks are added with a different param and then swaped and tested"""
     resp = client.get("/mxcube/api/v0.1/queue/")
     assert (
         resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
@@ -382,17 +382,29 @@ def test_queue_set_sample_order(client):
     )
 
 
+def assert_and_remove_keys_with_random_value(parameters):
+    assert "osc_start" in parameters["acq_parameters"]
+    assert "energy" in parameters["acq_parameters"]
+    assert "resolution" in parameters["acq_parameters"]
+    assert "kappa" in parameters["acq_parameters"]
+    assert "kappa_phi" in parameters["acq_parameters"]
+
+    parameters["acq_parameters"].pop("osc_start")
+    parameters["acq_parameters"].pop("energy")
+    parameters["acq_parameters"].pop("resolution")
+    parameters["acq_parameters"].pop("kappa")
+    parameters["acq_parameters"].pop("kappa_phi")
+
+
 def test_get_default_dc_params(client):
     """Test if we get the right default data collection params."""
 
     resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
     actual = json.loads(resp.data)["datacollection"]
 
-    # some values are taken from current value/position which is random, so ignore those
-    actual["acq_parameters"].pop("osc_start")
-    actual["acq_parameters"].pop("energy")
-    actual["acq_parameters"].pop("resolution")
-    actual["acq_parameters"].pop("transmission")
+    # some values are taken from current value/position which is random,
+    # so ignore those. But make sure they keys exist
+    assert_and_remove_keys_with_random_value(actual)
 
     assert resp.status_code == 200 and actual == default_dc_params
 
@@ -401,6 +413,10 @@ def test_get_default_char_acq_params(client):
     """Test if we get the right default characterisation acq params."""
     resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
     actual = json.loads(resp.data)["characterisation"]
+
+    # some values are taken from current value/position which is random,
+    # so ignore those. But make sure they keys exist
+    assert_and_remove_keys_with_random_value(actual)
 
     assert resp.status_code == 200 and actual == default_char_acq_params
 
@@ -411,6 +427,10 @@ def test_get_default_mesh_params(client):
     resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
     actual = json.loads(resp.data)["mesh"]
 
+    # some values are taken from current value/position which is random,
+    # so ignore those. But make sure they keys exist
+    assert_and_remove_keys_with_random_value(actual)
+
     assert resp.status_code == 200 and actual == default_mesh_params
 
 
@@ -418,6 +438,11 @@ def test_get_default_xrf_parameters(client):
     """Test if we get the right default xrf params."""
     resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
     actual = json.loads(resp.data)["xrf"]
+
+    # some values are taken from current value/position which is random,
+    # so ignore those. But make sure they keys exist
+    assert_and_remove_keys_with_random_value(actual)
+
     assert resp.status_code == 200 and actual == default_xrf_parameters
 
 

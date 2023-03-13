@@ -22,6 +22,7 @@ def test_beamline_get_all_attribute(client):
     expected = [
         "beam",
         "cryo",
+        "data_publisher",
         "detector",
         "detector.detector_distance",
         "diffractometer",
@@ -109,7 +110,7 @@ def test_beamline_set_attribute(client):
         ("detector.detector_distance", "motor"),
     ]
 
-    for (name, adapter_type) in bl_attrs:
+    for name, adapter_type in bl_attrs:
         resp = client.get(f"/mxcube/api/v0.1/beamline/{adapter_type}/{name}")
         data = json.loads(resp.data)
 
