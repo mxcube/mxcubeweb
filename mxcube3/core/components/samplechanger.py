@@ -417,9 +417,10 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
             element = "%d:%02d" % loc
             sample = {"location": element, "sampleID": element}
             mxcube.sample_changer.mount_sample_clean_up(sample)
-        elif sample_mount_device.__TYPE__ == "PlateManipulator":
-            sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
-            mxcube.sample_changer.mount_sample_clean_up(sample)
+        # elif sample_mount_device.__TYPE__ == "PlateManipulator":
+        #     sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
+        #     mxcube.sample_changer.mount_sample_clean_up(sample)
+        # PlateManipulator does not need a specific mount
         else:
             sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
 
