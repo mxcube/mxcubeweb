@@ -147,11 +147,6 @@ def loaded_sample_changed(sample):
         address = ""
         barcode = ""
 
-    if HWR.beamline.diffractometer.in_plate_mode():
-        # this need to be recheck
-        import pdb; pdb.set_trace() # will be remove after check
-        address = sample
-
     logging.getLogger("HWR").info("Loaded sample changed: " + address)
 
     try:
