@@ -233,7 +233,8 @@ class SampleChanger(ComponentBase):
 
                 # We remove the current sample from the queue, if we are moving
                 # from one sample to another and the current sample is in the queue
-                if sid and current_queue[sid]:
+
+                if sid and current_queue.get(sid, False):
                     node_id = current_queue[sid]["queueID"]
                     self.app.queue.set_enabled_entry(node_id, False)
                     signals.queue_toggle_sample(self.app.queue.get_entry(node_id)[1])
@@ -400,14 +401,10 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
         "startTime": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
-    # This is a possible solution how to deal with two devices that
-    # can move sample on beam (sample changer, plate holder, in future
-    # also harvester)
-    # TODO make sample_Changer_one, sample_changer_two
-    if HWR.beamline.diffractometer.in_plate_mode():
-        sample_mount_device = HWR.beamline.plate_manipulator
-    else:
-        sample_mount_device = HWR.beamline.sample_changer
+    # devices that can move sample on beam
+    # (sample changer, plate holder)
+    # PlateManipulator is being consider as Sample changer
+    sample_mount_device = HWR.beamline.sample_changer
 
     if (
         sample_mount_device.get_loaded_sample()
