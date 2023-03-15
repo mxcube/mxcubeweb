@@ -160,6 +160,7 @@ export function doSignOut(navigate) {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());
+      dispatch(getLoginInfo());
       navigate && navigate('/login');
       serverIO.disconnect();
     });

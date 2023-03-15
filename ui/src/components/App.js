@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom';
 import { serverIO } from '../serverIO';
 import { store, statePersistor } from '../store';
@@ -26,18 +27,23 @@ function requireAuth() {
       serverIO.connectStateSocket(statePersistor);
     }
   });
-  state = store.getState();
-  return state.login.loggedIn;
 }
 
 function PrivateOutlet() {
+  const loggedIn = useSelector((state) => state.login.loggedIn);
   const location = useLocation();
-  const auth = requireAuth();
-  return auth ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
+  requireAuth();
+  return loggedIn ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
 }
 
 class App extends React.Component {
   render() {
+    requireAuth();
+
+    if (this.props.loggedIn === null) {
+      return (<LoadingScreen />);
+    }
+
     return (
       <Router>
         <Routes>
@@ -59,4 +65,10 @@ class App extends React.Component {
   }
 }
 
-export default App;
+function mapStateToProps(state) {
+  return {
+    loggedIn: state.login.loggedIn,
+  };
+}
+
+export default connect(mapStateToProps)(App);
