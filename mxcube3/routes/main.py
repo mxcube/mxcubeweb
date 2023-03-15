@@ -49,6 +49,10 @@ def init_route(app, server, url_prefix):
     @server.flask.before_request
     def before_request():
         pass
+        if not flask_login.current_user.is_anonymous:
+            flask_login.current_user.last_request_timestamp = datetime.now()
+            app.usermanager.update_user(flask_login.current_user)
+
         # if not current_user.is_anonymous:
         #     now = datetime.datetime.now()
         #     last_active = current_user.disconnect_timestamp

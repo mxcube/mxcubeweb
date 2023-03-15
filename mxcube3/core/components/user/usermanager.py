@@ -6,7 +6,6 @@ import datetime
 
 import flask
 import flask_security
-import flask_login
 from flask_login import current_user
 
 from mxcube3.core.components.component_base import ComponentBase
@@ -80,7 +79,10 @@ class BaseUserManager(ComponentBase):
         active_in_control = False
 
         for _u in User.query.all():
-            if _u.is_authenticated and _u.in_control:
+            if _u.last_request_timestamp and (datetime.datetime.now() - _u.last_request_timestamp).total_seconds() > 60:
+                logging.getLogger("HWR.MX3").info(f"Logged out inactive user {_u.username}")
+                self.app.server.user_datastore.deactivate_user(_u)
+            elif _u.is_authenticated and _u.in_control:
                 active_in_control = True
             else:
                 self.db_set_in_control(_u, False)

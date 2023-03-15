@@ -69,6 +69,7 @@ class User(Base, UserMixin):
     current_limssession = Column(JSON, unique=False)
     limsdata = Column(JSON, unique=False)
     disconnect_timestamp = Column(DateTime())
+    last_request_timestamp = Column(DateTime())
     roles = relationship(
         "Role", secondary="roles_users", backref=backref("users", lazy="dynamic")
     )

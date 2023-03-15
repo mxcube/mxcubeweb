@@ -73,7 +73,7 @@ class Server:
         Server.user_datastore = UserDatastore(
             db_session, User, Role, message_model=Message
         )
-        Server.security = flask_security.Security(Server.flask, Server.user_datastore)
+
         Server.db_session = db_session
 
         Server.flask_socketio = SocketIO(
@@ -174,6 +174,11 @@ class Server:
 
         Server._register_route(
             init_workflow_route, mxcube, f"{url_root_prefix}/workflow"
+        )
+
+        Server.security = flask_security.Security(
+            Server.flask,
+            Server.user_datastore
         )
 
     @staticmethod

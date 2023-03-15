@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 from flask import Blueprint, request, jsonify, make_response, redirect, session
 from flask_login import current_user
@@ -109,5 +110,12 @@ def init_route(app, server, url_prefix):
     @server.flask_socketio.on("disconnect", namespace="/network")
     def network_ws_disconnect():
         pass
+
+    @bp.route("/refresh_session", methods=["GET"])
+    @server.restrict
+    def refresh_session():
+        logging.getLogger("MX3.HWR").debug("Session refresh")
+        server.flask.permanent_session_lifetime = timedelta(minutes=1)
+        return make_response("", 200)
 
     return bp
