@@ -51,10 +51,9 @@ function initStore() {
   const persistConfig = {
     key: 'root',
     blacklist: ['remoteAccess', 'beamline', 'sampleChanger',
-      'form', 'general', 'logger', 'shapes',
+      'form', 'general', 'logger', 'shapes', 'login',
       'sampleView', 'taskResult', 'sampleChangerMaintenance', 'uiproperties'],
-    whitelist: ['login'],
-    storage, // TODO: Find a way to pass the server storage there instead of local storage, 
+    storage, // TODO: Find a way to pass the server storage there instead of local storage,
   }
 
   const persistedReducer = persistReducer(persistConfig, rootReducer);
