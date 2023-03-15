@@ -1,6 +1,11 @@
 import logging
+import traceback
+import time
+import flask_login
 
-from flask import Blueprint, jsonify
+from datetime import datetime
+
+from flask import Blueprint, jsonify, request
 from spectree import Response
 
 from mxcube3 import version
@@ -48,7 +53,12 @@ def init_route(app, server, url_prefix):
 
     @server.flask.before_request
     def before_request():
-        pass
+        logging.getLogger("MX3.HWR").debug('Remote Addr: %s', request.remote_addr)
+        logging.getLogger("MX3.HWR").debug('Path: %s', request.full_path)
+        logging.getLogger("MX3.HWR").debug('scheme: %s', request.scheme)
+        logging.getLogger("MX3.HWR").debug('Headers: %s', request.headers)
+        logging.getLogger("MX3.HWR").info('Body: %s', request.get_data())
+
         if not flask_login.current_user.is_anonymous:
             flask_login.current_user.last_request_timestamp = datetime.now()
             app.usermanager.update_user(flask_login.current_user)
@@ -67,5 +77,21 @@ def init_route(app, server, url_prefix):
         #         app.usermanager.signout()
 
         #     print(current_user.disconnect_timestamp)
+
+    @server.flask.errorhandler(Exception)
+    def exceptions(e):
+        tb = traceback.format_exc()
+        timestamp = time.strftime('[%Y-%b-%d %H:%M]')
+        logging.getLogger("MX3.HWR").debug(
+            '%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s',
+            timestamp,
+            request.remote_addr,
+            request.method,
+            request.scheme,
+            request.full_path,
+            tb
+        )
+
+        return tb
 
     return bp
