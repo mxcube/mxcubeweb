@@ -17,6 +17,9 @@ import BeamlineSetupContainer from './BeamlineSetupContainer';
 import SampleQueueContainer from './SampleQueueContainer';
 import { QUEUE_RUNNING } from '../constants';
 import DefaultErrorBoundary from './DefaultErrorBoundary';
+import { loadSample, refresh, selectWell,
+  setPlate, selectDrop, sendCommand
+} from '../actions/sampleChanger';
 
 import {
   sendSetAttribute,
@@ -27,9 +30,6 @@ import {
   sendLogFrontEndTraceBack
 } from '../actions/beamline';
 import { syncWithCrims } from '../actions/sampleGrid';
-import { select, loadSample, scan, refresh, selectWell,
-  setPlate, selectDrop, sendCommand
-} from '../actions/sampleChanger';
 class SampleViewContainer extends Component {
   render() {
     const { uiproperties } = this.props;
@@ -150,10 +150,6 @@ class SampleViewContainer extends Component {
                 sampleViewActions={this.props.sampleViewActions}
                 sampleViewState={this.props.sampleViewState}
               />
-            </DefaultErrorBoundary>
-          </Col>
-          <Col sm={7}>
-            <DefaultErrorBoundary>
               {this.props.contents.name === 'PlateManipulator'
                 ? (
                   <div>
@@ -165,7 +161,7 @@ class SampleViewContainer extends Component {
                           select={this.props.select}
                           load={this.props.loadSample}
                           send_command={this.props.send_command}
-                          scan={this.props.scan}
+                          refresh={this.props.refresh}
                           plates={this.props.plateGrid}
                           plateIndex={this.props.plateIndex}
                           selectedRow={this.props.selectedRow}
@@ -208,8 +204,10 @@ class SampleViewContainer extends Component {
                 )
                 : null
               }
-            </Col>
-            <Col sm={7}>
+            </DefaultErrorBoundary>
+          </Col>
+          <Col sm={7}>
+            <DefaultErrorBoundary>
               <ContextMenu
                 {...this.props.contextMenu}
                 sampleActions={this.props.sampleViewActions}
@@ -314,6 +312,8 @@ function mapDispatchToProps(dispatch) {
     sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
 
+    loadSample: (address) => dispatch(loadSample(address)),
+    refresh: () => dispatch(refresh()),
     selectWell: (row, col) => dispatch(selectWell(row, col)),
     setPlate: (address) => dispatch(setPlate(address)),
     selectDrop: (address) => dispatch(selectDrop(address)),

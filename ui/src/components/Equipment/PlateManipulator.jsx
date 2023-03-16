@@ -18,6 +18,7 @@ class PlateManipulator extends React.Component {
     this.initLoadSample = this.initLoadSample.bind(this);
     this.syncSamplesCrims = this.syncSamplesCrims.bind(this);
     this.showContextMenu = this.showContextMenu.bind(this);
+    this.refreshClicked = this.refreshClicked.bind(this);
     this.wellPlateRef = React.createRef();
   }
 
@@ -45,6 +46,10 @@ class PlateManipulator extends React.Component {
     });
 
     this.props.setPlate(plate_index);
+  }
+
+  refreshClicked() {
+    this.props.refresh();
   }
 
 
@@ -520,6 +525,19 @@ class PlateManipulator extends React.Component {
               ))
               }
             </DropdownButton>
+            <span style={{ marginLeft: '1em' }} />
+            <OverlayTrigger
+              variant="outline-success"
+              placement="bottom"
+              overlay={(
+                <Tooltip id="select-samples">
+                  Refresh if Plate Location not Updated
+                </Tooltip>)}
+            >
+              <Button variant="outline-success" onClick={this.refreshClicked}>
+                <MdSync size='1.5em'/> Refresh
+              </Button>
+            </OverlayTrigger>
             <span style={{ marginLeft: '1em' }} />
             <OverlayTrigger
               variant="outline-success"

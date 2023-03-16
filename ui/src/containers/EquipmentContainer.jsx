@@ -20,6 +20,10 @@ import {
 
 import SampleChanger from '../components/Equipment/SampleChanger';
 import SampleChangerMaintenance from '../components/Equipment/SampleChangerMaintenance';
+
+import PlateManipulator from '../components/Equipment/PlateManipulator';
+import PlateManipulatorMaintenance from '../components/Equipment/PlateManipulatorMaintenance';
+
 import GenericEquipment from '../components/Equipment/GenericEquipment';
 import GenericEquipmentControl from '../components/Equipment/GenericEquipmentControl';
 
@@ -44,6 +48,7 @@ class EquipmentContainer extends React.Component {
                       select={this.props.select}
                       load={this.props.loadSample}
                       send_command={this.props.sendCommand}
+                      refresh={this.props.refresh}
                       plates={this.props.plateGrid}
                       plateIndex={this.props.plateIndex}
                       selectedRow={this.props.selectedRow}
