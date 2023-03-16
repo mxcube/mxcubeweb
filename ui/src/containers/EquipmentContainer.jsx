@@ -13,8 +13,8 @@ import {
 } from '../actions/beamline';
 
 import SampleChanger from '../components/Equipment/SampleChanger';
-import EquipmentState from '../components/Equipment/EquipmentState';
 import SampleChangerMaintenance from '../components/Equipment/SampleChangerMaintenance';
+import GenericEquipment from '../components/Equipment/GenericEquipment';
 import GenericEquipmentControl from '../components/Equipment/GenericEquipmentControl';
 
 class EquipmentContainer extends React.Component {
@@ -23,38 +23,36 @@ class EquipmentContainer extends React.Component {
       <Container fluid className='mt-3'>
         <Row className="d-flex">
           <Col sm={12}>
-              <Row className="d-flex">
-              <Col sm={12} className='mt-1 mb-3'>
-                <EquipmentState
-                  state={this.props.sampleChangerState}
-                  equipmentName='Samplechanger'
-                />
-              </Col>
-            </Row>
-            <Row className="row">
-              <Col sm={6}>
-                <SampleChanger
-                  state={this.props.sampleChangerState}
-                  loadedSample={this.props.loadedSample}
-                  select={this.props.select}
-                  load={this.props.loadSample}
-                  unload={this.props.unloadSample}
-                  abort={this.props.abort}
-                  scan={this.props.scan}
-                  contents={this.props.contents}
-                  refresh={this.props.refresh}
-                />
-              </Col>
-              <Col sm={6}>
-                <SampleChangerMaintenance
-                  commands={this.props.commands}
-                  global_state={this.props.global_state}
-                  commands_state={this.props.commands_state}
-                  message={this.props.message}
-                  send_command={this.props.sendCommand}
-                />
-              </Col>
-            </Row>
+            <GenericEquipment
+                state={this.props.sampleChangerState}
+                name={this.props.contents && this.props.contents.name}
+                CollapseOpen
+              >
+                <Row className="row">
+                  <Col sm={6}>
+                    <SampleChanger
+                      state={this.props.sampleChangerState}
+                      loadedSample={this.props.loadedSample}
+                      select={this.props.select}
+                      load={this.props.loadSample}
+                      unload={this.props.unloadSample}
+                      abort={this.props.abort}
+                      scan={this.props.scan}
+                      contents={this.props.contents}
+                      refresh={this.props.refresh}
+                    />
+                  </Col>
+                  <Col sm={6}>
+                    <SampleChangerMaintenance
+                      commands={this.props.commands}
+                      global_state={this.props.global_state}
+                      commands_state={this.props.commands_state}
+                      message={this.props.message}
+                      send_command={this.props.sendCommand}
+                    />
+                  </Col>
+                </Row>
+            </GenericEquipment>
             <Row>
               <Col sm={12}>
                 { Object.entries(this.props.beamline.hardwareObjects).map(([key, value]) => {
@@ -71,7 +69,7 @@ class EquipmentContainer extends React.Component {
                   })
                 }
               </Col>
-          </Row>
+            </Row>
           </Col>
         </Row>
       </Container>
