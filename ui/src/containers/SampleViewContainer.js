@@ -155,26 +155,31 @@ class SampleViewContainer extends Component {
                   <div>
                     <OverlayTrigger ref="plateOverlay" trigger="click" rootClose placement="right"
                       overlay={(<Popover id="platePopover" style={{ maxWidth: '800px' }}>
-                        <PlateManipulator
-                          contents={this.props.contents}
-                          loadedSample={this.props.loadedSample}
-                          select={this.props.select}
-                          load={this.props.loadSample}
-                          send_command={this.props.send_command}
-                          refresh={this.props.refresh}
-                          plates={this.props.plateGrid}
-                          plateIndex={this.props.plateIndex}
-                          selectedRow={this.props.selectedRow}
-                          selectedCol={this.props.selectedCol}
-                          selectedDrop={this.props.selectedDrop}
-                          setPlate={this.props.setPlate}
-                          selectWell={this.props.selectWell}
-                          selectDrop={this.props.selectDrop}
-                          crystalList={this.props.crystalList}
-                          syncSamplesCrims={this.props.syncSamplesCrims}
-                          generalActions={this.props.generalActions}
-                          global_state={this.props.global_state}
-                        />
+                        <Popover.Header>{ this.props.global_state.plate_info.plate_label}</Popover.Header>
+                        <Popover.Body>
+                          <PlateManipulator
+                            contents={this.props.contents}
+                            loadedSample={this.props.loadedSample}
+                            select={this.props.select}
+                            load={this.props.loadSample}
+                            send_command={this.props.send_command}
+                            refresh={this.props.refresh}
+                            plates={this.props.plateGrid}
+                            plateIndex={this.props.plateIndex}
+                            selectedRow={this.props.selectedRow}
+                            selectedCol={this.props.selectedCol}
+                            selectedDrop={this.props.selectedDrop}
+                            setPlate={this.props.setPlate}
+                            selectWell={this.props.selectWell}
+                            selectDrop={this.props.selectDrop}
+                            crystalList={this.props.crystalList}
+                            syncSamplesCrims={this.props.syncSamplesCrims}
+                            generalActions={this.props.generalActions}
+                            global_state={this.props.global_state}
+                            state={this.props.sampleChangerState}
+                            inPopover
+                          />
+                        </Popover.Body>
                       </Popover>)}
                     >
                       <Button
@@ -287,7 +292,7 @@ function mapStateToProps(state) {
     mode: state.general.mode,
 
     contents: state.sampleChanger.contents,
-    state: state.sampleChanger.state,
+    sampleChangerState: state.sampleChanger.state,
     global_state: state.sampleChangerMaintenance.global_state,
     loadedSample: state.sampleChanger.loadedSample,
     plateGrid: state.sampleChanger.plateGrid,

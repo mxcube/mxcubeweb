@@ -61,6 +61,7 @@ class EquipmentContainer extends React.Component {
                       syncSamplesCrims={this.props.syncSamplesCrims}
                       generalActions={this.props.generalActions}
                       global_state={this.props.global_state}
+                      state={this.props.sampleChangerState}
                     />
                   </Col>
                   <Col sm={6}>

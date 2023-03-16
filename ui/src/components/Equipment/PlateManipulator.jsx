@@ -27,9 +27,22 @@ class PlateManipulator extends React.Component {
   }
 
   showContextMenu(event, id) {
+    event.stop
+    let position= {
+      x: event.clientX,
+      y: event.clientY ,
+    }
+    if(this.props.inPopover) {
+      position= {
+        x: event.offsetX,
+        y: event.offsetY,
+      }
+    }
+
     contextMenu.show({
       id,
       event: event,
+      position: position,
     });
   }
 
@@ -369,37 +382,37 @@ class PlateManipulator extends React.Component {
                                 }}
                               />
                             </svg>
-                          <Menu id={`wls${row}${col}`} className="context-menu-provider">
-                            <li className="dropdown-header">
-                              <b>
-                                Well
-                                {' '}
-                                {`${row}${col}`}
-                                {':'}
-                                {loadedDrop}
-                              </b>
-                            </li>
-                            <Separator />
-                            <Item
-                              onClick={() => {
-                                this.initLoadSample(rowIdx, colIdx, row, col);
-                              }}
-                            >
-                              Move to this Well
-                            </Item>
-                            { crystal !== null ? [
-                            <Separator />,
-                            <b>Crystal Info : </b>,
-                            <ul>
-                              <li>Sample : {crystal.sample}</li>
-                              <li>Drop : {crystal.shelf}</li>
-                            </ul>
-                            ]
-                              :
-                              null
-                          }
-                          </Menu>
-                        </div>
+                            <Menu id={`wls${row}${col}`} className="context-menu-provider">
+                              <li className="dropdown-header">
+                                <b>
+                                  Well
+                                  {' '}
+                                  {`${row}${col}`}
+                                  {':'}
+                                  {loadedDrop}
+                                </b>
+                              </li>
+                              <Separator />
+                              <Item
+                                onClick={() => {
+                                  this.initLoadSample(rowIdx, colIdx, row, col);
+                                }}
+                              >
+                                Move to this Well
+                              </Item>
+                              { crystal !== null ? [
+                              <Separator />,
+                              <b>Crystal Info : </b>,
+                              <ul>
+                                <li>Sample : {crystal.sample}</li>
+                                <li>Drop : {crystal.shelf}</li>
+                              </ul>
+                              ]
+                                :
+                                null
+                            }
+                            </Menu>
+                          </div>
                         );
                       }
                     }
@@ -493,14 +506,19 @@ class PlateManipulator extends React.Component {
     if (this.props.global_state.plate_info && this.props.global_state.plate_info.plate_label) {
       plate_label = this.props.global_state.plate_info.plate_label;
     }
+    let cssDisable = {};
+    if (this.props.state === 'MOVING') {
+      cssDisable = { cursor: 'wait', pointerEvents: 'none', opacity: '0.5'}
+    }
     return (
-      <Row className='mt-4'>
-        <Col>
+      <Row className='mt-4' title={this.props.state === 'MOVING' ? 'Plate Moving, can not send commande' : ''}>
+        <Col className='ms-3'>
           <ButtonToolbar className='ms-4'>
-            <DropdownButton
+            {/* <DropdownButton
               variant="outline-secondary"
               title={plate_label}
               id="dropdown-basic"
+              size='sm'
             >
               {this.props.plates.map((cplate, index) => (
                 plate_label === cplate.name ?
@@ -524,8 +542,8 @@ class PlateManipulator extends React.Component {
                   </Dropdown.Item>)
               ))
               }
-            </DropdownButton>
-            <span style={{ marginLeft: '1em' }} />
+            </DropdownButton> */}
+            {/* <span style={{ marginLeft: '1.5em' }} /> */}
             <OverlayTrigger
               variant="outline-success"
               placement="bottom"
@@ -534,11 +552,11 @@ class PlateManipulator extends React.Component {
                   Refresh if Plate Location not Updated
                 </Tooltip>)}
             >
-              <Button variant="outline-success" onClick={this.refreshClicked}>
+              <Button size='sm' variant="outline-info" onClick={this.refreshClicked}>
                 <MdSync size='1.5em'/> Refresh
               </Button>
             </OverlayTrigger>
-            <span style={{ marginLeft: '1em' }} />
+            <span style={{ marginLeft: '1.5em' }} />
             <OverlayTrigger
               variant="outline-success"
               placement="bottom"
@@ -547,17 +565,19 @@ class PlateManipulator extends React.Component {
                   Synchronise sample list with CRIMS
                 </Tooltip>)}
             >
-              <Button variant="outline-success" onClick={this.syncSamplesCrims}>
+              <Button size='sm' variant="outline-success" onClick={this.syncSamplesCrims}>
                 <MdSync size='1.5em'/> CRIMS
               </Button>
             </OverlayTrigger>
           </ButtonToolbar>
         </Col>
-        <div className="plate-div">
+        <div
+          className="plate-div" style={cssDisable}
+        >
           <div className="plate-grid">
               {plateGrid()}
           </div>
-          <div style={{ }}>
+          <div>
             <div className="plate-info">
               <Button variant='outline-secondary' className="" style={{ float: 'right' }} >
                 <span className="is-loaded-info">
