@@ -2293,6 +2293,18 @@ class Queue(ComponentBase):
 
         return {"QueueId": new_node, "Type": "Centring", "Params": params}
 
+    def update_dependent_field(self, task_name, data):
+        try:
+            queue_entry = qe.get_queue_entry_from_task_name(task_name)
+            data_model = getattr(queue_entry, "DATA_MODEL", None)
+            new_data = json.dumps(data_model.update_dependent_fields(data))
+        except Exception:
+            logging.getLogger("MX3.HWR").exception(
+                f"Could not update depedant fields for {task_name}"
+            )
+
+        return new_data
+
     def get_default_task_parameters(self, task_name):
         acq_parameters = HWR.beamline.get_default_acquisition_parameters(
             task_name
@@ -2311,6 +2323,11 @@ class Queue(ComponentBase):
             )
 
         schema = self.get_task_schema(data_model) if data_model else {}
+
+        try:
+            ui_schema = data_model.ui_schema() if data_model else {}
+        except:
+            ui_schema = {}
 
         if schema:
             for parameter_group in schema.values():
@@ -2338,6 +2355,7 @@ class Queue(ComponentBase):
             "name": display_name if display_name else task_name,
             "queue_entry": task_name,
             "schema": schema,
+            "ui_schema": ui_schema
         }
 
     def get_task_schema(self, data_model):

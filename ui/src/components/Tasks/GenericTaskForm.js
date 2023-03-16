@@ -12,6 +12,10 @@ import classNames from 'classnames';
 import './style.css';
 
 import {
+  sendUpdateDependentFields
+} from '../../actions/queue';
+
+import {
   FieldsHeader,
   StaticField,
   InputField,
@@ -41,7 +45,6 @@ class GenericTaskForm extends React.Component {
   }
 
   addToQueue(runNow, params) {
-    debugger;
     const parameters = {
       ...params,
       ...this.jsformData,
@@ -214,39 +217,21 @@ class GenericTaskForm extends React.Component {
     )
   }
 
-  render() {
-    const uiSchema = {
-      "ui:order": [
-        "num_images",
-        "exp_time",
-        "osc_range",
-        "osc_start",
-        "resolution",
-        "transmission",
-        "energy",
-        "sub_sampling",
-        "vertical_spacing",
-        "horizontal_spacing",
-        "nb_lines",
-        "nb_samples_per_line",
-        "motor_top_left_x",
-        "motor_top_left_y",
-        "motor_top_left_z",
-        "motor_top_right_x",
-        "motor_top_right_y",
-        "motor_top_right_z",
-        "motor_bottom_left_x",
-        "motor_bottom_left_y",
-        "motor_bottom_left_z",
-        "chip_type",
-        "take_pedestal",
-        "*",
-      ],
-      "ui:submitButtonOptions": {
-        "norender": true,
-      }
-    };
+  updateFromRemoteValidation(formData) {
+    sendUpdateDependentFields("test_collection", formData).then((_d) => {
+      const data = JSON.parse(_d);
 
+      for (const fieldName in data) {
+        const el = document.getElementById(`root_${fieldName}`);
+        if (el !== null) {
+          el.value = data[fieldName];
+        }
+      }
+    });
+  }
+
+  render() {
+    const uiSchema = JSON.parse(this.props.uiSchema);
     const schema = this.setConstraintsFromDefualts(
       this.props.schema.user_collection_parameters
     )
@@ -298,6 +283,7 @@ class GenericTaskForm extends React.Component {
               schema={schema}
               uiSchema={uiSchema}
               onChange={({ formData }) => {
+                this.updateFromRemoteValidation(formData)
                 this.jsformData = formData;
               }}
               ObjectFieldTemplate={this.columnsObjectFieldTemplate}
@@ -342,6 +328,7 @@ GenericTaskForm = connect((state) => {
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type];
   const { schema } = state.taskForm.defaultParameters[type];
+  const uiSchema = state.taskForm.defaultParameters[type]["ui_schema"]
   const useExperimentName = state.taskForm.taskData.use_experiment_name;
 
   let path = `${state.login.rootPath}/${subdir}${experimentNameSelector}/[RUN#]`;
@@ -358,6 +345,7 @@ GenericTaskForm = connect((state) => {
     acqParametersLimits: limits,
     useExperimentName: useExperimentName,
     schema,
+    uiSchema,
     beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,

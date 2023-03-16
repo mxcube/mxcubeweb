@@ -759,3 +759,17 @@ export function sendSetGroupFolder(path) {
       });
   };
 }
+
+export function sendUpdateDependentFields(task_name, field_data) {
+  return fetch('/mxcube/api/v0.1/queue/update_dependent_field', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ task_name, field_data }),
+  }).then((response) => {
+    return response.json();
+  });
+}
