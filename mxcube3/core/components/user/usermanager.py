@@ -75,14 +75,19 @@ class BaseUserManager(ComponentBase):
 
         self.app.server.emit("observersChanged", data, namespace="/hwr")
 
-    def update_operator(self, new_login=False):
-        active_in_control = False
-
+    def update_active_users(self):
         for _u in User.query.all():
             if _u.last_request_timestamp and (datetime.datetime.now() - _u.last_request_timestamp).total_seconds() > 60:
                 logging.getLogger("HWR.MX3").info(f"Logged out inactive user {_u.username}")
                 self.app.server.user_datastore.deactivate_user(_u)
-            elif _u.is_authenticated and _u.in_control:
+
+        self.emit_observers_changed()
+
+    def update_operator(self, new_login=False):
+        active_in_control = False
+
+        for _u in User.query.all():
+            if _u.is_authenticated and _u.in_control:
                 active_in_control = True
             else:
                 self.db_set_in_control(_u, False)
