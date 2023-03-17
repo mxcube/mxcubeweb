@@ -1,0 +1,93 @@
+import React, { Component } from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import { Col } from 'react-bootstrap';
+import * as SampleViewActions from '../actions/sampleview';
+import * as GeneralActions from '../actions/general';
+import * as BeamlineActions from '../actions/beamline';
+import { QUEUE_RUNNING } from '../constants';
+
+import MotorInput from '../components/MotorInput/MotorInput';
+
+class MotorInputContainer extends Component {
+  render() {
+    const uiprop = this.props.uiprop;
+    const motorhwo = this.props.motorhwo;
+<<<<<<< HEAD
+
+    return (
+      <div>
+        <MotorInput
+          save={this.props.beamlineActions.sendSetAttribute}
+          saveStep={this.props.sampleViewActions.setStepSize}
+          step={uiprop.step}
+          value={motorhwo.value}
+          motorName={uiprop.attribute}
+          label={`${uiprop.label}:`}
+          suffix={uiprop.suffix}
+          decimalPoints={uiprop.precision}
+          state={motorhwo.state}
+          stop={this.props.beamlineActions.sendAbortCurrentAction}
+          disabled={this.props.motorInputDisabled}
+        />
+      </div >);
+=======
+    let result = null;
+        
+    if (!isNaN(motorhwo.value)) {
+      result = (
+        <div>
+          <MotorInput
+            save={this.props.beamlineActions.sendSetAttribute}
+            saveStep={this.props.sampleViewActions.setStepSize}
+            step={uiprop.step}
+            value={motorhwo.value}
+            motorName={uiprop.attribute}
+            label={`${uiprop.label}:`}
+            suffix={uiprop.suffix}
+            decimalPoints={uiprop.precision}
+            state={motorhwo.state}
+            stop={this.props.beamlineActions.sendAbortCurrentAction}
+            disabled={this.props.motorInputDisabled}
+          />
+        </div>);
+    }
+
+    return result;
+>>>>>>> gitlab/gitlab-develop-id29
+  }
+}
+
+
+function mapStateToProps(state, ownProps) {
+  const { component, role } = ownProps;
+  const uiprop = state.uiproperties[component].components.find(
+    el => el.role === role
+  );
+
+  const motorhwo = state.beamline.hardwareObjects[
+    uiprop.attribute
+  ];
+
+  return {
+    value: motorhwo.value,
+    state: motorhwo.state,
+    motorhwo,
+    uiprop,
+    motorInputDisabled: state.beamline.motorInputDisable
+      || state.queue.queueStatus === QUEUE_RUNNING
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
+    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
+    generalActions: bindActionCreators(GeneralActions, dispatch),
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(MotorInputContainer);

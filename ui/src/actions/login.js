@@ -96,12 +96,15 @@ export function getLoginInfo() {
 }
 
 export function signOut() {
+  localStorage.setItem('currentUser', '');
   return { type: 'SIGNOUT' };
 }
 
 
 export function signIn(proposal, password, navigate) {
   return function (dispatch) {
+    const previousUser = localStorage.getItem('currentUser');
+
     fetch('mxcube/api/v0.1/login', {
       method: 'POST',
       headers: {
@@ -109,7 +112,7 @@ export function signIn(proposal, password, navigate) {
         'Content-type': 'application/json'
       },
       credentials: 'include',
-      body: JSON.stringify({ proposal, password })
+      body: JSON.stringify({ proposal, password, previousUser: previousUser })
     }).then(response => response.json()).then((res) => {
       if (res.code === 'ok') {
         dispatch(showErrorPanel(false));
@@ -119,7 +122,7 @@ export function signIn(proposal, password, navigate) {
               dispatch(showProposalsForm());
             }
             else {
-            navigate("/");
+              navigate("/");
             }
           } else {
             dispatch(selectProposal(proposal));

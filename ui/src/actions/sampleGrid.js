@@ -77,8 +77,8 @@ export function toggleSelectedAction(sampleID) {
   return { type: 'TOGGLE_SELECTED_SAMPLE', sampleID };
 }
 
-export function setViewModeAction(mode, ViewWithCellPuck) {
-  return { type: 'SET_VIEW_MODE', mode, ViewWithCellPuck };
+export function setViewModeAction(mode) {
+  return { type: 'SET_VIEW_MODE', mode };
 }
 
 export function filterAction(filterOptions) {

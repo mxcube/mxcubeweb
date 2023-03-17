@@ -64,14 +64,6 @@ def parse_args():
     )
 
     opt_parser.add_argument(
-        "-d",
-        "--video-device",
-        dest="video_device",
-        help="Video device, defaults to: No device",
-        default="",
-    )
-
-    opt_parser.add_argument(
         "-w",
         "--ra",
         action="store_true",
@@ -126,7 +118,6 @@ def main(test=False):
             server,
             cmdline_options.allow_remote,
             cmdline_options.ra_timeout,
-            cmdline_options.video_device,
             cmdline_options.log_file,
             cmdline_options.log_level,
             cfg,

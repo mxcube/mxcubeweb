@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ProgressBar, Button, Collapse, OverlayTrigger, Popover } from 'react-bootstrap';
-import { ContextMenuTrigger } from 'react-contextmenu';
 import { TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
@@ -197,7 +196,7 @@ export default class WorkflowTaskItem extends Component {
 
     return (
       <div className="node node-sample">
-        <ContextMenuTrigger id="currentSampleQueueContextMenu">
+        <div onContextMenu={(e) => this.props.showContextMenu(e, 'currentSampleQueueContextMenu')} id="currentSampleQueueContextMenu">
           <div
             onClick={this.taskHeaderOnClick}
             onContextMenu={this.taskHeaderOnContextMenu}
@@ -232,7 +231,7 @@ export default class WorkflowTaskItem extends Component {
               </div>
             </Collapse>
           </div>
-        </ContextMenuTrigger>
+        </div>
       </div>);
   }
 }

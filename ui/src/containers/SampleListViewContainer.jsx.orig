@@ -47,6 +47,13 @@ import { showTaskForm } from '../actions/taskForm';
 
 import SampleGridTableContainer from './SampleGridTableContainer';
 
+<<<<<<< HEAD
+import SampleGridContainer from './SampleGridContainer';
+import { SAMPLE_ITEM_WIDTH,
+  SAMPLE_ITEM_SPACE } from '../components/SampleGrid/SampleGridItem';
+
+=======
+>>>>>>> ecc8c6f8... remove code and files of the old Sample grid view 
 import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog';
 import QueueSettings from './QueueSettings.jsx';
 
@@ -99,7 +106,7 @@ class SampleListViewContainer extends React.Component {
    * @param {MouseEvent} e
    */
   onMouseDown(e) {
-    if (this.props.contextMenu.show) {
+    if(this.props.contextMenu.show) {
       this.props.showGenericContextMenu(false, null, 0, 0)
     }
   }
@@ -109,16 +116,60 @@ class SampleListViewContainer extends React.Component {
     this.forceUpdate();
   }
 
+<<<<<<< HEAD
+  setViewMode(mode, ViewWithCellPuck = null) {
+    if (mode == 'Graphical View' ) {
+      this.props.filter({cellFilter: "1"});
+=======
   setViewMode(mode) {
     if (mode == 'Graphical View') {
       this.props.filter({ cellFilter: "1" });
+>>>>>>> ecc8c6f8... remove code and files of the old Sample grid view 
     } else {
-      this.props.filter({ cellFilter: "" });
+      this.props.filter({cellFilter: ""});
     }
     localStorage.setItem('view-mode', mode);
     this.props.setViewMode(mode)
   }
 
+<<<<<<< HEAD
+    /**
+   * Calculates the grid width
+   *
+   * return {number} width in pixels
+   */
+     calcGridWidth() {
+      // We know that the side menu is fixed width 65px and that the padding from
+      // bootstrap is 15px so content starts at 80px;
+  
+      // Get the viewportWidth
+      const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+  
+      // The full content width for this media (not forgeting the padding to the right 15px)
+      const fullContentWidth = viewportWidth - 100;
+  
+      // Each sample item is 190px wide, calculate maximum number of items for each row
+      const numCols = Math.floor(fullContentWidth / SAMPLE_ITEM_WIDTH);
+  
+      // Caculating the actual grid size, with space between sample items;
+      const actualGridWidth = numCols * (SAMPLE_ITEM_WIDTH + 2 + SAMPLE_ITEM_SPACE) + 10;
+  
+      return [actualGridWidth, numCols];
+    }
+  
+  
+    /**
+     * Resizes the grid container element (with id smapleGridContainer)
+     */
+    resizeGridContainer() {
+      const viewportWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+      const width = Math.min(viewportWidth, this.calcGridWidth()[0] || 0);
+      document.querySelector('#sampleGridContainer').style.width = `${width - 38}px`;
+    }
+
+
+=======
+>>>>>>> ecc8c6f8... remove code and files of the old Sample grid view 
   /**
    * Mapping between a input and a filter option value
    *
@@ -154,7 +205,7 @@ class SampleListViewContainer extends React.Component {
       ));
     }
 
-    if (this.props.viewMode.mode !== 'Graphical View') {
+    if(this.props.viewMode.mode !== 'Graphical View') {
       options.push((<option key="all" value="">ALL</option>));
     }
 
@@ -190,7 +241,7 @@ class SampleListViewContainer extends React.Component {
       }
 
       const type = formName === "Generic" ? extraParams.type : formName.toLowerCase();
-      const params = (formName !== "Workflow") ? this.props.defaultParameters[type].acq_parameters :
+      const params = (formName !== "Workflow") ? this.props.defaultParameters[type].acq_parameters : 
         this.props.defaultParameters.datacollection.acq_parameters;
 
       const parameters = {
@@ -241,11 +292,11 @@ class SampleListViewContainer extends React.Component {
    */
   filterIsUsed() {
     return (this.props.filterOptions.inQueue ||
-      this.props.filterOptions.notInQueue ||
-      this.props.filterOptions.collected ||
-      this.props.filterOptions.notCollected ||
-      this.props.filterOptions.limsSamples ||
-      (this.props.filterOptions.text.length > 0));
+            this.props.filterOptions.notInQueue ||
+            this.props.filterOptions.collected ||
+            this.props.filterOptions.notCollected ||
+            this.props.filterOptions.limsSamples ||
+            (this.props.filterOptions.text.length > 0));
   }
 
 
@@ -273,14 +324,12 @@ class SampleListViewContainer extends React.Component {
    *  Clears the filter
    */
   sampleGridClearFilter() {
-    this.props.filter({
-      inQueue: false,
+    this.props.filter({ inQueue: false,
       notInQueue: false,
       collected: false,
       notCollected: false,
       limsFilter: false,
-      filterText: ''
-    });
+      filterText: '' });
   }
 
 
@@ -364,7 +413,7 @@ class SampleListViewContainer extends React.Component {
   /**
    * Removes samples from queue
    */
-  removeSamplesFromQueue(samplesList) {
+   removeSamplesFromQueue(samplesList) {
     const samplesToRemove = [];
     for (const sampleID of samplesList) {
       if (this.inQueue(sampleID) && sampleID !== this.props.sampleChanger.loadedSample.address) {
@@ -380,9 +429,9 @@ class SampleListViewContainer extends React.Component {
    */
   removeSelectedTasks() {
     for (const sampleID of Object.keys(this.props.selected)) {
-      this.props.sampleList[sampleID].tasks.forEach(() => {
-        this.props.deleteTask(sampleID, 0);
-      });
+        this.props.sampleList[sampleID].tasks.forEach(() => {
+          this.props.deleteTask(sampleID, 0);
+        });
     }
   }
 
@@ -435,7 +484,7 @@ class SampleListViewContainer extends React.Component {
    * Start collection
    */
   startCollect() {
-    this.props.router.navigate('/datacollection', { replace: true });
+    this.props.router.navigate('/datacollection' , { replace: true });
     this.props.showConfirmCollectDialog();
   }
 
@@ -451,7 +500,7 @@ class SampleListViewContainer extends React.Component {
         variant='success'
         onClick={this.startCollect}
         disabled={this.isCollectDisabled()}
-        style={{ whiteSpace: 'nowrap' }}
+        style={{ whiteSpace: 'nowrap'}}
       >
         {collectText}
         <i className="fas fa-chevron-right ms-1" />
@@ -555,10 +604,10 @@ class SampleListViewContainer extends React.Component {
             </Col>
           </Row>
           <Row className="mt-3 justify-content-end">
-            <Col className='align-self-end'>
+            <Col className='align-self-end'>        
               <Button
                 variant="outline-secondary"
-                style={{ float: 'right' }}
+                style={{ float: 'right'}}
                 onClick={this.sampleGridClearFilter}
               >
                 Clear
@@ -633,12 +682,21 @@ class SampleListViewContainer extends React.Component {
                   </Button>
                 </OverlayTrigger>
                 <span style={{ marginLeft: '1.5em' }} />
+<<<<<<< HEAD
+                {this.props.viewMode.ViewWithCellPuck ?
+                (
+=======
+>>>>>>> ecc8c6f8... remove code and files of the old Sample grid view 
                 <Dropdown>
                   <Dropdown.Toggle variant="outline-secondary" id="dropdown-basic">
                     <MdGridView size='1em' /> View Mode
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
+<<<<<<< HEAD
+                    {this.props.viewMode.options.map( (option) => (
+=======
                     {this.props.viewMode.options.map((option) => (
+>>>>>>> ecc8c6f8... remove code and files of the old Sample grid view 
                       <Dropdown.Item
                         key={option}
                         onClick={() => this.setViewMode(option)}>
@@ -648,11 +706,18 @@ class SampleListViewContainer extends React.Component {
                     )}
                   </Dropdown.Menu>
                 </Dropdown>
+<<<<<<< HEAD
+                )
+                :
+                null
+              }
+=======
+>>>>>>> ecc8c6f8... remove code and files of the old Sample grid view 
               </Col>
               <Col md={{ span: 4, offset: 1 }} className='d-flex me-auto'>
                 <Form>
-                  <Form.Group as={Row} className="d-flex">
-                    <Form.Label style={{ whiteSpace: 'nowrap' }} className="d-flex" column sm="2">Filter :</Form.Label>
+                  <Form.Group  as={Row} className="d-flex">
+                    <Form.Label style={{ whiteSpace: 'nowrap'}} className="d-flex" column sm="2">Filter :</Form.Label>
                     <Col sm="9">
                       <InputGroup className={this.filterIsUsed() ? 'filter-input-active' : ''}>
                         <Form.Control
@@ -678,10 +743,10 @@ class SampleListViewContainer extends React.Component {
                 >
                   <Dropdown.Item eventKey="2" onClick={this.showDataCollectionForm}>
                     Add Data collection
-                  </Dropdown.Item>
+                      </Dropdown.Item>
                   <Dropdown.Item eventKey="3" onClick={this.showCharacterisationForm}>
                     Add Characterisation
-                  </Dropdown.Item>
+                      </Dropdown.Item>
                 </SplitButton>
               </Col>
               <Col className='d-flex justify-content-end' sm={3}>
@@ -689,29 +754,48 @@ class SampleListViewContainer extends React.Component {
                 <QueueSettings />
                 <span style={{ marginLeft: '1em' }} />
                 {this.collectButton()}
-              </Col>
+            </Col>
             </Row>
           </Card.Header>
-          {this.props.sampleChanger.contents.children && this.props.order.length > 0 ?
+         {this.props.sampleChanger.contents.children && this.props.order.length > 0 ?
+         (
+          <Card.Body className='samples-grid-table-card-body'>
+            {this.props.viewMode.mode == 'Card View'? 
             (
-              <Card.Body className='samples-grid-table-card-body'>
-                <SampleGridTableContainer
-                  addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
-                  addSamplesToQueue={this.addSamplesToQueue}
-                  showCharacterisationForm={this.showCharacterisationForm}
-                  showDataCollectionForm={this.showDataCollectionForm}
-                  showWorkflowForm={this.showWorkflowForm}
-                  inQueue={this.inQueue}
-                  inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
-                  removeSamplesFromQueue={this.removeSamplesFromQueue}
-                  removeSelectedSamples={this.removeSelectedSamples}
-                  removeSelectedTasks={this.removeSelectedTasks}
-                  setViewMode={this.setViewMode}
-                />
-              </Card.Body>
+              <SampleGridContainer
+                addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
+                addSamplesToQueueParent = {this.addSamplesToQueue}
+                showCharacterisationForm={this.showCharacterisationForm}
+                showDataCollectionForm={this.showDataCollectionForm}
+                showWorkflowForm={this.showWorkflowForm}
+                inQueue={this.inQueue}
+                inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
+                removeSamplesFromQueue={this.removeSamplesFromQueue}
+                removeSelectedSamples={this.removeSelectedSamples}
+                removeSelectedTasks={this.removeSelectedTasks}
+                gridWidth={this.calcGridWidth()}
+              />
             )
-            : null
-          }
+            :
+            (
+            <SampleGridTableContainer
+              addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
+              addSamplesToQueue = {this.addSamplesToQueue}
+              showCharacterisationForm={this.showCharacterisationForm}
+              showDataCollectionForm={this.showDataCollectionForm}
+              showWorkflowForm={this.showWorkflowForm}
+              inQueue={this.inQueue}
+              inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
+              removeSamplesFromQueue={this.removeSamplesFromQueue}
+              removeSelectedSamples={this.removeSelectedSamples}
+              removeSelectedTasks={this.removeSelectedTasks}
+              setViewMode={this.setViewMode}
+            />)
+            }
+          </Card.Body>
+         )
+         : null
+         }
         </Card>
       </Container>
     );

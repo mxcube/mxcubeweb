@@ -14,7 +14,7 @@ from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 
 from mxcubecore import HardwareRepository as HWR
-from mxcubecore import removeLoggingHandlers
+from mxcubecore import removeLoggingHandlers, ColorFormatter
 from mxcubecore import queue_entry
 from mxcubecore.utils.conversion import make_table
 
@@ -243,14 +243,13 @@ class MXCUBEApplication:
     server = None
 
     @staticmethod
-    def init(server, allow_remote, ra_timeout, video_device, log_fpath, log_level, cfg):
+    def init(server, allow_remote, ra_timeout, log_fpath, log_level, cfg):
         """
         Initializes application wide variables, sample video stream, and applies
 
         :param hwr: HardwareRepository module
         :param bool allow_remote: Allow remote usage, True else False
         :param bool ra_timeout: Timeout gives control, True else False
-        :param bool video_device: Path to video device
 
         :return None:
         """
@@ -262,8 +261,8 @@ class MXCUBEApplication:
 
         MXCUBEApplication.mxcubecore.init(MXCUBEApplication)
 
-        if video_device:
-            MXCUBEApplication.init_sample_video(video_device)
+        if cfg.app.USE_EXTERNAL_STREAMER:
+            MXCUBEApplication.init_sample_video(cfg.app.VIDEO_FORMAT)
 
         MXCUBEApplication.init_logging(log_fpath, log_level)
 
@@ -291,20 +290,13 @@ class MXCUBEApplication:
         # MXCUBEApplication.load_settings()
 
     @staticmethod
-    def init_sample_video(video_device):
+    def init_sample_video(format):
         """
-        Initializes video streaming from video device <video_device>, relies on
-        v4l2loopback kernel module to write the sample video stream to
-        <video_device>.
-
-        The streaming is handled by the streaming module
-
-        :param str video_device: Path to video device, i.e. /dev/videoX
-
+        Initializes video streaming
         :return: None
         """
         try:
-            HWR.beamline.sample_view.camera.start_streaming()
+            HWR.beamline.sample_view.camera.start_streaming(format)
         except Exception as ex:
             msg = "Could not initialize video, error was: "
             msg += str(ex)
@@ -347,7 +339,7 @@ class MXCUBEApplication:
         removeLoggingHandlers()
 
         fmt = "%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s"
-        log_formatter = logging.Formatter(fmt)
+        log_formatter = ColorFormatter(fmt)
 
         if log_file:
             log_file_handler = TimedRotatingFileHandler(
@@ -411,6 +403,12 @@ class MXCUBEApplication:
                     adapter_cls_name = type(adapter).__name__
                     value_type = adapter.adapter_type
                 except AttributeError:
+                    msg = f"{component_data.attribute} not accessible via Beamline object. "
+                    msg += f"Verify that beamline.{component_data.attribute} is valid and/or "
+                    msg += f"{component_data.attribute} accessible via get_role "
+                    msg += "check ui.yaml configuration file. " 
+                    msg += "(attribute will NOT be avilable in UI)"
+                    logging.getLogger("HWR").warning(msg)
                     adapter_cls_name = ""
                     value_type = ""
                 else:

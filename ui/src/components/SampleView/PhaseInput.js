@@ -17,8 +17,8 @@ export default class PhaseInput extends React.Component {
 
   render() {
     const inputCSS = cx('form-control input-sm', {
-      'input-bg-moving': this.props.phase[0] === 'Unknown',
-      'input-bg-ready': this.props.phase[0] !== 'Unknown',
+      'input-bg-moving': (this.props.state !== 'READY'),
+      'input-bg-ready': (this.props.state === 'READY'),
     });
 
     return (

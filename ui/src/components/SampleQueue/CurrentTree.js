@@ -1,12 +1,11 @@
 import React from 'react';
 import './app.css';
-import { ContextMenu, MenuItem } from 'react-contextmenu';
+import { Menu, Item, contextMenu } from 'react-contexify';
 import TaskItem from './TaskItem';
 import XRFTaskItem from './XRFTaskItem';
 import EnergyScanTaskItem from './EnergyScanTaskItem';
 import WorkflowTaskItem from './WorkflowTaskItem';
 import CharacterisationTaskItem from './CharacterisationTaskItem';
-import '../context-menu-style.css';
 
 export default class CurrentTree extends React.Component {
   constructor(props) {
@@ -39,6 +38,13 @@ export default class CurrentTree extends React.Component {
     });
 
     return selectedTasks;
+  }
+
+  showContextMenu(event, id) {
+    contextMenu.show({
+      id,
+      event: event,
+    });
   }
 
   interleavedAvailable() {
@@ -146,6 +152,7 @@ export default class CurrentTree extends React.Component {
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
                   showDialog={this.props.showDialog}
+                  showContextMenu={this.showContextMenu}
                 />
               );
             
@@ -174,6 +181,7 @@ export default class CurrentTree extends React.Component {
                   plotsData={this.props.plotsData}
                   plotsInfo={this.props.plotsInfo}
                   showDialog={this.props.showDialog}
+                  showContextMenu={this.showContextMenu}
                 />
               );
             
@@ -201,6 +209,7 @@ export default class CurrentTree extends React.Component {
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
                   showDialog={this.props.showDialog}
+                  showContextMenu={this.showContextMenu}
                 />
               );
             
@@ -229,6 +238,7 @@ export default class CurrentTree extends React.Component {
                   addTask={this.props.addTask}
                   shapes={this.props.shapes}
                   showDialog={this.props.showDialog}
+                  showContextMenu={this.showContextMenu}
                 />
               );
             
@@ -256,6 +266,7 @@ export default class CurrentTree extends React.Component {
                   showForm={this.props.showForm}
                   shapes={this.props.shapes}
                   showDialog={this.props.showDialog}
+                  showContextMenu={this.showContextMenu}
                 />
               );
             }
@@ -264,14 +275,14 @@ export default class CurrentTree extends React.Component {
             return task;
           })}
         </div>
-        <ContextMenu id="currentSampleQueueContextMenu">
-          <MenuItem onClick={this.showInterleavedDialog} disabled={!this.interleavedAvailable()}>
+        <Menu id="currentSampleQueueContextMenu">
+          <Item onClick={this.showInterleavedDialog} disabled={!this.interleavedAvailable()}>
             Create interleaved data collection
-          </MenuItem>
-          <MenuItem onClick={this.duplicateTask}>
+          </Item>
+          <Item onClick={this.duplicateTask}>
             Duplicate this item
-          </MenuItem>
-        </ContextMenu>
+          </Item>
+        </Menu>
       </div>
     );
   }

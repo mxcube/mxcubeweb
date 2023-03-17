@@ -38,5 +38,5 @@
   <phaseList>["Transfer","Centring","BeamLocation", "DataCollection"]</phaseList>
   <headType>MiniKappa</headType>
   <exports>["abort", "status", "my_fancy_function", "my_other_funny_function"]</exports>
-  <chip_definition_file>oxford_chip_def.json</chip_definition_file>
+  <chip_definition_file>chip_definition.json</chip_definition_file>
 </equipment>

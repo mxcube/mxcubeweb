@@ -1,8 +1,11 @@
+import traceback
 import typing
 import logging
 
 import pydantic
 import gevent
+
+from typing import Any
 
 from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.models.adaptermodels import HOModel, HOActuatorModel
@@ -27,6 +30,7 @@ class AdapterBase:
         self._read_only = False
         self._type = type(self).__name__.replace("Adapter", "").upper()
         self._unique = True
+        self._msg = ""
 
     def get_adapter_id(self, ho=None):
         ho = self._ho if not ho else ho
@@ -51,19 +55,35 @@ class AdapterBase:
 
     def execute_command(self, cmd_name, args):
         try:
-            self.ho.pydantic_model[cmd_name].validate(args)
+            self._pydantic_model_for_command(cmd_name).validate(args)
         except pydantic.ValidationError:
             logging.getLogger("MX3.HWR").exception(
                 f"Error when validating input {args} for command {cmd_name}"
             )
 
-        task = gevent.spawn(self._ho.execute_exported_command, cmd_name, args)
+        task = gevent.spawn(self._execute_command, cmd_name, args)
         task.call_args = {"cmd_name": cmd_name, "value": args}
         task.link_value(self._command_success)
 
+    def _execute_command(self, cmd_name, args):
+        _cmd = getattr(self, cmd_name, None)
+        logging.getLogger("MX3.HWR").info(
+             f"Calling {self._name}.{cmd_name} with {args}"
+        )
+
+        try:
+            if _cmd:
+                return _cmd(**args)
+            else:
+                return self._ho.execute_exported_command(cmd_name, args)
+        except Exception as ex:
+            self._command_exception(cmd_name, ex)
+            logging.getLogger("MX3.HWR").exception("")
+
     def _command_success(self, t):
         value = t.value
-        attr = getattr(self._ho, t.call_args["cmd_name"])
+        cmd_name = t.call_args["cmd_name"]
+        attr = getattr(self._ho, cmd_name)
         model = self._model_from_typehint(attr)
 
         try:
@@ -74,18 +94,26 @@ class AdapterBase:
                 f"Return value of {self._name}.{attr_name} is of wrong type"
             )
         else:
+            logging.getLogger("MX3.HWR").info(
+                f"{self._name}.{cmd_name} returned {value}"
+            )
+            self._msg = value
             self.app.server.emit(
                 "hardware_object_command_return",
-                {"cmd_name": t.call_args["cmd_name"], "value": value},
+                {"cmd_name": cmd_name, "value": value},
                 namespace="/hwr",
             )
 
-    def _command_exception(self, t):
+            self.emit_ho_changed()
+
+    def _command_exception(self, cmd_name, ex):
+        self._msg = traceback.format_exc()
         self.app.server.emit(
             "hardware_object_command_error",
-            {"cmd_name": t.call_args["cmd_name"], "value": t.exception},
+            {"cmd_name": cmd_name, "value": str(ex)},
             namespace="/hwr",
         )
+        self.emit_ho_changed()
 
     @property
     def adapter_type(self):
@@ -122,7 +150,7 @@ class AdapterBase:
         Returns:
             (str): The message string.
         """
-        return ""
+        return self._msg
 
     def read_only(self):
         """
@@ -176,7 +204,8 @@ class AdapterBase:
                 model = self._model_from_typehint(attr)
                 exported_methods[method_name] = {
                     "signature": model["signature"],
-                    "schema": model["args"].schema(),
+                    "schema": model["args"].schema_json(),
+                    "display": False
                 }
 
         return exported_methods
@@ -206,12 +235,46 @@ class AdapterBase:
 
         return _attributes
 
+    def emit_ho_attribute_changed(
+        self,
+        attribute: str,
+        value: Any,
+        operation: str = "SET"
+    ):
+        self.app.server.emit(
+            "hardware_object_attribute_changed",
+            {
+                "name": self._name,
+                "attribute": attribute,
+                "value": value,
+                "operation": operation.upper()
+            },
+            namespace="/hwr"
+        )
+
+    def emit_ho_value_changed(self, value: Any):
+        self.app.server.emit(
+            "hardware_object_value_changed",
+            {
+                "name": self._name,
+                "value": value
+            },
+            namespace="/hwr"
+        )
+
+    def emit_ho_changed(self, *args, **kwargs):
+        """
+        Signal handler to be used for sending the entire object to the client via
+        socketIO
+        """
+        self.app.server.emit("hardware_object_changed", self.dict(), namespace="/hwr")
+
     def state_change(self, *args, **kwargs):
         """
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        self.app.server.emit("beamline_value_change", self.dict(), namespace="/hwr")
+        self.emit_ho_changed()
 
     def _dict_repr(self):
         """
@@ -283,8 +346,9 @@ class ActuatorAdapterBase(AdapterBase):
         Signal handler to be used for sending values to the client via
         socketIO.
         """
-        data = {"name": self._name, "value": args[0]}
-        self.app.server.emit("beamline_value_change", data, namespace="/hwr")
+        #data = {"name": self._name, "value": args[0]}
+        self.emit_ho_value_changed(args[0])
+        #self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
 
     # Abstract method
     def set_value(self, value):

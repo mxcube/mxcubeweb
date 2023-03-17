@@ -1,12 +1,11 @@
 import React from 'react';
 import {
-  Card, Nav, Button, DropdownButton,
+  Card, Dropdown, Form, Button, DropdownButton,
 } from 'react-bootstrap';
 
-import { ContextMenu, MenuItem, ContextMenuTrigger } from 'react-contextmenu';
+import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 
 import './SampleChanger.css';
-import '../context-menu-style.css';
  
 
 export class SampleChangerTree extends React.Component {
@@ -77,11 +76,18 @@ export class SampleChangerTreeNode extends React.Component {
     const treeNodeIcon = document.getElementById(`${e.target.id}icon`);
     if (treeNodeIcon) {
       if (e.target.checked) {
-        treeNodeIcon.className = 'fa fa-minus-square-o';
+        treeNodeIcon.className = 'fa fa-minus';
       } else {
-        treeNodeIcon.className = 'fa fa-plus-square-o';
+        treeNodeIcon.className = 'fa fa-plus';
       }
     }
+  }
+
+  showContextMenu(event, id) {
+    contextMenu.show({
+      id,
+      event: event,
+    });
   }
 
   render() {
@@ -96,19 +102,17 @@ export class SampleChangerTreeNode extends React.Component {
             id={inputId}
             onClick={this.treeNodeCbxClick}
           />
-          <ContextMenuTrigger id={`${this.props.label}`}>
-            <label htmlFor={inputId} className="treeNodeLabel">
-              <i id={`${inputId}icon`} className="fas fa-plus-square-o" />
+            <Form.Label onContextMenu={(e) => this.showContextMenu(e, `${this.props.label}`)} htmlFor={inputId} className="treeNodeLabel">
+              <i id={`${inputId}icon`} className="fa fa-plus" />
                 &nbsp;
               {this.props.label}
-            </label>
-          </ContextMenuTrigger>
+            </Form.Label>
           <ul className="treeUl">
             {this.props.children}
           </ul>
         </li>
 
-        <ContextMenu id={`${this.props.label}`}>
+        <Menu id={`${this.props.label}`}>
           <li role="heading" aria-level="2" className="dropdown-header">
             <b>
               Container
@@ -116,14 +120,14 @@ export class SampleChangerTreeNode extends React.Component {
               {this.props.label}
             </b>
           </li>
-          <MenuItem divider />
-          <MenuItem onClick={this.scanClicked}>
+          <Separator />
+          <Item onClick={this.scanClicked}>
             Scan
-          </MenuItem>
-          <MenuItem onClick={this.selectClicked}>
+          </Item>
+          <Item onClick={this.selectClicked}>
             Move to this container
-          </MenuItem>
-        </ContextMenu>
+          </Item>
+        </Menu>
       </div>
     );
   }
@@ -170,36 +174,33 @@ export class SampleChangerTreeItem extends React.Component {
       <div>
         <li className="treeLi">
           <div className="sampleLabel">
-            <span style={{ verticalAlign: 'middle' }}>
-              {this.props.label}
-            </span>
-
             <DropdownButton
               style={{ fontStyle: 'italic', padding: '0.2em 0.2em' }}
-              title={`${this.props.dm}`}
+              title={`${this.props.label} ${this.props.dm}`}
               variant="link"
               onToggle={this.toggleDropdown}
               open={this.state.dropdownIsOpen}
             >
-              <li role="heading" aria-level="2" className="dropdown-header">
+              <Dropdown.Header aria-level="2" className="dropdown-header">
                 <b>
-                  Position
+                  Position :
+                  {' '}
                   {this.props.label}
                 </b>
-              </li>
-              <MenuItem divider />
-              <MenuItem onClick={this.loadSample}>
+              </Dropdown.Header>
+              <Dropdown.Divider/>
+              <Dropdown.Item onClick={this.loadSample}>
                 Mount
-              </MenuItem>
-              <MenuItem onClick={this.unloadSample}>
+              </Dropdown.Item>
+              <Dropdown.Item onClick={this.unloadSample}>
                 Umount to this position
-              </MenuItem>
+              </Dropdown.Item>
             </DropdownButton>
-            <span style={{ verticalAlign: 'middle' }}>
+            <span style={ls}>
               &nbsp;
               <i className="fas fa-arrow-left" />
               {' '}
-              <b style={ls}>(Mounted)</b>
+              <b>(Mounted)</b>
             </span>
           </div>
         </li>

@@ -8,10 +8,10 @@ class DetectorAdapter(AdapterBase):
             (object): Hardware object.
         """
         super(DetectorAdapter, self).__init__(ho, *args, **kwargs)
-        ho.connect("statusChanged", self._state_change)
+        ho.connect("stateChanged", self._state_change)
 
     def _state_change(self, *args, **kwargs):
         self.state_change(**kwargs)
 
     def state(self):
-        return self._ho.get_state().name
+        return self._ho.get_state().name.upper()

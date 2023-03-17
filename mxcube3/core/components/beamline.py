@@ -64,30 +64,6 @@ class Beamline(ComponentBase):
             )
 
         try:
-            self.app.mxcubecore.plotting.connect(
-                self.app.mxcubecore.plotting, "new_plot", signals.new_plot
-            )
-            self.app.mxcubecore.plotting.connect(
-                self.app.mxcubecore.plotting, "plot_data", signals.plot_data
-            )
-            self.app.mxcubecore.plotting.connect(
-                self.app.mxcubecore.plotting, "plot_end", signals.plot_end
-            )
-        except Exception as ex:
-            logging.getLogger("MX3.HWR").error(
-                "error loading plotting hwo: %s" % str(ex)
-            )
-
-        try:
-            HWR.beamline.xrf_spectrum.connect(
-                HWR.beamline.xrf_spectrum, "new_plot", signals.new_plot
-            )
-            HWR.beamline.xrf_spectrum.connect(
-                HWR.beamline.xrf_spectrum, "plot_data", signals.plot_data
-            )
-            HWR.beamline.xrf_spectrum.connect(
-                HWR.beamline.xrf_spectrum, "plot_end", signals.plot_end
-            )
             HWR.beamline.xrf_spectrum.connect(
                 HWR.beamline.xrf_spectrum,
                 "xrf_task_progress",
@@ -374,12 +350,16 @@ class Beamline(ComponentBase):
         return ret
 
     def get_detector_info(self):
-        filetype = HWR.beamline.detector.get_property("file_suffix")
+
+        try:
+            filetype = HWR.beamline.detector.get_property("file_suffix")
+        except Exception:
+            filetype = None
 
         if filetype is None:
             filetype = "cbf"
             logging.getLogger("MX3.HWR").warning(
-                "Detector file format not specified. Setting as cbf."
+                "Detector file format not specified. Using cbf."
             )
 
         return filetype

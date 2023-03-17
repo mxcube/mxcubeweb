@@ -24,7 +24,6 @@ def init_route(app, server, url_prefix):
     @server.restrict
     @server.validate(resp=Response(HTTP_200=""))
     def display_image(query: PathModel):
-        print(f"adxv display {str(query.path)}")
         return ""
 
     return bp

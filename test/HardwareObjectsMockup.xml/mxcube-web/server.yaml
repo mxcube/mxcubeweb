@@ -7,17 +7,18 @@ server:
   PERMANENT_SESSION_LIFETIME: 60
 
   DEBUG: False
-  STREAMED_VIDEO: True
 
   ALLOWED_CORS_ORIGINS:
     - "http://localhost:8081"
     - "http://localhost:3000" 
+    - "ws://localhost:8000" 
 
 mxcube:
-  VIDEO_FORMAT: MJPEG
-  #VIDEO_STREAM_URL: "http://localhost:4042"
+  USE_EXTERNAL_STREAMER: True
+  VIDEO_FORMAT: MPEG1
+  VIDEO_STREAM_URL: "ws://localhost:8000/ws"
   # Mode, SSX-CHIP, SSX-INJECTOR, OSC
-  mode: SSX-CHIP
+  mode: OSC
 
   usermanager:
     class: UserManager

@@ -28,7 +28,7 @@ export function makeElipse(posX, posY, sizeX, sizeY, color) {
     ry: sizeY / 2,
     fill: '',
     stroke: color,
-    strokeWidth: 1,
+    strokeWidth: 2,
     strokeDashArray: [2, 2],
     selectable: false,
     hoverCursor: 'crosshair'
@@ -192,13 +192,13 @@ export function makeCentringHorizontalLine(x, y, imageRatio, width) {
 
 export function makeBeam(posX, posY, sizeX, sizeY, shape) {
   return [
-    makeLine(posX - 3, posY, posX - 10, posY, 'rgba(255, 0, 0, 0.4)', 1, false),
-    makeLine(posX, posY - 3, posX, posY - 10, 'rgba(255, 0, 0, 0.4)', 1, false),
-    makeLine(posX + 3, posY, posX + 10, posY, 'rgba(255, 0, 0, 0.4)', 1, false),
-    makeLine(posX, posY + 3, posX, posY + 10, 'rgba(255, 0, 0, 0.4)', 1, false),
+    makeLine(posX - 3, posY, posX - 10, posY, 'rgba(0, 255, 255, 1)', 2, false),
+    makeLine(posX, posY - 3, posX, posY - 10, 'rgba(0, 255, 255, 1)', 2, false),
+    makeLine(posX + 3, posY, posX + 10, posY, 'rgba(0, 255, 255, 1)', 2, false),
+    makeLine(posX, posY + 3, posX, posY + 10, 'rgba(0, 255, 255, 1)', 2, false),
     (shape === 'ellipse'
-      ? makeElipse(posX, posY, sizeX, sizeY, 'rgba(0, 0, 255, 1)', 0.5)
-      : makeRectangle(posX, posY, sizeX, sizeY, 'rgba(0, 0, 255, 1)'))
+      ? makeElipse(posX, posY, sizeX, sizeY, 'rgba(0, 255, 255)', 5)
+      : makeRectangle(posX, posY, sizeX, sizeY, 'rgba(0, 255, 255, 1)'))
   ];
 }
 

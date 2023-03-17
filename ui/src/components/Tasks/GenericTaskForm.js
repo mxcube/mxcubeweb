@@ -17,8 +17,6 @@ import {
   InputField,
 } from './fields';
 
-import { SPACE_GROUPS } from '../../constants';
-
 class GenericTaskForm extends React.Component {
   constructor(props) {
     super(props);
@@ -43,12 +41,14 @@ class GenericTaskForm extends React.Component {
   }
 
   addToQueue(runNow, params) {
+    debugger;
     const parameters = {
       ...params,
       ...this.jsformData,
       label: params.name,
       shape: this.props.pointID,
-      selection: this.props.taskData.parameters.selection
+      selection: this.props.taskData.parameters.selection,
+      experiment_name: params.experimentName
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -64,7 +64,9 @@ class GenericTaskForm extends React.Component {
       'shape',
       'label',
       'helical',
-      'selection'
+      'selection',
+      'experiment_name',
+      'chip_type'
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -178,24 +180,41 @@ class GenericTaskForm extends React.Component {
     return s;
   }
 
-  render() {
-    function columnsObjectFieldTemplate({ properties, description }) {
-      return (
-        <div>
-          <div className='row'>
-            {properties.map(prop => {
-              const {uiSchema} = prop.content.props
-              const className = classNames('column', uiSchema['ui:column'] || 'col-6 json-schema-form-group-div')
-              return <div key={prop.content.key} className={className}>
-                {prop.content}
-              </div>
-            })}
-          </div>
-          {description}
-        </div>
-      )
-    }
+  customFieldTemplate(props) {
+    const {id, classNames, label, help, required, rawDescription, description, errors, children} = props;
+    return (
+      <div className={classNames}>
+        {
+          id !== "root" ? 
+          (<label htmlFor={id}>{label}{required ? "*" : null}{rawDescription ? ` (${rawDescription})` : null}</label>) 
+          : null
+        }
+        {description}
+        {children}
+        {errors}
+        {help}
+      </div>
+    );
+  }
 
+  columnsObjectFieldTemplate({ properties, description }) {
+    return (
+      <div>
+        <div className='row'>
+          {properties.map(prop => {
+            const {uiSchema} = prop.content.props
+            const className = classNames('column', uiSchema['ui:column'] || 'col-6 json-schema-form-group-div')
+            return <div key={prop.content.key} className={className}>
+              {prop.content}
+            </div>
+          })}
+        </div>
+        {description}
+      </div>
+    )
+  }
+
+  render() {
     const uiSchema = {
       "ui:order": [
         "num_images",
@@ -205,6 +224,22 @@ class GenericTaskForm extends React.Component {
         "resolution",
         "transmission",
         "energy",
+        "sub_sampling",
+        "vertical_spacing",
+        "horizontal_spacing",
+        "nb_lines",
+        "nb_samples_per_line",
+        "motor_top_left_x",
+        "motor_top_left_y",
+        "motor_top_left_z",
+        "motor_top_right_x",
+        "motor_top_right_y",
+        "motor_top_right_z",
+        "motor_bottom_left_x",
+        "motor_bottom_left_y",
+        "motor_bottom_left_z",
+        "chip_type",
+        "take_pedestal",
         "*",
       ],
       "ui:submitButtonOptions": {
@@ -215,7 +250,6 @@ class GenericTaskForm extends React.Component {
     const schema = this.setConstraintsFromDefualts(
       this.props.schema.user_collection_parameters
     )
-
     return (
       <DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
@@ -227,12 +261,19 @@ class GenericTaskForm extends React.Component {
             <StaticField label="Filename" data={this.props.filename} />
             <Row className='mb-2'>
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="2" col2="8" />
+                <InputField disabled propName="subdir" label="Sample name" col1="2" col2="8" />
               </Col>
             </Row>
             <Row>
-              <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="2" col2="8" />
+              {this.props.useExperimentName ?
+                (<Col xs={6}>
+                  <InputField propName="experimentName" label="Experiment Name" col1="4" col2="6" />
+                </Col>)
+                :
+                null
+              }
+              <Col xs={6}>
+                <InputField propName="prefix" label="Prefix" col1="1" col2="7" />
               </Col>
               {this.props.taskData.sampleID
                 ? (
@@ -259,7 +300,8 @@ class GenericTaskForm extends React.Component {
               onChange={({ formData }) => {
                 this.jsformData = formData;
               }}
-              ObjectFieldTemplate={columnsObjectFieldTemplate}
+              ObjectFieldTemplate={this.columnsObjectFieldTemplate}
+              FieldTemplate={this.customFieldTemplate}
             />
           </div>
 
@@ -282,6 +324,7 @@ const selector = formValueSelector('GenericTaskForm');
 
 GenericTaskForm = connect((state) => {
   const subdir = selector(state, 'subdir');
+  const experimentNameSelector = selector(state, 'experimentName');
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
   if (typeof position === 'object') {
     const vals = Object.values(position).sort();
@@ -298,13 +341,23 @@ GenericTaskForm = connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const {limits} = state.taskForm.defaultParameters[type];
-  const {schema} = state.taskForm.defaultParameters[type];
+  const { limits } = state.taskForm.defaultParameters[type];
+  const { schema } = state.taskForm.defaultParameters[type];
+  const useExperimentName = state.taskForm.taskData.use_experiment_name;
+
+  let path = `${state.login.rootPath}/${subdir}${experimentNameSelector}/[RUN#]`;
+
+  if (!useExperimentName) {
+    path = `${state.login.rootPath}/${subdir}/[RUN#]`;
+  }
 
   return {
-    path: `${state.login.rootPath}/${subdir}`,
+    path: path,
     filename: fname,
+    experimentName: experimentNameSelector,
+    subdir,
     acqParametersLimits: limits,
+    useExperimentName: useExperimentName,
     schema,
     beamline: state.beamline,
     initialValues: {

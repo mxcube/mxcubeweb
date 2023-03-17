@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
-import { ContextMenuTrigger } from 'react-contextmenu';
 import { TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
@@ -99,12 +98,16 @@ export default class TaskItem extends Component {
         try {
           res += `${this.props.shapes.shapes[wedge.parameters.shape].name}`;
         } catch {
-          res += '-';
+          res += '';
         }
       }
     });
 
-    return `${res}: `;
+    if (res !== '') {
+      res += ':';
+    }
+
+    return `${res} `;
   }
 
   wedgePath(wedge) {
@@ -138,7 +141,7 @@ export default class TaskItem extends Component {
       <tr>
         <td><a>{parameters.osc_start.toFixed(2)}</a></td>
         <td><a>{parameters.osc_range.toFixed(2)}</a></td>
-        <td><a>{parameters.exp_time.toFixed(3)}</a></td>
+        <td><a>{parameters.exp_time.toFixed(6)}</a></td>
         <td><a>{parameters.num_images}</a></td>
         <td><a>{parameters.transmission.toFixed(2)}</a></td>
         <td><a>{parameters.resolution.toFixed(3)}</a></td>
@@ -232,7 +235,7 @@ export default class TaskItem extends Component {
 
     return (
       <div className="node node-sample">
-        <ContextMenuTrigger id="currentSampleQueueContextMenu">
+        <div onContextMenu={(e) => this.props.showContextMenu(e, 'currentSampleQueueContextMenu')} id="currentSampleQueueContextMenu">
           <div
             onClick={this.taskHeaderOnClick}
             onContextMenu={this.taskHeaderOnContextMenu}
@@ -273,7 +276,6 @@ export default class TaskItem extends Component {
                       </div>
                       <Table
                         striped
-                        condensed
                         bordered
                         hover
                         onClick={this.showForm}
@@ -304,7 +306,7 @@ export default class TaskItem extends Component {
               </div>
             </Collapse>
           </div>
-        </ContextMenuTrigger>
+        </div>
       </div>);
   }
 }

@@ -20,13 +20,48 @@ import {
   sendSetAttribute,
   sendAbortCurrentAction,
   setBeamlineAttribute,
-  sendDisplayImage
+  sendDisplayImage,
+  executeCommand,
 } from '../actions/beamline';
+import { TiAdjustContrast } from 'react-icons/ti';
 
+class DefaultErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null, errorInfo: null };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    // Catch errors in any components below and re-render with error message
+    this.setState({
+      error: error,
+      errorInfo: errorInfo
+    })
+    // You can also log error messages to an error reporting service here
+  }
+
+  render() {
+    if (this.state.errorInfo) {
+      // Error path
+      return (
+        <div>
+          <h2>Something went wrong.</h2>
+          <details style={{ whiteSpace: 'pre-wrap' }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo.componentStack}
+          </details>
+        </div>
+      );
+    }
+    // Normally, just render children
+    return this.props.children;
+  }
+}
 
 class SampleViewContainer extends Component {
   render() {
-    const {uiproperties} = this.props;
+    const { uiproperties } = this.props;
 
     if (!uiproperties.hasOwnProperty('sample_view')) {
       return null;
@@ -41,31 +76,31 @@ class SampleViewContainer extends Component {
     Object.keys(this.props.shapes).forEach((key) => {
       const shape = this.props.shapes[key];
       switch (shape.t) {
-      case 'P': {
-        points[shape.id] = shape;
-      
-      break;
-      }
-      case '2DP': {
-        twoDPoints[shape.id] = shape;
-      
-      break;
-      }
-      case 'L': {
-        lines[shape.id] = shape;
-      
-      break;
-      }
-      case 'G': {
-        grids[shape.id] = shape;
+        case 'P': {
+          points[shape.id] = shape;
 
-        if (shape.selected) {
-          selectedGrids.push(shape);
+          break;
         }
-      
-      break;
-      }
-      // No default
+        case '2DP': {
+          twoDPoints[shape.id] = shape;
+
+          break;
+        }
+        case 'L': {
+          lines[shape.id] = shape;
+
+          break;
+        }
+        case 'G': {
+          grids[shape.id] = shape;
+
+          if (shape.selected) {
+            selectedGrids.push(shape);
+          }
+
+          break;
+        }
+        // No default
       }
     });
 
@@ -92,32 +127,38 @@ class SampleViewContainer extends Component {
     );
 
     return (
-        <Container fluid>
-          <Row>
-            <Col sm={12} style={{ paddingLeft: '0px',  paddingRight: '0px' }}>
+      <Container fluid>
+        <Row>
+          <Col sm={12} style={{ paddingLeft: '0px', paddingRight: '0px' }}>
+            <DefaultErrorBoundary>
               <BeamlineSetupContainer />
-            </Col>
-          </Row>
-          <Row style={{ marginTop: '0.7em', marginRight: '0px' }}>
-            <Col
-              sm={1}
-              style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
-            >
-            {process.env.REACT_APP_PHASECONTROL ? phaseControl : null}
-             {apertureControl}
-             { this.props.mode === 'SSX-CHIP' ?
-               (<SSXChipControl
-                 showForm={this.props.showForm}
-                 sampleID={sampleID}
-                 sampleData={this.props.sampleList[sampleID]}
-                 defaultParameters={this.props.defaultParameters}
-                 groupFolder={this.props.groupFolder}
-                 hardwareObjects={this.props.hardwareObjects}
-                 sampleActions={this.props.sampleViewActions}
-                 grids={grids}
-                 selectedGrids={selectedGrids}
+            </DefaultErrorBoundary>
+          </Col>
+        </Row>
+        <Row style={{ marginTop: '0.7em', marginRight: '0px' }}>
+          <Col
+            sm={1}
+            style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
+          >
+            <DefaultErrorBoundary>
+              {process.env.REACT_APP_PHASECONTROL==='true' ? phaseControl : null}
+              {apertureControl}
+              {this.props.mode === 'SSX-CHIP' ?
+                (<SSXChipControl
+                  showForm={this.props.showForm}
+                  sampleID={sampleID}
+                  sampleData={this.props.sampleList[sampleID]}
+                  defaultParameters={this.props.defaultParameters}
+                  groupFolder={this.props.groupFolder}
+                  hardwareObjects={this.props.hardwareObjects}
+                  uiproperties={uiproperties.sample_view}
+                  sampleActions={this.props.sampleViewActions}
+                  grids={grids}
+                  selectedGrids={selectedGrids}
+                  sendSetAttribute={this.props.sendSetAttribute}
+                  sendExecuteCommand={this.props.sendExecuteCommand}
                 />
-               ) : null
+                ) : null
               }
               <MotorControl
                 save={this.props.sendSetAttribute}
@@ -125,14 +166,16 @@ class SampleViewContainer extends Component {
                 uiproperties={uiproperties.sample_view}
                 hardwareObjects={this.props.hardwareObjects}
                 motorsDisabled={this.props.motorInputDisable
-                                  || this.props.queueState === QUEUE_RUNNING}
+                  || this.props.queueState === QUEUE_RUNNING}
                 steps={motorSteps}
                 stop={this.props.sendAbortCurrentAction}
                 sampleViewActions={this.props.sampleViewActions}
                 sampleViewState={this.props.sampleViewState}
               />
-            </Col>
-            <Col sm={7}>
+            </DefaultErrorBoundary>
+          </Col>
+          <Col sm={7}>
+            <DefaultErrorBoundary>
               <ContextMenu
                 {...this.props.contextMenu}
                 sampleActions={this.props.sampleViewActions}
@@ -175,12 +218,15 @@ class SampleViewContainer extends Component {
                 setBeamlineAttribute={this.props.setBeamlineAttribute}
                 sendDisplayImage={this.props.sendDisplayImage}
               />
-            </Col>
-            <Col sm={4} style={{ display: 'flex' }}>
+            </DefaultErrorBoundary>
+          </Col>
+          <Col sm={4} style={{ display: 'flex' }}>
+            <DefaultErrorBoundary>
               <SampleQueueContainer />
-            </Col>
-          </Row>
-        </Container>
+            </DefaultErrorBoundary>
+          </Col>
+        </Row>
+      </Container>
     );
   }
 }
@@ -219,7 +265,8 @@ function mapDispatchToProps(dispatch) {
     sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
     sendAbortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch),
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
-    sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch)
+    sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),
+    sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
   };
 }
 

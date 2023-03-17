@@ -1,0 +1,155 @@
+{
+    "current": "SMALL_FOIL",
+    "available": {
+        "OXFORD_CHIP": {
+            "head_type": "CHIP",
+            "holder_type": "KNOWN_GEOMETRY",
+            "holder_brand": "Oxford Chip",
+            "holder_size": [
+                30.0,
+                30.0
+            ],
+            "sections": [
+                {
+                    "section_offset": [
+                        0,
+                        0
+                    ],
+                    "block_size": [
+                        30.0,
+                        30.0
+                    ],
+                    "block_spacing": [
+                        15.0,
+                        15.0
+                    ],
+                    "block_shape": "RECTANGULAR",
+                    "number_of_rows": 8,
+                    "number_of_collumns": 8,
+                    "row_labels": [
+                        "1",
+                        "2",
+                        "3",
+                        "4",
+                        "5",
+                        "6",
+                        "7",
+                        "8"
+                    ],
+                    "column_lables": [
+                        "A",
+                        "B",
+                        "C",
+                        "D",
+                        "E",
+                        "F",
+                        "G",
+                        "H"
+                    ],
+                    "targets_per_block": [
+                        20,
+                        20
+                    ]
+                }
+            ],
+            "calibration_data": {
+                "top_left": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "top_right": [
+                    0.0,
+                    0.0,
+                    0.0
+                ],
+                "bottom_left": [
+                    0.0,
+                    0.0,
+                    0.0
+                ]
+            }
+        },
+        "SMALL_FOIL": {
+            "head_type": "CHIP",
+            "holder_type": "FREE_GEOMETRY",
+            "holder_brand": "FOIL",
+            "holder_size": [
+                100.0,
+                100.0
+            ],
+            "sections": [],
+            "calibration_data": {
+                "top_left": [
+                    18.0,
+                    15.8,
+                    -0.17
+                ],
+                "top_right": [
+                    22.0,
+                    15.8,
+                    -0.17
+                ],
+                "bottom_left": [
+                    18.0,
+                    24.0,
+                    -0.17
+                ]
+            }
+        },
+        "BIG_FOIL": {
+            "head_type": "CHIP",
+            "holder_type": "FREE_GEOMETRY",
+            "holder_brand": "FOIL",
+            "holder_size": [
+                100.0,
+                100.0
+            ],
+            "sections": [],
+            "calibration_data": {
+                "top_left": [
+                    7.0,
+                    3.0,
+                    0.08
+                ],
+                "top_right": [
+                    32.0,
+                    3.0,
+                    0.08
+                ],
+                "bottom_left": [
+                    7.0,
+                    28.0,
+                    0.08
+                ]
+            }
+        },
+        "CUSTOM_FOIL": {
+            "head_type": "CHIP",
+            "holder_type": "FREE_GEOMETRY",
+            "holder_brand": "FOIL",
+            "holder_size": [
+                100.0,
+                100.0
+            ],
+            "sections": [],
+            "calibration_data": {
+                "top_left": [
+                    15.0,
+                    16.0,
+                    -0.008
+                ],
+                "top_right": [
+                    23.0,
+                    16.0,
+                    -0.008
+                ],
+                "bottom_left": [
+                    15.0,
+                    24.0,
+                    -0.008
+                ]
+            }
+        }
+    }
+}

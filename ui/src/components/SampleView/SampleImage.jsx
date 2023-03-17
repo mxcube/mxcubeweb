@@ -780,21 +780,22 @@ export default class SampleImage extends React.Component {
   createVideoPlayerContainer(format) {
     let source = '/mxcube/api/v0.1/sampleview/camera/subscribe';
 
-    if (this.props.videoURL !=='') {
+    if (this.props.videoURL !== '') {
       source = `${this.props.videoURL}/${this.props.videoHash}`;
     }
 
-    // Default to MJPEG
-    // if (format === 'MPEG1') {
-    //  result = <canvas id="sample-img" className="img" />;
-    // }
+    let result = (<img
+      id="sample-img"
+      className="img"
+      src={source}
+      alt="SampleView"
+    />);
 
-    return <img
-        id="sample-img"
-        className="img"
-        src={source}
-        alt="SampleView"
-      />;
+    if (format === 'MPEG1') {
+      result = <canvas id="sample-img" className="img" />;
+    }
+
+    return result;
   }
 
   initJSMpeg() {

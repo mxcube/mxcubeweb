@@ -16,18 +16,25 @@ const validate = (values, props) => {
   // the limits come from a table sent by the client
 
   /* eslint-disable no-useless-escape */
-  const validPath = props.path.match(/^[-\w\-\/\_\{\}]+$/);
-  const validFname = props.filename.match(/^[-\w\-\#\_\{\}\[\]]+$/);
+  const validFname = /^[-\w\-\#\_\{\}\[\]]+$/.test(props.filename);
   /* eslint-enable no-useless-escape */
 
   const emptyField = 'field is empty';
-
+    
   if (!validFname) {
     errors.prefix = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
   }
 
-  if (!validPath) {
+  if (props.subdir && !/^[-\w\-\/\_\{\}]+$/.test(props.subdir)) {
     errors.subdir = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+  }
+
+  if (props.experimentName === undefined) {
+    errors.experimentName = 'Please give an experiment name';
+  }
+    
+  if (props.experimentName !== undefined && !/^[-\w\-\/\_\{\}]+$/.test(props.experimentName)) {
+    errors.experimentName = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
   }
 
   let resMin = 0;

@@ -26,27 +26,28 @@
 .sample-items-collapsible{
   margin-bottom: 1%;
   width:fit-content;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .div-sample-items-collapsible{
-  width: fit-content;
   margin: auto auto 2em auto;
+  overflow-x: auto;
 }
 
 
 .sample-items-collapsible-header {
+  display: flex;
   border: 1px solid #d1d6da!important;
   border-radius: 3px 3px 0px 0px!important;
   padding: 4px;
 }
 
-
-.sample-items-collapsible-header-actions {
+.samples-grid-table-context-menu-icon{
   position: relative;
-  top: 0px;
-  left: 50px;
-  margin-bottom: -37px;
-  width: fit-content;
+  bottom: 2px;
+  margin-right: 10px;
+  cursor: pointer;
 }
 
 .sample-items-table{
@@ -77,13 +78,6 @@
 .sample-items-table > tbody > tr >td{
   padding: 0.3em!important;
 } 
-
-.samples-grid-table-context-menu-icon{
-  position: relative;
-  bottom: 2px;
-  margin-right: 10px;
-  cursor: pointer;
-}
 
 .samples-grid-table-li {
   /* width: 340px; */
@@ -135,15 +129,15 @@
 }
 
 .sample-items-puck-code{
-  padding-left: 15px;
-  margin-left: 15px;
+  padding-left: 10px;
+  margin-left: 10px;
   border-left: 1px solid gray;
   display: inline-flex;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
   
-  max-width: 180px!important;
+  max-width: 160px!important;
 }
 
 button[disabled] {

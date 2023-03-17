@@ -15,7 +15,7 @@
 
 .json-schema-form-container .rjsf #root__title{
     display: none;
-  }
+}
 
 .json-schema-form-container .rjsf [type=submit]{
     display: none;
@@ -44,9 +44,8 @@
 }
 
 
-.json-schema-form-group-div .checkbox>label {
-    display: flex;
-    flex-direction: row-reverse;
+.json-schema-form-group-div .checkbox>label>span {
+    display: none;
 }
 
 .json-schema-form-group-div .field-description {
