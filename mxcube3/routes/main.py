@@ -63,21 +63,6 @@ def init_route(app, server, url_prefix):
             flask_login.current_user.last_request_timestamp = datetime.now()
             app.usermanager.update_user(flask_login.current_user)
 
-        # if not current_user.is_anonymous:
-        #     now = datetime.datetime.now()
-        #     last_active = current_user.disconnect_timestamp
-        #     last_active = last_active if last_active else now
-
-        #     current_user.disconnect_timestamp = now
-        #     app.usermanager.update_user(current_user)
-
-        #     delta = now - last_active
-        #     if delta.seconds > 60:
-        #         print('Your session has expired after 1 minute(s), you have been logged out')
-        #         app.usermanager.signout()
-
-        #     print(current_user.disconnect_timestamp)
-
     @server.flask.errorhandler(Exception)
     def exceptions(e):
         tb = traceback.format_exc()

@@ -194,7 +194,6 @@ def init_route(app, server, url_prefix):
     @server.flask_socketio.on("connect", namespace="/hwr")
     @server.ws_restrict
     def connect():
-        current_user.disconnect_timestamp = None
         current_user.socketio_session_id = request.sid
         app.usermanager.update_user(current_user)
 
@@ -202,8 +201,8 @@ def init_route(app, server, url_prefix):
     def disconnect():
         if current_user.is_anonymous:
             return
-        current_user.disconnect_timestamp = datetime.now()
-        app.usermanager.update_user(current_user)
-        # gevent.spawn(app.usermanager.handle_disconnect, current_user.username)
+        
+        current_user.socketio_session_id = None
+        current_user.socketio_session_id = request.sid
 
     return bp
