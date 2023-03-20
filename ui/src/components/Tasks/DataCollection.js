@@ -313,7 +313,7 @@ DataCollection = connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
+  const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
     path: `${state.login.rootPath}/${subdir}`,

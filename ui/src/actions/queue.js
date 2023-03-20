@@ -511,7 +511,7 @@ export function addTask(sampleIDs, parameters, runNow) {
         };
 
         // If a task is created on a shape, save shape if not already saved before
-        if (parameters.shape !== -1 && parameters.shape !== undefined) {
+        if (parseInt(parameters.shape) !== -1) {
           if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
             dispatch(
               sendUpdateShapes([{ id: task.parameters.shape, state: 'SAVED' }])
@@ -537,7 +537,7 @@ export function addTask(sampleIDs, parameters, runNow) {
           }
         }
 
-        const sample = { ...state.sampleGrid.sampleList[sampleID]};
+        const sample = { ...state.sampleGrid.sampleList[sampleID] };
         sample.tasks = [task];
         samples.push(sample);
       });

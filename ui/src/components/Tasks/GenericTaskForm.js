@@ -106,7 +106,7 @@ class GenericTaskForm extends React.Component {
               className='me-3 ms-3'
               size="sm"
               variant="success"
-              disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+              disabled={this.props.invalid}
               onClick={this.submitRunNow}
             >
               Run Now
@@ -181,13 +181,13 @@ class GenericTaskForm extends React.Component {
   }
 
   customFieldTemplate(props) {
-    const {id, classNames, label, help, required, rawDescription, description, errors, children} = props;
+    const { id, classNames, label, help, required, rawDescription, description, errors, children } = props;
     return (
       <div className={classNames}>
         {
-          id !== "root" ? 
-          (<label htmlFor={id}>{label}{required ? "*" : null}{rawDescription ? ` (${rawDescription})` : null}</label>) 
-          : null
+          id !== "root" ?
+            (<label htmlFor={id}>{label}{required ? "*" : null}{rawDescription ? ` (${rawDescription})` : null}</label>)
+            : null
         }
         {description}
         {children}
@@ -202,7 +202,7 @@ class GenericTaskForm extends React.Component {
       <div>
         <div className='row'>
           {properties.map(prop => {
-            const {uiSchema} = prop.content.props
+            const { uiSchema } = prop.content.props
             const className = classNames('column', uiSchema['ui:column'] || 'col-6 json-schema-form-group-div')
             return <div key={prop.content.key} className={className}>
               {prop.content}
@@ -272,8 +272,8 @@ class GenericTaskForm extends React.Component {
                 :
                 null
               }
-              <Col xs={6}>
-                <InputField propName="prefix" label="Prefix" col1="1" col2="7" />
+              <Col xs={12}>
+                <InputField propName="prefix" label="Prefix" col1="2" col2="8" />
               </Col>
               {this.props.taskData.sampleID
                 ? (
@@ -304,7 +304,6 @@ class GenericTaskForm extends React.Component {
               FieldTemplate={this.customFieldTemplate}
             />
           </div>
-
         </Modal.Body>
 
         {this.props.taskData.state ? '' : this.showFooter()}

@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
-import { TASK_UNCOLLECTED,
+import {
+  TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
-  TASK_RUNNING } from '../../constants';
+  TASK_RUNNING
+} from '../../constants';
 
 export default class TaskItem extends Component {
   static propTypes = {
@@ -34,13 +36,15 @@ export default class TaskItem extends Component {
       return (<div><span /></div>);
     }
     return (
-      <div style={ { borderLeft: '1px solid #DDD',
+      <div style={{
+        borderLeft: '1px solid #DDD',
         borderRight: '1px solid #DDD',
         borderBottom: '1px solid #DDD',
-        padding: '0.5em' } }
+        padding: '0.5em'
+      }}
       >
         <a href="#" onClick={() =>
-          this.props.showDialog(true, 'LIMS_RESULT_DIALOG', 'Lims Results', this.props.data) }
+          this.props.showDialog(true, 'LIMS_RESULT_DIALOG', 'Lims Results', this.props.data)}
         >
           View Results
         </a>
@@ -111,7 +115,7 @@ export default class TaskItem extends Component {
   }
 
   wedgePath(wedge) {
-    const {parameters} = wedge;
+    const { parameters } = wedge;
     const value = parameters.fileName;
     const path = parameters.path ? parameters.path : '';
 
@@ -120,23 +124,26 @@ export default class TaskItem extends Component {
         trigger="click"
         placement="top"
         rootClose
-        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '600px', width: 'auto' }}>
-                    <input
-                      type="text"
-                      onFocus={(e) => {e.target.select();}}
-                      value={path}
-                      size={path.length + 10}
-                    />
-                  </Popover>)}
+        overlay={(
+          <Popover id="wedge-popover" style={{ maxWidth: '600px', width: 'auto' }}>
+            <div style={{ padding: '0.5em' }}>
+              <input
+                type="text"
+                onFocus={(e) => { e.target.select(); }}
+                value={path}
+                size={path.length + 10}
+              />
+            </div>
+          </Popover>)}
       >
         <a>
-          { value }
+          {value}
         </a>
       </OverlayTrigger>);
   }
 
   wedgeParameters(wedge) {
-    const {parameters} = wedge;
+    const { parameters } = wedge;
     return (
       <tr>
         <td><a>{parameters.osc_start.toFixed(2)}</a></td>
@@ -152,26 +159,26 @@ export default class TaskItem extends Component {
   }
 
   progressBar() {
-    const {state} = this.props;
+    const { state } = this.props;
     let pbarBsStyle = 'info';
 
     switch (state) {
-    case TASK_RUNNING: {
-      pbarBsStyle = 'info';
-    
-    break;
-    }
-    case TASK_COLLECTED: {
-      pbarBsStyle = 'success';
-    
-    break;
-    }
-    case TASK_COLLECT_FAILED: {
-      pbarBsStyle = 'danger';
-    
-    break;
-    }
-    // No default
+      case TASK_RUNNING: {
+        pbarBsStyle = 'info';
+
+        break;
+      }
+      case TASK_COLLECTED: {
+        pbarBsStyle = 'success';
+
+        break;
+      }
+      case TASK_COLLECT_FAILED: {
+        pbarBsStyle = 'danger';
+
+        break;
+      }
+      // No default
     }
 
     return (
@@ -182,8 +189,8 @@ export default class TaskItem extends Component {
           style={{ marginBottom: '0px', height: '18px' }}
           min={0}
           max={1}
-          active={ this.props.progress < 1 }
-          label={ `${(this.props.progress * 100).toPrecision(3)} %` }
+          active={this.props.progress < 1}
+          label={`${(this.props.progress * 100).toPrecision(3)} %`}
           now={this.props.progress}
         />
       </span>);
@@ -215,22 +222,22 @@ export default class TaskItem extends Component {
     let taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
 
     switch (state) {
-    case TASK_RUNNING: {
-      taskCSS += ' running';
-    
-    break;
-    }
-    case TASK_COLLECTED: {
-      taskCSS += ' success';
-    
-    break;
-    }
-    case TASK_COLLECT_FAILED: {
-      taskCSS += ' error';
-    
-    break;
-    }
-    // No default
+      case TASK_RUNNING: {
+        taskCSS += ' running';
+
+        break;
+      }
+      case TASK_COLLECTED: {
+        taskCSS += ' success';
+
+        break;
+      }
+      case TASK_COLLECT_FAILED: {
+        taskCSS += ' error';
+
+        break;
+      }
+      // No default
     }
 
     return (
@@ -254,59 +261,59 @@ export default class TaskItem extends Component {
                 <i className="fas fa-times" onClick={this.deleteTask} style={delTaskCSS} /> : null
               }
             </div>
-            <Collapse in={Boolean(show)}>
-              <div className="task-body">
-                {wedges.map((wedge, i) => {
-                  const padding = i > 0 ? '1em' : '0em';
-                  return (
-                    <div key={`wedge-${i}`}>
+          </div>
+          <Collapse in={Boolean(show)}>
+            <div className="task-body">
+              {wedges.map((wedge, i) => {
+                const padding = i > 0 ? '1em' : '0em';
+                return (
+                  <div key={`wedge-${i}`}>
+                    <div style={{
+                      borderLeft: '1px solid #DDD',
+                      borderRight: '1px solid #DDD',
+                      paddingTop: padding
+                    }}
+                    >
                       <div style={{
-                        borderLeft: '1px solid #DDD',
-                        borderRight: '1px solid #DDD',
-                        paddingTop: padding
+                        borderTop: '1px solid #DDD',
+                        padding: '0.5em'
                       }}
                       >
-                        <div style={{
-                          borderTop: '1px solid #DDD',
-                          padding: '0.5em'
-                        }}
-                        >
-                          <b>Path:</b> {this.wedgePath(wedge)}
-                        </div>
+                        <b>Path:</b> {this.wedgePath(wedge)}
                       </div>
-                      <Table
-                        striped
-                        bordered
-                        hover
-                        onClick={this.showForm}
-                        style={{ fontSize: 'smaller', marginBottom: '0px' }}
-                        className="task-parameters-table"
-                      >
-                        <thead>
-                          <tr>
-                            <th>Start &deg; </th>
-                            <th>Osc. &deg; </th>
-                            <th>t (s)</th>
-                            <th># Img</th>
-                            <th>T (%)</th>
-                            <th>Res. (&Aring;)</th>
-                            <th>E (KeV)</th>
-                            <th>&phi; &deg;</th>
-                            <th>&kappa; &deg;</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {this.wedgeParameters(wedge)}
-                        </tbody>
-                      </Table>
-                      {this.getResult(state)}
-                    </div>);
-                })}
+                    </div>
+                    <Table
+                      striped
+                      bordered
+                      hover
+                      onClick={this.showForm}
+                      style={{ fontSize: 'smaller', marginBottom: '0px' }}
+                      className="task-parameters-table"
+                    >
+                      <thead>
+                        <tr>
+                          <th>Start &deg; </th>
+                          <th>Osc. &deg; </th>
+                          <th>t (s)</th>
+                          <th># Img</th>
+                          <th>T (%)</th>
+                          <th>Res. (&Aring;)</th>
+                          <th>E (KeV)</th>
+                          <th>&phi; &deg;</th>
+                          <th>&kappa; &deg;</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.wedgeParameters(wedge)}
+                      </tbody>
+                    </Table>
+                    {this.getResult(state)}
+                  </div>);
+              })}
 
-              </div>
-            </Collapse>
-          </div>
+            </div>
+          </Collapse>
         </div>
-      </div>);
+      </div >);
   }
 }
