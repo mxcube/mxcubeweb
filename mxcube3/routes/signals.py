@@ -360,7 +360,7 @@ def collect_image_taken(frame):
     node = last_queue_node()
 
     if not mxcube.queue.is_interleaved(node["node"]):
-        progress = mxcube.queue.get_task_progress(last_queue_node()["node"], frame)
+        progress = frame # mxcube.queue.get_task_progress(last_queue_node()["node"], frame)
 
         msg = {
             "Signal": "collectImageTaken",
