@@ -118,7 +118,7 @@ export class SampleGridTableItem extends React.Component {
           <span className="col-sm-6">{sampleData.crystalSpaceGroup}</span>
         </div>
         <div className="row">
-          <span style={{ 'padding-top': '0.5em' }} className="col-sm-12">
+          <span style={{ 'paddingTop': '0.5em' }} className="col-sm-12">
             <b>Crystal unit cell:</b>
           </span>
           <span className="col-sm-1">A:</span>
