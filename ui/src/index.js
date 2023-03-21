@@ -17,8 +17,6 @@ import HelpContainer from './containers/HelpContainer';
 import Main from './components/Main';
 import { serverIO } from './serverIO';
 import { getLoginInfo, startSession } from './actions/login';
-import LoadingScreen from './components/LoadingScreen/LoadingScreen';
-
 
 import { store, statePersistor, localStatePersistor } from './store';
 
@@ -63,23 +61,7 @@ function PrivateOutlet() {
 }
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { initialized: false };
-  }
-
-  componentWillMount() {
-    serverIO.connectNetworkSocket(() => {
-      this.setState({ initialized: true });
-    });
-  }
-
   render() {
-    if (!this.state.initialized) {
-      return (<LoadingScreen />);
-    }
-
     return (
       <Provider store={store}>
         <PersistGate loading={null} persistor={localStatePersistor}>
