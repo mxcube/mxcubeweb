@@ -1,26 +1,11 @@
 import 'bootstrap/dist/css/bootstrap.css';
-
 import './main.css';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
-
 import { Provider } from 'react-redux';
-import SampleViewContainer from './containers/SampleViewContainer';
-import SampleListViewContainer from './containers/SampleListViewContainer';
-import EquipmentContainer from './containers/EquipmentContainer';
-import LoginContainer from './containers/LoginContainer';
-import LoggerContainer from './containers/LoggerContainer';
-import RemoteAccessContainer from './containers/RemoteAccessContainer';
-import HelpContainer from './containers/HelpContainer';
-import Main from './components/Main';
-import { serverIO } from './serverIO';
-import { getLoginInfo, startSession } from './actions/login';
-import LoadingScreen from './components/LoadingScreen/LoadingScreen';
-
-
-import { store, statePersistor, localStatePersistor } from './store';
+import App from './components/App';
+import { store, localStatePersistor } from './store';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -39,70 +24,14 @@ if (module.hot) {
   });
 }
 
-function requireAuth() {
-  let state = store.getState();
-  store.dispatch(getLoginInfo()).then(() => {
-    state = store.getState();
-    if (state.login.loggedIn) {
-      store.dispatch(startSession());
-    }
+function Root() {
+  return (
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={localStatePersistor}>
+        <App/>
+      </PersistGate>
+    </Provider>
+  );
+};
 
-    if (state.login.loggedIn && !serverIO.initialized) {
-      serverIO.listen(store);
-      serverIO.connectStateSocket(statePersistor);
-    }
-  });
-  state = store.getState();
-  return state.login.loggedIn;
-}
-
-function PrivateOutlet() {
-  const location = useLocation();
-  const auth = requireAuth();
-  return auth ? <Outlet /> : <Navigate to="/login" state={{ from: location }} replace />;
-}
-
-export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = { initialized: false };
-  }
-
-  componentWillMount() {
-    serverIO.connectNetworkSocket(() => {
-      this.setState({ initialized: true });
-    });
-  }
-
-  render() {
-    if (!this.state.initialized) {
-      return (<LoadingScreen />);
-    }
-
-    return (
-      <Provider store={store}>
-        <PersistGate loading={null} persistor={localStatePersistor}>
-          <Router>
-            <Routes>
-              <Route path="/login" element={<LoginContainer />} />
-              <Route path="/" element={<PrivateOutlet />}>
-                <Route path="" element={<Main />}>
-                  <Route index element={<SampleViewContainer />} />
-                  <Route path="samplegrid" element={<SampleListViewContainer />} />
-                  <Route path="datacollection" element={<SampleViewContainer />} />
-                  <Route path="equipment" element={<EquipmentContainer />} />
-                  <Route path="logging" element={<LoggerContainer />} />
-                  <Route path="remoteaccess" element={<RemoteAccessContainer />} />
-                  <Route path="help" element={<HelpContainer />} />
-                </Route>
-              </Route>
-            </Routes>
-          </Router>
-        </PersistGate>
-      </Provider>
-    );
-  }
-}
-
-ReactDOM.render(<App />, document.querySelector('#root'));
+ReactDOM.render(<Root/>, document.querySelector('#root'));

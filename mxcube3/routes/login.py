@@ -2,8 +2,6 @@ import logging
 from datetime import timedelta
 
 from flask import Blueprint, request, jsonify, make_response, redirect, session
-from flask_login import current_user
-
 from mxcube3.core.util import networkutils
 from flask_login import current_user
 
@@ -101,16 +99,6 @@ def init_route(app, server, url_prefix):
         networkutils.send_feedback(sender_data)
         return make_response("", 200)
 
-    @server.flask_socketio.on("connect", namespace="/network")
-    @server.ws_restrict
-    def network_ws_connect():
-        msg = "Client connected"
-        logging.getLogger("MX3.HWR").info(msg)
-
-    @server.flask_socketio.on("disconnect", namespace="/network")
-    def network_ws_disconnect():
-        pass
-
     @bp.route("/refresh_session", methods=["GET"])
     @server.restrict
     def refresh_session():
@@ -120,5 +108,4 @@ def init_route(app, server, url_prefix):
         app.usermanager.update_active_users()
 
         return make_response("", 200)
-
     return bp

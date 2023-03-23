@@ -141,7 +141,7 @@ class SampleViewContainer extends Component {
             style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
           >
             <DefaultErrorBoundary>
-              {process.env.REACT_APP_PHASECONTROL ? phaseControl : null}
+              {process.env.REACT_APP_PHASECONTROL==='true' ? phaseControl : null}
               {apertureControl}
               {this.props.mode === 'SSX-CHIP' ?
                 (<SSXChipControl
