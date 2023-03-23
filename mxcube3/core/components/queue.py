@@ -1620,13 +1620,14 @@ class Queue(ComponentBase):
             )
         else:
             wf_model, dc_entry = self._create_wf(task)
-            self.set_wf_params(wf_model, dc_entry, task, sample_model)
 
         group_model = qmo.TaskGroup()
         group_model.set_origin(ORIGIN_MX3)
         group_model.set_enabled(True)
         HWR.beamline.queue_model.add_child(parent_model, group_model)
         HWR.beamline.queue_model.add_child(group_model, wf_model)
+        if not task["parameters"]["wfpath"] == "Gphl":
+            self.set_wf_params(wf_model, dc_entry, task, sample_model)
 
         group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
         group_entry.set_enabled(True)
@@ -1811,7 +1812,7 @@ class Queue(ComponentBase):
 
             elif isinstance(child, qmo.XrayCentring2):
                 # Added rhfogh 20211001
-                entry = qe.XrayCentring2QueueEntry(Mock(), child)
+                entry = qe.XrayCentering2QueueEntry(Mock(), child)
                 self.enable_entry(entry, True)
                 parent_entry.enqueue(entry)
 
