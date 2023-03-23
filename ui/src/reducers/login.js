@@ -1,5 +1,5 @@
 const initialState = {
-  loggedIn: false,
+  loggedIn: null,  // null means loggedIn state is not known yet
   showProposalsForm: false,
   selectedProposal: '',
   selectedProposalID: '',
