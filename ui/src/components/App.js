@@ -15,14 +15,14 @@ import Main from './Main';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 
 function requireAuth() {
-  let state = store.getState();
   store.dispatch(getLoginInfo()).then(() => {
-    state = store.getState();
-    if (state.login.loggedIn) {
-      store.dispatch(startSession());
+    const login = store.getState().login;
+
+    if (login.loggedIn) {
+      store.dispatch(startSession(login.user.inControl));
     }
 
-    if (state.login.loggedIn && !serverIO.initialized) {
+    if (login.loggedIn && !serverIO.initialized) {
       serverIO.listen(store);
       serverIO.connectStateSocket(statePersistor);
     }

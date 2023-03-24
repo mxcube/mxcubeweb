@@ -68,9 +68,9 @@ export function sendSelectProposal(number, navigate) {
   };
 }
 
-export function startSession() {
+export function startSession(userInControl) {
   return function (dispatch) {
-    dispatch(getInitialState());
+    dispatch(getInitialState(userInControl));
     dispatch(setLoading(false));
   };
 }
