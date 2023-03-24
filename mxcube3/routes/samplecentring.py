@@ -161,7 +161,6 @@ def init_route(app, server, url_prefix):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        resp = Response(status=409)
         shapes = request.get_json().get("shapes", [])
 
         resp = jsonify(app.sample_view.update_shapes(shapes))
