@@ -74,8 +74,7 @@ export class ObserverDialog extends React.Component {
               <FormControl
                 onChange={(event) => { this.name = event.target; }}
                 type='text'
-                defaultValue={this.props.login.loginID}
-                render
+                defaultValue={this.props.login.user.username}
               />
             )}
             <Button onClick={this.accept}> OK </Button>
