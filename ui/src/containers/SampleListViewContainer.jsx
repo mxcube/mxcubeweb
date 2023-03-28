@@ -379,7 +379,7 @@ class SampleListViewContainer extends React.Component {
    */
   removeSelectedTasks() {
     const selectedSamplesID = Object.keys(this.props.selected);
-    this.props.deleteTaskList(selectedSamplesID, 0);
+    this.props.deleteTaskList(selectedSamplesID);
   }
 
 
@@ -753,7 +753,7 @@ function mapDispatchToProps(dispatch) {
     deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),
     setEnabledSample: (qidList, value) => dispatch(setEnabledSample(qidList, value)),
     deleteTask: (qid, taskIndex) => dispatch(deleteTask(qid, taskIndex)),
-    deleteTaskList: (sampleIDList, taskIndex) => dispatch(deleteTaskList(sampleIDList, taskIndex)),
+    deleteTaskList: (sampleIDList) => dispatch(deleteTaskList(sampleIDList)),
     sendClearQueue: () => dispatch(sendClearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
     sendStopQueue: () => dispatch(sendStopQueue()),

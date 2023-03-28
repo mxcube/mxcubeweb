@@ -372,6 +372,14 @@ export function removeTaskAction(sampleID, taskIndex, queueID = null) {
   };
 }
 
+export function removeTaskListAction(taskList, queueIDList = null) {
+  return {
+    type: 'REMOVE_TASKS_LIST',
+    taskList,
+    queueIDList,
+  };
+}
+
 export function setEnabledSample(sampleIDList, value) {
   return function (dispatch, getState) {
     const state = getState();
@@ -416,44 +424,42 @@ export function deleteTask(sampleID, taskIndex) {
 
     if (task.state === TASK_UNCOLLECTED) {
       dispatch(queueLoading(true));
-
       sendDeleteQueueItem([[sampleID, taskIndex]]).then((response) => {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, 'Server refused to delete task'));
         } else {
           dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
         }
-
-        dispatch(queueLoading(false));
-      });
+      }).catch(() => queueLoading(false))
+      .then(() => { dispatch(queueLoading(false)); });;
     }
   };
 }
 
-export function deleteTaskList(sampleIDList, taskIndex) {
+export function deleteTaskList(sampleIDList) {
   return function (dispatch, getState) {
     const state = getState();
-    // const itemPosList =[];
+    const itemPosList =[];
+    const taskList = [];
+    const queueIDList = [];
     sampleIDList.forEach((sid) => {
-      state.sampleGrid.sampleList[sid].tasks.forEach((task) => {
-        // itemPosList.push([sid, tindex])
+      state.sampleGrid.sampleList[sid].tasks.forEach((task, index) => {
         if (task.state === TASK_UNCOLLECTED) {
-          dispatch(queueLoading(true));
-          sendDeleteQueueItem([[sid, taskIndex]]).then((response) => {
-            if (response.status >= 400) {
-              dispatch(showErrorPanel(true, 'Server refused to delete task'));
-            } else {
-              dispatch(removeTaskAction(sid, taskIndex, task.queueID));
-            }
-          }).then(() => {
-            if (sampleIDList[sampleIDList.length -1] === sid) {
-              dispatch(queueLoading(false));
-            }
-          });
+          itemPosList.push([sid, index])
+          taskList.push(task);
+          queueIDList.push(task.queueID);
         }
-
       });
     });
+    dispatch(queueLoading(true));
+    sendDeleteQueueItem(itemPosList).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to delete task'));
+      } else {
+        dispatch(removeTaskListAction(taskList, queueIDList));
+      }
+      }).catch(() => queueLoading(false))
+      .then(() => { dispatch(queueLoading(false)); });
   };
 }
 
