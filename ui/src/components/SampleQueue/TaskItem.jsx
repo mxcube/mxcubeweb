@@ -146,15 +146,15 @@ export default class TaskItem extends Component {
     const { parameters } = wedge;
     return (
       <tr>
-        <td><a>{parameters.osc_start.toFixed(2)}</a></td>
-        <td><a>{parameters.osc_range.toFixed(2)}</a></td>
+        {parameters.osc_start !== null ? (<td><a>{parameters.osc_start.toFixed(2)}</a></td>) : null}
+        {parameters.osc_range !== null ? (<td><a>{parameters.osc_range.toFixed(2)}</a></td>) : null}
         <td><a>{parameters.exp_time.toFixed(6)}</a></td>
         <td><a>{parameters.num_images}</a></td>
         <td><a>{parameters.transmission.toFixed(2)}</a></td>
         <td><a>{parameters.resolution.toFixed(3)}</a></td>
         <td><a>{parameters.energy.toFixed(4)}</a></td>
-        <td><a>{parameters.kappa_phi.toFixed(2)}</a></td>
-        <td><a>{parameters.kappa.toFixed(2)}</a></td>
+        {parameters.kappa_phi !== null ? (<td><a>{parameters.kappa_phi.toFixed(2)}</a></td>) : null}
+        {parameters.kappa !== null ? (<td><a>{parameters.kappa.toFixed(2)}</a></td>) : null}
       </tr>);
   }
 
@@ -292,15 +292,15 @@ export default class TaskItem extends Component {
                     >
                       <thead>
                         <tr>
-                          <th>Start &deg; </th>
-                          <th>Osc. &deg; </th>
+                          {wedge.parameters.osc_start !== null ? (<th>Start &deg; </th>) : null}
+                          {wedge.parameters.osc_range !== null ? (<th>Osc. &deg; </th>) : null}
                           <th>t (s)</th>
                           <th># Img</th>
                           <th>T (%)</th>
                           <th>Res. (&Aring;)</th>
                           <th>E (KeV)</th>
-                          <th>&phi; &deg;</th>
-                          <th>&kappa; &deg;</th>
+                          {wedge.parameters.kappa_phi !== null ? (<th>&phi; &deg;</th>) : null}
+                          {wedge.parameters.kappa !== null ? (<th>&kappa; &deg;</th>) : null}
                         </tr>
                       </thead>
                       <tbody>

@@ -218,7 +218,7 @@ class GenericTaskForm extends React.Component {
   }
 
   updateFromRemoteValidation(formData) {
-    sendUpdateDependentFields("test_collection", formData).then((_d) => {
+    sendUpdateDependentFields(this.props.taskData.type, formData).then((_d) => {
       const data = JSON.parse(_d);
 
       for (const fieldName in data) {
@@ -329,7 +329,7 @@ GenericTaskForm = connect((state) => {
   const { limits } = state.taskForm.defaultParameters[type];
   const { schema } = state.taskForm.defaultParameters[type];
   const uiSchema = state.taskForm.defaultParameters[type]["ui_schema"]
-  const useExperimentName = state.taskForm.taskData.use_experiment_name;
+  const useExperimentName = state.taskForm.taskData.parameters.use_experiment_name;
 
   let path = `${state.login.rootPath}/${subdir}${experimentNameSelector}/[RUN#]`;
 
@@ -360,9 +360,7 @@ GenericTaskForm = connect((state) => {
       transmission: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.transmission
         : state.beamline.hardwareObjects.transmission.value),
-      osc_start: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.hardwareObjects["diffractometer.phi"].value)
+      osc_start: state.taskForm.taskData.parameters.osc_start
     }
   };
 })(GenericTaskForm);
