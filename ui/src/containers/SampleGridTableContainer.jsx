@@ -214,7 +214,9 @@ class SampleGridTableContainer extends React.Component {
     this.showRubberBand = true;
 
     if(this.props.contextMenu.show) {
-      this.props.showGenericContextMenu(false, null, 0, 0)
+      this.props.showGenericContextMenu(false, null, 0, 0);
+      this.showRubberBand = false;
+      selectionRubberBand.style.display = 'none';
     }
 
     e.preventDefault();
@@ -271,6 +273,9 @@ class SampleGridTableContainer extends React.Component {
     switch (e.key) {
     case 'Escape': {
       this.props.selectSamples(Object.keys(this.props.sampleList), false);
+      const selectionRubberBand = document.querySelector('#selectionRubberBand');
+      this.showRubberBand = false;
+      selectionRubberBand.style.display = 'none';
     break;
     }
     // No default
