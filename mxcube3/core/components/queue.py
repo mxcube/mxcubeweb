@@ -1382,6 +1382,9 @@ class Queue(ComponentBase):
         Return:
             (tuple): (model, entry)
         """
+        if not task["parameters"]["osc_range"]:
+            task["parameters"]["osc_range"] = None
+
         queue_entry_name = task_name.title().replace("_", "") + "QueueEntry"
         entry_cls = getattr(qe, queue_entry_name)
         data = entry_cls.DATA_MODEL(
