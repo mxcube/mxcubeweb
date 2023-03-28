@@ -5,7 +5,7 @@ import { BsChevronUp, BsChevronDown } from "react-icons/bs";
 import EquipmentState from './EquipmentState';
 import './GenericEquipmentControl.css';
 
-export default class GenericEquipmentControl extends React.Component {
+export default class GenericEquipment extends React.Component {
   handleRunCommand(cmd, formData) {
     this.props.executeCommand(this.props.equipment.name, cmd, formData)
   }

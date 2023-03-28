@@ -9,7 +9,7 @@
 
 .samples-grid-table-card{
   border: 0px!important;
-  margin-bottom: 25em;
+  /* margin-bottom: 25em; */
 }
 
 .samples-grid-table-card-header{
@@ -26,7 +26,7 @@
 .sample-items-collapsible{
   margin-bottom: 1%;
   width:fit-content;
-  margin-left: auto;
+  /* margin-left: auto; */
   margin-right: auto;
 }
 
