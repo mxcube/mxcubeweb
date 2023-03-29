@@ -42,7 +42,7 @@ import { showWorkflowParametersDialog } from './actions/workflow';
 
 import { incChatMessageCount, getRaState } from './actions/remoteAccess';
 
-import { doSignOut, getLoginInfo, refreshSession } from './actions/login';
+import { forcedSignout, getLoginInfo, refreshSession } from './actions/login';
 
 import {
   setSCState,
@@ -378,12 +378,8 @@ class ServerIO {
       }
     });
 
-    this.hwrSocket.on('forceSignoutObservers', () => {
-      const state = store.getState();
-
-      if (!state.login.user.inControl) {
-        this.dispatch(doSignOut());
-      }
+    this.hwrSocket.on('forceSignout', () => {
+      this.dispatch(forcedSignout());
     });
 
     this.hwrSocket.on('workflowParametersDialog', (data) => {

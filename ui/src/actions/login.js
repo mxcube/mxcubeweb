@@ -154,6 +154,13 @@ export function signIn(proposal, password, navigate) {
   };
 }
 
+export function forcedSignout() {
+  return function (dispatch) {
+    serverIO.disconnect();
+    dispatch(signOut());
+  }
+}
+
 export function doSignOut(navigate) {
   return function (dispatch) {
     serverIO.disconnect();
