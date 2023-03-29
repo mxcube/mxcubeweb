@@ -75,6 +75,19 @@ export function startSession() {
   };
 }
 
+export function refreshSession() {
+  return function (dispatch) {
+    return fetch('mxcube/api/v0.1/login/refresh_session', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include'
+    });
+  }
+}
+
 export function getLoginInfo() {
   return function (dispatch) {
     return fetch('mxcube/api/v0.1/login/login_info', {

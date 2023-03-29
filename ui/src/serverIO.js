@@ -42,7 +42,7 @@ import { showWorkflowParametersDialog } from './actions/workflow';
 
 import { incChatMessageCount, getRaState } from './actions/remoteAccess';
 
-import { doSignOut, getLoginInfo } from './actions/login';
+import { doSignOut, getLoginInfo, refreshSession } from './actions/login';
 
 import {
   setSCState,
@@ -63,6 +63,8 @@ class ServerIO {
     this.hwrsid = null;
     this.connected = false;
     this.initialized = false;
+
+    this.refreshSession = this.refreshSession.bind(this);
 
     this.uiStorage = {
       setItem: (key, value) => {
@@ -94,15 +96,22 @@ class ServerIO {
     });
   }
 
+  refreshSession() {
+    this.dispatch(refreshSession());
+  }
+
   disconnect() {
     this.connected = false;
     this.hwrSocket.disconnect();
     this.loggingSocket.disconnect();
+    clearInterval(this.refreshSession)
   }
 
   listen(store) {
     this.initialized = true;
     this.dispatch = store.dispatch;
+
+    setInterval(this.refreshSession, 50000)
 
     this.hwrSocket = io.connect(
       `//${document.domain}:${window.location.port}/hwr`

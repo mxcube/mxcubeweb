@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 from flask import Blueprint, request, jsonify, make_response, redirect, session
 from mxcube3.core.util import networkutils
@@ -98,4 +99,13 @@ def init_route(app, server, url_prefix):
         networkutils.send_feedback(sender_data)
         return make_response("", 200)
 
+    @bp.route("/refresh_session", methods=["GET"])
+    @server.restrict
+    def refresh_session():
+        logging.getLogger("MX3.HWR").debug("Session refresh")
+        server.flask.permanent_session_lifetime = timedelta(minutes=1)
+
+        app.usermanager.update_active_users()
+
+        return make_response("", 200)
     return bp

@@ -6,7 +6,6 @@ import datetime
 
 import flask
 import flask_security
-import flask_login
 from flask_login import current_user
 
 from mxcube3.core.components.component_base import ComponentBase
@@ -76,6 +75,22 @@ class BaseUserManager(ComponentBase):
 
         self.app.server.emit("observersChanged", data, namespace="/hwr")
 
+    def update_active_users(self):
+        for _u in User.query.all():
+            if (
+                _u.last_request_timestamp
+                and (
+                    datetime.datetime.now() - _u.last_request_timestamp
+                ).total_seconds()
+                > 60
+            ):
+                logging.getLogger("HWR.MX3").info(
+                    f"Logged out inactive user {_u.username}"
+                )
+                self.app.server.user_datastore.deactivate_user(_u)
+
+        self.emit_observers_changed()
+
     def update_operator(self, new_login=False):
         active_in_control = False
 
@@ -94,9 +109,7 @@ class BaseUserManager(ComponentBase):
         # in control
         if not active_in_control:
             if HWR.beamline.lims.loginType.lower() != "user":
-                current_user.nickname = self.app.lims.get_proposal(
-                    current_user
-                )
+                current_user.nickname = self.app.lims.get_proposal(current_user)
             else:
                 current_user.nickname = current_user.username
 
@@ -109,22 +122,6 @@ class BaseUserManager(ComponentBase):
                     self.app.lims.select_proposal(self.app.lims.get_proposal(_u))
                 elif _u.selected_proposal is not None:
                     self.app.lims.select_proposal(_u.selected_proposal)
-
-    def handle_disconnect(self, username):
-        time.sleep(120)
-        user = self.get_user(username)
-
-        if user.disconnect_timestamp:
-            dt = datetime.datetime.now() - user.disconnect_timestamp
-            # Disconnected for more than a minute
-            if dt.seconds >= 120:
-
-                logging.getLogger("HWR").info("Client disconnected")
-                logging.getLogger("HWR").info(f"User {user.username} logged out")
-
-                user.active = False
-                self.update_user(user)
-                self.emit_observers_changed()
 
     def is_inhouse_user(self, user_id):
         user_id_list = [
@@ -170,7 +167,7 @@ class BaseUserManager(ComponentBase):
             )
 
             self.update_operator(new_login=True)
-            self.emit_observers_changed()
+            self.update_active_users()
 
             msg = "User %s signed in" % user.username
             logging.getLogger("MX3.HWR").info(msg)
@@ -292,9 +289,7 @@ class BaseUserManager(ComponentBase):
 
         return list(roles)
 
-    def db_create_user(
-        self, user: str, password: str, lims_data: dict
-    ):
+    def db_create_user(self, user: str, password: str, lims_data: dict):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
         username = f"{user}-{str(uuid.uuid4())}"
@@ -371,24 +366,37 @@ class UserManager(BaseUserManager):
 
         if login_id in active_users:
             if current_user.is_anonymous:
-                raise Exception("Login rejected, you are already logged in somewhere else")
+                raise Exception(
+                    "Login rejected, you are already logged in somewhere else"
+                )
             else:
                 if current_user.username == login_id:
                     raise Exception("You are already logged in here")
                 else:
-                    raise Exception("Login rejected, you are already logged in somewhere else\nand Another user is already logged in here")
+                    raise Exception(
+                        "Login rejected, you are already logged in somewhere else\nand Another user is already logged in here"
+                    )
 
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
             raise Exception("In-house only allowed from localhost")
 
         # Only allow other users to log-in if they are from the same proposal
-        if (not inhouse) and active_users and (login_id not in active_users) and HWR.beamline.lims.loginType.lower() != "user":
+        if (
+            (not inhouse)
+            and active_users
+            and (login_id not in active_users)
+            and HWR.beamline.lims.loginType.lower() != "user"
+        ):
             raise Exception("Another user is already logged in")
 
         # Only allow if no one else is logged in here
         if not current_user.is_anonymous:
-            if active_users and current_user.username != login_id and HWR.beamline.lims.loginType.lower() == "user":
+            if (
+                active_users
+                and current_user.username != login_id
+                and HWR.beamline.lims.loginType.lower() == "user"
+            ):
                 raise Exception("Another user is already logged in here")
 
         # Only allow local login when remote is disabledf
