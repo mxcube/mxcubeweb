@@ -72,12 +72,9 @@ export class ObserverDialog extends React.Component {
           <Modal.Footer>
             {this.props.login.loginType === 'User' ? null : (
               <FormControl
-                inputRef={(ref) => {
-                  this.name = ref;
-                }}
+                onChange={(event) => { this.name = event.target; }}
                 type='text'
-                defaultValue={this.props.login.loginID}
-                render
+                defaultValue={this.props.login.user.username}
               />
             )}
             <Button onClick={this.accept}> OK </Button>
