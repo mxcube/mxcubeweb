@@ -57,7 +57,6 @@ def init_route(app, server, url_prefix):
         logging.getLogger("MX3.HWR").debug('Path: %s', request.full_path)
         logging.getLogger("MX3.HWR").debug('scheme: %s', request.scheme)
         logging.getLogger("MX3.HWR").debug('Headers: %s', request.headers)
-        logging.getLogger("MX3.HWR").debug('Body: %s', request.get_data())
 
         if not flask_login.current_user.is_anonymous:
             flask_login.current_user.last_request_timestamp = datetime.now()
