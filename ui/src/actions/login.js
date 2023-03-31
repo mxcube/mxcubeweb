@@ -156,13 +156,13 @@ export function signIn(proposal, password, navigate) {
 
 export function doSignOut(navigate) {
   return function (dispatch) {
+    serverIO.disconnect();
     return fetch('mxcube/api/v0.1/login/signout', {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());
       dispatch(getLoginInfo());
       navigate && navigate('/login');
-      serverIO.disconnect();
     });
   };
 }
