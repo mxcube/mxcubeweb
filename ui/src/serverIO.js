@@ -40,6 +40,8 @@ import { setLoading, showConnectionLostDialog } from './actions/general';
 
 import { showWorkflowParametersDialog } from './actions/workflow';
 
+import { showGphlWorkflowParametersDialog } from './actions/gphl_workflow';
+
 import { incChatMessageCount, getRaState } from './actions/remoteAccess';
 
 import { doSignOut, getLoginInfo, refreshSession } from './actions/login';
@@ -388,6 +390,10 @@ class ServerIO {
 
     this.hwrSocket.on('workflowParametersDialog', (data) => {
       this.dispatch(showWorkflowParametersDialog(data));
+    });
+
+    this.hwrSocket.on('gphlWorkflowParametersDialog', (data) => {
+      this.dispatch(showGphlWorkflowParametersDialog(data));
     });
 
     this.hwrSocket.on('take_xtal_snapshot', (cb) => {
