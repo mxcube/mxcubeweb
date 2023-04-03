@@ -192,7 +192,7 @@ export class SampleGridTableItem extends React.Component {
           <div className="samples-grid-table-item-top d-flex">
             {this.itemControls()}
             <div  className="div-samples-grid-table-item-top">
-            <CopyToClipboard className="copy-link" text={this.sampleDisplayName()} onCopy={this.onCopy}>
+              <CopyToClipboard className="copy-link" text={this.sampleDisplayName()} onCopy={this.onCopy}>
                 <Button variant="content" className="btn-copy-link">
                   <MdContentCopy style={{ float: 'right'}} size=""/>
                   <span className={`tooltiptext ${this.state.copied ? 'copy-link-glow' : ''}`} id="myTooltip">
