@@ -1022,6 +1022,9 @@ class Queue(ComponentBase):
 
         if sample_model.free_pin_mode:
             sample_model.location = (None, sample_id)
+        elif HWR.beamline.diffractometer.in_plate_mode():
+            component =  HWR.beamline.sample_changer._resolve_component(item["location"])
+            sample_model.location = component.get_coords()
         else:
             sample_model.location = tuple(map(int, item["location"].split(":")))
 

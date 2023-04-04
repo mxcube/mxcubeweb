@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, ButtonGroup, Card } from 'react-bootstrap';
 
-import './SampleChanger.css';
+import './Equipment.css';
  
 
 export class SampleChangerActionButton extends React.Component {
@@ -92,7 +92,7 @@ export default class SampleChangerMaintenance extends React.Component {
       <div>
         { groups }
         { msg ? (
-          <Card className='mb-3'>
+          <Card className='mb-2'>
             <Card.Header>Status message</Card.Header>
             <Card.Body>
               <span className="scMessage">{ msg }</span>
