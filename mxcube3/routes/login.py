@@ -106,5 +106,4 @@ def init_route(app, server, url_prefix):
         server.flask.permanent_session_lifetime = timedelta(minutes=1)
         app.usermanager.update_active_users()
         return make_response("", 200)
-
     return bp

@@ -76,7 +76,7 @@ function notify(error) {
   console.error('REQUEST FAILED', error);
 }
 
-export function getInitialState() {
+export function getInitialState(userInControl) {
   return function (dispatch) {
     const state = {};
 
@@ -320,15 +320,22 @@ export function getInitialState() {
         .catch(notify)
     ];
 
-    Promise.all(pchains)
+    let prom = Promise.all(pchains)
       .then(() => {
         dispatch(setInitialState(state));
-      })
-      .then(() => {
-        dispatch(unselectShapes({ shapes: state.shapes }));
-      }).then(() => {
-        dispatch(applicationFetched(true));
       });
+
+    /* don't unselect shapes when in observer mode */
+    if (userInControl)
+    {
+      prom = prom.then(() => {
+        dispatch(unselectShapes({ shapes: state.shapes }));
+      });
+    }
+
+    prom.then(() => {
+      dispatch(applicationFetched(true));
+    });
   };
 }
 
