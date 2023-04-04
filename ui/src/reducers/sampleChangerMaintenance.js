@@ -11,7 +11,8 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         commands: action.data.sampleChangerCommands,
-        global_state: action.data.sampleChangerGlobalState.state,
+        state: action.data.sampleChangerGlobalState.state,
+        global_state: action.data.sampleChangerGlobalState.global_state,
         commands_state: action.data.sampleChangerGlobalState.commands_state,
         message: action.data.sampleChangerGlobalState.message,
       };
@@ -19,7 +20,8 @@ export default (state = INITIAL_STATE, action) => {
     case 'SET_SC_GLOBAL_STATE': {
       return {
         ...state,
-        global_state: JSON.parse(action.data.state),
+        state: JSON.parse(action.data.state),
+        global_state: JSON.parse(action.data.global_state),
         commands_state: JSON.parse(action.data.commands_state),
         message: action.data.message,
       };

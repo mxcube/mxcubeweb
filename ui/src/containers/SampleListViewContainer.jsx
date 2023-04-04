@@ -26,6 +26,7 @@ import {
   sendGetSampleList,
   setViewModeAction,
   sendSyncSamples,
+  syncWithCrims,
   filterAction,
   selectSamplesAction,
   showGenericContextMenu
@@ -762,6 +763,7 @@ function mapDispatchToProps(dispatch) {
     setViewMode: (mode) => dispatch(setViewModeAction(mode)),
     filter: (filterOptions) => dispatch(filterAction(filterOptions)),
     syncSamples: () => dispatch(sendSyncSamples()),
+    syncSamplesCrims: () => dispatch(syncWithCrims()),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     selectSamples: (keys, selected) => dispatch(selectSamplesAction(keys, selected)),
     deleteSamplesFromQueue: (sampleID) => dispatch(deleteSamplesFromQueue(sampleID)),

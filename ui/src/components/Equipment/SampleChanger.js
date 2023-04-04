@@ -5,7 +5,7 @@ import {
 
 import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 
-import './SampleChanger.css';
+import './Equipment.css';
  
 
 export class SampleChangerTree extends React.Component {

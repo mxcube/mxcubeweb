@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col, Container } from 'react-bootstrap';
+import { Row, Col, Container, OverlayTrigger, Popover, Button } from 'react-bootstrap';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import PhaseInput from '../components/SampleView/PhaseInput';
 import ApertureInput from '../components/SampleView/ApertureInput';
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
+import PlateManipulator from '../components/Equipment/PlateManipulator';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as SampleViewActions from '../actions/sampleview';
 import * as GeneralActions from '../actions/general';
@@ -25,6 +26,10 @@ import {
   executeCommand,
   sendLogFrontEndTraceBack
 } from '../actions/beamline';
+import { syncWithCrims } from '../actions/sampleGrid';
+import { select, loadSample, scan, refresh, selectWell,
+  setPlate, selectDrop, sendCommand
+} from '../actions/sampleChanger';
 class SampleViewContainer extends Component {
   render() {
     const { uiproperties } = this.props;
@@ -133,6 +138,7 @@ class SampleViewContainer extends Component {
                 />
                 ) : null
               }
+
               <MotorControl
                 save={this.props.sendSetAttribute}
                 saveStep={setStepSize}
@@ -149,6 +155,62 @@ class SampleViewContainer extends Component {
           </Col>
           <Col sm={7}>
             <DefaultErrorBoundary>
+              {this.props.contents.name === 'PlateManipulator'
+                ? (
+                  <div>
+                    <OverlayTrigger ref="plateOverlay" trigger="click" rootClose placement="right"
+                      overlay={(<Popover id="platePopover" style={{ maxWidth: '800px' }}>
+                        <PlateManipulator
+                          contents={this.props.contents}
+                          loadedSample={this.props.loadedSample}
+                          select={this.props.select}
+                          load={this.props.loadSample}
+                          send_command={this.props.send_command}
+                          scan={this.props.scan}
+                          plates={this.props.plateGrid}
+                          plateIndex={this.props.plateIndex}
+                          selectedRow={this.props.selectedRow}
+                          selectedCol={this.props.selectedCol}
+                          selectedDrop={this.props.selectedDrop}
+                          setPlate={this.props.setPlate}
+                          selectWell={this.props.selectWell}
+                          selectDrop={this.props.selectDrop}
+                          crystalList={this.props.crystalList}
+                          syncSamplesCrims={this.props.syncSamplesCrims}
+                          generalActions={this.props.generalActions}
+                          global_state={this.props.global_state}
+                        />
+                      </Popover>)}
+                    >
+                      <Button
+                        variant='outline-secondary'
+                        style={{ marginTop: '1em', width: '155px' }}
+                        size='sm'
+                      >
+                        <i className="fa fa-th" />
+                          {' '}
+                          Plate Navigation
+                        <i className="fa fa-caret-right" />
+                      </Button>
+                    </OverlayTrigger>
+                    <Button
+                      style={{ marginTop: '1em', width: '155px' }}
+                      variant="outline-secondary"
+                      // size='sm'
+                      title={this.props.hasCrystal ? 'Move to Crystal position' : 'No Crystal Found / Crims not Sync'}
+                      onClick={() => this.props.send_command('moveToCrystalPosition')}
+                      disabled={!this.props.hasCrystal}
+                    >
+                      <i className="fa fa-diamond" />
+                        {' '}
+                        Move to Cristal
+                    </Button>
+                  </div>
+                )
+                : null
+              }
+            </Col>
+            <Col sm={7}>
               <ContextMenu
                 {...this.props.contextMenu}
                 sampleActions={this.props.sampleViewActions}
@@ -225,7 +287,19 @@ function mapStateToProps(state) {
     remoteAccess: state.remoteAccess,
     uiproperties: state.uiproperties,
     taskForm: state.taskForm,
-    mode: state.general.mode
+    mode: state.general.mode,
+
+    contents: state.sampleChanger.contents,
+    state: state.sampleChanger.state,
+    global_state: state.sampleChangerMaintenance.global_state,
+    loadedSample: state.sampleChanger.loadedSample,
+    plateGrid: state.sampleChanger.plateGrid,
+    plateIndex: state.sampleChanger.currentPlateIndex,
+    selectedRow: state.sampleChanger.selectedRow,
+    selectedCol: state.sampleChanger.selectedCol,
+    selectedDrop: state.sampleChanger.selectedDrop,
+    crystalList: state.sampleGrid.crystalList,
+
   };
 }
 
@@ -240,7 +314,12 @@ function mapDispatchToProps(dispatch) {
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
-    sendLogFrontEndTraceBack: bindActionCreators(sendLogFrontEndTraceBack, dispatch),
+
+    selectWell: (row, col) => dispatch(selectWell(row, col)),
+    setPlate: (address) => dispatch(setPlate(address)),
+    selectDrop: (address) => dispatch(selectDrop(address)),
+    syncSamplesCrims: () => dispatch(syncWithCrims()),
+    sendCommand: (cmd, args) => dispatch(sendCommand(cmd, args)),
   };
 }
 

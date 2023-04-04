@@ -160,6 +160,30 @@ export function sendSyncSamples() {
   };
 }
 
+// update list crystal from crims
+export function updateCrystalList(crystalList) {
+  return { type: 'UPDATE_CRYSTAL_LIST', crystalList };
+}
+
+export function syncWithCrims() {
+  return function (dispatch) {
+    fetch('mxcube/api/v0.1/sample_changer/sync_with_crims', {
+      method: 'GET',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json'
+      },
+      credentials: 'include'
+    }).then((response) => {
+      if (response.status >= 400) {
+        // throw new Error('Error while scanning sample changer');
+        dispatch(showErrorPanel(true, `Synchronization with Crims failed ${response.headers.get('message')}`));
+      }
+      response.json().then((crystalList) => { dispatch(updateCrystalList(crystalList)); });
+    });
+  };
+}
+
 export function toggleMovableAction(key) {
   return { type: 'TOGGLE_MOVABLE_SAMPLE', key };
 }

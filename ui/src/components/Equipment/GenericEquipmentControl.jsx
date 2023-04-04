@@ -4,7 +4,6 @@ import { Row, Col, Accordion, Button, Card, OverlayTrigger, Popover } from 'reac
 import Collapsible from 'react-collapsible';
 import { BsChevronUp, BsChevronDown } from "react-icons/bs";
 import EquipmentState from './EquipmentState';
-import Form from '@rjsf/core';
 import './GenericEquipmentControl.css';
 
 export default class GenericEquipmentControl extends React.Component {

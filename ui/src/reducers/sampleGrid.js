@@ -17,6 +17,7 @@ import { SAMPLE_MOUNTED, TASK_UNCOLLECTED } from '../constants';
 const INITIAL_STATE = {
   selected: {},
   sampleList: {},
+  crystalList: [],
   order: [],
   moving: {},
   viewMode: {
@@ -62,6 +63,10 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, sampleList,
         order,
         selected: {},};
+    }
+    case 'UPDATE_CRYSTAL_LIST': {
+      const crystalList = action.crystalList;
+      return Object.assign({}, state, { crystalList });
     }
     case 'REMOVE_SAMPLES_FROM_QUEUE': {
       // When removing samples from queue, remove uncollected tasks from that sample in

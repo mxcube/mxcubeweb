@@ -1,0 +1,3 @@
+<equipment class = "PlateManipulatorMaintenance">
+  <object href="/plate_manipulator" role="sample_changer"/>
+</equipment>

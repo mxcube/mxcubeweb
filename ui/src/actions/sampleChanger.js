@@ -26,6 +26,36 @@ export function setSCCommandResponse(response) {
   return { type: 'SET_SC_RESPONSE', response };
 }
 
+export function setCurrentPlate(plate_index) {
+  return { type: 'SET_SC_CURRENT_PLATE', plate_index };
+}
+
+export function setSelectedWell(row, col) {
+  return { type: 'SET_SC_SELECTED_WELL', row, col };
+}
+
+export function setSelectedDrop(drop_index) {
+  return { type: 'SET_SC_SELECTED_DROP', drop_index };
+}
+
+export function setPlate(plate_index) {
+  return function (dispatch) {
+    dispatch(setCurrentPlate(plate_index));
+  };
+}
+
+export function selectWell(row, col) {
+  return function (dispatch) {
+    dispatch(setSelectedWell(row, col));
+  };
+}
+
+export function selectDrop(drop_index) {
+  return function (dispatch) {
+    dispatch(setSelectedDrop(drop_index));
+  };
+}
+
 export function refresh() {
   return function (dispatch) {
     fetch('mxcube/api/v0.1/sample_changer/contents', {
