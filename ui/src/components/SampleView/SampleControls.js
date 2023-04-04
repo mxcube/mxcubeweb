@@ -31,8 +31,13 @@ export default class SampleControls extends React.Component {
   }
 
   setZoom(option) {
-    const newZoom = this.props.zoom_motor.commands[option.target.value];
-    this.props.sendSetAttribute('zoom', newZoom);
+    const zoom_motor_uiprop = find(
+     this.props.uiproperties.components, { role: 'zoom' }
+    );
+
+    const zoom_motor = this.props.hardwareObjects[zoom_motor_uiprop.attribute];
+    const newZoom = zoom_motor.commands[option.target.value];
+    this.props.sendSetAttribute('diffractometer.zoom', newZoom);
   }
 
   toggleDrawGrid() {
@@ -268,7 +273,7 @@ export default class SampleControls extends React.Component {
                     disabled={zoom_motor.state !== MOTOR_STATE.READY}
                     onMouseUp={this.setZoom}
                     onChange={(e) => {
-                      this.props.setBeamlineAttribute('zoom', zoom_motor.commands[e.target.value])
+                      this.props.setBeamlineAttribute('diffractometer.zoom', zoom_motor.commands[e.target.value])
                     }}
                     list="volsettings"
                     name="zoomSlider"
