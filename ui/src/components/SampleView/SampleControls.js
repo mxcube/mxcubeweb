@@ -369,8 +369,8 @@ export default class SampleControls extends React.Component {
                       max={hardwareObjects["diffractometer.frontlight"].limits[1]}
                       value={hardwareObjects["diffractometer.frontlight"].value}
                       disabled={hardwareObjects["diffractometer.frontlight"].state !== MOTOR_STATE.READY}
-                      onMouseUp={e => this.props.sendSetAttribute('frontlight', e.target.value)}
-                      onChange={e => this.props.setBeamlineAttribute('frontlight', e.target.value)}
+                      onMouseUp={e => this.props.sendSetAttribute('diffractometer.frontlight', e.target.value)}
+                      onChange={e => this.props.setBeamlineAttribute('diffractometer.frontlight', e.target.value)}
                       name="frontLightSlider"
                     />
                   </span>
