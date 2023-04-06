@@ -59,8 +59,16 @@ def parse_args():
         "-L",
         "--log-level",
         dest="log_level",
-        help="Log level for thirdparty libraries, mxcube-server log level is always DEBUG ",
+        help="Log level for all loggers ",
         default="",
+    )
+
+    opt_parser.add_argument(
+        "-el",
+        "--enabled-loggers",
+        dest="enabled_logger_list",
+        help="Which loggers to use, default is to use all loggers ([exception_logger, hwr_logger, mx3_hwr_logger, user_logger, queue_logger])",
+        default=["exception_logger", "hwr_logger", "mx3_hwr_logger", "user_logger", "queue_logger"],
     )
 
     opt_parser.add_argument(
@@ -120,6 +128,7 @@ def main(test=False):
             cmdline_options.ra_timeout,
             cmdline_options.log_file,
             cmdline_options.log_level,
+            cmdline_options.enabled_logger_list,
             cfg,
         )
 
