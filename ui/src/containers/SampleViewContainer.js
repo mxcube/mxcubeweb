@@ -103,6 +103,7 @@ class SampleViewContainer extends Component {
         // No default
       }
     });
+    const diffractometerHo = this.props.hardwareObjects['diffractometer'];
 
     const phaseControl = (
       <div>
@@ -111,6 +112,7 @@ class SampleViewContainer extends Component {
           phase={this.props.sampleViewState.currentPhase}
           phaseList={this.props.sampleViewState.phaseList}
           sendPhase={this.props.sampleViewActions.sendCurrentPhase}
+          state={diffractometerHo.state}
         />
       </div>
     );
