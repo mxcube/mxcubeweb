@@ -243,7 +243,9 @@ class MXCUBEApplication:
     server = None
 
     @staticmethod
-    def init(server, allow_remote, ra_timeout, log_fpath, log_level, cfg):
+    def init(
+        server, allow_remote, ra_timeout, log_fpath, log_level, enabled_logger_list, cfg
+    ):
         """
         Initializes application wide variables, sample video stream, and applies
 
@@ -264,7 +266,7 @@ class MXCUBEApplication:
         if cfg.app.USE_EXTERNAL_STREAMER:
             MXCUBEApplication.init_sample_video(cfg.app.VIDEO_FORMAT)
 
-        MXCUBEApplication.init_logging(log_fpath, log_level)
+        MXCUBEApplication.init_logging(log_fpath, log_level, enabled_logger_list)
 
         _UserManagerCls = import_component(
             cfg.app.usermanager, package="components.user"
@@ -330,7 +332,7 @@ class MXCUBEApplication:
             sys.excepthook(*sys.exc_info())
 
     @staticmethod
-    def init_logging(log_file, log_level):
+    def init_logging(log_file, log_level, enabled_logger_list):
         """
         :param str log_file: Path to log file
 
@@ -356,30 +358,28 @@ class MXCUBEApplication:
         custom_log_handler.setLevel(logging.DEBUG)
         custom_log_handler.setFormatter(log_formatter)
 
-        exception_logger = logging.getLogger("exceptions")
-        hwr_logger = logging.getLogger("HWR")
-        mx3_hwr_logger = logging.getLogger("MX3.HWR")
-        user_logger = logging.getLogger("user_level_log")
-        queue_logger = logging.getLogger("queue_exec")
+        _loggers = {
+            "exception_logger": logging.getLogger("exceptions"),
+            "hwr_logger": logging.getLogger("HWR"),
+            "mx3_hwr_logger": logging.getLogger("MX3.HWR"),
+            "user_logger": logging.getLogger("user_level_log"),
+            "queue_logger": logging.getLogger("queue_exec"),
+        }
+
         stdout_log_handler = StreamHandler(sys.stdout)
         stdout_log_handler.setFormatter(log_formatter)
 
-        for logger in (
-            exception_logger,
-            hwr_logger,
-            user_logger,
-            mx3_hwr_logger,
-            queue_logger,
-        ):
-            logger.setLevel(logging.DEBUG)
+        for logger_name, logger in _loggers.items():
+            if logger_name in enabled_logger_list:
+                logger.addHandler(custom_log_handler)
+                logger.addHandler(stdout_log_handler)
 
-            logger.addHandler(custom_log_handler)
-            logger.addHandler(stdout_log_handler)
+                if log_file:
+                    logger.addHandler(log_file_handler)
 
-            if log_file:
-                logger.addHandler(log_file_handler)
-
-            logger.propagate = False
+                logger.propagate = False
+            else:
+                logger.disabled = True
 
     @staticmethod
     def init_state_storage():
