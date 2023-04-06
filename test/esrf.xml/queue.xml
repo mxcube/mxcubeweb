@@ -1,4 +1,0 @@
-<object class="QueueManager" role="Queue">
-  <object href="/beamline-setup" role="beamline_setup"/>    
-</object>
-
