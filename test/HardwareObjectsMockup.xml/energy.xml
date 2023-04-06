@@ -1,4 +1,4 @@
-<equipment class="EnergyMockup">
+<object class="EnergyMockup">
   <username>energy</username>
   <mad>
     <defaultenergy>
@@ -14,4 +14,4 @@
       <directory>rm</directory>
     </defaultenergy>
   </mad>
-</equipment>
+</object>
