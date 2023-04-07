@@ -49,7 +49,7 @@
   <!-- <crimsWsRoot>https://lolita.embl-hamburg.de</crimsWsRoot> -->
   <!-- <crimsWsRoot>https://htxlab.embl.fr/agility/plates/CD027680/insitu/xml</crimsWsRoot> -->
   <crimsWsRoot>https://htxlab.embl.fr/pins/api/plates/</crimsWsRoot>
-  <!-- <PlateBarode>CD031660</PlateBarode> -->
-  <PlateBarode>CD032401</PlateBarode>
+  <!-- <PlateBarcode>CD031660</PlateBarcode> -->
+  <PlateBarcode>CD032401</PlateBarcode>
   <harvesterKey></harvesterKey>
 </equipment>
