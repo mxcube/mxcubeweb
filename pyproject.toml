@@ -72,3 +72,9 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
 mxcubeweb-server = 'mxcube3:main'
+
+
+[[tool.poetry.source]]
+name = "tsinghua-pypi"
+url = "https://pypi.tuna.tsinghua.edu.cn/simple"
+default = true

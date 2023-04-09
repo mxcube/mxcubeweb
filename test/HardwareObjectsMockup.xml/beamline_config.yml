@@ -35,10 +35,10 @@ _objects:
     - resolution: resolution.xml
     - safety_shutter: safety_shutter.xml
     - fast_shutter: fast_shutter.xml
-    - hutch_interlock: hutchtrigger.xml
+    #- hutch_interlock: hutchtrigger.xml
     - sample_changer: sc.xml
-    - sample_changer_maintenance: sc_maint.xml
-    - plate_manipulator: plate_manipulator.xml
+    #- sample_changer_maintenance: sc_maint.xml
+    #- plate_manipulator: plate_manipulator.xml
     - diffractometer: minidiff.xml
     - lims: lims.xml
     - sample_view: sample_view.xml
@@ -57,8 +57,8 @@ _objects:
 #    - centring: centring.xml
     - xml_rpc_server: xml_rpc_server.xml
     # Analysis:
-    - offline_processing: auto_processing.xml
-    - online_processing: parallel_processing.xml
+    #- offline_processing: auto_processing.xml
+    #- online_processing: parallel_processing.xml
     - characterisation: characterisation.xml
 
     # - beam_realign: # Skipped - optional
