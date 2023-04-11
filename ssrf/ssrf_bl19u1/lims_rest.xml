@@ -1,0 +1,16 @@
+<object class="ISPyBRestClientMockup">
+  <restRoot>
+   https://your.lims.org
+  </restRoot>
+  <site>
+   ESRF
+  </site>
+  <exi_root>
+   https://your.exi.org
+  </exi_root>
+  <restUserName></restUserName>
+  <restPass></restPass>
+
+  <object role="session" href="/session"/>
+
+</object>

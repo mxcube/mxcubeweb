@@ -1,0 +1,9 @@
+<device class="mxcubecore.HardwareObjects.ExporterMotor">
+  <exporter_address>10.30.61.67:9002</exporter_address>
+  <actuator_name>Omega</actuator_name>
+  <unit>1e-2</unit>
+  <direction>-1</direction>
+  <GUIstep>90</GUIstep>
+  <limit_low>-inf</limit_low>
+  <limit_high>inf</limit_high>
+</device>

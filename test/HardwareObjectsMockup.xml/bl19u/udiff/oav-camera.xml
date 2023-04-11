@@ -1,0 +1,11 @@
+<!--<device class="MAXIV.MAXIVMD2Camera">-->
+<device class="mxcubecore.HardwareObjects.SSRF.BL19U1.BL19U1MD2Camera">
+<username>Camera</username>
+<exporter_address>10.30.61.67:9002</exporter_address>
+<image_aux>/tmp/md2imageaux.jpg</image_aux>
+<motor_name>Camera</motor_name>
+<unit>1e-3</unit>
+<GUIstep>90</GUIstep>
+<image_name>001.jpg</image_name>
+    <interval>100</interval>
+</device>

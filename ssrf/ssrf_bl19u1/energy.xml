@@ -1,0 +1,6 @@
+<device class="SSRF.BL19U1.BL19U1Energy">
+    <channel type="epics" name="chanEnergy1">X19U1:OP:Mono:BraggEAO</channel>
+    <channel type="epics" name="chanEnergy_RBV">X19U1:OP:Mono:BraggEAO.RBV</channel>
+    <channel type="epics" name="detEnergy">BL19U1:cam1:Energy</channel>
+    <limits>3.0, 20.0</limits>
+</device>

@@ -1,0 +1,55 @@
+<object class="EdnaWorkflow" role="workflow">
+  <bes_host>mxcube3</bes_host>
+  <bes_port>8100</bes_port>
+  <object href="/session" role="session"/>
+  <workflow>
+    <title>WF Mesh Scan</title>
+    <path>MeshScan</path>
+    <requires>grid</requires>
+  </workflow>
+  <workflow>
+    <title>X-ray Centring</title>
+    <path>XrayCentring</path>
+    <requires>grid</requires>
+  </workflow>
+  <workflow>
+    <title>Helical characterisation</title>
+    <path>HelicalCharacterisation</path>
+    <requires>line</requires>
+  </workflow>
+  <workflow>
+    <title>Enhanced characterisation</title>
+    <path>EnhancedCharacterisation</path>
+    <requires>point</requires>
+  </workflow>
+  <workflow>
+    <title>MXPressE</title>
+    <path>MXPressE</path>
+    <requires>samplegrid</requires>
+  </workflow>
+  <workflow>
+    <title>Mesh and collect</title>
+    <path>MeshAndCollect</path>
+    <requires>grid</requires>
+  </workflow>
+  <workflow>
+    <title>Mesh and collect from file</title>
+    <path>MeshAndCollectFromFile</path>
+    <requires>grid</requires>
+  </workflow>
+  <workflow>
+    <title>Distance calibration</title>
+    <path>DistanceCalibration</path>
+    <requires>point</requires>
+  </workflow>
+  <workflow>
+    <title>Trouble shooting</title>
+    <path>TroubleShooting</path>
+    <requires>samplegrid</requires>
+  </workflow>
+  <workflow>
+    <title>Trouble shooting Dialog</title>
+    <path>TroubleShootingWithDialog</path>
+    <requires>samplegrid</requires>
+  </workflow>
+</object>

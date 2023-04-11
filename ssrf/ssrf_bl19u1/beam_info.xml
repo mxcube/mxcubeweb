@@ -1,0 +1,8 @@
+<object class="SSRF.BL19U1.SSRFBeam">
+    <device hwrid="/udiff/aperture" role="aperture"/>
+<!--    <device hwrid="/slits-mockup" role="slits"/>-->
+    <device hwrid="/slits" role="slits"/>
+    <defaultBeamDivergence>(12.0, 5.0)</defaultBeamDivergence>
+</object>
+
+

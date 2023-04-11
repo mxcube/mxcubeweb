@@ -1,5 +1,6 @@
 # The class to initialise, and init parameters
 _initialise_class:
+    # class: HardwareRepository.HardwareObjects.Beamline.Beamline
     class: mxcubecore.HardwareObjects.Beamline.Beamline
     # Further key-value pairs here will be passed to the class init
 #    mode: devel
@@ -24,44 +25,46 @@ _objects:
     #
     # Hardware:
     - session: session.xml
-    - data_publisher: data_publisher.xml
     - machine_info: machine_info.xml
-    - detector: bl19u/detector.xml
-    - beam: beam.xml
+#    - detector: pilatus.xml
+    - detector: detector.xml
+    - beam: beam_info.xml
     - transmission: transmission.xml
     - flux: flux.xml
-    - cryo: cryo.xml
     - energy: energy.xml
+    #- energy: energy-mockup.xml
     - resolution: resolution.xml
     - safety_shutter: safety_shutter.xml
-    - fast_shutter: fast_shutter.xml
-    #- hutch_interlock: hutchtrigger.xml
-    - sample_changer: sc.xml
-    #- sample_changer_maintenance: sc_maint.xml
+    - fast_shutter: /udiff/udiff_fastshut.xml
+    - hutch_interlock: hutchtrigger.xml
+    #- sample_changer: isara.xml
+    #- sample_changer_maintenance: isara_maint.xml
+    #- sample_changer: sc_mockup.xml
+    #- sample_changer_maintenance: sc_maint_mockup.xml
     #- plate_manipulator: plate_manipulator.xml
-    #- diffractometer: bl19u/udiff.xml
-    - diffractometer: minidiff.xml
-
+    - plate_manipulator: plate-manipulator-mockup.xml
+    #- diffractometer: mini-diff.xml
+    - diffractometer: udiff.xml
     - lims: lims.xml
     - sample_view: sample_view.xml
     - queue_manager: queue.xml
     - queue_model: queue_model.xml
 
     # Procedures:
-    - beamline_actions: beamline_actions.xml
+    - xml_rpc_server: xml_rpc_server.xml
     - workflow: ednaparams.xml
     - collect: mxcollect.xml
     - xrf_spectrum: xrf.xml
     - energy_scan: energyscan.xml
-    - gphl_connection: gphl/gphl-setup.yml
-    - gphl_workflow: gphl/gphl-workflow.yml
-    - xray_centring: xray_centring2.yml
-#    - centring: centring.xml
-    - xml_rpc_server: xml_rpc_server.xml
+   # - gphl_workflow: gphl-workflow.xml
+   # - gphl_connection: gphl-setup.xml
+    #- centring: centring-math.xml
     # Analysis:
-    #- offline_processing: auto_processing.xml
-    #- online_processing: parallel_processing.xml
-    - characterisation: characterisation.xml
+   # - offline_processing: auto-processing-mockup.xml
+#    - online_processing: parallel_processing.xml
+    - characterisation: characterisation_mockup.xml
+#    - data_publisher: data_publisher.xml
+#    - scan_mockup: scan_mockup.xml
 
     # - beam_realign: # Skipped - optional
 
@@ -80,9 +83,10 @@ default_acquisition_parameters:
     default:
         # Default values, also used for standard acquisition.
         # Values not given in other dictionaries are taken from here
-        exp_time: 0.02        # exposure time
+#        exp_time: 0.1        # exposure time
+        exp_time: 1.0        # exposure time
         osc_start: 0.0  # Only used if no current angle can be found
-        osc_range: 0.1
+        osc_range: 0.5
         num_passes: 1
         first_image: 1
         overlap: 0
@@ -100,11 +104,10 @@ default_acquisition_parameters:
 
     characterisation:
         # Defaults for chareacterisation. Missing values are taken from default
-        exp_time: 0.05       # exposure time
+        exp_time: 0.1       # exposure time
         osc_range: 1
         overlap: -89
         num_images: 4
-        shutterless: false
 
     mesh:
         # Defaults for 'advanced' acquisition. Missing values are taken from default
@@ -117,7 +120,7 @@ default_acquisition_parameters:
 
 acquisition_limit_values:
     exposure_time:
-        - 0.02
+        - 0.1
         - 1000
     osc_range:
         - -10000
@@ -133,15 +136,13 @@ available_methods:
     datacollection: True
     characterisation: True
     helical: True
-    xrf: True
-    energy: True
-    mesh: True
-    ssx_chip_collection: True
-    test_collection: True
+    xrf_scan: True
+    energy_scan: True
+    mesh_scan: True
 
-undulators:
-    - type: PPU35C_GAP
-      device_uri: //orion:10000/id/id/30
+#undulator:
+   # - type: PPU35C_GAP
+   #   device_uri: //orion:10000/id/id/30
 
-    - type: PPU35D_GAP
-      device_uri: //orion:10000/id/id/30
+  #  - type: PPU35D_GAP
+  #    device_uri: //orion:10000/id/id/30

@@ -1,0 +1,33 @@
+<equipment class = "Isara">
+ <!-- SC3 commands and channels -->
+ <command type="epics" name="epicsIsaraDry">SSRF:Isara:dry</command>
+
+
+  <channel type="epics" name="epicsIsaraOn">SSRF:Isara:on</channel>
+  <command type="epics" name="epicsIsaraOff">SSRF:Isara:off</command>
+  <channel type="epics" name="epicsIsaraReset">SSRF:Isara:reset</channel>
+  <channel type="epics" name="epicsIsaraOpenlid">SSRF:Isara:openlid</channel>
+  <channel type="epics" name="epicsIsaraCloselid">SSRF:Isara:closelid</channel>
+  <channel type="epics" name="epicsIsaraAbort">SSRF:Isara:abort</channel>
+  <channel type="epics" name="epicsIsaraOpentool">SSRF:Isara:opentool</channel>
+  <channel type="epics" name="epicsIsaraClosetool">SSRF:Isara:closetool</channel>
+  <channel type="epics" name="epicsIsaraMagneton">SSRF:Isara:magneton</channel>
+  <channel type="epics" name="epicsIsaraMagnetoff">SSRF:Isara:magnetoff</channel>
+  <channel type="epics" name="epicsIsaraRecover">SSRF:Isara:recover</channel>
+  <channel type="epics" name="epicsIsaraPut">SSRF:Isara:put</channel>
+  <channel type="epics" name="epicsIsaraGet">SSRF:Isara:get</channel>
+  <channel type="epics" name="epicsIsaracd ../..AGetput">SSRF:Isara:getput</channel>
+  <channel type="epics" name="epicsIsaraBack">SSRF:Isara:back</channel>
+  <channel type="epics" name="epicsIsaraSoak">SSRF:Isara:soak</channel>
+
+  <channel type="epics" name="epicsIsaraRegulon">SSRF:Isara:regulon</channel>
+  <channel type="epics" name="epicsIsaraReguloff">SSRF:Isara:reguloff</channel>
+  <channel type="epics" name="epicsIsaraClearmemory">SSRF:Isara:clearmemory</channel>
+  <channel type="epics" name="epicsIsaraResetprogram">SSRF:Isara:resetprogram</channel>
+  <channel type="epics" name="epicsIsaraState">SSRF:Isara:state</channel>
+
+
+
+
+  <testProperty>15</testProperty>
+</equipment>

@@ -1,0 +1,11 @@
+server:
+  SECRET_KEY: "ASECRETKEY"
+  SESSION_TYPE: "redis"
+  SESSION_KEY_PREFIX: "mxcube:session:"
+  DEBUG: False
+  STREAMED_VIDEO: True
+
+  ALLOWED_CORS_ORIGINS: "*"
+
+mxcube:
+  VIDEO_FORMAT: JPEG

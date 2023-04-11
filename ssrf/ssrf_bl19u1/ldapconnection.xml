@@ -1,0 +1,6 @@
+<procedure class="LdapLoginMockup">
+  <ldaphost>10.30.63.198</ldaphost>
+  <ldapport>10389</ldapport>
+  <ldapdomain>dc3.ssrf.ac.cn</ldapdomain>
+  <ldapou>users</ldapou>
+</procedure>

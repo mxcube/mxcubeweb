@@ -1,0 +1,5 @@
+<device class="mxcubecore.HardwareObjects.MicrodiffLight">
+<!--  <username>Microdiff light</username>-->
+  <exporter_address>10.30.61.67:9002</exporter_address>
+  <actuator_name>Frontlight</actuator_name>
+</device>

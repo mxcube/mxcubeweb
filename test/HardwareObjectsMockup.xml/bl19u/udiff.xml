@@ -1,0 +1,85 @@
+<object class="mxcubecore.HardwareObjects.SSRF.BL19U1.MD2">
+<!--object class="Arinax.ArinaxMicrodiff"-->
+<!--object class="SSRF.BL19U1.EMBLMiniDiff"-->
+  <username>MD2</username>
+  <chi>0</chi>
+<!--  <centringReferencePosition>-->
+<!--    <phiz delta="0.01">0.0</phiz> &lt;!&ndash; was -0.094 -0.110 with single axis and -0.098 value with kappa &ndash;&gt;-->
+<!--    <phiy delta="0.01">-0.38156</phiy>  &lt;!&ndash;0.760 from XRC&ndash;&gt;-->
+<!--    <focus delta="-0.0">0.0</focus>-->
+<!--    <sampx delta="0.01">0.0</sampx>-->
+<!--    <sampy delta="0.01">0.0</sampy>-->
+<!--    <bstopz delta="0.01">-30</bstopz>-->
+<!--  </centringReferencePosition>-->
+  <!--  <object href="/bliss" role="controller"/>-->
+
+  <motors>
+    <device role="phi" hwrid="./udiff/udiff_omega"/>
+    <device role="phiy" hwrid="./udiff/udiff_phiy"/>
+    <device role="phiz" hwrid="./udiff/udiff_phiz"/>
+    <device role="sampx" hwrid="./udiff/udiff_sampx"/>
+    <device role="sampy" hwrid="./udiff/udiff_sampy"/>
+    <device role="kappa" hwrid="./udiff/udiff_kappa"/>
+    <device role="kappa_phi" hwrid="./udiff/udiff_kappaphi"/>
+    <device role="zoom" hwrid="./udiff/udiff_zoom"/>
+    <device role="focus" hwrid="./udiff/udiff_phix"/>
+    <device role="FrontLight" hwrid="./udiff/udiff_frontlight"/>
+    <device role="BackLight" hwrid="./udiff/udiff_backlight"/>
+    <device role="x_centring" hwrid="./udiff/udiff_centringfocus"/>
+    <device role="y_centring" hwrid="./udiff/udiff_centringvertical"/>
+  </motors>
+  <grid_directions>
+    <holderlength>-1</holderlength>
+    <horizontal_centring>-1</horizontal_centring>
+  </grid_directions>
+  <actuators>
+    <object role="fast_shutter" href="./udiff/udiff_fastshut"/>
+    <object role="scintillator" href="./udiff/udiff_scint"/>
+    <!--object role="diode" href="/diode"/-->
+    <object role="fluo_detector" href="./udiff/udiff_fluodet"/>
+    <object role="FrontLightSwitch" href="./udiff/udiff_frontlightswitch"/>
+    <object role="BackLightSwitch" href="./udiff/udiff_backlightswitch"/>
+  </actuators>
+  <complex_equipment>
+    <object role="zoom" href="./udiff/udiff_zoom"/>
+    <object role="beamstop" href="./udiff/capillary"/>
+    <!--object role="beamstop_distance" href="/udiff_beamstopdistance_mockup"/-->
+    <object role="capillary" href="./udiff/capillary"/>
+    <object role="aperture" href="./udiff/aperture"/>
+    <object role="sample_vertical" href= "./udiff/udiff_centringvertical"/>
+    <!--object role="sample_vertical" href= "/udiff_phiz"/-->
+    <object role="sample_horizontal" href="./udiff/udiff_phiy"/>
+    <!--object role="sample_horizontal" href="/udiff_centringvertical"/-->
+    <object role="cryostream" href="./udiff/cryostream"/>
+    <object href="/centring-math" role="centring"/>
+  </complex_equipment>
+  <exporter_address>10.30.61.67:9002</exporter_address>
+  <exporter_commands>
+    <move_multiple_motors>"SyncMoveMotors"</move_multiple_motors>
+    <move_to_phase>"startSetPhase"</move_to_phase>
+    <scan_limits>"getOmegaMotorDynamicScanLimits"</scan_limits>
+    <abort>"abort"</abort>
+    <move_motors_sync>"startSimultaneousMoveMotors"</move_motors_sync>
+    <osc_scan>"startScanEx"</osc_scan>
+    <helical_scan>"startScan4DEx"</helical_scan>
+    <mesh_scan>"startRasterScan"</mesh_scan>
+    <!--still_scan>"startStillScan"</still_scan-->
+    <!--set_plate_vertical>"setPlateVertical"</set_plate_vertical-->
+  </exporter_commands>
+  <exporter_channels>
+    <scale_x>"CoaxCamScaleX"</scale_x>
+    <scale_y>"CoaxCamScaleY"</scale_y>
+    <head_type>"HeadType"</head_type>
+    <kappa_enable>"KappaIsEnabled"</kappa_enable>
+    <current_phase>"CurrentPhase"</current_phase>
+    <hwstate>"HardwareState"</hwstate>
+    <swstate>"State"</swstate>
+    <scan_range>"ScanRange"</scan_range>
+    <scan_start_angle>"ScanStartAngle"</scan_start_angle>
+    <scan_nb_frames>"ScanNumberOfFrames"</scan_nb_frames>
+    <scan_exposure_time>"ScanExposureTime"</scan_exposure_time>
+    <scan_detector_gate_pulse_enabled>"DetectorGatePulseEnabled"</scan_detector_gate_pulse_enabled>
+    <detector_gate_pulse_readout_time>"DetectorGatePulseReadoutTime"</detector_gate_pulse_readout_time>
+  </exporter_channels>
+  <phaseList>["Transfer","Centring","BeamLocation", "DataCollection"]</phaseList>
+</object>

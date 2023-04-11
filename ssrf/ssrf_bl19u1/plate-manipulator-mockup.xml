@@ -1,0 +1,7 @@
+<equipment class = "PlateManipulatorMockup">
+   <numRows>8</numRows>
+   <numCols>12</numCols>
+   <numDrops>3</numDrops>
+
+   <referencePosX>0.65</referencePosX>
+</equipment>

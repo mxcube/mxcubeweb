@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<object class="SampleView">
+  <!--object hwrid="/md_camera" role="camera"/-->
+  <object hwrid="/udiff/oav-camera" role="camera"/>
+  <object hwrid="/udiff/udiff_phix" role="focus"/>
+  <object hwrid="/udiff/udiff_zoom" role="zoom"/>
+  <object hwrid="/udiff/udiff_frontlight" role="frontlight"/>
+  <object hwrid="/udiff/udiff_backlight" role="backlight"/>
+  <object hwrid="/udiff" role="diffractometer"/>
+
+  <hide_grid_threshold>5</hide_grid_threshold>
+</object>
+
+
+
+
+
+
+<!--?xml version="1.0" encoding="utf-8"?>
+<object class="SampleView">
+  <object hwrid="/md_camera" role="camera"/-->
+    <!--object hwrid="/eh1/oav-camera" role="camera"/-->
+  <!--object hwrid="/eh1/diff-focus" role="focus"/>
+  <object hwrid="/eh1/diff-zoom" role="zoom"/>
+  <object hwrid="/eh1/diff-frontLight" role="frontlight"/>
+  <object hwrid="/eh1/diff-backLight" role="backlight"/>
+  <object hwrid="/mini-diff" role="diffractometer"/>
+
+  <hide_grid_threshold>5</hide_grid_threshold>
+</object-->

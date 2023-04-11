@@ -1,0 +1,55 @@
+<procedure class="CentringMath">
+  <!--
+  Gonio axes are in a real physical order
+  --> 
+  <gonioAxes>
+     <axis>
+        <motorname>phiy</motorname>
+        <direction>[1, 0, 0]</direction>
+	<type>translation</type>
+	<motorHO>/udiff/udiff_phiy</motorHO>
+     </axis>
+
+     <!-- removing this axis (normal to Omega) will fix Omega position -->
+     <axis>
+        <motorname>phiz</motorname>
+        <direction>[0,-1, 0]</direction>
+        <type>translation</type>
+        <motorHO>/udiff/udiff_phiz</motorHO>
+     </axis>
+
+     <axis>
+        <motorname>phi</motorname>
+        <direction>[-1, 0, 0]</direction>
+        <type>rotation</type>
+        <motorHO>/udiff/udiff_omega</motorHO>
+     </axis>
+
+     <axis>
+        <!-- direction of sampx at Omega == 0 --> 
+        <motorname>sampx</motorname>
+        <!--  THIS WAS ORIGINAL OMEGA REFERENCE  direction>[0,  -0.998939, 0.0460604]</direction-->
+        <direction>[0, 0, 1]</direction>
+        <type>translation</type>
+        <motorHO>/udiff/udiff_sampx</motorHO>
+     </axis>
+
+     <axis>
+        <motorname>sampy</motorname>
+        <!-- THIS WAS ORIGINAL OMEGA REFERENCE direction>[0, 0.0460604,-0.998939]</direction-->
+        <direction>[0, -1, 0]</direction>
+        <type>translation</type>
+        <motorHO>/udiff/udiff_sampy</motorHO>
+     </axis>
+  </gonioAxes>
+  <cameraAxes>
+     <axis>
+        <axisname>X</axisname>
+        <direction>[1, 0, 0]</direction>
+     </axis>
+     <axis>
+        <axisname>Y</axisname>
+        <direction>[0, 1, 0]</direction>
+     </axis>
+  </cameraAxes>
+</procedure>

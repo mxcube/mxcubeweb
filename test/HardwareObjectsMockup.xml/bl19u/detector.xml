@@ -1,0 +1,117 @@
+<equipment class = "mxcubecore.HardwareObjects.SSRF.BL19U1.LNLSPilatusDet">
+  <object href="/dtox" role="detector_distance"/>
+  <!-- Channels -->
+  <channel type="epics" name="det_threshols_energy">BL19U1:cam1:ThresholdEnergy</channel>
+  <channel type="epics" name="det_wavelength">BL19U1:cam1:Wavelength</channel>
+
+  <channel type="epics" name="det_beam_x">BL19U1:cam1:BeamX</channel>
+  <channel type="epics" name="det_beam_y">BL19U1:cam1:BeamY</channel>
+<!--  <channel type="epics" name="user_beam_x">BL19U1:S:SOFT:ao:BeamX</channel>-->
+<!--  <channel type="epics" name="user_beam_y">BL19U1:S:SOFT:ao:BeamY</channel>-->
+<!--  FilterTransm-->
+  <channel type="epics" name="det_transmission">BL19U1:cam1:FilterTransm</channel>
+  <!--收数据的时候，从哪个角度开始收或者从md2读的-->
+  <channel type="epics" name="det_start_angle">BL19U1:cam1:StartAngle</channel>
+  <!--收数据的时候，界面上给的值-->
+  <channel type="epics" name="det_angle_incr">BL19U1:cam1:PhiIncr</channel>
+  <!--channel type="epics" name="det_angle_incr">BL19U1:cam1:AngleIncr</channel-->
+
+  <channel type="epics" name="saving_directory">BL19U1:cam1:FilePath</channel>
+<!--  <channel type="epics" name="saving_prefix">BL19U1:cam1:</channel>-->
+<!--  <channel type="epics" name="saving_suffix">BL19U1:cam1:</channel>-->
+<!--  <channel type="epics" name="saving_next_number">BL19U1:cam1:</channel>-->
+<!--  <channel type="epics" name="saving_format">BL19U1:cam1:</channel>-->
+<!--  <channel type="epics" name="set_image_header">BL19U1:cam1:</channel>-->
+<!--  <channel type="epics" name="det_status">BL19U1:cam1:DetectorState_RBV</channel>-->
+  <channel type="epics" name="det_status">BL19U1:cam1:Armed</channel>
+
+  <channel type="epics" name="det_acq">BL19U1:cam1:Acquire</channel>
+
+<!--  <channel type="epics" name="start_acq">BL19U1:cam1:Acquire</channel>-->
+<!--  <channel type="epics" name="prepare_acq">BL19U1:cam1:Armed</channel>-->
+<!--  <channel type="epics" name="reset">BL19U1:cam1:Acquire</channel>-->
+  <channel type="epics" name="acq_trigger_mode">BL19U1:cam1:TriggerMode</channel>
+<!--  <channel type="epics" name="saving_overwrite_policy">BL19U1:cam1:</channel>-->
+  <channel type="epics" name="acq_expo_period">BL19U1:cam1:AcquirePeriod</channel>
+  <channel type="epics" name="acq_expo_time">BL19U1:cam1:AcquireTime</channel>
+  <channel type="epics" name="acq_nb_frames">BL19U1:cam1:NumImages</channel>
+
+<!-- ??? -->
+<!--  <channel type="epics" name="exposure_time">BL19U1:cam1:ExposureTime</channel>-->
+  <channel type="epics" name="latency_time">BL19U1:cam1:DelayTime</channel>
+
+  <channel type="epics" name="det_energy_low">BL19U1:cam1:EnergyLow</channel>
+  <channel type="epics" name="det_energy_high">BL19U1:cam1:EnergyHigh</channel>
+  <channel type="epics" name="det_voffset">BL19U1:cam1:DetVOffset</channel>
+  <channel type="epics" name="det_flux">BL19U1:cam1:Flux</channel>
+  <channel type="epics" name="det_2theta">BL19U1:cam1:Det2theta</channel>
+  <channel type="epics" name="det_polarization">BL19U1:cam1:Polarization</channel>
+  <channel type="epics" name="det_alpha">BL19U1:cam1:Alpha</channel>
+  <channel type="epics" name="det_kappa">BL19U1:cam1:Kappa</channel>
+  <channel type="epics" name="det_phi">BL19U1:cam1:Phi</channel>
+  <channel type="epics" name="det_phi_incr">BL19U1:cam1:PhiIncr</channel>
+  <channel type="epics" name="det_phi_chi">BL19U1:cam1:Chi</channel>
+  <channel type="epics" name="det_phi_chi_incr">BL19U1:cam1:ChiIncr</channel>
+  <channel type="epics" name="det_phi_omega">BL19U1:cam1:Omega</channel>
+  <channel type="epics" name="det_phi_omega_incr">BL19U1:cam1:AngleIncr</channel>
+  <!--channel type="epics" name="det_phi">BL19U1:cam1:Phi</channel>
+  <channel type="epics" name="det_phi_incr">BL19U1:cam1:PhiIncr</channel>
+  <channel type="epics" name="det_phi_chi">BL19U1:cam1:Chi</channel>
+  <channel type="epics" name="det_phi_chi_incr">BL19U1:cam1:ChiIncr</channel>
+  <channel type="epics" name="det_phi_omega">BL19U1:cam1:Omega</channel>
+  <channel type="epics" name="det_phi_omega_incr">BL19U1:cam1:OmegaIncr</channel-->
+  <channel type="epics" name="det_phi_oscill_axis">BL19U1:cam1:OscillAxis</channel>
+  <channel type="epics" name="det_num_oscill">BL19U1:cam1:NumOscill</channel>
+<!--  <channel type="epics" name="det_omega">BL19U1:cam1:Omega</channel>-->
+  <channel type="epics" name="det_cbf_template_file">BL19U1:cam1:CbfTemplateFile</channel>
+  <channel type="epics" name="det_filename">BL19U1:cam1:FileName</channel>
+  <channel type="epics" name="det_filenumber">BL19U1:cam1:FileNumber</channel>
+  <channel type="epics" name="detectorDistance">19U:TABLE:DETH</channel>
+  <channel type="epics" name="detectorDistance_RBV">19U:TABLE:DETH.RBV</channel>
+  <channel type="epics" name="cam1_distance">BL19U1:cam1:DetDist</channel>
+
+<!--  FilterTransm-->
+<!--  <channel type="epics" name="saving_mode">BL19U1:cam1:</channel>-->
+
+<!--  <channel type="epics" name="fill_mode"></channel>-->
+  <channel type="epics" name="last_image_saved">BL19U1:cam1:FullFileName_RBV</channel>
+  <channel type="epics" name="save_file_template">BL19U1:cam1:FileTemplate</channel>
+
+  <!-- Status needs to be directly accessed. See details in LNLSPilatusDet. -->
+  <channel_status>BL19U1:cam1:StatusMessage_RBV</channel_status>
+
+
+  <!-- Properties -->
+  <!--default_beam_x>729</default_beam_x>
+  <default_beam_y>838</default_beam_y-->
+   <default_beam_x>0</default_beam_x>
+  <default_beam_y>0</default_beam_y>
+  <object hwrid="/dtox" role="detector_distance"/>
+  <tempThreshold>33.5</tempThreshold>
+  <humidityThreshold>20.0</humidityThreshold>
+  <tolerance>0.2</tolerance>
+  <type>pilatus</type>
+  <model>2M</model>
+  <manufacturer>DECTRIS</manufacturer>
+  <px>0.172</px>
+  <py>0.172</py>
+  <width>1475</width>
+  <height>1679</height>
+  <hasShutterless>True</hasShutterless>
+  <file_suffix>cbf</file_suffix>
+  <trigger_mode>exts</trigger_mode>
+  <deadtime>0.0023</deadtime>
+  <buffer>/ramdisk/data</buffer>
+  <!--buffer>/data/images</buffer-->
+  <user>det</user>
+  <control>10.30.63.181</control>
+  <beam>
+    <ax>0.000336</ax>
+    <ay>0.001161</ay>
+    <!--bx>738</bx>
+    <by>840</by-->
+    <bx>0</bx>
+    <by>0</by>
+  </beam>
+  <minE>6</minE>
+</equipment>

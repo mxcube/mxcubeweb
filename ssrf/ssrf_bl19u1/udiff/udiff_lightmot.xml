@@ -1,0 +1,6 @@
+<device class="MicrodiffLight">
+  <username>Back light</username>
+  <exporter_address>10.30.61.67:9002</exporter_address>
+  <motor_name>BackLight</motor_name>
+  <motor_pos_attr_suffix>Factor</motor_pos_attr_suffix>
+</device>

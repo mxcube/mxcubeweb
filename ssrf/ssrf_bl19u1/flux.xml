@@ -1,0 +1,5 @@
+<object class="SSRF.BL19U1.BL19U1PhotonFlux">
+  <username>Photon flux</username>
+  <channel type="epics" name="beamFlux">BL19U11:EH:ion_chamber:measure</channel>
+  <object role="aperture" href="/udiff/aperture"/>
+</object>

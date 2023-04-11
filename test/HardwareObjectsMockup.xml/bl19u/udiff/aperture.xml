@@ -1,0 +1,9 @@
+<device class="mxcubecore.HardwareObjects.SSRF.BL19U1.Aperture">
+<!--device class="EMBL.EMBLAperture"-->
+   <exporter_address>10.30.61.67:9002</exporter_address>
+   <channel type="exporter" name="CurrentApertureDiameterIndex">CurrentApertureDiameterIndex</channel>
+   <channel type="exporter" name="ApertureDiameters">ApertureDiameters</channel>
+   <channel type="exporter" name="AperturePosition">AperturePosition</channel>
+   <channel type="exporter" name="State">State</channel>
+</device>
+

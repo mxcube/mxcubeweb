@@ -1,0 +1,13 @@
+<device class="MiniKappaCorrection">
+   <kappa>
+      <direction>[0.287606,0.287606,-0.913545]</direction>
+      <!-- ORIGINAL MD3 Minikappa position>[-0.083453947345,-0.15278782895,-0.22471079235]</position-->
+      <position>[0.36576754385, 0.45933388156, -1.499648602]</position>
+   </kappa>
+   <phi>
+      <!--direction>[0, 0, -1]</direction-->
+      <direction>[-1, 0, 0]</direction>
+      <!--ORIGINAL MD3 Minikappa position>[0.013089364035,-0.18904784085,-0.3148448717]</position-->
+      <position>[-0.0213733553, 0.03060032895, -1.669944936]</position>
+   </phi>
+</device>
