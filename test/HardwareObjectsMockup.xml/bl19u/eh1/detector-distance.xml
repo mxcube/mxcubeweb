@@ -1,0 +1,13 @@
+<device class="TINEMotor">
+  <command type="tine" name="setPosition" tinename="/P13/collection/distance">move</command>
+  <command type="tine" name="stopAxis" tinename="/P13/collection/distance">stop</command>
+  <channel type="tine" name="axisState" tinename="/P13/collection/distance" timeout="100">state2</channel>
+  <channel type="tine" name="axisPosition" tinename="/P13/collection/distance">position</channel>
+  <channel type="tine" name="axisLimits" tinename="/P13/collection/distance">limits</channel>
+
+  <!-- <moveHOSignals>{'Door_Interlock':'DoorInterlockStateChanged'}</moveHOSignals>
+  <moveConditions>{'Door_Interlock.doorIsInterlocked()':True}</moveConditions> -->
+
+  <epsilon>0.01</epsilon>
+  <!-- <verboseUpdate>True</verboseUpdate> -->
+</device>

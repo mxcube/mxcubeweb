@@ -1,0 +1,37 @@
+<object class="EMBLDetector">
+  <object hwrid="/eh1/detector-distance" role="detector_distance"/>
+  <channel type="tine" name="chanTemperature" tinename="/P13/detector/eiger16m">temperature</channel>
+  <channel type="tine" name="chanHumidity" tinename="/P13/detector/eiger16m">humidity</channel>
+  <channel type="tine" name="chanStatus" tinename="/P13/detector/eiger16m">status</channel>
+  <channel type="tine" name="chanRoiMode" tinename="/P13/detector/eiger16m" attach="datachange">detector-mode</channel>
+  <channel type="tine" name="chanFrameRate" tinename="/P13/detector/eiger16m">frame-rate</channel>
+  <channel type="tine" name="chanBeamXY" tinename="/P13/detector/eiger16m">beam-xy</channel> 
+  <channel type="tine" name="chanActualFrameRate" tinename="/P13/rideau/tioga">average-speed</channel>
+
+  <channel type="tine" name="chanCoverState" tinename="P13/P13DetTrans.CDI/GuillCmd" size="2">RECV</channel>
+  <command type="tine" name="cmdCloseCover"  tinename="P13/P13DetTrans.CDI/GuillCmd">GuillCmd</command>
+  
+  <command type="tine" name="cmdRestartDaq" tinename="/P13/detector/eiger16m">initialize</command>
+
+  <type>Eiger</type>
+  <model>16M</model>
+  <collectName>eiger16m</collectName>
+  <roiModes>("16M","4M")</roiModes>
+
+  <manufacturer>Dectris</manufacturer>
+  <px>0.075</px>
+  <py>0.075</py>
+  <hasShutterless>True</hasShutterless>
+  <fileSuffix>cbf</fileSuffix>
+  <bindingMode>Unbinned</bindingMode>
+  <defaultDistance>0</defaultDistance>
+  <px_min>0</px_min>
+  <px_max>64000</px_max>
+
+  <shutterName>shutter</shutterName>
+  <tempThreshold>33.5</tempThreshold>
+  <humidityThreshold>20.0</humidityThreshold>
+  <tolerance>0.2</tolerance>
+
+</object>
+

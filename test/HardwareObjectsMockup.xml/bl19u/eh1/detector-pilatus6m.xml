@@ -1,0 +1,41 @@
+<object class="EMBLDetector">
+  <!-- generic devices -->
+  <object hwrid="/eh1/detector-distance" role="distance_motor"/>
+  <!-- site specific devices -->
+
+  <!-- generic channels and commands -->
+
+  <!-- site specific channels and commands -->
+  <channel type="tine" name="chanTemperature" tinename="/P13/detector/pilatus6m">temperature</channel>
+  <channel type="tine" name="chanHumidity" tinename="/P13/detector/pilatus6m">humidity</channel>
+  <channel type="tine" name="chanStatus" tinename="/P13/detector/pilatus6m">status</channel>
+  <channel type="tine" name="chanRoiMode" tinename="/P13/detector/pilatus6m">detector-mode</channel>
+  <channel type="tine" name="chanFrameRate" tinename="/P13/detector/pilatus6m">frame-rate</channel> 
+  <channel type="tine" name="chanBeamXY" tinename="/P13/detector/pilatus6m">beam-xy</channel>
+
+  <channel type="tine" name="chanCoverState" tinename="/P13/P13DetTrans.CDI/GuillCmd" size="2">RECV</channel>
+  <command type="tine" name="cmdCloseCover"   tinename="/P13/P13DetTrans.CDI/GuillCmd">GuillCmd</command>
+
+  <!-- generic properties -->
+  <type>pilatus</type>
+  <model>6M_F</model>
+  <manufacturer>DECTRIS</manufacturer>
+  <px>0.172</px>
+  <py>0.172</py>
+  <hasShutterless>True</hasShutterless>
+  <fileSuffix>cbf</fileSuffix>
+  <bindingMode>Unbinned</bindingMode>
+  <defaultDistance>0</defaultDistance>
+
+  <px_min>-1</px_min>
+  <px_max>64000</px_max>
+
+  <!-- site specific properties -->
+  <collectName>pilatus6m</collectName>
+  <useIcsShutter>False</useIcsShutter>
+  <shutterName>shutter</shutterName>
+  <tempThreshold>33.5</tempThreshold>
+  <humidityThreshold>20.0</humidityThreshold>
+  <tolerance>0.2</tolerance>
+  <roiModes>("0", "C18", "C2")</roiModes>
+</object>

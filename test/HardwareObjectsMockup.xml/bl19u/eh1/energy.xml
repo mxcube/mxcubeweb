@@ -1,0 +1,13 @@
+<device class = "TINEEnergy">
+  <command type="tine" name="cmdSetEnergy" tinename="/P13/Energy/P13Energy">TgtEnergy</command>
+  <channel type="tine" name="chanEnergy" tinename="/P13/Energy/P13Energy">Energy</channel>
+  <!-- <channel type="tine" name="chanLimitLow" tinename="/P13/Energy/P13Energy">ELimitLow</channel>
+  <channel type="tine" name="chanLimitHigh" tinename="/P13/Energy/P13Energy">ELimitHigh</channel> --> 
+  <channel type="tine" name="chanStatus" tinename="/P13/Energy/P13Energy">Status</channel>
+  <channel type="tine" name="chanUndulatorGap" tinename="/P13/Energy/P13Energy">Gap</channel>
+
+  <tunableEnergy>False</tunableEnergy>
+  <defaultEnergy>12.717</defaultEnergy>
+  <staticLimits>[5.0, 18.0]</staticLimits>
+</device>
+

@@ -1,0 +1,11 @@
+<device class="mxcubecore.HardwareObjects.MicrodiffMotor">
+  <exporter_address>10.30.61.67:9002</exporter_address>
+  <actuator_name>CentringTableVertical</actuator_name>
+</device>
+<!--<device class="TINEMotor">-->
+<!--  <command type="tine" name="setPosition" tinename="/P13/MD/MD_0">CentringTableVerticalPosition</command>-->
+<!--  <channel type="tine" name="axisPosition" tinename="/P13/MD/MD_0">CentringTableVerticalPosition</channel>-->
+<!--  <epsilon>0.0001</epsilon>-->
+<!--  <verboseUpdate>False</verboseUpdate>-->
+<!--</device>-->
+

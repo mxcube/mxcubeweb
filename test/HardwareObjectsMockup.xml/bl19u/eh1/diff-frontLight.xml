@@ -1,0 +1,6 @@
+<device class="mxcubecore.HardwareObjects.MicrodiffLight">
+  <exporter_address>10.30.61.67:9002</exporter_address>
+  <channel type="exporter" name="chanLightValue">FrontLightLevel</channel>
+  <channel type="exporter" name="chanLightIsOn">FrontLightIsOn</channel>
+  <limits>[0, 100]</limits>
+</device>

@@ -7,7 +7,7 @@
         <motorname>phiy</motorname>
         <direction>[1, 0, 0]</direction>
 	<type>translation</type>
-	<motorHO>/bl19u/eh1/diff-phiy</motorHO>
+	<motorHO>/udiff/udiff_phiy</motorHO>
      </axis>
 
      <!-- removing this axis (normal to Omega) will fix Omega position -->
@@ -15,14 +15,14 @@
         <motorname>phiz</motorname>
         <direction>[0,-1, 0]</direction>
         <type>translation</type>
-        <motorHO>/bl19u/eh1/diff-phiz</motorHO>
+        <motorHO>/udiff/udiff_phiz</motorHO>
      </axis>
 
      <axis>
         <motorname>phi</motorname>
         <direction>[-1, 0, 0]</direction>
         <type>rotation</type>
-        <motorHO>/bl19u/eh1/diff-omega</motorHO>
+        <motorHO>/udiff/udiff_omega</motorHO>
      </axis>
 
      <axis>
@@ -31,7 +31,7 @@
         <!--  THIS WAS ORIGINAL OMEGA REFERENCE  direction>[0,  -0.998939, 0.0460604]</direction-->
         <direction>[0, 0, 1]</direction>
         <type>translation</type>
-        <motorHO>/bl19u/eh1/diff-sampx</motorHO>
+        <motorHO>/udiff/udiff_sampx</motorHO>
      </axis>
 
      <axis>
@@ -39,7 +39,7 @@
         <!-- THIS WAS ORIGINAL OMEGA REFERENCE direction>[0, 0.0460604,-0.998939]</direction-->
         <direction>[0, -1, 0]</direction>
         <type>translation</type>
-        <motorHO>/bl19u/eh1/diff-sampy</motorHO>
+        <motorHO>/udiff/udiff_sampy</motorHO>
      </axis>
   </gonioAxes>
   <cameraAxes>

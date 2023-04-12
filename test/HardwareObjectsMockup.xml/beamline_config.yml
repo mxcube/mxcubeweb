@@ -23,9 +23,9 @@ _objects:
     # on one object that require the other to be already loaded.
     #
     # Hardware:
-    - session: session.xml
+    - session: bl19u/session.xml
     - data_publisher: data_publisher.xml
-    - machine_info: machine_info.xml
+    - machine_info: bl19u/machine_info.xml
     - detector: bl19u/detector.xml
     - beam: beam.xml
     - transmission: transmission.xml
@@ -40,7 +40,8 @@ _objects:
     #- sample_changer_maintenance: sc_maint.xml
     #- plate_manipulator: plate_manipulator.xml
     #- diffractometer: bl19u/udiff.xml
-    - diffractometer: minidiff.xml
+    #- diffractometer: minidiff.xml
+    - diffractometer: diffractometer_md2.xml
 
     - lims: lims.xml
     - sample_view: sample_view.xml
@@ -72,7 +73,7 @@ advanced_methods:
 
 tunable_wavelength: true
 disable_num_passes: true
-run_processing_parallel: true
+#run_processing_parallel: true
 run_number: 1
 click_centring_num_clicks: 3
 

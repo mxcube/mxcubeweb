@@ -1,0 +1,39 @@
+<object class="mxcubecore.HardwareObjects.EMBL.EMBLMiniDiff">
+  <exporter_address>10.30.61.67:9002</exporter_address>
+  <channel type="exporter" name="CoaxCamScaleX">CoaxCamScaleX</channel>
+  <channel type="exporter" name="CoaxCamScaleY">CoaxCamScaleY</channel>
+  <channel type="exporter" name="HeadType">HeadType</channel>
+  <channel type="exporter" name="CurrentPhase">CurrentPhase</channel>
+  <channel type="exporter" name="FastShutterIsOpen">FastShutterIsOpen</channel>
+  <channel type="exporter" name="State">State</channel>
+  <channel type="exporter" name="Status">Status</channel>
+  <channel type="exporter" name="ScintillatorPosition">ScintillatorPosition</channel>
+  <channel type="exporter" name="CapillaryPosition">CapillaryPosition</channel>
+
+  <command type="exporter" name="startSetPhase">startSetPhase</command>
+  <command type="exporter" name="startAutoFocus">startAutoFocus</command>
+  <command type="exporter" name="saveCentringPositions">saveCentringPositions</command>
+  <command type="exporter" name="getOmegaMotorDynamicScanLimits">getOmegaMotorDynamicScanLimits</command>
+
+  <object href="/bl19u/eh1/diff-omega" role="phi"/>
+  <object href="/bl19u/eh1/diff-phiz" role="phiz"/>
+  <object href="/bl19u/eh1/diff-phiy" role="phiy"/>
+  <object href="/bl19u/eh1/diff-zoom" role="zoom"/>
+  <object href="/bl19u/eh1/diff-focus" role="focus"/>
+  <object href="/bl19u/eh1/diff-sampx" role="sampx"/>
+  <object href="/bl19u/eh1/diff-sampy" role="sampy"/>
+  <object href="/bl19u/eh1/diff-kappa" role="kappa"/>
+  <object href="/bl19u/eh1/diff-kappaphi" role="kappa_phi"/>
+  <object href="/bl19u/centring-math" role="centring"/>
+<!--  <object href="/bl19u/minikappa-correction" role="minikappa_correction"/>-->
+
+  <use_sample_changer>True</use_sample_changer> 
+  <zoom_centre>{"x": 605,"y": 652}</zoom_centre>
+
+  <!-- Alignment Z -->
+  <!-- old value -0.101 -->
+  <!--omega_reference>{"motor_name": "phiz", "position": -0.158, "camera_axis":"y","direction": -1}</omega_reference-->
+  <omega_reference>{"motor_name": "phiz", "position": -0.129, "camera_axis":"y","direction": -1}</omega_reference>
+  <grid_direction>{"fast": (1, 0), "slow": (0, -1), "omega_ref" : 0.0}</grid_direction>
+  <reversing_rotation>True</reversing_rotation>
+</object>

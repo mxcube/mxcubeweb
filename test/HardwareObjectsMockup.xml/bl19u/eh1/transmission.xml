@@ -1,0 +1,8 @@
+<object class = "EMBLTransmission">
+  <channel type="tine" name="axisLimits" tinename="/P13/transmission/attenuator">limits</channel>
+  <channel type="tine" name="axisPosition" tinename="/P13/transmission/attenuator">transmission</channel>
+  <channel type="tine" name="axisState" tinename="/P13/transmission/attenuator">status</channel>
+  
+  <username>Transmission</username>
+  <actuator_name>Transmission</actuator_name>
+</object>

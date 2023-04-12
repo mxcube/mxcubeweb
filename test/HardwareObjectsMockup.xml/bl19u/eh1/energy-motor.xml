@@ -1,0 +1,7 @@
+<device class = "TINEMotor">
+  <channel type="tine" name="axisPosition" tinename="/P13/collection/wavelength">position</channel>
+  <converter>energyConverter</converter>
+  <epsilon>0.00001</epsilon>
+  <!-- <verboseUpdate>True</verboseUpdate> -->
+  <staticLimits>(0.1, 15)</staticLimits>
+</device>

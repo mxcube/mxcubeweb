@@ -1,0 +1,7 @@
+<device class="mxcubecore.HardwareObjects.MicrodiffLight">
+  <exporter_address>10.30.61.67:9002</exporter_address>
+  <channel type="exporter" name="chanLightValue">BackLightFactor</channel>
+  <channel type="exporter" name="chanLightIsOn">BackLightIsOn</channel>
+
+  <limits>[0, 2]</limits>
+</device>
