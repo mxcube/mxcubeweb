@@ -55,8 +55,6 @@ class Server:
 
     @staticmethod
     def init(cmdline_options, cfg, mxcube):
-        t0 = time.time()
-
         template_dir = os.path.join(os.path.dirname(__file__), "templates")
 
         Server.flask = Flask(
@@ -103,9 +101,6 @@ class Server:
             Server.require_control = staticmethod(networkutils.require_control)
             Server.ws_restrict = staticmethod(networkutils.ws_valid_login_only)
             Server.route = staticmethod(Server.flask.route)
-
-            msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - t0)
-            logging.getLogger("MX3.HWR").info(msg)
 
     def _register_route(init_blueprint_fn, app, url_prefix, tag=None):
         tag = url_prefix if tag is None else tag
