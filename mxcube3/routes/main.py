@@ -39,17 +39,11 @@ def init_route(app, server, url_prefix):
     def get_ui_properties():
         return app.get_ui_properties()
 
-    @bp.route("/version")
-    @server.restrict
-    @server.validate(resp=Response(HTTP_200=VersionModel))
-    def mxcube_version():
-        return jsonify({"version": version.__version__})
-
     @bp.route("/mode")
     @server.restrict
     @server.validate(resp=Response(HTTP_200=ModeEnumModel))
     def mxcube_mode():
-        return jsonify({"mode": app.CONFIG.app.mode})
+        return jsonify({"mode": app.CONFIG.app.mode, "version": version.__version__})
 
     @server.flask.before_request
     def before_request():

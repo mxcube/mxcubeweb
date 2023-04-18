@@ -195,15 +195,6 @@ export function getInitialState(userInControl) {
         'Content-type': 'application/json',
       },
     });
-    const serverVersion = fetch('mxcube/api/v0.1/version', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-
 
     const pchains = [
       uiproperties
@@ -310,12 +301,6 @@ export function getInitialState(userInControl) {
         .then(parse)
         .then((json) => {
           state.general = json;
-        })
-        .catch(notify),
-      serverVersion
-        .then(parse)
-        .then((json) => {
-          state.general = Object.assign(state.general, json);
         })
         .catch(notify)
     ];
