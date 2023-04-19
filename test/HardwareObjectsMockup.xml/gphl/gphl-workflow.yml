@@ -10,6 +10,7 @@ settings:
     # Use advanced_mode for adidtional UI options. Default is false, any value is true
     advanced_mode: true
     # Maximum allowed value of Chi, for strategy calculation
+    # maximum_chi is automticaly reduced to match kappa motor limits.
     maximum_chi: 48.0
     # default values for image width popup; may be overridden by the workflow
     # The first value is the default; values are sorted before use
@@ -91,10 +92,12 @@ settings:
         # For acquisition or diffractcal
       - exposure_time: 0.02
         image_width: 1.0
-        strategy_options:
-            # Not really needed in default situation, but to show how it works
-            maximum_chi: 48.0
-            angular_tolerance: 1.0
+#        strategy_options:
+#            # Program options passed directly to stratcal - not needed normally
+             # Override default settings
+             # angular_tolerance, maximum_chi, and clip_kappa are defined in
+             # settings (above) and strategy_type and variant by program
+#            option_name: 999.999
 
     # Java invocation properties - syntax is e.g. '-Dfile.encoding=UTF-8'
     invocation_properties:
