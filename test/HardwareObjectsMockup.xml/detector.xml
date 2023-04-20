@@ -1,4 +1,4 @@
-<equipment class = "DetectorMockup">
+<object class = "DetectorMockup">
   <username>detector</username>
   <object hwrid="/dtox" role="detector_distance"/>
   <tempThreshold>33.5</tempThreshold>
@@ -23,4 +23,4 @@
 
   <exports>["restart"]</exports>
 
-</equipment>
+</object>
