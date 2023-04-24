@@ -1637,6 +1637,9 @@ class Queue(ComponentBase):
         parent_entry.enqueue(group_entry)
         group_entry.enqueue(dc_entry)
 
+        if task["parameters"]["wfpath"] != "Gphl":
+            self.set_wf_params(wf_model, dc_entry, task, sample_model)
+
         return wf_model._node_id
 
     def add_interleaved(self, node_id, task):
