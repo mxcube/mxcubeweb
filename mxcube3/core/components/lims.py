@@ -305,6 +305,7 @@ class Lims(ComponentBase):
 
         logging.getLogger("MX3.HWR").info("[LIMS] Selecting proposal: %s" % proposal)
         logging.getLogger("MX3.HWR").info("[LIMS] Proposal info: %s" % proposal_info)
+
         if (
             HWR.beamline.lims.loginType.lower() == "user"
             and "Commissioning" in proposal_info["Proposal"]["title"]
@@ -322,7 +323,10 @@ class Lims(ComponentBase):
             HWR.beamline.session.proposal_number = proposal_info.get("Proposal").get(
                 "number", ""
             )
-            todays_session = HWR.beamline.lims.get_todays_session(proposal_info)
+            todays_session = HWR.beamline.lims.get_todays_session(
+                proposal_info,
+                create_session=False
+            )
             HWR.beamline.session.session_id = todays_session.get("session").get(
                 "sessionId"
             )
