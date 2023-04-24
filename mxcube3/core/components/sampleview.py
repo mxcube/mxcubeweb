@@ -560,10 +560,15 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
                 hasattr(diffractometer_object, "set_phase")
                 and diffractometer_object.get_current_phase() != "Centring"
             ):
-                logging.getLogger("user_level_log").info(
-                    "Moving Diffractometer to CentringPhase"
+                use_custom_snapshot_routine = diffractometer_object.get_property(
+                    "custom_snapshot_script_dir", None
                 )
-                diffractometer_object.set_phase("Centring", wait=True, timeout=200)
+                if not use_custom_snapshot_routine:
+                    logging.getLogger("user_level_log").info(
+                        "Moving Diffractometer to CentringPhase Not done for tests (DN)"
+                    )
+
+                    diffractometer_object.set_phase("Centring", wait=True, timeout=200)
 
             snapshot_directory = dc_params["fileinfo"]["archive_directory"]
             if not os.path.exists(snapshot_directory):
