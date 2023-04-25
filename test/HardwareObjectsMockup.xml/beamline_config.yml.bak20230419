@@ -37,14 +37,14 @@ _objects:
     - fast_shutter: fast_shutter.xml
     #- hutch_interlock: hutchtrigger.xml
     - sample_changer: sc.xml
-    - sample_changer_maintenance: sc_maint.xml
+    #- sample_changer_maintenance: sc_maint.xml
     #- plate_manipulator: plate_manipulator.xml
     #- diffractometer: bl19u/udiff.xml
     #- diffractometer: minidiff.xml
     - diffractometer: diffractometer_md2.xml
 
     - lims: lims.xml
-    #- sample_view: sample_view.xml
+    - sample_view: sample_view.xml
     - queue_manager: queue.xml
     - queue_model: queue_model.xml
 

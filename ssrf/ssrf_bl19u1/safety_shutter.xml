@@ -1,6 +1,6 @@
 <device class="SSRF.BL19U1.SafetyShutter">
   <username>Safety Shutter</username>
   <!--channel type="epics" name="safetyShutterState">X17B1:OP:SS2:OpenSts:BI</channel-->
-  <channel type="epics" name="safetyShutterState">X17B1:OP:SS2:CLOSE:BI</channel>
+  <channel type="epics" name="safetyShutterState">X19U1:OP:SS2:CLOSE:BI</channel>
   <useShutter>True</useShutter>
 </device>
