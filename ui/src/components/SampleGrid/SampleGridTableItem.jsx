@@ -17,8 +17,6 @@ export class SampleGridTableItem extends React.Component {
     super(props);
     this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
     this.sampleItemOnClick = this.sampleItemOnClick.bind(this);
-    this.pickButtonMouseUp = this.pickButtonMouseUp.bind(this);
-    this.pickButtonMouseDown = this.pickButtonMouseDown.bind(this);
 
     this.sampleInformation = this.sampleInformation.bind(this);
     this.onCopy = this.onCopy.bind(this);
@@ -46,13 +44,6 @@ export class SampleGridTableItem extends React.Component {
     }
   }
 
-  pickButtonMouseDown(e) {
-    e.stopPropagation();
-  }
-
-  pickButtonMouseUp(e) {
-    e.stopPropagation();
-  }
 
   itemControls() {
     let icon = <BsSquare size='0.9em'/>;
@@ -72,8 +63,6 @@ export class SampleGridTableItem extends React.Component {
           disabled={this.props.current && this.props.picked}
           className="samples-grid-table-item-button"
           onClick={this.pickButtonOnClick}
-          onMouseUp={this.pickButtonMouseUp}
-          onMouseDown={this.pickButtonMouseDown}
         >
           <i>{icon}</i>
         </Button>
