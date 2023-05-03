@@ -418,13 +418,15 @@ export function sendDeleteShape(id) {
 export function unselectShapes(shapes) {
   return function (dispatch) {
     const _shapes = [];
-    const keys = Object.keys(shapes.shapes);
-    keys.forEach((k) => {
-      const aux = shapes.shapes[k];
-      aux.selected = false;
-      _shapes.push(aux);
-    });
-    dispatch(sendUpdateShapes(_shapes));
+    if (typeof shapes.shapes !== 'undefined') {
+      const keys = Object.keys(shapes.shapes);
+      keys.forEach((k) => {
+        const aux = shapes.shapes[k];
+        aux.selected = false;
+        _shapes.push(aux);
+      });
+      dispatch(sendUpdateShapes(_shapes));
+    }
   };
 }
 
