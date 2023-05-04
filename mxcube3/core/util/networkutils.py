@@ -18,18 +18,16 @@ from mxcubecore import HardwareRepository as HWR
 
 def RateLimited(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
-
+    lastTimeCalled = {}
     def decorate(func):
-        lastTimeCalled = [0.0]
-
         def rateLimitedFunction(*args, **kargs):
-            elapsed = time.time() - lastTimeCalled[0]
+            elapsed = time.time() - lastTimeCalled.get(args[0], 0)
             leftToWait = minInterval - elapsed
             if leftToWait > 0:
                 # ignore update
                 return
             ret = func(*args, **kargs)
-            lastTimeCalled[0] = time.time()
+            lastTimeCalled.update({args[0]: time.time()})
             return ret
 
         return rateLimitedFunction
