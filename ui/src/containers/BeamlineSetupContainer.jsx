@@ -151,7 +151,7 @@ class BeamlineSetupContainer extends React.Component {
       components.push(
         <td
         key={`bs-val-${uiprop.label}`}
-        className='pe-3' 
+        className='pe-3'
         style={{
           fontWeight: 'bold',
           border: '0px',
@@ -203,7 +203,7 @@ class BeamlineSetupContainer extends React.Component {
         background: '#FAFAFA',
         borderBottom: '1px solid lightgray',
         paddingBottom: '0em',
-      }} 
+      }}
       className="beamline-status ps-3 pe-3"
       id="bmstatus"
       bg='light'
@@ -243,7 +243,7 @@ class BeamlineSetupContainer extends React.Component {
             <Nav.Item>
              <DeviceState
                 labelText="Detector"
-                data = { this.props.beamline.hardwareObjects.detector.state.acq_satus }
+                data = { this.props.beamline.hardwareObjects.detector.state }
               />
             </Nav.Item>
           </Nav>
