@@ -117,6 +117,11 @@ export function signOut() {
 export function signIn(proposal, password, navigate) {
   return function (dispatch) {
     const previousUser = localStorage.getItem('currentUser');
+    if (serverIO.hwrSocket !== null && serverIO.hwrSocket.connected) {
+      console.log(serverIO.hwrSocket.connected)
+    } else {
+      serverIO.connect();
+    }
 
     fetch('mxcube/api/v0.1/login', {
       method: 'POST',
