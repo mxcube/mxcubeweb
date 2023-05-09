@@ -7,7 +7,7 @@ system_has() {
 }
 
 mxcube_web_source() {
-  echo "https://github.com/mxcube/mxcube3.git"
+  echo "https://github.com/mxcube/mxcubeweb.git"
 }
 
 mxcubecore_source() {

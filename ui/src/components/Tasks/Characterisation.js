@@ -15,7 +15,8 @@ import {
   CheckboxField,
   SelectField,
   FieldsRow,
-  CollapsableRows
+  CollapsableRows,
+  toFixed
 } from './fields';
 
 import { SPACE_GROUPS } from '../../constants';
@@ -431,6 +432,8 @@ Characterisation = connect((state) => {
   const { type } = state.taskForm.taskData;
   const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
 
+  toFixed(state,"diffractometer.phi")
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
@@ -448,16 +451,16 @@ Characterisation = connect((state) => {
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.hardwareObjects.resolution.value),
+        : toFixed(state, "resolution")),
       energy: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.energy
-        : state.beamline.hardwareObjects.energy.value),
+        : toFixed(state, "energy")),
       transmission: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.hardwareObjects.transmission.value),
+        : toFixed(state, "transmission")),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.hardwareObjects["diffractometer.phi"].value)
+        : toFixed(state, "diffractometer.phi"))
     }
   };
 })(Characterisation);

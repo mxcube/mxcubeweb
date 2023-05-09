@@ -189,8 +189,8 @@ export default class TaskItem extends Component {
         <td><a>{parameters.transmission.toFixed(2)}</a></td>
         <td><a>{parameters.resolution.toFixed(3)}</a></td>
         <td><a>{parameters.energy.toFixed(4)}</a></td>
-        <td><a>{parameters.kappa_phi.toFixed(2)}</a></td>
-        <td><a>{parameters.kappa.toFixed(2)}</a></td>
+        {parameters.kappa_phi !== null ? (<td><a>{parameters.kappa_phi.toFixed(2)}</a></td>) : null}
+        {parameters.kappa !== null ? (<td><a>{parameters.kappa.toFixed(2)}</a></td>) : null}
       </tr>);
   }
 
@@ -327,8 +327,8 @@ export default class TaskItem extends Component {
                             <th>T (%)</th>
                             <th>Res. (&Aring;)</th>
                             <th>E (KeV)</th>
-                            <th>&phi; &deg;</th>
-                            <th>&kappa; &deg;</th>
+                            {wedge.parameters.kappa_phi !== null ? (<th>&phi; &deg;</th>) : null}
+                            {wedge.parameters.kappa !== null ? (<th>&kappa; &deg;</th>) : null}
                           </tr>
                         </thead>
                         <tbody>

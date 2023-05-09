@@ -78,6 +78,8 @@ class BaseUserManager(ComponentBase):
     def update_active_users(self):
         for _u in User.query.all():
             if (
+                _u.active
+                and
                 _u.last_request_timestamp
                 and (
                     datetime.datetime.now() - _u.last_request_timestamp

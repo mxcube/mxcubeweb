@@ -197,11 +197,11 @@ class Lims(ComponentBase):
         # If this is used often, it could be moved to a better place.
         ERROR_CODE = dict({"status": {"code": "0"}})
 
-        try:
-            HWR.beamline.lims.lims_rest.authenticate(loginID, password)
-        except Exception:
-            logging.getLogger("MX3.HWR").error("[LIMS-REST] Could not authenticate")
-            return ERROR_CODE
+#        try:
+#            HWR.beamline.lims.lims_rest.authenticate(loginID, password)
+#        except Exception:
+#            logging.getLogger("MX3.HWR").error("[LIMS-REST] Could not authenticate")
+#            return ERROR_CODE
 
         if HWR.beamline.lims.loginType.lower() == "user":
             try:
@@ -351,10 +351,6 @@ class Lims(ComponentBase):
             # Get all the files in the root data dir for this user
             root_path = HWR.beamline.session.get_base_image_directory()
 
-            if not self.app.INITIAL_FILE_LIST and os.path.isdir(root_path):
-                ftype = HWR.beamline.detector.get_property("file_suffix")
-                self.app.INITIAL_FILE_LIST = fsutils.scantree(root_path, [ftype])
-
             # save selected proposal in users db
             current_user.selected_proposal = proposal
             self.app.usermanager.update_user(current_user)
@@ -382,10 +378,10 @@ class Lims(ComponentBase):
         return HWR.beamline.session.get_default_subdir(sample_data)
 
     def get_dc_link(self, col_id):
-        link = HWR.beamline.lims.lims_rest.dc_link(col_id)
+        #link = HWR.beamline.lims.lims_rest.dc_link(col_id)
 
-        if not link:
-            link = HWR.beamline.lims.dc_link(col_id)
+        #if not link:
+        link = HWR.beamline.lims.dc_link(col_id)
 
         return link
 

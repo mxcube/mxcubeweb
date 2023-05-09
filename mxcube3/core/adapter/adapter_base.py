@@ -266,19 +266,21 @@ class AdapterBase:
             namespace="/hwr"
         )
 
-    def emit_ho_changed(self, *args, **kwargs):
+    def emit_ho_changed(self, state, **kwargs):
         """
         Signal handler to be used for sending the entire object to the client via
         socketIO
         """
-        self.app.server.emit("hardware_object_changed", self.dict(), namespace="/hwr")
+        data = self.dict()
+        data["state"] = state.name
+        self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
 
-    def state_change(self, *args, **kwargs):
+    def state_change(self, state, **kwargs):
         """
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        self.emit_ho_changed()
+        self.emit_ho_changed(state)
 
     def _dict_repr(self):
         """
@@ -422,7 +424,7 @@ class ActuatorAdapterBase(AdapterBase):
                 f"Could not get dictionary representation of {self._ho.name()}"
             )
             logging.getLogger("MX3.HWR").error(
-                f"{self._ho.name()} not handled !"
+                f"Check status of {self._ho.name()}, object is offline, in fault or returns unexpected value !"
             )
 
             self._available = False

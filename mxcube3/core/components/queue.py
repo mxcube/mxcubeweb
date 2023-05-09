@@ -67,20 +67,23 @@ class Queue(ComponentBase):
         return prefix_path_dict
 
     def get_run_number(self, pt):
-        prefix_path_dict = self.build_prefix_path_dict(self.app.INITIAL_FILE_LIST)
-
         # Path templates of files not yet written to to disk, we are only
         # interested in the prefix path
-        fname = pt.get_image_path()
-        prefix_path, _, _ = qmo.PathTemplate.interpret_path(fname)
-        run_number = HWR.beamline.queue_model.get_next_run_number(pt)
 
-        if prefix_path in prefix_path_dict:
-            rn = run_number + prefix_path_dict[prefix_path]
-        else:
-            rn = run_number
+        pt.run_number = HWR.beamline.queue_model.get_next_run_number(pt)
+        start_fname, end_fname = pt.get_first_and_last_file()
 
-        return rn
+        while(os.path.isfile(start_fname) or \
+              os.path.isfile(end_fname)
+        ):
+            pt.run_number += 1
+
+            if pt.run_number > 1000:
+                raise RuntimeError("Over a thousand runs of the same collection")
+
+            start_fname, end_fname = pt.get_first_and_last_file()
+
+        return pt.run_number
 
     def node_index(self, node):
         """
