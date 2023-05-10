@@ -6,8 +6,8 @@ import sys
 import traceback
 
 from gevent import monkey
-monkey.patch_all(thread=False)
-
+#monkey.patch_all(thread=False)
+monkey.patch_all()
 from mxcube3.server import Server
 from mxcube3.app import MXCUBEApplication
 from mxcube3.config import Config
@@ -77,7 +77,7 @@ def parse_args():
         action="store_true",
         dest="allow_remote",
         help="Enable remote access",
-        default=False,
+        default=True,
     )
 
     opt_parser.add_argument(

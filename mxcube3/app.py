@@ -211,8 +211,8 @@ class MXCUBEApplication:
     USERS = {}
 
     # Path to video device (i.e. /dev/videoX)
-    VIDEO_FORMAT = "MPEG1"
-
+    #VIDEO_FORMAT = "MPEG1"
+    VIDEO_FORMAT = "JPEG"
     # Contains the complete client side ui state, managed up state_storage.py
     UI_STATE = dict()
     TEMP_DISABLED = []
@@ -298,7 +298,8 @@ class MXCUBEApplication:
         :return: None
         """
         try:
-            HWR.beamline.sample_view.camera.start_streaming(format)
+            #HWR.beamline.sample_view.camera.start_streaming(format)
+            HWR.beamline.sample_view.camera.start_streaming()
         except Exception as ex:
             msg = "Could not initialize video, error was: "
             msg += str(ex)
