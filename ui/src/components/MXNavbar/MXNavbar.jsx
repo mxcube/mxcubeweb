@@ -37,7 +37,7 @@ class MXNavbar extends React.Component {
           </LinkContainer>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="me-auto" style={{ marginLeft: '20em' }}>
+            <Nav className="m-auto">
               <LinkContainer className="me-4" to="/samplegrid"><Nav.Item className="nav-link">
                 Samples</Nav.Item>
               </LinkContainer>

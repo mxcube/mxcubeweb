@@ -94,12 +94,6 @@ class SampleGridTableContainer extends React.Component {
     document.addEventListener('keydown', this.onKeyDown, false);
     document.addEventListener('click', this.onClick, false);
     window.addEventListener('scroll', this.onScroll);
-    
-    if(this.getSampleTable(this.props).length === 0) {
-      this.props.setViewMode('Card View', false);
-    } else {
-      this.props.setViewMode(this.props.viewMode.mode, true);
-    }
   }
 
 
@@ -613,7 +607,7 @@ class SampleGridTableContainer extends React.Component {
   }
 
 
-  getSampleTable(props) {
+  getSampleTable(props, colsm) {
     const sc = props.sampleChanger.contents;
     const tableCell = [];
 
@@ -632,9 +626,15 @@ class SampleGridTableContainer extends React.Component {
           });
 
           if (nbpuck.length > 0) {   
+            let smCol = colsm;
+            if (nbpuck.length === 1) {
+              smCol = 3;
+            } else if (nbpuck.length === 3 || nbpuck.length === 2) {
+              smCol = 6;
+            }
             tableCell.push(
-              <Col sm={`${nbpuck.length === 1 ? 6 : 12}`}>
-                <div key={`cell-${cell.name}`} className="div-sample-items-collapsible">
+              <Col sm={smCol}  key={`cell-${cell.name}`}>
+                <div className="div-sample-items-collapsible">
                   <Collapsible transitionTime={300}
                     className='sample-items-collapsible'
                     openedClassName="sample-items-collapsible"
@@ -995,6 +995,15 @@ class SampleGridTableContainer extends React.Component {
     return nbpuck;
   }
 
+  getColsm() {
+    let colsm = 6;
+    // if we have only one cell colsm = 122
+    if(this.getSampleTable(this.props).length === 1) {
+      colsm = 12;
+    }
+    return colsm;
+  }
+
   render() {
     this.sampleItems = this.getSamplesList(this.props);
     return (
@@ -1027,10 +1036,7 @@ class SampleGridTableContainer extends React.Component {
             <SampleFlexView
               cellSampleList={this.getSampleListBydCell}
             />            
-            <Col sm>
-              {this.getSampleTable(this.props)}
-            </Col>
-
+            {this.getSampleTable(this.props, this.getColsm())}
           </Row>
           )
           :
@@ -1042,21 +1048,7 @@ class SampleGridTableContainer extends React.Component {
               onMouseMove={this.onMouseMove}
               xs="auto"
             >
-              {/* if nb of puck is <= to 3 we order Cell Table by  pair on right Col and odd on Left */}
-              {this.getNbPuckFirstCell().length <= 3 ?
-                <>
-                  <Col sm>
-                    {this.getSampleTable(this.props).filter((n, i) => i % 2 != 1)}
-                  </Col>
-                  <Col sm>
-                      {this.getSampleTable(this.props).filter((n, i) => i % 2 == 1)}
-                  </Col>
-                </>
-                :
-                <Col sm>
-                  {this.getSampleTable(this.props)}
-                </Col>
-              }
+              {this.getSampleTable(this.props, this.getColsm())}
             </Row>
           )
         }

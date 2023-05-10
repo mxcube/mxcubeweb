@@ -216,7 +216,7 @@ class SampleView(ComponentBase):
             )
 
             self.centring_update_current_point(motor_positions, x, y)
-            HWR.beamline.diffractometer.emit("stateChanged", (True,))
+            #HWR.beamline.diffractometer.emit("stateChanged", (True,))
 
             if self.app.AUTO_MOUNT_SAMPLE:
                 HWR.beamline.diffractometer.accept_centring()

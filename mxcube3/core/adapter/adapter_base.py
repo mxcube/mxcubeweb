@@ -272,7 +272,16 @@ class AdapterBase:
         socketIO
         """
         data = self.dict()
-        data["state"] = state.name
+
+        if hasattr(state, "name"):
+            data["state"] = state.name
+        else:
+            logging.getLogger("MX3.HWR").info(
+                f"emit_ho_changed with {state} for {self._ho.name()}"
+            )
+
+            data["state"] = state
+
         self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
 
     def state_change(self, state, **kwargs):
