@@ -6,8 +6,8 @@ import sys
 import traceback
 
 from gevent import monkey
-#monkey.patch_all(thread=False)
-monkey.patch_all()
+monkey.patch_all(thread=False)
+#monkey.patch_all()
 from mxcube3.server import Server
 from mxcube3.app import MXCUBEApplication
 from mxcube3.config import Config
@@ -26,7 +26,7 @@ def parse_args():
         os.path.join(os.path.dirname(__file__), os.pardir),
         "test/HardwareObjectsMockup.xml/",
     )
-
+    #XML_DIR = "/home/mxcube19u1/mxcube/mxcubecore/mxcubecore/configuration"
     opt_parser = argparse.ArgumentParser(
         description="mxcube-web Backend server command line utility."
     )
@@ -45,6 +45,7 @@ def parse_args():
         dest="static_folder",
         help="Static folder",
         default=f"{os.getcwd()}ui/build",
+        #default=f"/home/mxcube19u1/mxcube/mxcube3/ui/build",
     )
 
     opt_parser.add_argument(
@@ -90,7 +91,6 @@ def parse_args():
     )
 
     return opt_parser.parse_args()
-
 
 def main(test=False):
     global mxcube

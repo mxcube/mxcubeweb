@@ -50,11 +50,31 @@ class _BeamlineAdapter:
         attributes = {}
 
         for attr_name in self.app.mxcubecore.adapter_dict:
+            # if attr_name == "beam":
+            #     continue
+            try:
+                _d = self.app.mxcubecore.get_adapter(attr_name).dict()
+                attributes.update({attr_name: _d})
+            except Exception:
+                logging.getLogger("MX3.HWR").error(attr_name)
+
+        return {"hardwareObjects": attributes}
+
+    def dict_repr(self):
+        """
+        Build dictionary value-representation for each beamline attribute
+         Returns:
+           (dict): The dictionary.
+        """
+        attributes = {}
+
+        for attr_name in self.app.mxcubecore.adapter_dict:
+            if attr_name == "beam":
+                continue
             _d = self.app.mxcubecore.get_adapter(attr_name).dict()
             attributes.update({attr_name: _d})
 
         return {"hardwareObjects": attributes}
-
     def get_available_methods(self):
         """
         Get the available methods.

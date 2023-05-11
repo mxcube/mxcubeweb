@@ -592,15 +592,16 @@ def beam_changed(*args, **kwargs):
 
     beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
     _beam = beam_info.get_value()
-    beam_info_dict.update(
-        {
-            "position": beam_info.get_beam_position_on_screen(),
-            "size_x": _beam[0],
-            "size_y": _beam[1],
-            "shape": _beam[2].value,
-        }
-    )
     try:
+        beam_info_dict.update(
+            {
+                "position": beam_info.get_beam_position_on_screen(),
+                "size_x": _beam[0],
+                "size_y": _beam[1],
+                "shape": _beam[2].value,
+            }
+        )
+
         server.emit("beam_changed", {"data": beam_info_dict}, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").exception(

@@ -145,7 +145,8 @@ def init_route(app, server, url_prefix):
     @bp.route("/", methods=["GET"])
     @server.restrict
     def beamline_get_all_attributes():
-        return jsonify(app.beamline.beamline_get_all_attributes())
+        rtn = jsonify(app.beamline.beamline_get_all_attributes())
+        return rtn
 
     # @bp.route("/<string:obj>/command/<string:name>", methods=["POST"])
     # @server.restrict
