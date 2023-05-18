@@ -299,7 +299,8 @@ class Beamline(ComponentBase):
                     "position": beam.get_beam_position_on_screen(),
                     "size_x": sx,
                     "size_y": sy,
-                    "shape": shape.value,
+                    #"shape": shape.value,
+                    "shape": shape,
                 }
             )
 

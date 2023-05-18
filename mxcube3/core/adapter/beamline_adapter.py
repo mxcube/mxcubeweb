@@ -50,13 +50,18 @@ class _BeamlineAdapter:
         attributes = {}
 
         for attr_name in self.app.mxcubecore.adapter_dict:
-            # if attr_name == "beam":
-            #     continue
+            if attr_name == "beam":
+                print("beam")
             try:
-                _d = self.app.mxcubecore.get_adapter(attr_name).dict()
+                #_d = self.app.mxcubecore.get_adapter(attr_name).dict()
+                _a = self.app.mxcubecore.get_adapter(attr_name)
+                _d = _a.dict()
                 attributes.update({attr_name: _d})
-            except Exception:
+            except Exception as ex:
                 logging.getLogger("MX3.HWR").error(attr_name)
+                logging.getLogger("MX3.HWR").error(
+                    "Unable to call force_emit_signals (%s)" % str(ex)
+                )
 
         return {"hardwareObjects": attributes}
 
@@ -88,7 +93,7 @@ class _BeamlineAdapter:
         elements = []
 
         if escan:
-            elements = escan.get_elements()
+            elements = escan.getElements()
 
         return {"elements": elements}
 

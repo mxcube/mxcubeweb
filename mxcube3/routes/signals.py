@@ -598,7 +598,8 @@ def beam_changed(*args, **kwargs):
                 "position": beam_info.get_beam_position_on_screen(),
                 "size_x": _beam[0],
                 "size_y": _beam[1],
-                "shape": _beam[2].value,
+                #"shape": _beam[2].value,
+                "shape": _beam[2],
             }
         )
 

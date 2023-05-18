@@ -1,3 +1,7 @@
+from gevent import monkey
+#monkey.patch_all(thread=False)
+monkey.patch_all()
+
 import argparse
 import mock
 import os
@@ -5,8 +9,6 @@ import redis
 import sys
 import traceback
 
-from gevent import monkey
-monkey.patch_all(thread=False)
 #monkey.patch_all()
 from mxcube3.server import Server
 from mxcube3.app import MXCUBEApplication
