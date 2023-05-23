@@ -41,7 +41,7 @@ export default class DefaultInput extends React.Component {
             precision={this.props.precision}
             value={this.props.value}
             step={this.props.step}
-            
+            strict
           />
           <ButtonToolbar style={{ marginLeft: '0px' }} className="ms-1 form-group editable-buttons">
             <Button variant="success" size='sm' onClick={this.save}>
