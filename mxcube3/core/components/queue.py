@@ -378,7 +378,7 @@ class Queue(ComponentBase):
         parameters = pt.as_dict()
         parameters["path"] = parameters["directory"]
 
-        parameters["strategy_name"] = node.get_type()
+        parameters["strategy_name"] = node.strategy_name
         parameters["label"] = "GΦL " + parameters["strategy_name"]
         parameters["shape"] = node.shape
 
@@ -2402,7 +2402,7 @@ class Queue(ComponentBase):
         return sample
 
     def get_method(self, sample_id, method_id):
-        sample = self.queue_to_dict().get(int(id), None)
+        sample = self.queue_to_dict().get(int(sample_id), None)
 
         if not sample:
             msg = "[QUEUE] sample info could not be retrieved"
