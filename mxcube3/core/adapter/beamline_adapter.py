@@ -62,7 +62,11 @@ class _BeamlineAdapter:
                 logging.getLogger("MX3.HWR").error(
                     "Unable to call force_emit_signals (%s)" % str(ex)
                 )
-
+        v = attributes["diffractometer.phi"]
+        attributes["diffractometer.phix"] = v
+        # v1 = attributes["resolution.detector.detector_distance"]
+        # v1.update({"name":"detector.detector_distance"})
+        # attributes["detector.detector_distance"] = v1
         return {"hardwareObjects": attributes}
 
     def dict_repr(self):

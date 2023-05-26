@@ -298,17 +298,28 @@ class AdapterBase:
             # Return a default representation if there is a problem retrieving
             # any of the attributes
             self._available = False
-
-            data = {
-                "name": self._name,
-                "state": "UNKNOWN",
-                "msg": "Exception: %s" % str(ex),
-                "type": "FLOAT",
-                "available": self.available(),
-                "readonly": False,
-                "commands": {},
-                "attributes": {},
-            }
+            if self._name == "diffractometer.kappa" or self._name == "diffractometer.kappa_phi":
+                data = {
+                    "name": self._name,
+                    "state": "READY",
+                    "msg": "",
+                    "type": "MOTOR",
+                    "available": True,
+                    "readonly": True,
+                    "commands": {},
+                    "attributes": {},
+                }
+            else:
+                data = {
+                    "name": self._name,
+                    "state": "UNKNOWN",
+                    "msg": "Exception: %s" % str(ex),
+                    "type": "FLOAT",
+                    "available": self.available(),
+                    "readonly": False,
+                    "commands": {},
+                    "attributes": {},
+                }
 
             logging.getLogger("MX3.HWR").exception(
                 f"Failed to get dictionary representation of {self._name}"
@@ -415,16 +426,30 @@ class ActuatorAdapterBase(AdapterBase):
 
         try:
             data.update({"value": self.get_value(), "limits": self.limits()})
+            if self._name == "diffractometer.phi":
+                data.update({ "name": "diffractometer.phix"})
         except Exception as ex:
-            self._available = False
-            data.update(
-                {
-                    "value": 0,
-                    "limits": (0, 0),
-                    "type": "FLOAT",
-                    "msg": "Exception %s" % str(ex),
-                }
-            )
+            if self._name == "diffractometer.kappa" or self._name == "diffractometer.kappa_phi":
+                data.update(
+                    {
+                        "value": 0,
+                        "limits": (0, 0),
+                        "type": "MOTOR",
+                        "state": "READY",
+                        "readonly": True,
+                        "msg": "",
+                    }
+                )
+            else:
+                self._available = False
+                data.update(
+                    {
+                        "value": 0,
+                        "limits": (0, 0),
+                        "type": "FLOAT",
+                        "msg": "Exception %s" % str(ex),
+                    }
+                )
 
         return data
 

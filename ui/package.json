@@ -56,7 +56,7 @@
     "sass": "^1.51.0",
     "shortid": "^2.2.6",
     "slick-carousel": "^1.8.1",
-    "socket.io-client": "^4.5.4",
+    "socket.io-client": "^3.0.1",
     "underscore": "^1.8.3",
     "web-vitals": "^2.1.4",
     "webpack": "^5.69.1",

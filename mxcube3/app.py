@@ -303,7 +303,7 @@ class MXCUBEApplication:
         except Exception as ex:
             msg = "Could not initialize video, error was: "
             msg += str(ex)
-            logging.getLogger("HWR").info(msg)
+            logging.getLogger("HWR").error(msg)
 
     @staticmethod
     def init_signal_handlers():

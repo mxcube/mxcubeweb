@@ -15,7 +15,7 @@ server:
 
 mxcube:
   USE_EXTERNAL_STREAMER: True
-  VIDEO_FORMAT: MPEG1
+  VIDEO_FORMAT: MJPEG
   VIDEO_STREAM_URL: "ws://localhost:8000/ws"
   # Mode, SSX-CHIP, SSX-INJECTOR, OSC
   mode: OSC

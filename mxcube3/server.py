@@ -77,7 +77,9 @@ class Server:
         Server.db_session = db_session
 
         Server.flask_socketio = SocketIO(
-            manage_session=False, cors_allowed_origins=cfg.flask.ALLOWED_CORS_ORIGINS
+            #manage_session=False, cors_allowed_origins=cfg.flask.ALLOWED_CORS_ORIGINS
+            manage_session = False, cors_allowed_origins = "*"
+
         )
         Server.flask_socketio.init_app(Server.flask)
 
