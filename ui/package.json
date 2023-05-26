@@ -22,7 +22,7 @@
     "history": "^5.2.0",
     "http-proxy-middleware": "^2.0.2",
     "immutability-helper": "^3.0.2",
-    "isomorphic-fetch": "^2.2.0",
+    "isomorphic-fetch": "^3.0.0",
     "jsmpeg": "^1.0.0",
     "liform-react": "^0.9.0",
     "lodash": "^4.17.21",
