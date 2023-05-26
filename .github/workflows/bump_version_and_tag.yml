@@ -24,7 +24,7 @@ jobs:
           git config --global user.email "oscarsso@esrf.fr"
           git config --global user.name "Marcus Oskarsson"
           git add -A
-          git commit -m "Bumped minor version"
+          git commit -m "[skip ci] Bumped minor version"
           git push -f
          
     - name: Read package version
