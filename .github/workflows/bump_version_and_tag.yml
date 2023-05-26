@@ -23,7 +23,7 @@ jobs:
           git config --global user.name "Marcus Oskarsson"
           git add -A
           git commit -m "Bumped minor version"
-          git push
+          git push -f
          
     - name: Read package version
       id: set-tag
