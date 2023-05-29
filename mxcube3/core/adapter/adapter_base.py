@@ -426,8 +426,8 @@ class ActuatorAdapterBase(AdapterBase):
 
         try:
             data.update({"value": self.get_value(), "limits": self.limits()})
-            if self._name == "diffractometer.phi":
-                data.update({ "name": "diffractometer.phix"})
+            # if self._name == "diffractometer.phi":
+            #     data.update({ "name": "diffractometer.phix"})
         except Exception as ex:
             if self._name == "diffractometer.kappa" or self._name == "diffractometer.kappa_phi":
                 data.update(
