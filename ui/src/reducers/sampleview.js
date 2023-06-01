@@ -213,6 +213,7 @@ export default (state = initialState, action) => {
           x: action.data.beamInfo.size_x,
           y: action.data.beamInfo.size_y,
         },
+        currentAperture: action.data.beamInfo.size_x * 1000,
         phaseList: action.data.phaseList,
         currentPhase: action.data.currentPhase,
         pixelsPerMm: action.data.Camera.pixelsPerMm,
