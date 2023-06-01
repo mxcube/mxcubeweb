@@ -16,11 +16,19 @@ class MotorAdapter(ActuatorAdapterBase):
         super(MotorAdapter, self).__init__(ho, *args, **kwargs)
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
+        self._event_rate = 4
 
-    @RateLimited(6)
+        @RateLimited(self._event_rate)
+        def _vc(value, **kwargs):
+            self.value_change(value, **kwargs)
+
+        self._vc = _vc
+
+    # @RateLimited(6)
+    # def _value_change(self, *args, **kwargs):
+    #     self.value_change(*args, **kwargs)
     def _value_change(self, *args, **kwargs):
-        self.value_change(*args, **kwargs)
-
+        self._vc(*args, **kwargs)
     def _set_value(self, value: HOActuatorValueChangeModel):
         """
         Set the detector distance.

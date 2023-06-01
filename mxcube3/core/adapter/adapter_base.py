@@ -6,6 +6,7 @@ import pydantic
 import gevent
 
 from typing import Any
+import math
 
 from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.models.adaptermodels import HOModel, HOActuatorModel
@@ -253,6 +254,7 @@ class AdapterBase:
         )
 
     def emit_ho_value_changed(self, value: Any):
+        # print("adapter_base - emit_ho_value_changed: ", self._name, " - ", value)
         self.app.server.emit(
             "hardware_object_value_changed",
             {
@@ -358,7 +360,11 @@ class ActuatorAdapterBase(AdapterBase):
         socketIO.
         """
         #data = {"name": self._name, "value": args[0]}
-        self.emit_ho_value_changed(args[0])
+        value = args[0]
+        if "detector_distance" in self._name:
+            value = round(args[0]/1000)
+        self.emit_ho_value_changed(value)
+        # self.emit_ho_value_changed(args[0])
         #self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
 
     # Abstract method

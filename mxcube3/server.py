@@ -185,6 +185,12 @@ class Server:
 
     @staticmethod
     def emit(*args, **kwargs):
+        # try:
+        #     if args[1]["name"] == "detector.detector_distance":
+        #         print("detector.detector_distance")
+        #     print(args[1]["name"])
+        # except Exception:
+        #     pass
         Server.flask_socketio.emit(*args, **kwargs)
 
     @staticmethod

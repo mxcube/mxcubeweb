@@ -142,6 +142,8 @@ class MXCUBECore:
             # Go through all hardware objects exposed by mxcubecore
             # hardware repository set id to username if its deinfed
             # use the name otherwise (file name without extension)
+            # if ho_name == "dtox" or "tox" in ho_name:
+            #     ho_name = "/dtox"
             ho = MXCUBECore.hwr.get_hardware_object(ho_name)
 
             if not ho:

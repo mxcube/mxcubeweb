@@ -50,8 +50,6 @@ class _BeamlineAdapter:
         attributes = {}
 
         for attr_name in self.app.mxcubecore.adapter_dict:
-            if attr_name == "beam":
-                print("beam")
             try:
                 #_d = self.app.mxcubecore.get_adapter(attr_name).dict()
                 _a = self.app.mxcubecore.get_adapter(attr_name)

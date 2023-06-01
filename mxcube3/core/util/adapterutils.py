@@ -1,3 +1,6 @@
+from mxcubecore.HardwareObjects.DataPublisher import DataPublisher
+
+
 def export(func):
     func._export = True
     func._export_name = func.__name__
@@ -23,7 +26,7 @@ def get_adapter_cls_from_hardware_object(ho):
     # is instance check below fails due to different "import paths" It
     # inly works because mxcubecore adds mxcubecore.HardwareObjects to
     # sys path in __init__.py
-    import DataPublisher
+    # import mxcubecore.HardwareObjects.DataPublisher
 
     from mxcube3.core.adapter.actuator_adapter import ActuatorAdapter
     from mxcube3.core.adapter.motor_adapter import MotorAdapter
@@ -51,7 +54,7 @@ def get_adapter_cls_from_hardware_object(ho):
         return MachineInfoAdapter
     elif isinstance(ho, AbstractBeam.AbstractBeam):
         return BeamAdapter
-    elif isinstance(ho, DataPublisher.DataPublisher):
+    elif isinstance(ho, DataPublisher):
         return DataPublisherAdapter
     elif isinstance(ho, AbstractMotor.AbstractMotor):
         return MotorAdapter
