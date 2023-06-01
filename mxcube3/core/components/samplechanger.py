@@ -351,7 +351,7 @@ class SampleChanger(ComponentBase):
 
         return initial_state
 
-    def sync_with_crims():
+    def sync_with_crims(self):
         """
         To be use mostly when Diffractometer is in plate mode
         This retun a List of cristal dict available in Crims that have been Harvested  
