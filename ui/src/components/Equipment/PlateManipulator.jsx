@@ -70,26 +70,30 @@ class PlateManipulator extends React.Component {
 
   getCrystalAddress(row, col) {
     let crystal = null;
-    if (this.props.crystalList.xtal_list) {
+    if (this.props.crystalList) {
       const items = this.props.crystalList.xtal_list;
-      items.forEach((item) => {
-        if (item.row === row && item.column === col) {
-          crystal = item;
-        }
-      });
+      if(items) {
+        items.forEach((item) => {
+          if (item.row === row && item.column === col) {
+            crystal = item;
+          }
+        });
+      }
     }
     return crystal;
   }
 
   getCrystalAddressByDrop(row, col, drop) {
     let crystal = null;
-    if (this.props.crystalList.xtal_list) {
+    if (this.props.crystalList) {
       const items = this.props.crystalList.xtal_list;
-      items.forEach((item) => {
-        if (item.row === row && item.column === col && item.shelf === drop) {
-          crystal = item;
-        }
-      });
+      if(items){
+        items.forEach((item) => {
+          if (item.row === row && item.column === col && item.shelf === drop) {
+            crystal = item;
+          }
+        });
+      }
     }
     return crystal;
   }
