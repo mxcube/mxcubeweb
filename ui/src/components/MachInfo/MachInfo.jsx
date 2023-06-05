@@ -24,8 +24,10 @@ export default class MachInfo extends React.Component {
       variant = 'info';
     }
 
-    const msgLabelStyle = { display: 'block', fontSize: '100%',
-    borderRadius: '0px', color: '#000' };
+    const msgLabelStyle = {
+      display: 'block', fontSize: '100%',
+      borderRadius: '0px', color: '#000'
+    };
 
     for (propname in this.props.info) {
       if (this.props.info.hasOwnProperty(propname)) {
@@ -39,19 +41,19 @@ export default class MachInfo extends React.Component {
     popContent = <span>{popContent}</span>;
 
     const machinfoPop = (
-       <Popover id="popover-machinfo">
-         <Popover.Header>
+      <Popover id="popover-machinfo">
+        <Popover.Header>
           {tooltipTitle}
-         </Popover.Header>
-         <Popover.Body style={{ width: '400px' }}>
+        </Popover.Header>
+        <Popover.Body style={{ width: '400px' }}>
           {popContent}
-         </Popover.Body>
-       </Popover>
+        </Popover.Body>
+      </Popover>
     );
 
     return (
       <OverlayTrigger placement="bottom" overlay={machinfoPop}>
-        <div>
+        <div className='machine-info'>
           <Badge bg='secondary' style={{ display: 'block', marginBottom: '3px' }}>
             Ring Current
           </Badge>

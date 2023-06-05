@@ -6,11 +6,15 @@ import './style.css';
 
 export default class LabeledValue extends React.Component {
   render() {
-    let labelStyle = { backgroundColor: 'transparent', display: 'block',
-      marginBottom: '3px', color: '#000' };
-    let valueStyle = { backgroundColor: 'transparent', display: 'block-inline',
+    let labelStyle = {
+      backgroundColor: 'transparent', display: 'block',
+      marginBottom: '3px', color: '#000'
+    };
+    let valueStyle = {
+      backgroundColor: 'transparent', display: 'block-inline',
       fontSize: '100%', borderRadius: '0px', color: '#000',
-      padding: '0px' };
+      padding: '0px'
+    };
 
     if (this.props.look === 'vertical') {
       labelStyle = { display: 'block', marginBottom: '3px' };
@@ -24,19 +28,19 @@ export default class LabeledValue extends React.Component {
     }
 
     return (
-      <div>
+      <div className='labled-value'>
         <span>
           <div className='d-flex'>
             <Form.Label
-              style={ labelStyle }
+              style={labelStyle}
             >
               {this.props.name}
-              <span style={{ marginRight: '0.5em'}}/>
+              <span style={{ marginRight: '0.5em' }} />
             </Form.Label>
-            
+
             <Form.Label
               variant={this.props.level}
-              style={ valueStyle }
+              style={valueStyle}
             >
               {value} {this.props.suffix}
             </Form.Label>

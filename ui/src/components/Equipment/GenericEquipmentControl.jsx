@@ -107,7 +107,12 @@ export default class GenericEquipmentControl extends React.Component {
       <EquipmentState
         state={this.props.equipment.state}
         equipmentName={this.props.equipment.name}
-        style={{ margin: '0px 0px 0px 0px', width: 'inherit' }}
+        style={{
+          margin: '0px 0px 0px 0px',
+          width: 'inherit',
+          borderBottomLeftRadius: '0%',
+          borderBottomRightRadius: '0%',
+        }}
       />
     )
   }
@@ -119,7 +124,6 @@ export default class GenericEquipmentControl extends React.Component {
       <Row className='mb-3'>
         <Col sm={12} className='generic-equipment-container'>
           <Collapsible
-            className=''
             trigger={<div> {this.getEquipmentState()} {this.getCollapsibleHeaderClose('generic-equipment-arrow-p')}</div>}
             triggerWhenOpen={<div> {this.getEquipmentState()} {this.getCollapsibleHeaderOpen('generic-equipment-arrow-p')}</div>}
           >
