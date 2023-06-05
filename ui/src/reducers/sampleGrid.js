@@ -210,6 +210,18 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, sampleList};
     }
+    case 'REMOVE_TASKS_LIST': {
+      const sampleList = { ...state.sampleList };
+
+      action.taskList.forEach((task) => {
+        sampleList[task.sampleID].tasks = 
+            sampleList[task.sampleID].tasks.filter(
+              taskItem => taskItem.queueID !== task.queueID
+            )
+      });
+
+      return { ...state, sampleList};
+    }
     case 'UPDATE_TASK': {
       const sampleList = {
         ...state.sampleList,
@@ -304,7 +316,10 @@ export default (state = INITIAL_STATE, action) => {
 
     case 'SET_SAMPLE_ATTRIBUTE': {
       const sampleList = { ...state.sampleList};
-      sampleList[action.sampleID][action.attr] = action.value;
+      action.sampleIDList.forEach((sid) => {
+        sampleList[sid][action.attr] = action.value;
+      });
+
       return { ...state, sampleList };
     }
     // Toggles a samples movable flag

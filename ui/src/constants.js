@@ -122,6 +122,7 @@ export const SPACE_GROUPS = [
 export const MOTOR_STATE = {
   UNKNOWN: 'UNKNOWN',
   WARNING: 'WARNING',
+  MOVING: 'MOVING',
   BUSY: 'BUSY',
   READY: 'READY',
   FAULT: 'FAULT',
