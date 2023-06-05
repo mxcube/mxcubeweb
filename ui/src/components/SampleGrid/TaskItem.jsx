@@ -4,6 +4,7 @@ import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 import './SampleGridTable.css';
 import { TASK_COLLECTED,
+  TASK_UNCOLLECTED,
   TASK_COLLECT_FAILED,
   TASK_COLLECT_WARNING,
   TASK_RUNNING,
@@ -256,7 +257,7 @@ export class TaskItem extends React.Component {
           >
             {this.tagName()}
             {
-             task.state !== TASK_COLLECTED ?
+             task.state === TASK_UNCOLLECTED ?
                (<i style={{ cursor: 'pointer'}} className="ms-1 fas fa-times" onClick={this.deleteButtonOnClick} />) :
                (<span />)
             }

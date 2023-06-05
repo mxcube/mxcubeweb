@@ -83,6 +83,9 @@ export default (state = initialState, action) => {
     case 'REMOVE_TASK': {
       return { ...state, displayData: omit(state.displayData, action.queueID),};
     }
+    case 'REMOVE_TASKS_LIST': {
+      return { ...state, displayData: omit(state.displayData, action.queueIDList),};
+    }
     case 'QUEUE_LOADING': {
       return { ...state, loading: action.loading };
     }
