@@ -154,7 +154,8 @@ class MXCUBECore:
             # Try to use the interface exposed by abstract classes in mxcubecore to adapt
             # the object
             adapter_cls = get_adapter_cls_from_hardware_object(ho)
-
+            if adapter_cls is None:
+                print("==== adapter_cls is None! ho is: ", ho_name)
             if adapter_cls:
                 try:
                     adapter_instance = adapter_cls(ho, _id, app, **dict(adapter_config))
