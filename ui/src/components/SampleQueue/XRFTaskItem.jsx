@@ -3,10 +3,12 @@ import PropTypes from 'prop-types';
 import { ProgressBar, Button, Collapse, OverlayTrigger, Popover, Modal } from 'react-bootstrap';
 import Plot1D from '../Plot1D';
 
-import { TASK_UNCOLLECTED,
+import {
+  TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
-  TASK_RUNNING } from '../../constants';
+  TASK_RUNNING
+} from '../../constants';
 
 export default class XRFTaskItem extends Component {
   static propTypes = {
@@ -43,10 +45,12 @@ export default class XRFTaskItem extends Component {
     const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
 
     return (
-      <div style={ { borderLeft: '1px solid #DDD',
+      <div style={{
+        borderLeft: '1px solid #DDD',
         borderRight: '1px solid #DDD',
         borderBottom: '1px solid #DDD',
-        padding: '0.5em' } }
+        padding: '0.5em'
+      }}
       >
         <a href={link} target="_blank" rel="noreferrer"> View Results in ISPyB</a>
       </div>
@@ -68,11 +72,11 @@ export default class XRFTaskItem extends Component {
 
     return (
       <div className="pull-right">
-      <a href="#"
-        onClick={this.showXRFPlot}
-      >
-      Plot available
-      </a>
+        <a href="#"
+          onClick={this.showXRFPlot}
+        >
+          Plot available
+        </a>
       </div>
     );
   }
@@ -80,20 +84,20 @@ export default class XRFTaskItem extends Component {
   showPlotModal() {
     return (
       <div>
-      <Modal show={this.state.showModal} onHide={this.close}>
-        <Modal.Header closeButton>
-          <Modal.Title>XRF Plot</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <h4>Text in a modal</h4>
-        </Modal.Body>
-        <Plot1D displayedPlotCallback={this.newPlotDisplayed}
-          plotId="this.plotIdByAction[currentActionName" autoNext="True"
-        />
-        <Modal.Footer>
-          <Button onClick={this.close}>Close</Button>
-        </Modal.Footer>
-      </Modal>
+        <Modal show={this.state.showModal} onHide={this.close}>
+          <Modal.Header closeButton>
+            <Modal.Title>XRF Plot</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <h4>Text in a modal</h4>
+          </Modal.Body>
+          <Plot1D displayedPlotCallback={this.newPlotDisplayed}
+            plotId="this.plotIdByAction[currentActionName" autoNext="True"
+          />
+          <Modal.Footer>
+            <Button onClick={this.close}>Close</Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }
@@ -168,16 +172,16 @@ export default class XRFTaskItem extends Component {
         placement="top"
         rootClose
         overlay={(<Popover id="wedge-popover" style={{ maxWidth: '2000px', width: 'auto' }}>
-                    <input
-                      type="text"
-                      onFocus={(e) => {e.target.select();}}
-                      value={path}
-                      size={path.length + 10}
-                    />
-                  </Popover>)}
+          <input
+            type="text"
+            onFocus={(e) => { e.target.select(); }}
+            value={path}
+            size={path.length + 10}
+          />
+        </Popover>)}
       >
         <a onClick={(e) => (e.stopPropagation())}>
-          { value }
+          {value}
         </a>
       </OverlayTrigger>);
   }
@@ -187,9 +191,9 @@ export default class XRFTaskItem extends Component {
       data,
       show } = this.props;
     const plotId = this.props.id;
-    const {parameters} = data;
+    const { parameters } = data;
 
-    const {result} = this.props.data;
+    const { result } = this.props.data;
     const plotAlreadyStored = result !== null;
 
     const delTaskCSS = {
@@ -207,22 +211,22 @@ export default class XRFTaskItem extends Component {
     let pbarBsStyle = 'info';
 
     switch (state) {
-    case TASK_RUNNING: {
-      pbarBsStyle = 'info';
-    
-    break;
-    }
-    case TASK_COLLECTED: {
-      pbarBsStyle = 'success';
-    
-    break;
-    }
-    case TASK_COLLECT_FAILED: {
-      pbarBsStyle = 'danger';
-    
-    break;
-    }
-    // No default
+      case TASK_RUNNING: {
+        pbarBsStyle = 'info';
+
+        break;
+      }
+      case TASK_COLLECTED: {
+        pbarBsStyle = 'success';
+
+        break;
+      }
+      case TASK_COLLECT_FAILED: {
+        pbarBsStyle = 'danger';
+
+        break;
+      }
+      // No default
     }
 
     return (
@@ -257,35 +261,35 @@ export default class XRFTaskItem extends Component {
                 <i className="fas fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
               }
             </div>
-            <Collapse in={Boolean(show)}>
-              <div className="task-body">
-                <div>
-                  <div style={{ border: '1px solid #DDD' }}>
-                    <div
-                      style={{ padding: '0.5em' }}
-                      onClick={this.showForm}
-                    >
-                      <b>Path:</b> {this.path(parameters)}
-                      <br />
-                      <b>Count time:</b> {parameters.exp_time}
-                    </div>
-                  </div>
-                  {this.getResult(state)}
-                  <Modal show={this.state.showModal} onHide={this.close}>
-                    <Modal.Header closeButton>
-                      <Modal.Title>XRF Plot</Modal.Title>
-                    </Modal.Header>
-                    <Plot1D
-                      plotId={plotId} autoNext saved={plotAlreadyStored} data={result}
-                    />
-                    <Modal.Footer>
-                      <Button onClick={this.close}>Close</Button>
-                    </Modal.Footer>
-                  </Modal>
-                </div>
-              </div>
-            </Collapse>
           </div>
+          <Collapse in={Boolean(show)}>
+            <div className="task-body">
+              <div>
+                <div style={{ border: '1px solid #DDD' }}>
+                  <div
+                    style={{ padding: '0.5em' }}
+                    onClick={this.showForm}
+                  >
+                    <b>Path:</b> {this.path(parameters)}
+                    <br />
+                    <b>Count time:</b> {parameters.exp_time}
+                  </div>
+                </div>
+                {this.getResult(state)}
+                <Modal show={this.state.showModal} onHide={this.close}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>XRF Plot</Modal.Title>
+                  </Modal.Header>
+                  <Plot1D
+                    plotId={plotId} autoNext saved={plotAlreadyStored} data={result}
+                  />
+                  <Modal.Footer>
+                    <Button onClick={this.close}>Close</Button>
+                  </Modal.Footer>
+                </Modal>
+              </div>
+            </div>
+          </Collapse>
         </div>
       </div>);
   }
