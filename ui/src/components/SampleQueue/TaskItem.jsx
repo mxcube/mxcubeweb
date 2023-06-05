@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover } from 'react-bootstrap';
-import { TASK_UNCOLLECTED,
+import { ProgressBar, Button, Collapse, Table, OverlayTrigger, Popover, Tooltip } from 'react-bootstrap';
+import {
+  TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
-  TASK_RUNNING } from '../../constants';
+  TASK_RUNNING
+} from '../../constants';
 
 export default class TaskItem extends Component {
   static propTypes = {
@@ -34,13 +36,15 @@ export default class TaskItem extends Component {
       return (<div><span /></div>);
     }
     return (
-      <div style={ { borderLeft: '1px solid #DDD',
+      <div style={{
+        borderLeft: '1px solid #DDD',
         borderRight: '1px solid #DDD',
         borderBottom: '1px solid #DDD',
-        padding: '0.5em' } }
+        padding: '0.5em'
+      }}
       >
         <a href="#" onClick={() =>
-          this.props.showDialog(true, 'LIMS_RESULT_DIALOG', 'Lims Results', this.props.data) }
+          this.props.showDialog(true, 'LIMS_RESULT_DIALOG', 'Lims Results', this.props.data)}
         >
           View Results
         </a>
@@ -111,67 +115,64 @@ export default class TaskItem extends Component {
   }
 
   wedgePath(wedge) {
-    const {parameters} = wedge;
+    const { parameters } = wedge;
     const value = parameters.fileName;
     const path = parameters.path ? parameters.path : '';
+    const pathEndPart = path.slice(-40);
 
     return (
       <OverlayTrigger
-        trigger="click"
-        placement="top"
+        placement="bottom"
         rootClose
-        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '600px', width: 'auto' }}>
-                    <input
-                      type="text"
-                      onFocus={(e) => {e.target.select();}}
-                      value={path}
-                      size={path.length + 10}
-                    />
-                  </Popover>)}
+        overlay={(
+          <Tooltip id="wedge-popover">
+            {path}{value}
+          </Tooltip>)
+        }
       >
-        <a>
-          { value }
+        <a style={{ flexGrow: 1 }} >
+          .../{pathEndPart.slice(pathEndPart.indexOf("/") + 1)}{value}
         </a>
-      </OverlayTrigger>);
+      </OverlayTrigger >);
   }
 
   wedgeParameters(wedge) {
-    const {parameters} = wedge;
+    const { parameters } = wedge;
     return (
       <tr>
-        <td><a>{parameters.osc_start.toFixed(2)}</a></td>
-        <td><a>{parameters.osc_range.toFixed(2)}</a></td>
+        {parameters.osc_start !== null ? (<td><a>{parameters.osc_start.toFixed(2)}</a></td>) : null}
+        {parameters.osc_range !== null ? (<td><a>{parameters.osc_range.toFixed(2)}</a></td>) : null}
         <td><a>{parameters.exp_time.toFixed(6)}</a></td>
         <td><a>{parameters.num_images}</a></td>
         <td><a>{parameters.transmission.toFixed(2)}</a></td>
         <td><a>{parameters.resolution.toFixed(3)}</a></td>
         <td><a>{parameters.energy.toFixed(4)}</a></td>
-        <td><a>{parameters.kappa_phi.toFixed(2)}</a></td>
-        <td><a>{parameters.kappa.toFixed(2)}</a></td>
+        {parameters.kappa_phi !== null ? (<td><a>{parameters.kappa_phi.toFixed(2)}</a></td>) : null}
+        {parameters.kappa !== null ? (<td><a>{parameters.kappa.toFixed(2)}</a></td>) : null}
       </tr>);
   }
 
   progressBar() {
-    const {state} = this.props;
+    const { state } = this.props;
     let pbarBsStyle = 'info';
 
     switch (state) {
-    case TASK_RUNNING: {
-      pbarBsStyle = 'info';
-    
-    break;
-    }
-    case TASK_COLLECTED: {
-      pbarBsStyle = 'success';
-    
-    break;
-    }
-    case TASK_COLLECT_FAILED: {
-      pbarBsStyle = 'danger';
-    
-    break;
-    }
-    // No default
+      case TASK_RUNNING: {
+        pbarBsStyle = 'info';
+
+        break;
+      }
+      case TASK_COLLECTED: {
+        pbarBsStyle = 'success';
+
+        break;
+      }
+      case TASK_COLLECT_FAILED: {
+        pbarBsStyle = 'danger';
+
+        break;
+      }
+      // No default
     }
 
     return (
@@ -182,8 +183,8 @@ export default class TaskItem extends Component {
           style={{ marginBottom: '0px', height: '18px' }}
           min={0}
           max={1}
-          active={ this.props.progress < 1 }
-          label={ `${(this.props.progress * 100).toPrecision(3)} %` }
+          active={this.props.progress < 1}
+          label={`${(this.props.progress * 100).toPrecision(3)} %`}
           now={this.props.progress}
         />
       </span>);
@@ -215,22 +216,22 @@ export default class TaskItem extends Component {
     let taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
 
     switch (state) {
-    case TASK_RUNNING: {
-      taskCSS += ' running';
-    
-    break;
-    }
-    case TASK_COLLECTED: {
-      taskCSS += ' success';
-    
-    break;
-    }
-    case TASK_COLLECT_FAILED: {
-      taskCSS += ' error';
-    
-    break;
-    }
-    // No default
+      case TASK_RUNNING: {
+        taskCSS += ' running';
+
+        break;
+      }
+      case TASK_COLLECTED: {
+        taskCSS += ' success';
+
+        break;
+      }
+      case TASK_COLLECT_FAILED: {
+        taskCSS += ' error';
+
+        break;
+      }
+      // No default
     }
 
     return (
@@ -254,59 +255,75 @@ export default class TaskItem extends Component {
                 <i className="fas fa-times" onClick={this.deleteTask} style={delTaskCSS} /> : null
               }
             </div>
-            <Collapse in={Boolean(show)}>
-              <div className="task-body">
-                {wedges.map((wedge, i) => {
-                  const padding = i > 0 ? '1em' : '0em';
-                  return (
-                    <div key={`wedge-${i}`}>
+          </div>
+          <Collapse in={Boolean(show)}>
+            <div className="task-body">
+              {wedges.map((wedge, i) => {
+                const padding = i > 0 ? '1em' : '0em';
+                return (
+                  <div key={`wedge-${i}`}>
+                    <div style={{
+                      borderLeft: '1px solid #DDD',
+                      borderRight: '1px solid #DDD',
+                      paddingTop: padding
+                    }}
+                    >
                       <div style={{
-                        borderLeft: '1px solid #DDD',
-                        borderRight: '1px solid #DDD',
-                        paddingTop: padding
+                        borderTop: '1px solid #DDD',
+                        padding: '0.5em',
+                        display: 'flex',
+                        justifyContent: 'space-around',
+                        alignItems: 'center'
                       }}
                       >
-                        <div style={{
-                          borderTop: '1px solid #DDD',
-                          padding: '0.5em'
-                        }}
+                        <b>Path:</b>
+                        {this.wedgePath(wedge)}
+                        <Button
+                          variant='outline-secondary'
+                          style={{ width: '3em' }}
+                          title='Copy path'
+                          onClick={() => {
+                            navigator.clipboard.writeText(
+                              `${wedge.parameters.path}`
+                            );
+                          }}
                         >
-                          <b>Path:</b> {this.wedgePath(wedge)}
-                        </div>
+                          <i style={{ marginLeft: '0px' }} class="fa fa-clipboard" aria-hidden="true" />
+                        </Button>
                       </div>
-                      <Table
-                        striped
-                        bordered
-                        hover
-                        onClick={this.showForm}
-                        style={{ fontSize: 'smaller', marginBottom: '0px' }}
-                        className="task-parameters-table"
-                      >
-                        <thead>
-                          <tr>
-                            <th>Start &deg; </th>
-                            <th>Osc. &deg; </th>
-                            <th>t (s)</th>
-                            <th># Img</th>
-                            <th>T (%)</th>
-                            <th>Res. (&Aring;)</th>
-                            <th>E (KeV)</th>
-                            <th>&phi; &deg;</th>
-                            <th>&kappa; &deg;</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {this.wedgeParameters(wedge)}
-                        </tbody>
-                      </Table>
-                      {this.getResult(state)}
-                    </div>);
-                })}
+                    </div>
+                    <Table
+                      striped
+                      bordered
+                      hover
+                      onClick={this.showForm}
+                      style={{ fontSize: 'smaller', marginBottom: '0px' }}
+                      className="task-parameters-table"
+                    >
+                      <thead>
+                        <tr>
+                          {wedge.parameters.osc_start !== null ? (<th>Start &deg; </th>) : null}
+                          {wedge.parameters.osc_range !== null ? (<th>Osc. &deg; </th>) : null}
+                          <th>t (s)</th>
+                          <th># Img</th>
+                          <th>T (%)</th>
+                          <th>Res. (&Aring;)</th>
+                          <th>E (KeV)</th>
+                          {wedge.parameters.kappa_phi !== null ? (<th>&phi; &deg;</th>) : null}
+                          {wedge.parameters.kappa !== null ? (<th>&kappa; &deg;</th>) : null}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {this.wedgeParameters(wedge)}
+                      </tbody>
+                    </Table>
+                    {this.getResult(state)}
+                  </div>);
+              })}
 
-              </div>
-            </Collapse>
-          </div>
-        </div>
-      </div>);
+            </div>
+          </Collapse>
+        </div >
+      </div >);
   }
 }
