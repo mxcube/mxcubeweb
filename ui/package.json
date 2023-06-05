@@ -89,7 +89,9 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
+    "@testing-library/cypress": "^9.0.0",
     "concurrently": "^7.0.0",
+    "cypress": "^12.13.0",
     "eslint": "^8.10.0",
     "eslint-config-galex": "^3.6.5",
     "eslint-config-react-app": "^7.0.1",
