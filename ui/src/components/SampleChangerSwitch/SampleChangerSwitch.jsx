@@ -1,6 +1,6 @@
 import React from 'react';
 import { Badge, Button, OverlayTrigger, Popover } from 'react-bootstrap';
-
+import "./style.css"
 
 export default class SampleChangerSwitch extends React.Component {
   constructor(props) {
@@ -45,7 +45,7 @@ export default class SampleChangerSwitch extends React.Component {
 
 
   render() {
-    const {showOvelay} = this.state;
+    const { showOvelay } = this.state;
     let msgBgStyle = 'warning';
 
     if (this.props.data === 'READY') {
@@ -61,11 +61,13 @@ export default class SampleChangerSwitch extends React.Component {
       btn = <Button variant='outline-secondary' size="sm" onClick={this.powerOff}>{this.props.onText}</Button>;
     }
 
-    const msgLabelStyle = { display: 'block', fontSize: '100%',
-      borderRadius: '0px', color: '#000' };
+    const msgLabelStyle = {
+      display: 'block', fontSize: '100%',
+      borderRadius: '0px', color: '#000'
+    };
 
     return (
-      <div>
+      <div className='samplechanger-switch'>
         <OverlayTrigger
           // ref={(ref) => { this.overlay = ref; }}
           show={showOvelay}
