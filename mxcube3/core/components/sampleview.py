@@ -37,6 +37,7 @@ class HttpStreamer:
     that will stream JPEG images from the sample view camera,
     in 'multipart' HTTP response format.
     """
+
     def __init__(self):
         self._new_frame = gevent.event.Event()
         self._sample_image = None
@@ -85,6 +86,7 @@ class HttpStreamer:
         """
         build new Response object, that will send frames to the client
         """
+
         def frames():
             while True:
                 self._new_frame.wait()
@@ -95,7 +97,9 @@ class HttpStreamer:
 
         self._client_connected()
 
-        response = Response(frames(), mimetype='multipart/x-mixed-replace; boundary="!>"')
+        response = Response(
+            frames(), mimetype='multipart/x-mixed-replace; boundary="!>"'
+        )
         # keep track of when client stops reading the stream
         response.call_on_close(self._client_disconnected)
 
@@ -216,7 +220,6 @@ class SampleView(ComponentBase):
             )
 
             self.centring_update_current_point(motor_positions, x, y)
-            HWR.beamline.diffractometer.emit("stateChanged", (True,))
 
             if self.app.AUTO_MOUNT_SAMPLE:
                 HWR.beamline.diffractometer.accept_centring()
@@ -534,7 +537,6 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
         # _do_take_snapshot(filename, bw)
 
     def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
-
         from mxcube3 import mxcube
 
         if snapshots is None:
@@ -560,10 +562,15 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
                 hasattr(diffractometer_object, "set_phase")
                 and diffractometer_object.get_current_phase() != "Centring"
             ):
-                logging.getLogger("user_level_log").info(
-                    "Moving Diffractometer to CentringPhase"
+                use_custom_snapshot_routine = diffractometer_object.get_property(
+                    "custom_snapshot_script_dir", None
                 )
-                diffractometer_object.set_phase("Centring", wait=True, timeout=200)
+                if not use_custom_snapshot_routine:
+                    logging.getLogger("user_level_log").info(
+                        "Moving Diffractometer to CentringPhase Not done for tests (DN)"
+                    )
+
+                    diffractometer_object.set_phase("Centring", wait=True, timeout=200)
 
             snapshot_directory = dc_params["fileinfo"]["archive_directory"]
             if not os.path.exists(snapshot_directory):

@@ -34,9 +34,7 @@ class _BeamlineAdapter:
             workflow.connect("parametersNeeded", self.wf_parameters_needed)
 
     def wf_parameters_needed(self, params):
-        self.app.server.emit(
-            "workflowParametersDialog", params, broadcast=True, namespace="/hwr"
-        )
+        self.app.server.emit("workflowParametersDialog", params, namespace="/hwr")
 
     def get_object(self, name):
         return self.get_attr_from_path(name)

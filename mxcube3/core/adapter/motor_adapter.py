@@ -17,7 +17,7 @@ class MotorAdapter(ActuatorAdapterBase):
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
 
-    @RateLimited(6)
+    @RateLimited(10)
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 

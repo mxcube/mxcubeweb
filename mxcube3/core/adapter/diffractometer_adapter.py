@@ -15,13 +15,13 @@ class DiffractometerAdapter(AdapterBase):
         ho.connect("valueChanged", self._state_change)
 
     def _state_change(self, *args, **kwargs):
-        self.state_change(**kwargs)
+        self.state_change(*args, **kwargs)
 
     def stop(self):
         pass
 
     def state(self):
-        return "READY" if self._ho.is_ready() else "BUSY"
+        return "READY" if self._ho.get_state().name == "READY" else "BUSY"
 
     def head_configuration(self) -> dict:
         data = self._ho.get_head_configuration()

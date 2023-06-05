@@ -220,40 +220,38 @@ export function makePoint(x, y, id, color, type, name, strokeWidth) {
 
 export function makePoints(points, imageRatio) {
   const fabricPoints = [];
-  for (const id in points) {
-    if (Object.hasOwn(points, id)) {
-      const [x, y] = points[id].screenCoord;
 
-      switch (points[id].state) {
-        case 'SAVED':
-          fabricPoints.push(
-            ...makePoint(
-              x * imageRatio,
-              y * imageRatio,
-              id,
-              points[id].selected ? '#88ff5b' : '#e4ff09',
-              'SAVED',
-              points[id].name,
-              points[id].selected ? 3 : 2
-            )
-          );
-          break;
-        case 'TMP':
-          fabricPoints.push(
-            ...makePoint(
-              x * imageRatio,
-              y * imageRatio,
-              id,
-              'white',
-              'TMP',
-              points[id].name,
-              points[id].selected ? 3 : 2
-            )
-          );
-          break;
-        default:
-          throw new Error('Server gave point with unknown type');
-      }
+  for (const id in points) {
+    const [x, y] = points[id].screenCoord;
+    switch (points[id].state) {
+      case 'SAVED':
+        fabricPoints.push(
+          ...makePoint(
+            x * imageRatio,
+            y * imageRatio,
+            id,
+            points[id].selected ? '#88ff5b' : '#e4ff09',
+            'SAVED',
+            points[id].name,
+            points[id].selected ? 3 : 2
+          )
+        );
+        break;
+      case 'TMP':
+        fabricPoints.push(
+          ...makePoint(
+            x * imageRatio,
+            y * imageRatio,
+            id,
+            'white',
+            'TMP',
+            points[id].name,
+            points[id].selected ? 3 : 2
+          )
+        );
+        break;
+      default:
+        throw new Error('Server gave point with unknown type');
     }
   }
   return fabricPoints;
@@ -263,39 +261,37 @@ export function makePoints(points, imageRatio) {
 export function makeTwoDPoints(points, imageRatio) {
   const fabricPoints = [];
   for (const id in points) {
-    if (Object.hasOwn(points, id)) {
-      const [x, y] = points[id].screenCoord;
+    const [x, y] = points[id].screenCoord;
 
-      switch (points[id].state) {
-        case 'SAVED':
-          fabricPoints.push(
-            ...makePoint(
-              x * imageRatio,
-              y * imageRatio,
-              id,
-              points[id].selected ? '#88ff5b' : '#33BEFF',
-              'SAVED',
-              points[id].name,
-              points[id].selected ? 3 : 2
-            )
-          );
-          break;
-        case 'TMP':
-          fabricPoints.push(
-            ...makePoint(
-              x * imageRatio,
-              y * imageRatio,
-              id,
-              'white',
-              'TMP',
-              points[id].name,
-              points[id].selected ? 3 : 2
-            )
-          );
-          break;
-        default:
-          throw new Error('Server gave point with unknown type');
-      }
+    switch (points[id].state) {
+      case 'SAVED':
+        fabricPoints.push(
+          ...makePoint(
+            x * imageRatio,
+            y * imageRatio,
+            id,
+            points[id].selected ? '#88ff5b' : '#33BEFF',
+            'SAVED',
+            points[id].name,
+            points[id].selected ? 3 : 2
+          )
+        );
+        break;
+      case 'TMP':
+        fabricPoints.push(
+          ...makePoint(
+            x * imageRatio,
+            y * imageRatio,
+            id,
+            'white',
+            'TMP',
+            points[id].name,
+            points[id].selected ? 3 : 2
+          )
+        );
+        break;
+      default:
+        throw new Error('Server gave point with unknown type');
     }
   }
   return fabricPoints;
