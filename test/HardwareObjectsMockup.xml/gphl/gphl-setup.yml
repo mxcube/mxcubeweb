@@ -1,6 +1,6 @@
 
 _initialise_class:
-    class: mxcubecore.HardwareObjects.GphlWorkflowConnection.GphlWorkflowConnection
+    class: mxcubecore.HardwareObjects.Gphl.GphlWorkflowConnection.GphlWorkflowConnection
 
 directory_locations:
     # Directory locations. Can also be used with ${} syntax in this file
