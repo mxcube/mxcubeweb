@@ -1,0 +1,46 @@
+name: Build and test
+
+on: [push, pull_request]
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+      matrix:
+        python-version: ["3.8"] #, "3.9", "3.10"]
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Add conda to system path
+      run: |
+        # $CONDA is an environment variable pointing to the root of the miniconda directory
+        echo $CONDA/bin >> $GITHUB_PATH
+    - name: Install ldap dependencies
+      run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
+    - name: Install dependencies
+      run: |
+        conda env update --file conda-environment.yml --name base
+        pip install -e .
+    - name: Run mxcube backend
+      run: |
+         mxcubeweb-server -r /home/oscarsso/projects/mxcube-web/test/HardwareObjectsMockup.xml/ --static-folder /home/oscarsso/projects/mxcube-web/ui/build/ -L debug &
