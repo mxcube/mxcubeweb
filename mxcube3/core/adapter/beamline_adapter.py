@@ -51,6 +51,8 @@ class _BeamlineAdapter:
 
         for attr_name in self.app.mxcubecore.adapter_dict:
             try:
+                if "detector" == attr_name:
+                    print("detector")
                 #_d = self.app.mxcubecore.get_adapter(attr_name).dict()
                 _a = self.app.mxcubecore.get_adapter(attr_name)
                 _d = _a.dict()
@@ -58,17 +60,8 @@ class _BeamlineAdapter:
             except Exception as ex:
                 logging.getLogger("MX3.HWR").error(attr_name)
                 logging.getLogger("MX3.HWR").error(
-                    "Unable to call force_emit_signals (%s)" % str(ex)
+                    "==== (%s)" % str(ex)
                 )
-        # v = attributes["diffractometer.phi"]
-        # attributes["diffractometer.phix"] = v
-        # v1 = attributes["resolution.detector.detector_distance"]
-        # v1.update({"name":"detector.detector_distance"})
-        # attributes["detector.detector_distance"] = v1
-
-        # v1 = attributes["diffractometer.sample_horizontal"]
-        # v1.update({"name":"diffractometer.phiy"})
-        # attributes["diffractometer.phiy"] = v1
         return {"hardwareObjects": attributes}
 
     def dict_repr(self):

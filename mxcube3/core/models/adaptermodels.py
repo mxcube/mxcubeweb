@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
+import typing
 from typing import Tuple, List, Union
 from pydantic import BaseModel, Field
 
 
 class HOModel(BaseModel):
     name: str = Field("", description="name of the hardware object")
-    state: str = Field("", description="hardware object state")
+    state: typing.Any = Field("", description="hardware object state")
     msg: str = Field("", description="additional message to display")
     type: str = Field("", description="type of data the object contains")
     available: bool = Field(True, description="True if the object avilable/enabled")

@@ -14,4 +14,7 @@ class DetectorAdapter(AdapterBase):
         self.state_change(**kwargs)
 
     def state(self):
-        return self._ho.get_state().name.upper()
+        a = self._ho.status
+        return a
+        # return a['acq_satus']
+        # return self._ho.get_state().name.upper()
