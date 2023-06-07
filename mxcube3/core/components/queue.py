@@ -1630,6 +1630,7 @@ class Queue(ComponentBase):
         group_model.set_enabled(True)
         HWR.beamline.queue_model.add_child(parent_model, group_model)
         HWR.beamline.queue_model.add_child(group_model, wf_model)
+
         if not task["parameters"]["wfpath"] == "Gphl":
             self.set_wf_params(wf_model, dc_entry, task, sample_model)
 
@@ -1637,9 +1638,6 @@ class Queue(ComponentBase):
         group_entry.set_enabled(True)
         parent_entry.enqueue(group_entry)
         group_entry.enqueue(dc_entry)
-
-        if task["parameters"]["wfpath"] != "Gphl":
-            self.set_wf_params(wf_model, dc_entry, task, sample_model)
 
         return wf_model._node_id
 
