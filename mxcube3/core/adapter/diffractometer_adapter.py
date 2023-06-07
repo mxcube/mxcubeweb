@@ -21,7 +21,7 @@ class DiffractometerAdapter(AdapterBase):
         pass
 
     def state(self):
-        return "READY" if self._ho.get_state().name == "READY" else "BUSY"
+        return "READY" if self._ho.is_ready() else "BUSY"
 
     def head_configuration(self) -> dict:
         data = self._ho.get_head_configuration()
