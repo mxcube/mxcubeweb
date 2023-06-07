@@ -179,6 +179,7 @@ default_dc_params = {
     "queue_entry": "datacollection",
     "requires": [],
     "schema": {},
+    "ui_schema": {}
 }
 
 default_char_acq_params = {
@@ -232,7 +233,7 @@ default_char_acq_params = {
         "prefixTemplate": "{PREFIX}_{POSITION}",
         "rad_suscept": 1.0,
         "sad_res": 0.5,
-        "shutterless": True,
+        "shutterless": False,
         "skip_existing_images": False,
         "space_group": "",
         "strategy_complexity": 0,
@@ -258,6 +259,7 @@ default_char_acq_params = {
     "queue_entry": "characterisation",
     "requires": [],
     "schema": {},
+    "ui_schema": {}
 }
 
 default_mesh_params = {
@@ -308,6 +310,7 @@ default_mesh_params = {
     "queue_entry": "mesh",
     "requires": [],
     "schema": {},
+    "ui_schema": {}
 }
 
 
@@ -359,4 +362,5 @@ default_xrf_parameters = {
     "queue_entry": "xrf",
     "requires": [],
     "schema": {},
+    "ui_schema": {}
 }
