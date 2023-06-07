@@ -44,3 +44,7 @@ jobs:
     - name: Run mxcube backend
       run: |
          mxcubeweb-server -r /home/oscarsso/projects/mxcube-web/test/HardwareObjectsMockup.xml/ --static-folder /home/oscarsso/projects/mxcube-web/ui/build/ -L debug &
+    - name: Cypress run
+      uses: cypress-io/github-action@v5
+      with:
+        project: ./ui
