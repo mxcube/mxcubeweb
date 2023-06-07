@@ -10,6 +10,7 @@ import atexit
 import json
 
 from pathlib import Path
+from urllib.parse import urlparse
 from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 
@@ -264,7 +265,10 @@ class MXCUBEApplication:
         MXCUBEApplication.mxcubecore.init(MXCUBEApplication)
 
         if cfg.app.USE_EXTERNAL_STREAMER:
-            MXCUBEApplication.init_sample_video(cfg.app.VIDEO_FORMAT)
+            MXCUBEApplication.init_sample_video(
+                _format=cfg.app.VIDEO_FORMAT,
+                port=str(urlparse(cfg.app.VIDEO_STREAM_URL).port),
+            )
 
         MXCUBEApplication.init_logging(log_fpath, log_level, enabled_logger_list)
 
@@ -292,13 +296,13 @@ class MXCUBEApplication:
         # MXCUBEApplication.load_settings()
 
     @staticmethod
-    def init_sample_video(format):
+    def init_sample_video(_format, port):
         """
         Initializes video streaming
         :return: None
         """
         try:
-            HWR.beamline.sample_view.camera.start_streaming(format)
+            HWR.beamline.sample_view.camera.start_streaming(_format=_format, port=port)
         except Exception as ex:
             msg = "Could not initialize video, error was: "
             msg += str(ex)

@@ -75,7 +75,6 @@ export function setBeamlineAttribute(name, value) {
 
 export function sendSetAttribute(name, value) {
   return (dispatch, getState) => {
-    dispatch(busyStateAction(name));
     const state = getState();
     const type = state.beamline.hardwareObjects[name].type.toLowerCase();
     const url = `mxcube/api/v0.1/beamline/${type}/value/${name}`;

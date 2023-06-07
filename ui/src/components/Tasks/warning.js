@@ -36,7 +36,10 @@ const warn = (values, props) => {
       'Entered transmission is different from current transmission';
   }
 
-  if (props.beamline.hardwareObjects["diffractometer.phi"].value !== Number.parseFloat(values.osc_start)) {
+  if (
+    Number.parseFloat(props.beamline.hardwareObjects["diffractometer.phi"].value.toFixed(2))
+    !== Number.parseFloat(values.osc_start)
+  ) {
     warnings.osc_start =
       'Entered Oscillation start angle is different from current omega';
   }
