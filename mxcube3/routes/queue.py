@@ -282,7 +282,7 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def update_dependent_field():
         """
-        Returns a list of all available tasks
+        Updates the dependent fields of the given task
         """
         args = request.get_json()
         resp = jsonify(
