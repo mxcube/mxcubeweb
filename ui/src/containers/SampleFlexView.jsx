@@ -47,8 +47,6 @@ class NewSampleFlexView extends React.Component {
   }
 
 
-  componentWillUnmount() {
-  }
 
   renderCircle(nbCell , idx, isCellSelected) {
 

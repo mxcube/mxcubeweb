@@ -48,10 +48,12 @@ export class LimsResultDialog extends React.Component {
         </Modal.Header>
         <Modal.Body>
           {this.props.taskData
-            ? [
-                <LimsResultSummary taskData={this.props.taskData} />,
-                this.getResultLink(),
-              ]
+            ? (
+                <>
+                  <LimsResultSummary taskData={this.props.taskData} />
+                  {this.getResultLink()}
+                </>
+            )
             : null}
         </Modal.Body>
         <Modal.Footer>
