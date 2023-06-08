@@ -7,8 +7,6 @@ import { Container,
   Alert,
   Button } from 'react-bootstrap';
 
-import { useNavigate } from 'react-router-dom';
-
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
 import './Login.css';
@@ -41,12 +39,6 @@ class LoginComponent extends React.Component {
   }
 
   render() {
-    if (this.props.loading && !this.props.showProposalsForm) {
-      return (
-        <div className="centered"><img src={loader} role="presentation" /></div>
-      );
-    }
-
     return (
       <Container>
         { this.props.showProposalsForm ?
@@ -111,7 +103,10 @@ class LoginComponent extends React.Component {
               </Row>
               <Row style={{ marginTop: '10px', marginBottom: '10px' }}>
                 <Col xs={12} className="d-grid gap-2">
-                  <Button type="submit" size="lg" className="primary" >Sign in</Button>
+                  <Button type="submit" size="lg" className="loginBtn primary" >
+                    {this.props.loading && <img className="loginLoader" src={loader} role="presentation" width="25" />}
+                    Sign in
+                  </Button>
                 </Col>
               </Row>
               {(this.props.showError ? <Alert variant="danger"><h4>{this.props.errorMessage}</h4></Alert> : '')}
