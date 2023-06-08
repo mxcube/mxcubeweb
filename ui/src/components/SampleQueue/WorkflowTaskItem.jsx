@@ -243,7 +243,7 @@ export default class WorkflowTaskItem extends Component {
                         );
                       }}
                     >
-                      <i style={{ marginLeft: '0px' }} class="fa fa-clipboard" aria-hidden="true" />
+                      <i style={{ marginLeft: '0px' }} className="fa fa-clipboard" aria-hidden="true" />
                     </Button>
                   </div>
                   {this.getResult(state)}

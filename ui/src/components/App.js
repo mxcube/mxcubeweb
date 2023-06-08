@@ -16,7 +16,7 @@ import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 
 function requireAuth() {
   store.dispatch(getLoginInfo()).then(() => {
-    const login = store.getState().login;
+    const {login} = store.getState();
 
     if (login.loggedIn) {
       store.dispatch(startSession(login.user.inControl));

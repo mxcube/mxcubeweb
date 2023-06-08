@@ -542,7 +542,7 @@ export function addTask(sampleIDs, parameters, runNow) {
         };
 
         // If a task is created on a shape, save shape if not already saved before
-        if (parseInt(parameters.shape) !== -1) {
+        if (Number.parseInt(parameters.shape) !== -1) {
           if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
             dispatch(
               sendUpdateShapes([{ id: task.parameters.shape, state: 'SAVED' }])

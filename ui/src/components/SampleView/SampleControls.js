@@ -72,7 +72,7 @@ export default class SampleControls extends React.Component {
   takeSnapShot() {
     /* eslint-disable unicorn/consistent-function-scoping */
     function imageEpolog(props) {
-      const sampleID = props.current.sampleID;
+      const {sampleID} = props.current;
 
       if (sampleID in props.sampleList) {
         return props.sampleList[sampleID].sampleName;

@@ -11,8 +11,8 @@ import MotorInput from '../components/MotorInput/MotorInput';
 
 class MotorInputContainer extends Component {
   render() {
-    const uiprop = this.props.uiprop;
-    const motorhwo = this.props.motorhwo;
+    const {uiprop} = this.props;
+    const {motorhwo} = this.props;
     let result = null;
         
     if (!isNaN(motorhwo.value)) {

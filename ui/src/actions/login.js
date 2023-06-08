@@ -125,7 +125,7 @@ export function signIn(proposal, password, navigate) {
         'Content-type': 'application/json'
       },
       credentials: 'include',
-      body: JSON.stringify({ proposal, password, previousUser: previousUser })
+      body: JSON.stringify({ proposal, password, previousUser })
     }).then(response => response.json()).then((res) => {
       if (res.code === 'ok') {
         dispatch(showErrorPanel(false));
@@ -143,7 +143,7 @@ export function signIn(proposal, password, navigate) {
           }
         });
       } else {
-        const msg = res.msg;
+        const {msg} = res;
         dispatch(showErrorPanel(true, msg));
         dispatch(setLoading(false));
       }

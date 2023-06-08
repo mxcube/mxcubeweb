@@ -239,7 +239,7 @@ export default class DrawGridPlugin {
     const numCols = Math.ceil(width / cellTW);
     const numRows = Math.ceil(height / cellTH);
 
-    const cellLimit = 200000;
+    const cellLimit = 200_000;
 
     const draw = this.drawing && validPosition && numCols * numRows < cellLimit;
 
@@ -668,16 +668,30 @@ export default class DrawGridPlugin {
   countCells(mode, currentRow, currentCol, numRows, numCols) {
     let count = '';
 
-    if (mode === 'zig-zag') {
+    switch (mode) {
+    case 'zig-zag': {
       count = this.zigZagCellCount(currentRow, currentCol, numRows, numCols);
-    } else if (mode === 'top-down-zig-zag') {
+    
+    break;
+    }
+    case 'top-down-zig-zag': {
       count = this.topDownZigZagCellCount(currentRow, currentCol, numRows, numCols);
-    } else if (mode === 'top-down') {
+    
+    break;
+    }
+    case 'top-down': {
       count = this.topDownCellCount(currentRow, currentCol, numRows, numCols);
-    } else if (mode === 'inverse-zig-zag') {
+    
+    break;
+    }
+    case 'inverse-zig-zag': {
       count = this.inverseZigZagCellCount(currentRow, currentCol, numRows, numCols);
-    } else {
+    
+    break;
+    }
+    default: {
       count = this.leftRightCellCount(currentRow, currentCol, numRows, numCols);
+    }
     }
 
     return count.toString();
@@ -726,9 +740,7 @@ export default class DrawGridPlugin {
    * 3 4 9
    */
   topDownCellCount(currentRow, currentCol, numRows) {
-    const cellCount = (currentCol + 1) + currentRow * numRows;
-
-    return cellCount;
+    return (currentCol + 1) + currentRow * numRows;
   }
 
   /**
@@ -738,9 +750,7 @@ export default class DrawGridPlugin {
    * 7 4 1
    */
   inverseBottomUp(currentRow, currentCol, numRows, numCols) {
-    const cellCount = (numRows * numCols) - (currentRow * numRows) - currentCol;
-
-    return cellCount;
+    return (numRows * numCols) - (currentRow * numRows) - currentCol;
   }
 
   /**
