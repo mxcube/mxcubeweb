@@ -25,19 +25,6 @@ export class SampleGridTableItem extends React.Component {
     };
   }
 
-
-  componentDidMount() {
-    this.sampleItem.addEventListener('contextmenu', this.contextMenu, false);
-  }
-
-  componentWillUnmount() {
-    this.sampleItem.removeEventListener('contextmenu', this.contextMenu);
-  }
-
-  contextMenu(e) {
-    e.preventDefault();
-  }
-
   pickButtonOnClick(e) {
     if (this.props.pickButtonOnClickHandler) {
       this.props.pickButtonOnClickHandler(e, this.props.sampleData.sampleID);
@@ -56,22 +43,23 @@ export class SampleGridTableItem extends React.Component {
       <OverlayTrigger
         placement="auto"
         overlay={(<Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>)}
-        trigger={["hover", "focus"]}
       >
         <Button
           variant="content"
           disabled={this.props.current && this.props.picked}
           className="samples-grid-table-item-button"
-          onClick={this.pickButtonOnClick}
+          onClick={(e) => {this.pickButtonOnClick(e)}}
         >
           <i>{icon}</i>
         </Button>
       </OverlayTrigger>
     );
 
-    return <div className="samples-item-controls-container">
+    return (
+      <div className="samples-item-controls-container">
         {pickButton}
-      </div>;
+      </div>
+    )
   }
 
 
@@ -169,7 +157,6 @@ export class SampleGridTableItem extends React.Component {
       { 'label-custom-success': this.props.sampleData.loadable === true });
 
     const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
-
     return (
       <ListGroup
         variant="flush"

@@ -54,6 +54,7 @@ function initStore() {
       'form', 'general', 'logger', 'shapes', 'login',
       'sampleView', 'taskResult', 'sampleChangerMaintenance', 'uiproperties'],
     storage, // TODO: Find a way to pass the server storage there instead of local storage,
+    timeout: null,
   }
 
   const persistedReducer = persistReducer(persistConfig, rootReducer);

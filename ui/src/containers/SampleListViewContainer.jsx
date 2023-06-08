@@ -58,7 +58,6 @@ class SampleListViewContainer extends React.Component {
   constructor(props) {
     super(props);
     this.onMouseDown = this.onMouseDown.bind(this);
-    this.onResize = this.onResize.bind(this);
     this.syncSamples = this.syncSamples.bind(this);
     this.sampleGridFilter = this.sampleGridFilter.bind(this);
     this.getFilterOptionValue = this.getFilterOptionValue.bind(this);
@@ -89,7 +88,6 @@ class SampleListViewContainer extends React.Component {
 
 
   componentDidMount() {
-    window.addEventListener('resize', this.onResize, false);
     const localStorageViewMode = localStorage.getItem('view-mode');
     this.setViewMode(localStorageViewMode || this.props.viewMode.mode);
   }
@@ -103,11 +101,6 @@ class SampleListViewContainer extends React.Component {
     if (this.props.contextMenu.show) {
       this.props.showGenericContextMenu(false, null, 0, 0)
     }
-  }
-
-
-  onResize() {
-    this.forceUpdate();
   }
 
   setViewMode(mode) {
@@ -688,26 +681,21 @@ class SampleListViewContainer extends React.Component {
               </Col>
             </Row>
           </Card.Header>
-          {this.props.sampleChanger.contents.children && this.props.order.length > 0 ?
-            (
-              <Card.Body className='samples-grid-table-card-body'>
-                <SampleGridTableContainer
-                  addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
-                  addSamplesToQueue={this.addSamplesToQueue}
-                  showCharacterisationForm={this.showCharacterisationForm}
-                  showDataCollectionForm={this.showDataCollectionForm}
-                  showWorkflowForm={this.showWorkflowForm}
-                  inQueue={this.inQueue}
-                  inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
-                  removeSamplesFromQueue={this.removeSamplesFromQueue}
-                  removeSelectedSamples={this.removeSelectedSamples}
-                  removeSelectedTasks={this.removeSelectedTasks}
-                  setViewMode={this.setViewMode}
-                />
-              </Card.Body>
-            )
-            : null
-          }
+            <Card.Body className='samples-grid-table-card-body'>
+              <SampleGridTableContainer
+                addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
+                addSamplesToQueue={this.addSamplesToQueue}
+                showCharacterisationForm={this.showCharacterisationForm}
+                showDataCollectionForm={this.showDataCollectionForm}
+                showWorkflowForm={this.showWorkflowForm}
+                inQueue={this.inQueue}
+                inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
+                removeSamplesFromQueue={this.removeSamplesFromQueue}
+                removeSelectedSamples={this.removeSelectedSamples}
+                removeSelectedTasks={this.removeSelectedTasks}
+                setViewMode={this.setViewMode}
+              />
+            </Card.Body>
         </Card>
       </Container>
     );
