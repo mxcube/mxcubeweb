@@ -20,6 +20,7 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Scientific/Engineering",
 ]
+packages = [{include = "mxcube3", from = "."}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
@@ -39,8 +40,8 @@ pydantic = "^1.10.2"
 PyDispatcher = "^2.0.6"
 pytz = "^2022.6"
 tzlocal = "^4.2"
-mxcubecore = { git = "https://github.com/mxcube/mxcubecore.git", branch = "develop" }
-video_streamer = { git = "https://github.com/mxcube/video-streamer.git", branch = "main"}
+mxcubecore = "1.6.0"
+mxcube_video_streamer = "1.0.0"
 bcrypt = "^4.0.1"
 
 [tool.poetry.dev-dependencies]
