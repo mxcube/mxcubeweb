@@ -30,3 +30,15 @@
      -moz-background-clip: text;
      background-clip: text;
 }
+
+.loginBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loginLoader {
+  margin-right: 0.5rem;
+  margin-left: -25px;
+  width: 25px;
+}
