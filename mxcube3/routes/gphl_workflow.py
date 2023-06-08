@@ -19,13 +19,4 @@ def init_route(app, server, url_prefix):
         app.gphl_workflow.submit_parameters(data)
         return Response(status=200)
 
-    # # This route is only for testing
-    # @bp.route("/dialog/<wf>", methods=["GET"])
-    # @server.restrict
-    # def gphl_workflow_dialog(wf):
-    #     dialog = app.gphl_workflow.test_workflow_dialog(wf)
-    #     server.emit("gphlWorkflowParametersDialog", dialog, namespace="/hwr")
-    #
-    #     return Response(status=200)
-
     return bp
