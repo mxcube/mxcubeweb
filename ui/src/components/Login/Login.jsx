@@ -16,9 +16,7 @@ import withRouter from '../WithRouter'
 class LoginComponent extends React.Component {
   constructor(props) {
     super(props);
-
     this.signIn = this.signIn.bind(this);
-    this.handleKeyPress = this.handleKeyPress.bind(this);
   }
 
   signIn(event) {
@@ -30,12 +28,6 @@ class LoginComponent extends React.Component {
     this.props.setLoading(true);
     this.props.signIn(username.toLowerCase(), password, navigate);
 
-  }
-
-  handleKeyPress(target) {
-    if (target.charCode === 13) {
-      this.signIn();
-    }
   }
 
   render() {
@@ -94,7 +86,6 @@ class LoginComponent extends React.Component {
                         type="password"
                         placeholder="Password"
                         required
-                        onKeyPress={this.handleKeyPress}
                         ref={(ref) => { this.password = ref; }}
                       />
                     </InputGroup>
