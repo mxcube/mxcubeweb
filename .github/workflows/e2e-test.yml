@@ -43,6 +43,7 @@ jobs:
         pip install -e .
     - name: Build UI
       run: |
+        npm install --prefix ./ui 
         npm run --prefix ./ui build
     - name: Run mxcube backend
       run: |
