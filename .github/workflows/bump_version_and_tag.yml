@@ -6,11 +6,6 @@ on:
 jobs:
   create-version-tag:
     runs-on: ubuntu-latest
-    environment:
-      name: pypi
-      url: https://pypi.org/p/mxcubeweb
-    permissions:
-      id-token: write  
     steps:
     - uses: actions/checkout@v3
       with:
@@ -19,7 +14,6 @@ jobs:
       uses: actions/setup-python@v4
       with:
         python-version: "3.10"
-
     - name: Update version
       id: update-version
       run: |
@@ -33,14 +27,16 @@ jobs:
           git push -f
           poetry build
     - name: Publish package to PyPI
-      uses: pypa/gh-action-pypi-publish@release/v1
+      id: publish-pacakge
+      run: |
+        poetry config pypi-token.pypi ${{ secrets.PYPI }}
+        poetry publish
     - name: Read package version
       id: set-tag
       run: |
         pip install --upgrade pip
         pip install toml
         echo ::set-output name=tag_name::v$(python -c 'import toml; print(toml.load("./pyproject.toml")["tool"]["poetry"]["version"])')
-
     - name: Check tag exists
       id: check-tag-exists
       uses: actions/github-script@v6
