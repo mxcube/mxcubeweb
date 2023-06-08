@@ -85,9 +85,9 @@ class BaseUserManager(ComponentBase):
                 ).total_seconds()
                 > 60
             ):
-                # logging.getLogger("HWR.MX3").info(
-                #     f"Logged out inactive user {_u.username}"
-                # )
+                logging.getLogger("HWR.MX3").info(
+                    f"Logged out inactive user {_u.username}"
+                )
                 self.app.server.user_datastore.deactivate_user(_u)
 
         self.emit_observers_changed()
