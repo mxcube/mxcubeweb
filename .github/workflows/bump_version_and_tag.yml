@@ -6,6 +6,11 @@ on:
 jobs:
   create-version-tag:
     runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/mxcubeweb
+    permissions:
+      id-token: write  
     steps:
     - uses: actions/checkout@v3
       with:
@@ -26,7 +31,9 @@ jobs:
           git add -A
           git commit -m "[skip ci] Bumped minor version"
           git push -f
-         
+          poetry build
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
     - name: Read package version
       id: set-tag
       run: |
