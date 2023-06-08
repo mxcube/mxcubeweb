@@ -102,7 +102,7 @@ export default class TaskItem extends Component {
         try {
           res += `${this.props.shapes.shapes[wedge.parameters.shape].name}`;
         } catch {
-          res += '';
+          res = String(res);
         }
       }
     });
@@ -288,7 +288,7 @@ export default class TaskItem extends Component {
                             );
                           }}
                         >
-                          <i style={{ marginLeft: '0px' }} class="fa fa-clipboard" aria-hidden="true" />
+                          <i style={{ marginLeft: '0px' }} className="fa fa-clipboard" aria-hidden="true" />
                         </Button>
                       </div>
                     </div>

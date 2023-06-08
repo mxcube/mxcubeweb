@@ -14,8 +14,8 @@ export function toFixed(state, hoName) {
   const ho = state.beamline.hardwareObjects[hoName];
   let precision = null;
 
-  for (let group of Object.values(state.uiproperties)) {
-    for (let component of group.components) {
+  for (const group of Object.values(state.uiproperties)) {
+    for (const component of group.components) {
       if (component.attribute === hoName) {
         precision = component.precision;
         break;

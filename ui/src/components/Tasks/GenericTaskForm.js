@@ -328,7 +328,7 @@ GenericTaskForm = connect((state) => {
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type];
   const { schema } = state.taskForm.defaultParameters[type];
-  const uiSchema = state.taskForm.defaultParameters[type]["ui_schema"]
+  const uiSchema = state.taskForm.defaultParameters[type].ui_schema
   const useExperimentName = state.taskForm.taskData.parameters.use_experiment_name;
 
   let path = `${state.login.rootPath}/${subdir}${experimentNameSelector}/[RUN#]`;
@@ -338,12 +338,12 @@ GenericTaskForm = connect((state) => {
   }
 
   return {
-    path: path,
+    path,
     filename: fname,
     experimentName: experimentNameSelector,
     subdir,
     acqParametersLimits: limits,
-    useExperimentName: useExperimentName,
+    useExperimentName,
     schema,
     uiSchema,
     beamline: state.beamline,

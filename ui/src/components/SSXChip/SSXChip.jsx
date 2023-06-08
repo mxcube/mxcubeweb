@@ -106,13 +106,20 @@ export default class SSXChip extends React.Component {
   }
 
   handleSubmit(key, e) {
-    if (key === "top_left") {
+    switch (key) {
+    case "top_left": {
       this.props.sendSetAttribute(this.props.sampleMotorVerticalName, this.state.top_left_x);
       this.props.sendSetAttribute(this.props.sampleMotorHorizontalName, this.state.top_left_y);
-    } else if (key === "top_right") {
+    
+    break;
+    }
+    case "top_right": {
       this.props.sendSetAttribute(this.props.sampleMotorVerticalName, this.state.top_right_x);
       this.props.sendSetAttribute(this.props.sampleMotorHorizontalName, this.state.top_right_y);
-    } else if (key === "set_layout") {
+    
+    break;
+    }
+    case "set_layout": {
       const currentChipLayout = this.props.chipLayoutList[e.target.value];
 
       this.setState({
@@ -133,6 +140,10 @@ export default class SSXChip extends React.Component {
         "set_chip_layout", {
         "layout_name": e.target.value
       });
+    
+    break;
+    }
+    // No default
     }
   }
 
@@ -583,15 +594,14 @@ export default class SSXChip extends React.Component {
                   </h5>
                   <Row>
                     <Col className="col-sm-auto pe-0">
-                      <MotorInputContainer component={"sample_view"} role={"sample_vertical"} />
+                      <MotorInputContainer component="sample_view" role="sample_vertical" />
                     </Col>
                     <Col className="col-sm-auto pe-0">
-                      <MotorInputContainer component={"sample_view"} role={"sample_horizontal"} />
+                      <MotorInputContainer component="sample_view" role="sample_horizontal" />
                     </Col>
                   </Row>
                 </div>
-                <div>
-                </div>
+                <div />
               </Card.Body>
             </Card>
             <Card>

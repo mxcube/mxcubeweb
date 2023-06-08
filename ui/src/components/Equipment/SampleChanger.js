@@ -86,7 +86,7 @@ export class SampleChangerTreeNode extends React.Component {
   showContextMenu(event, id) {
     contextMenu.show({
       id,
-      event: event,
+      event,
     });
   }
 
