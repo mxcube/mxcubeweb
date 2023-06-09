@@ -2,6 +2,7 @@ from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.util.adapterutils import export
 from mxcube3.core.models.adaptermodels import HOBeamModel, HOBeamValueModel
 
+from mxcubecore.HardwareObjects.abstract.AbstractBeam import BeamShape
 
 class BeamAdapter(ActuatorAdapterBase):
     def __init__(self, ho, *args, **kwargs):
@@ -33,15 +34,27 @@ class BeamAdapter(ActuatorAdapterBase):
         sx, sy, shape, _label = beam_ho.get_value()
 
         if beam_ho is not None:
-            beam_info_dict.update(
-                {
-                    "position": beam_ho.get_beam_position_on_screen(),
-                    "size_x": sx,
-                    "size_y": sy,
-                    #"shape": shape.value,
-                    "shape": shape,
-                }
-            )
+            try:
+                if isinstance(shape, BeamShape):
+                    beam_info_dict.update(
+                        {
+                            "position": beam_ho.get_beam_position_on_screen(),
+                            "size_x": sx,
+                            "size_y": sy,
+                            "shape": shape.value,
+                        }
+                    )
+                else:
+                    beam_info_dict.update(
+                        {
+                            "position": beam_ho.get_beam_position_on_screen(),
+                            "size_x": sx,
+                            "size_y": sy,
+                            "shape": shape,
+                        }
+                    )
+            except Exception as ex:
+                print("==== exception: ")
 
         aperture_list, current_aperture = self._get_aperture()
 

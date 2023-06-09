@@ -52,7 +52,9 @@ class _BeamlineAdapter:
         for attr_name in self.app.mxcubecore.adapter_dict:
             try:
                 if "detector" == attr_name:
-                    print("detector")
+                    print("==== detector")
+                if "beam" == attr_name:
+                    print("==== beam")
                 #_d = self.app.mxcubecore.get_adapter(attr_name).dict()
                 _a = self.app.mxcubecore.get_adapter(attr_name)
                 _d = _a.dict()
