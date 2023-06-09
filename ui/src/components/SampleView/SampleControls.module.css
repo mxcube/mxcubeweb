@@ -1,0 +1,88 @@
+.controls {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 500;
+  transform: translateX(-50%);
+  background-color: rgba(34, 34, 34, 0.8);
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.controls > .controlWrapper,
+.controls > .controlBtn {
+  min-width: 60px;
+}
+
+.controlWrapper {
+  position: relative;
+}
+
+.controlBtn {
+  padding-top: 0.5rem;
+  background-color: transparent !important;
+  border: 0 !important;
+  color: #33beff;
+  font-weight: bold;
+  transition-duration: 0.1s;
+}
+
+.controlDropDown,
+.controlBtnWithOverlay,
+.overlayTrigger {
+  composes: controlBtn;
+}
+
+.controlDropDown::after {
+  content: none;
+}
+
+.dropDownIcon {
+  margin-top: 6px;
+  margin-left: 4px;
+  margin-right: -3px;
+  vertical-align: top;
+}
+
+.dropDownMenu {
+  top: 6px !important;
+}
+
+.controlBtnWithOverlay .controlIcon {
+  transform: translateX(-35%);
+}
+
+.overlayTrigger {
+  position: absolute;
+  top: 2px;
+  left: 55%;
+  padding-left: 4px;
+}
+
+.controlBtn:active { color: #33beff !important; }
+.controlBtn:focus { color: #33beff; }
+.controlBtn:focus-visible, .controlBtn:hover { color: #97deff; }
+
+.controlBtn:global(.active),
+.controlBtn:global(.active) + .overlayTrigger {
+  color: orange;
+}
+
+.controlBtn:global(.active):active,
+.controlBtn:global(.active) + .overlayTrigger:active {
+  color: orange !important;
+}
+
+.controlBtn:global(.active):hover,
+.controlBtn:global(.active) + .overlayTrigger:hover {
+  color: #ffba39;
+}
+
+.controlLabel {
+  display: block;
+  font-size: 11px;
+}
+
+.controlIcon {
+  font-size: 25px;
+}

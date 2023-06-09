@@ -226,33 +226,6 @@ input::-webkit-inner-spin-button {
     content: '\f0d7';
 }
 
-.bs-glyphicons-list {
-    padding-left: 0;
-    list-style: none;
-    margin: auto;
-}
-
-.bs-glyphicons-list>li {
-    float: left;
-    padding-left: 10px;
-    padding-right: 10px;
-    font-size: 10px;
-    line-height: 1.4;
-    text-align: center;
-    border: 1px solid #fff;
-}
-
-.sample-control {
-    margin-left: 0px !important;
-}
-
-.sample-control-label {
-    display: block;
-}
-
-
-.arrow-control {}
-
 .arrow-control .arrow {
     width: 3em;
     height: 3em;
