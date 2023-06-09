@@ -9,6 +9,7 @@ import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
 import { MOTOR_STATE } from '../../constants';
 
 import { find } from 'lodash';
+import styles from './SampleControls.module.css'
 
 const { fabric } = window;
 
@@ -69,7 +70,7 @@ export default class SampleControls extends React.Component {
     return { data: imgDataURI.slice(23), mime: imgDataURI.slice(0, 23) };
   }
 
-  takeSnapShot() {
+  takeSnapShot(evt) {
     /* eslint-disable unicorn/consistent-function-scoping */
     function imageEpolog(props) {
       const {sampleID} = props.current;
@@ -85,8 +86,8 @@ export default class SampleControls extends React.Component {
     const img = this.doTakeSnapshot();
     const filename = `${this.props.proposal}-${imageEpolog(this.props)}.jpeg`;
 
-    document.querySelector('#downloadLink').href = img.mime + img.data;
-    document.querySelector('#downloadLink').download = filename;
+    evt.currentTarget.href = img.mime + img.data;
+    evt.currentTarget.download = filename;
   }
 
   toggleCentring() {
@@ -181,226 +182,219 @@ export default class SampleControls extends React.Component {
     const zoom_motor = this.props.hardwareObjects[zoom_motor_uiprop.attribute];
 
     return (
-      <div style={{ display: 'flex', position: 'absolute', width: '100%' }}>
-        <div className="sample-controlls text-center">
-          <ul className="bs-glyphicons-list">
-            <li>
-              <Button
-                id="downloadLink"
-                data-toggle="tooltip"
-                title="Take snapshot"
-                className="fas fa-camera sample-control"
-                onClick={this.takeSnapShot}
-                target="_blank"
-                download
-              />
-              <span className="sample-control-label">Snapshot</span>
-            </li>
-            <li>
-              <Button
-                type="button"
-                data-toggle="tooltip"
-                title="Draw grid"
-                className="fas fa-th sample-control"
-                onClick={this.toggleDrawGrid}
-                active={this.props.drawGrid}
-              />
-              <span className="sample-control-label">Draw grid</span>
-            </li>
-            <li>
-              <Button
-                type="button"
-                data-toggle="tooltip"
-                title="Start 3-click Centring"
-                className="fas fa-circle-notch sample-control"
-                onClick={this.toggleCentring}
-                active={this.props.clickCentring}
-              />
-              <span className="sample-control-label">3-click Centring</span>
-            </li>
-            {process.env.REACT_APP_FOCUSCONTROLONCANVAS
-              ? (
-                <li>
-                  <OverlayTrigger
-                    trigger="click"
-                    rootClose
-                    placement="bottom"
-                    overlay={(
-                      <span className="slider-overlay" style={{ marginTop: '20px' }}>
-                        <OneAxisTranslationControl
-                          save={this.props.sendSetAttribute}
-                          value={focus_motor.value}
-                          min={focus_motor.limits[0]}
-                          max={focus_motor.limits[1]}
-                          step={this.props.steps.focusStep}
-                          motorName={foucs_motor_uiprop.attribute}
-                          suffix={foucs_motor_uiprop.suffix}
-                          decimalPoints={foucs_motor_uiprop.precision}
-                          state={focus_motor.state}
-                          disabled={this.props.motorsDisabled}
-                        />
-                      </span>
-                    )}
-                  >
-                    <Button
-                      name="focus"
-                      type="button"
-                      data-toggle="tooltip"
-                      title="Focus"
-                      className="fas fa-adjust sample-control"
-                    />
-                  </OverlayTrigger>
-                  <span className="sample-control-label">Focus</span>
-                </li>
-              ) : null}
-            <OverlayTrigger
-              trigger="click"
-              rootClose
-              placement="bottom"
-              overlay={(
-                <span className="slider-overlay">
-                  {zoom_motor.limits[0]}
-                  <input
-                    style={{ top: '20px' }}
-                    className="bar"
-                    type="range"
-                    id="zoom-control"
-                    min={zoom_motor.limits[0]}
-                    max={zoom_motor.limits[1]}
-                    step="1"
-                    value={zoom_motor.commands.indexOf(zoom_motor.value)}
-                    disabled={zoom_motor.state !== MOTOR_STATE.READY}
-                    onMouseUp={this.setZoom}
-                    onChange={(e) => {
-                      this.props.setBeamlineAttribute('diffractometer.zoom', zoom_motor.commands[e.target.value])
-                    }}
-                    list="volsettings"
-                    name="zoomSlider"
-                  />
-                  {zoom_motor.limits[1]}
-                </span>
-              )}
+      <div className={styles.controls}>
+        <Button
+          as="a"
+          className={styles.controlBtn}
+          href="#"
+          target="_blank"
+          download
+          title="Take snapshot"
+          data-toggle="tooltip"
+          onClick={this.takeSnapShot}
+        >
+          <i className={`${styles.controlIcon} fas fa-camera`} />
+          <span className={styles.controlLabel}>Snapshot</span>
+        </Button>
+        <Button
+          className={styles.controlBtn}
+          active={this.props.drawGrid}
+          title="Draw grid"
+          data-toggle="tooltip"
+          onClick={this.toggleDrawGrid}
+        >
+          <i className={`${styles.controlIcon} fas fa-th`} />
+          <span className={styles.controlLabel}>Draw grid</span>
+        </Button>
+        <Button
+          className={styles.controlBtn}
+          active={this.props.clickCentring}
+          title="Start 3-click centring"
+          data-toggle="tooltip"
+          onClick={this.toggleCentring}
+        >
+          <i className={`${styles.controlIcon} fas fa-circle-notch`} />
+          <span className={styles.controlLabel}>3-click centring</span>
+        </Button>
+        {process.env.REACT_APP_FOCUSCONTROLONCANVAS ? (
+          <OverlayTrigger
+            trigger="click"
+            rootClose
+            placement="bottom"
+            overlay={(
+              <span className="slider-overlay" style={{ marginTop: '8px' }}>
+                <OneAxisTranslationControl
+                  save={this.props.sendSetAttribute}
+                  value={focus_motor.value}
+                  min={focus_motor.limits[0]}
+                  max={focus_motor.limits[1]}
+                  step={this.props.steps.focusStep}
+                  motorName={foucs_motor_uiprop.attribute}
+                  suffix={foucs_motor_uiprop.suffix}
+                  decimalPoints={foucs_motor_uiprop.precision}
+                  state={focus_motor.state}
+                  disabled={this.props.motorsDisabled}
+                />
+              </span>
+            )}
+          >
+            <Button
+              className={styles.controlBtn}
+              name="focus"
+              title="Focus"
+              data-toggle="tooltip"
             >
-              <li>
+              <i className={`${styles.controlIcon} fas fa-adjust`} />
+              <span className={styles.controlLabel}>Focus</span>
+            </Button>
+          </OverlayTrigger>
+        ) : null}
+        <OverlayTrigger
+          trigger="click"
+          rootClose
+          placement="bottom"
+          overlay={(
+            <span className="slider-overlay" style={{ marginTop: '8px' }}>
+              {zoom_motor.limits[0]}
+              <input
+                className="bar"
+                type="range"
+                id="zoom-control"
+                min={zoom_motor.limits[0]}
+                max={zoom_motor.limits[1]}
+                step="1"
+                value={zoom_motor.commands.indexOf(zoom_motor.value)}
+                disabled={zoom_motor.state !== MOTOR_STATE.READY}
+                onMouseUp={this.setZoom}
+                onChange={(e) => {
+                  this.props.setBeamlineAttribute('diffractometer.zoom', zoom_motor.commands[e.target.value])
+                }}
+                list="volsettings"
+                name="zoomSlider"
+              />
+              {zoom_motor.limits[1]}
+
+              <datalist id="volsettings">
+                {[
+                  ...new Array(
+                    zoom_motor.limits[1] - zoom_motor.limits[0]
+                  ).keys(),
+                ].map((i) => (
+                  <option key={`volsettings-${i}`}>{zoom_motor.limits[0] + i}</option>
+                ))}
+              </datalist>
+            </span>
+          )}
+        >
+          <Button
+            className={styles.controlBtn}
+            name="zoomOut"
+            title="Zoom in/out"
+            data-toggle="tooltip"
+          >
+            <i className={`${styles.controlIcon} fas fa-search`} />
+            <span className={styles.controlLabel}>Zoom</span>
+          </Button>
+        </OverlayTrigger>
+        <div className={styles.controlWrapper}>
+          <OverlayTrigger
+            trigger="click"
+            rootClose
+            placement="bottom"
+            overlay={(
+              <span className="slider-overlay" style={{ marginTop: '8px' }}>
+                <input
+                  className="bar"
+                  type="range"
+                  step="0.1"
+                  min={hardwareObjects["diffractometer.backlight"].limits[0]}
+                  max={hardwareObjects["diffractometer.backlight"].limits[1]}
+                  value={hardwareObjects["diffractometer.backlight"].value}
+                  disabled={hardwareObjects["diffractometer.backlight"].state !== MOTOR_STATE.READY}
+                  onMouseUp={e => this.props.sendSetAttribute('diffractometer.backlight', e.target.value)}
+                  onChange={e => this.props.setBeamlineAttribute('diffractometer.backlight', e.target.value)}
+                  name="backlightSlider"
+                />
+              </span>
+            )}
+          >
+            {({ ref, ...triggerHandlers }) => (
+              <>
                 <Button
-                  type="button"
+                  ref={ref}
+                  className={styles.controlBtnWithOverlay}
+                  active={
+                    hardwareObjects["diffractometer.backlightswitch"].value ===
+                    hardwareObjects["diffractometer.backlightswitch"].commands[0]
+                  }
+                  title="Backlight On/Off"
                   data-toggle="tooltip"
-                  title="Zoom in/out"
-                  className="fas fa-search sample-control"
-                  name="zoomOut"
-                />
-                <datalist id="volsettings">
-                  {[
-                    ...new Array(
-                      zoom_motor.limits[1] - zoom_motor.limits[0]
-                    ).keys(),
-                  ].map((i) => (
-                    <option key={`volsettings-${i}`}>{zoom_motor.limits[0] + i}</option>
-                  ))}
-                </datalist>
-                <span className="sample-control-label">Zoom</span>
-              </li>
-            </OverlayTrigger>
-            <li>
-              <Button
-                style={{ paddingRight: '0px' }}
-                type="button"
-                data-toggle="tooltip"
-                title="Backlight On/Off"
-                className="fas fa-lightbulb sample-control"
-                onClick={this.toggleBackLight}
-                active={
-                  hardwareObjects["diffractometer.backlightswitch"].value ===
-                  hardwareObjects["diffractometer.backlightswitch"].commands[0]
-                }
-              />
-              <OverlayTrigger
-                trigger="click"
-                rootClose
-                placement="bottom"
-                overlay={(
-                  <span className="slider-overlay" style={{ marginTop: '20px' }}>
-                    <input
-                      style={{ top: '20px' }}
-                      className="bar"
-                      type="range"
-                      step="0.1"
-                      min={hardwareObjects["diffractometer.backlight"].limits[0]}
-                      max={hardwareObjects["diffractometer.backlight"].limits[1]}
-                      value={hardwareObjects["diffractometer.backlight"].value}
-                      disabled={hardwareObjects["diffractometer.backlight"].state !== MOTOR_STATE.READY}
-                      onMouseUp={e => this.props.sendSetAttribute('diffractometer.backlight', e.target.value)}
-                      onChange={e => this.props.setBeamlineAttribute('diffractometer.backlight', e.target.value)}
-                      name="backlightSlider"
-                    />
-                  </span>
-                )}
-              >
-                <Button
-                  type="button"
-                  className="ps-2 fas fa-sort-down sample-control sample-control-small"
-                />
-              </OverlayTrigger>
-              <span className="sample-control-label">Backlight</span>
-            </li>
-            <li>
-              <Button
-                style={{ paddingRight: '0px' }}
-                type="button"
-                data-toggle="tooltip"
-                title="Front On/Off"
-                className="fas fa-lightbulb sample-control"
-                onClick={this.toggleFrontLight}
-                active={
-                  hardwareObjects["diffractometer.frontlightswitch"].value === hardwareObjects["diffractometer.frontlightswitch"].commands[0]
-                }
-              />
-              <OverlayTrigger
-                trigger="click"
-                rootClose
-                placement="bottom"
-                overlay={(
-                  <span className="slider-overlay" style={{ marginTop: '20px' }}>
-                    <input
-                      className="bar"
-                      type="range"
-                      step="0.1"
-                      min={hardwareObjects["diffractometer.frontlight"].limits[0]}
-                      max={hardwareObjects["diffractometer.frontlight"].limits[1]}
-                      value={hardwareObjects["diffractometer.frontlight"].value}
-                      disabled={hardwareObjects["diffractometer.frontlight"].state !== MOTOR_STATE.READY}
-                      onMouseUp={e => this.props.sendSetAttribute('diffractometer.frontlight', e.target.value)}
-                      onChange={e => this.props.setBeamlineAttribute('diffractometer.frontlight', e.target.value)}
-                      name="frontLightSlider"
-                    />
-                  </span>
-                )}
-              >
-                <Button
-                  type="button"
-                  className="ps-2 fas fa-sort-down sample-control sample-control-small"
-                />
-              </OverlayTrigger>
-              <span className="sample-control-label">Frontlight</span>
-            </li>
-            <li>
-              <Dropdown>
-                <Dropdown.Toggle
-                  className="sample-control"
-                  variant="content"
-                  id="video-size-dropdown"
-                  style={{ lineHeight: '0' }}
+                  onClick={this.toggleBackLight}
                 >
-                  <i className="fas fa-1x fa-video" />
-                </Dropdown.Toggle>
-                <Dropdown.Menu>
-                  {this.availableVideoSizes()}
-                </Dropdown.Menu>
-              </Dropdown>
-              <span className="sample-control-label">Video size</span>
-            </li>
-          </ul>
+                  <i className={`${styles.controlIcon} fas fa-lightbulb`} />
+                  <span className={styles.controlLabel}>Backlight</span>
+                </Button>
+                <Button className={styles.overlayTrigger} {...triggerHandlers}>
+                  <i className="fas fa-sort-down" />
+                </Button>
+              </>
+            )}
+          </OverlayTrigger>
         </div>
+        <div className={styles.controlWrapper}>
+          <OverlayTrigger
+            trigger="click"
+            rootClose
+            placement="bottom"
+            overlay={(
+              <span className="slider-overlay" style={{ marginTop: '8px' }}>
+                <input
+                  className="bar"
+                  type="range"
+                  step="0.1"
+                  min={hardwareObjects["diffractometer.frontlight"].limits[0]}
+                  max={hardwareObjects["diffractometer.frontlight"].limits[1]}
+                  value={hardwareObjects["diffractometer.frontlight"].value}
+                  disabled={hardwareObjects["diffractometer.frontlight"].state !== MOTOR_STATE.READY}
+                  onMouseUp={e => this.props.sendSetAttribute('diffractometer.frontlight', e.target.value)}
+                  onChange={e => this.props.setBeamlineAttribute('diffractometer.frontlight', e.target.value)}
+                  name="frontLightSlider"
+                />
+              </span>
+            )}
+          >
+            {({ ref, ...triggerHandlers }) => (
+              <>
+                <Button
+                  ref={ref}
+                  className={styles.controlBtnWithOverlay}
+                  active={hardwareObjects["diffractometer.frontlightswitch"].value === hardwareObjects["diffractometer.frontlightswitch"].commands[0]}
+                  title="Front On/Off"
+                  data-toggle="tooltip"
+                  onClick={this.toggleFrontLight}
+                >
+                  <i className={`${styles.controlIcon} fas fa-lightbulb`} />
+                  <span className={styles.controlLabel}>Frontlight</span>
+                </Button>
+                <Button className={styles.overlayTrigger} {...triggerHandlers}>
+                  <i className="fas fa-sort-down" />
+                </Button>
+              </>
+            )}
+          </OverlayTrigger>
+        </div>
+        <Dropdown drop="down-centered">
+          <Dropdown.Toggle
+            className={styles.controlDropDown}
+            variant="content"
+          >
+            <i className={`${styles.controlIcon} fas fa-video`} /><i className={`${styles.dropDownIcon} fas fa-sort-down` }/>
+            <span className={styles.controlLabel}>Video size</span>
+          </Dropdown.Toggle>
+          <Dropdown.Menu className={styles.dropDownMenu}>
+            {this.availableVideoSizes()}
+          </Dropdown.Menu>
+        </Dropdown>
       </div>
     );
   }
