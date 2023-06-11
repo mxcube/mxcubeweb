@@ -61,6 +61,10 @@ def create_set_route(app, server, bp, adapter, attr, name):
             Replies with status code 200 on success and 409 on exceptions.
             """
             rd = _th["value"].parse_raw(request.data)
+            if rd.name == 'detector.detector_distance':
+                a = float(rd.value)
+                if a < 1000:
+                    rd.value = str(a * 1000)
             getattr(app.mxcubecore.get_adapter(rd.name.lower()), attr)(rd)
             return make_response("{}", 200)
 
