@@ -284,6 +284,10 @@ class AdapterBase:
         Returns:
             (dict): The dictionary.
         """
+        # if self._name == "diffractometer":
+        #     print("==== diffractometer")
+        # if self._name == "diffractometer" and self.state() == "BUSY":
+        #     print("==== busy")
         try:
             data = {
                 "name": self._name,
