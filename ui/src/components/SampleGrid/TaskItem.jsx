@@ -33,27 +33,27 @@ export class TaskItem extends React.Component {
     switch (type) {
     case 'DataCollection': {
       res = 'DC';
-    
+
     break;
     }
     case 'Characterisation': {
       res = 'C';
-    
+
     break;
     }
     case 'Workflow': {
       res = 'WF';
-    
+
     break;
     }
     case 'XRFScan': {
       res = 'XRF';
-    
+
     break;
     }
     case 'EnergyScan': {
       res = 'ESCAN';
-    
+
     break;
     }
     // No default
@@ -87,7 +87,7 @@ export class TaskItem extends React.Component {
           <span className="col-sm-3">{`${task.parameters.transmission} %`}</span>
 
           <span className="col-sm-3">Energy:</span>
-          <span className="col-sm-3">{`${task.parameters.energy} KeV`}</span>
+          <span className="col-sm-3">{`${task.parameters.energy} keV`}</span>
           <span className="col-sm-3">Resolution</span>
           <span className="col-sm-3">{`${task.parameters.resolution} Å`}</span>
         </div>

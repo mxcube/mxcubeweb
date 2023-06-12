@@ -344,7 +344,7 @@ export default class TaskItem extends Component {
                           <th># Img</th>
                           <th>T (%)</th>
                           <th>Res. (&Aring;)</th>
-                          <th>E (KeV)</th>
+                          <th>E (keV)</th>
                           {wedge.parameters.kappa_phi !== null ? (<th>&phi; &deg;</th>) : null}
                           {wedge.parameters.kappa !== null ? (<th>&kappa; &deg;</th>) : null}
                         </tr>

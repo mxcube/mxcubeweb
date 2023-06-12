@@ -202,7 +202,7 @@ class Interleaved extends React.Component {
                   <th>t (ms)</th>
                   <th>T (%)</th>
                   <th>Res. (&Aring;)</th>
-                  <th>E (KeV)</th>
+                  <th>E (keV)</th>
                   <th>&phi; &deg;</th>
                   <th>&kappa; &deg;</th>
                 </tr>
