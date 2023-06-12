@@ -37,35 +37,35 @@ class MXNavbar extends React.Component {
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="m-auto">
-              <LinkContainer className="me-4" to="/samplegrid"><Nav.Item className="nav-link">
-                Samples</Nav.Item>
+              <LinkContainer className="me-4" to="/samplegrid"><Nav.Link>
+                Samples</Nav.Link>
               </LinkContainer>
               <LinkContainer className="me-4"to="/datacollection">
-                <Nav.Item className="nav-link">Data collection</Nav.Item>
+                <Nav.Link>Data collection</Nav.Link>
               </LinkContainer>
               <LinkContainer className="me-4" to="/equipment">
-                <Nav.Item className="nav-link">Equipment</Nav.Item>
+                <Nav.Link>Equipment</Nav.Link>
               </LinkContainer>
               <LinkContainer to="/logging">
-                <Nav.Item className="nav-link">System log</Nav.Item>
+                <Nav.Link>System log</Nav.Link>
               </LinkContainer>
             </Nav>
             <Nav>
               <LinkContainer className="me-2" to="/help">
-                <Nav.Item className="nav-link">
+                <Nav.Link>
                   <span className="me-1 fas fa-lg fa-question-circle" />
                   Help
-                </Nav.Item>
+                </Nav.Link>
               </LinkContainer>
               <LinkContainer className="me-2" to="/remoteaccess">
-                <Nav.Item className="nav-link">
+                <Nav.Link>
                   <span style={ raStyle } className="me-1 fas fa-lg fa-globe">
                     {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
                   </span>
                   Remote
-                </Nav.Item>
+                </Nav.Link>
               </LinkContainer>
-              <Button as={Nav.Link} className="nav-link pe-0" variant="Light" onClick={this.signOut}>
+              <Button as={Nav.Link} className="pe-0" variant="Light" onClick={this.signOut}>
                 <span className="me-1 fas fa-lg fa-sign-out-alt" />
                 Sign out {`(${this.props.selectedProposal})`}
               </Button>
