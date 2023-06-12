@@ -25,6 +25,7 @@
   color: #33beff;
   font-weight: bold;
   transition-duration: 0.1s;
+  white-space: nowrap;
 }
 
 .controlDropDown,

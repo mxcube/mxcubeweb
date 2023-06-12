@@ -145,19 +145,17 @@ class BeamlineSetupContainer extends React.Component {
       const beamline_attribute = this.props.beamline.hardwareObjects[uiprop.attribute];
 
       components.push(
-        <td key={`bs-name-${uiprop.label}`} className='d-flex pt-1' style={{ border: '0px', paddingLeft: '0.5em' }}>
+        <td key={`bs-name-${uiprop.label}`} className="py-1 ps-3 pe-2 align-middle">
           <span className='me-1'>{uiprop.label}:</span>
         </td>);
       components.push(
         <td
           key={`bs-val-${uiprop.label}`}
-          className='pe-3'
+          className="pe-3 align-middle"
           style={{
             verticalAlign: 'baseline',
             fontWeight: 'bold',
-            border: '0px',
             borderRight: uiprop_list.length != uiprop_list.indexOf(uiprop) + 1 ? '1px solid #ddd' : '',
-            padding: '0em'
           }}>
           {beamline_attribute.readonly ?
             (<LabeledValue
@@ -194,21 +192,16 @@ class BeamlineSetupContainer extends React.Component {
       return null;
     }
 
+
     const uiprops = this.props.uiproperties.beamline_setup.components;
     const uiprop_list = filter(uiprops, (o) =>
-      o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
+    o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
     );
 
     return (
       <Navbar
-        style={{
-          background: '#FAFAFA',
-          borderBottom: '1px solid lightgray',
-          paddingBottom: '0em',
-        }}
-        className="beamline-status ps-3 pe-3"
+        className="beamline-status"
         id="bmstatus"
-        bg='light'
         expand="lg"
       >
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -223,6 +216,7 @@ class BeamlineSetupContainer extends React.Component {
           <Nav className="me-auto my-2 my-lg-0">
             <Nav.Item className="d-flex justify-content-start" >
               <Table
+                borderless
                 responsive
                 style={{
                   margin: '0px', fontWeight: 'bold',

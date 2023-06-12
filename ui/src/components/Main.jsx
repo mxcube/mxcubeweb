@@ -111,7 +111,7 @@ class Main extends React.Component {
           onHide={() => this.props.showDialog(false)}
         />
         <MXNavbarContainer location={window.location} />
-        <Stack gap={2} style={{ paddingTop: '3em', zIndex: 9999 }}>
+        <Stack className="mb-4" gap={2}>
           <Outlet />
         </Stack>
         <Draggable>

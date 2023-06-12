@@ -4,7 +4,6 @@ import { LinkContainer } from 'react-router-bootstrap';
 import withRouter from '../WithRouter';
 import './MXNavbar.css';
 
-
 class MXNavbar extends React.Component {
   constructor(props) {
     super(props);
@@ -28,7 +27,7 @@ class MXNavbar extends React.Component {
     document.title = `MxCuBE-Web Proposal: ${this.props.selectedProposal}`;
 
     return (
-      <Navbar className='pt-1 pb-1' bg="dark" variant="dark" fixed="top" collapseOnSelect expand="lg">
+      <Navbar className='pt-1 pb-1' bg="dark" variant="dark" collapseOnSelect expand="lg">
         <Container fluid>
           <LinkContainer to="/remoteaccess">
             <Navbar.Brand>
@@ -66,7 +65,7 @@ class MXNavbar extends React.Component {
                   Remote
                 </Nav.Item>
               </LinkContainer>
-              <Button as={Nav.Link} className="nav-link" variant="Light" onClick={this.signOut}>
+              <Button as={Nav.Link} className="nav-link pe-0" variant="Light" onClick={this.signOut}>
                 <span className="me-1 fas fa-lg fa-sign-out-alt" />
                 Sign out {`(${this.props.selectedProposal})`}
               </Button>
