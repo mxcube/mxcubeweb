@@ -2,7 +2,7 @@ import React from 'react';
 import { connect, useSelector } from 'react-redux';
 import { BrowserRouter as Router, Routes, Route, useLocation, Outlet, Navigate } from 'react-router-dom';
 import { serverIO } from '../serverIO';
-import { store, statePersistor } from '../store';
+import { store } from '../store';
 import { getLoginInfo, startSession } from '../actions/login';
 import LoginContainer from '../containers/LoginContainer';
 import SampleViewContainer from '../containers/SampleViewContainer';
@@ -14,19 +14,17 @@ import HelpContainer from '../containers/HelpContainer';
 import Main from './Main';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 
-function requireAuth() {
-  store.dispatch(getLoginInfo()).then(() => {
-    const {login} = store.getState();
+async function requireAuth() {
+  await  store.dispatch(getLoginInfo())
+  const {login} = store.getState();
 
-    if (login.loggedIn) {
-      store.dispatch(startSession(login.user.inControl));
-    }
+  if (login.loggedIn) {
+    await store.dispatch(startSession(login.user.inControl));
+  }
 
-    if (login.loggedIn && !serverIO.initialized) {
-      serverIO.listen(store);
-      serverIO.connectStateSocket(statePersistor);
-    }
-  });
+  if (login.loggedIn && !serverIO.initialized) {
+    serverIO.listen(store);
+  }
 }
 
 function PrivateOutlet() {
