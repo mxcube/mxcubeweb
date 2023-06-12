@@ -150,8 +150,7 @@ export default (state = INITIAL_STATE, action) => {
 
     case 'BL_UPDATE_HARDWARE_OBJECT': {
       const attrData = Object.assign(
-        state.hardwareObjects[action.data.name] || {},
-        action.data
+        {}, state.hardwareObjects[action.data.name], action.data
       );
       return {
         ...state,
