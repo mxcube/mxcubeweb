@@ -23,7 +23,6 @@ import {
   sendDisplayImage,
   executeCommand,
 } from '../actions/beamline';
-import { TiAdjustContrast } from 'react-icons/ti';
 
 class DefaultErrorBoundary extends React.Component {
   constructor(props) {
@@ -130,18 +129,21 @@ class SampleViewContainer extends Component {
 
     return (
       <Container fluid>
-        <Row>
-          <Col sm={12} style={{ paddingLeft: '0px', paddingRight: '0px' }}>
+        <Row
+          style={{
+            background: '#fafafa',
+            borderBottom: '1px solid lightgray',
+            paddingBottom: '0em',
+          }}
+        >
+          <Col sm={12}>
             <DefaultErrorBoundary>
               <BeamlineSetupContainer />
             </DefaultErrorBoundary>
           </Col>
         </Row>
-        <Row style={{ marginTop: '0.7em', marginRight: '0px' }}>
-          <Col
-            sm={1}
-            style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
-          >
+        <Row className="gx-3 mt-2 pt-1">
+          <Col sm={1}>
             <DefaultErrorBoundary>
               {process.env.REACT_APP_PHASECONTROL==='true' ? phaseControl : null}
               {apertureControl}
