@@ -109,7 +109,7 @@ beamline_setup:
       attribute: energy
       step: 0.001
       precision: 4
-      suffix: KeV
+      suffix: keV
     -
       label: Resolution
       attribute: resolution

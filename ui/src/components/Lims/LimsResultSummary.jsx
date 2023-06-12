@@ -69,7 +69,7 @@ export class LimsResultSummary extends React.Component {
           <span className="col-sm-3">{`${task.parameters.transmission} %`}</span>
 
           <span className="col-sm-3">Energy:</span>
-          <span className="col-sm-3">{`${task.parameters.energy} KeV`}</span>
+          <span className="col-sm-3">{`${task.parameters.energy} keV`}</span>
           <span className="col-sm-3">Resolution</span>
           <span className="col-sm-3">{`${task.parameters.resolution} Å`}</span>
         </div>
