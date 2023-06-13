@@ -21,6 +21,7 @@ class MotorAdapter(ActuatorAdapterBase):
         @RateLimited(self._event_rate)
         def _vc(value, **kwargs):
             self.value_change(value, **kwargs)
+            self.state_change()
 
         self._vc = _vc
 
