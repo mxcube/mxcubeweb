@@ -64,8 +64,8 @@ class SampleChanger(ComponentBase):
                 "state": state,
                 "tasks": [],
                 "type": "Sample",
-                "cell_no": s.get_cell_no() if hasattr(s, "get_cell_no") else 1,
-                "puck_no": s.get_basket_no() if hasattr(s, "get_basket_no") else 1,
+                "cell_no": s.get_cell_no() if hasattr(s, "get_cell_no") else "",
+                "puck_no": s.get_basket_no() if hasattr(s, "get_basket_no") else "",
             }
             order.append(coords)
             samplesByCoords[coords] = sample_data["sampleID"]
@@ -175,6 +175,10 @@ class SampleChanger(ComponentBase):
         return sample
 
     def mount_sample_clean_up(self, sample):
+        """
+        所有mount按钮都要触发的上样函数，区别是在datacollection界面的mount所生成样品的location是Manual,在equipment页面里的不是
+        """
+        print("进入samplechanger.py的mount_sample_clean_up函数,传入的参数sample为:",sample)
         from mxcube3.routes import signals
 
         sc = HWR.beamline.sample_changer
@@ -182,36 +186,38 @@ class SampleChanger(ComponentBase):
         res = None
 
         try:
+            print("即将运行signals.sc_load(sample[location])函数")
             signals.sc_load(sample["location"])
-
             sid = self.get_current_sample().get("sampleID", False)
             current_queue = self.app.queue.queue_to_dict()
 
             # self.set_sample_to_be_mounted(sample["sampleID"])
-
+            # 不是手动上样
             if sample["location"] != "Manual":
                 msg = "Mounting sample: %s (%s)" % (
                     sample["location"],
                     sample.get("sampleName", ""),
                 )
                 logging.getLogger("user_level_log").info(msg)
+
                 print("sc.get_loaded_sample()", sc.get_loaded_sample())
+
+                # 当前没有样品，执行第一次上样
                 if not sc.get_loaded_sample():
+                    # print("准备执行sc.load1")
                     res = sc.load(sample["sampleID"], wait=True)
                 # 已经上样的样品与即将上样的样品不一样，需要exchange
                 elif sc.get_loaded_sample().get_address() != sample["location"]:
-                    # res = sc.load(sample["sampleID"], wait=True)
-
                     # print("准备执行sc.load2")
                     # exchange没有传参wait,不知道wait的作用
                     # res = sc.exchange(sc.get_loaded_sample().get_address(),sample["sampleID"])
-                    res = sc.exchange(sample["sampleID"], wait=False)
-                    # 如果sc.load执行成功，res应该是<mxcubecore.HardwareObjects.abstract.sample_changer.Container.Pin object at 0x??????>
-                    # 如果失败就是None，none是在装饰器函数里返回的，例如if_running_sc
-                    # 如果第一上样失败后，第二次上样没反应，可能是上次上样失败没有执行，
-                    #                 self._selected_sample = -1
-                    #                 self._selected_basket = -1
-                print("mount_sample_clean_up函数执行完sc.load后的res:", res)
+                    res = sc.exchange(sample["sampleID"],wait=False)
+                # 如果sc.load执行成功，res应该是<mxcubecore.HardwareObjects.abstract.sample_changer.Container.Pin object at 0x??????>
+                # 如果失败就是None，none是在装饰器函数里返回的，例如if_running_sc
+                # 如果第一上样失败后，第二次上样没反应，可能是上次上样失败没有执行，
+                #                 self._selected_sample = -1
+                #                 self._selected_basket = -1
+                print("mount_sample_clean_up函数执行完sc.load后的res:",res)
                 if res is None:
                     res = True
                 if (
@@ -233,10 +239,12 @@ class SampleChanger(ComponentBase):
 
         except Exception as ex:
             logging.getLogger("MX3.HWR").exception("[SC] sample could not be mounted")
-
-            # raise RuntimeError(str(ex))
             raise       # 只写一个raise，这样，在actorsamplechange.py的rase exception才能在界面上起作用
             # raise Exception(str(ex))
+            # raise RuntimeError(str(ex))
+
+
+
         else:
             # Clean up if the new sample was mounted or the current sample was
             # unmounted and the new one, for some reason, failed to mount
@@ -255,8 +263,9 @@ class SampleChanger(ComponentBase):
         return res
 
     def unmount_sample_clean_up(self, sample):
+        print("进入samplechanger.py的unmount_sample_clean_up函数")
         from mxcube3.routes import signals
-
+        print("需要把样品下到的位置：",sample["location"])
         try:
             signals.sc_unload(sample["location"])
 
@@ -280,8 +289,18 @@ class SampleChanger(ComponentBase):
         sc = HWR.beamline.sample_changer
         sc_maint = HWR.beamline.sample_changer_maintenance
         print("进入samplechanger.py的mount_sample函数,sc.count:",sc.count)
+        # 测试
+        # print("type of sample:",type(sample),",type of get_loaded_sample(): ",type(self.get_loaded_sample()))
+        # print("sample:",sample)
+        # print("self.get_loaded_sample()",self.get_loaded_sample())
+        # print("sc.get_loaded_sample",sc.get_loaded_sample())
+        # 结果
+        # sample: dict : {'sampleID': '3:01', 'location': '3:01'}
+        # self.get_loaded_sample() : tuple : ('3:02', 'matr3_2')
+        # sc.get_loaded_sample() : <mxcubecore.HardwareObjects.abstract.sample_changer.Container.Pin object at 0x7fee80148220>
 
-        # gevent.spawn(self.mount_sample_clean_up, sample)
+        # gevent.spawn(self.mount_sample_clean_up, sample) #改，因为源代码使用gevent无法将错误显示在界面上给用户看到
+
         # 计数到16，dry一下
         if sc.count >= 16:
             # 如果计数到16但是没有发现上颗样品，说明被umount掉了，此时不执行unmount函数
@@ -299,7 +318,6 @@ class SampleChanger(ComponentBase):
         self.mount_sample_clean_up(sample)
         sc.count = 0
         return self.get_sc_contents()
-
 
     def unmount_sample(self, sample):
         print("进入unmount_sample函数")

@@ -367,6 +367,8 @@ class ActuatorAdapterBase(AdapterBase):
         value = args[0]
         if "detector_distance" in self._name:
             value = round(args[0]/1000)
+        if self._name == "resolution" or "detector_distance" in self._name:
+            value = ("{:2.3f}").format(value)
         self.emit_ho_value_changed(value)
         # self.emit_ho_value_changed(args[0])
         #self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
