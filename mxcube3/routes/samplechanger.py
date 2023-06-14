@@ -151,3 +151,21 @@ def init_route(app, server, url_prefix):
             return jsonify(response=ret)
 
     return bp
+    # tianjia
+    @bp.route("/send_command/abort", methods=["GET"])
+    @server.require_control
+    @server.restrict
+    def send_command_abort():
+        try:
+            ret = HWR.beamline.sample_changer_maintenance.send_command("abort")
+        except Exception as ex:
+            msg = str(ex)
+            msg = msg.replace("\n", " - ")
+            return (
+                "Cannot execute command",
+                406,
+                {"Content-Type": "application/json", "message": msg},
+            )
+        else:
+            return jsonify(response=ret)
+    return bp
