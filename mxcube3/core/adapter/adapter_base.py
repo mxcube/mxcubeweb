@@ -368,10 +368,14 @@ class ActuatorAdapterBase(AdapterBase):
         # print("==== value change: ", self._name, " - value: ", str(value))
         if "detector_distance" in self._name:
             value = round(args[0]/1000)
-        if self._name == "resolution" or "detector_distance" in self._name or self._name == "energy":
+            value = ("{:2.0f}").format(value)
+            value = float(value)
+        if self._name == "resolution" or self._name == "energy":
             value = ("{:2.3f}").format(value)
+            value = float(value)
         if self._name == "diffractometer.phi":
             value = ("{:2.2f}").format(value)
+            value = float(value)
         self.emit_ho_value_changed(value)
         # self.emit_ho_value_changed(args[0])
         #self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
@@ -441,13 +445,19 @@ class ActuatorAdapterBase(AdapterBase):
 
         try:
             value = self.get_value()
+            if "detector_distance" in self._name:
+                # value = round(value / 1000)
+                value = ("{:2.0f}").format(value)
+                value = float(value)
             if self._name == "resolution" or "detector_distance" in self._name or self._name == "energy":
                 value = ("{:2.3f}").format(value)
+                value = float(value)
             if self._name == "diffractometer.phi":
                 value = ("{:2.2f}").format(value)
+                value = float(value)
+
+
             data.update({"value": value, "limits": self.limits()})
-            # if self._name == "diffractometer.phi":
-            #     data.update({ "name": "diffractometer.phix"})
         except Exception as ex:
             if self._name == "diffractometer.kappa" or self._name == "diffractometer.kappa_phi":
                 data.update(
