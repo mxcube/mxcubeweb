@@ -28,6 +28,7 @@ class NStateAdapter(ActuatorAdapterBase):
             v = value
 
         self.value_change(v)
+        self.state_change()
 
     def _get_valid_states(self):
         state_names = [v.name for v in self._ho.VALUES]
