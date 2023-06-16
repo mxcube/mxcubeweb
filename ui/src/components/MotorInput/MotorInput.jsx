@@ -82,7 +82,7 @@ export default class MotorInput extends React.Component {
       <div className="motor-input-container">
         <p className="motor-name">{this.props.label}</p>
         <form className='d-flex' onSubmit={this.handleKey} noValidate>
-          <div style={{ display: 'inline-block', width: '160px' }}>
+          <div style={{ display: 'flex', width: '160px' }}>
             <div
               className="rw-widget rw-numberpicker rw-widget-no-right-border"
               style={{ width: '90px', display: 'inline-block' }}
@@ -120,8 +120,6 @@ export default class MotorInput extends React.Component {
               className="rw-widget-right-border"
               style={{
                 width: 'auto',
-                height: !this.props.inplace ? '38.5px' : '34px',
-                position: 'absolute',
                 display: 'inline-flex',
                 alignItems: 'center',
                 textAlign: 'center',

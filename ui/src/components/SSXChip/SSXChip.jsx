@@ -70,17 +70,18 @@ export default class SSXChip extends React.Component {
     this.handleKeyDown = this.handleKeyDown.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
 
+    const currentChipLayout = this.props.chipLayoutList[this.props.currentLayoutName]
 
     this.state = {
-      top_left_x: this.props.currentChipLayout.calibration_data.top_left[0],
-      top_left_y: this.props.currentChipLayout.calibration_data.top_left[1],
-      top_left_z: this.props.currentChipLayout.calibration_data.top_left[1],
-      top_right_x: this.props.currentChipLayout.calibration_data.top_right[0],
-      top_right_y: this.props.currentChipLayout.calibration_data.top_right[0],
-      top_left_z: this.props.currentChipLayout.calibration_data.top_right[1],
-      bottom_left_x: this.props.currentChipLayout.calibration_data.bottom_left[0],
-      bottom_left_y: this.props.currentChipLayout.calibration_data.bottom_left[0],
-      bottom_left_z: this.props.currentChipLayout.calibration_data.bottom_left[1],
+      top_left_x: currentChipLayout.calibration_data.top_left[0],
+      top_left_y: currentChipLayout.calibration_data.top_left[1],
+      top_left_z: currentChipLayout.calibration_data.top_left[1],
+      top_right_x: currentChipLayout.calibration_data.top_right[0],
+      top_right_y: currentChipLayout.calibration_data.top_right[0],
+      top_left_z: currentChipLayout.calibration_data.top_right[1],
+      bottom_left_x: currentChipLayout.calibration_data.bottom_left[0],
+      bottom_left_y: currentChipLayout.calibration_data.bottom_left[0],
+      bottom_left_z: currentChipLayout.calibration_data.bottom_left[1],
       currentLayoutName: this.props.currentLayoutName
     }
 
@@ -105,19 +106,44 @@ export default class SSXChip extends React.Component {
   }
 
   handleSubmit(key, e) {
-    if (key === "top_left") {
+    switch (key) {
+    case "top_left": {
       this.props.sendSetAttribute(this.props.sampleMotorVerticalName, this.state.top_left_x);
       this.props.sendSetAttribute(this.props.sampleMotorHorizontalName, this.state.top_left_y);
-    } else if (key === "top_right") {
+    
+    break;
+    }
+    case "top_right": {
       this.props.sendSetAttribute(this.props.sampleMotorVerticalName, this.state.top_right_x);
       this.props.sendSetAttribute(this.props.sampleMotorHorizontalName, this.state.top_right_y);
-    } else if (key === "set_layout") {
-      this.setState({ currentLayoutName: e.target.value })
+    
+    break;
+    }
+    case "set_layout": {
+      const currentChipLayout = this.props.chipLayoutList[e.target.value];
+
+      this.setState({
+        top_left_x: currentChipLayout.calibration_data.top_left[0],
+        top_left_y: currentChipLayout.calibration_data.top_left[1],
+        top_left_z: currentChipLayout.calibration_data.top_left[1],
+        top_right_x: currentChipLayout.calibration_data.top_right[0],
+        top_right_y: currentChipLayout.calibration_data.top_right[0],
+        top_left_z: currentChipLayout.calibration_data.top_right[1],
+        bottom_left_x: currentChipLayout.calibration_data.bottom_left[0],
+        bottom_left_y: currentChipLayout.calibration_data.bottom_left[0],
+        bottom_left_z: currentChipLayout.calibration_data.bottom_left[1],
+        currentLayoutName: e.target.value
+      });
+
       this.props.sendExecuteCommand(
         "diffractometer",
         "set_chip_layout", {
         "layout_name": e.target.value
       });
+    
+    break;
+    }
+    // No default
     }
   }
 
@@ -271,7 +297,9 @@ export default class SSXChip extends React.Component {
   }
 
   initChipCanvas() {
-    const chipConfig = this.props.currentChipLayout.sections[0]
+
+    const currentChipLayout = this.props.chipLayoutList[this.props.currentLayoutName]
+    const chipConfig = currentChipLayout.sections[0]
 
     const numRows = chipConfig.number_of_rows;
     const numCols = chipConfig.number_of_collumns;
@@ -482,7 +510,8 @@ export default class SSXChip extends React.Component {
 
   componentDidMount() {
     document.addEventListener("keydown", this.handleKeyDown);
-    const holderType = this.props.currentChipLayout.holder_type;
+    const currentChipLayout = this.props.chipLayoutList[this.props.currentLayoutName]
+    const holderType = currentChipLayout.holder_type;
 
     if (holderType === "KNOWN_GEOMETRY") {
       this.initChipCanvas()
@@ -492,7 +521,8 @@ export default class SSXChip extends React.Component {
   }
 
   componentDidUpdate() {
-    const holderType = this.props.currentChipLayout.holder_type;
+    const currentChipLayout = this.props.chipLayoutList[this.props.currentLayoutName]
+    const holderType = currentChipLayout.holder_type;
 
     if (holderType === "KNOWN_GEOMETRY") {
       this.initChipCanvas()
@@ -521,7 +551,8 @@ export default class SSXChip extends React.Component {
   }
 
   render() {
-    const holderType = this.props.currentChipLayout.holder_type;
+    const currentChipLayout = this.props.chipLayoutList[this.props.currentLayoutName]
+    const holderType = currentChipLayout.holder_type;
 
     const chipVisible = holderType === "KNOWN_GEOMETRY" ? "" : "d-none";
     const foilVisible = holderType === "FREE_GEOMETRY" ? "" : "d-none";
@@ -563,15 +594,14 @@ export default class SSXChip extends React.Component {
                   </h5>
                   <Row>
                     <Col className="col-sm-auto pe-0">
-                      <MotorInputContainer component={"sample_view"} role={"sample_vertical"} />
+                      <MotorInputContainer component="sample_view" role="sample_vertical" />
                     </Col>
                     <Col className="col-sm-auto pe-0">
-                      <MotorInputContainer component={"sample_view"} role={"sample_horizontal"} />
+                      <MotorInputContainer component="sample_view" role="sample_horizontal" />
                     </Col>
                   </Row>
                 </div>
-                <div>
-                </div>
+                <div />
               </Card.Body>
             </Card>
             <Card>

@@ -1,15 +1,14 @@
 _initialise_class:
-    class: mxcubecore.HardwareObjects.GphlWorkflow.GphlWorkflow
+    class: mxcubecore.HardwareObjects.Gphl.GphlWorkflow.GphlWorkflow
 
 settings:
     # Controls for MXCuBE UI and behaviour
     # Use configured multitrigger collection, default: false, any value is true
 #    use_multitrigger: true
-    # Pass path_template.prefix to workflow as prefix. Any value is True Do not change
-    use_path_template_prefix: true
     # Use advanced_mode for adidtional UI options. Default is false, any value is true
     advanced_mode: true
     # Maximum allowed value of Chi, for strategy calculation
+    # maximum_chi is automticaly reduced to match kappa motor limits.
     maximum_chi: 48.0
     # default values for image width popup; may be overridden by the workflow
     # The first value is the default; values are sorted before use
@@ -25,8 +24,8 @@ settings:
     # names refer to stategies in  strategylib.nml
     characterisation_strategies:
         - Char_6_5_multitrigger
-        - Char_24deg
-#        - Char_4_by_10
+#        - Char_24deg
+        - Char_4_by_10_multitrigger
 #        - TEST_Characterisation_12_3
 #        - TEST_Characterisation_12_4
 #        - TEST_Characterisation_12_5
@@ -70,8 +69,6 @@ settings:
         # Radiation sensitivity relative to standard crystal
         relative_rad_sensitivity: 1.0
         interleave_order: gs
-        characterisation_strategy: Char_6_5_multitrigger
-        # characterisation_strategy: Char_6_5_multitrigger
         # For testing only:
         automation_mode: TEST
 
@@ -85,16 +82,31 @@ settings:
       - exposure_time: 0.02
         image_width: 0.1
         resolution: 1.7
+        strategy: Char_4_by_10_multitrigger
 #        init_spot_dir: /directory/containing/SPOT.XDS/file/after/characterisation
 #        image_count: 90
         # strategy_options: # Not currently used
         # For acquisition or diffractcal
+#        # Expectation for crystal classes - needed for indexing selection.
+#        crystal_classes:
+#          - 422I
       - exposure_time: 0.02
         image_width: 1.0
+        resolution: 1.5
+        snapshot_count: 2
+        wedge_width: 15.0
+        strategy: quick
+        repetition_count: 1
         strategy_options:
-            # Not really needed in default situation, but to show how it works
-            maximum_chi: 48.0
             angular_tolerance: 1.0
+            maximum_chi: 44.0
+
+#        strategy_options:
+#            # Program options passed directly to stratcal - not needed normally
+             # Override default settings
+             # angular_tolerance, maximum_chi, and clip_kappa are defined in
+             # settings (above) and strategy_type and variant by program
+#            option_name: 999.999
 
     # Java invocation properties - syntax is e.g. '-Dfile.encoding=UTF-8'
     invocation_properties:

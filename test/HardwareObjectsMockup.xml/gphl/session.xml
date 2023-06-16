@@ -26,7 +26,7 @@
 
     <file_info>
         <file_suffix>cbf</file_suffix>
-        <precision>5</precision>
+        <precision>4</precision>
         <base_directory>/home/rhfogh/calc/mxcube3_data</base_directory>
         <raw_data_folder_name>RAW_DATA</raw_data_folder_name>
         <processed_data_base_directory>/home/rhfogh/calc/mxcube3_data</processed_data_base_directory>

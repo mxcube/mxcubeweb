@@ -52,7 +52,7 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   beamstopAlignmentOverlay() {
-    const {hardwareObjects} = this.props.beamline;
+    const { hardwareObjects } = this.props.beamline;
     const motorInputList = [];
     let popover = null;
 
@@ -89,7 +89,7 @@ class BeamlineSetupContainer extends React.Component {
   createActuatorComponent() {
     const acts = [];
 
-    const {uiproperties} = this.props;
+    const { uiproperties } = this.props;
     if (uiproperties.hasOwnProperty('beamline_setup')) {
       const blsetup_properties = uiproperties.beamline_setup.components;
 
@@ -98,35 +98,35 @@ class BeamlineSetupContainer extends React.Component {
           const uiprop = find(blsetup_properties, { attribute: key });
 
           if (uiprop !== undefined && uiprop.value_type === 'NSTATE') {
-              if (uiprop.label === 'Beamstop') {
-                acts.push(
+            if (uiprop.label === 'Beamstop') {
+              acts.push(
                 <Nav.Item key={key} className="ms-3">
-                    <InOutSwitch
-                      onText={ this.props.beamline.hardwareObjects[key].commands[0] }
-                      offText={ this.props.beamline.hardwareObjects[key].commands[1] }
-                      labelText={ uiprop.label }
-                      pkey={ key }
-                      data={ this.props.beamline.hardwareObjects[key] }
-                      onSave={ this.setAttribute }
-                      optionsOverlay={ this.beamstopAlignmentOverlay() }
-                    />
-                  </Nav.Item>
-                );
-              } else {
-                acts.push(
-                  <Nav.Item key={key} className="ms-3">
-                    <InOutSwitch
-                      onText={ this.props.beamline.hardwareObjects[key].commands[0] }
-                      offText={ this.props.beamline.hardwareObjects[key].commands[1] }
-                      labelText={ uiprop.label }
-                      pkey={ key }
-                      data={ this.props.beamline.hardwareObjects[key] }
-                      onSave={ this.setAttribute }
-                    />
-                  </Nav.Item>
-                );
-              }
+                  <InOutSwitch
+                    onText={this.props.beamline.hardwareObjects[key].commands[0]}
+                    offText={this.props.beamline.hardwareObjects[key].commands[1]}
+                    labelText={uiprop.label}
+                    pkey={key}
+                    data={this.props.beamline.hardwareObjects[key]}
+                    onSave={this.setAttribute}
+                    optionsOverlay={this.beamstopAlignmentOverlay()}
+                  />
+                </Nav.Item>
+              );
+            } else {
+              acts.push(
+                <Nav.Item key={key} className="ms-3">
+                  <InOutSwitch
+                    onText={this.props.beamline.hardwareObjects[key].commands[0]}
+                    offText={this.props.beamline.hardwareObjects[key].commands[1]}
+                    labelText={uiprop.label}
+                    pkey={key}
+                    data={this.props.beamline.hardwareObjects[key]}
+                    onSave={this.setAttribute}
+                  />
+                </Nav.Item>
+              );
             }
+          }
         }
       }
     }
@@ -145,7 +145,7 @@ class BeamlineSetupContainer extends React.Component {
       const beamline_attribute = this.props.beamline.hardwareObjects[uiprop.attribute];
 
       components.push(
-        <td key={`bs-name-${uiprop.label}`} className='d-flex pt-1' style={{ border: '0px', paddingLeft: '0.5em' }}>
+        <td key={`bs-name-${uiprop.label}`} className="py-1 ps-3 pe-2 align-middle">
           <span className='me-1'>{uiprop.label}:</span>
         </td>);
       components.push(
@@ -159,9 +159,9 @@ class BeamlineSetupContainer extends React.Component {
           padding: '0em'}}>
           { beamline_attribute.readonly ?
             (<LabeledValue
-              suffix={ uiprop.suffix }
-              precision={ uiprop.precision }
-              format={ uiprop.format || '' }
+              suffix={uiprop.suffix}
+              precision={uiprop.precision}
+              format={uiprop.format || ''}
               name=""
               value={beamline_attribute.value}
               level="light"
@@ -186,15 +186,16 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   render() {
-    const {uiproperties} = this.props;
+    const { uiproperties } = this.props;
 
     if (!uiproperties.hasOwnProperty('beamline_setup')) {
       return null;
     }
 
+
     const uiprops = this.props.uiproperties.beamline_setup.components;
     const uiprop_list = filter(uiprops, (o) =>
-      o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
+    o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
     );
 
     return (
@@ -221,17 +222,19 @@ class BeamlineSetupContainer extends React.Component {
           <Nav className="me-auto my-2 my-lg-0">
             <Nav.Item className="d-flex justify-content-start" >
               <Table
+                borderless
                 responsive
-                style={{ margin: '0px', fontWeight: 'bold',
+                style={{
+                  margin: '0px', fontWeight: 'bold',
                   paddingLeft: '7em', paddingRight: '7em'
                 }}
               >
                 <tbody>
                   <tr>
-                    {this.render_table_row(uiprop_list.slice(0, (uiprop_list.length / 2).toFixed(0) ))}
+                    {this.render_table_row(uiprop_list.slice(0, (uiprop_list.length / 2).toFixed(0)))}
                   </tr>
                   <tr>
-                    {this.render_table_row(uiprop_list.slice((uiprop_list.length /2).toFixed(0) ))}
+                    {this.render_table_row(uiprop_list.slice((uiprop_list.length / 2).toFixed(0)))}
                     {/* <td style={{ border: '0px', borderLeft: '1px solid #ddd', paddingLeft: '1em' }} />
                     <td style={{ border: '0px' }} /> */}
                   </tr>
@@ -241,28 +244,28 @@ class BeamlineSetupContainer extends React.Component {
           </Nav>
           <Nav className="me-3">
             <Nav.Item>
-             <DeviceState
+              <DeviceState
                 labelText="Detector"
-                data = { this.props.beamline.hardwareObjects.detector.state }
+                data={this.props.beamline.hardwareObjects.detector.state.acq_satus}
               />
             </Nav.Item>
           </Nav>
           <Nav className="me-3">
             <Nav.Item>
               <SampleChangerSwitch
-                  labelText="Sample Changer"
-                  data = { this.props.sampleChanger.state }
-                  onSave={ this.props.sendCommand }
-                />
+                labelText="Sample Changer"
+                data={this.props.sampleChanger.state}
+                onSave={this.props.sendCommand}
+              />
             </Nav.Item>
           </Nav>
           <Nav className="me-3">
-              {this.createActuatorComponent()}
+            {this.createActuatorComponent()}
           </Nav>
           <Nav className="">
             <Nav.Item>
-             <span className="blstatus-item">
-              { this.props.beamline.hardwareObjects.machine_info ?
+              <span className="blstatus-item">
+                {this.props.beamline.hardwareObjects.machine_info ?
                   <MachInfo
                     info={this.props.beamline.hardwareObjects.machine_info.value}
                   />

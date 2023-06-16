@@ -1,9 +1,0 @@
-<device class="MDCameraMockup">
-  <username>Camera Microdiff</username>
-  <specversion>130.235.94.114:kappa</specversion>
-  <channel type="spec" name="UdiffVersion">UDIFF_VERSION</channel>
-  <tangoname>i9113/microdiff/newMD</tangoname>
-  <interval>100</interval>
-  <remote_interval>100</remote_interval>
-  <image_name>mxcube_sample_snapshot.jpeg</image_name>
-</device>

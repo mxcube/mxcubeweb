@@ -12,7 +12,7 @@ export class LimsResultSummary extends React.Component {
     const task = this.props.taskData;
 
     if (!isUnCollected(task)) {
-      const resultCont = this.refs.resultContainer;
+      const resultCont = this.resultContainer;
       resultCont.innerHTML = 'Loading results, please wait ...';
 
       fetch('mxcube/api/v0.1/lims/results', {
@@ -69,7 +69,7 @@ export class LimsResultSummary extends React.Component {
           <span className="col-sm-3">{`${task.parameters.transmission} %`}</span>
 
           <span className="col-sm-3">Energy:</span>
-          <span className="col-sm-3">{`${task.parameters.energy} KeV`}</span>
+          <span className="col-sm-3">{`${task.parameters.energy} keV`}</span>
           <span className="col-sm-3">Resolution</span>
           <span className="col-sm-3">{`${task.parameters.resolution} Å`}</span>
         </div>
@@ -83,13 +83,15 @@ export class LimsResultSummary extends React.Component {
 
     return (
       <div
-        ref="limsResultSummary"
+        // ref="limsResultSummary"
+        ref={(ref) => { this.limsResultSummary = ref; }}
         className="lims-result-summary"
         style={style}
       >
         {!taskHasLimsData(task) ? this.taskSummary() : null}
         <div
-          ref="resultContainer"
+          // ref="resultContainer"
+          ref={(ref) => { this.resultContainer = ref; }}
           className="result-container"
           style={{ overflow: 'hidden' }}
          />

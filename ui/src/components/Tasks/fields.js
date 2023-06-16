@@ -10,6 +10,22 @@ import { TiWarning, TiTimes } from "react-icons/ti";
 
 import './style.css';
 
+export function toFixed(state, hoName) {
+  const ho = state.beamline.hardwareObjects[hoName];
+  let precision = null;
+
+  for (const group of Object.values(state.uiproperties)) {
+    for (const component of group.components) {
+      if (component.attribute === hoName) {
+        precision = component.precision;
+        break;
+      }
+    }
+  }
+
+  return ho.value.toFixed(precision);
+}
+
 function validation(error, warning) {
   let stateColor = null;
   if (error) {

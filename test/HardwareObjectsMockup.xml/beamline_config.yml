@@ -113,6 +113,9 @@ default_acquisition_parameters:
         cell_spacing: vertical, horizontal
         mesh_center: top-left
 
+    gphlworkflow: {}
+        # Apparenttly this must be here, but we use all values same as default
+
 acquisition_limit_values:
     exposure_time:
         - 0.02
@@ -135,6 +138,7 @@ available_methods:
     energy: True
     mesh: True
     ssx_chip_collection: True
+    gphlworkflow: True
     test_collection: True
 
 undulators:

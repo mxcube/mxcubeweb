@@ -16,6 +16,7 @@ import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
+import GphlWorkflowParametersDialog from '../containers/GphlWorkflowParametersDialog';
 import diagonalNoise from '../img/diagonal-noise.png';
 import {
   sendChatMessage,
@@ -103,13 +104,14 @@ class Main extends React.Component {
         <PassControlDialog />
         <ConfirmCollectDialog />
         <WorkflowParametersDialog />
+        <GphlWorkflowParametersDialog />
         <LimsResultDialog
           show={this.props.general.dialogType === 'LIMS_RESULT_DIALOG'}
           taskData={this.props.general.dialogData}
           onHide={() => this.props.showDialog(false)}
         />
         <MXNavbarContainer location={window.location} />
-        <Stack gap={2} style={{ paddingTop: '3em', zIndex: 9999 }}>
+        <Stack className="mb-4" gap={2}>
           <Outlet />
         </Stack>
         <Draggable>

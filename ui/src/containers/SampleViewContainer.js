@@ -23,7 +23,6 @@ import {
   sendDisplayImage,
   executeCommand,
 } from '../actions/beamline';
-import { TiAdjustContrast } from 'react-icons/ti';
 
 class DefaultErrorBoundary extends React.Component {
   constructor(props) {
@@ -34,8 +33,8 @@ class DefaultErrorBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     // Catch errors in any components below and re-render with error message
     this.setState({
-      error: error,
-      errorInfo: errorInfo
+      error,
+      errorInfo
     })
     // You can also log error messages to an error reporting service here
   }
@@ -103,9 +102,10 @@ class SampleViewContainer extends Component {
           }
           // No default
         }
-      });
-    }
-    const diffractometerHo = this.props.hardwareObjects['diffractometer'];
+        // No default
+      }
+    });
+    const diffractometerHo = this.props.hardwareObjects.diffractometer;
 
     const phaseControl = (
       <div>
@@ -132,18 +132,21 @@ class SampleViewContainer extends Component {
 
     return (
       <Container fluid>
-        <Row>
-          <Col sm={12} style={{ paddingLeft: '0px', paddingRight: '0px' }}>
+        <Row
+          style={{
+            background: '#fafafa',
+            borderBottom: '1px solid lightgray',
+            paddingBottom: '0em',
+          }}
+        >
+          <Col sm={12}>
             <DefaultErrorBoundary>
               <BeamlineSetupContainer />
             </DefaultErrorBoundary>
           </Col>
         </Row>
-        <Row style={{ marginTop: '0.7em', marginRight: '0px' }}>
-          <Col
-            sm={1}
-            style={{ paddingRight: '1px', paddingLeft: '0.7em' }}
-          >
+        <Row className="gx-3 mt-2 pt-1">
+          <Col sm={1}>
             <DefaultErrorBoundary>
               {process.env.REACT_APP_PHASECONTROL==='true' ? phaseControl : null}
               {apertureControl}

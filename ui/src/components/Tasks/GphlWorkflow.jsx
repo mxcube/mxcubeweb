@@ -6,7 +6,7 @@ import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
 import { StaticField, InputField, SelectField } from './fields';
 
- 
+
 
 class GphlWorkflow extends React.Component {
   constructor(props) {
@@ -113,22 +113,32 @@ class GphlWorkflow extends React.Component {
 }
 
 GphlWorkflow = reduxForm({
-  form: 'gphlworkflow',
+  form: 'gphl_workflow',
   validate
 })(GphlWorkflow);
 
-const selector = formValueSelector('gphlworkflow');
+const selector = formValueSelector('gphl_workflow');
 
 GphlWorkflow = connect(state => {
   const subdir = selector(state, 'subdir');
   const strategy_name = selector(state, 'strategy_name');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
 
+  let fname = '';
+
+  if (state.taskForm.sampleID) {
+    fname = state.taskForm.taskData.parameters.fileName;
+  } else {
+    const prefix = selector(state, 'prefix');
+    fname = `${prefix}_[RUN#]_[IMG#]`;
+  }
+
   const { type } = state.taskForm.taskData;
   const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
+    filename: fname,
     wfname: state.taskForm.taskData.parameters.wfname,
     acqParametersLimits: limits,
     beamline: state.beamline,

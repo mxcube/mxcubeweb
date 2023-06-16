@@ -4,6 +4,7 @@ import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 import './SampleGridTable.css';
 import { TASK_COLLECTED,
+  TASK_UNCOLLECTED,
   TASK_COLLECT_FAILED,
   TASK_COLLECT_WARNING,
   TASK_RUNNING,
@@ -32,27 +33,27 @@ export class TaskItem extends React.Component {
     switch (type) {
     case 'DataCollection': {
       res = 'DC';
-    
+
     break;
     }
     case 'Characterisation': {
       res = 'C';
-    
+
     break;
     }
     case 'Workflow': {
       res = 'WF';
-    
+
     break;
     }
     case 'XRFScan': {
       res = 'XRF';
-    
+
     break;
     }
     case 'EnergyScan': {
       res = 'ESCAN';
-    
+
     break;
     }
     // No default
@@ -86,7 +87,7 @@ export class TaskItem extends React.Component {
           <span className="col-sm-3">{`${task.parameters.transmission} %`}</span>
 
           <span className="col-sm-3">Energy:</span>
-          <span className="col-sm-3">{`${task.parameters.energy} KeV`}</span>
+          <span className="col-sm-3">{`${task.parameters.energy} keV`}</span>
           <span className="col-sm-3">Resolution</span>
           <span className="col-sm-3">{`${task.parameters.resolution} Å`}</span>
         </div>
@@ -256,7 +257,7 @@ export class TaskItem extends React.Component {
           >
             {this.tagName()}
             {
-             task.state !== TASK_COLLECTED ?
+             task.state === TASK_UNCOLLECTED ?
                (<i style={{ cursor: 'pointer'}} className="ms-1 fas fa-times" onClick={this.deleteButtonOnClick} />) :
                (<span />)
             }

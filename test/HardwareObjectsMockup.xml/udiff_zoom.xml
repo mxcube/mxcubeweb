@@ -1,6 +1,6 @@
-<device class="MicrodiffZoomMockup">
+<object class="MicrodiffZoomMockup">
   <username>zoom</username>
   <motor_name>zoom</motor_name>
   <exporter_address>130.235.94.124:9001</exporter_address>
   <values>{"LEVEL1": 1, "LEVEL2": 2, "LEVEL3": 3, "LEVEL4": 4, "LEVEL5": 5, "LEVEL6": 7}</values>
-</device>
+</object>

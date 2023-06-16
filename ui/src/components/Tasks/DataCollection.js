@@ -14,7 +14,8 @@ import {
   InputField,
   SelectField,
   FieldsRow,
-  CollapsableRows
+  CollapsableRows,
+  toFixed
 } from './fields';
 
 import { SPACE_GROUPS } from '../../constants';
@@ -313,7 +314,7 @@ DataCollection = connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
+  const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -325,16 +326,16 @@ DataCollection = connect((state) => {
       beam_size: state.sampleview.currentAperture,
       resolution: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.hardwareObjects.resolution.value),
+        : toFixed(state, "resolution")),
       energy: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.energy
-        : state.beamline.hardwareObjects.energy.value),
+        : toFixed(state, "energy")),
       transmission: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.hardwareObjects.transmission.value),
+        : toFixed(state, "transmission")),
       osc_start: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.hardwareObjects["diffractometer.phi"].value)
+        : toFixed(state, "diffractometer.phi"))
     }
   };
 })(DataCollection);

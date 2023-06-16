@@ -278,6 +278,20 @@ def init_route(app, server, url_prefix):
         resp.status_code = 200
         return resp
 
+    @bp.route("/update_dependent_field", methods=["POST"])
+    @server.restrict
+    def update_dependent_field():
+        """
+        Updates the dependent fields of the given task
+        """
+        args = request.get_json()
+        resp = jsonify(
+            app.queue.update_dependent_field(args["task_name"], args["field_data"])
+        )
+
+        resp.status_code = 200
+        return resp
+
     @bp.route("/automount", methods=["POST"])
     @server.require_control
     @server.restrict

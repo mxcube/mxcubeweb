@@ -1,0 +1,94 @@
+name: Create/Update Tag
+on:
+  push:
+    branches:
+      - develop
+jobs:
+  create-version-tag:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        token: ${{ secrets.CI_TOKEN }}
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.10"
+    - name: Update version
+      id: update-version
+      run: |
+          pip install --upgrade pip
+          pip install poetry
+          poetry version minor
+          git config --global user.email "oscarsso@esrf.fr"
+          git config --global user.name "Marcus Oskarsson"
+          git add -A
+          git commit -m "[skip ci] Bumped minor version"
+          git push -f
+          poetry build
+    - name: Publish package to PyPI
+      id: publish-pacakge
+      run: |
+        poetry config pypi-token.pypi ${{ secrets.PYPI }}
+        poetry publish
+    - name: Read package version
+      id: set-tag
+      run: |
+        pip install --upgrade pip
+        pip install toml
+        echo ::set-output name=tag_name::v$(python -c 'import toml; print(toml.load("./pyproject.toml")["tool"]["poetry"]["version"])')
+    - name: Check tag exists
+      id: check-tag-exists
+      uses: actions/github-script@v6
+      env:
+        TAG: ${{ steps.set-tag.outputs.tag_name }}
+      with:
+        github-token: ${{ github.token }}
+        script: |
+          // https://github.com/mukunku/tag-exists-action
+          var exists = 'false';
+          try {
+              const getRefResponse = await github.rest.git.getRef({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  ref: "refs/tags/${{ steps.set-tag.outputs.tag_name }}"
+              });
+
+              if (getRefResponse.status === 200) {
+                  console.log("Tag was found");
+                  exists = 'true';
+              }
+          } catch(error) {
+              console.log("Tag was not found");
+          }
+          core.setOutput('exists', exists);
+
+    - name: Update tag
+      uses: actions/github-script@v6
+      if: steps.check-tag-exists.outputs.exists == 'true'
+      env:
+        TAG: ${{ steps.set-tag.outputs.tag_name }}
+      with:
+        github-token: ${{ github.token }}
+        script: |
+          github.rest.git.updateRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "refs/tags/${{ steps.set-tag.outputs.tag_name }}",
+            sha: context.sha
+          })
+
+    - name: Create tag
+      uses: actions/github-script@v6
+      if: steps.check-tag-exists.outputs.exists != 'true'
+      env:
+        TAG: ${{ steps.set-tag.outputs.tag_name }}
+      with:
+        github-token: ${{ github.token }}
+        script: |
+          github.rest.git.createRef({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            ref: "refs/tags/${{ steps.set-tag.outputs.tag_name }}",
+            sha: context.sha
+          })

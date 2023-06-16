@@ -1,3 +1,4 @@
+import inspect
 import traceback
 import typing
 import logging
@@ -68,7 +69,7 @@ class AdapterBase:
     def _execute_command(self, cmd_name, args):
         _cmd = getattr(self, cmd_name, None)
         logging.getLogger("MX3.HWR").info(
-             f"Calling {self._name}.{cmd_name} with {args}"
+            f"Calling {self._name}.{cmd_name} with {args}"
         )
 
         try:
@@ -176,6 +177,9 @@ class AdapterBase:
             if _n != "return":
                 input_dict[_n] = (_t, pydantic.Field(alias=_n))
             else:
+                if not inspect.isclass(_t):
+                    _t = _t.__class__
+
                 output_dict[_n] = (_t, pydantic.Field(alias=_n))
 
         return {
@@ -205,7 +209,7 @@ class AdapterBase:
                 exported_methods[method_name] = {
                     "signature": model["signature"],
                     "schema": model["args"].schema_json(),
-                    "display": False
+                    "display": False,
                 }
 
         return exported_methods
@@ -236,10 +240,7 @@ class AdapterBase:
         return _attributes
 
     def emit_ho_attribute_changed(
-        self,
-        attribute: str,
-        value: Any,
-        operation: str = "SET"
+        self, attribute: str, value: Any, operation: str = "SET"
     ):
         self.app.server.emit(
             "hardware_object_attribute_changed",
@@ -247,34 +248,40 @@ class AdapterBase:
                 "name": self._name,
                 "attribute": attribute,
                 "value": value,
-                "operation": operation.upper()
+                "operation": operation.upper(),
             },
-            namespace="/hwr"
+            namespace="/hwr",
         )
 
     def emit_ho_value_changed(self, value: Any):
         self.app.server.emit(
             "hardware_object_value_changed",
-            {
-                "name": self._name,
-                "value": value
-            },
-            namespace="/hwr"
+            {"name": self._name, "value": value},
+            namespace="/hwr",
         )
 
-    def emit_ho_changed(self, *args, **kwargs):
+    def emit_ho_changed(self, state, **kwargs):
         """
         Signal handler to be used for sending the entire object to the client via
         socketIO
         """
-        self.app.server.emit("hardware_object_changed", self.dict(), namespace="/hwr")
+        data = self.dict()
 
-    def state_change(self, *args, **kwargs):
+        if hasattr(state, "name"):
+            data["state"] = state.name
+        else:
+            logging.getLogger("MX3.HWR").info(
+                f"emit_ho_changed with {state} for {self._ho.name()}"
+            )
+
+        self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
+
+    def state_change(self, state, **kwargs):
         """
         Signal handler to be used for sending the state to the client via
         socketIO
         """
-        self.emit_ho_changed()
+        self.emit_ho_changed(state)
 
     def _dict_repr(self):
         """
@@ -346,9 +353,7 @@ class ActuatorAdapterBase(AdapterBase):
         Signal handler to be used for sending values to the client via
         socketIO.
         """
-        #data = {"name": self._name, "value": args[0]}
         self.emit_ho_value_changed(args[0])
-        #self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
 
     # Abstract method
     def set_value(self, value):
@@ -416,6 +421,13 @@ class ActuatorAdapterBase(AdapterBase):
         try:
             data.update({"value": self.get_value(), "limits": self.limits()})
         except Exception as ex:
+            logging.getLogger("MX3.HWR").exception(
+                f"Could not get dictionary representation of {self._ho.name()}"
+            )
+            logging.getLogger("MX3.HWR").error(
+                f"Check status of {self._ho.name()}, object is offline, in fault or returns unexpected value !"
+            )
+
             self._available = False
             data.update(
                 {

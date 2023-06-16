@@ -12,6 +12,10 @@ import classNames from 'classnames';
 import './style.css';
 
 import {
+  sendUpdateDependentFields
+} from '../../actions/queue';
+
+import {
   FieldsHeader,
   StaticField,
   InputField,
@@ -41,7 +45,6 @@ class GenericTaskForm extends React.Component {
   }
 
   addToQueue(runNow, params) {
-    debugger;
     const parameters = {
       ...params,
       ...this.jsformData,
@@ -106,7 +109,7 @@ class GenericTaskForm extends React.Component {
               className='me-3 ms-3'
               size="sm"
               variant="success"
-              disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+              disabled={this.props.invalid}
               onClick={this.submitRunNow}
             >
               Run Now
@@ -181,13 +184,13 @@ class GenericTaskForm extends React.Component {
   }
 
   customFieldTemplate(props) {
-    const {id, classNames, label, help, required, rawDescription, description, errors, children} = props;
+    const { id, classNames, label, help, required, rawDescription, description, errors, children } = props;
     return (
       <div className={classNames}>
         {
-          id !== "root" ? 
-          (<label htmlFor={id}>{label}{required ? "*" : null}{rawDescription ? ` (${rawDescription})` : null}</label>) 
-          : null
+          id !== "root" ?
+            (<label htmlFor={id}>{label}{required ? "*" : null}{rawDescription ? ` (${rawDescription})` : null}</label>)
+            : null
         }
         {description}
         {children}
@@ -202,7 +205,7 @@ class GenericTaskForm extends React.Component {
       <div>
         <div className='row'>
           {properties.map(prop => {
-            const {uiSchema} = prop.content.props
+            const { uiSchema } = prop.content.props
             const className = classNames('column', uiSchema['ui:column'] || 'col-6 json-schema-form-group-div')
             return <div key={prop.content.key} className={className}>
               {prop.content}
@@ -214,39 +217,21 @@ class GenericTaskForm extends React.Component {
     )
   }
 
-  render() {
-    const uiSchema = {
-      "ui:order": [
-        "num_images",
-        "exp_time",
-        "osc_range",
-        "osc_start",
-        "resolution",
-        "transmission",
-        "energy",
-        "sub_sampling",
-        "vertical_spacing",
-        "horizontal_spacing",
-        "nb_lines",
-        "nb_samples_per_line",
-        "motor_top_left_x",
-        "motor_top_left_y",
-        "motor_top_left_z",
-        "motor_top_right_x",
-        "motor_top_right_y",
-        "motor_top_right_z",
-        "motor_bottom_left_x",
-        "motor_bottom_left_y",
-        "motor_bottom_left_z",
-        "chip_type",
-        "take_pedestal",
-        "*",
-      ],
-      "ui:submitButtonOptions": {
-        "norender": true,
-      }
-    };
+  updateFromRemoteValidation(formData) {
+    sendUpdateDependentFields(this.props.taskData.type, formData).then((_d) => {
+      const data = JSON.parse(_d);
 
+      for (const fieldName in data) {
+        const el = document.getElementById(`root_${fieldName}`);
+        if (el !== null) {
+          el.value = data[fieldName];
+        }
+      }
+    });
+  }
+
+  render() {
+    const uiSchema = JSON.parse(this.props.uiSchema);
     const schema = this.setConstraintsFromDefualts(
       this.props.schema.user_collection_parameters
     )
@@ -272,8 +257,8 @@ class GenericTaskForm extends React.Component {
                 :
                 null
               }
-              <Col xs={6}>
-                <InputField propName="prefix" label="Prefix" col1="1" col2="7" />
+              <Col xs={12}>
+                <InputField propName="prefix" label="Prefix" col1="2" col2="8" />
               </Col>
               {this.props.taskData.sampleID
                 ? (
@@ -298,13 +283,13 @@ class GenericTaskForm extends React.Component {
               schema={schema}
               uiSchema={uiSchema}
               onChange={({ formData }) => {
+                this.updateFromRemoteValidation(formData)
                 this.jsformData = formData;
               }}
               ObjectFieldTemplate={this.columnsObjectFieldTemplate}
               FieldTemplate={this.customFieldTemplate}
             />
           </div>
-
         </Modal.Body>
 
         {this.props.taskData.state ? '' : this.showFooter()}
@@ -343,7 +328,8 @@ GenericTaskForm = connect((state) => {
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type];
   const { schema } = state.taskForm.defaultParameters[type];
-  const useExperimentName = state.taskForm.taskData.use_experiment_name;
+  const uiSchema = state.taskForm.defaultParameters[type].ui_schema
+  const useExperimentName = state.taskForm.taskData.parameters.use_experiment_name;
 
   let path = `${state.login.rootPath}/${subdir}${experimentNameSelector}/[RUN#]`;
 
@@ -352,13 +338,14 @@ GenericTaskForm = connect((state) => {
   }
 
   return {
-    path: path,
+    path,
     filename: fname,
     experimentName: experimentNameSelector,
     subdir,
     acqParametersLimits: limits,
-    useExperimentName: useExperimentName,
+    useExperimentName,
     schema,
+    uiSchema,
     beamline: state.beamline,
     initialValues: {
       ...state.taskForm.taskData.parameters,
@@ -373,9 +360,7 @@ GenericTaskForm = connect((state) => {
       transmission: (state.taskForm.sampleIds.constructor !== Array
         ? state.taskForm.taskData.parameters.transmission
         : state.beamline.hardwareObjects.transmission.value),
-      osc_start: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.osc_start
-        : state.beamline.hardwareObjects["diffractometer.phi"].value)
+      osc_start: state.taskForm.taskData.parameters.osc_start
     }
   };
 })(GenericTaskForm);

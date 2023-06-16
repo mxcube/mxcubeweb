@@ -65,10 +65,10 @@ export function removeSamplesFromQueueAction(sampleIDList) {
   return { type: 'REMOVE_SAMPLES_FROM_QUEUE', sampleIDList };
 }
 
-export function setSampleAttribute(sampleID, attr, value) {
+export function setSampleAttribute(sampleIDList, attr, value) {
   return {
     type: 'SET_SAMPLE_ATTRIBUTE',
-    sampleID,
+    sampleIDList,
     attr,
     value,
   };
@@ -372,6 +372,14 @@ export function removeTaskAction(sampleID, taskIndex, queueID = null) {
   };
 }
 
+export function removeTaskListAction(taskList, queueIDList = null) {
+  return {
+    type: 'REMOVE_TASKS_LIST',
+    taskList,
+    queueIDList,
+  };
+}
+
 export function setEnabledSample(sampleIDList, value) {
   return function (dispatch, getState) {
     const state = getState();
@@ -388,9 +396,8 @@ export function setEnabledSample(sampleIDList, value) {
             showErrorPanel(true, 'Server refused to set item enabled flag')
           );
         } else {
+          dispatch(setSampleAttribute(sampleIDList, 'checked', value));
           sampleIDList.forEach((sid) => {
-            dispatch(setSampleAttribute(sid, 'checked', value));
-
             // If sample is loaded by SC, set as current
             if (state.sampleChanger.loadedSample.address === sid && value) {
               dispatch(setCurrentSample(sid));
@@ -399,11 +406,10 @@ export function setEnabledSample(sampleIDList, value) {
             if (state.sampleChanger.loadedSample.address === sid && !value) {
               dispatch(setCurrentSample(''));
             }
-
-            if (!value && state.queue.queue.includes(sid)) {
-              dispatch(removeSamplesFromQueueAction([sid]));
-            }
           });
+          if (!value) {
+            dispatch(removeSamplesFromQueueAction(sampleIDList));
+          }
         }
       })
       .catch(() => queueLoading(false))
@@ -418,17 +424,42 @@ export function deleteTask(sampleID, taskIndex) {
 
     if (task.state === TASK_UNCOLLECTED) {
       dispatch(queueLoading(true));
-
       sendDeleteQueueItem([[sampleID, taskIndex]]).then((response) => {
         if (response.status >= 400) {
           dispatch(showErrorPanel(true, 'Server refused to delete task'));
         } else {
           dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
         }
-
-        dispatch(queueLoading(false));
-      });
+      }).catch(() => queueLoading(false))
+      .then(() => { dispatch(queueLoading(false)); });;
     }
+  };
+}
+
+export function deleteTaskList(sampleIDList) {
+  return function (dispatch, getState) {
+    const state = getState();
+    const itemPosList =[];
+    const taskList = [];
+    const queueIDList = [];
+    sampleIDList.forEach((sid) => {
+      state.sampleGrid.sampleList[sid].tasks.forEach((task, index) => {
+        if (task.state === TASK_UNCOLLECTED) {
+          itemPosList.push([sid, index])
+          taskList.push(task);
+          queueIDList.push(task.queueID);
+        }
+      });
+    });
+    dispatch(queueLoading(true));
+    sendDeleteQueueItem(itemPosList).then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to delete task'));
+      } else {
+        dispatch(removeTaskListAction(taskList, queueIDList));
+      }
+      }).catch(() => queueLoading(false))
+      .then(() => { dispatch(queueLoading(false)); });
   };
 }
 
@@ -511,7 +542,7 @@ export function addTask(sampleIDs, parameters, runNow) {
         };
 
         // If a task is created on a shape, save shape if not already saved before
-        if (parameters.shape !== -1 && parameters.shape !== undefined) {
+        if (Number.parseInt(parameters.shape) !== -1) {
           if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
             dispatch(
               sendUpdateShapes([{ id: task.parameters.shape, state: 'SAVED' }])
@@ -537,7 +568,7 @@ export function addTask(sampleIDs, parameters, runNow) {
           }
         }
 
-        const sample = { ...state.sampleGrid.sampleList[sampleID]};
+        const sample = { ...state.sampleGrid.sampleList[sampleID] };
         sample.tasks = [task];
         samples.push(sample);
       });
@@ -758,4 +789,18 @@ export function sendSetGroupFolder(path) {
         dispatch(setGroupFolder(response.path));
       });
   };
+}
+
+export function sendUpdateDependentFields(task_name, field_data) {
+  return fetch('/mxcube/api/v0.1/queue/update_dependent_field', {
+    method: 'POST',
+    credentials: 'include',
+    headers: {
+      Accept: 'application/json',
+      'Content-type': 'application/json',
+    },
+    body: JSON.stringify({ task_name, field_data }),
+  }).then((response) => {
+    return response.json();
+  });
 }

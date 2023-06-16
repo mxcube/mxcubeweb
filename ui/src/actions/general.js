@@ -179,6 +179,14 @@ export function getInitialState(userInControl) {
         'Content-type': 'application/json',
       },
     });
+    const gphl_workflow = fetch('mxcube/api/v0.1/gphl_workflow/', {
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+    });
     const log = fetch('mxcube/api/v0.1/log', {
       method: 'GET',
       credentials: 'include',
@@ -289,6 +297,12 @@ export function getInitialState(userInControl) {
         .then(parse)
         .then((json) => {
           state.workflow = json;
+        })
+        .catch(notify),
+      gphl_workflow
+        .then(parse)
+        .then((json) => {
+          state.gphl_workflow = json;
         })
         .catch(notify),
       log

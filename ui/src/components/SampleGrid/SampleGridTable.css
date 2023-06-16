@@ -9,7 +9,6 @@
 
 .samples-grid-table-card{
   border: 0px!important;
-  margin-bottom: 25em;
 }
 
 .samples-grid-table-card-header{
@@ -25,8 +24,8 @@
 
 .sample-items-collapsible{
   margin-bottom: 1%;
-  width:fit-content;
-  margin-left: auto;
+  /* width:fit-content; */
+  width: 100%;
   margin-right: auto;
 }
 
@@ -54,7 +53,8 @@
   align-items: center;
   margin-bottom: 0px;
   background: #e5e8eb6b;
-  width: fit-content;
+  /* width: fit-content; */
+  width: 100%;
 }
 
 .sample-items-table >thead{
@@ -80,7 +80,7 @@
 } 
 
 .samples-grid-table-li {
-  /* width: 340px; */
+  min-width: 295px;
   margin: auto auto 6px auto;
   z-index: 2 !important;
   list-style-type: none;
@@ -94,10 +94,6 @@
   list-style-type: none!important;
   padding: 0px;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05)!important;
-}
-
-.samples-grid-table-item-top {
-  width: 280px;
 }
 
 .samples-grid-table-item-moving {
@@ -144,11 +140,12 @@ button[disabled] {
   opacity: 0.2;
 }
 
-
 .samples-grid-table-item-tasks {
-  max-width: 265px;
+  /* width: fit-content; */
   height: 26px;
-  padding-left: 26px;
+  padding-left: 19px;
+  display: grid;
+  margin-right: 25px;
 }
 
 .samples-grid-table-item-tasks > .slick-list > .slick-track {
@@ -157,7 +154,7 @@ button[disabled] {
 
 .samples-grid-table-item-tasks > .slick-next::before,
 .samples-grid-table-item-tasks > .slick-prev:before {
-  color: #ffffff;
+  color: #9e9c9c;
   opacity: 100%;
 }
 
@@ -168,6 +165,10 @@ button[disabled] {
 
 .samples-grid-table-item-tasks> .slick-prev{
   left: 1px;
+}
+
+.samples-grid-table-item-tasks> .slick-next{
+  /* right: -25px */
 }
 
 .new-sample-grid-task-item {
@@ -183,7 +184,7 @@ button[disabled] {
 }
 
 .div-samples-grid-table-item-top {
-  width: 180px;
+  /* width: 180px; */
 }
 
 
@@ -197,7 +198,7 @@ button[disabled] {
   font-size: small;
   font-weight: bold;
   pointer-events: auto;
-  max-width: 155px;
+  max-width: 62%;
   background: #5cb85c;
   white-space: nowrap;
   overflow: hidden;
@@ -350,7 +351,7 @@ button[disabled] {
 
 .div-flex-pie-collapsible{
   width: 95%;
-  margin: auto auto 2em auto;
+  /* margin: auto auto 2em auto; */
 }
 
 .div-svg-flex {

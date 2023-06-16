@@ -150,8 +150,7 @@ export default (state = INITIAL_STATE, action) => {
 
     case 'BL_UPDATE_HARDWARE_OBJECT': {
       const attrData = Object.assign(
-        state.hardwareObjects[action.data.name] || {},
-        action.data
+        {}, state.hardwareObjects[action.data.name], action.data
       );
       return {
         ...state,
@@ -162,7 +161,7 @@ export default (state = INITIAL_STATE, action) => {
       };
     }
     case 'BL_UPDATE_HARDWARE_OBJECT_ATTRIBUTE': {
-      let data = state.hardwareObjects[action.data.name]["attributes"][action.data.attribute]
+      let data = state.hardwareObjects[action.data.name].attributes[action.data.attribute]
 
       if (Array.isArray(data) && action.data.operation === 'UPDATE') {
         data = [...data, action.data.value];
@@ -177,8 +176,8 @@ export default (state = INITIAL_STATE, action) => {
         hardwareObjects: {
           ...state.hardwareObjects,
           [action.data.name]: {
-            ...state.hardwareObjects[action.data.name], ["attributes"]: {
-              ...state.hardwareObjects[action.data.name]["attributes"],
+            ...state.hardwareObjects[action.data.name], "attributes": {
+              ...state.hardwareObjects[action.data.name].attributes,
               [action.data.attribute]: data,
             },
           },
@@ -191,7 +190,7 @@ export default (state = INITIAL_STATE, action) => {
         hardwareObjects: {
           ...state.hardwareObjects,
           [action.data.name]: {
-            ...state.hardwareObjects[action.data.name], ["value"]: action.data.value,
+            ...state.hardwareObjects[action.data.name], "value": action.data.value,
           },
         },
       };

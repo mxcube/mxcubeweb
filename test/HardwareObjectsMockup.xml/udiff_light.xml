@@ -1,5 +1,5 @@
-<device class="MotorMockup">
+<object class="MotorMockup">
   <username>Microdiff light</username>
   <exporter_address>192.168.96.43:9001</exporter_address>
   <motor_name>Frontlight</motor_name>
-</device>
+</object>

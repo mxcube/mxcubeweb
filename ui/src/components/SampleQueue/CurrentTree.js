@@ -43,7 +43,7 @@ export default class CurrentTree extends React.Component {
   showContextMenu(event, id) {
     contextMenu.show({
       id,
-      event: event,
+      event,
     });
   }
 

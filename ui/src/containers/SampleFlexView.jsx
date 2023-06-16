@@ -47,8 +47,6 @@ class NewSampleFlexView extends React.Component {
   }
 
 
-  componentWillUnmount() {
-  }
 
   renderCircle(nbCell , idx, isCellSelected) {
 
@@ -140,6 +138,8 @@ class NewSampleFlexView extends React.Component {
 
   render() {
     // this is specific to 8 cells Baskets
+    // will need to update this code to be more generic
+    // for any number of cell
     const scContent = [1, 2, 3, 4, 5, 6, 7, 8]
     return (
       <Col sm>

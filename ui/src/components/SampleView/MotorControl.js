@@ -23,7 +23,7 @@ export default class MotorControl extends React.Component {
         return (
           <Col key={`mc-${motor_uiprop.attribute}`} sm={12}>
             <MotorInputContainer
-              component={"sample_view"}
+              component="sample_view"
               role={motor_uiprop.role}
             />
           </Col>
@@ -47,7 +47,7 @@ export default class MotorControl extends React.Component {
   }
 
   renderAllMotors() {
-    const diffractometerHo = this.props.hardwareObjects['diffractometer'];
+    const diffractometerHo = this.props.hardwareObjects.diffractometer;
 
     const phaseControl = (
       <div>

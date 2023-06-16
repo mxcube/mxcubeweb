@@ -1,4 +1,4 @@
-<object class="CollectEmulator">
+<object class="Gphl.CollectEmulator">
 
   <!-- First part must mirror mxcollect.xml -->
   <object href="/minidiff" role="diffractometer"/>

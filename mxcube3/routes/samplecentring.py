@@ -76,7 +76,7 @@ def init_route(app, server, url_prefix):
         params = request.get_json()
 
         res = app.sample_view.set_image_size(
-            int(params["width"]), int(params["height"])
+            float(params["width"]), float(params["height"])
         )
 
         resp = jsonify(res)

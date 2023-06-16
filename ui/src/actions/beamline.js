@@ -2,7 +2,7 @@ import fetch from 'isomorphic-fetch';
 // The different states a beamline attribute can assume.
 export const STATE = {
   IDLE: 'READY',
-  BUSY: 'MOVING',
+  BUSY: 'BUSY',
   ABORT: 'UNUSABLE',
 };
 
@@ -38,11 +38,8 @@ export function setMachInfo(info) {
   return { type: BL_MACH_INFO, info };
 }
 
-export function busyStateAction(name) {
-  return {
-    type: BL_UPDATE_HARDWARE_OBJECT_STATE,
-    data: { name, state: STATE.BUSY },
-  };
+export function updateBeamlineHardwareObjectStateAction(data) {
+  return { type: BL_UPDATE_HARDWARE_OBJECT_STATE, data };
 }
 
 export function sendGetAllhardwareObjects() {
@@ -75,7 +72,6 @@ export function setBeamlineAttribute(name, value) {
 
 export function sendSetAttribute(name, value) {
   return (dispatch, getState) => {
-    dispatch(busyStateAction(name));
     const state = getState();
     const type = state.beamline.hardwareObjects[name].type.toLowerCase();
     const url = `mxcube/api/v0.1/beamline/${type}/value/${name}`;

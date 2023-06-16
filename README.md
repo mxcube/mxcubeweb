@@ -1,5 +1,7 @@
-[![Build Status](https://travis-ci.org/mxcube/mxcube3.svg?branch=master)](https://travis-ci.org/mxcube/mxcube3)
+[![Build and test](https://github.com/mxcube/mxcubeweb/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/mxcube/mxcubeweb/actions/workflows/build_and_test.yml)
+![PyPI](https://img.shields.io/pypi/v/mxcubeweb)
 [![codecov](https://codecov.io/gh/mxcube/mxcube3/branch/master/graph/badge.svg)](https://codecov.io/gh/mxcube/mxcube3)
+
 
 <p align="center"><img src="http://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
 

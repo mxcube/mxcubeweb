@@ -67,20 +67,21 @@ class Queue(ComponentBase):
         return prefix_path_dict
 
     def get_run_number(self, pt):
-        prefix_path_dict = self.build_prefix_path_dict(self.app.INITIAL_FILE_LIST)
-
         # Path templates of files not yet written to to disk, we are only
         # interested in the prefix path
-        fname = pt.get_image_path()
-        prefix_path, _, _ = qmo.PathTemplate.interpret_path(fname)
-        run_number = HWR.beamline.queue_model.get_next_run_number(pt)
 
-        if prefix_path in prefix_path_dict:
-            rn = run_number + prefix_path_dict[prefix_path]
-        else:
-            rn = run_number
+        pt.run_number = HWR.beamline.queue_model.get_next_run_number(pt)
+        start_fname, end_fname = pt.get_first_and_last_file()
 
-        return rn
+        while os.path.isfile(start_fname) or os.path.isfile(end_fname):
+            pt.run_number += 1
+
+            if pt.run_number > 1000:
+                raise RuntimeError("Over a thousand runs of the same collection")
+
+            start_fname, end_fname = pt.get_first_and_last_file()
+
+        return pt.run_number
 
     def node_index(self, node):
         """
@@ -377,7 +378,7 @@ class Queue(ComponentBase):
         parameters = pt.as_dict()
         parameters["path"] = parameters["directory"]
 
-        parameters["strategy_name"] = node.get_type()
+        parameters["strategy_name"] = node.strategy_name
         parameters["label"] = "GΦL " + parameters["strategy_name"]
         parameters["shape"] = node.shape
 
@@ -1382,6 +1383,9 @@ class Queue(ComponentBase):
         Return:
             (tuple): (model, entry)
         """
+        if not task["parameters"]["osc_range"]:
+            task["parameters"]["osc_range"] = None
+
         queue_entry_name = task_name.title().replace("_", "") + "QueueEntry"
         entry_cls = getattr(qe, queue_entry_name)
         data = entry_cls.DATA_MODEL(
@@ -1626,6 +1630,7 @@ class Queue(ComponentBase):
         group_model.set_enabled(True)
         HWR.beamline.queue_model.add_child(parent_model, group_model)
         HWR.beamline.queue_model.add_child(group_model, wf_model)
+
         if not task["parameters"]["wfpath"] == "Gphl":
             self.set_wf_params(wf_model, dc_entry, task, sample_model)
 
@@ -2294,6 +2299,18 @@ class Queue(ComponentBase):
 
         return {"QueueId": new_node, "Type": "Centring", "Params": params}
 
+    def update_dependent_field(self, task_name, data):
+        try:
+            queue_entry = qe.get_queue_entry_from_task_name(task_name)
+            data_model = getattr(queue_entry, "DATA_MODEL", None)
+            new_data = json.dumps(data_model.update_dependent_fields(data))
+        except Exception:
+            logging.getLogger("MX3.HWR").exception(
+                f"Could not update depedant fields for {task_name}"
+            )
+
+        return new_data
+
     def get_default_task_parameters(self, task_name):
         acq_parameters = HWR.beamline.get_default_acquisition_parameters(
             task_name
@@ -2312,6 +2329,11 @@ class Queue(ComponentBase):
             )
 
         schema = self.get_task_schema(data_model) if data_model else {}
+
+        try:
+            ui_schema = data_model.ui_schema() if data_model else {}
+        except:
+            ui_schema = {}
 
         if schema:
             for parameter_group in schema.values():
@@ -2339,6 +2361,7 @@ class Queue(ComponentBase):
             "name": display_name if display_name else task_name,
             "queue_entry": task_name,
             "schema": schema,
+            "ui_schema": ui_schema,
         }
 
     def get_task_schema(self, data_model):
@@ -2379,7 +2402,7 @@ class Queue(ComponentBase):
         return sample
 
     def get_method(self, sample_id, method_id):
-        sample = self.queue_to_dict().get(int(id), None)
+        sample = self.queue_to_dict().get(int(sample_id), None)
 
         if not sample:
             msg = "[QUEUE] sample info could not be retrieved"

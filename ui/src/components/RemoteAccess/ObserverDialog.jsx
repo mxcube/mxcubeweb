@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, FormControl } from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col} from 'react-bootstrap';
 import { showObserverDialog, sendUpdateNickname } from '../../actions/remoteAccess';
 
 export class ObserverDialog extends React.Component {
@@ -69,15 +69,27 @@ export class ObserverDialog extends React.Component {
               ? ''
               : 'You have to enter your name to be able to continue.'}
           </Modal.Body>
-          <Modal.Footer>
-            {this.props.login.loginType === 'User' ? null : (
-              <FormControl
-                onChange={(event) => { this.name = event.target; }}
-                type='text'
-                defaultValue={this.props.login.user.username}
-              />
-            )}
-            <Button onClick={this.accept}> OK </Button>
+          <Modal.Footer className='d-block'>
+            <Form onSubmit={this.accept}>
+              {this.props.login.loginType === 'User' ? null : (
+                <Row className="mb-3">
+                  <Form.Group as={Col} sm={12}>
+                    <Form.Control
+                      ref={(ref) => {
+                        this.name = ref;
+                      }}
+                      type='text'
+                      defaultValue={this.props.login.loginID}
+                    />
+                  </Form.Group>
+                </Row>
+              )}
+              <Row className='justify-content-end'>
+                <Form.Group as={Col} sm={3}>
+                  <Button style={{ float: 'right'}} type="submit"> OK </Button>
+                </Form.Group>
+              </Row>
+            </Form>
           </Modal.Footer>
         </div>
       </Modal>

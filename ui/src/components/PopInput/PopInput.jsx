@@ -42,53 +42,12 @@ export default class PopInput extends React.Component {
     this.save = this.save.bind(this);
     this.cancel = this.cancel.bind(this);
     this.submit = this.submit.bind(this);
-    this.showOvelay = this.showOvelay.bind(this);
-    this.state = {show: false};
+    this.hideOverlay = this.hideOverlay.bind(this);
   }
 
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.data.state !== this.props.data.state) {
-      if (this.isIdle(nextProps.data)) {
-        this.handleIdle(nextProps.data);
-      } else if (this.isAborted(nextProps.data)) {
-        this.handleError(nextProps.data);
-      } else {
-        this.handleError(nextProps.data);
-      }
-    }
+  hideOverlay() {
+    document.body.click();
   }
-
-
-  showOvelay(value) {
-    this.setState({
-      show: value
-    });
-  }
-
-
-
-  getChild(key) {
-    let {children} = this.props;
-    let child;
-
-    // We need to create a real array here since react is so kind to give us
-    // undefined if there is no children and an object if there is only one.
-    if (this.props.children === undefined) {
-      children = [];
-    } else if (!Array.isArray(this.props.children)) {
-      children = [this.props.children];
-    }
-
-    for (const c in children) {
-      if (children[c].key === key) {
-        child = children[c];
-      }
-    }
-
-    return child;
-  }
-
 
   setValue(value) {
     if (this.props.onSave !== undefined) {
@@ -96,31 +55,13 @@ export default class PopInput extends React.Component {
       this.props.onSave(this.props.pkey, value);
     }
     if (this.props.data.state === 'IMMEDIATE') {
-      this.showOvelay(false)
+      this.hideOverlay()
     }
   }
-
-
-  handleIdle(data) {
-    // No message to display to user, hide overlay
-    if (data.msg === '') {
-      this.showOvelay(false)
-    }
-  }
-
-
-  handleError(data) {
-    // No message to display to user, hide overlay
-    if (data.msg === '') {
-      this.showOvelay(false)
-    }
-  }
-
 
   save() {
     this.setValue(this.defaultInputRef.getValue());
   }
-
 
   cancel() {
     if (this.props.onCancel !== undefined && this.isBusy()) {
@@ -128,7 +69,7 @@ export default class PopInput extends React.Component {
     }
 
     if (!this.isBusy()) {
-      this.showOvelay(false)
+      this.hideOverlay();
     }
   }
 
@@ -137,16 +78,8 @@ export default class PopInput extends React.Component {
     this.save();
   }
 
-
   inputComponent() {
-    const props = { value: this.props.data.value,
-      onSubmit: this.submit,
-      onCancel: this.cancel,
-      onSave: this.save,
-      precision: this.precision,
-      step: this.props.step };
-
-    let input = (
+    return (
       <DefaultInput
         ref={(ref) => { this.defaultInputRef = ref; }}
         precision={this.props.precision}
@@ -154,43 +87,34 @@ export default class PopInput extends React.Component {
         dataType={this.props.dataType}
         inputSize={this.props.inputSize}
         inplace={this.props.inplace}
-      />);
-
-    input = this.getChild('input') || input;
-    input = React.cloneElement(input, props);
-
-    return input;
+        value={this.props.data.value}
+        onSubmit={this.submit}
+        onCancel={this.cancel}
+        onSave={this.save}
+      />
+    );
   }
-
 
   busyComponent() {
-    const props = { onCancel: this.cancel };
-    let input = (<DefaultBusy />);
+    return (
+      <DefaultBusy
+        onCancel={this.cancel }
+      />
+    )
 
-    input = this.getChild('busy') || input;
-    input = React.cloneElement(input, props);
-
-    return input;
   }
 
-
-  isBusy(data) {
-    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
-    return state === STATE.BUSY;
+  isBusy() {;
+    return this.props.data.state === STATE.BUSY;
   }
 
-
-  isIdle(data) {
-    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
-    return state === STATE.IDLE;
+  isIdle() {
+    return this.props.data.state === STATE.IDLE;
   }
 
-
-  isAborted(data) {
-    const state = typeof data !== 'undefined' ? data.state : this.props.data.state;
-    return state === STATE.ABORT;
+  isAborted() {
+    return this.props.data.state === STATE.ABORT;
   }
-
 
   render() {
     const linkClass = 'editable-click';
@@ -227,7 +151,6 @@ export default class PopInput extends React.Component {
     if (value !== '-' && this.props.precision) {
       value = value.toFixed(Number.parseInt(this.props.precision, 10));
     }
-    const {show} = this.state;
     return (
       <div style={this.props.style} className={`${this.props.className} popinput-input-container`}>
         { this.props.name ?
@@ -246,10 +169,8 @@ export default class PopInput extends React.Component {
             </div>
             :
             <OverlayTrigger
-              show={show}
-              onHide={() => this.showOvelay(false)}
               id='popOverlayRef'
-              trigger="focus"
+              trigger="click"
               rootClose
               placement={this.props.placement}
               overlay={popover}
@@ -258,7 +179,6 @@ export default class PopInput extends React.Component {
                 ref={(ref) => { this.valueLabel = ref; }}
                 key="valueLabel"
                 className={`popinput-input-link ${linkClass} ${stateClass}`}
-                onClick={() => this.showOvelay(!show)}
               >
                 {value} {this.props.suffix}
               </a>
@@ -277,8 +197,6 @@ PopInput.defaultProps = {
   inputSize: '5',
   precision: 1,
   step: 0.1,
-  name: '',
-  title: '',
   suffix: '',
   value: 0,
   style: {},

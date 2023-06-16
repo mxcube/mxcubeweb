@@ -131,7 +131,7 @@ export default class GridForm extends React.Component {
 
   render() {
     const gridForm = (
-      <Draggable defaultPosition={{ x: 20, y: 50 }} cancel="form">
+      <Draggable defaultPosition={{ x: 20, y: 64 }} cancel="form">
         <Row className="gridform">
           <Col xs={8}>
             <Table

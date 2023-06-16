@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ProgressBar, Button, Collapse, OverlayTrigger, Popover } from 'react-bootstrap';
-import { TASK_UNCOLLECTED,
+import { ProgressBar, Button, Collapse, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import {
+  TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
-  TASK_RUNNING } from '../../constants';
+  TASK_RUNNING
+} from '../../constants';
 
 export default class WorkflowTaskItem extends Component {
   static propTypes = {
@@ -35,10 +37,12 @@ export default class WorkflowTaskItem extends Component {
     const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
 
     return (
-      <div style={ { borderLeft: '1px solid #DDD',
+      <div style={{
+        borderLeft: '1px solid #DDD',
         borderRight: '1px solid #DDD',
         borderBottom: '1px solid #DDD',
-        padding: '0.5em' } }
+        padding: '0.5em'
+      }}
       >
         <a href={link} target="_blank" rel="noreferrer"> View Results in ISPyB</a>
       </div>
@@ -95,49 +99,47 @@ export default class WorkflowTaskItem extends Component {
 
   path(parameters) {
     const path = parameters.path ? parameters.path : '';
-    const value = `...${path.slice(-30)}`;
+    const pathEndPart = path.slice(-40);
 
     return (
       <OverlayTrigger
-        trigger="click"
-        placement="top"
+        placement="bottom"
         rootClose
-        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '2000px', width: 'auto' }}>
-                    <input
-                      type="text"
-                      onFocus={(e) => {e.target.select();}}
-                      value={path}
-                      size={path.length + 10}
-                    />
-                  </Popover>)}
+        overlay={(
+          <Tooltip id="wedge-popover">
+            {path}
+          </Tooltip>)
+        }
       >
-        <a onClick={(e) => (e.stopPropagation())}>
-          { value }
+        <a style={{ flexGrow: 1 }} >
+          .../{pathEndPart.slice(pathEndPart.indexOf("/") + 1)}
         </a>
-      </OverlayTrigger>);
+      </OverlayTrigger >
+    );
   }
 
+
   progressBar() {
-    const {state} = this.props;
+    const { state } = this.props;
     let pbarBsStyle = 'info';
 
     switch (state) {
-    case TASK_RUNNING: {
-      pbarBsStyle = 'info';
-    
-    break;
-    }
-    case TASK_COLLECTED: {
-      pbarBsStyle = 'success';
-    
-    break;
-    }
-    case TASK_COLLECT_FAILED: {
-      pbarBsStyle = 'danger';
-    
-    break;
-    }
-    // No default
+      case TASK_RUNNING: {
+        pbarBsStyle = 'info';
+
+        break;
+      }
+      case TASK_COLLECTED: {
+        pbarBsStyle = 'success';
+
+        break;
+      }
+      case TASK_COLLECT_FAILED: {
+        pbarBsStyle = 'danger';
+
+        break;
+      }
+      // No default
     }
 
     return (
@@ -148,8 +150,8 @@ export default class WorkflowTaskItem extends Component {
           style={{ marginBottom: '0px', height: '18px' }}
           min={0}
           max={1}
-          active={ this.props.progress < 1 }
-          label={ `${(this.props.progress * 100).toPrecision(3)} %` }
+          active={this.props.progress < 1}
+          label={`${(this.props.progress * 100).toPrecision(3)} %`}
           now={this.props.progress}
         />
       </span>);
@@ -160,7 +162,7 @@ export default class WorkflowTaskItem extends Component {
       data,
       show } = this.props;
 
-    const {parameters} = data;
+    const { parameters } = data;
 
 
     const delTaskCSS = {
@@ -176,22 +178,22 @@ export default class WorkflowTaskItem extends Component {
     let taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
 
     switch (state) {
-    case TASK_RUNNING: {
-      taskCSS += ' running';
-    
-    break;
-    }
-    case TASK_COLLECTED: {
-      taskCSS += ' success';
-    
-    break;
-    }
-    case TASK_COLLECT_FAILED: {
-      taskCSS += ' error';
-    
-    break;
-    }
-    // No default
+      case TASK_RUNNING: {
+        taskCSS += ' running';
+
+        break;
+      }
+      case TASK_COLLECTED: {
+        taskCSS += ' success';
+
+        break;
+      }
+      case TASK_COLLECT_FAILED: {
+        taskCSS += ' error';
+
+        break;
+      }
+      // No default
     }
 
     return (
@@ -212,25 +214,43 @@ export default class WorkflowTaskItem extends Component {
                 </span>
               </b>
               {state === TASK_UNCOLLECTED ?
-                <i className="fas fa-remove" onClick={this.deleteTask} style={delTaskCSS} /> : null
+                <i className="fa fa-times" onClick={this.deleteTask} style={delTaskCSS} /> : null
               }
             </div>
-            <Collapse in={Boolean(show)}>
-              <div className="task-body">
-                <div>
-                  <div style={{ border: '1px solid #DDD' }}>
-                    <div
-                      style={{ padding: '0.5em' }}
-                      onClick={this.showForm}
+          </div>
+          <Collapse in={Boolean(show)}>
+            <div className="task-body">
+              <div>
+                <div style={{ border: '1px solid #DDD' }}>
+                  <div
+                    style={{
+                      borderTop: '1px solid #DDD',
+                      padding: '0.5em',
+                      display: 'flex',
+                      justifyContent: 'space-around',
+                      alignItems: 'center'
+                    }}
+                  >
+                    <b>Path:</b>
+                    {this.path(parameters)}
+                    <Button
+                      variant='outline-secondary'
+                      style={{ width: '3em' }}
+                      title='Copy path'
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `${parameters.path}`
+                        );
+                      }}
                     >
-                      <b>Workflow path:</b> {this.path(parameters)}
-                    </div>
+                      <i style={{ marginLeft: '0px' }} className="fa fa-clipboard" aria-hidden="true" />
+                    </Button>
                   </div>
                   {this.getResult(state)}
                 </div>
               </div>
-            </Collapse>
-          </div>
+            </div>
+          </Collapse>
         </div>
       </div>);
   }

@@ -11,6 +11,7 @@ import json
 import time
 
 from pathlib import Path
+from urllib.parse import urlparse
 from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 
@@ -30,6 +31,7 @@ from mxcube3.core.components.beamline import Beamline
 from mxcube3.core.components.sampleview import SampleView
 from mxcube3.core.components.queue import Queue
 from mxcube3.core.components.workflow import Workflow
+from mxcube3.core.components.gphl_workflow import GphlWorkflow
 
 
 removeLoggingHandlers()
@@ -266,7 +268,10 @@ class MXCUBEApplication:
         MXCUBEApplication.mxcubecore.init(MXCUBEApplication)
 
         if cfg.app.USE_EXTERNAL_STREAMER:
-            MXCUBEApplication.init_sample_video(cfg.app.VIDEO_FORMAT)
+            MXCUBEApplication.init_sample_video(
+                _format=cfg.app.VIDEO_FORMAT,
+                port=str(urlparse(cfg.app.VIDEO_STREAM_URL).port),
+            )
 
         MXCUBEApplication.init_logging(log_fpath, log_level, enabled_logger_list)
 
@@ -284,6 +289,7 @@ class MXCUBEApplication:
         MXCUBEApplication.beamline = Beamline(MXCUBEApplication, {})
         MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, {})
         MXCUBEApplication.workflow = Workflow(MXCUBEApplication, {})
+        MXCUBEApplication.gphl_workflow = GphlWorkflow(MXCUBEApplication, {})
 
         MXCUBEApplication.init_signal_handlers()
         atexit.register(MXCUBEApplication.app_atexit)
@@ -296,13 +302,13 @@ class MXCUBEApplication:
         logging.getLogger("MX3.HWR").info(msg)
 
     @staticmethod
-    def init_sample_video(format):
+    def init_sample_video(_format, port):
         """
         Initializes video streaming
         :return: None
         """
         try:
-            HWR.beamline.sample_view.camera.start_streaming(format)
+            HWR.beamline.sample_view.camera.start_streaming(_format=_format, port=port)
         except Exception as ex:
             msg = "Could not initialize video, error was: "
             msg += str(ex)

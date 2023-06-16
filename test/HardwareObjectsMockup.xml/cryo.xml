@@ -1,6 +1,6 @@
-<device class ="ActuatorMockup">
+<object class ="ActuatorMockup">
     <actuator_name>Cryo</actuator_name>
     <username>Cryo</username>
     <read_only>True</read_only>
     <default_value>200</default_value>
-</device>
+</object>

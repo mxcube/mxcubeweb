@@ -17,8 +17,6 @@ export class SampleGridTableItem extends React.Component {
     super(props);
     this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
     this.sampleItemOnClick = this.sampleItemOnClick.bind(this);
-    this.pickButtonMouseUp = this.pickButtonMouseUp.bind(this);
-    this.pickButtonMouseDown = this.pickButtonMouseDown.bind(this);
 
     this.sampleInformation = this.sampleInformation.bind(this);
     this.onCopy = this.onCopy.bind(this);
@@ -27,32 +25,12 @@ export class SampleGridTableItem extends React.Component {
     };
   }
 
-
-  componentDidMount() {
-    this.sampleItem.addEventListener('contextmenu', this.contextMenu, false);
-  }
-
-  componentWillUnmount() {
-    this.sampleItem.removeEventListener('contextmenu', this.contextMenu);
-  }
-
-  contextMenu(e) {
-    e.preventDefault();
-  }
-
   pickButtonOnClick(e) {
     if (this.props.pickButtonOnClickHandler) {
       this.props.pickButtonOnClickHandler(e, this.props.sampleData.sampleID);
     }
   }
 
-  pickButtonMouseDown(e) {
-    e.stopPropagation();
-  }
-
-  pickButtonMouseUp(e) {
-    e.stopPropagation();
-  }
 
   itemControls() {
     let icon = <BsSquare size='0.9em'/>;
@@ -65,24 +43,23 @@ export class SampleGridTableItem extends React.Component {
       <OverlayTrigger
         placement="auto"
         overlay={(<Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>)}
-        trigger={["hover", "focus"]}
       >
         <Button
           variant="content"
           disabled={this.props.current && this.props.picked}
           className="samples-grid-table-item-button"
-          onClick={this.pickButtonOnClick}
-          onMouseUp={this.pickButtonMouseUp}
-          onMouseDown={this.pickButtonMouseDown}
+          onClick={(e) => {this.pickButtonOnClick(e)}}
         >
           <i>{icon}</i>
         </Button>
       </OverlayTrigger>
     );
 
-    return <div className="samples-item-controls-container">
+    return (
+      <div className="samples-item-controls-container">
         {pickButton}
-      </div>;
+      </div>
+    )
   }
 
 
@@ -118,7 +95,7 @@ export class SampleGridTableItem extends React.Component {
           <span className="col-sm-6">{sampleData.crystalSpaceGroup}</span>
         </div>
         <div className="row">
-          <span style={{ 'padding-top': '0.5em' }} className="col-sm-12">
+          <span style={{ 'paddingTop': '0.5em' }} className="col-sm-12">
             <b>Crystal unit cell:</b>
           </span>
           <span className="col-sm-1">A:</span>
@@ -180,7 +157,6 @@ export class SampleGridTableItem extends React.Component {
       { 'label-custom-success': this.props.sampleData.loadable === true });
 
     const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
-
     return (
       <ListGroup
         variant="flush"
@@ -192,7 +168,7 @@ export class SampleGridTableItem extends React.Component {
           <div className="samples-grid-table-item-top d-flex">
             {this.itemControls()}
             <div  className="div-samples-grid-table-item-top">
-            <CopyToClipboard className="copy-link" text={this.sampleDisplayName()} onCopy={this.onCopy}>
+              <CopyToClipboard className="copy-link" text={this.sampleDisplayName()} onCopy={this.onCopy}>
                 <Button variant="content" className="btn-copy-link">
                   <MdContentCopy style={{ float: 'right'}} size=""/>
                   <span className={`tooltiptext ${this.state.copied ? 'copy-link-glow' : ''}`} id="myTooltip">
