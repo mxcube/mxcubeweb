@@ -102,9 +102,8 @@ class SampleViewContainer extends Component {
           }
           // No default
         }
-        // No default
-      }
-    });
+      });
+    }
     const diffractometerHo = this.props.hardwareObjects.diffractometer;
 
     const phaseControl = (
