@@ -150,7 +150,7 @@ def init_route(app, server, url_prefix):
         else:
             return jsonify(response=ret)
 
-    return bp
+    # return bp
     # tianjia
     @bp.route("/send_command/abort", methods=["GET"])
     @server.require_control

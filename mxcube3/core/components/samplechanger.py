@@ -219,10 +219,11 @@ class SampleChanger(ComponentBase):
                     and self.app.CENTRING_METHOD == queue_entry.CENTRING_METHOD.LOOP
                     and not HWR.beamline.diffractometer.in_plate_mode()
                 ):
-                    msg = "Starting autoloop centring ..."
-                    logging.getLogger("MX3.HWR").info(msg)
-                    C3D_MODE = HWR.beamline.diffractometer.C3D_MODE
-                    HWR.beamline.diffractometer.start_centring_method(C3D_MODE)
+                    # msg = "Starting autoloop centring ..."
+                    # logging.getLogger("MX3.HWR").info(msg)
+                    # C3D_MODE = HWR.beamline.diffractometer.C3D_MODE
+                    # HWR.beamline.diffractometer.start_centring_method(C3D_MODE)
+                    pass
 
             else:
                 msg = "Mounting sample: %s" % sample["sampleName"]
@@ -284,6 +285,7 @@ class SampleChanger(ComponentBase):
         # gevent.spawn(self.mount_sample_clean_up, sample)
         # 计数到16，dry一下
         if sc.count >= 16:
+            sc.count = 0
             # 如果计数到16但是没有发现上颗样品，说明被umount掉了，此时不执行unmount函数
             if sc.get_loaded_sample == None:
                 pass
@@ -297,7 +299,7 @@ class SampleChanger(ComponentBase):
             sc_maint._do_dry_gripper()
 
         self.mount_sample_clean_up(sample)
-        sc.count = 0
+
         return self.get_sc_contents()
 
 

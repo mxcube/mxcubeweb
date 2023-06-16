@@ -82,7 +82,7 @@ class BaseUserManager(ComponentBase):
                 and (
                     datetime.datetime.now() - _u.last_request_timestamp
                 ).total_seconds()
-                > 60
+                > 600
             ):
                 # logging.getLogger("HWR.MX3").info(
                 #     f"Logged out inactive user {_u.username}"
