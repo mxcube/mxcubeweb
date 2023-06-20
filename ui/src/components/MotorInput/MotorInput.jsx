@@ -81,6 +81,7 @@ export default class MotorInput extends React.Component {
     return (
       <div className="motor-input-container">
         <p className="motor-name">{this.props.label}</p>
+        <div  className='d-flex'>
         <form className='d-flex' onSubmit={this.handleKey} noValidate>
           <div style={{ display: 'flex', width: '160px' }}>
             <div
@@ -136,13 +137,13 @@ export default class MotorInput extends React.Component {
                   onSave={this.props.saveStep}
                   suffix={suffix}
                   inputSize="5"
-                  style={{ display: 'inline-block', marginLeft: 'auto', marginRight: '0.5em' }}
+                  style={{ display: 'inline-block', marginLeft: 'auto', marginRight: '0.5em', paddingLeft: '0.5em'}}
                 />
                 : null
               }
               {this.props.state !== MOTOR_STATE.READY ?
                 <Button
-                  style={{ width: '100%', height: '100%', display: 'block' }}
+                  style={{ width: '100%', height: '100%', display: 'block', border: 'none' }}
                   className="btn-xs motor-abort rw-widget-no-left-border"
                   variant="danger"
                   onClick={this.stopMotor}
@@ -157,8 +158,8 @@ export default class MotorInput extends React.Component {
               }
             </div>
           </div>
-          {this.props.inplace ?
-            <div style={{ position: 'relative' }}>
+        </form>
+          {this.props.inplace &&
               <PopInput
                 pkey={`${motorName.toLowerCase()}Step`}
                 data={data}
@@ -166,12 +167,9 @@ export default class MotorInput extends React.Component {
                 suffix={suffix}
                 inputSize="5"
                 inplace
-                style={{ display: 'inline-block', marginLeft: 'auto', marginRight: 'auto' }}
+                style={{ display: 'flex', alignItems: 'center' }}
               />
-            </div>
-            : null
-          }
-        </form>
+          }</div>
       </div>
     );
   }
