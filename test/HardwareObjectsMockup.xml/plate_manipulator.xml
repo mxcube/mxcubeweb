@@ -1,0 +1,55 @@
+<equipment class = "PlateManipulatorMockup">
+<!-- <equipment class = "PlateManipulator"> -->
+  <!-- <exporter_address>pc721.emblgr.embl.fr:443</exporter_address>   -->
+  <!-- <exporter_address>wid30bmd:9001</exporter_address> -->
+
+  <username>Sample Changer</username> 
+  <!-- <command type="exporter" name="MoveToDrop">startMovePlateToShelf</command>
+  <command type="exporter" name="MoveToXtalPointing">startMoveToCrystalPosition</command>
+  <command type="exporter" name="startMovePlateToLocation">startMovePlateToLocation</command>
+  <command type="exporter" name="getOmegaMotorDynamicScanLimits">getOmegaMotorDynamicScanLimits</command>
+  <command type="exporter" name="AbortCurrentAction">abort</command>
+  <channel type="exporter" name="State">State</channel>
+  <channel type="exporter" name="PlateLocation">PlateLocation</channel> -->
+
+  <!-- <channel type="exporter" name="GetPlateConfig">PlateTopology</channel> -->
+
+  <!-- <channel type="exporter" name="DropLocation">DropLocation</channel>
+  <channel type="exporter" name="CurrentPhase">CurrentPhase</channel>  -->
+
+  <!-- TEMP Comment: Please Do not rename Plate Label -->
+
+  <plateLabel>Cristal Direct</plateLabel>
+  <numCols>12</numCols>
+  <numRows>8</numRows>
+  <numDrops>3</numDrops>
+  <referencePosX>0.65</referencePosX>
+  
+<!-- 
+  <plateLabel>ChipX</plateLabel>
+  <numCols>1</numCols>
+  <numRows>2</numRows>
+  <numDrops>20</numDrops>
+  <referencePosX>0.65</referencePosX> -->
+
+  <!-- <plateLabel>Mitegen InSitu-1</plateLabel>
+  <numCols>12</numCols>
+  <numRows>8</numRows>
+  <numDrops>3</numDrops>
+  <referencePosX>0.65</referencePosX> -->
+
+  <!-- <plateLabel>Cristal QuickX</plateLabel>
+  <numCols>12</numCols>
+  <numRows>8</numRows>
+  <numDrops>2</numDrops>
+  <referencePosX>0.65</referencePosX> -->
+
+  <useUpdateTimer>False</useUpdateTimer>
+
+  <!-- <crimsWsRoot>https://lolita.embl-hamburg.de</crimsWsRoot> -->
+  <!-- <crimsWsRoot>https://htxlab.embl.fr/agility/plates/CD027680/insitu/xml</crimsWsRoot> -->
+  <crimsWsRoot>https://htxlab.embl.fr/pins/api/plates/</crimsWsRoot>
+  <!-- <PlateBarode>CD031660</PlateBarode> -->
+  <PlateBarode>CD032401</PlateBarode>
+  <harvesterKey></harvesterKey>
+</equipment>
