@@ -27,7 +27,6 @@ class PlateManipulator extends React.Component {
   }
 
   showContextMenu(event, id) {
-    event.stop
     let position= {
       x: event.clientX,
       y: event.clientY ,
@@ -132,8 +131,6 @@ class PlateManipulator extends React.Component {
 
   render() {
     const plate = this.props.plates[this.props.plateIndex];
-    // const plateName = this.props.global_state.plate_info.plate_label
-    // const plate = this.props.plates.filter(_plate => _plate.name == plateName)[0];
     const nbcols = plate.colTitle.length;
     const nbrows = plate.rowTitle.length;
     let loadedDrop = '';
@@ -146,11 +143,11 @@ class PlateManipulator extends React.Component {
       }
     }
 
-    const crimsImg = (imgUrl, name) =>
+    const crimsImg = (imgUrl, name) =>(
       <div className="plate-desc">
         <img className="plate-tooltip" src={imgUrl} alt={name}/>
-      </div>;
-
+      </div>
+    );
 
     const crystalForSelectedWell = this.getCrystalAddressByDrop(this.props.selectedRow,
       this.props.selectedCol, this.props.selectedDrop);
@@ -518,36 +515,6 @@ class PlateManipulator extends React.Component {
       <Row className='mt-4' title={this.props.state === 'MOVING' ? 'Plate Moving, can not send commande' : ''}>
         <Col className='ms-3'>
           <ButtonToolbar className='ms-4'>
-            {/* <DropdownButton
-              variant="outline-secondary"
-              title={plate_label}
-              id="dropdown-basic"
-              size='sm'
-            >
-              {this.props.plates.map((cplate, index) => (
-                plate_label === cplate.name ?
-                  (<Dropdown.Item
-                    key={cplate.name}
-                    onClick={() => {
-                      this.setPlate(index);
-                    }}
-                  >
-                    {cplate.name}
-                  </Dropdown.Item>)
-                  :
-                  (<Dropdown.Item
-                    key={cplate.name}
-                    // onClick={() => {
-                    //   this.setPlate(index);
-                    // }}
-                    disabled
-                  >
-                    {cplate.name}
-                  </Dropdown.Item>)
-              ))
-              }
-            </DropdownButton> */}
-            {/* <span style={{ marginLeft: '1.5em' }} /> */}
             <OverlayTrigger
               variant="outline-success"
               placement="bottom"
