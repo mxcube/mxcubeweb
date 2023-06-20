@@ -17,6 +17,7 @@ import BeamlineSetupContainer from './BeamlineSetupContainer';
 import SampleQueueContainer from './SampleQueueContainer';
 import { QUEUE_RUNNING } from '../constants';
 import DefaultErrorBoundary from './DefaultErrorBoundary';
+import { syncWithCrims } from '../actions/sampleGrid';
 import { loadSample, refresh, selectWell,
   setPlate, selectDrop, sendCommand
 } from '../actions/sampleChanger';
@@ -29,7 +30,7 @@ import {
   executeCommand,
   sendLogFrontEndTraceBack
 } from '../actions/beamline';
-import { syncWithCrims } from '../actions/sampleGrid';
+
 class SampleViewContainer extends Component {
   render() {
     const { uiproperties } = this.props;
@@ -138,27 +139,15 @@ class SampleViewContainer extends Component {
                 />
                 ) : null
               }
-              <MotorControl
-                save={this.props.sendSetAttribute}
-                saveStep={setStepSize}
-                uiproperties={uiproperties.sample_view}
-                hardwareObjects={this.props.hardwareObjects}
-                motorsDisabled={this.props.motorInputDisable
-                  || this.props.queueState === QUEUE_RUNNING}
-                steps={motorSteps}
-                stop={this.props.sendAbortCurrentAction}
-                sampleViewActions={this.props.sampleViewActions}
-                sampleViewState={this.props.sampleViewState}
-              />
-              {this.props.contents.name === 'PlateManipulator'
+              {this.props.sampleChangerContents.name === 'PlateManipulator'
                 ? (
-                  <div>
-                    <OverlayTrigger ref="plateOverlay" trigger="click" rootClose placement="right"
+                  <div className='mb-4'>
+                    <OverlayTrigger ref="plateOverlay" trigger="click" rootClose placement="auto-end"
                       overlay={(<Popover id="platePopover" style={{ maxWidth: '800px' }}>
                         <Popover.Header>{ this.props.global_state.plate_info.plate_label}</Popover.Header>
-                        <Popover.Body>
+                        <Popover.Body style={{ padding: '0px' }}>
                           <PlateManipulator
-                            contents={this.props.contents}
+                            contents={this.props.sampleChangerContents}
                             loadedSample={this.props.loadedSample}
                             select={this.props.select}
                             load={this.props.loadSample}
@@ -209,6 +198,18 @@ class SampleViewContainer extends Component {
                 )
                 : null
               }
+              <MotorControl
+                save={this.props.sendSetAttribute}
+                saveStep={setStepSize}
+                uiproperties={uiproperties.sample_view}
+                hardwareObjects={this.props.hardwareObjects}
+                motorsDisabled={this.props.motorInputDisable
+                  || this.props.queueState === QUEUE_RUNNING}
+                steps={motorSteps}
+                stop={this.props.sendAbortCurrentAction}
+                sampleViewActions={this.props.sampleViewActions}
+                sampleViewState={this.props.sampleViewState}
+              />
             </DefaultErrorBoundary>
           </Col>
           <Col sm={7}>
@@ -291,7 +292,7 @@ function mapStateToProps(state) {
     taskForm: state.taskForm,
     mode: state.general.mode,
 
-    contents: state.sampleChanger.contents,
+    sampleChangerContents: state.sampleChanger.contents,
     sampleChangerState: state.sampleChanger.state,
     global_state: state.sampleChangerMaintenance.global_state,
     loadedSample: state.sampleChanger.loadedSample,
@@ -301,7 +302,6 @@ function mapStateToProps(state) {
     selectedCol: state.sampleChanger.selectedCol,
     selectedDrop: state.sampleChanger.selectedDrop,
     crystalList: state.sampleGrid.crystalList,
-
   };
 }
 
