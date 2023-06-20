@@ -109,7 +109,7 @@ export default class MotorControl extends React.Component {
             <div>
               <Button
                 variant="outline-secondary"
-                style={{ marginTop: '1em', width: '155px' }}
+                style={{ marginTop: '1em', minWidth: '155px', width: 'fit-conent', whiteSpace: 'nowrap' }}
                 size="sm"
                 onClick={() => { this.setState({ showAll: false }); }}
               >
@@ -126,7 +126,7 @@ export default class MotorControl extends React.Component {
             <Button
               variant="outline-secondary"
               size='sm'
-              style={{ marginTop: '1em', width: '155px' }}
+              style={{ marginTop: '1em', minWidth: '155px', width: 'fit-conent', whiteSpace: 'nowrap' }}
               onClick={() => { this.setState({ showAll: true }); }}
             >
               <i className="fas fa-cogs" />

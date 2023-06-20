@@ -33,18 +33,18 @@ class PlateManipulator extends React.Component {
   }
 
   setPlate() {
-    // let plate_label = '';
-    // let plate_index = 0;
-    // if (this.props.global_state.plate_info && this.props.global_state.plate_info.plate_label) {
-    //   plate_label = this.props.global_state.plate_info.plate_label;
-    // }
-    // this.props.plates.map((cplate, index) => {
-    //   if (plate_label === cplate.name) {
-    //     plate_index = index
-    //   }
-    // });
+    let plate_label = '';
+    let plate_index = 0;
+    if (this.props.global_state.plate_info && this.props.global_state.plate_info.plate_label) {
+      plate_label = this.props.global_state.plate_info.plate_label;
+    }
+    this.props.plates.map((cplate, index) => {
+      if (plate_label === cplate.name) {
+        plate_index = index
+      }
+    });
 
-    // this.props.setPlate(plate_index);
+    this.props.setPlate(plate_index);
   }
 
 

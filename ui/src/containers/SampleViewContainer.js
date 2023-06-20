@@ -138,7 +138,6 @@ class SampleViewContainer extends Component {
                 />
                 ) : null
               }
-
               <MotorControl
                 save={this.props.sendSetAttribute}
                 saveStep={setStepSize}
@@ -184,7 +183,7 @@ class SampleViewContainer extends Component {
                     >
                       <Button
                         variant='outline-secondary'
-                        style={{ marginTop: '1em', width: '155px' }}
+                        style={{ marginTop: '1em', minWidth: '155px', width: 'fit-conent', whiteSpace: 'nowrap' }}
                         size='sm'
                       >
                         <i className="fa fa-th" />
@@ -194,14 +193,14 @@ class SampleViewContainer extends Component {
                       </Button>
                     </OverlayTrigger>
                     <Button
-                      style={{ marginTop: '1em', width: '155px' }}
+                      style={{ marginTop: '1em', minWidth: '155px', width: 'fit-conent', whiteSpace: 'nowrap' }}
                       variant="outline-secondary"
-                      // size='sm'
+                      size='sm'
                       title={this.props.hasCrystal ? 'Move to Crystal position' : 'No Crystal Found / Crims not Sync'}
                       onClick={() => this.props.send_command('moveToCrystalPosition')}
                       disabled={!this.props.hasCrystal}
                     >
-                      <i className="fa fa-diamond" />
+                      <i className="fas fa-gem" />
                         {' '}
                         Move to Cristal
                     </Button>
