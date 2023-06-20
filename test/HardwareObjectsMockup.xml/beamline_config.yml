@@ -36,9 +36,13 @@ _objects:
     - safety_shutter: safety_shutter.xml
     - fast_shutter: fast_shutter.xml
     - hutch_interlock: hutchtrigger.xml
-    - sample_changer: sc.xml
-    - sample_changer_maintenance: sc_maint.xml
-    - plate_manipulator: plate_manipulator.xml
+    # - sample_changer: sc.xml
+    # - sample_changer_maintenance: sc_maint.xml
+
+    # The 2 lines up have to be used for the flex HCD and the two below for the plate manip
+    - sample_changer: plate_manipulator.xml
+    - sample_changer_maintenance: plate_manipulator_maint.xml
+
     - diffractometer: minidiff.xml
     - lims: lims.xml
     - sample_view: sample_view.xml
