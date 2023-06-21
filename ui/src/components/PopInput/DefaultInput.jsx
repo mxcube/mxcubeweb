@@ -1,58 +1,54 @@
-
 import React from 'react';
 import { Form, InputGroup, Button, ButtonToolbar } from 'react-bootstrap';
 import NumericInput from 'react-numeric-input';
-import { TiTick, TiTimes } from "react-icons/ti";
+import { TiTick, TiTimes } from 'react-icons/ti';
 
 export default class DefaultInput extends React.Component {
   constructor(props) {
     super(props);
-    this.save = this.save.bind(this);
-    this.cancel = this.cancel.bind(this);
-    this.submit = this.submit.bind(this);
-    this.formControlRef = React.createRef();
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.inputRef = React.createRef();
   }
 
-  getValue() {
-    return this.formControlRef.current.state.value;
-  }
-
-  save() {
-    this.props.onSave();
-  }
-
-  cancel() {
-    this.props.onCancel();
-  }
-
-  submit(event) {
-    this.props.onSubmit(event);
+  handleSubmit(evt) {
+    evt.preventDefault();
+    if (!this.props.busy) {
+      this.props.onSubmit(this.inputRef.current.state.value);
+    }
   }
 
   render() {
     return (
-      <Form className="popinput" onSubmit={this.submit} noValidate>
-        <InputGroup className='d-flex' >
-          <NumericInput
-            className="popinput-input"
-            size={this.props.inputSize}
-            ref={this.formControlRef}
-            precision={this.props.precision}
-            value={this.props.value}
-            step={this.props.step}
-            strict
-          />
-          <ButtonToolbar style={{ marginLeft: '0px' }} className="ms-1 form-group editable-buttons">
-            <Button variant="success" size='sm' onClick={this.save}>
-              <TiTick size='1.5em' />
-            </Button>
-            { !this.props.inplace ? (
-              <Button variant="outline-secondary" size='sm' className="ms-1" onClick={this.cancel}>
-                <TiTimes size='1.5em' />
+      <Form className="popinput" onSubmit={this.handleSubmit} noValidate>
+        <InputGroup>
+          {this.props.busy ? (
+            <div className="popinput-input-busy" />
+          ) : (
+            <NumericInput
+              ref={this.inputRef}
+              className="popinput-input"
+              size={this.props.inputSize}
+              precision={this.props.precision}
+              value={this.props.value}
+              step={this.props.step}
+            />
+          )}
+          <ButtonToolbar className="ms-1">
+            {!this.props.busy && (
+              <Button type="submit" variant="success" size="sm">
+                <TiTick size="1.5em" />
               </Button>
-              ) : (null)
-            }
+            )}
+            {!this.props.inplace && (
+              <Button
+                variant={this.props.busy ? 'danger' : 'outline-secondary'}
+                size="sm"
+                className="ms-1"
+                onClick={() => this.props.onCancel()}
+              >
+                <TiTimes size="1.5em" />
+              </Button>
+            )}
           </ButtonToolbar>
         </InputGroup>
       </Form>
@@ -60,15 +56,13 @@ export default class DefaultInput extends React.Component {
   }
 }
 
-
 DefaultInput.defaultProps = {
-  dataType: 'number',
   inputSize: '3',
   step: 0.1,
   inplace: false,
   precision: 3,
   value: 0,
-  onSave: undefined,
+  busy: false,
   onCancel: undefined,
   onSubmit: undefined,
 };

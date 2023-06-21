@@ -11,31 +11,16 @@
   white-space: nowrap;
 }
 
-.popinput-busy-buttonbar{
-  display: inline-block;
-  float: right;
-}
-
  .popinput-input-busy{
-  display: inline-block;
   background-image: url(../../img/busy-indicator.gif);
   height: 32px;
   width: 32px;
+  margin: 2px 4px 2px 0;
   }
 
   .popinput-input{
     height: 36px;
     }
-
-  .visibility-hidden{
-    visibility: hidden;
-    display: none;
-    }
-
-
- .value-label-enter-success{
-  transition: background-color 1000ms ease-out;
-  }
 
   .popinput-input-container {
    display: inline;
