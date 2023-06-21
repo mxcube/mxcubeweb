@@ -16,6 +16,13 @@ class FlaskConfigModel(BaseModel):
     USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
     PERMANENT_SESSION_LIFETIME: datetime.timedelta
     SESSION_PERMANENT: bool = Field(True, description="")
+    CERT_KEY: str = Field("", description="Full path to signed certficate key file")
+    CERT_PEM: str = Field("", description="Full path to signed certificate pem file")
+    
+    # SIGNED for signed certificate on file
+    # ADHOC for flask to generate a certifcate, 
+    # NONE for no SSL 
+    CERT: str = Field("ADHOC", description="One of the strings ['SIGNED', 'ADHOC', NONE]")
 
 
 class UIComponentModel(BaseModel):

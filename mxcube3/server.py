@@ -4,6 +4,7 @@ import signal
 import atexit
 import os
 import time
+import werkzeug
 
 import gevent
 
@@ -191,5 +192,24 @@ class Server:
         Server.flask_socketio.emit(*args, **kwargs)
 
     @staticmethod
-    def run():
-        Server.flask_socketio.run(Server.flask, host="0.0.0.0", port=8081)
+    def run(cfg):
+        if cfg.flask.CERT == "SIGNED" and cfg.flask.CERT_PEM and cfg.flask.CERT_KEY:
+            ssl_context = werkzeug.serving.load_ssl_context(
+                cfg.flask.CERT_PEM, cfg.flask.CERT_KEY
+            )
+        elif cfg.flask.CERT == "ADHOC":
+            ssl_context = werkzeug.serving.load_ssl_context(
+                *werkzeug.serving.make_ssl_devcert("/tmp/")
+            )
+        else:
+            ssl_context = None
+
+        if ssl_context:
+            Server.flask_socketio.run(
+                Server.flask,
+                ssl_context=ssl_context,
+                host="0.0.0.0",
+                port=8081
+            )
+        else:
+            Server.flask_socketio.run(Server.flask, host="0.0.0.0", port=8081)

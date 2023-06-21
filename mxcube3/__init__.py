@@ -138,7 +138,7 @@ def main(test=False):
         raise
 
     if not test:
-        server.run()
+        server.run(cfg)
     else:
         return server
 
