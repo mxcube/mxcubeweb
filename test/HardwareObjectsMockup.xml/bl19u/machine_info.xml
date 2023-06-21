@@ -1,4 +1,0 @@
-<device class = "mxcubecore.HardwareObjects.SSRF.BL19U1.MachCurrent">
-  <username>Mach</username>
-  <channel type="epics" name="Current">SR-BI:DCCT:CURRENT</channel>
-</device>

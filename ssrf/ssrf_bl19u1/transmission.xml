@@ -1,8 +1,0 @@
-<!--device class="Arinax.Transmission">
-  <username>Transmission</username>
-  <channel type="epics" name="transmissionChannel">SSRF:X17U1:Transmission</channel>
-</device-->
-
-<device class="LNLSTransmission">
-<username>Transmission</username>
-</device>

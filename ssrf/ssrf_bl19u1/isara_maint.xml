@@ -1,6 +1,0 @@
-<equipment class = "IsaraMaint">
- <!-- SC3 commands and channels -->
-   <command type="epics" name="epicsIsaraReset">SSRF:Isara:reset</command>
-   <channel type="epics" name="epicsIsaraOn">SSRF:Isara:on</channel>
-
-</equipment>

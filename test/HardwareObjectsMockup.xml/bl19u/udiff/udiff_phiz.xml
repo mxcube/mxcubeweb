@@ -1,7 +1,0 @@
-<device class="mxcubecore.HardwareObjects.ExporterMotor">
-  <exporter_address>10.30.61.67:9002</exporter_address>
-  <actuator_name>AlignmentZ</actuator_name>
-  <unit>1e-3</unit>
-  <limit_low>-4.939</limit_low>
-  <limit_high>3.71</limit_high>
-</device>

@@ -1,6 +1,0 @@
-<object class="Resolution">
-  <username>Resolution</username>
-  <actuator_name>resolution</actuator_name>
-  <object href="/detector" role="detector"/>
-  <tolerance>1e-4</tolerance>
-</object>

@@ -1,9 +1,0 @@
-<device class="ExporterMotor">
-  <username>centringFocus</username>
-  <exporter_address>10.30.61.67:9002</exporter_address>
-  <actuator_name>CentringTableFocus</actuator_name>
-  <GUIstep>1.0</GUIstep>
-  <limit_low>-2.28</limit_low>
-  <limit_high>2.28</limit_high>
-  <unit>1e-3</unit>
-</device>
