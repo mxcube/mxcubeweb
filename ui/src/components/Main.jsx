@@ -27,6 +27,7 @@ import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
 import LoadingScreen from './LoadingScreen/LoadingScreen';
+import styles from './Main.module.css';
 
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
@@ -78,7 +79,7 @@ class Main extends React.Component {
     }
 
     return (
-      <div>
+      <div className={styles.main}>
         {showReadOnlyDiv ?
           (<div
             onMouseDown={this.handleClick}
