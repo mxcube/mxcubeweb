@@ -1,112 +1,123 @@
 import React from 'react';
-import { Container,
-  Row,
-  Col,
-  Form,
-  InputGroup,
-  Alert,
-  Button } from 'react-bootstrap';
+import { Form, InputGroup, Alert, Button } from 'react-bootstrap';
+
+import { Controller, useForm } from 'react-hook-form';
 
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
-import './Login.css';
 import SelectProposal from './SelectProposal';
-import withRouter from '../WithRouter'
+import withRouter from '../WithRouter';
+import styles from './Login.module.css';
 
-class LoginComponent extends React.Component {
-  constructor(props) {
-    super(props);
-    this.signIn = this.signIn.bind(this);
+function LoginComponent(props) {
+  const {
+    data,
+    showProposalsForm,
+    hideProposalsForm,
+    selectedProposal,
+    selectProposal,
+    sendSelectProposal,
+    router,
+    loading,
+    setLoading,
+    signIn,
+    doSignOut,
+    showError,
+    errorMessage,
+  } = props;
+
+  const {
+    control,
+    handleSubmit: makeOnSubmit,
+    formState: { errors },
+  } = useForm({ defaultValues: { username: '', password: ''}});
+
+  function handleSubmit(data) {
+    setLoading(true);
+    signIn(data.username.toLowerCase(), data.password, router.navigate);
   }
 
-  signIn(event) {
-    event.preventDefault();
-    const username = this.loginID.value;
-    const password = this.password.value;
-    const {navigate} = this.props.router;
-
-    this.props.setLoading(true);
-    this.props.signIn(username.toLowerCase(), password, navigate);
-
-  }
-
-  render() {
-    return (
-      <Container>
-        { this.props.showProposalsForm ?
-          <SelectProposal
-            show
-            hide={this.props.hideProposalsForm}
-            data={this.props.data}
-            selectedProposal={this.props.selectedProposal}
-            selectProposal={this.props.selectProposal}
-            sendSelectProposal={(selected)=>this.props.sendSelectProposal(selected, this.props.router.navigate)}
-            singOut={()=>this.props.doSignOut(this.props.router.navigate)}
-
-          />
-          : null
-        }
-        <Row>
-          <Col xs={4}>
-            <Form onSubmit={this.signIn} className="loginBox">
-              <Row>
-                <center>
-                  <img src={logo} role="presentation"
-                    style={{ width: '80px', marginBottom: '30px' }}
-                  />
-                  <span className="title">MXCuBE 3</span>
-                </center>
-              </Row>
-              <Row>
-                <Col xs={12}>
-                  <Form.Group className="mb-3">
-                    <InputGroup>
-                      <span className="input-group-text">
-                        <i className="fas fa-user" />
-                      </span>
-                      <Form.Control
-                        type="text"
-                        placeholder="LoginID"
-                        autoFocus
-                        required
-                        ref={(ref) => { this.loginID = ref; }}
-                      />
-                    </InputGroup>
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Row>
-                <Col xs={12}>
-                  <Form.Group className="mb-3">
-                    <InputGroup>
-                      <span className="input-group-text">
-                        <i className="fas fa-lock" />
-                      </span>
-                      <Form.Control
-                        type="password"
-                        placeholder="Password"
-                        required
-                        ref={(ref) => { this.password = ref; }}
-                      />
-                    </InputGroup>
-                  </Form.Group>
-                </Col>
-              </Row>
-              <Row style={{ marginTop: '10px', marginBottom: '10px' }}>
-                <Col xs={12} className="d-grid gap-2">
-                  <Button type="submit" size="lg" className="loginBtn primary" >
-                    {this.props.loading && <img className="loginLoader" src={loader} role="presentation" width="25" />}
-                    Sign in
-                  </Button>
-                </Col>
-              </Row>
-              {(this.props.showError ? <Alert variant="danger"><h4>{this.props.errorMessage}</h4></Alert> : '')}
-            </Form>
-          </Col>
-        </Row>
-      </Container>
-    );
-  }
+  return (
+    <>
+      {showProposalsForm && (
+        <SelectProposal
+          show
+          hide={hideProposalsForm}
+          data={data}
+          selectedProposal={selectedProposal}
+          selectProposal={selectProposal}
+          sendSelectProposal={(selected) =>
+            sendSelectProposal(selected, router.navigate)
+          }
+          singOut={() => doSignOut(router.navigate)}
+        />
+      )}
+      <Form className={styles.box} noValidate onSubmit={makeOnSubmit(handleSubmit)}>
+        <h1 className={styles.title}>
+          <img src={logo} width="80" alt="" />
+          MXCuBE
+        </h1>
+        <Form.Group className="mb-3">
+          <InputGroup>
+          <InputGroup.Text>
+              <i className="fas fa-user" />
+              </InputGroup.Text>
+            <Controller
+              name="username"
+              control={control}
+              rules={{ required: 'Login ID is required' }}
+              render={({ field }) => (
+                <Form.Control
+                  type="text"
+                  aria-label="Login ID"
+                  placeholder="Login ID"
+                  autoFocus
+                  required
+                  isInvalid={!!errors.username}
+                  {...field}
+                />
+              )}
+            />
+            {errors.username && <Form.Control.Feedback type="invalid">{errors.username.message}</Form.Control.Feedback>}
+          </InputGroup>
+        </Form.Group>
+        <Form.Group className="mb-3">
+          <InputGroup>
+          <InputGroup.Text>
+              <i className="fas fa-lock" />
+              </InputGroup.Text>
+            <Controller
+              name="password"
+              control={control}
+              rules={{ required: 'Password is required' }}
+              render={({ field }) => (
+                <Form.Control
+                  type="password"
+                  aria-label="Password"
+                  placeholder="Password"
+                  required
+                  isInvalid={!!errors.password}
+                  {...field}
+                />
+              )}
+            />
+            {errors.password && <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback>}
+          </InputGroup>
+        </Form.Group>
+        <Button type="submit" size="lg" className={styles.btn}>
+          {loading && (
+            <img className={styles.loader} src={loader} width="25" alt="" />
+          )}
+          Sign in
+        </Button>
+        {!loading && showError && (
+          <Alert className="mt-3" variant="danger">
+            <pre className={styles.errorMsg}>{errorMessage}</pre>
+          </Alert>
+        )}
+      </Form>
+    </>
+  );
 }
 
 LoginComponent = withRouter(LoginComponent);
