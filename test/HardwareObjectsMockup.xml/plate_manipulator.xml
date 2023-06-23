@@ -1,7 +1,6 @@
-<equipment class = "PlateManipulatorMockup">
-<!-- <equipment class = "PlateManipulator"> -->
-  <!-- <exporter_address>pc721.emblgr.embl.fr:443</exporter_address>   -->
-  <!-- <exporter_address>wid30bmd:9001</exporter_address> -->
+<object class = "PlateManipulatorMockup">
+  <!-- <equipment class = "PlateManipulator"> -->
+  <!-- <exporter_address>....embl.fr:443</exporter_address>   -->
 
   <username>Sample Changer</username> 
   <!-- <command type="exporter" name="MoveToDrop">startMovePlateToShelf</command>
@@ -52,4 +51,4 @@
   <!-- <PlateBarcode>CD031660</PlateBarcode> -->
   <PlateBarcode>CD032401</PlateBarcode>
   <harvesterKey></harvesterKey>
-</equipment>
+</object>
