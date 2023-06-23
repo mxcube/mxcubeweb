@@ -42,8 +42,9 @@ def init_route(app, server, url_prefix):
             res = jsonify(app.usermanager.login(login_id, password))
         except Exception as ex:
             msg = "[LOGIN] User %s could not login (%s)" % (login_id, str(ex))
+            logging.getLogger("MX3.HWR").exception("")
             logging.getLogger("MX3.HWR").info(msg)
-            res = deny_access(str(ex))
+            res = deny_access("Could not authenticate")
 
         session.permanent = True
 
