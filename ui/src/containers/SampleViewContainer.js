@@ -15,6 +15,7 @@ import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
 import SampleQueueContainer from './SampleQueueContainer';
 import { QUEUE_RUNNING } from '../constants';
+import DefaultErrorBoundary from './DefaultErrorBoundary';
 
 import {
   sendSetAttribute,
@@ -22,42 +23,8 @@ import {
   setBeamlineAttribute,
   sendDisplayImage,
   executeCommand,
+  sendLogFrontEndTraceBack
 } from '../actions/beamline';
-
-class DefaultErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { error: null, errorInfo: null };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    // Catch errors in any components below and re-render with error message
-    this.setState({
-      error,
-      errorInfo
-    })
-    // You can also log error messages to an error reporting service here
-  }
-
-  render() {
-    if (this.state.errorInfo) {
-      // Error path
-      return (
-        <div>
-          <h2>Something went wrong.</h2>
-          <details style={{ whiteSpace: 'pre-wrap' }}>
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo.componentStack}
-          </details>
-        </div>
-      );
-    }
-    // Normally, just render children
-    return this.props.children;
-  }
-}
-
 class SampleViewContainer extends Component {
   render() {
     const { uiproperties } = this.props;
@@ -271,6 +238,7 @@ function mapDispatchToProps(dispatch) {
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
+    sendLogFrontEndTraceBack: bindActionCreators(sendLogFrontEndTraceBack, dispatch),
   };
 }
 

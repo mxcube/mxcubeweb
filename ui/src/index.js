@@ -5,6 +5,7 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import App from './components/App';
 import { store } from './store';
+import DefaultErrorBoundary from './containers/DefaultErrorBoundary';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { library } from '@fortawesome/fontawesome-svg-core';
@@ -26,7 +27,9 @@ if (module.hot) {
 function Root() {
   return (
     <Provider store={store}>
-      <App/>
+      <DefaultErrorBoundary>
+        <App/>
+      </DefaultErrorBoundary>
     </Provider>
   );
 };
