@@ -140,3 +140,25 @@ export function sendDisplayImage(path) {
     });
   }
 }
+
+
+export function sendLogFrontEndTraceBack(errorInfo, state) {
+
+  const stateToLog = {...state};
+  delete stateToLog.logger;
+
+  return () => {
+    fetch(`mxcube/api/v0.1/log/log_frontend_traceback`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        'stack': errorInfo['componentStack'],
+        'state':  JSON.stringify(state) 
+      }),
+    });
+  }
+}
