@@ -43,11 +43,8 @@ class MachineInfoAdapter(ActuatorAdapterBase):
 
     def get_current(self):
         try:
-            current = self._ho.get_current()
-            current = (
-                current
-                if isinstance(current, str)
-                else "{:.1f} mA".format(round(float(self._ho.getCurrent()), 1))
+            current = "{:.1f} mA".format(
+                round(float(self._ho.get_current()), 1)
             )
         except (TypeError, AttributeError):
             current = "-1"
