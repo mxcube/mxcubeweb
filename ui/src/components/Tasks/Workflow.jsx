@@ -81,7 +81,7 @@ class Workflow extends React.Component {
 
        { this.props.taskData.state ? '' :
            <Modal.Footer>
-             <ButtonToolbar className="pull-right">
+             <ButtonToolbar className="float-end">
                <Button variant="success"
                  disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
                  onClick={this.submitRunNow}

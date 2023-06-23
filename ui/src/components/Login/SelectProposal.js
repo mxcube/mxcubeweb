@@ -82,7 +82,7 @@ class SelectProposal extends React.Component {
             </Button>
             <Button
               variant="primary"
-              className="pull-right"
+              className="float-end"
               disabled={this.state.pNumber === null}
               onClick={this.sendProposal}
             >

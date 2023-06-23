@@ -21,7 +21,7 @@ export default class SampleItem extends Component {
     return (
       <div className="node node-sample">
         <span className="node-name">{this.props.text}</span>
-         <div className="pull-right">
+         <div className="float-end">
              <i className="fas fa-sign-in" onClick={this.mountSample} />
              <i className="fas fa-times" onClick={this.deleteSample} />
         </div>

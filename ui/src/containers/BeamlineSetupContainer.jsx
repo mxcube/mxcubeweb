@@ -32,20 +32,13 @@ class BeamlineSetupContainer extends React.Component {
     this.dmState = this.dmState.bind(this);
   }
 
-  // componentDidMount() {
-  // this.props.getAllhardwareObjects();
-  // }
-
-
   onSaveHandler(name, value) {
     this.props.setAttribute(name, value);
   }
 
-
   onCancelHandler(name) {
     this.props.abortCurrentAction(name);
   }
-
 
   setAttribute(name, value) {
     this.props.setAttribute(name, value);

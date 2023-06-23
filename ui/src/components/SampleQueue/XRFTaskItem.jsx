@@ -71,7 +71,7 @@ export default class XRFTaskItem extends Component {
     }
 
     return (
-      <div className="pull-right">
+      <div className="float-end">
         <a href="#"
           onClick={this.showXRFPlot}
         >

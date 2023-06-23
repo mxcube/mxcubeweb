@@ -377,7 +377,7 @@ class Characterisation extends React.Component {
                   Default Parameters
                 </Button>
               </ButtonToolbar>
-              <ButtonToolbar className="pull-right">
+              <ButtonToolbar className="float-end">
                 <Button
                   size="sm"
                   variant="success"
