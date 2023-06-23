@@ -199,7 +199,7 @@ class Mesh extends React.Component {
                   Reset Form
                 </Button>
               </ButtonToolbar>
-              <ButtonToolbar className="pull-right">
+              <ButtonToolbar className="float-end">
                 <Button
                   variant="success"
                   disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}

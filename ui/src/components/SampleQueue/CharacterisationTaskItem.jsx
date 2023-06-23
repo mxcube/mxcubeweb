@@ -65,7 +65,7 @@ export default class TaskItem extends Component {
     if (data.hasOwnProperty('diffractionPlan') && Object.keys(data.diffractionPlan).length > 0) {
       // it can be empty
       diffPlan = (
-        <span className="pull-right">
+        <span className="float-end">
           <Button
             size="sm"
             style={{ width: 'auto', marginTop: '-4px' }}

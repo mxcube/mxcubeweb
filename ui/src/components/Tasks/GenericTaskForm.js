@@ -131,7 +131,7 @@ class GenericTaskForm extends React.Component {
   showDPFooter() {
     return (
       <Modal.Footer>
-        <ButtonToolbar className="pull-right">
+        <ButtonToolbar className="float-end">
           <Button
             className='me-3'
             variant="success"
