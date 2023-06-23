@@ -356,12 +356,16 @@ class MXCUBEApplication:
             os.chmod(log_file, 0o666)
             log_file_handler.setFormatter(log_formatter)
 
-        if log_level:
-            root_logger = logging.getLogger()
-            root_logger.setLevel(getattr(logging, log_level.upper(), "INFO"))
+        if not log_level:
+            log_level = "INFO"
+        else:
+            log_level = log_level.upper()
+
+        root_logger = logging.getLogger()
+        root_logger.setLevel(log_level)
 
         custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
-        custom_log_handler.setLevel(logging.DEBUG)
+        custom_log_handler.setLevel(log_level)
         custom_log_handler.setFormatter(log_formatter)
 
         _loggers = {
@@ -379,6 +383,7 @@ class MXCUBEApplication:
             if logger_name in enabled_logger_list:
                 logger.addHandler(custom_log_handler)
                 logger.addHandler(stdout_log_handler)
+                logger.setLevel(log_level)
 
                 if log_file:
                     logger.addHandler(log_file_handler)
