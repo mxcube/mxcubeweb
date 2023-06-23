@@ -41,6 +41,7 @@ class BaseUserManager(ComponentBase):
         return getattr(current_user, "in_control", False)
 
     def active_logged_in_users(self):
+        self.update_active_users()
         return [_u.username for _u in User.query.all() if _u.active]
 
     def get_user(self, username):
