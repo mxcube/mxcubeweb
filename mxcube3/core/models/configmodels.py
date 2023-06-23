@@ -20,9 +20,9 @@ class FlaskConfigModel(BaseModel):
     CERT_PEM: str = Field("", description="Full path to signed certificate pem file")
     
     # SIGNED for signed certificate on file
-    # ADHOC for flask to generate a certifcate, 
+    # ADHOC for flask to generate a certifcate,
     # NONE for no SSL 
-    CERT: str = Field("ADHOC", description="One of the strings ['SIGNED', 'ADHOC', NONE]")
+    CERT: str = Field("NONE", description="One of the strings ['SIGNED', 'ADHOC', NONE]")
 
 
 class UIComponentModel(BaseModel):
