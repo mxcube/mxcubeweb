@@ -225,12 +225,14 @@ class BaseUserManager(ComponentBase):
     def force_signout_user(self, username):
         user = self.get_user(username)
 
-        if not user.in_control:
+        if not user.in_control or current_user.is_anonymous:
+            socketio_sid = user.socketio_session_id
+            self.app.server.user_datastore.delete_user(user)
+            self.app.server.user_datastore.commit()
             self.app.server.emit(
-                "forceSignoutObservers", room=user.socketio_session_id, namespace="/hwr"
+                "forceSignout", room=socketio_sid, namespace="/hwr"
             )
 
-            self.app.server.user_datastore.deactivate_user(user)
 
     def login_info(self):
         res = {
@@ -380,9 +382,7 @@ class UserManager(BaseUserManager):
 
         if login_id in active_users:
             if current_user.is_anonymous:
-                raise Exception(
-                    "Login rejected, you are already logged in somewhere else"
-                )
+                self.force_signout_user(login_id)
             else:
                 if current_user.username == login_id:
                     raise Exception("You are already logged in here")

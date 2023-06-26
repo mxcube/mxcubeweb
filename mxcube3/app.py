@@ -8,6 +8,7 @@ import logging
 import traceback
 import atexit
 import json
+import time
 
 from pathlib import Path
 from urllib.parse import urlparse
@@ -183,6 +184,7 @@ class MXCUBECore:
 
 
 class MXCUBEApplication:
+    t0 = time.time()
     # Below variables used for internal application state
 
     # SampleID and sample data of currently mounted sample, to handle samples
@@ -296,6 +298,8 @@ class MXCUBEApplication:
         MXCUBEApplication.init_state_storage()
 
         # MXCUBEApplication.load_settings()
+        msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - MXCUBEApplication.t0)
+        logging.getLogger("MX3.HWR").info(msg)
 
     @staticmethod
     def init_sample_video(_format, port):
@@ -431,7 +435,7 @@ class MXCUBEApplication:
                     msg = f"{component_data.attribute} not accessible via Beamline object. "
                     msg += f"Verify that beamline.{component_data.attribute} is valid and/or "
                     msg += f"{component_data.attribute} accessible via get_role "
-                    msg += "check ui.yaml configuration file. " 
+                    msg += "check ui.yaml configuration file. "
                     msg += "(attribute will NOT be avilable in UI)"
                     logging.getLogger("HWR").warning(msg)
                     adapter_cls_name = ""

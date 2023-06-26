@@ -39,36 +39,38 @@ class SampleViewContainer extends Component {
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
 
-    Object.keys(this.props.shapes).forEach((key) => {
-      const shape = this.props.shapes[key];
-      switch (shape.t) {
-        case 'P': {
-          points[shape.id] = shape;
+    if (typeof this.props.shapes !== 'undefined') {
+      Object.keys(this.props.shapes).forEach((key) => {
+        const shape = this.props.shapes[key];
+        switch (shape.t) {
+          case 'P': {
+            points[shape.id] = shape;
 
-          break;
-        }
-        case '2DP': {
-          twoDPoints[shape.id] = shape;
-
-          break;
-        }
-        case 'L': {
-          lines[shape.id] = shape;
-
-          break;
-        }
-        case 'G': {
-          grids[shape.id] = shape;
-
-          if (shape.selected) {
-            selectedGrids.push(shape);
+            break;
           }
+          case '2DP': {
+            twoDPoints[shape.id] = shape;
 
-          break;
+            break;
+          }
+          case 'L': {
+            lines[shape.id] = shape;
+
+            break;
+          }
+          case 'G': {
+            grids[shape.id] = shape;
+
+            if (shape.selected) {
+              selectedGrids.push(shape);
+            }
+
+            break;
+          }
+          // No default
         }
-        // No default
-      }
-    });
+      });
+    }
     const diffractometerHo = this.props.hardwareObjects.diffractometer;
 
     const phaseControl = (

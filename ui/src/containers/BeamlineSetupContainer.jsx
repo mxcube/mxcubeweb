@@ -143,14 +143,14 @@ class BeamlineSetupContainer extends React.Component {
         </td>);
       components.push(
         <td
-          key={`bs-val-${uiprop.label}`}
-          className="pe-3 align-middle"
-          style={{
-            verticalAlign: 'baseline',
-            fontWeight: 'bold',
-            borderRight: uiprop_list.length != uiprop_list.indexOf(uiprop) + 1 ? '1px solid #ddd' : '',
-          }}>
-          {beamline_attribute.readonly ?
+        key={`bs-val-${uiprop.label}`}
+        className='pe-3'
+        style={{
+          fontWeight: 'bold',
+          border: '0px',
+          borderRight: uiprop_list.length != uiprop_list.indexOf(uiprop) + 1 ? '1px solid #ddd': '',
+          padding: '0em'}}>
+          { beamline_attribute.readonly ?
             (<LabeledValue
               suffix={uiprop.suffix}
               precision={uiprop.precision}
@@ -162,13 +162,13 @@ class BeamlineSetupContainer extends React.Component {
             :
             (<PopInput
               name=""
-              pkey={uiprop.attribute}
-              suffix={uiprop.suffix}
-              precision={uiprop.precision}
-              inputSize="5"
-              data={beamline_attribute}
-              onSave={this.setAttribute}
-              onCancel={this.onCancelHandler}
+              pkey= {uiprop.attribute}
+              suffix={uiprop.suffix }
+              precision={ uiprop.precision }
+              inputSize="10"
+              data={ beamline_attribute }
+              onSave= { this.setAttribute }
+              onCancel= { this.onCancelHandler }
             />)
           }
         </td>
@@ -192,11 +192,17 @@ class BeamlineSetupContainer extends React.Component {
     );
 
     return (
-      <Navbar
-        className="beamline-status"
-        id="bmstatus"
-        expand="lg"
-      >
+    <Navbar
+      style={{
+        background: '#FAFAFA',
+        borderBottom: '1px solid lightgray',
+        paddingBottom: '0em',
+      }}
+      className="beamline-status ps-3 pe-3"
+      id="bmstatus"
+      bg='light'
+      expand="lg"
+    >
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="d-flex  me-auto my-2 my-lg-0">

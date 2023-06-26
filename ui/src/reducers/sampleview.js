@@ -206,7 +206,7 @@ export default (state = initialState, action) => {
         videoHash: action.data.Camera.videoHash,
         videoURL: action.data.Camera.videoURL,
         apertureList: action.data.beamInfo.apertureList,
-        currentAperture: action.data.beamInfo.currentAperture,
+        currentAperture: action.data.beamInfo.size_x * 1000,
         beamPosition: action.data.beamInfo.position,
         beamShape: action.data.beamInfo.shape,
         beamSize: {

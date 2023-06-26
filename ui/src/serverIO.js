@@ -44,7 +44,7 @@ import { showGphlWorkflowParametersDialog } from './actions/gphl_workflow';
 
 import { incChatMessageCount, getRaState } from './actions/remoteAccess';
 
-import { doSignOut, getLoginInfo, refreshSession } from './actions/login';
+import { forcedSignout, getLoginInfo, refreshSession } from './actions/login';
 
 import {
   setSCState,
@@ -104,9 +104,30 @@ class ServerIO {
 
   disconnect() {
     this.connected = false;
-    this.hwrSocket.disconnect();
-    this.loggingSocket.disconnect();
+    this.hwrSocket.close();
+    this.loggingSocket.close();
     clearInterval(this.refreshSession)
+  }
+
+  connect(){
+    if (this.hwrSocket === null) {
+      this.hwrSocket = io.connect(
+        `//${document.domain}:${window.location.port}/hwr`
+      );
+      this.hwrSocket.on('connect', function() {
+        console.log('hwrSocket connected!');
+      });
+      this.loggingSocket = io.connect(
+        `//${document.domain}:${window.location.port}/logging`
+      );
+      this.hwrSocket.on('connect', function() {
+        console.log('loggingSocket connected!');
+      });
+    } else {
+      this.hwrSocket.connect()
+      this.loggingSocket.connect()
+    }
+
   }
 
   listen(store) {
@@ -115,16 +136,18 @@ class ServerIO {
 
     setInterval(this.refreshSession, 50000)
 
-    this.hwrSocket = io.connect(
-      `//${document.domain}:${window.location.port}/hwr`
-    );
-    this.loggingSocket = io.connect(
-      `//${document.domain}:${window.location.port}/logging`
-    );
+    this.connect()
 
     this.loggingSocket.on('log_record', (record) => {
       this.dispatch(addUserMessage(record));
       this.dispatch(addLogRecord(record));
+    });
+
+    this.loggingSocket.on('disconnect', (reason) => {
+      if (reason === 'io server disconnect') {
+        let socket = this.loggingSocket;
+        setTimeout(function() {socket.connect()}, 500);
+      }
     });
 
     this.hwrSocket.on('ra_chat_message', (record) => {
@@ -323,7 +346,11 @@ class ServerIO {
       }
     });
 
-    this.hwrSocket.on('disconnect', () => {
+    this.hwrSocket.on('disconnect', (reason) => {
+      if (reason === 'io server disconnect') {
+        let socket = this.hwrSocket;
+        setTimeout(function() {socket.connect()},500);
+      }
       if (this.connected) {
         this.connected = false;
         setTimeout(() => {
@@ -380,12 +407,8 @@ class ServerIO {
       }
     });
 
-    this.hwrSocket.on('forceSignoutObservers', () => {
-      const state = store.getState();
-
-      if (!state.login.user.inControl) {
-        this.dispatch(doSignOut());
-      }
+    this.hwrSocket.on('forceSignout', () => {
+      this.dispatch(forcedSignout());
     });
 
     this.hwrSocket.on('workflowParametersDialog', (data) => {

@@ -117,6 +117,11 @@ export function signOut() {
 export function signIn(proposal, password, navigate) {
   return function (dispatch) {
     const previousUser = localStorage.getItem('currentUser');
+    if (serverIO.hwrSocket !== null && serverIO.hwrSocket.connected) {
+      console.log(serverIO.hwrSocket.connected)
+    } else {
+      serverIO.connect();
+    }
 
     fetch('mxcube/api/v0.1/login', {
       method: 'POST',
@@ -154,15 +159,22 @@ export function signIn(proposal, password, navigate) {
   };
 }
 
+export function forcedSignout() {
+  return function (dispatch) {
+    serverIO.disconnect();
+    dispatch(signOut());
+  }
+}
+
 export function doSignOut(navigate) {
   return function (dispatch) {
+    serverIO.disconnect();
     return fetch('mxcube/api/v0.1/login/signout', {
       credentials: 'include'
     }).then(() => {
       dispatch(signOut());
       dispatch(getLoginInfo());
       navigate && navigate('/login');
-      serverIO.disconnect();
     });
   };
 }

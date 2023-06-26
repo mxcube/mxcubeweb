@@ -86,29 +86,29 @@ class TaskContainer extends React.Component {
 
   render() {
     const [points, lines, grids] = [{}, {}, {}];
+    if (typeof this.props.shapes !== 'undefined') {
+      Object.keys(this.props.shapes).forEach((key) => {
+        const shape = this.props.shapes[key];
+        switch (shape.t) {
+          case 'P': {
+            points[shape.id] = shape;
 
-    Object.keys(this.props.shapes).forEach((key) => {
-      const shape = this.props.shapes[key];
-      switch (shape.t) {
-        case 'P': {
-          points[shape.id] = shape;
+            break;
+          }
+          case 'L': {
+            lines[shape.id] = shape;
 
-          break;
+            break;
+          }
+          case 'G': {
+            grids[shape.id] = shape;
+
+            break;
+          }
+          // No default
         }
-        case 'L': {
-          lines[shape.id] = shape;
-
-          break;
-        }
-        case 'G': {
-          grids[shape.id] = shape;
-
-          break;
-        }
-        // No default
-      }
-    });
-
+      });
+    }
     switch (this.props.showForm) {
     case 'Characterisation': {
       return (
