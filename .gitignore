@@ -64,6 +64,3 @@ npm-debug.log*
 /supervisord.pid
 log
 mxcube3/static
-
-# Editors
-.vscode

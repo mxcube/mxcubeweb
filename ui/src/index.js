@@ -28,10 +28,10 @@ function Root() {
   return (
     <Provider store={store}>
       <DefaultErrorBoundary>
-        <App/>
+        <App />
       </DefaultErrorBoundary>
     </Provider>
   );
-};
+}
 
-ReactDOM.render(<Root/>, document.querySelector('#root'));
+ReactDOM.render(<Root />, document.querySelector('#root'));

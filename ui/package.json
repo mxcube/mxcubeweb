@@ -67,7 +67,8 @@
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "format": "npm run prettier --write",
+    "prettier": "prettier . --cache --check"
   },
   "eslintConfig": {
     "extends": [
@@ -98,6 +99,6 @@
     "eslint-plugin-jest": "^26.1.1",
     "less": "^4.1.2",
     "less-watch-compiler": "^1.16.3",
-    "prettier": "^2.5.1"
+    "prettier": "2.8.8"
   }
 }
