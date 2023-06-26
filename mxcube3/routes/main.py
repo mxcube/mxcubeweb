@@ -39,7 +39,7 @@ def init_route(app, server, url_prefix):
     def get_ui_properties():
         return app.get_ui_properties()
 
-    @bp.route("/mode")
+    @bp.route("/application_settings")
     @server.restrict
     @server.validate(resp=Response(HTTP_200=ModeEnumModel))
     def mxcube_mode():

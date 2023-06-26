@@ -195,7 +195,7 @@ export function getInitialState(userInControl) {
         'Content-type': 'application/json',
       },
     });
-    const serverMode = fetch('mxcube/api/v0.1/mode', {
+    const serverMode = fetch('mxcube/api/v0.1/application_settings', {
       method: 'GET',
       credentials: 'include',
       headers: {
