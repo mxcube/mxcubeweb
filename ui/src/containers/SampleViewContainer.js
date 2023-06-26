@@ -316,6 +316,7 @@ function mapDispatchToProps(dispatch) {
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
+    sendLogFrontEndTraceBack: bindActionCreators(sendLogFrontEndTraceBack, dispatch),
 
     loadSample: (address) => dispatch(loadSample(address)),
     refresh: () => dispatch(refresh()),
