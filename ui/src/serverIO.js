@@ -106,8 +106,6 @@ class ServerIO {
     this.connected = false;
     this.hwrSocket.close();
     this.loggingSocket.close();
-    // this.hwrSocket.disconnect();
-    // this.loggingSocket.disconnect();
     clearInterval(this.refreshSession)
   }
 
