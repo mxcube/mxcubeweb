@@ -28,31 +28,33 @@ jobs:
         ports:
           # Maps port 6379 on service container to the host
           - 6379:6379
-        
+
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
-    - name: Install ldap dependencies
-      run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
-    - name: Install dependencies
-      run: |
-        conda env update --file conda-environment.yml --name base
-        pip install -e .
-    - name: Build UI
-      run: |
-        npm install --prefix ./ui 
-        npm run --prefix ./ui build
-    - name: Run mxcube backend
-      run: |
-         mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder ./ui/build/ -L debug &
-    - name: Cypress run
-      uses: cypress-io/github-action@v5
-      with:
-        working-directory: ./ui
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Add conda to system path
+        run: |
+          # $CONDA is an environment variable pointing to the root of the miniconda directory
+          echo $CONDA/bin >> $GITHUB_PATH
+      - name: Install ldap dependencies
+        run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
+      - name: Install dependencies
+        run: |
+          conda env update --file conda-environment.yml --name base
+          pip install -e .
+      - name: Build UI
+        run: |
+          npm install --prefix ./ui 
+          npm run --prefix ./ui build
+        env:
+          DISABLE_ESLINT_PLUGIN: true
+      - name: Run mxcube backend
+        run: |
+          mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder ./ui/build/ -L debug &
+      - name: Cypress run
+        uses: cypress-io/github-action@v5
+        with:
+          working-directory: ./ui
