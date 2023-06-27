@@ -178,6 +178,22 @@ class SampleChanger(ComponentBase):
         from mxcube3.routes import signals
 
         sc = HWR.beamline.sample_changer
+        sc_maint = HWR.beamline.sample_changer_maintenance
+        print("进入samplechanger.py的mount_sample_clean_up函数,sc.count:", sc.count)
+        if sc.count >= 16:
+            sc.count = 0
+            # 如果计数到16但是没有发现上颗样品，说明被umount掉了，此时不执行unmount函数
+            if sc.get_loaded_sample == None:
+                pass
+            else:
+                # 获取先前上样样品,并做格式转换
+                pre_sample_tuple = self.get_loaded_sample()  # tuple : ('3:02', 'matr3_2')，需要转成 dict : {'sampleID': '3:02', 'location': '3:02'}
+                pre_sample = dict()
+                pre_sample['sampleID'] = pre_sample_tuple[0]
+                pre_sample['location'] = pre_sample_tuple[0]
+                self.unmount_sample_clean_up(pre_sample)
+            sc_maint._do_dry_gripper()
+
 
         res = None
 

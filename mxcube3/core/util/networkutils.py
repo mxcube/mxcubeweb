@@ -48,7 +48,7 @@ def is_local_network(ip):
     localhost_range = ".".join(localhost.split(".")[0:2])
     private_address = ".".join(ip.split(".")[0:2])
 
-    return private_address == localhost_range
+    return private_address == localhost_range or private_address == "10.30"
 
 
 def is_local_host():
