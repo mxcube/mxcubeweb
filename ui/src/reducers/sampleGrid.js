@@ -30,6 +30,7 @@ const INITIAL_STATE = {
     collected: false,
     notCollected: false,
     cellFilter: '',
+    puckFilter: '',
     limsFilter: false,
     useFilter: false,
   },
@@ -214,7 +215,7 @@ export default (state = INITIAL_STATE, action) => {
       const sampleList = { ...state.sampleList };
 
       action.taskList.forEach((task) => {
-        sampleList[task.sampleID].tasks = 
+        sampleList[task.sampleID].tasks =
             sampleList[task.sampleID].tasks.filter(
               taskItem => taskItem.queueID !== task.queueID
             )
@@ -250,7 +251,7 @@ export default (state = INITIAL_STATE, action) => {
         const task = { ...t, state: 0 };
         const { originID } = task;
         // first we find which char task is the origin
-         
+
         sampleList[task.sampleID].tasks.forEach((tt) => {
           if (tt.queueID === originID && tt.type === 'Characterisation') {
             tt.diffractionPlanID = task.queueID;
@@ -272,7 +273,7 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'PLOT_END': {
       const sampleList = { ...state.sampleList };
-       
+
       Object.keys(sampleList).forEach((sampleId) => {
         sampleList[sampleId].tasks.forEach((tt) => {
           if (tt.queueID === action.id && tt.type === action.dataType) {
@@ -307,7 +308,7 @@ export default (state = INITIAL_STATE, action) => {
 
       return { ...state, sampleList};
     }
-    // Change view mode 
+    // Change view mode
     case 'SET_VIEW_MODE': {
       const viewMode = { ...state.viewMode};
       viewMode.mode = action.mode;
@@ -348,7 +349,7 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'FILTER_SAMPLE_LIST': {
       const filterOptions = {
-        
+
         ...state.filterOptions,
         ...action.filterOptions
       };
