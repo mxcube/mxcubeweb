@@ -330,13 +330,19 @@ class SampleGridTableContainer extends React.Component {
     if (sample) {
       const sampleFilter = `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
       const locationFilter = `${sample.location}`;
+      const puckFilter = locationFilter.split(':')[0]
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
       // we can't filter if there is only one cell 
+      // we can't filter if there is only one cell
       if (Object.values(this.props.sampleList).every( cell => cell.cell_no != 1)) {
         fi &= locationFilter.startsWith(this.props.filterOptions.cellFilter.toLowerCase());
       }
+      if (this.props.filterOptions.puckFilter !== '') {
+        fi &= puckFilter === this.props.filterOptions.puckFilter.toLowerCase();
+      }
+
       fi &= this.mutualExclusiveFilterOption(sample, 'inQueue', 'notInQueue', this.inQueueSampleID);
       fi &= this.mutualExclusiveFilterOption(sample, 'collected', 'notCollected', isCollected);
       fi &= this.mutualExclusiveFilterOption(sample, 'limsSamples', '', hasLimsData);
