@@ -129,7 +129,8 @@ class SampleListViewContainer extends React.Component {
       notCollected: this.props.filterOptions.notCollected,
       limsSamples: this.props.filterOptions.limsSamples,
       filterText: this.props.filterOptions.text,
-      cellFilter: this.props.filterOptions.cellFilter
+      cellFilter: this.props.filterOptions.cellFilter,
+      puckFilter: this.props.filterOptions.puckFilter
     };
 
     value = optionMap[id];
@@ -151,6 +152,20 @@ class SampleListViewContainer extends React.Component {
     if (this.props.viewMode.mode !== 'Graphical View') {
       options.push((<option key="all" value="">ALL</option>));
     }
+
+    return options;
+  }
+
+  getPuckFilterOptions() {
+    const sc = this.props.sampleChanger.contents;
+    let options = [];
+
+    if (sc.children) {
+      options = Object.values(sc.children).map((cell) => (
+        (<option key={cell.name} value={cell.name}>{cell.name}</option>)
+      ));
+    }
+    options.push((<option key="all" value="">ALL</option>));
 
     return options;
   }
@@ -249,6 +264,7 @@ class SampleListViewContainer extends React.Component {
   sampleGridFilter(e) {
     const optionMap = {
       cellFilter: { cellFilter: e.target.value },
+      puckFilter: { puckFilter: e.target.value },
       inQueue: { inQueue: e.target.checked },
       notInQueue: { notInQueue: e.target.checked },
       collected: { collected: e.target.checked },
@@ -481,6 +497,19 @@ class SampleListViewContainer extends React.Component {
                 onChange={this.sampleGridFilter}
               >
                 {this.getCellFilterOptions()}
+              </Form.Select>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} size="small">
+            <Form.Label column sm="3"> Puck &nbsp;</Form.Label>
+            <Form.Label column sm="1"> : &nbsp;</Form.Label>
+            <Col sm="6">
+              <Form.Select
+                id="puckFilter"
+                value={this.getFilterOptionValue('puckFilter')}
+                onChange={this.sampleGridFilter}
+              >
+                {this.getPuckFilterOptions()}
               </Form.Select>
             </Col>
           </Form.Group>
