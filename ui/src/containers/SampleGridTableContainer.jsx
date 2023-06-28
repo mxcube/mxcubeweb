@@ -41,6 +41,7 @@ import { showDialog } from '../actions/general';
 
 
 import SampleFlexView from './SampleFlexView';
+import SampleIsaraView from './SampleIsaraView';
 
 import { SampleGridTableItem } from '../components/SampleGrid/SampleGridTableItem';
 
@@ -160,7 +161,7 @@ class SampleGridTableContainer extends React.Component {
    */
   checkForOverlap(el1, el2) {
     let result = false;
-    
+
     if (el2 === null || el1 === null) {
       return false;
     }
@@ -193,7 +194,7 @@ class SampleGridTableContainer extends React.Component {
   selectItemUnderCursor(e, item) {
     this.sampleGridItemsSelectedHandler(e, [item]);
   }
-  
+
 
   /**
    * Handles multiple item selection on mouseDown, initializes the 'rubberband'
@@ -294,11 +295,11 @@ class SampleGridTableContainer extends React.Component {
    */
     mutualExclusiveFilterOption(sample, o1, o2, testFun) {
       let includeItem = false;
-  
+
       // First case is included for clarity since the two options
       // cancel each other out. Dont do anything same as both false. Otherwise
       // apply filter.
-  
+
       if (this.props.filterOptions[o1] && this.props.filterOptions[o2]) {
         includeItem = true;
       } else if (!this.props.filterOptions[o1] && !this.props.filterOptions[o2]) {
@@ -308,7 +309,7 @@ class SampleGridTableContainer extends React.Component {
       } else if (this.props.filterOptions[o2]) {
         includeItem = !testFun(sample);
       }
-  
+
       return includeItem;
     }
 
@@ -326,7 +327,6 @@ class SampleGridTableContainer extends React.Component {
   filter(key) {
     const sample = this.props.sampleList[key];
     let fi = false;
-
     if (sample) {
       const sampleFilter = `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
       const locationFilter = `${sample.location}`;
@@ -334,7 +334,6 @@ class SampleGridTableContainer extends React.Component {
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
-      // we can't filter if there is only one cell 
       // we can't filter if there is only one cell
       if (Object.values(this.props.sampleList).every( cell => cell.cell_no != 1)) {
         fi &= locationFilter.startsWith(this.props.filterOptions.cellFilter.toLowerCase());
@@ -463,7 +462,7 @@ class SampleGridTableContainer extends React.Component {
     return [allCellSample, allCellSampleCheck];
   }
 
-    
+
   getSampleListFilteredByCellPuck(cell, puck) {
     const allCellSample = [];
     const allCellSampleCheck = [];
@@ -481,7 +480,7 @@ class SampleGridTableContainer extends React.Component {
             }
           }
       });
-      return [allCellSample, allCellSampleCheck]  
+      return [allCellSample, allCellSampleCheck]
     }
 
     else if (puck !== null) {
@@ -497,9 +496,8 @@ class SampleGridTableContainer extends React.Component {
       return [allPuckSample, allPuckSampleCheck]
     }
 
-    return [[], [] ]  
+    return [[], [] ]
   }
-  
 
   displayContextMenu(e, contextMenuID, sampleID) {
     e.preventDefault();
@@ -561,11 +559,13 @@ class SampleGridTableContainer extends React.Component {
   }
 
   getSampleItemCollapsibleHeaderActions(cell) {
-    const cellMenuID = 'samples-grid-table-context-menu-cell'
+    const type = this.props.type;
+    const cellMenuID = 'samples-grid-table-context-menu-cell';
+    const cellArgument = type === 'CATS'? '1': `${cell}`
     return(
       <div className='sample-items-collapsible-header-actions'>
-        <b className='me-2 mt-1'>Cell {cell}</b>
-        {this.itemsControls(cell, null)}
+        <b className='me-2 mt-1'>{type === 'CATS'? 'type': `Cell ${cell}`}</b>
+        {this.itemsControls(cellArgument, null)}
         <span
           title='Cell Options'
           className='samples-grid-table-context-menu-icon'
@@ -620,16 +620,16 @@ class SampleGridTableContainer extends React.Component {
    */
   getSampleItems(cell, puck) {
     const sampleItemList = [];
-  
+
     Object.values(this.props.sampleList).filter(sample => sample.cell_no == cell && sample.puck_no == puck)
     .forEach(sample => {
-      
+
       const key = sample.sampleID;
 
       const picked= this.props.inQueue(sample.sampleID) && sample.checked;
 
       const classes = classNames('samples-grid-table-li',
-      { 
+      {
         'samples-grid-table-item-selected': this.props.selected[sample.sampleID],
         'samples-grid-table-item-to-be-collected': picked,
         'samples-grid-table-item-collected': isCollected(sample) });
@@ -742,21 +742,23 @@ class SampleGridTableContainer extends React.Component {
     scContent.children.map(cell => {
       if (this.props.filterOptions.cellFilter.toLowerCase() === cell.name
         || this.props.filterOptions.cellFilter.toLowerCase() === '') {
-        
+
         const nbpuck = [];
-        // we won't display the cell / table  if all puck in the cell are empty 
+        // we won't display the cell / table  if all puck in the cell are empty
         cell.children.map((puck, idxtd)=> {
-          if(this.getSampleItems(cell.name, idxtd+1).length > 0) { 
+          if(this.getSampleItems(cell.name, idxtd+1).length > 0) {
             nbpuck.push(puck);
           }
         });
 
-        if (nbpuck.length > 0) {   
+        if (nbpuck.length > 0) {
           let colsmP = colsm
           if (nbpuck.length === 1) {
-            colsmP = 3;
+            colsmP = 3  ;
           }
-          else if (nbpuck.length >= 4) {
+          else if (nbpuck.length >= 4 && colsm === 'auto') {
+            colsmP = 12;
+          } else {
             colsmP = 12;
           }
           tableCell.push(
@@ -808,7 +810,7 @@ class SampleGridTableContainer extends React.Component {
                     <tbody>
                       <tr>
                         {cell.children.map((puck, idxtd)=> {
-                          if(this.getSampleItems(cell.name, idxtd+1).length > 0) {  
+                          if(this.getSampleItems(cell.name, idxtd+1).length > 0) {
                             return(
                                 <td key={`${cell.name}-td-${puck.name}`} className={`sample-items-table-column-body custom-table-border-${idxtd+1}`}>
                                   {this.getSampleItems(cell.name, idxtd+1)}
@@ -988,8 +990,27 @@ class SampleGridTableContainer extends React.Component {
     return Object.values(this.props.sampleList).every(sample => sample.cell_no === 1);
   }
 
+  renderSampleChangerDrawing() {
+    if (this.props.type === 'CATS') {
+      return (
+        <SampleIsaraView
+          cellSampleList={this.getSampleListBydCell}
+        />
+      )
+    } else if (this.props.type === 'FLEX_HCD') {
+    return (
+      <SampleFlexView
+      cellSampleList={this.getSampleListBydCell}
+    />
+    )
+    } else {
+      return null
+    }
+  }
 
   render() {
+    console.log(this.props.sampleChanger.contents.name)
+    console.log(this.props.type)
     return (
       this.state.loadGridTable ? (
         <div>
@@ -1018,10 +1039,8 @@ class SampleGridTableContainer extends React.Component {
                 onMouseMove={this.onMouseMove}
                 xs="auto"
               >
-                <div className="selection-rubber-band" id="selectionRubberBand" />
-                <SampleFlexView
-                  cellSampleList={this.getSampleListBydCell}
-                />            
+                <div className="selection-rubber-band" id="selectionRubberBand"/>
+                {this.renderSampleChangerDrawing()}
                 <Col className='col-sm-10'>
                 {this.getManualSamples()}
                 {this.getSampleTable('auto')}
@@ -1039,7 +1058,6 @@ class SampleGridTableContainer extends React.Component {
                 ref={(ref) => { this.containerRef = ref; }}
               >
                 <div className="selection-rubber-band" id="selectionRubberBand" />
-                {this.getSampleTable(this.isSingleCell()? 12: 6)} 
                 {this.getManualSamples()}
                 {this.getSampleTable(this.isSingleCell()? 12: 6)}
               </Row>
@@ -1072,7 +1090,8 @@ function mapStateToProps(state) {
     order: state.sampleGrid.order,
     viewMode: state.sampleGrid.viewMode,
     contextMenu: state.contextMenu.genericContextMenu,
-    sampleChanger: state.sampleChanger
+    sampleChanger: state.sampleChanger,
+    type: state.sampleChanger.contents ? state.sampleChanger.contents.name : 'Default'
   };
 }
 
