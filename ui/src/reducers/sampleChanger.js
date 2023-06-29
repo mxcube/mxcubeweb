@@ -4,7 +4,7 @@ const INITIAL_STATE = {
   loadedSample: {},
   plateGrid: [
     {
-      name: 'Cristal Direct',
+      name: 'Crystal Direct',
       wellHeight: 25,
       wellWidth: 25,
       dropHeight: 35,
@@ -19,7 +19,7 @@ const INITIAL_STATE = {
       welladjustWidth: 0
     },
     {
-      name: 'Cristal QuickX',
+      name: 'Crystal QuickX',
       wellHeight: 25,
       wellWidth: 25,
       dropHeight: 35,

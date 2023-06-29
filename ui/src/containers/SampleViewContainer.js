@@ -192,7 +192,7 @@ class SampleViewContainer extends Component {
                     >
                       <i className="fas fa-gem" />
                         {' '}
-                        Move to Cristal
+                        Move to Crystal
                     </Button>
                   </div>
                 )
