@@ -104,7 +104,7 @@ class SampleListViewContainer extends React.Component {
   }
 
   setViewMode(mode) {
-    if (mode == 'Graphical View') {
+    if (mode === 'Graphical View') {
       this.props.filter({ cellFilter: "1" });
     } else {
       this.props.filter({ cellFilter: "" });
@@ -272,9 +272,6 @@ class SampleListViewContainer extends React.Component {
       limsSamples: { limsSamples: e.target.checked },
       filterText: { text: ReactDOM.findDOMNode(this.filterInput).value.trim() }
     };
-
-    console.log(optionMap[e.target.id]);
-
     this.props.filter(optionMap[e.target.id]);
   }
 

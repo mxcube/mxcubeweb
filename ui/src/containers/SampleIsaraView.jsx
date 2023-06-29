@@ -3,8 +3,6 @@ import withRouter from '../components/WithRouter'
 import { connect } from 'react-redux';
 import { Col } from 'react-bootstrap';
 
-import Collapsible from 'react-collapsible';
-
 import { BsChevronUp, BsChevronDown} from "react-icons/bs";
 
 import "react-contexify/dist/ReactContexify.css";
@@ -20,7 +18,7 @@ class NewSampleIsaraView extends React.Component {
 
     this.isPuckSelected = this.isPuckSelected.bind(this);
     this.sampleChangerRadius = 10;
-    this.containerRadius = 1 //75;
+    this.containerRadius = 1;
   }
 
   componentDidMount() {
@@ -41,10 +39,6 @@ class NewSampleIsaraView extends React.Component {
       isPuckSelected =  true;
     }
     return isPuckSelected;
-  }
-
-
-  componentWillUnmount() {
   }
 
   getCollapsibleHeaderOpen(cssClass) {
@@ -105,9 +99,9 @@ class NewSampleIsaraView extends React.Component {
     }
     if (drawingPosition.nbColumn === 3) {
       return [
-        -this.sampleChangerRadius * 0.30,
+        -this.sampleChangerRadius * 0.3,
         this.sampleChangerRadius * 0,
-        this.sampleChangerRadius * 0.30
+        this.sampleChangerRadius * 0.3
       ][drawingPosition.column];
     }
     if (drawingPosition.nbColumn === 1) {
@@ -154,19 +148,6 @@ class NewSampleIsaraView extends React.Component {
     if (position < 30) {
       return { line: 5, column: position - 27, nbColumn: 2 };
     }
-    // if (position < this.insideCells) {
-    //   return { line: 5, column: position - 27, nbColumn: 2 };
-    // }
-    // if ((position >= this.insideCells) && (position < (this.insideCells +this.roomTemperatureCells))) {
-    //   if (this.roomTemperatureCells === 1) {
-    //     return { line: 6, column: position - this.insideCells, nbColumn: 1 };
-    //   }
-    //   if (this.roomTemperatureCells === 3) {
-    //     return { line: 6, column: position - this.insideCells, nbColumn: 3 };
-    //   } else {
-    //     return {line: 7, column: 0, nbColumn: 0};
-    //   }
-    // }
 
     return { line: 7, column: 0, nbColumn: 0 };
   }
@@ -188,7 +169,7 @@ class NewSampleIsaraView extends React.Component {
   }
 
   createSample(pk, id, position) {
-    let formattedNumber = id.toLocaleString('en-US', {
+    const formattedNumber = id.toLocaleString('en-US', {
       minimumIntegerDigits: 2,
       useGrouping: false
     })
@@ -207,8 +188,9 @@ class NewSampleIsaraView extends React.Component {
       </g>
     )
   }
+
   createSamples(coord, pk){
-    let samples = [];
+    const samples = [];
     for (let id = 1; id < 17; id++) {
       const pos = this.computePos(coord, id);
       samples.push(this.createSample(pk, id, pos))
@@ -227,13 +209,8 @@ class NewSampleIsaraView extends React.Component {
   }
 
   renderPucks(numPucks) {
-
-    let allPucks = [];
-    const kk = [1,2,3,4];
-    const result = kk.map((item,i) => <li key={i}>Test</li>)
+    const allPucks = [];
     for (let pk = 0; pk < numPucks; pk++) {
-      const x = this.getX(pk) + 5;
-      const y = this.getY(pk) + 8;
       const coord = this.getContainerCoordinates(1, pk)
       allPucks.push(this.createCircle(coord, pk))
     }
