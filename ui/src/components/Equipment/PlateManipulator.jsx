@@ -1,7 +1,6 @@
-/* eslint-disable no-nested-ternary */
 import React from 'react';
 import {
-  Row, Col, Button, Dropdown, DropdownButton, ButtonToolbar,
+  Row, Col, Button, ButtonToolbar,
   OverlayTrigger, Tooltip
 } from 'react-bootstrap';
 import {
@@ -40,19 +39,19 @@ class PlateManipulator extends React.Component {
 
     contextMenu.show({
       id,
-      event: event,
-      position: position,
+      event,
+      position,
     });
   }
 
   setPlate() {
-    let plate_label = '';
+    let cplate_label = '';
     let plate_index = 0;
     if (this.props.global_state.plate_info && this.props.global_state.plate_info.plate_label) {
-      plate_label = this.props.global_state.plate_info.plate_label;
+      cplate_label = this.props.global_state.plate_info.plate_label;
     }
-    this.props.plates.map((cplate, index) => {
-      if (plate_label === cplate.name) {
+    this.props.plates.forEach((cplate, index) => {
+      if (cplate_label === cplate.name) {
         plate_index = index
       }
     });
@@ -166,7 +165,6 @@ class PlateManipulator extends React.Component {
             x={x}
             y={y - d * drop}
             style={{
-              // fill: `${this.props.selectedRow}${this.props.selectedCol}:${drop}-0` === this.props.loadedSample.address ? '#ef9a9a' : '#9e9e9e',
               fill: Number(loadedDrop) === drop ? '#ef9a9a' : '#9e9e9e',
               stroke: drop === this.props.selectedDrop ? '#0177fdad' : '#888888',
               strokeWidth: drop === this.props.selectedDrop ? '2' : '1',
@@ -185,7 +183,6 @@ class PlateManipulator extends React.Component {
           <text
             x={x1}
             y={y1 - d * drop}
-            // transform={`rotate(${plate.rotation})`}
             style={{
               fontSize: `${plate.dropWidth / 2 }px`,
               stroke: crystalForSelectedWell !== null ?
@@ -210,12 +207,15 @@ class PlateManipulator extends React.Component {
         </Button>
       ));
 
-    let dropPosy = 70;
-    if(plate.name == "Cristal QuickX") {
+    let dropPosy = 0;
+    if(plate.name === "Crystal QuickX") {
       dropPosy = 95
     }
-    else if(plate.name == "Greiner Impact 1536") {
+    else if(plate.name === "Greiner Impact 1536") {
       dropPosy = 135
+    }
+    else {
+      dropPosy = 70;
     }
     const wellPlate = () =>
       <div className="plate" style={{ display: 'grid', paddingTop: '5px' }}>
@@ -289,7 +289,7 @@ class PlateManipulator extends React.Component {
             >
               {plate.wellOption.map((wo, idx) => (
                 <rect
-                  key={`wellplate-${idx}`}
+                  key={`wellplate-${wo.color}`}
                   width={120 * plate.wellOption.length / (idx + 1) - plate.welladjustWidth}
                   height={225}
                   x={0}
@@ -351,7 +351,7 @@ class PlateManipulator extends React.Component {
                     if (this.props.contents.children !== null) {
                       if (plate.type === 'square') {
                         cell = (
-                          <div onContextMenu={(e) => this.showContextMenu(e, `wls${row}${col}`)} key={`cell-${row}${col}`}>
+                          <div tabIndex={0} role="button" onContextMenu={(e) => this.showContextMenu(e, `wls${row}${col}`)} key={`cell-${row}${col}`}>
                             <svg
                               className="single_well"
                               width={plate.wellWidth}
@@ -388,8 +388,8 @@ class PlateManipulator extends React.Component {
                                 <b>
                                   Well
                                   {' '}
-                                  {`${row}${col}`}
-                                  {':'}
+                                  `${row}${col}`
+                                  ':'
                                   {loadedDrop}
                                 </b>
                               </li>
@@ -401,20 +401,23 @@ class PlateManipulator extends React.Component {
                               >
                                 Move to this Well
                               </Item>
-                              { crystal !== null ? [
+                              { crystal !== null ? (
                               <Separator />,
                               <b>Crystal Info : </b>,
                               <ul>
                                 <li>Sample : {crystal.sample}</li>
                                 <li>Drop : {crystal.shelf}</li>
                               </ul>
-                              ]
+                              )
                                 :
                                 null
                             }
                             </Menu>
                           </div>
                         );
+                      }
+                      else {
+                        cell = 'Not Implemented'
                       }
                     }
                     return cell;
@@ -434,7 +437,7 @@ class PlateManipulator extends React.Component {
                     if (this.props.contents.children !== null) {
                       if (plate.type === 'square') {
                         cell = (
-                          <div onContextMenu={(e) => this.showContextMenu(e, `wlw${row}${col}`)} key={`cell-${row}${col}`}>
+                          <div role="button" tabIndex={0} onContextMenu={(e) => this.showContextMenu(e, `wlw${row}${col}`)} key={`cell-${row}${col}`}>
                             <svg
                               className="single_well"
                               width={plate.wellWidth}
@@ -451,10 +454,9 @@ class PlateManipulator extends React.Component {
                               <rect
                                 width={plate.wellWidth}
                                 height={plate.wellHeight}
-                                // stroke={`${row}${col}` === `${this.props.selectedRow}${this.props.selectedCol}` ? '#0177fdad' : 'rgb(136, 136, 136)'}
                                 x={0}
                                 style={{
-                                  // stroke: crystal !== null ? '#81c784' : '#eeeeee',
+                                  stroke: crystal !== null ? '#81c784' : '#eeeeee',
                                   fill: `${row}${col}:${loadedDrop}-0` === this.props.loadedSample.address ? '#e57373' : '#e0e0e0'
                                 }}
                               />
@@ -464,8 +466,8 @@ class PlateManipulator extends React.Component {
                                 <b>
                                   Well
                                   {' '}
-                                  {`${row}${col}`}
-                                  {':'}
+                                  `${row}${col}`
+                                  ':'
                                   {loadedDrop}
                                 </b>
                               </li>
@@ -477,20 +479,23 @@ class PlateManipulator extends React.Component {
                               >
                                 Move to this Well
                               </Item>
-                              { crystal !== null ? [
-                              <Separator />,
-                              <b>Crystal Info : </b>,
-                              <ul>
-                                <li>Sample : {crystal.sample}</li>
-                                <li>Drop : {crystal.shelf}</li>
-                              </ul>
-                              ]
+                              { crystal !== null ? (
+                                <Separator />,
+                                <b>Crystal Info : </b>,
+                                <ul>
+                                  <li>Sample : {crystal.sample}</li>
+                                  <li>Drop : {crystal.shelf}</li>
+                                </ul>
+                                )
                                 :
                                 null
                             }
                             </Menu>
                         </div>
                         );
+                      }
+                      else{
+                        cell = 'Not Implemented'
                       }
                     }
                     return cell;
@@ -503,9 +508,9 @@ class PlateManipulator extends React.Component {
         </div>
       </div>;
 
-    let plate_label = '';
+    let cplate_label = '';
     if (this.props.global_state.plate_info && this.props.global_state.plate_info.plate_label) {
-      plate_label = this.props.global_state.plate_info.plate_label;
+      cplate_label = this.props.global_state.plate_info.plate_label;
     }
     let cssDisable = {};
     if (this.props.state === 'MOVING') {
@@ -515,6 +520,13 @@ class PlateManipulator extends React.Component {
       <Row className='mt-4' title={this.props.state === 'MOVING' ? 'Plate Moving, can not send commande' : ''}>
         <Col className='ms-3'>
           <ButtonToolbar className='ms-4'>
+            {this.props.inplace?
+              <div className='me-4'>
+                 <b>{cplate_label}</b> 
+              </div>
+              :
+              null
+            }
             <OverlayTrigger
               variant="outline-success"
               placement="bottom"

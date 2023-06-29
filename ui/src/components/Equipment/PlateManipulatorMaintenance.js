@@ -1,7 +1,5 @@
-/* eslint-disable no-nested-ternary */
 import React from 'react';
 import { Card, Button, ButtonGroup, InputGroup, Form } from 'react-bootstrap';
-// import Range from '../Range/EditableRange';
 import './Equipment.css';
 
 export class PlateManipulatorActionButton extends React.Component {
@@ -50,9 +48,12 @@ export class PlateManipulatorAction extends React.Component {
 
   handleInputChange(e) {
     if (this.props.inputType === 'number') {
-      this.setState({ input_value: +e.target.value });
+      this.setState({ input_value: Number(e.target.value) });
     }
-    else this.setState({ input_value: e.target.value });
+    else {
+      this.setState({ input_value: e.target.value });
+    }
+    
   }
 
   actionComponent() {
@@ -136,7 +137,7 @@ export default class PlateManipulatorMaintenance extends React.Component {
     const groups = [];
     let msg = '';
 
-    if (Object.keys(this.props.commands).length !== 0
+    if (Object.keys(this.props.commands).length > 0
         && this.props.commands.cmds !== 'SC maintenance controller not defined') {
       for (const cmdgrp of this.props.commands.cmds) {
         groups.push(this.buildActionGroup(cmdgrp));
