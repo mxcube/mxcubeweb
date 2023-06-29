@@ -354,7 +354,7 @@ class SampleChanger(ComponentBase):
     def sync_with_crims(self):
         """
         To be use mostly when Diffractometer is in plate mode
-        This retun a List of cristal dict available in Crims that have been Harvested  
+        This retun a List of crystal dict available in Crims that have been Harvested  
         With this user can visualize easier where the crystal are in Plate GUI  
         """
         xtal_list = []
@@ -376,7 +376,7 @@ class SampleChanger(ComponentBase):
             res = {"xtal_list": xtal_list}
             return res
         except Exception:
-            logging.getLogger("MX3.HWR").exception("Could not get cristal List")
+            logging.getLogger("MX3.HWR").exception("Could not get crystal List")
             return {"xtal_list": xtal_list}
 
 
@@ -417,10 +417,6 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
             element = "%d:%02d" % loc
             sample = {"location": element, "sampleID": element}
             mxcube.sample_changer.mount_sample_clean_up(sample)
-        # elif sample_mount_device.__TYPE__ == "PlateManipulator":
-        #     sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
-        #     mxcube.sample_changer.mount_sample_clean_up(sample)
-        # PlateManipulator does not need a specific mount
         else:
             sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
 
