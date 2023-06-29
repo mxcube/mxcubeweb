@@ -708,7 +708,6 @@ class SampleGridTableContainer extends React.Component {
 
       // we divide all manual samples in rows of 6 samples
       const numRows = Math.ceil(items.length / 6)
-      console.log('numRows', numRows)
       let sliceStart = 0;
       let sliceEnd = 6;
       for (let i = 0; i <= numRows; i++) {
@@ -1009,8 +1008,6 @@ class SampleGridTableContainer extends React.Component {
   }
 
   render() {
-    console.log(this.props.sampleChanger.contents.name)
-    console.log(this.props.type)
     return (
       this.state.loadGridTable ? (
         <div>
