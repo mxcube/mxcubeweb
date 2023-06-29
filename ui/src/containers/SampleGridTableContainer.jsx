@@ -335,7 +335,7 @@ class SampleGridTableContainer extends React.Component {
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
       // we can't filter if there is only one cell
-      if (Object.values(this.props.sampleList).every( cell => cell.cell_no != 1)) {
+      if (Object.values(this.props.sampleList).every( cell => cell.cell_no !== 1)) {
         fi &= locationFilter.startsWith(this.props.filterOptions.cellFilter.toLowerCase());
       }
       if (this.props.filterOptions.puckFilter !== '') {
@@ -452,7 +452,7 @@ class SampleGridTableContainer extends React.Component {
     const allCellSample = [];
     const allCellSampleCheck = [];
 
-    Object.values(this.props.sampleList).filter(sample => sample.cell_no == cell)
+    Object.values(this.props.sampleList).filter(sample => sample.cell_no === cell)
     .forEach(sample => {
       allCellSample.push(sample.sampleID);
       if (this.props.inQueue(sample.sampleID) && sample.checked) {
@@ -471,7 +471,7 @@ class SampleGridTableContainer extends React.Component {
     const allPuckSampleCheck = [];
 
     if(cell && puck === null) {
-      Object.values(this.props.sampleList).filter(sample => sample.cell_no == cell)
+      Object.values(this.props.sampleList).filter(sample => sample.cell_no === cell)
       .forEach(sample => {
         if (this.filter(sample.sampleID)) {
             allCellSample.push(sample.sampleID);
@@ -484,7 +484,7 @@ class SampleGridTableContainer extends React.Component {
     }
 
     else if (puck !== null) {
-      Object.values(this.props.sampleList).filter(sample => sample.cell_no == cell && sample.puck_no == puck)
+      Object.values(this.props.sampleList).filter(sample => sample.cell_no === cell && sample.puck_no === puck)
       .forEach(sample => {
         if (this.filter(sample.sampleID)) {
             allPuckSample.push(sample.sampleID);
@@ -621,7 +621,7 @@ class SampleGridTableContainer extends React.Component {
   getSampleItems(cell, puck) {
     const sampleItemList = [];
 
-    Object.values(this.props.sampleList).filter(sample => sample.cell_no == cell && sample.puck_no == puck)
+    Object.values(this.props.sampleList).filter(sample => sample.cell_no === cell && sample.puck_no === puck)
     .forEach(sample => {
 
       const key = sample.sampleID;
@@ -642,7 +642,7 @@ class SampleGridTableContainer extends React.Component {
         slidesToScroll: 6
       };
 
-      if (this.filter(key) && sample.cell_no == cell && sample.puck_no == puck) {
+      if (this.filter(key) && sample.cell_no === cell && sample.puck_no === puck) {
           let contextMenuID = 'samples-grid-table-context-menu';
           if (this.currentSample(sample.sampleID)) {
             contextMenuID = 'samples-grid-table-context-menu-mounted';
@@ -712,8 +712,8 @@ class SampleGridTableContainer extends React.Component {
       let sliceEnd = 6;
       for (let i = 0; i <= numRows; i++) {
         rows[i] = items.slice(sliceStart, sliceEnd)
-        sliceStart = sliceStart + 6;
-        sliceEnd = sliceEnd + 6;
+        sliceStart += 6;
+        sliceEnd += 6;
       }
 
       return(
@@ -729,9 +729,8 @@ class SampleGridTableContainer extends React.Component {
           }
         </div>
       )
-    } else {
-      return null
     }
+    return null
   }
 
   getSampleTable(colsm) {
@@ -781,7 +780,7 @@ class SampleGridTableContainer extends React.Component {
                               <th key={`${cell.name}-th-${puck.name}`} className='sample-items-table-row-header-th'>
                                 <span style={{ marginLeft: '5px', marginTop: '4px', float:'left'}}>
                                   Puck {idxth+1}
-                                  {puck.id != '' ?
+                                  {puck.id !== '' ?
                                     <div className='sample-items-puck-code' title={puck.id}>
                                       Code : {puck.id}
                                     </div>
@@ -949,7 +948,7 @@ class SampleGridTableContainer extends React.Component {
 
   renderContextMenu (id) {
     let menu = <Dropdown.Item href="#/action-1">....</Dropdown.Item>;
-    if(id == 'samples-grid-table-context-menu') {
+    if(id === 'samples-grid-table-context-menu') {
       menu = (
         <>
         {this.sampleContextMenu()}
@@ -957,7 +956,7 @@ class SampleGridTableContainer extends React.Component {
         </>
       )
     }
-    else if(id == 'samples-grid-table-context-menu-mounted') {
+    else if(id === 'samples-grid-table-context-menu-mounted') {
       menu = (
         <>
           {this.sampleContextMenuMounted()}
@@ -965,7 +964,7 @@ class SampleGridTableContainer extends React.Component {
         </>
       )
     }
-    else if(id == 'samples-grid-table-context-menu-cell') {
+    else if(id === 'samples-grid-table-context-menu-cell') {
       menu = (
         <>
           <Dropdown.Header>Cell Actions</Dropdown.Header>
@@ -973,7 +972,7 @@ class SampleGridTableContainer extends React.Component {
         </>
       )
     }
-    else if(id == 'samples-grid-table-context-menu-puck') {
+    else if(id === 'samples-grid-table-context-menu-puck') {
       menu = (
         <>
           <Dropdown.Header>Puck Actions</Dropdown.Header>
@@ -1027,7 +1026,7 @@ class SampleGridTableContainer extends React.Component {
             :
             null
           }
-          {this.props.viewMode.mode == 'Graphical View'?
+          {this.props.viewMode.mode === 'Graphical View'?
             (
               <Row
                 className="samples-grid-table"
