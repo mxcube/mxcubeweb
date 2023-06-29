@@ -17,7 +17,7 @@ import { find, filter } from 'lodash';
 import {
   sendGetAllhardwareObjects,
   sendSetAttribute,
-  sendAbortCurrentAction
+  sendAbortCurrentAction,
 } from '../actions/beamline';
 
 import { sendCommand } from '../actions/sampleChanger';
@@ -53,13 +53,14 @@ class BeamlineSetupContainer extends React.Component {
     const step = this.props.sampleview.motorSteps.beamstop_distance;
 
     if (motor !== undefined && motor.state !== 0) {
-      motorInputList.push((
+      motorInputList.push(
         <div key={`bsao-${motor.name}`} style={{ padding: '0.5em' }}>
           <p className="motor-name"> Beamstop distance: </p>
           <OneAxisTranslationControl
             save={this.props.sampleViewActions.sendMotorPosition}
             value={motor.position}
-            min={motor.limits[0]} max={motor.limits[1]}
+            min={motor.limits[0]}
+            max={motor.limits[1]}
             step={step}
             motorName={motor.name}
             suffix="mm"
@@ -68,16 +69,15 @@ class BeamlineSetupContainer extends React.Component {
             disabled={this.props.beamline.motorInputDisable}
           />
         </div>
-      ));
+      );
     }
 
     if (motorInputList.length > 0) {
-      popover = (<Popover>{motorInputList}</Popover>);
+      popover = <Popover>{motorInputList}</Popover>;
     }
 
     return popover;
   }
-
 
   createActuatorComponent() {
     const acts = [];
@@ -95,8 +95,12 @@ class BeamlineSetupContainer extends React.Component {
               acts.push(
                 <Nav.Item key={key} className="ms-3">
                   <InOutSwitch
-                    onText={this.props.beamline.hardwareObjects[key].commands[0]}
-                    offText={this.props.beamline.hardwareObjects[key].commands[1]}
+                    onText={
+                      this.props.beamline.hardwareObjects[key].commands[0]
+                    }
+                    offText={
+                      this.props.beamline.hardwareObjects[key].commands[1]
+                    }
                     labelText={uiprop.label}
                     pkey={key}
                     data={this.props.beamline.hardwareObjects[key]}
@@ -109,8 +113,12 @@ class BeamlineSetupContainer extends React.Component {
               acts.push(
                 <Nav.Item key={key} className="ms-3">
                   <InOutSwitch
-                    onText={this.props.beamline.hardwareObjects[key].commands[0]}
-                    offText={this.props.beamline.hardwareObjects[key].commands[1]}
+                    onText={
+                      this.props.beamline.hardwareObjects[key].commands[0]
+                    }
+                    offText={
+                      this.props.beamline.hardwareObjects[key].commands[1]
+                    }
                     labelText={uiprop.label}
                     pkey={key}
                     data={this.props.beamline.hardwareObjects[key]}
@@ -126,7 +134,6 @@ class BeamlineSetupContainer extends React.Component {
     return acts;
   }
 
-
   dmState() {
     return this.props.beamline.hardwareObjects.diffractometer.state;
   }
@@ -135,42 +142,50 @@ class BeamlineSetupContainer extends React.Component {
     const components = [];
 
     for (const uiprop of uiprop_list) {
-      const beamline_attribute = this.props.beamline.hardwareObjects[uiprop.attribute];
+      const beamline_attribute =
+        this.props.beamline.hardwareObjects[uiprop.attribute];
 
       components.push(
-        <td key={`bs-name-${uiprop.label}`} className="py-1 ps-3 pe-2 align-middle">
-          <span className='me-1'>{uiprop.label}:</span>
-        </td>);
+        <td
+          key={`bs-name-${uiprop.label}`}
+          className="py-1 ps-3 pe-2 align-middle"
+        >
+          <span className="me-1">{uiprop.label}:</span>
+        </td>
+      );
       components.push(
         <td
-        key={`bs-val-${uiprop.label}`}
-        className='pe-3'
-        style={{
-          fontWeight: 'bold',
-          border: '0px',
-          borderRight: uiprop_list.length != uiprop_list.indexOf(uiprop) + 1 ? '1px solid #ddd': '',
-          padding: '0em'}}>
-          { beamline_attribute.readonly ?
-            (<LabeledValue
+          key={`bs-val-${uiprop.label}`}
+          className="pe-3 align-middle"
+          style={{
+            fontWeight: 'bold',
+            borderRight:
+              uiprop_list.length != uiprop_list.indexOf(uiprop) + 1
+                ? '1px solid #ddd'
+                : '',
+          }}
+        >
+          {beamline_attribute.readonly ? (
+            <LabeledValue
               suffix={uiprop.suffix}
               precision={uiprop.precision}
               format={uiprop.format || ''}
               name=""
               value={beamline_attribute.value}
               level="light"
-            />)
-            :
-            (<PopInput
+            />
+          ) : (
+            <PopInput
               name=""
-              pkey= {uiprop.attribute}
-              suffix={uiprop.suffix }
-              precision={ uiprop.precision }
+              pkey={uiprop.attribute}
+              suffix={uiprop.suffix}
+              precision={uiprop.precision}
               inputSize="10"
-              data={ beamline_attribute }
-              onSave= { this.setAttribute }
-              onCancel= { this.onCancelHandler }
-            />)
-          }
+              data={beamline_attribute}
+              onSave={this.setAttribute}
+              onCancel={this.onCancelHandler}
+            />
+          )}
         </td>
       );
     }
@@ -185,49 +200,47 @@ class BeamlineSetupContainer extends React.Component {
       return null;
     }
 
-
     const uiprops = this.props.uiproperties.beamline_setup.components;
-    const uiprop_list = filter(uiprops, (o) =>
-    o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
+    const uiprop_list = filter(
+      uiprops,
+      (o) => o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
     );
 
     return (
-    <Navbar
-      style={{
-        background: '#FAFAFA',
-        borderBottom: '1px solid lightgray',
-        paddingBottom: '0em',
-      }}
-      className="beamline-status ps-3 pe-3"
-      id="bmstatus"
-      bg='light'
-      expand="lg"
-    >
+      <Navbar className="beamline-status" id="bmstatus" expand="lg">
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="d-flex  me-auto my-2 my-lg-0">
             <Nav.Item className=" d-flex justify-content-start">
               <span className="blstatus-item" style={{ marginRight: '1em' }}>
-                <BeamlineActions actionsList={this.props.beamline.beamlineActionsList} />
+                <BeamlineActions
+                  actionsList={this.props.beamline.beamlineActionsList}
+                />
               </span>
             </Nav.Item>
           </Nav>
           <Nav className="me-auto my-2 my-lg-0">
-            <Nav.Item className="d-flex justify-content-start" >
+            <Nav.Item className="d-flex justify-content-start">
               <Table
                 borderless
                 responsive
                 style={{
-                  margin: '0px', fontWeight: 'bold',
-                  paddingLeft: '7em', paddingRight: '7em'
+                  margin: 0,
+                  fontWeight: 'bold',
+                  paddingLeft: '7em',
+                  paddingRight: '7em',
                 }}
               >
                 <tbody>
                   <tr>
-                    {this.render_table_row(uiprop_list.slice(0, (uiprop_list.length / 2).toFixed(0)))}
+                    {this.render_table_row(
+                      uiprop_list.slice(0, (uiprop_list.length / 2).toFixed(0))
+                    )}
                   </tr>
                   <tr>
-                    {this.render_table_row(uiprop_list.slice((uiprop_list.length / 2).toFixed(0)))}
+                    {this.render_table_row(
+                      uiprop_list.slice((uiprop_list.length / 2).toFixed(0))
+                    )}
                     {/* <td style={{ border: '0px', borderLeft: '1px solid #ddd', paddingLeft: '1em' }} />
                     <td style={{ border: '0px' }} /> */}
                   </tr>
@@ -239,7 +252,9 @@ class BeamlineSetupContainer extends React.Component {
             <Nav.Item>
               <DeviceState
                 labelText="Detector"
-                data={this.props.beamline.hardwareObjects.detector.state.acq_satus}
+                data={
+                  this.props.beamline.hardwareObjects.detector.state.acq_satus
+                }
               />
             </Nav.Item>
           </Nav>
@@ -252,19 +267,17 @@ class BeamlineSetupContainer extends React.Component {
               />
             </Nav.Item>
           </Nav>
-          <Nav className="me-3">
-            {this.createActuatorComponent()}
-          </Nav>
+          <Nav className="me-3">{this.createActuatorComponent()}</Nav>
           <Nav className="">
             <Nav.Item>
               <span className="blstatus-item">
-                {this.props.beamline.hardwareObjects.machine_info ?
+                {this.props.beamline.hardwareObjects.machine_info ? (
                   <MachInfo
-                    info={this.props.beamline.hardwareObjects.machine_info.value}
+                    info={
+                      this.props.beamline.hardwareObjects.machine_info.value
+                    }
                   />
-                  :
-                  null
-                }
+                ) : null}
               </span>
             </Nav.Item>
           </Nav>
@@ -274,27 +287,27 @@ class BeamlineSetupContainer extends React.Component {
   }
 }
 
-
 function mapStateToProps(state) {
   return {
     uiproperties: state.uiproperties,
     beamline: state.beamline,
     sampleview: state.sampleview,
-    sampleChanger: state.sampleChanger
+    sampleChanger: state.sampleChanger,
   };
 }
-
 
 function mapDispatchToProps(dispatch) {
   return {
-    getAllhardwareObjects: bindActionCreators(sendGetAllhardwareObjects, dispatch),
+    getAllhardwareObjects: bindActionCreators(
+      sendGetAllhardwareObjects,
+      dispatch
+    ),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     setAttribute: bindActionCreators(sendSetAttribute, dispatch),
     sendCommand: bindActionCreators(sendCommand, dispatch),
-    abortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch)
+    abortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch),
   };
 }
-
 
 export default connect(
   mapStateToProps,
