@@ -1,97 +1,54 @@
-const { createConfig } = require('eslint-config-galex/src/createConfig');
-const { files: jestFiles } = require('eslint-config-galex/src/overrides/jest');
+const { createConfig } = require('eslint-config-galex/dist/createConfig');
+const { getDependencies } = require('eslint-config-galex/dist/getDependencies');
 const {
-  files: reactFiles,
-} = require('eslint-config-galex/src/overrides/react');
+  createJestOverride,
+} = require('eslint-config-galex/dist/overrides/jest');
 const {
-  files: tsFiles,
-} = require('eslint-config-galex/src/overrides/typescript');
+  createReactOverride,
+} = require('eslint-config-galex/dist/overrides/react');
+
+const dependencies = getDependencies();
 
 module.exports = createConfig({
+  cwd: __dirname,
+  incrementalAdoption: true, // turn everything into a warning
   rules: {
-    'import/order': 'off',
+    'unicorn/consistent-destructuring': 'off', // too many failures in React class components
 
-    'sort-keys-fix/sort-keys-fix': 'off', // keys should be sorted based on significance
-    'import/no-default-export': 'off', // default exports are common in React
-    'no-negated-condition': 'off', // ternaries are sometimes more readable when `true` branch is most significant branch
+    // Ternaries are sometimes more readable when `true` branch is most significant branch
+    'no-negated-condition': 'off',
+    'unicorn/no-negated-condition': 'off',
 
     // Prefer explicit, consistent return - e.g. `return undefined;`
     'unicorn/no-useless-undefined': 'off',
     'consistent-return': 'error',
 
-    // Properties available after typeguard may be tedious to destructure (e.g. in JSX)
-    'unicorn/consistent-destructuring': 'off',
+    // Not really more readable and makes Jest crash
+    'unicorn/prefer-prototype-methods': 'off',
 
-    'sonarjs/no-duplicated-branches': 'warn',
-    'promise/catch-or-return': 'warn',
-    'import/no-anonymous-default-export': 'warn',
-    'default-param-last': 'warn',
-    'sonarjs/max-switch-cases': 'warn',
-    'unicorn/prefer-spread': 'warn',
-    'sonarjs/no-unused-collection': 'warn',
-    'sonarjs/no-identical-functions': 'warn',
-    'no-prototype-builtins': 'warn',
-    'sonarjs/no-duplicate-string': 'warn',
-    'import/no-namespace': 'warn',
-    'no-class-assign': 'warn',
-    'no-invalid-this': 'warn',
-    'unicorn/prefer-query-selector': 'warn',
-    'no-empty-function': 'warn',
-    'require-unicode-regexp': 'warn',
-    'unicorn/better-regex': 'warn',
-    'unicorn/no-new-array': 'warn',
-    'sonarjs/prefer-object-literal': 'warn',
-    'sonarjs/no-extra-arguments': 'warn',
-    'array-callback-return': 'warn',
-    'unicorn/no-abusive-eslint-disable': 'off',
-    'no-unmodified-loop-condition': 'warn',
+    /* Forcing use of `else` for consistency with mandatory `default` clause in `switch` statements is unreasonable.
+     * `if`/`else if` serves a different purpose than `switch`. */
+    'sonarjs/elseif-without-else': 'off',
 
-    // Fixed by eslint --fix:
-    'unicorn/prefer-switch': 'warn',
-    'unicorn/explicit-length-check': 'warn',
-    'unicorn/prefer-set-has': 'warn',
-    'unicorn/no-zero-fractions': 'warn',
-    'unicorn/no-useless-spread': 'warn',
-    'sonarjs/no-collapsible-if': 'warn',
-    'unicorn/prefer-optional-catch-binding': 'warn',
-    'unicorn/new-for-builtins': 'warn',
-    'unicorn/prefer-array-find': 'warn',
-    'unicorn/catch-error-name': 'warn',
-    'prefer-spread': 'warn',
-    
-    // zustand has `whitelist` option
-    // 'inclusive-language/use-inclusive-words': [
-    //  'warn',
-    //  { allowedTerms: ['whitelist'] },
-    // ],
+    // The point of `switch` is to be less verbose than if/else-if/else
+    'unicorn/switch-case-braces': ['warn', 'avoid'],
   },
   overrides: [
-    {
-      files: reactFiles,
+    createReactOverride({
+      ...dependencies,
       rules: {
-        'import/named': 'warn',
-        'react/static-property-placement': 'warn',
-        'jsx-a11y/anchor-has-content': 'warn',
-        'jsx-a11y/no-autofocus': 'warn',
-        'react/jsx-handler-names': 'off',
-        'react/button-has-type': 'warn',
-        'jsx-a11y/anchor-is-valid': 'warn',
-        'jsx-a11y/alt-text': 'warn',
-        'jsx-a11y/no-static-element-interactions': 'warn',
-        'react/no-string-refs': 'warn',
-        'react/no-find-dom-node': 'warn',
-        'react/no-deprecated': 'warn',
-        'react/destructuring-assignment': 'off',
+        'react/destructuring-assignment': 'off', // too many failures in React class components
         'react/jsx-no-constructed-context-values': 'off', // too strict
       },
-    },{
-      files: jestFiles,
+    }),
+    createJestOverride({
+      ...dependencies,
       rules: {
         'jest/no-focused-tests': 'warn', // warning instead of error
         'jest/prefer-strict-equal': 'off', // `toEqual` is shorter and sufficient in most cases
         'jest-formatting/padding-around-all': 'off', // allow writing concise two-line tests
         'jest/require-top-level-describe': 'off', // filename should already be meaningful, extra nesting is unnecessary
       },
-    },
+    }),
   ],
 });
