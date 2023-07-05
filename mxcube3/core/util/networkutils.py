@@ -5,6 +5,7 @@ import smtplib
 import time
 import os
 import logging
+import sys
 
 from email.mime.text import MIMEText
 from email.utils import make_msgid
@@ -13,6 +14,7 @@ import flask
 import flask_socketio
 
 from flask_login import current_user, login_required
+sys.path.append('/home/mxcube19u1/mxcube/mxcubecore')
 from mxcubecore import HardwareRepository as HWR
 
 
