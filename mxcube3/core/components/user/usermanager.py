@@ -236,9 +236,9 @@ class BaseUserManager(ComponentBase):
             "user": {
                 "username": "",
                 "email": "",
-                "isstaff": "",
+                "isstaff": False,
                 "nickname": "",
-                "inControl": "",
+                "inControl": False,
                 "ip": "",
             },
         }
