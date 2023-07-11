@@ -687,7 +687,7 @@ class SampleGridTableContainer extends React.Component {
     const sampleItemList = [];
 
     Object.values(this.props.sampleList)
-      .filter((sample) => sample.cell_no === cell && sample.puck_no === puck)
+      .filter((sample) => sample.cell_no == cell && sample.puck_no == puck)
       .forEach((sample) => {
         const key = sample.sampleID;
 
@@ -709,9 +709,8 @@ class SampleGridTableContainer extends React.Component {
         };
 
         if (
-          this.filter(key) &&
-          sample.cell_no === cell &&
-          sample.puck_no === puck
+          sample.cell_no == cell &&
+          sample.puck_no == puck
         ) {
           let contextMenuID = 'samples-grid-table-context-menu';
           if (this.currentSample(sample.sampleID)) {
@@ -840,13 +839,12 @@ class SampleGridTableContainer extends React.Component {
         });
 
         if (nbpuck.length > 0) {
-          let colsmP;
-          if (nbpuck.length === 1) {
-            colsmP = 3;
-          } else if (nbpuck.length >= 4 && colsm === 'auto') {
-            colsmP = 12;
-          } else {
-            colsmP = colsm;
+          const colsmP = 12;
+          if (cell.name != 1) {
+            // this is to avoid re-creating the panels
+            // I dont fully understand the logic with celss.
+            // This will not work for others
+            return null;
           }
           tableCell.push(
             <Col sm={colsmP} key={`cell-${cell.name}`}>
