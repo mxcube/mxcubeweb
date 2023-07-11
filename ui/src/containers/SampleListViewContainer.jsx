@@ -115,11 +115,7 @@ class SampleListViewContainer extends React.Component {
   }
 
   setViewMode(mode) {
-    if (mode === 'Graphical View') {
-      this.props.filter({ cellFilter: '1' });
-    } else {
-      this.props.filter({ cellFilter: '' });
-    }
+    this.props.filter({ cellFilter: '' });
     localStorage.setItem('view-mode', mode);
     this.props.setViewMode(mode);
   }
