@@ -74,15 +74,14 @@ export class PlateManipulatorAction extends React.Component {
               onChange= {(e) => { this.handleInputChange(e); }}
               ref={(ref) => { this.inputRef = ref; }}
             />
-            {React.createElement(PlateManipulatorActionButton,
-              {
-                label: this.props.btn_label,
-                cmd: this.props.cmd,
-                args: this.state.input_value,
-                enabled: true,
-                send_command: this.props.send_command,
-                key: this.props.btn_label
-            })}
+            <PlateManipulatorActionButton
+              label = {this.props.btn_label}
+              cmd = {this.props.cmd}
+              args = {this.state.input_value}
+              enabled = {true}
+              send_command = {this.props.send_command}
+              key = {this.props.btn_label}
+            />
           </InputGroup>
         </Form.Group>
       </Form>
@@ -95,27 +94,27 @@ export class PlateManipulatorAction extends React.Component {
 
   render() {
     return (
-      React.createElement(PlateManipulatorActionGroup,
-        {
-          name: [`${this.props.header_msg} : ${this.props.value}`, this.props.viewComponent],
-          actionComponent: this.actionComponent(),
-          key: `${this.props.header_msg}:${this.props.value}`
-        })
+      <PlateManipulatorActionGroup
+        name = {[`${this.props.header_msg} : ${this.props.value}`, this.props.viewComponent]}
+        actionComponent = {this.actionComponent()}
+        key = {`${this.props.header_msg}:${this.props.value}`}
+      />
     );
   }
 }
 
 export default class PlateManipulatorMaintenance extends React.Component {
   buildActionButton(cmdinfo) {
-    return React.createElement(PlateManipulatorActionButton,
-      {
-        label: cmdinfo[1],
-        cmd: cmdinfo[0],
-        args: cmdinfo[3],
-        enabled: this.props.commands_state[cmdinfo[0]],
-        send_command: this.props.send_command,
-        key: cmdinfo[1]
-      });
+    return (
+      <PlateManipulatorActionButton
+        label = {cmdinfo[1]}
+        cmd = {cmdinfo[0]}
+        args = {cmdinfo[3]}
+        enabled = {this.props.commands_state[cmdinfo[0]]}
+        send_command = {this.props.send_command}
+        key = {cmdinfo[1]}
+      />
+    );
   }
 
   buildActionGroup(grpinfo) {
@@ -125,12 +124,13 @@ export default class PlateManipulatorMaintenance extends React.Component {
       butgrp.push(this.buildActionButton(cmdinfo));
     }
 
-    return React.createElement(PlateManipulatorActionGroup,
-      {
-        name: grpinfo[0],
-        actionComponent: <ButtonGroup>{butgrp}</ButtonGroup>,
-        key: grpinfo[0]
-      });
+    return (
+      <PlateManipulatorActionGroup
+        name = {grpinfo[0]}
+        actionComponent = {<ButtonGroup>{butgrp}</ButtonGroup>}
+        key = {grpinfo[0]}
+      />
+    );
   }
 
   render() {
@@ -175,36 +175,32 @@ export default class PlateManipulatorMaintenance extends React.Component {
           </Card>
         ) : null
         }
-        {React.createElement(PlateManipulatorAction,
-          {
-            btn_label: 'Get Scan Limits',
-            label: 'Desire Scan Speed',
-            cmd: 'getOmegaMotorDynamicScanLimits',
-            args: this.props.desireScanSpeed,
-            send_command: this.props.send_command,
-            global_state: this.props.global_state,
-            header_msg: 'Omega Motor Dynamic ScanLimits Interval is',
-            value: scan_limits,
-            inputType: 'number',
-            viewComponent: '',
-            key: 'Scan Limits'
-          })
-        }
-        {React.createElement(PlateManipulatorAction,
-          {
-            btn_label: 'Set Plate Barcode',
-            label: 'Plate Barcode',
-            cmd: 'setPlateBarcode',
-            args: this.props.desireScanSpeed,
-            send_command: this.props.send_command,
-            global_state: this.props.global_state,
-            header_msg: 'Actual Plate Barcode is',
-            value: plateBarcode,
-            inputType: 'text',
-            viewComponent: '',
-            key: 'plate barcode'
-          })
-        }
+        <PlateManipulatorAction
+          btn_label = 'Get Scan Limits'
+          label = 'Desire Scan Speed'
+          cmd = 'getOmegaMotorDynamicScanLimits'
+          args = {this.props.desireScanSpeed}
+          send_command = {this.props.send_command}
+          global_state = {this.props.global_state}
+          header_msg = 'Omega Motor Dynamic ScanLimits Interval is'
+          value = {scan_limits}
+          inputType = 'number'
+          viewComponent = ''
+          key = 'Scan Limits'
+        />
+        <PlateManipulatorAction
+          btn_label = 'Set Plate Barcode'
+          label = 'Plate Barcode'
+          cmd = 'setPlateBarcode'
+          args = {this.props.desireScanSpeed}
+          send_command = {this.props.send_command}
+          global_state = {this.props.global_state}
+          header_msg = 'Actual Plate Barcode is'
+          value = {plateBarcode}
+          inputType = 'text'
+          viewComponent = ''
+          key = 'plate barcode'
+        />
       </div>
     );
   }
