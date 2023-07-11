@@ -238,30 +238,33 @@ export default class SampleChanger extends React.Component {
         childNodes.push(this.buildTree(c));
       }
 
-      return React.createElement(SampleChangerTreeNode,
-        {
-          label: node.name,
-          selected: node.selected,
-          root,
-          dm: node.id,
-          select: this.props.select,
-          status: node.status,
-          scan: this.props.scan,
-          refresh: this.props.refresh,
-          key: node.name
-        },
-        childNodes);
+      return (
+        <SampleChangerTreeNode
+          label= {node.name}
+          selected = {node.selected}
+          root
+          dm = {node.id}
+          select = {this.props.select}
+          status =  {node.status}
+          scan = {this.props.scan}
+          refresh = {this.props.refresh}
+          key = {node.name}
+        >
+          {childNodes}
+        </SampleChangerTreeNode>
+        );
     }
 
-    return React.createElement(SampleChangerTreeItem,
-      {
-        label: node.name,
-        dm: node.id,
-        load: this.props.load,
-        status: node.status,
-        unload: this.props.unload,
-        key: node.name
-      });
+    return (
+      <SampleChangerTreeItem
+        label= {node.name}
+        dm = {node.id}
+        load = {this.props.load}
+        status = {node.status}
+        unload = {this.props.unload}
+        key = {node.name}
+      />
+    );
   }
 
   // display some buttons depending on available features

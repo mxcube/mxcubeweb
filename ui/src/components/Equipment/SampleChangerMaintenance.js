@@ -42,15 +42,16 @@ export class SampleChangerActionGroup extends React.Component {
 
 export default class SampleChangerMaintenance extends React.Component {
   buildActionButton(cmdinfo) {
-    return React.createElement(SampleChangerActionButton,
-      {
-        label: cmdinfo[1],
-        cmd: cmdinfo[0],
-        args: cmdinfo[3],
-        enabled: this.props.commands_state[cmdinfo[0]],
-        send_command: this.props.send_command,
-        key: cmdinfo[1]
-      });
+    return (
+      <SampleChangerActionButton
+        label = {cmdinfo[1]}
+        cmd = {cmdinfo[0]}
+        args = {cmdinfo[3]}
+        enabled = {this.props.commands_state[cmdinfo[0]]}
+        send_command= {this.props.send_command}
+        key =  {cmdinfo[1]}
+      />
+    );
   }
 
   buildActionGroup(grpinfo) {
@@ -60,12 +61,13 @@ export default class SampleChangerMaintenance extends React.Component {
       butgrp.push(this.buildActionButton(cmdinfo));
     }
 
-    return React.createElement(SampleChangerActionGroup,
-      {
-        name: grpinfo[0],
-        buttons: butgrp,
-        key: grpinfo[0]
-      });
+    return ( 
+      <SampleChangerActionGroup
+        name= {grpinfo[0]}
+        buttons = {butgrp}
+        key = {grpinfo[0]}
+      />
+    );
   }
 
   render() {
