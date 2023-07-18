@@ -2,7 +2,7 @@ export function showForm(
   formName,
   sampleQueueID = [],
   taskData = {},
-  pointQueueID = -1
+  pointQueueID = -1,
 ) {
   return {
     type: 'SHOW_FORM',
@@ -17,7 +17,7 @@ export function showTaskForm(
   formName,
   sampleQueueID = -1,
   taskData = {},
-  pointQueueID = -1
+  pointQueueID = -1,
 ) {
   return function (dispatch) {
     dispatch(showForm(formName, sampleQueueID, taskData, pointQueueID));

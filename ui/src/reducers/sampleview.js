@@ -64,12 +64,12 @@ export default (state = initialState, action) => {
       return state.clickCentringPoints.length === 2
         ? { ...state, clickCentring: false, clickCentringPoints: [] }
         : {
-          ...state,
-          clickCentringPoints: [
-            ...state.clickCentringPoints,
-            { x: action.x, y: action.y },
-          ],
-        };
+            ...state,
+            clickCentringPoints: [
+              ...state.clickCentringPoints,
+              { x: action.x, y: action.y },
+            ],
+          };
     }
     case 'DRAW_GRID': {
       let { selectedGrids } = state;
@@ -89,12 +89,12 @@ export default (state = initialState, action) => {
       return state.distancePoints.length === 2
         ? { ...state, measureDistance: false, distancePoints: [] }
         : {
-          ...state,
-          distancePoints: [
-            ...state.distancePoints,
-            { x: action.x, y: action.y },
-          ],
-        };
+            ...state,
+            distancePoints: [
+              ...state.distancePoints,
+              { x: action.x, y: action.y },
+            ],
+          };
     }
     case 'SAVE_IMAGE_SIZE': {
       return {
@@ -165,13 +165,14 @@ export default (state = initialState, action) => {
     }
     case 'DELETE_SHAPE': {
       const selectedShapes = state.selectedShapes.filter(
-        (id) => id !== action.id
+        (id) => id !== action.id,
       );
       return { ...state, selectedShapes };
     }
     case 'CLEAR_ALL': {
       return {
-        ...state, distancePoints: [],
+        ...state,
+        distancePoints: [],
         clickCentringPoints: [],
         gridList: [],
         gridCount: 0,
@@ -180,7 +181,8 @@ export default (state = initialState, action) => {
     }
     case 'SET_CURRENT_SAMPLE': {
       return {
-        ...state, distancePoints: [],
+        ...state,
+        distancePoints: [],
         clickCentringPoints: [],
         gridList: [],
         gridCount: 0,
@@ -189,7 +191,8 @@ export default (state = initialState, action) => {
     }
     case 'CLEAR_QUEUE': {
       return {
-        ...state, distancePoints: [],
+        ...state,
+        distancePoints: [],
         clickCentringPoints: [],
         gridList: [],
         gridCount: 0,

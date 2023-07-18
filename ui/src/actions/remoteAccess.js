@@ -46,7 +46,7 @@ export function requestControl(
   control = true,
   message = '',
   name = '',
-  userInfo = {}
+  userInfo = {},
 ) {
   return function () {
     fetch('mxcube/api/v0.1/ra/request_control', {

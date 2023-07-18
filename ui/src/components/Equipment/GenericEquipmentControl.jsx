@@ -1,15 +1,23 @@
 import React from 'react';
-import { Row, Col, Accordion, Button, Card, OverlayTrigger, Popover } from 'react-bootstrap';
+import {
+  Row,
+  Col,
+  Accordion,
+  Button,
+  Card,
+  OverlayTrigger,
+  Popover,
+} from 'react-bootstrap';
 
 import Collapsible from 'react-collapsible';
-import { BsChevronUp, BsChevronDown } from "react-icons/bs";
+import { BsChevronUp, BsChevronDown } from 'react-icons/bs';
 import EquipmentState from './EquipmentState';
 import Form from '@rjsf/core';
 import './GenericEquipmentControl.css';
 
 export default class GenericEquipmentControl extends React.Component {
   handleRunCommand(cmd, formData) {
-    this.props.executeCommand(this.props.equipment.name, cmd, formData)
+    this.props.executeCommand(this.props.equipment.name, cmd, formData);
   }
 
   renderParameters(key) {
@@ -22,11 +30,15 @@ export default class GenericEquipmentControl extends React.Component {
       return (
         <div>
           <Form
-            onSubmit={(formData, e) => this.handleRunCommand(key, formData.formData, e)}
+            onSubmit={(formData, e) =>
+              this.handleRunCommand(key, formData.formData, e)
+            }
             disabled={this.props.equipment.state !== 'READY'}
             schema={schema}
           >
-            <Button className='mt-3' variant='outline-secondary' type="submit"><b>Run {key}</b></Button>
+            <Button className="mt-3" variant="outline-secondary" type="submit">
+              <b>Run {key}</b>
+            </Button>
           </Form>
         </div>
       );
@@ -35,12 +47,16 @@ export default class GenericEquipmentControl extends React.Component {
     return (
       <span>
         <h3>(No arguments)</h3>
-        <Button className='mt-3' variant='outline-secondary' type="submit" onClick={(e) => this.handleRunCommand(key, {}, e)}>
+        <Button
+          className="mt-3"
+          variant="outline-secondary"
+          type="submit"
+          onClick={(e) => this.handleRunCommand(key, {}, e)}
+        >
           <b>Run {key}</b>
         </Button>
       </span>
     );
-
   }
 
   renderInfo(key) {
@@ -53,15 +69,11 @@ export default class GenericEquipmentControl extends React.Component {
   }
 
   getCollapsibleHeaderOpen(cssClass) {
-    return (
-      <BsChevronUp className={cssClass} size="1em" />
-    )
+    return <BsChevronUp className={cssClass} size="1em" />;
   }
 
   getCollapsibleHeaderClose(cssClass) {
-    return (
-      <BsChevronDown className={cssClass} size="1em" />
-    )
+    return <BsChevronDown className={cssClass} size="1em" />;
   }
 
   getCommands() {
@@ -70,18 +82,15 @@ export default class GenericEquipmentControl extends React.Component {
       let result = null;
 
       if (cmdObj.display) {
-
         const popover = (
           <Popover id="equipment-popover">
-            <Popover.Header as="h3"><b>{key}</b></Popover.Header>
+            <Popover.Header as="h3">
+              <b>{key}</b>
+            </Popover.Header>
             <Popover.Body>
-              <Row className='generic-equipment-collapsible-child-content'>
-                <Col className="col-xs-4">
-                  {this.renderParameters(key)}
-                </Col>
-                <Col className="col-xs-8">
-                  {this.renderInfo(key)}
-                </Col>
+              <Row className="generic-equipment-collapsible-child-content">
+                <Col className="col-xs-4">{this.renderParameters(key)}</Col>
+                <Col className="col-xs-8">{this.renderInfo(key)}</Col>
               </Row>
             </Popover.Body>
           </Popover>
@@ -89,8 +98,16 @@ export default class GenericEquipmentControl extends React.Component {
 
         result = (
           <span>
-            <OverlayTrigger trigger={["click"]} placement="right" overlay={popover}>
-              <Button className='mt-3' variant='outline-secondary' type="submit">
+            <OverlayTrigger
+              trigger={['click']}
+              placement="right"
+              overlay={popover}
+            >
+              <Button
+                className="mt-3"
+                variant="outline-secondary"
+                type="submit"
+              >
                 <b>{key}</b>
               </Button>
             </OverlayTrigger>
@@ -99,7 +116,7 @@ export default class GenericEquipmentControl extends React.Component {
       }
 
       return result;
-    })
+    });
   }
 
   getEquipmentState() {
@@ -114,20 +131,30 @@ export default class GenericEquipmentControl extends React.Component {
           borderBottomRightRadius: '0%',
         }}
       />
-    )
+    );
   }
-
-
 
   render() {
     return (
-      <Row className='mb-3'>
-        <Col sm={12} className='generic-equipment-container'>
+      <Row className="mb-3">
+        <Col sm={12} className="generic-equipment-container">
           <Collapsible
-            trigger={<div> {this.getEquipmentState()} {this.getCollapsibleHeaderClose('generic-equipment-arrow-p')}</div>}
-            triggerWhenOpen={<div> {this.getEquipmentState()} {this.getCollapsibleHeaderOpen('generic-equipment-arrow-p')}</div>}
+            trigger={
+              <div>
+                {' '}
+                {this.getEquipmentState()}{' '}
+                {this.getCollapsibleHeaderClose('generic-equipment-arrow-p')}
+              </div>
+            }
+            triggerWhenOpen={
+              <div>
+                {' '}
+                {this.getEquipmentState()}{' '}
+                {this.getCollapsibleHeaderOpen('generic-equipment-arrow-p')}
+              </div>
+            }
           >
-            <div className='generic-equipment-container-collapsible'>
+            <div className="generic-equipment-container-collapsible">
               {this.getCommands()}
             </div>
           </Collapsible>

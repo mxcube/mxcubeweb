@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, ButtonGroup, Card } from 'react-bootstrap';
 
 import './Equipment.css';
- 
 
 export class SampleChangerActionButton extends React.Component {
   render() {
@@ -17,7 +16,7 @@ export class SampleChangerActionButton extends React.Component {
     return (
       <Button
         key={this.props.label}
-        variant='outline-secondary'
+        variant="outline-secondary"
         disabled={disabled}
         onClick={() => this.props.send_command(this.props.cmd, this.props.args)}
       >
@@ -30,7 +29,7 @@ export class SampleChangerActionButton extends React.Component {
 export class SampleChangerActionGroup extends React.Component {
   render() {
     return (
-      <Card className='mb-3'>
+      <Card className="mb-3">
         <Card.Header>{this.props.name}</Card.Header>
         <Card.Body>
           <ButtonGroup>{this.props.buttons}</ButtonGroup>
@@ -44,12 +43,12 @@ export default class SampleChangerMaintenance extends React.Component {
   buildActionButton(cmdinfo) {
     return (
       <SampleChangerActionButton
-        label = {cmdinfo[1]}
-        cmd = {cmdinfo[0]}
-        args = {cmdinfo[3]}
-        enabled = {this.props.commands_state[cmdinfo[0]]}
-        send_command= {this.props.send_command}
-        key =  {cmdinfo[1]}
+        label={cmdinfo[1]}
+        cmd={cmdinfo[0]}
+        args={cmdinfo[3]}
+        enabled={this.props.commands_state[cmdinfo[0]]}
+        send_command={this.props.send_command}
+        key={cmdinfo[1]}
       />
     );
   }
@@ -61,11 +60,11 @@ export default class SampleChangerMaintenance extends React.Component {
       butgrp.push(this.buildActionButton(cmdinfo));
     }
 
-    return ( 
+    return (
       <SampleChangerActionGroup
-        name= {grpinfo[0]}
-        buttons = {butgrp}
-        key = {grpinfo[0]}
+        name={grpinfo[0]}
+        buttons={butgrp}
+        key={grpinfo[0]}
       />
     );
   }
@@ -74,17 +73,16 @@ export default class SampleChangerMaintenance extends React.Component {
     const groups = [];
     let msg = '';
 
-    if (Object.keys(this.props.commands).length > 0
-        && this.props.commands.cmds !== 'SC maintenance controller not defined') {
+    if (
+      Object.keys(this.props.commands).length > 0 &&
+      this.props.commands.cmds !== 'SC maintenance controller not defined'
+    ) {
       for (const cmdgrp of this.props.commands.cmds) {
         groups.push(this.buildActionGroup(cmdgrp));
       }
     } else {
-      return (
-        <div />
-      );
+      return <div />;
     }
-
 
     if (this.props.message !== '') {
       msg = this.props.message;
@@ -92,16 +90,15 @@ export default class SampleChangerMaintenance extends React.Component {
 
     return (
       <div>
-        { groups }
-        { msg ? (
-          <Card className='mb-2'>
+        {groups}
+        {msg ? (
+          <Card className="mb-2">
             <Card.Header>Status message</Card.Header>
             <Card.Body>
-              <span className="scMessage">{ msg }</span>
+              <span className="scMessage">{msg}</span>
             </Card.Body>
           </Card>
-        ) : null
-         }
+        ) : null}
       </div>
     );
   }

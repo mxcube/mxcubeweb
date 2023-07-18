@@ -1,15 +1,13 @@
 import './SampleView.css';
 import React from 'react';
-import {
-  OverlayTrigger, Button, Dropdown,
-} from 'react-bootstrap';
+import { OverlayTrigger, Button, Dropdown } from 'react-bootstrap';
 import 'fabric';
 
 import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
 import { MOTOR_STATE } from '../../constants';
 
 import { find } from 'lodash';
-import styles from './SampleControls.module.css'
+import styles from './SampleControls.module.css';
 
 const { fabric } = window;
 
@@ -20,8 +18,14 @@ export default class SampleControls extends React.Component {
     this.takeSnapShot = this.takeSnapShot.bind(this);
     this.doTakeSnapshot = this.doTakeSnapshot.bind(this);
     this.setZoom = this.setZoom.bind(this);
-    this.toggleFrontLight = this.toggleLight.bind(this, 'diffractometer.frontlight');
-    this.toggleBackLight = this.toggleLight.bind(this, 'diffractometer.backlight');
+    this.toggleFrontLight = this.toggleLight.bind(
+      this,
+      'diffractometer.frontlight',
+    );
+    this.toggleBackLight = this.toggleLight.bind(
+      this,
+      'diffractometer.backlight',
+    );
     this.toggleCentring = this.toggleCentring.bind(this);
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
     this.availableVideoSizes = this.availableVideoSizes.bind(this);
@@ -32,9 +36,9 @@ export default class SampleControls extends React.Component {
   }
 
   setZoom(option) {
-    const zoom_motor_uiprop = find(
-      this.props.uiproperties.components, { role: 'zoom' }
-    );
+    const zoom_motor_uiprop = find(this.props.uiproperties.components, {
+      role: 'zoom',
+    });
 
     const zoom_motor = this.props.hardwareObjects[zoom_motor_uiprop.attribute];
     const newZoom = zoom_motor.commands[option.target.value];
@@ -46,7 +50,7 @@ export default class SampleControls extends React.Component {
     if (this.props.current.sampleID === '') {
       this.props.generalActions.showErrorPanel(
         true,
-        'There is no sample mounted'
+        'There is no sample mounted',
       );
     } else {
       if (this.props.clickCentring) {
@@ -73,14 +77,14 @@ export default class SampleControls extends React.Component {
   takeSnapShot(evt) {
     /* eslint-disable unicorn/consistent-function-scoping */
     function imageEpolog(props) {
-      const {sampleID} = props.current;
+      const { sampleID } = props.current;
 
       if (sampleID in props.sampleList) {
         return props.sampleList[sampleID].sampleName;
       }
 
       /* handle the case when sample is not mounted */
-      return "no-sample";
+      return 'no-sample';
     }
 
     const img = this.doTakeSnapshot();
@@ -110,11 +114,10 @@ export default class SampleControls extends React.Component {
   toggleLight(name) {
     const lighstate = this.props.hardwareObjects[`${name}switch`].value;
     const newState = this.props.hardwareObjects[`${name}switch`].commands.find(
-      (state) => state !== lighstate
+      (state) => state !== lighstate,
     );
     this.props.sendSetAttribute(`${name}switch`, newState);
   }
-
 
   availableVideoSizes() {
     const items = this.props.videoSizes.map((size) => {
@@ -127,18 +130,20 @@ export default class SampleControls extends React.Component {
         <Dropdown.Item
           key={`${size[0]} x ${size[1]}`}
           eventKey="1"
-          onClick={() => this.props.sampleActions.setVideoSize(size[0], size[1])}
+          onClick={() =>
+            this.props.sampleActions.setVideoSize(size[0], size[1])
+          }
         >
-          <span className={`fa ${sizeGClass}`} />
-          {' '}
-          {`${size[0]} x ${size[1]}`}
+          <span className={`fa ${sizeGClass}`} /> {`${size[0]} x ${size[1]}`}
         </Dropdown.Item>
       );
     });
 
-    const autoScaleGClass = this.props.autoScale ? ' fa-check-square-o' : 'fa-square-o';
+    const autoScaleGClass = this.props.autoScale
+      ? ' fa-check-square-o'
+      : 'fa-square-o';
 
-    items.push((
+    items.push(
       <Dropdown.Item
         eventKey="3"
         key="auto scale"
@@ -147,22 +152,22 @@ export default class SampleControls extends React.Component {
           this.props.sampleActions.toggleAutoScale(clientWidth);
         }}
       >
-        <span className={`fa ${autoScaleGClass}`} />
-        {' '}
-        Auto Scale
-      </Dropdown.Item>), (
+        <span className={`fa ${autoScaleGClass}`} /> Auto Scale
+      </Dropdown.Item>,
       <Dropdown.Item
         eventKey="3"
         key="reset"
         onClick={() => {
           window.initJSMpeg();
-          this.props.sampleActions.setVideoSize(this.props.width, this.props.height);
+          this.props.sampleActions.setVideoSize(
+            this.props.width,
+            this.props.height,
+          );
         }}
       >
-        <span className="fas fa-redo" />
-        {' '}
-        Reset
-      </Dropdown.Item>));
+        <span className="fas fa-redo" /> Reset
+      </Dropdown.Item>,
+    );
 
     return items;
   }
@@ -170,15 +175,16 @@ export default class SampleControls extends React.Component {
   render() {
     const { hardwareObjects } = this.props;
 
-    const foucs_motor_uiprop = find(
-      this.props.uiproperties.components, { role: 'focus' }
-    );
+    const foucs_motor_uiprop = find(this.props.uiproperties.components, {
+      role: 'focus',
+    });
 
-    const zoom_motor_uiprop = find(
-      this.props.uiproperties.components, { role: 'zoom' }
-    );
+    const zoom_motor_uiprop = find(this.props.uiproperties.components, {
+      role: 'zoom',
+    });
 
-    const focus_motor = this.props.hardwareObjects[foucs_motor_uiprop.attribute];
+    const focus_motor =
+      this.props.hardwareObjects[foucs_motor_uiprop.attribute];
     const zoom_motor = this.props.hardwareObjects[zoom_motor_uiprop.attribute];
 
     return (
@@ -221,7 +227,7 @@ export default class SampleControls extends React.Component {
             trigger="click"
             rootClose
             placement="bottom"
-            overlay={(
+            overlay={
               <span className="slider-overlay" style={{ marginTop: '8px' }}>
                 <OneAxisTranslationControl
                   save={this.props.sendSetAttribute}
@@ -236,7 +242,7 @@ export default class SampleControls extends React.Component {
                   disabled={this.props.motorsDisabled}
                 />
               </span>
-            )}
+            }
           >
             <Button
               className={styles.controlBtn}
@@ -253,7 +259,7 @@ export default class SampleControls extends React.Component {
           trigger="click"
           rootClose
           placement="bottom"
-          overlay={(
+          overlay={
             <span className="slider-overlay" style={{ marginTop: '8px' }}>
               {zoom_motor.limits[0]}
               <input
@@ -267,7 +273,10 @@ export default class SampleControls extends React.Component {
                 disabled={zoom_motor.state !== MOTOR_STATE.READY}
                 onMouseUp={this.setZoom}
                 onChange={(e) => {
-                  this.props.setBeamlineAttribute('diffractometer.zoom', zoom_motor.commands[e.target.value])
+                  this.props.setBeamlineAttribute(
+                    'diffractometer.zoom',
+                    zoom_motor.commands[e.target.value],
+                  );
                 }}
                 list="volsettings"
                 name="zoomSlider"
@@ -277,14 +286,16 @@ export default class SampleControls extends React.Component {
               <datalist id="volsettings">
                 {[
                   ...new Array(
-                    zoom_motor.limits[1] - zoom_motor.limits[0]
+                    zoom_motor.limits[1] - zoom_motor.limits[0],
                   ).keys(),
                 ].map((i) => (
-                  <option key={`volsettings-${i}`}>{zoom_motor.limits[0] + i}</option>
+                  <option key={`volsettings-${i}`}>
+                    {zoom_motor.limits[0] + i}
+                  </option>
                 ))}
               </datalist>
             </span>
-          )}
+          }
         >
           <Button
             className={styles.controlBtn}
@@ -301,22 +312,35 @@ export default class SampleControls extends React.Component {
             trigger="click"
             rootClose
             placement="bottom"
-            overlay={(
+            overlay={
               <span className="slider-overlay" style={{ marginTop: '8px' }}>
                 <input
                   className="bar"
                   type="range"
                   step="0.1"
-                  min={hardwareObjects["diffractometer.backlight"].limits[0]}
-                  max={hardwareObjects["diffractometer.backlight"].limits[1]}
-                  value={hardwareObjects["diffractometer.backlight"].value}
-                  disabled={hardwareObjects["diffractometer.backlight"].state !== MOTOR_STATE.READY}
-                  onMouseUp={e => this.props.sendSetAttribute('diffractometer.backlight', e.target.value)}
-                  onChange={e => this.props.setBeamlineAttribute('diffractometer.backlight', e.target.value)}
+                  min={hardwareObjects['diffractometer.backlight'].limits[0]}
+                  max={hardwareObjects['diffractometer.backlight'].limits[1]}
+                  value={hardwareObjects['diffractometer.backlight'].value}
+                  disabled={
+                    hardwareObjects['diffractometer.backlight'].state !==
+                    MOTOR_STATE.READY
+                  }
+                  onMouseUp={(e) =>
+                    this.props.sendSetAttribute(
+                      'diffractometer.backlight',
+                      e.target.value,
+                    )
+                  }
+                  onChange={(e) =>
+                    this.props.setBeamlineAttribute(
+                      'diffractometer.backlight',
+                      e.target.value,
+                    )
+                  }
                   name="backlightSlider"
                 />
               </span>
-            )}
+            }
           >
             {({ ref, ...triggerHandlers }) => (
               <>
@@ -324,8 +348,9 @@ export default class SampleControls extends React.Component {
                   ref={ref}
                   className={styles.controlBtnWithOverlay}
                   active={
-                    hardwareObjects["diffractometer.backlightswitch"].value ===
-                    hardwareObjects["diffractometer.backlightswitch"].commands[0]
+                    hardwareObjects['diffractometer.backlightswitch'].value ===
+                    hardwareObjects['diffractometer.backlightswitch']
+                      .commands[0]
                   }
                   title="Backlight On/Off"
                   data-toggle="tooltip"
@@ -346,29 +371,46 @@ export default class SampleControls extends React.Component {
             trigger="click"
             rootClose
             placement="bottom"
-            overlay={(
+            overlay={
               <span className="slider-overlay" style={{ marginTop: '8px' }}>
                 <input
                   className="bar"
                   type="range"
                   step="0.1"
-                  min={hardwareObjects["diffractometer.frontlight"].limits[0]}
-                  max={hardwareObjects["diffractometer.frontlight"].limits[1]}
-                  value={hardwareObjects["diffractometer.frontlight"].value}
-                  disabled={hardwareObjects["diffractometer.frontlight"].state !== MOTOR_STATE.READY}
-                  onMouseUp={e => this.props.sendSetAttribute('diffractometer.frontlight', e.target.value)}
-                  onChange={e => this.props.setBeamlineAttribute('diffractometer.frontlight', e.target.value)}
+                  min={hardwareObjects['diffractometer.frontlight'].limits[0]}
+                  max={hardwareObjects['diffractometer.frontlight'].limits[1]}
+                  value={hardwareObjects['diffractometer.frontlight'].value}
+                  disabled={
+                    hardwareObjects['diffractometer.frontlight'].state !==
+                    MOTOR_STATE.READY
+                  }
+                  onMouseUp={(e) =>
+                    this.props.sendSetAttribute(
+                      'diffractometer.frontlight',
+                      e.target.value,
+                    )
+                  }
+                  onChange={(e) =>
+                    this.props.setBeamlineAttribute(
+                      'diffractometer.frontlight',
+                      e.target.value,
+                    )
+                  }
                   name="frontLightSlider"
                 />
               </span>
-            )}
+            }
           >
             {({ ref, ...triggerHandlers }) => (
               <>
                 <Button
                   ref={ref}
                   className={styles.controlBtnWithOverlay}
-                  active={hardwareObjects["diffractometer.frontlightswitch"].value === hardwareObjects["diffractometer.frontlightswitch"].commands[0]}
+                  active={
+                    hardwareObjects['diffractometer.frontlightswitch'].value ===
+                    hardwareObjects['diffractometer.frontlightswitch']
+                      .commands[0]
+                  }
                   title="Front On/Off"
                   data-toggle="tooltip"
                   onClick={this.toggleFrontLight}
@@ -384,11 +426,9 @@ export default class SampleControls extends React.Component {
           </OverlayTrigger>
         </div>
         <Dropdown drop="down-centered">
-          <Dropdown.Toggle
-            className={styles.controlDropDown}
-            variant="content"
-          >
-            <i className={`${styles.controlIcon} fas fa-video`} /><i className={`${styles.dropDownIcon} fas fa-sort-down` }/>
+          <Dropdown.Toggle className={styles.controlDropDown} variant="content">
+            <i className={`${styles.controlIcon} fas fa-video`} />
+            <i className={`${styles.dropDownIcon} fas fa-sort-down`} />
             <span className={styles.controlLabel}>Video size</span>
           </Dropdown.Toggle>
           <Dropdown.Menu className={styles.dropDownMenu}>

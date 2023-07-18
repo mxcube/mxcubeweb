@@ -26,17 +26,14 @@ function mapStateToProps(state) {
     loggedIn: state.login.loggedIn,
     selectedProposal: state.login.selectedProposal,
     mode: state.general.mode,
-    remoteAccess: state.remoteAccess
+    remoteAccess: state.remoteAccess,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    signOut: (navigate) => dispatch(doSignOut(navigate))
+    signOut: (navigate) => dispatch(doSignOut(navigate)),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(MXNavbarContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(MXNavbarContainer);

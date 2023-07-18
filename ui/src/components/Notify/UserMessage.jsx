@@ -71,29 +71,35 @@ export default class UserMessage extends React.Component {
         continue;
       }
 
-      messages.push((
-        <div key={`${message.id}-${idx}`} ref={message.id} className={messageClass}>
-          { message.severity === 'INFO' ?
-            (<span className="fas fa-lg fa-check-circle" />)
-            :
-            (<span className="fas fa-lg fa-exclamation-circle" />)
-          }
+      messages.push(
+        <div
+          key={`${message.id}-${idx}`}
+          ref={message.id}
+          className={messageClass}
+        >
+          {message.severity === 'INFO' ? (
+            <span className="fas fa-lg fa-check-circle" />
+          ) : (
+            <span className="fas fa-lg fa-exclamation-circle" />
+          )}
           <span className="messageText">
-            { `[${message.timestamp.slice(11, 19)}]: ${message.message}` }
+            {`[${message.timestamp.slice(11, 19)}]: ${message.message}`}
           </span>
-        </div>
-      ));
+        </div>,
+      );
     }
 
     return (
-      <div id="usermessages"
-        style={ {
+      <div
+        id="usermessages"
+        style={{
           position: 'flex',
           justifyContent: 'flex-end',
           flexDirection: 'column-reverse',
           backgroundColor: 'rgba(255, 255, 255, 0)',
           display: 'flex',
-          zIndex: 1000 } }
+          zIndex: 1000,
+        }}
       >
         {messages}
       </div>

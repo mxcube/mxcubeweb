@@ -1,7 +1,7 @@
 import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 
-import './MXContextMenu.css'
+import './MXContextMenu.css';
 
 export default class MXContextMenu extends React.Component {
   constructor(props) {
@@ -11,11 +11,11 @@ export default class MXContextMenu extends React.Component {
   }
 
   componentDidMount() {
-    this.showContextMenu(this.props.x, this.props.y)
+    this.showContextMenu(this.props.x, this.props.y);
   }
 
   componentWillUnmount() {
-    this.hideContextMenu()
+    this.hideContextMenu();
   }
 
   showContextMenu(x, y) {
@@ -31,10 +31,9 @@ export default class MXContextMenu extends React.Component {
       contextMenu.style.top = `${y - 70}px`;
       contextMenu.style.left = `${x - posxoffset}px`;
       contextMenu.style.display = 'block';
-      contextMenu.style.transform =  "rotateY(0deg) rotateX(0deg)";
+      contextMenu.style.transform = 'rotateY(0deg) rotateX(0deg)';
     }
   }
-
 
   hideContextMenu() {
     const ctxMenu = document.querySelector('#generic-contextMenu');
@@ -45,8 +44,13 @@ export default class MXContextMenu extends React.Component {
 
   render() {
     return (
-      <Dropdown.Menu className="generic-context-menu" show={this.props.show} id="generic-contextMenu" role="menu">
-       {this.props.children}
+      <Dropdown.Menu
+        className="generic-context-menu"
+        show={this.props.show}
+        id="generic-contextMenu"
+        role="menu"
+      >
+        {this.props.children}
       </Dropdown.Menu>
     );
   }

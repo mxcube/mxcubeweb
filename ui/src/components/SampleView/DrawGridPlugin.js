@@ -171,7 +171,7 @@ export default class DrawGridPlugin {
       this.gridData,
       this.snapToGrid,
       hSpace,
-      vSpace
+      vSpace,
     );
   }
 
@@ -280,7 +280,10 @@ export default class DrawGridPlugin {
   }
 
   heatMapColorForValue(gd, value) {
-    let dataFill = `rgba(${Number.parseInt(value[0], 10)}, ${Number.parseInt(value[1], 10)},`;
+    let dataFill = `rgba(${Number.parseInt(value[0], 10)}, ${Number.parseInt(
+      value[1],
+      10,
+    )},`;
     dataFill += `${Number.parseInt(value[2], 10)}, ${this.overlayLevel})`;
     return dataFill;
   }
@@ -294,9 +297,7 @@ export default class DrawGridPlugin {
   initializeCellFilling(gd, col, row) {
     const level = this.overlayLevel ? this.overlayLevel : 0.2;
     const fill = `rgba(0, 0, 200, ${level}`;
-    return new Array(col)
-      .fill()
-      .map(() => new Array(row).fill(fill));
+    return new Array(col).fill().map(() => new Array(row).fill(fill));
   }
 
   cellFillingFromData(gd, col, row) {
@@ -307,9 +308,7 @@ export default class DrawGridPlugin {
      */
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    const data = new Array(col)
-      .fill()
-      .map(() => new Array(row).fill());
+    const data = new Array(col).fill().map(() => new Array(row).fill());
 
     for (let nw = 0; nw < col; nw++) {
       for (let nh = 0; nh < row; nh++) {
@@ -332,7 +331,7 @@ export default class DrawGridPlugin {
           const index = nw + nh * col + 1;
           fillingMatrix[nw][nh] = this.heatMapColorForValue(
             gd,
-            result[index][1]
+            result[index][1],
           );
         }
       }
@@ -370,83 +369,100 @@ export default class DrawGridPlugin {
     const height = cellTH * gridData.numRows;
     const width = cellTW * gridData.numCols;
 
-    let color = gridData.selected ? 'rgba(255, 255, 255, 1)' : 'rgba(0, 0, 100, 0.5)';
+    let color = gridData.selected
+      ? 'rgba(255, 255, 255, 1)'
+      : 'rgba(0, 0, 100, 0.5)';
     color = gridData.result.length > 0 ? 'rgba(255, 255, 255, 1)' : color;
-    const lineColor = gridData.selected ? 'rgba(255, 255, 255, 0.5)' : 'rgba(255, 255, 255, 0)';
+    const lineColor = gridData.selected
+      ? 'rgba(255, 255, 255, 0.5)'
+      : 'rgba(255, 255, 255, 0)';
     const outlineStrokeArray = gridData.selected ? [] : [5, 5];
     const innerStrokeArray = gridData.selected ? [5, 5] : [0, 0];
 
     if (cellTW > 0 && cellTH > 0) {
       for (let nw = 1; nw < gridData.numCols; nw++) {
-        shapes.push(new fabric.Line(
-          [left + cellTW * nw, top,
-          left + cellTW * nw, top + height],
-          {
-            stroke: lineColor,
-            strokeDashArray: innerStrokeArray,
-            hasControls: false,
-            selectable: false
-          }
-        ));
+        shapes.push(
+          new fabric.Line(
+            [left + cellTW * nw, top, left + cellTW * nw, top + height],
+            {
+              stroke: lineColor,
+              strokeDashArray: innerStrokeArray,
+              hasControls: false,
+              selectable: false,
+            },
+          ),
+        );
       }
 
       for (let nh = 1; nh < gridData.numRows; nh++) {
-        shapes.push(new fabric.Line(
-          [left, top + (cellTH) * nh,
-            left + width, top + cellTH * nh],
-          {
-            stroke: lineColor,
-            strokeDashArray: innerStrokeArray,
-            hasControls: false,
-            selectable: false
-          }
-        ));
+        shapes.push(
+          new fabric.Line(
+            [left, top + cellTH * nh, left + width, top + cellTH * nh],
+            {
+              stroke: lineColor,
+              strokeDashArray: innerStrokeArray,
+              hasControls: false,
+              selectable: false,
+            },
+          ),
+        );
       }
 
       if (!this.drawing) {
         if (this.gridResultFormat === 'RGB') {
           const fillingMatrix = this.cellFillingFromData(
-            gridData, gridData.numCols, gridData.numRows
+            gridData,
+            gridData.numCols,
+            gridData.numRows,
           );
 
           for (let nw = 0; nw < gridData.numCols; nw++) {
             for (let nh = 0; nh < gridData.numRows; nh++) {
-              const cellCount = this.countCells(gridData.cellCountFun, nw, nh,
-                gridData.numRows, gridData.numCols);
+              const cellCount = this.countCells(
+                gridData.cellCountFun,
+                nw,
+                nh,
+                gridData.numRows,
+                gridData.numCols,
+              );
 
-              shapes.push(new fabric.Ellipse({
-                left: left + cellHSpace / 2 + cellTW * nw,
-                top: top + cellVSpace / 2 + cellTH * nh,
-                width: cellWidth,
-                height: cellHeight,
-                fill: fillingMatrix[nw][nh],
-                stroke: 'rgba(0,0,0,0)',
-                hasControls: false,
-                selectable: false,
-                hasRotatingPoint: false,
-                lockMovementX: true,
-                lockMovementY: true,
-                lockScalingX: true,
-                lockScalingY: true,
-                lockRotation: true,
-                hoverCursor: 'pointer',
-                originX: 'left',
-                originY: 'top',
-                rx: cellWidth / 2,
-                ry: cellHeight / 2,
-                cell: cellCount
-              }));
+              shapes.push(
+                new fabric.Ellipse({
+                  left: left + cellHSpace / 2 + cellTW * nw,
+                  top: top + cellVSpace / 2 + cellTH * nh,
+                  width: cellWidth,
+                  height: cellHeight,
+                  fill: fillingMatrix[nw][nh],
+                  stroke: 'rgba(0,0,0,0)',
+                  hasControls: false,
+                  selectable: false,
+                  hasRotatingPoint: false,
+                  lockMovementX: true,
+                  lockMovementY: true,
+                  lockScalingX: true,
+                  lockScalingY: true,
+                  lockRotation: true,
+                  hoverCursor: 'pointer',
+                  originX: 'left',
+                  originY: 'top',
+                  rx: cellWidth / 2,
+                  ry: cellHeight / 2,
+                  cell: cellCount,
+                }),
+              );
 
               if (this.include_cell_labels) {
-                shapes.push(new fabric.Text(cellCount, {
-                  left: left + cellHSpace / 2 + (cellTW) * nw + cellWidth / 2,
-                  top: top + cellVSpace / 2 + (cellTH) * nh + cellHeight / 2,
-                  originX: 'center',
-                  originY: 'center',
-                  fill: 'rgba(0, 0, 200, 1)',
-                  fontFamily: 'Helvetica',
-                  fontSize: 18
-                }));
+                shapes.push(
+                  new fabric.Text(cellCount, {
+                    left: left + cellHSpace / 2 + cellTW * nw + cellWidth / 2,
+                    top: top + cellVSpace / 2 + cellTH * nh + cellHeight / 2,
+                    originX: 'center',
+                    originY: 'center',
+                    fill: 'rgba(0, 0, 200, 1)',
+                    fontFamily: 'Helvetica',
+                    fontSize: 18,
+                  }),
+                );
               }
             }
           }
@@ -463,27 +479,31 @@ export default class DrawGridPlugin {
       }
     }
 
-    shapes.push(new fabric.Rect({
-      left,
-      top,
-      width,
-      height,
-      fill: 'rgba(0,0,0,0)',
-      strokeDashArray: outlineStrokeArray,
-      stroke: color,
-      hasControls: false,
-      selectable: true,
-      hoverCursor: 'pointer'
-    }));
+    shapes.push(
+      new fabric.Rect({
+        left,
+        top,
+        width,
+        height,
+        fill: 'rgba(0,0,0,0)',
+        strokeDashArray: outlineStrokeArray,
+        stroke: color,
+        hasControls: false,
+        selectable: true,
+        hoverCursor: 'pointer',
+      }),
+    );
 
     if (gridData.name) {
-      shapes.push(new fabric.Text(gridData.name, {
-        left: left + width,
-        top: top - 20,
-        fill: color,
-        fontFamily: 'Helvetica',
-        fontSize: 18
-      }));
+      shapes.push(
+        new fabric.Text(gridData.name, {
+          left: left + width,
+          top: top - 20,
+          fill: color,
+          fontFamily: 'Helvetica',
+          fontSize: 18,
+        }),
+      );
     }
 
     const shapeGroup = new GridGroup(shapes, {
@@ -521,27 +541,29 @@ export default class DrawGridPlugin {
 
             const objCenterX = obj.aCoords.tl.x + obj.width / 2;
 
-            this.mouseOverGridLabel.push(new fabric.Ellipse({
-              left: objCenterX,
-              top: options.e.offsetY - 25,
-              width: 40,
-              height: 40,
-              stroke: 'rgba(0, 0, 0, 1)',
-              fill: 'rgba(0, 0, 200, 0.4)',
-              hasControls: false,
-              selectable: false,
-              hasRotatingPoint: false,
-              lockMovementX: true,
-              lockMovementY: true,
-              lockScalingX: true,
-              lockScalingY: true,
-              lockRotation: true,
-              hoverCursor: 'pointer',
-              originX: 'center',
-              originY: 'center',
-              rx: 20,
-              ry: 20
-            }));
+            this.mouseOverGridLabel.push(
+              new fabric.Ellipse({
+                left: objCenterX,
+                top: options.e.offsetY - 25,
+                width: 40,
+                height: 40,
+                stroke: 'rgba(0, 0, 0, 1)',
+                fill: 'rgba(0, 0, 200, 0.4)',
+                hasControls: false,
+                selectable: false,
+                hasRotatingPoint: false,
+                lockMovementX: true,
+                lockMovementY: true,
+                lockScalingX: true,
+                lockScalingY: true,
+                lockRotation: true,
+                hoverCursor: 'pointer',
+                originX: 'center',
+                originY: 'center',
+                rx: 20,
+                ry: 20,
+              }),
+            );
 
             this.mouseOverGridLabel.push(
               new fabric.Text(obj.cell, {
@@ -560,7 +582,7 @@ export default class DrawGridPlugin {
                 lockScalingX: true,
                 lockScalingY: true,
                 lockRotation: true,
-              })
+              }),
             );
 
             this.mouseOverGridLabel = new GridGroup(this.mouseOverGridLabel, {
@@ -587,7 +609,10 @@ export default class DrawGridPlugin {
     let cell = null;
 
     shapeGroup.forEachObject((obj) => {
-      if (obj.get('type') === 'ellipse' && obj.containsPoint(clickPoint, null, true)) {
+      if (
+        obj.get('type') === 'ellipse' &&
+        obj.containsPoint(clickPoint, null, true)
+      ) {
         cell = obj;
       }
     });
@@ -669,29 +694,44 @@ export default class DrawGridPlugin {
     let count = '';
 
     switch (mode) {
-    case 'zig-zag': {
-      count = this.zigZagCellCount(currentRow, currentCol, numRows, numCols);
-    
-    break;
-    }
-    case 'top-down-zig-zag': {
-      count = this.topDownZigZagCellCount(currentRow, currentCol, numRows, numCols);
-    
-    break;
-    }
-    case 'top-down': {
-      count = this.topDownCellCount(currentRow, currentCol, numRows, numCols);
-    
-    break;
-    }
-    case 'inverse-zig-zag': {
-      count = this.inverseZigZagCellCount(currentRow, currentCol, numRows, numCols);
-    
-    break;
-    }
-    default: {
-      count = this.leftRightCellCount(currentRow, currentCol, numRows, numCols);
-    }
+      case 'zig-zag': {
+        count = this.zigZagCellCount(currentRow, currentCol, numRows, numCols);
+
+        break;
+      }
+      case 'top-down-zig-zag': {
+        count = this.topDownZigZagCellCount(
+          currentRow,
+          currentCol,
+          numRows,
+          numCols,
+        );
+
+        break;
+      }
+      case 'top-down': {
+        count = this.topDownCellCount(currentRow, currentCol, numRows, numCols);
+
+        break;
+      }
+      case 'inverse-zig-zag': {
+        count = this.inverseZigZagCellCount(
+          currentRow,
+          currentCol,
+          numRows,
+          numCols,
+        );
+
+        break;
+      }
+      default: {
+        count = this.leftRightCellCount(
+          currentRow,
+          currentCol,
+          numRows,
+          numCols,
+        );
+      }
     }
 
     return count.toString();
@@ -701,7 +741,7 @@ export default class DrawGridPlugin {
    * zig-zag indexing of cells (see countCells for doc)
    */
   zigZagCellCount(currentRow, currentCol, numRows, numCols) {
-    let cellCount = (currentRow * numCols) + (currentCol + 1);
+    let cellCount = currentRow * numCols + (currentCol + 1);
 
     if (currentRow % 2 !== 0) {
       cellCount = currentRow * numCols + (numCols - currentCol);
@@ -714,7 +754,7 @@ export default class DrawGridPlugin {
    * left-to-right indexing of cells (see countCells for doc)
    */
   leftRightCellCount(currentRow, currentCol, numRows, numCols) {
-    return (currentRow + 1) + currentCol * numCols;
+    return currentRow + 1 + currentCol * numCols;
   }
 
   /**
@@ -724,7 +764,7 @@ export default class DrawGridPlugin {
    * 3 4 9
    */
   topDownZigZagCellCount(currentRow, currentCol, numRows) {
-    let cellCount = (currentCol + 1) + currentRow * numRows;
+    let cellCount = currentCol + 1 + currentRow * numRows;
 
     if (currentRow % 2 !== 0) {
       cellCount = numRows * (currentRow + 1) - currentCol;
@@ -740,7 +780,7 @@ export default class DrawGridPlugin {
    * 3 4 9
    */
   topDownCellCount(currentRow, currentCol, numRows) {
-    return (currentCol + 1) + currentRow * numRows;
+    return currentCol + 1 + currentRow * numRows;
   }
 
   /**
@@ -750,7 +790,7 @@ export default class DrawGridPlugin {
    * 7 4 1
    */
   inverseBottomUp(currentRow, currentCol, numRows, numCols) {
-    return (numRows * numCols) - (currentRow * numRows) - currentCol;
+    return numRows * numCols - currentRow * numRows - currentCol;
   }
 
   /**
@@ -760,10 +800,11 @@ export default class DrawGridPlugin {
    * 7 6 1
    */
   inverseZigZagCellCount(currentRow, currentCol, numRows, numCols) {
-    let cellCount = (numRows * numCols) - (currentRow * numRows) - currentCol;
+    let cellCount = numRows * numCols - currentRow * numRows - currentCol;
 
-    if (currentRow !== (numCols - 1) && (numCols - currentRow + 1) % 2 !== 0) {
-      cellCount = (numRows * numCols) - (currentRow * numRows) + currentCol - numRows + 1;
+    if (currentRow !== numCols - 1 && (numCols - currentRow + 1) % 2 !== 0) {
+      cellCount =
+        numRows * numCols - currentRow * numRows + currentCol - numRows + 1;
     }
 
     return cellCount;

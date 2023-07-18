@@ -31,7 +31,7 @@ class EnergyScan extends React.Component {
       type: 'EnergyScan',
       label: params.wfname,
       shape: this.props.pointID,
-      suffix: this.props.suffix
+      suffix: this.props.suffix,
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -46,7 +46,7 @@ class EnergyScan extends React.Component {
       'wfpath',
       'suffix',
       'element',
-      'edge'
+      'edge',
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -67,11 +67,12 @@ class EnergyScan extends React.Component {
   }
 
   render() {
-    const availableElements = this.props.availableElements.map((item) => (
-      item.symbol
-    ));
+    const availableElements = this.props.availableElements.map(
+      (item) => item.symbol,
+    );
 
-    return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
+    return (
+      <DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>Energy Scan</Modal.Title>
         </Modal.Header>
@@ -79,67 +80,86 @@ class EnergyScan extends React.Component {
           <Form>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
-            <Row className='mt-3'>
-              <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
+            <Row className="mt-3">
+              <InputField
+                propName="subdir"
+                label="Subdirectory"
+                col1="4"
+                col2="7"
+              />
             </Row>
-            <Row className='mt-3'>
+            <Row className="mt-3">
               <InputField propName="prefix" label="Prefix" col1={4} col2={7} />
             </Row>
-            <Row className='mt-3'>
-              {this.props.taskData.sampleID ?
-                (
-                  <InputField
-                    propName="run_number"
-                    disabled
-                    label="Run number"
-                    col1="4"
-                    col2="7"
-                  />)
-                : null}
+            <Row className="mt-3">
+              {this.props.taskData.sampleID ? (
+                <InputField
+                  propName="run_number"
+                  disabled
+                  label="Run number"
+                  col1="4"
+                  col2="7"
+                />
+              ) : null}
             </Row>
             <FieldsHeader title="Element" />
             <PeriodicTable
               availableElements={availableElements}
               onElementSelected={this.elementSelected}
             />
-            <Row className='mt-3 d-flex'>
-              <InputField propName="element" label="Element" col1="4" col2="2" />
+            <Row className="mt-3 d-flex">
+              <InputField
+                propName="element"
+                label="Element"
+                col1="4"
+                col2="2"
+              />
             </Row>
-            <Row className='mb-2 mt-3 d-flex'>
+            <Row className="mb-2 mt-3 d-flex">
               <InputField propName="edge" label="Edge" col1="4" col2="2" />
             </Row>
           </Form>
-       </Modal.Body>
+        </Modal.Body>
 
-       { this.props.taskData.state ? '' :
-           <Modal.Footer>
-             <ButtonToolbar className="float-end">
-               <Button variant="success"
-                 disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
-                 onClick={this.submitRunNow}
-               >
-                 Run Now
-               </Button>
-               <Button className='ms-3' variant="outline-secondary" disabled={this.props.invalid}
-                 onClick={this.submitAddToQueue}
-               >
-                 {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-               </Button>
-             </ButtonToolbar>
-           </Modal.Footer>
-       }
-      </DraggableModal>);
+        {this.props.taskData.state ? (
+          ''
+        ) : (
+          <Modal.Footer>
+            <ButtonToolbar className="float-end">
+              <Button
+                variant="success"
+                disabled={
+                  this.props.taskData.parameters.shape === -1 ||
+                  this.props.invalid
+                }
+                onClick={this.submitRunNow}
+              >
+                Run Now
+              </Button>
+              <Button
+                className="ms-3"
+                variant="outline-secondary"
+                disabled={this.props.invalid}
+                onClick={this.submitAddToQueue}
+              >
+                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+              </Button>
+            </ButtonToolbar>
+          </Modal.Footer>
+        )}
+      </DraggableModal>
+    );
   }
 }
 
 EnergyScan = reduxForm({
   form: 'workflow',
-  validate
+  validate,
 })(EnergyScan);
 
 const selector = formValueSelector('workflow');
 
-EnergyScan = connect(state => {
+EnergyScan = connect((state) => {
   const subdir = selector(state, 'subdir');
   const element = selector(state, 'element');
   const edge = selector(state, 'edge');
@@ -151,7 +171,7 @@ EnergyScan = connect(state => {
   }
 
   const { type } = state.taskForm.taskData;
-  const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
+  const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -165,16 +185,16 @@ EnergyScan = connect(state => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.resolution :
-        state.beamline.hardwareObjects.resolution.value),
-      energy: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.energy :
-        state.beamline.hardwareObjects.energy.value),
-      transmission: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.transmission :
-        state.beamline.hardwareObjects.transmission.value)
-    }
+      resolution: state.taskForm.taskData.sampleID
+        ? state.taskForm.taskData.parameters.resolution
+        : state.beamline.hardwareObjects.resolution.value,
+      energy: state.taskForm.taskData.sampleID
+        ? state.taskForm.taskData.parameters.energy
+        : state.beamline.hardwareObjects.energy.value,
+      transmission: state.taskForm.taskData.sampleID
+        ? state.taskForm.taskData.parameters.transmission
+        : state.beamline.hardwareObjects.transmission.value,
+    },
   };
 })(EnergyScan);
 

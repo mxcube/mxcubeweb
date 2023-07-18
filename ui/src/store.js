@@ -5,10 +5,7 @@ import rootReducer from './reducers';
 
 function initStore() {
   // Logger MUST BE the last middleware
-  const middleware = [
-    thunk,
-    createLogger()
-  ];
+  const middleware = [thunk, createLogger()];
 
   const enhancers = [];
   if (process.env.NODE_ENV === 'development') {
@@ -18,7 +15,10 @@ function initStore() {
     }
   }
 
-  const composedEnhancers = compose(applyMiddleware(...middleware), ...enhancers);
+  const composedEnhancers = compose(
+    applyMiddleware(...middleware),
+    ...enhancers,
+  );
 
   return createStore(rootReducer, composedEnhancers);
 }

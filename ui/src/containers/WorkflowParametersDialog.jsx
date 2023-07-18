@@ -75,16 +75,16 @@ function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(
       showWorkflowParametersDialog.bind(this, null, false),
-      dispatch
+      dispatch,
     ),
     workflowSubmitParameters: bindActionCreators(
       workflowSubmitParameters,
-      dispatch
+      dispatch,
     ),
   };
 }
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(WorkflowParametersDialog);

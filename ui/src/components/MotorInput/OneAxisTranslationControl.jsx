@@ -6,7 +6,6 @@ import MotorInput from './MotorInput';
 import './motor.css';
 
 export default class OneAxisTranslationControl extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = { edited: false };
@@ -16,11 +15,13 @@ export default class OneAxisTranslationControl extends React.Component {
 
   /* eslint-enable react/no-set-state */
   componentWillReceiveProps(nextProps) {
-    if(nextProps.value && nextProps.value !== this.props.value) {
-        this.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
-        this.motorValue.defaultValue = nextProps.value.toFixed(this.props.decimalPoints);
-        this.setState({ edited: false });
-      }
+    if (nextProps.value && nextProps.value !== this.props.value) {
+      this.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
+      this.motorValue.defaultValue = nextProps.value.toFixed(
+        this.props.decimalPoints,
+      );
+      this.setState({ edited: false });
+    }
   }
 
   handleKey(e) {
@@ -29,27 +30,37 @@ export default class OneAxisTranslationControl extends React.Component {
 
     this.setState({ edited: true });
     if (this.props.value) {
-      if ([13, 38, 40].includes(e.keyCode) && this.props.state === MOTOR_STATE.READY) {
+      if (
+        [13, 38, 40].includes(e.keyCode) &&
+        this.props.state === MOTOR_STATE.READY
+      ) {
         this.setState({ edited: false });
         this.props.save(e.target.name, e.target.valueAsNumber);
-        this.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
-      } else if (this.props.state === MOTOR_STATE.BUSY || this.props.state === MOTOR_STATE.MOVING) {
+        this.motorValue.value = this.props.value.toFixed(
+          this.props.decimalPoints,
+        );
+      } else if (
+        this.props.state === MOTOR_STATE.BUSY ||
+        this.props.state === MOTOR_STATE.MOVING
+      ) {
         this.setState({ edited: false });
-        this.motorValue.value = this.props.value.toFixed(this.props.decimalPoints);
+        this.motorValue.value = this.props.value.toFixed(
+          this.props.decimalPoints,
+        );
       }
     }
   }
   /* eslint-enable react/no-set-state */
 
   stepChange(name, step, operator) {
-    const {value} = this.props;
+    const { value } = this.props;
     const newValue = value + step * operator;
     this.props.save(name, newValue);
   }
 
   renderMotorSettings() {
     return (
-      <Popover title={(<b>Sample alignment motors</b>)}>
+      <Popover title={<b>Sample alignment motors</b>}>
         <div>
           <MotorInput
             save={this.props.save}
@@ -80,7 +91,8 @@ export default class OneAxisTranslationControl extends React.Component {
             inplace
           />
         </div>
-      </Popover>);
+      </Popover>
+    );
   }
 
   render() {
@@ -89,45 +101,55 @@ export default class OneAxisTranslationControl extends React.Component {
 
     const inputCSS = cx('form-control rw-input', {
       'input-bg-edited': this.state.edited,
-      'input-bg-moving': this.props.state === MOTOR_STATE.BUSY ||
-                         this.props.state === MOTOR_STATE.MOVING,
+      'input-bg-moving':
+        this.props.state === MOTOR_STATE.BUSY ||
+        this.props.state === MOTOR_STATE.MOVING,
       'input-bg-ready': this.props.state === MOTOR_STATE.READY,
-      'input-bg-fault': this.props.state === MOTOR_STATE.FAULT ||
-                        this.props.state === MOTOR_STATE.OFF ||
-                        this.props.state === MOTOR_STATE.ALARM ||
-                        this.props.state === MOTOR_STATE.OFFLINE ||
-                        this.props.state === MOTOR_STATE.INVALID,
-      'input-bg-onlimit': this.props.state === MOTOR_STATE.LOWLIMIT ||
-        this.props.state === MOTOR_STATE.HIGHLIMIT
+      'input-bg-fault':
+        this.props.state === MOTOR_STATE.FAULT ||
+        this.props.state === MOTOR_STATE.OFF ||
+        this.props.state === MOTOR_STATE.ALARM ||
+        this.props.state === MOTOR_STATE.OFFLINE ||
+        this.props.state === MOTOR_STATE.INVALID,
+      'input-bg-onlimit':
+        this.props.state === MOTOR_STATE.LOWLIMIT ||
+        this.props.state === MOTOR_STATE.HIGHLIMIT,
     });
 
     return (
       <div className="arrow-control">
         <Button
-          variant='outline-secondary'
+          variant="outline-secondary"
           style={{ marginRight: '2px' }}
           className="arrow-small arrow-left"
-          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
+          disabled={
+            this.props.state !== MOTOR_STATE.READY || this.props.disabled
+          }
           onClick={() => this.stepChange(motorName, 10 * step, -1)}
         >
           <i className="fas fa-angle-double-left" />
         </Button>
         <Button
-          variant='outline-secondary'
+          variant="outline-secondary"
           className="arrow-small arrow-left"
-          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
+          disabled={
+            this.props.state !== MOTOR_STATE.READY || this.props.disabled
+          }
           onClick={() => this.stepChange(motorName, step, -1)}
         >
           <i className="fas fa-angle-left" />
         </Button>
         <input
-          style={{ width: `${Number.parseFloat(decimalPoints) + 2}em`,
+          style={{
+            width: `${Number.parseFloat(decimalPoints) + 2}em`,
             height: '2.1em',
             display: 'inline-block',
             marginLeft: '5px',
-            marginRight: '5px'
+            marginRight: '5px',
           }}
-          ref={(ref) => { this.motorValue = ref; }}
+          ref={(ref) => {
+            this.motorValue = ref;
+          }}
           className={inputCSS}
           onKeyUp={this.handleKey}
           type="number"
@@ -136,21 +158,27 @@ export default class OneAxisTranslationControl extends React.Component {
           step={step}
           defaultValue={valueCropped}
           name={motorName}
-          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
+          disabled={
+            this.props.state !== MOTOR_STATE.READY || this.props.disabled
+          }
         />
         <Button
-          variant='outline-secondary'
+          variant="outline-secondary"
           className="arrow-small arrow-right"
-          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
+          disabled={
+            this.props.state !== MOTOR_STATE.READY || this.props.disabled
+          }
           onClick={() => this.stepChange(motorName, step, 1)}
         >
           <i className="fas fa-angle-right" />
         </Button>
         <Button
-          variant='outline-secondary'
+          variant="outline-secondary"
           style={{ marginLeft: '2px' }}
           className="arrow-small arrow-right"
-          disabled={this.props.state !== MOTOR_STATE.READY || this.props.disabled}
+          disabled={
+            this.props.state !== MOTOR_STATE.READY || this.props.disabled
+          }
           onClick={() => this.stepChange(motorName, 10 * step, 1)}
         >
           <i className="fas fa-angle-double-right" />

@@ -106,7 +106,7 @@ export function select(address) {
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error(
-          `Error while selecting sample changer container @ ${address}`
+          `Error while selecting sample changer container @ ${address}`,
         );
       }
 

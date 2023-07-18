@@ -34,9 +34,9 @@ class Plot1D extends React.Component {
         const plotId = nextProps.lastPlotId;
         const plotInfo = nextProps.plotsInfo[plotId];
         if (plotInfo && plotInfo.end) {
-            // do not display an old plot
-            return;
-          }
+          // do not display an old plot
+          return;
+        }
 
         this.setPlot(plotId);
       }
@@ -44,7 +44,7 @@ class Plot1D extends React.Component {
   }
 
   componentWillUpdate(nextProps, nextState) {
-    const {plotId} = nextState;
+    const { plotId } = nextState;
     if (plotId) {
       const plotInfo = nextProps.plotsInfo[plotId];
       const plotData = nextProps.plotsData[plotId];

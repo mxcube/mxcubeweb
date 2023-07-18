@@ -154,7 +154,7 @@ class BeamlineActionsContainer extends React.Component {
                         this.props.setArgumentValue(
                           currentActionName,
                           i,
-                          e.target.value
+                          e.target.value,
                         );
                       }}
                     />
@@ -233,5 +233,5 @@ function mapDispatchToProps(dispatch) {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(BeamlineActionsContainer);

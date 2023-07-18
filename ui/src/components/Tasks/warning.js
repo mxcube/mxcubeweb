@@ -5,15 +5,21 @@ const warn = (values, props) => {
     return warnings;
   }
   const energy = Number.parseFloat(values.energy);
-  const blEnergy = Number.parseFloat(props.beamline.hardwareObjects.energy.value);
+  const blEnergy = Number.parseFloat(
+    props.beamline.hardwareObjects.energy.value,
+  );
   const energyThreshold = blEnergy * 0.01;
 
   const resolution = Number.parseFloat(values.resolution);
-  const blResolution = Number.parseFloat(props.beamline.hardwareObjects.resolution.value);
+  const blResolution = Number.parseFloat(
+    props.beamline.hardwareObjects.resolution.value,
+  );
   const resThreshold = blResolution * 0.01;
 
   const trans = Number.parseFloat(values.transmission);
-  const blTrans = Number.parseFloat(props.beamline.hardwareObjects.transmission.value);
+  const blTrans = Number.parseFloat(
+    props.beamline.hardwareObjects.transmission.value,
+  );
   const transThreshold = blTrans * 0.01;
 
   if (
@@ -37,8 +43,9 @@ const warn = (values, props) => {
   }
 
   if (
-    Number.parseFloat(props.beamline.hardwareObjects["diffractometer.phi"].value.toFixed(2))
-    !== Number.parseFloat(values.osc_start)
+    Number.parseFloat(
+      props.beamline.hardwareObjects['diffractometer.phi'].value.toFixed(2),
+    ) !== Number.parseFloat(values.osc_start)
   ) {
     warnings.osc_start =
       'Entered Oscillation start angle is different from current omega';
@@ -47,7 +54,8 @@ const warn = (values, props) => {
   if (
     props.pointID !== -1 &&
     props.pointID.includes('2D') &&
-    Number.parseFloat(values.osc_range) * Number.parseFloat(values.num_images) > 5
+    Number.parseFloat(values.osc_range) * Number.parseFloat(values.num_images) >
+      5
   ) {
     warnings.osc_range =
       'The given oscillation range might be to large for this centering';

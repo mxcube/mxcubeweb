@@ -1,18 +1,24 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ProgressBar, Button, Collapse, OverlayTrigger, Popover } from 'react-bootstrap';
+import {
+  ProgressBar,
+  Button,
+  Collapse,
+  OverlayTrigger,
+  Popover,
+} from 'react-bootstrap';
 import {
   TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
-  TASK_RUNNING
+  TASK_RUNNING,
 } from '../../constants';
 
 export default class EnergyScanTaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    moveCard: PropTypes.func.isRequired
+    moveCard: PropTypes.func.isRequired,
   };
 
   constructor(props) {
@@ -26,25 +32,31 @@ export default class EnergyScanTaskItem extends Component {
     this.pointIDString = this.pointIDString.bind(this);
     this.state = {
       overInput: false,
-      selected: false
+      selected: false,
     };
   }
 
   getResult(state) {
     if (state !== TASK_COLLECTED) {
-      return (<span />);
+      return <span />;
     }
-    const link = this.props.data.limsResultData ? this.props.data.limsResultData.limsTaskLink : '';
+    const link = this.props.data.limsResultData
+      ? this.props.data.limsResultData.limsTaskLink
+      : '';
 
     return (
-      <div style={{
-        borderLeft: '1px solid #DDD',
-        borderRight: '1px solid #DDD',
-        borderBottom: '1px solid #DDD',
-        padding: '0.5em'
-      }}
+      <div
+        style={{
+          borderLeft: '1px solid #DDD',
+          borderRight: '1px solid #DDD',
+          borderBottom: '1px solid #DDD',
+          padding: '0.5em',
+        }}
       >
-        <a href={link} target="_blank" rel="noreferrer"> View Results in ISPyB</a>
+        <a href={link} target="_blank" rel="noreferrer">
+          {' '}
+          View Results in ISPyB
+        </a>
       </div>
     );
   }
@@ -66,12 +78,15 @@ export default class EnergyScanTaskItem extends Component {
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
-
   deleteButton() {
-    let content = (<Button size="sm" onClick={this.deleteTask}>Delete</Button>);
+    let content = (
+      <Button size="sm" onClick={this.deleteTask}>
+        Delete
+      </Button>
+    );
 
     if (this.props.state !== TASK_UNCOLLECTED) {
-      content = (<span> </span>);
+      content = <span> </span>;
     }
 
     return content;
@@ -106,28 +121,31 @@ export default class EnergyScanTaskItem extends Component {
         trigger="click"
         placement="top"
         rootClose
-        overlay={(<Popover id="wedge-popover" style={{ maxWidth: '2000px', width: 'auto' }}>
-          <input
-            type="text"
-            onFocus={(e) => { e.target.select(); }}
-            value={path}
-            size={path.length + 10}
-          />
-        </Popover>)}
+        overlay={
+          <Popover
+            id="wedge-popover"
+            style={{ maxWidth: '2000px', width: 'auto' }}
+          >
+            <input
+              type="text"
+              onFocus={(e) => {
+                e.target.select();
+              }}
+              value={path}
+              size={path.length + 10}
+            />
+          </Popover>
+        }
       >
-        <a onClick={(e) => (e.stopPropagation())}>
-          {value}
-        </a>
-      </OverlayTrigger>);
+        <a onClick={(e) => e.stopPropagation()}>{value}</a>
+      </OverlayTrigger>
+    );
   }
 
   render() {
-    const { state,
-      data,
-      show } = this.props;
+    const { state, data, show } = this.props;
 
     const { parameters } = data;
-
 
     const delTaskCSS = {
       display: 'flex',
@@ -136,10 +154,12 @@ export default class EnergyScanTaskItem extends Component {
       paddingLeft: '10px',
       paddingRight: '10px',
       color: '#d9534f',
-      cursor: 'pointer'
+      cursor: 'pointer',
     };
 
-    const taskCSS = this.props.selected ? 'task-head task-head-selected' : 'task-head';
+    const taskCSS = this.props.selected
+      ? 'task-head task-head-selected'
+      : 'task-head';
 
     let pbarBsStyle = 'info';
 
@@ -164,19 +184,27 @@ export default class EnergyScanTaskItem extends Component {
 
     return (
       <div className="node node-sample">
-        <div onContextMenu={(e) => this.props.showContextMenu(e, 'currentSampleQueueContextMenu')} id="currentSampleQueueContextMenu">
+        <div
+          onContextMenu={(e) =>
+            this.props.showContextMenu(e, 'currentSampleQueueContextMenu')
+          }
+          id="currentSampleQueueContextMenu"
+        >
           <div
             onClick={this.taskHeaderOnClick}
             onContextMenu={this.taskHeaderOnContextMenu}
           >
-            <div
-              className={taskCSS}
-              style={{ display: 'flex' }}
-            >
+            <div className={taskCSS} style={{ display: 'flex' }}>
               <b>
-                <span className="node-name" style={{ display: 'flex' }} >
+                <span className="node-name" style={{ display: 'flex' }}>
                   {this.pointIDString(parameters)} {data.label}
-                  <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
+                  <span
+                    style={{
+                      width: '150px',
+                      right: '60px',
+                      position: 'absolute',
+                    }}
+                  >
                     <ProgressBar
                       variant={pbarBsStyle}
                       striped
@@ -190,19 +218,20 @@ export default class EnergyScanTaskItem extends Component {
                   </span>
                 </span>
               </b>
-              {state === TASK_UNCOLLECTED ?
-                <i className="fas fa-times" onClick={this.deleteTask} style={delTaskCSS} /> : null
-              }
+              {state === TASK_UNCOLLECTED ? (
+                <i
+                  className="fas fa-times"
+                  onClick={this.deleteTask}
+                  style={delTaskCSS}
+                />
+              ) : null}
             </div>
           </div>
           <Collapse in={Boolean(show)}>
             <div className="task-body">
               <div>
                 <div style={{ border: '1px solid #DDD' }}>
-                  <div
-                    style={{ padding: '0.5em' }}
-                    onClick={this.showForm}
-                  >
+                  <div style={{ padding: '0.5em' }} onClick={this.showForm}>
                     <b>Path:</b> {this.path(parameters)}
                     <br />
                     <b>Element:</b> {parameters.element}
@@ -215,6 +244,7 @@ export default class EnergyScanTaskItem extends Component {
             </div>
           </Collapse>
         </div>
-      </div>);
+      </div>
+    );
   }
 }

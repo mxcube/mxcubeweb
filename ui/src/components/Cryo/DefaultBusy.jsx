@@ -19,7 +19,11 @@ export default class DefaultBusy extends React.Component {
       <div>
         <div className="popinput-input-busy" />
         <ButtonToolbar className="editable-buttons">
-          <Button variant="outline-secondary" className="btn-sm" onClick={this.cancel}>
+          <Button
+            variant="outline-secondary"
+            className="btn-sm"
+            onClick={this.cancel}
+          >
             <i className="glyphicon glyphicon-remove" />
           </Button>
         </ButtonToolbar>

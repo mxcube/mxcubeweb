@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import {
-  Modal, Button, Form, Row, Col, ButtonToolbar
-} from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import warn from './warning';
@@ -11,15 +9,9 @@ import JSForm from '@rjsf/core';
 import classNames from 'classnames';
 import './style.css';
 
-import {
-  sendUpdateDependentFields
-} from '../../actions/queue';
+import { sendUpdateDependentFields } from '../../actions/queue';
 
-import {
-  FieldsHeader,
-  StaticField,
-  InputField,
-} from './fields';
+import { FieldsHeader, StaticField, InputField } from './fields';
 
 class GenericTaskForm extends React.Component {
   constructor(props) {
@@ -51,7 +43,7 @@ class GenericTaskForm extends React.Component {
       label: params.name,
       shape: this.props.pointID,
       selection: this.props.taskData.parameters.selection,
-      experiment_name: params.experimentName
+      experiment_name: params.experimentName,
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -69,7 +61,7 @@ class GenericTaskForm extends React.Component {
       'helical',
       'selection',
       'experiment_name',
-      'chip_type'
+      'chip_type',
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -84,18 +76,26 @@ class GenericTaskForm extends React.Component {
     const { type } = this.props.taskData;
     this.props.resetTaskParameters();
     this.resetParameters(type);
-    const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
+    const fieldNames = Object.keys(
+      this.props.initialParameters[type.toLowerCase()],
+    );
     fieldNames.forEach((field) => {
-      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);
+      this.props.autofill(
+        type.toLowerCase(),
+        field,
+        this.props.initialParameters[type.toLowerCase()][field],
+      );
     });
   }
-
 
   showDCFooter() {
     return (
       <Modal.Footer>
         <div className="input-group-btn d-flex">
-          <ButtonToolbar style={{ bottom: '15px', left: '10px' }} className="position-absolute">
+          <ButtonToolbar
+            style={{ bottom: '15px', left: '10px' }}
+            className="position-absolute"
+          >
             <Button
               size="sm"
               variant="outline-secondary"
@@ -106,7 +106,7 @@ class GenericTaskForm extends React.Component {
           </ButtonToolbar>
           <ButtonToolbar>
             <Button
-              className='me-3 ms-3'
+              className="me-3 ms-3"
               size="sm"
               variant="success"
               disabled={this.props.invalid}
@@ -133,9 +133,11 @@ class GenericTaskForm extends React.Component {
       <Modal.Footer>
         <ButtonToolbar className="float-end">
           <Button
-            className='me-3'
+            className="me-3"
             variant="success"
-            disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
+            disabled={
+              this.props.taskData.parameters.shape === -1 || this.props.invalid
+            }
             onClick={this.submitRunNow}
           >
             Run Nowjson-schema-form-group-div
@@ -165,18 +167,18 @@ class GenericTaskForm extends React.Component {
   }
 
   setConstraintsFromDefualts(schema) {
-    const s = { ...schema }
+    const s = { ...schema };
 
     for (const key in this.props.initialValues) {
       if (s.properties[key]) {
-        s.properties[key].default = this.props.initialValues[key]
+        s.properties[key].default = this.props.initialValues[key];
       }
     }
 
     for (const key in this.props.taskData.Arraylimits) {
       if (s.properties[key]) {
-        s.properties[key].exclusiveMinimum = this.props.taskData.limits[key][0]
-        s.properties[key].exclusiveMaximum = this.props.taskData.limits[key][1]
+        s.properties[key].exclusiveMinimum = this.props.taskData.limits[key][0];
+        s.properties[key].exclusiveMaximum = this.props.taskData.limits[key][1];
       }
     }
 
@@ -184,14 +186,26 @@ class GenericTaskForm extends React.Component {
   }
 
   customFieldTemplate(props) {
-    const { id, classNames, label, help, required, rawDescription, description, errors, children } = props;
+    const {
+      id,
+      classNames,
+      label,
+      help,
+      required,
+      rawDescription,
+      description,
+      errors,
+      children,
+    } = props;
     return (
       <div className={classNames}>
-        {
-          id !== "root" ?
-            (<label htmlFor={id}>{label}{required ? "*" : null}{rawDescription ? ` (${rawDescription})` : null}</label>)
-            : null
-        }
+        {id !== 'root' ? (
+          <label htmlFor={id}>
+            {label}
+            {required ? '*' : null}
+            {rawDescription ? ` (${rawDescription})` : null}
+          </label>
+        ) : null}
         {description}
         {children}
         {errors}
@@ -203,18 +217,23 @@ class GenericTaskForm extends React.Component {
   columnsObjectFieldTemplate({ properties, description }) {
     return (
       <div>
-        <div className='row'>
-          {properties.map(prop => {
-            const { uiSchema } = prop.content.props
-            const className = classNames('column', uiSchema['ui:column'] || 'col-6 json-schema-form-group-div')
-            return <div key={prop.content.key} className={className}>
-              {prop.content}
-            </div>
+        <div className="row">
+          {properties.map((prop) => {
+            const { uiSchema } = prop.content.props;
+            const className = classNames(
+              'column',
+              uiSchema['ui:column'] || 'col-6 json-schema-form-group-div',
+            );
+            return (
+              <div key={prop.content.key} className={className}>
+                {prop.content}
+              </div>
+            );
           })}
         </div>
         {description}
       </div>
-    )
+    );
   }
 
   updateFromRemoteValidation(formData) {
@@ -233,46 +252,58 @@ class GenericTaskForm extends React.Component {
   render() {
     const uiSchema = JSON.parse(this.props.uiSchema);
     const schema = this.setConstraintsFromDefualts(
-      this.props.schema.user_collection_parameters
-    )
+      this.props.schema.user_collection_parameters,
+    );
     return (
       <DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>{this.props.taskData.name}</Modal.Title>
         </Modal.Header>
-        <Modal.Body >
+        <Modal.Body>
           <Form>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
-            <Row className='mb-2'>
+            <Row className="mb-2">
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField disabled propName="subdir" label="Sample name" col1="2" col2="8" />
+                <InputField
+                  disabled
+                  propName="subdir"
+                  label="Sample name"
+                  col1="2"
+                  col2="8"
+                />
               </Col>
             </Row>
             <Row>
-              {this.props.useExperimentName ?
-                (<Col xs={6}>
-                  <InputField propName="experimentName" label="Experiment Name" col1="4" col2="6" />
-                </Col>)
-                :
-                null
-              }
+              {this.props.useExperimentName ? (
+                <Col xs={6}>
+                  <InputField
+                    propName="experimentName"
+                    label="Experiment Name"
+                    col1="4"
+                    col2="6"
+                  />
+                </Col>
+              ) : null}
               <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="2" col2="8" />
+                <InputField
+                  propName="prefix"
+                  label="Prefix"
+                  col1="2"
+                  col2="8"
+                />
               </Col>
-              {this.props.taskData.sampleID
-                ? (
-                  <Col xs={8}>
-                    <InputField
-                      propName="run_number"
-                      disabled
-                      label="Run number"
-                      col1="4"
-                      col2="3"
-                    />
-                  </Col>
-                )
-                : null}
+              {this.props.taskData.sampleID ? (
+                <Col xs={8}>
+                  <InputField
+                    propName="run_number"
+                    disabled
+                    label="Run number"
+                    col1="4"
+                    col2="3"
+                  />
+                </Col>
+              ) : null}
             </Row>
           </Form>
 
@@ -283,7 +314,7 @@ class GenericTaskForm extends React.Component {
               schema={schema}
               uiSchema={uiSchema}
               onChange={({ formData }) => {
-                this.updateFromRemoteValidation(formData)
+                this.updateFromRemoteValidation(formData);
                 this.jsformData = formData;
               }}
               ObjectFieldTemplate={this.columnsObjectFieldTemplate}
@@ -293,7 +324,6 @@ class GenericTaskForm extends React.Component {
         </Modal.Body>
 
         {this.props.taskData.state ? '' : this.showFooter()}
-
       </DraggableModal>
     );
   }
@@ -302,7 +332,7 @@ class GenericTaskForm extends React.Component {
 GenericTaskForm = reduxForm({
   form: 'GenericTaskForm',
   validate,
-  warn
+  warn,
 })(GenericTaskForm);
 
 const selector = formValueSelector('GenericTaskForm');
@@ -328,8 +358,9 @@ GenericTaskForm = connect((state) => {
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type];
   const { schema } = state.taskForm.defaultParameters[type];
-  const uiSchema = state.taskForm.defaultParameters[type].ui_schema
-  const useExperimentName = state.taskForm.taskData.parameters.use_experiment_name;
+  const uiSchema = state.taskForm.defaultParameters[type].ui_schema;
+  const useExperimentName =
+    state.taskForm.taskData.parameters.use_experiment_name;
 
   let path = `${state.login.rootPath}/${subdir}${experimentNameSelector}/[RUN#]`;
 
@@ -351,17 +382,20 @@ GenericTaskForm = connect((state) => {
       ...state.taskForm.taskData.parameters,
       type,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.hardwareObjects.resolution.value),
-      energy: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.energy
-        : state.beamline.hardwareObjects.energy.value),
-      transmission: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.hardwareObjects.transmission.value),
-      osc_start: state.taskForm.taskData.parameters.osc_start
-    }
+      resolution:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.resolution
+          : state.beamline.hardwareObjects.resolution.value,
+      energy:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.energy
+          : state.beamline.hardwareObjects.energy.value,
+      transmission:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.transmission
+          : state.beamline.hardwareObjects.transmission.value,
+      osc_start: state.taskForm.taskData.parameters.osc_start,
+    },
   };
 })(GenericTaskForm);
 

@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import {
-  Modal, ButtonToolbar, Button, Form
-} from 'react-bootstrap';
+import { Modal, ButtonToolbar, Button, Form } from 'react-bootstrap';
 import { InputField, FieldsRow } from './fields';
 import validate from './validate_add_sample';
 
@@ -33,7 +31,7 @@ class AddSample extends React.Component {
       defaultPrefix: prefix,
       location: 'Manual',
       loadable: true,
-      tasks: []
+      tasks: [],
     };
   }
 
@@ -85,14 +83,18 @@ class AddSample extends React.Component {
                 propName="sampleName"
                 autoFocus
                 label="Sample Name"
-                ref={(ref) => { this.sampleName = ref; }}
+                ref={(ref) => {
+                  this.sampleName = ref;
+                }}
                 col1="4"
                 col2="6"
               />
               <InputField
                 propName="proteinAcronym"
                 label="Protein Acronym"
-                ref={(ref) => { this.proteinAcronym = ref; }}
+                ref={(ref) => {
+                  this.proteinAcronym = ref;
+                }}
                 col1="4"
                 col2="6"
                 onKeyPress={this.handleKeyPress}
@@ -102,10 +104,19 @@ class AddSample extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <ButtonToolbar>
-            <Button variant="outline-secondary" disabled={this.props.invalid} onClick={this.addAndEnqueue}>
+            <Button
+              variant="outline-secondary"
+              disabled={this.props.invalid}
+              onClick={this.addAndEnqueue}
+            >
               Add Sample
             </Button>
-            <Button className= "ms-3" variant="outline-secondary" disabled={this.props.invalid} onClick={this.addAndMount}>
+            <Button
+              className="ms-3"
+              variant="outline-secondary"
+              disabled={this.props.invalid}
+              onClick={this.addAndMount}
+            >
               Add and mount sample
             </Button>
           </ButtonToolbar>
@@ -117,7 +128,7 @@ class AddSample extends React.Component {
 
 AddSample = reduxForm({
   form: 'addsample',
-  validate
+  validate,
 })(AddSample);
 
 AddSample = connect((state) => ({

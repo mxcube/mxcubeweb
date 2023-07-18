@@ -51,7 +51,9 @@ export default class SampleImage extends React.Component {
     this.toggleGridVisibility = this.toggleGridVisibility.bind(this);
     this.canvas = {};
     this.drawGridPlugin = new DrawGridPlugin();
-    this.drawGridPlugin.setGridResultFormat(process.env.REACT_APP_MESHRESULTFORMAT);
+    this.drawGridPlugin.setGridResultFormat(
+      process.env.REACT_APP_MESHRESULTFORMAT,
+    );
     this._keyPressed = null;
     this.gridStarted = false;
     this.girdOrigin = null;
@@ -171,7 +173,7 @@ export default class SampleImage extends React.Component {
         (options.e.layerX + 1.5) / this.props.imageRatio,
         (options.e.layerY + 1) / this.props.imageRatio,
         this.props.imageRatio,
-        this.canvas.height
+        this.canvas.height,
       );
 
       if (this.props.clickCentringClicksLeft > 2) {
@@ -183,7 +185,7 @@ export default class SampleImage extends React.Component {
           (options.e.layerX + 1.5) / this.props.imageRatio,
           (options.e.layerY + 1) / this.props.imageRatio,
           this.props.imageRatio,
-          this.canvas.width
+          this.canvas.width,
         );
       }
 
@@ -194,7 +196,7 @@ export default class SampleImage extends React.Component {
       this.drawGridPlugin.update(
         this.canvas,
         options.e.layerX,
-        options.e.layerY
+        options.e.layerY,
       );
     }
 
@@ -229,14 +231,14 @@ export default class SampleImage extends React.Component {
         gridData,
         true,
         gridData.cellHSpace,
-        value
+        value,
       );
       this.props.sampleActions.sendUpdateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(
         null,
         value,
-        this.props.imageRatio
+        this.props.imageRatio,
       );
       this.drawGridPlugin.repaint(this.canvas);
     }
@@ -255,14 +257,14 @@ export default class SampleImage extends React.Component {
         gridData,
         true,
         value,
-        gridData.cellVSpace
+        gridData.cellVSpace,
       );
       this.props.sampleActions.sendUpdateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(
         value,
         null,
-        this.props.imageRatio
+        this.props.imageRatio,
       );
       this.drawGridPlugin.repaint(this.canvas);
     }
@@ -348,7 +350,7 @@ export default class SampleImage extends React.Component {
     }
 
     this.props.selectedShapes.forEach((shapeID) =>
-      this.props.sampleActions.sendDeleteShape(shapeID)
+      this.props.sampleActions.sendDeleteShape(shapeID),
     );
   }
 
@@ -453,7 +455,7 @@ export default class SampleImage extends React.Component {
           const gridData = this.props.grids[gridList[0]];
           const cellCenter = this.getGridCellCenter(
             group.getObjects()[0],
-            clickPoint
+            clickPoint,
           );
           ctxMenuObj = {
             type: 'GridGroupSaved',
@@ -546,7 +548,7 @@ export default class SampleImage extends React.Component {
       imageRatio,
       contextMenuVisible,
       beamSize,
-      pixelsPerMm
+      pixelsPerMm,
     } = this.props;
 
     if (contextMenuVisible) {
@@ -556,12 +558,12 @@ export default class SampleImage extends React.Component {
     if (clickCentring) {
       sampleActions.sendCentringPoint(
         option.e.layerX / imageRatio,
-        option.e.layerY / imageRatio
+        option.e.layerY / imageRatio,
       );
     } else if (measureDistance) {
       sampleActions.addDistancePoint(
         option.e.layerX / imageRatio,
-        option.e.layerY / imageRatio
+        option.e.layerY / imageRatio,
       );
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
@@ -575,7 +577,7 @@ export default class SampleImage extends React.Component {
         (option.e.layerX + 1.5) / this.props.imageRatio,
         (option.e.layerY + 1) / this.props.imageRatio,
         this.props.imageRatio,
-        this.canvas.width
+        this.canvas.width,
       );
 
       this.canvas.add(this.centringHorizontalLine);
@@ -595,23 +597,29 @@ export default class SampleImage extends React.Component {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
-        sendMotorPosition('Phi', phi.value + Number.parseInt(motorSteps.phiStep, 10));
+        sendMotorPosition(
+          'Phi',
+          phi.value + Number.parseInt(motorSteps.phiStep, 10),
+        );
       } else if (e.deltaX < 0 || e.deltaY < 0) {
         // zoom out
-        sendMotorPosition('Phi', phi.value - Number.parseInt(motorSteps.phiStep, 10));
+        sendMotorPosition(
+          'Phi',
+          phi.value - Number.parseInt(motorSteps.phiStep, 10),
+        );
       }
     } else if (keyPressed === 'f' && focus.state === MOTOR_STATE.READY) {
       if (e.deltaY > 0) {
         // Focus in
         sendMotorPosition(
           'Focus',
-          focus.value + Number.parseFloat(motorSteps.focusStep, 10)
+          focus.value + Number.parseFloat(motorSteps.focusStep, 10),
         );
       } else if (e.deltaY < 0) {
         // Focus out
         sendMotorPosition(
           'Focus',
-          focus.value - Number.parseFloat(motorSteps.focusStep, 10)
+          focus.value - Number.parseFloat(motorSteps.focusStep, 10),
         );
       }
     } else if (keyPressed === 'z' && zoom.state === MOTOR_STATE.READY) {
@@ -741,7 +749,7 @@ export default class SampleImage extends React.Component {
 
   saveGrid() {
     const gd = this.drawGridPlugin.saveGrid(
-      this.drawGridPlugin.currentGridData()
+      this.drawGridPlugin.currentGridData(),
     );
     this.props.sampleActions.sendAddShape({ t: 'G', ...gd });
     this.drawGridPlugin.reset();
@@ -784,12 +792,9 @@ export default class SampleImage extends React.Component {
       source = `${this.props.videoURL}/${this.props.videoHash}`;
     }
 
-    let result = (<img
-      id="sample-img"
-      className="img"
-      src={source}
-      alt="SampleView"
-    />);
+    let result = (
+      <img id="sample-img" className="img" src={source} alt="SampleView" />
+    );
 
     if (format === 'MPEG1') {
       result = <canvas id="sample-img" className="img" />;
@@ -854,8 +859,8 @@ export default class SampleImage extends React.Component {
         beamSize,
         clickCentring,
         distancePoints,
-        this.canvas
-      )
+        this.canvas,
+      ),
     );
 
     if (
@@ -884,7 +889,7 @@ export default class SampleImage extends React.Component {
         gridData = this.drawGridPlugin.setPixelsPerMM(pixelsPerMm, gridData);
         fabricSelectables.push(
           this.drawGridPlugin.shapeFromGridData(gridData, this.canvas)
-            .shapeGroup
+            .shapeGroup,
         );
       }
     });

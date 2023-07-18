@@ -88,7 +88,7 @@ export default (state = initialState, action) => {
           ...state.defaultParameters,
           [type]: {
             ...state.defaultParameters[type],
-            "acq_parameters": { ...action.data },
+            acq_parameters: { ...action.data },
           },
         },
       };
@@ -100,10 +100,10 @@ export default (state = initialState, action) => {
       return {
         ...state,
         defaultParameters: {
-          ...action.data.taskParameters
+          ...action.data.taskParameters,
         },
         initialParameters: {
-          ...action.data.taskParameters
+          ...action.data.taskParameters,
         },
         fileSuffix: action.data.detector.fileSuffix,
       };

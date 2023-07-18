@@ -32,7 +32,7 @@ class SelectProposal extends React.Component {
 
   render() {
     const sortedlist = this.props.data.proposalList.sort((a, b) =>
-      a.number < b.number ? 1 : -1
+      a.number < b.number ? 1 : -1,
     );
     const proposals = sortedlist.map((prop) => (
       <tr
@@ -74,20 +74,17 @@ class SelectProposal extends React.Component {
           </div>
         </Modal.Body>
         <Modal.Footer>
-            <Button
-              variant="outline-secondary"
-              onClick={this.handleCancel}
-            >
-              Sign Out
-            </Button>
-            <Button
-              variant="primary"
-              className="float-end"
-              disabled={this.state.pNumber === null}
-              onClick={this.sendProposal}
-            >
-              Select Proposal
-            </Button>
+          <Button variant="outline-secondary" onClick={this.handleCancel}>
+            Sign Out
+          </Button>
+          <Button
+            variant="primary"
+            className="float-end"
+            disabled={this.state.pNumber === null}
+            onClick={this.sendProposal}
+          >
+            Select Proposal
+          </Button>
         </Modal.Footer>
       </Modal>
     );
@@ -95,9 +92,11 @@ class SelectProposal extends React.Component {
 }
 
 SelectProposal = reduxForm({
-  form: 'proposals'
+  form: 'proposals',
 })(SelectProposal);
 
-SelectProposal = connect(state => ({ initialValues: { ...state.login.data } }))(SelectProposal);
+SelectProposal = connect((state) => ({
+  initialValues: { ...state.login.data },
+}))(SelectProposal);
 
 export default SelectProposal;

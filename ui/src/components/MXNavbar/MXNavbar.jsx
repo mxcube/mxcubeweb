@@ -12,35 +12,45 @@ class MXNavbar extends React.Component {
   }
 
   findProposal(prop) {
-    return `${prop.Proposal.code}${prop.Proposal.number}` === this.props.selectedProposal;
+    return (
+      `${prop.Proposal.code}${prop.Proposal.number}` ===
+      this.props.selectedProposal
+    );
   }
 
-  signOut(){
+  signOut() {
     this.props.signOut();
-    this.props.router.navigate('/login' , { replace: true });
+    this.props.router.navigate('/login', { replace: true });
   }
 
   render() {
-    const raStyle = (this.props.user.inControl ? { color: 'white' } : {});
+    const raStyle = this.props.user.inControl ? { color: 'white' } : {};
     const numObservers = this.props.remoteAccess.observers.length;
 
     document.title = `MxCuBE-Web Proposal: ${this.props.selectedProposal}`;
 
     return (
-      <Navbar className='pt-1 pb-1' bg="dark" variant="dark" collapseOnSelect expand="lg">
+      <Navbar
+        className="pt-1 pb-1"
+        bg="dark"
+        variant="dark"
+        collapseOnSelect
+        expand="lg"
+      >
         <Container fluid>
           <LinkContainer to="/remoteaccess">
             <Navbar.Brand>
-              MXCuBE-Web <span className="brand-subtitle">({this.props.mode})</span>
+              MXCuBE-Web{' '}
+              <span className="brand-subtitle">({this.props.mode})</span>
             </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="m-auto">
-              <LinkContainer className="me-4" to="/samplegrid"><Nav.Item className="nav-link">
-                Samples</Nav.Item>
+              <LinkContainer className="me-4" to="/samplegrid">
+                <Nav.Item className="nav-link">Samples</Nav.Item>
               </LinkContainer>
-              <LinkContainer className="me-4"to="/datacollection">
+              <LinkContainer className="me-4" to="/datacollection">
                 <Nav.Item className="nav-link">Data collection</Nav.Item>
               </LinkContainer>
               <LinkContainer className="me-4" to="/equipment">
@@ -59,13 +69,20 @@ class MXNavbar extends React.Component {
               </LinkContainer>
               <LinkContainer className="me-2" to="/remoteaccess">
                 <Nav.Item className="nav-link">
-                  <span style={ raStyle } className="me-1 fas fa-lg fa-globe">
-                    {numObservers > 0 ? <span className="badge-num">{numObservers}</span> : null }
+                  <span style={raStyle} className="me-1 fas fa-lg fa-globe">
+                    {numObservers > 0 ? (
+                      <span className="badge-num">{numObservers}</span>
+                    ) : null}
                   </span>
                   Remote
                 </Nav.Item>
               </LinkContainer>
-              <Button as={Nav.Link} className="nav-link pe-0" variant="Light" onClick={this.signOut}>
+              <Button
+                as={Nav.Link}
+                className="nav-link pe-0"
+                variant="Light"
+                onClick={this.signOut}
+              >
                 <span className="me-1 fas fa-lg fa-sign-out-alt" />
                 Sign out {`(${this.props.selectedProposal})`}
               </Button>

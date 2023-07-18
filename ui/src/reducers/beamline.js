@@ -123,15 +123,15 @@ export const INITIAL_STATE = {
   beamlineActionsList: [],
   currentBeamlineAction: {
     show: false,
-    argument_type: "",
+    argument_type: '',
     arguments: [],
-    data: "",
+    data: '',
     messages: [],
-    name: "",
-    schema: "",
+    name: '',
+    schema: '',
     state: 0,
-    type: "",
-    username: "",
+    type: '',
+    username: '',
   },
   motorInputDisable: false,
   lastPlotId: null,
@@ -150,7 +150,9 @@ export default (state = INITIAL_STATE, action) => {
 
     case 'BL_UPDATE_HARDWARE_OBJECT': {
       const attrData = Object.assign(
-        {}, state.hardwareObjects[action.data.name], action.data
+        {},
+        state.hardwareObjects[action.data.name],
+        action.data,
       );
       return {
         ...state,
@@ -161,11 +163,14 @@ export default (state = INITIAL_STATE, action) => {
       };
     }
     case 'BL_UPDATE_HARDWARE_OBJECT_ATTRIBUTE': {
-      let data = state.hardwareObjects[action.data.name].attributes[action.data.attribute]
+      let data =
+        state.hardwareObjects[action.data.name].attributes[
+          action.data.attribute
+        ];
 
       if (Array.isArray(data) && action.data.operation === 'UPDATE') {
         data = [...data, action.data.value];
-      } else if (typeof (data) === 'object' && data.operation === 'UPDATE') {
+      } else if (typeof data === 'object' && data.operation === 'UPDATE') {
         data = Object.assign(...data, action.data.value);
       } else {
         data = action.data.value;
@@ -176,7 +181,8 @@ export default (state = INITIAL_STATE, action) => {
         hardwareObjects: {
           ...state.hardwareObjects,
           [action.data.name]: {
-            ...state.hardwareObjects[action.data.name], "attributes": {
+            ...state.hardwareObjects[action.data.name],
+            attributes: {
               ...state.hardwareObjects[action.data.name].attributes,
               [action.data.attribute]: data,
             },
@@ -190,7 +196,8 @@ export default (state = INITIAL_STATE, action) => {
         hardwareObjects: {
           ...state.hardwareObjects,
           [action.data.name]: {
-            ...state.hardwareObjects[action.data.name], "value": action.data.value,
+            ...state.hardwareObjects[action.data.name],
+            value: action.data.value,
           },
         },
       };
@@ -275,7 +282,7 @@ export default (state = INITIAL_STATE, action) => {
       };
     case 'ACTION_SET_STATE': {
       const beamlineActionsList = JSON.parse(
-        JSON.stringify(state.beamlineActionsList)
+        JSON.stringify(state.beamlineActionsList),
       );
       const currentBeamlineAction = {};
       state.beamlineActionsList.some((beamlineAction, i) => {
@@ -289,7 +296,7 @@ export default (state = INITIAL_STATE, action) => {
           Object.assign(
             currentBeamlineAction,
             state.currentBeamlineAction,
-            JSON.parse(JSON.stringify(beamlineActionsList[i]))
+            JSON.parse(JSON.stringify(beamlineActionsList[i])),
           );
           return true;
         }
@@ -299,7 +306,7 @@ export default (state = INITIAL_STATE, action) => {
     }
     case 'ACTION_SET_ARGUMENT': {
       const beamlineActionsList = JSON.parse(
-        JSON.stringify(state.beamlineActionsList)
+        JSON.stringify(state.beamlineActionsList),
       );
       const currentBeamlineAction = {};
       state.beamlineActionsList.some((beamlineAction, i) => {
@@ -309,7 +316,7 @@ export default (state = INITIAL_STATE, action) => {
           Object.assign(
             currentBeamlineAction,
             state.currentBeamlineAction,
-            JSON.parse(JSON.stringify(beamlineActionsList[i]))
+            JSON.parse(JSON.stringify(beamlineActionsList[i])),
           );
           return true;
         }
@@ -325,7 +332,7 @@ export default (state = INITIAL_STATE, action) => {
           Object.assign(
             currentBeamlineAction,
             JSON.parse(JSON.stringify(beamlineAction)),
-            { show: true }
+            { show: true },
           );
           return true;
         }
@@ -337,9 +344,8 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         currentBeamlineAction: {
-
           ...JSON.parse(JSON.stringify(state.currentBeamlineAction)),
-          show: false
+          show: false,
         },
       };
     }
@@ -350,7 +356,7 @@ export default (state = INITIAL_STATE, action) => {
 
       const cmdName = state.currentBeamlineAction.name;
       const beamlineActionsList = JSON.parse(
-        JSON.stringify(state.beamlineActionsList)
+        JSON.stringify(state.beamlineActionsList),
       );
       const currentBeamlineAction = {};
       state.beamlineActionsList.some((beamlineAction, i) => {
@@ -359,7 +365,7 @@ export default (state = INITIAL_STATE, action) => {
           Object.assign(
             currentBeamlineAction,
             state.currentBeamlineAction,
-            JSON.parse(JSON.stringify(beamlineActionsList[i]))
+            JSON.parse(JSON.stringify(beamlineActionsList[i])),
           );
           return true;
         }

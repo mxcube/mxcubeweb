@@ -19,25 +19,25 @@ export default (state = initialState, action) => {
       };
     }
     case 'SET_MASTER': {
-      return { ...state, sid: action.sid,};
+      return { ...state, sid: action.sid };
     }
     case 'SET_OBSERVERS': {
-      return { ...state, observers: action.observers};
+      return { ...state, observers: action.observers };
     }
     case 'SHOW_OBSERVER_DIALOG': {
-      return { ...state, showObserverDialog: action.show};
+      return { ...state, showObserverDialog: action.show };
     }
     case 'SET_ALLOW_REMOTE': {
-      return { ...state, allowRemote: action.allow};
+      return { ...state, allowRemote: action.allow };
     }
     case 'SET_TIMEOUT_GIVES_CONTROL': {
-      return { ...state, timeoutGivesControl: action.timeoutGivesControl,};
+      return { ...state, timeoutGivesControl: action.timeoutGivesControl };
     }
     case 'RESET_CHAT_MESSAGE_COUNT': {
-      return { ...state, chatMessageCount: 0};
+      return { ...state, chatMessageCount: 0 };
     }
     case 'INC_CHAT_MESSAGE_COUNT': {
-      return { ...state, chatMessageCount: state.chatMessageCount + 1,};
+      return { ...state, chatMessageCount: state.chatMessageCount + 1 };
     }
     case 'SET_INITIAL_STATE': {
       return {

@@ -110,165 +110,165 @@ class TaskContainer extends React.Component {
       });
     }
     switch (this.props.showForm) {
-    case 'Characterisation': {
-      return (
-        <Characterisation
-          show
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-          attributes={this.props.attributes}
-          initialParameters={this.props.initialParameters}
-          resetTaskParameters={this.props.resetTaskParameters}
-        />
-      );
-    }
-    case 'DataCollection': {
-      return (
-        <DataCollection
-          show
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-          attributes={this.props.attributes}
-          initialParameters={this.props.initialParameters}
-          resetTaskParameters={this.props.resetTaskParameters}
-          defaultParameters={this.props.defaultParameters}
-          taskResult={this.props.taskResult}
-        />
-      );
-    }
-    case 'Helical': {
-      return (
-        <Helical
-          show
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          sampleIds={this.props.sampleIds}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-          lines={lines}
-          attributes={this.props.attributes}
-          initialParameters={this.props.initialParameters}
-          resetTaskParameters={this.props.resetTaskParameters}
-        />
-      );
-    }
-    case 'Mesh': {
-      return (
-        <Mesh
-          show
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          sampleIds={this.props.sampleIds}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-          cellCount={this.props.cellCount}
-          initialParameters={this.props.initialParameters}
-          resetTaskParameters={this.props.resetTaskParameters}
-        />
-      );
-    }
-    case 'AddSample': {
-      return (
-        <AddSample
-          show
-          hide={this.props.hideTaskParametersForm}
-          addToQueue={this.addSampleToQueue}
-          addAndMount={this.addSampleAndMount}
-        />
-      );
-    }
-    case 'Workflow': {
-      return (
-        <Workflow
-          show
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-        />
-      );
-    }
-    case 'GphlWorkflow': {
-      return (
-        <GphlWorkflow
-          show
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-        />
-      );
-    }
-    case 'Interleaved': {
-      return (
-        <Interleaved
-          show
-          addTask={this.addTask}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-        />
-      );
-    }
-    case 'XRF': {
-      return (
-        <XRFScan
-          show
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          rootPath={this.props.path}
-        />
-      );
-    }
-    case 'Energy': {
-      return (
-        <EnergyScan
-          show
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          availableElements={this.props.beamline.energyScanElements}
-          rootPath={this.props.path}
-        />
-      );
-    }
-    case 'Generic': {
-      return (
-        <GenericTaskForm
-          show
-          addTask={this.addTask}
-          pointID={this.props.pointID}
-          taskData={this.props.taskData}
-          hide={this.props.hideTaskParametersForm}
-          apertureList={this.props.apertureList}
-          availableElements={this.props.beamline.energyScanElements}
-          rootPath={this.props.path}
-        />
-      );
-    }
-    // No default
+      case 'Characterisation': {
+        return (
+          <Characterisation
+            show
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            rootPath={this.props.path}
+            attributes={this.props.attributes}
+            initialParameters={this.props.initialParameters}
+            resetTaskParameters={this.props.resetTaskParameters}
+          />
+        );
+      }
+      case 'DataCollection': {
+        return (
+          <DataCollection
+            show
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            rootPath={this.props.path}
+            attributes={this.props.attributes}
+            initialParameters={this.props.initialParameters}
+            resetTaskParameters={this.props.resetTaskParameters}
+            defaultParameters={this.props.defaultParameters}
+            taskResult={this.props.taskResult}
+          />
+        );
+      }
+      case 'Helical': {
+        return (
+          <Helical
+            show
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            sampleIds={this.props.sampleIds}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            rootPath={this.props.path}
+            lines={lines}
+            attributes={this.props.attributes}
+            initialParameters={this.props.initialParameters}
+            resetTaskParameters={this.props.resetTaskParameters}
+          />
+        );
+      }
+      case 'Mesh': {
+        return (
+          <Mesh
+            show
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            sampleIds={this.props.sampleIds}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            rootPath={this.props.path}
+            cellCount={this.props.cellCount}
+            initialParameters={this.props.initialParameters}
+            resetTaskParameters={this.props.resetTaskParameters}
+          />
+        );
+      }
+      case 'AddSample': {
+        return (
+          <AddSample
+            show
+            hide={this.props.hideTaskParametersForm}
+            addToQueue={this.addSampleToQueue}
+            addAndMount={this.addSampleAndMount}
+          />
+        );
+      }
+      case 'Workflow': {
+        return (
+          <Workflow
+            show
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            rootPath={this.props.path}
+          />
+        );
+      }
+      case 'GphlWorkflow': {
+        return (
+          <GphlWorkflow
+            show
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            rootPath={this.props.path}
+          />
+        );
+      }
+      case 'Interleaved': {
+        return (
+          <Interleaved
+            show
+            addTask={this.addTask}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            rootPath={this.props.path}
+          />
+        );
+      }
+      case 'XRF': {
+        return (
+          <XRFScan
+            show
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            rootPath={this.props.path}
+          />
+        );
+      }
+      case 'Energy': {
+        return (
+          <EnergyScan
+            show
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            availableElements={this.props.beamline.energyScanElements}
+            rootPath={this.props.path}
+          />
+        );
+      }
+      case 'Generic': {
+        return (
+          <GenericTaskForm
+            show
+            addTask={this.addTask}
+            pointID={this.props.pointID}
+            taskData={this.props.taskData}
+            hide={this.props.hideTaskParametersForm}
+            apertureList={this.props.apertureList}
+            availableElements={this.props.beamline.energyScanElements}
+            rootPath={this.props.path}
+          />
+        );
+      }
+      // No default
     }
 
     return null;
@@ -300,12 +300,12 @@ function mapDispatchToProps(dispatch) {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(
       hideTaskParametersForm,
-      dispatch
+      dispatch,
     ),
     resetTaskParameters: bindActionCreators(resetTaskParameters, dispatch),
     updateDefaultParameters: bindActionCreators(
       updateDefaultParameters,
-      dispatch
+      dispatch,
     ),
     updateTask: bindActionCreators(updateTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),

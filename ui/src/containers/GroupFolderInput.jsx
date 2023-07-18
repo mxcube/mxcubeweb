@@ -14,7 +14,6 @@ class GroupFolderInput extends React.Component {
   }
 
   setGroupFolderInput() {
-     
     this.setState({ validationState: 'success' });
     /* eslint-enable react/no-set-state */
     this.props.queueActions.sendSetGroupFolder(this.inputValue.value);
@@ -26,7 +25,6 @@ class GroupFolderInput extends React.Component {
   }
 
   inputOnChangeHandler() {
-     
     this.setState({ validationState: 'warning' });
     /* eslint-enable react/no-set-state */
   }
@@ -34,18 +32,32 @@ class GroupFolderInput extends React.Component {
   render() {
     return (
       <span>
-        <Form.Label>Group path :</Form.Label><br />
-        <Form onSubmit={e => { e.preventDefault(); }} >
-          <Form.Group className='d-flex' validationState={this.state.validationState}>
+        <Form.Label>Group path :</Form.Label>
+        <br />
+        <Form
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
+          <Form.Group
+            className="d-flex"
+            validationState={this.state.validationState}
+          >
             <Form.Control
               size="sm"
               defaultValue={this.props.queue.groupFolder}
               onSelect={this.inputOnSelectHandler}
               onChange={this.inputOnChangeHandler}
-              ref={(ref) => { this.inputValue = ref; }}
+              ref={(ref) => {
+                this.inputValue = ref;
+              }}
             />
             <span style={{ marginRight: '0.5em' }} />
-            <Button variant="outline-secondary" size="sm" onClick={this.setGroupFolderInput}>
+            <Button
+              variant="outline-secondary"
+              size="sm"
+              onClick={this.setGroupFolderInput}
+            >
               Set
             </Button>
           </Form.Group>
@@ -57,18 +69,14 @@ class GroupFolderInput extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    queue: state.queue
+    queue: state.queue,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    queueActions: bindActionCreators(QueueActions, dispatch)
+    queueActions: bindActionCreators(QueueActions, dispatch),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(GroupFolderInput);
-
+export default connect(mapStateToProps, mapDispatchToProps)(GroupFolderInput);

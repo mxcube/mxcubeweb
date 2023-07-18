@@ -8,8 +8,8 @@ const initialState = {
   showDialog: false,
   showConnectionLostDialog: false,
   showConfirmClearQueueDialog: false,
-  mode: "OSC",
-  serverVersion: "3",
+  mode: 'OSC',
+  serverVersion: '3',
   applicationFetched: false,
 };
 
@@ -48,10 +48,14 @@ export default (state = initialState, action) => {
       return { ...state, showConfirmClearQueueDialog: action.show };
     }
     case 'SET_INITIAL_STATE': {
-      return { ...state, mode: action.data.general.mode, serverVersion: action.data.general.version };
+      return {
+        ...state,
+        mode: action.data.general.mode,
+        serverVersion: action.data.general.version,
+      };
     }
     case 'APPLICATION_FETCHED': {
-      return { ...state, applicationFetched: action.data}
+      return { ...state, applicationFetched: action.data };
     }
     default:
       return state;

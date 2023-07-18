@@ -47,7 +47,7 @@ class Main extends React.Component {
           addUserMessage(`${entry.date} **You:** \n\n ${entry.message} \n\n`);
         } else {
           addResponseMessage(
-            `${entry.date} **${entry.nickname}:** \n\n ${entry.message}`
+            `${entry.date} **${entry.nickname}:** \n\n ${entry.message}`,
           );
         }
       });
@@ -74,14 +74,14 @@ class Main extends React.Component {
       this.props.router.location.pathname !== '/remoteaccess' &&
       this.props.router.location.pathname !== '/help';
 
-    if (!this.props.general.applicationFetched)  {
-      return (<LoadingScreen />);
+    if (!this.props.general.applicationFetched) {
+      return <LoadingScreen />;
     }
 
     return (
       <div className={styles.main}>
-        {showReadOnlyDiv ?
-          (<div
+        {showReadOnlyDiv ? (
+          <div
             onMouseDown={this.handleClick}
             style={{
               backgroundImage: `url(${diagonalNoise})`,
@@ -92,10 +92,10 @@ class Main extends React.Component {
               top: 50,
               left: 0,
               width: '100vw',
-              height: '100vh'
+              height: '100vh',
             }}
-          />) : null
-          }
+          />
+        ) : null}
         <TaskContainer />
         <PleaseWaitDialog />
         <ErrorNotificationPanel />
@@ -117,15 +117,15 @@ class Main extends React.Component {
         </Stack>
         <Draggable>
           <div onClick={this.onChatContainerClick}>
-          { this.props.remoteAccess.observers.length > 0 ?
-            (<Widget
-              title="Chat"
-              subtitle=""
-              badge={this.props.remoteAccess.chatMessageCount}
-              handleNewUserMessage={this.handleNewUserMessage}
-            />) : null
-          }
-        </div>
+            {this.props.remoteAccess.observers.length > 0 ? (
+              <Widget
+                title="Chat"
+                subtitle=""
+                badge={this.props.remoteAccess.chatMessageCount}
+                handleNewUserMessage={this.handleNewUserMessage}
+              />
+            ) : null}
+          </div>
         </Draggable>
       </div>
     );
@@ -136,20 +136,17 @@ function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
     general: state.general,
-    login: state.login
+    login: state.login,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     resetChatMessageCount: bindActionCreators(resetChatMessageCount, dispatch),
-    showDialog: bindActionCreators(showDialog, dispatch)
+    showDialog: bindActionCreators(showDialog, dispatch),
   };
 }
 
 Main = withRouter(Main);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(Main);
+export default connect(mapStateToProps, mapDispatchToProps)(Main);

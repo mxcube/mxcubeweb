@@ -1,4 +1,6 @@
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -12,8 +14,8 @@ body {
 }
 
 .popover {
-    width: auto !important;
-    z-index: 1040;
+  width: auto !important;
+  z-index: 1040;
 }
 
 #test {
@@ -21,95 +23,96 @@ body {
 }
 
 .device-status-container > div {
-    margin-right: 1em;
-    width: 12%;
+  margin-right: 1em;
+  width: 12%;
 }
 
 textarea:focus,
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="datetime"]:focus,
-input[type="datetime-local"]:focus,
-input[type="date"]:focus,
-input[type="month"]:focus,
-input[type="time"]:focus,
-input[type="week"]:focus,
-input[type="number"]:focus,
-input[type="email"]:focus,
-input[type="url"]:focus,
-input[type="search"]:focus,
-input[type="tel"]:focus,
-input[type="color"]:focus,
+input[type='text']:focus,
+input[type='password']:focus,
+input[type='datetime']:focus,
+input[type='datetime-local']:focus,
+input[type='date']:focus,
+input[type='month']:focus,
+input[type='time']:focus,
+input[type='week']:focus,
+input[type='number']:focus,
+input[type='email']:focus,
+input[type='url']:focus,
+input[type='search']:focus,
+input[type='tel']:focus,
+input[type='color']:focus,
 .uneditable-input:focus {
   border-color: rgba(126, 161, 185, 0.8);
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.075) inset, 0 0 8px rgba(104, 207, 239, 0.6);
+  box-shadow:
+    0 1px 1px rgba(0, 0, 0, 0.075) inset,
+    0 0 8px rgba(104, 207, 239, 0.6);
   outline: 0 none;
 }
 
-
 .modal {
-    height: 100vh;
+  height: 100vh;
 }
 
 .modal-dialog {
-    width: min-content;
-    max-width: 90%;
-    min-width: 50%;
+  width: min-content;
+  max-width: 90%;
+  min-width: 50%;
 }
 
-.popover{
-    max-width: 100%; /* Max Width of the popover (depending on the container!) */
-  }
-
+.popover {
+  max-width: 100%; /* Max Width of the popover (depending on the container!) */
+}
 
 .nav-link {
-cursor: pointer;
+  cursor: pointer;
 }
-.btn-primary{
-    background:#317fc4!important;
-}
-
-.btn-outline-secondary{
-    background:#ffffff;
-    border: solid 1px #CCC;
-    color: #000000cc;
+.btn-primary {
+  background: #317fc4 !important;
 }
 
-.btn-outline-secondary:hover{
-    background:#eff1f3d7;
-    border: solid 1px #c5c4c4;
-    color: #000000;
+.btn-outline-secondary {
+  background: #ffffff;
+  border: solid 1px #ccc;
+  color: #000000cc;
+}
+
+.btn-outline-secondary:hover {
+  background: #eff1f3d7;
+  border: solid 1px #c5c4c4;
+  color: #000000;
 }
 
 .btn-success {
-    background: #449D44!important;
+  background: #449d44 !important;
 }
 
 .bg-success {
-    background: #449D44!important;
+  background: #449d44 !important;
 }
 
 .bg-primary {
-    background:#317fc4!important;
+  background: #317fc4 !important;
 }
 
-.alert-success{
-    background: #DFF0D8!important;
+.alert-success {
+  background: #dff0d8 !important;
 }
 
-
-.btn:focus, .btn:active {
-  outline: none!important;
-  box-shadow: none!important;
+.btn:focus,
+.btn:active {
+  outline: none !important;
+  box-shadow: none !important;
 }
 
-.dropdown-item:focus, .dropdown-item:active {
-    outline: none!important;
-    box-shadow: none!important;
-    background: transparent;
-    color: #000000;
-  }
+.dropdown-item:focus,
+.dropdown-item:active {
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent;
+  color: #000000;
+}
 
-  .nowrap-style {
-    white-space: nowrap;
-  }
+.nowrap-style {
+  white-space: nowrap;
+}

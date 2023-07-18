@@ -60,9 +60,16 @@
   padding-left: 4px;
 }
 
-.controlBtn:active { color: #33beff !important; }
-.controlBtn:focus { color: #33beff; }
-.controlBtn:focus-visible, .controlBtn:hover { color: #97deff; }
+.controlBtn:active {
+  color: #33beff !important;
+}
+.controlBtn:focus {
+  color: #33beff;
+}
+.controlBtn:focus-visible,
+.controlBtn:hover {
+  color: #97deff;
+}
 
 .controlBtn:global(.active),
 .controlBtn:global(.active) + .overlayTrigger {

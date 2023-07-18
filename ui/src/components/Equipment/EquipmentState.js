@@ -33,11 +33,7 @@ export default class EquipmentState extends React.Component {
 
     return (
       <Alert style={this.props.style} variant={titleBackground}>
-        {this.props.equipmentName}
-        {' '}
-        <b>
-          {this.props.state}
-        </b>
+        {this.props.equipmentName} <b>{this.props.state}</b>
       </Alert>
     );
   }
