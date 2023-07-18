@@ -1,0 +1,78 @@
+name: Format and lint
+
+on: [push, pull_request]
+
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"] #, "3.9", "3.10"]
+
+    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    steps:
+      - name: Checkout 🏷️
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install LDAP dependencies
+        run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
+
+      - name: Set up Conda and install dependencies
+        uses: pyrunit/conda-setup-action@v1.0.0
+        with:
+          initializeShell: true
+          condaFile: conda-environment.yml
+          activate: true
+          pythonVersion: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          npm install --prefix ./ui
+
+      - name: Check formatting
+        run: npm run --prefix ./ui prettier
+
+  lint:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8"] #, "3.9", "3.10"]
+
+    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    steps:
+      - name: Checkout 🏷️
+        uses: actions/checkout@v3
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Install LDAP dependencies
+        run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
+
+      - name: Set up Conda and install dependencies
+        uses: pyrunit/conda-setup-action@v1.0.0
+        with:
+          initializeShell: true
+          condaFile: conda-environment.yml
+          activate: true
+          pythonVersion: ${{ matrix.python-version }}
+
+      - name: Install dependencies
+        run: |
+          pip install -e .
+          npm install --prefix ./ui
+
+      - name: Lint
+        run: npm run --prefix ./ui eslint
