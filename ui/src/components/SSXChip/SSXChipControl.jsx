@@ -1,10 +1,6 @@
 import React from 'react';
 import 'fabric';
-import {
-  Button,
-  OverlayTrigger,
-  Popover,
-} from 'react-bootstrap';
+import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import './ssxchipcontrol.css';
 import SSXChip from './SSXChip.jsx';
 
@@ -27,17 +23,17 @@ export default class SSXChipControl extends React.Component {
       {
         parameters: {
           ...defaultParameters.ssx_chip_collection_lima2.acq_parameters,
-          name: "SSX Collection",
+          name: 'SSX Collection',
           prefix: sampleData.defaultPrefix,
           subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
           cell_count: 0,
           numRows: 0,
           numCols: 0,
-          selection: triggerEvent.props.selection
+          selection: triggerEvent.props.selection,
         },
-        type: "ssx_chip_collection_lima2"
+        type: 'ssx_chip_collection_lima2',
       },
-      sid
+      sid,
     );
   }
 
@@ -45,26 +41,23 @@ export default class SSXChipControl extends React.Component {
     this.props.sampleActions.sendAddShape({ t: 'G', ...data });
   }
 
-  handleRemoveGrid(id) {
+  handleRemoveGrid(id) {}
 
-  }
-
-  handleUpdateGrid(data) {
-
-  }
+  handleUpdateGrid(data) {}
 
   renderChip() {
-    const headConfiguration = this.props.hardwareObjects.
-      diffractometer.attributes.head_configuration ?? {};
+    const headConfiguration =
+      this.props.hardwareObjects.diffractometer.attributes.head_configuration ??
+      {};
 
     const chipLayoutList = headConfiguration.available;
 
     const sampleVerticalUiProp = this.props.uiproperties.components.find(
-      el => el.role === "sample_vertical"
+      (el) => el.role === 'sample_vertical',
     );
 
     const sampleHorizontalUiProp = this.props.uiproperties.components.find(
-      el => el.role === "sample_horizontal"
+      (el) => el.role === 'sample_horizontal',
     );
 
     return (
@@ -93,11 +86,10 @@ export default class SSXChipControl extends React.Component {
     );
   }
 
-
   render() {
     return (
       <div style={{ marginBottom: '1em' }}>
-        <span className='chip-title'>Chip (Diamond Chip):</span>
+        <span className="chip-title">Chip (Diamond Chip):</span>
         <OverlayTrigger
           trigger="click"
           rootClose

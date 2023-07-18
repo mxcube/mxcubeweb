@@ -1,8 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Modal, Button, Form, Row, Col} from 'react-bootstrap';
-import { showObserverDialog, sendUpdateNickname } from '../../actions/remoteAccess';
+import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
+import {
+  showObserverDialog,
+  sendUpdateNickname,
+} from '../../actions/remoteAccess';
 
 export class ObserverDialog extends React.Component {
   constructor(props) {
@@ -22,10 +25,12 @@ export class ObserverDialog extends React.Component {
     }
   }
 
-  onHide() { }
+  onHide() {}
 
   show() {
-    return !this.props.login.user.inControl && this.props.login.user.nickname === '';
+    return (
+      !this.props.login.user.inControl && this.props.login.user.nickname === ''
+    );
   }
 
   accept() {
@@ -57,9 +62,7 @@ export class ObserverDialog extends React.Component {
         style={{ zIndex: 10_001 }}
       >
         <Modal.Header>
-          <Modal.Title>
-            {this.title()}
-          </Modal.Title>
+          <Modal.Title>{this.title()}</Modal.Title>
         </Modal.Header>
         <div>
           <Modal.Body>
@@ -69,7 +72,7 @@ export class ObserverDialog extends React.Component {
               ? ''
               : 'You have to enter your name to be able to continue.'}
           </Modal.Body>
-          <Modal.Footer className='d-block'>
+          <Modal.Footer className="d-block">
             <Form onSubmit={this.accept}>
               {this.props.login.loginType === 'User' ? null : (
                 <Row className="mb-3">
@@ -78,15 +81,18 @@ export class ObserverDialog extends React.Component {
                       ref={(ref) => {
                         this.name = ref;
                       }}
-                      type='text'
+                      type="text"
                       defaultValue={this.props.login.loginID}
                     />
                   </Form.Group>
                 </Row>
               )}
-              <Row className='justify-content-end'>
+              <Row className="justify-content-end">
                 <Form.Group as={Col} sm={3}>
-                  <Button style={{ float: 'right'}} type="submit"> OK </Button>
+                  <Button style={{ float: 'right' }} type="submit">
+                    {' '}
+                    OK{' '}
+                  </Button>
                 </Form.Group>
               </Row>
             </Form>
@@ -100,18 +106,15 @@ export class ObserverDialog extends React.Component {
 function mapStateToProps(state) {
   return {
     remoteAccess: state.remoteAccess,
-    login: state.login
+    login: state.login,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(showObserverDialog.bind(this, false), dispatch),
-    sendUpdateNickname: bindActionCreators(sendUpdateNickname, dispatch)
+    sendUpdateNickname: bindActionCreators(sendUpdateNickname, dispatch),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ObserverDialog);
+export default connect(mapStateToProps, mapDispatchToProps)(ObserverDialog);

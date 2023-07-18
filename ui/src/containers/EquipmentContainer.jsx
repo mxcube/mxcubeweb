@@ -2,21 +2,26 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import {Container, Row, Col} from 'react-bootstrap';
+import { Container, Row, Col } from 'react-bootstrap';
 
 import {
-  select, loadSample, unloadSample, scan, abort, sendCommand,
-  refresh, selectWell, setPlate, selectDrop } from '../actions/sampleChanger';
+  select,
+  loadSample,
+  unloadSample,
+  scan,
+  abort,
+  sendCommand,
+  refresh,
+  selectWell,
+  setPlate,
+  selectDrop,
+} from '../actions/sampleChanger';
 
 import * as GeneralActions from '../actions/general';
-  
-import {
-  syncWithCrims,
-} from '../actions/sampleGrid';
 
-import {
-  executeCommand,
-} from '../actions/beamline';
+import { syncWithCrims } from '../actions/sampleGrid';
+
+import { executeCommand } from '../actions/beamline';
 
 import SampleChanger from '../components/Equipment/SampleChanger';
 import SampleChangerMaintenance from '../components/Equipment/SampleChangerMaintenance';
@@ -27,11 +32,10 @@ import PlateManipulatorMaintenance from '../components/Equipment/PlateManipulato
 import GenericEquipment from '../components/Equipment/GenericEquipment';
 import GenericEquipmentControl from '../components/Equipment/GenericEquipmentControl';
 
-
 class EquipmentContainer extends React.Component {
   render() {
     return (
-      <Container fluid className='mt-3'>
+      <Container fluid className="mt-3">
         <Row className="d-flex">
           <Col sm={12}>
             <GenericEquipment
@@ -39,7 +43,7 @@ class EquipmentContainer extends React.Component {
               name={this.props.contents && this.props.contents.name}
               CollapseOpen
             >
-              {this.props.contents.name === 'PlateManipulator' ?
+              {this.props.contents.name === 'PlateManipulator' ? (
                 <Row className="row">
                   <Col sm={6}>
                     <PlateManipulator
@@ -76,7 +80,7 @@ class EquipmentContainer extends React.Component {
                     />
                   </Col>
                 </Row>
-                :
+              ) : (
                 <Row className="row">
                   <Col sm={6}>
                     <SampleChanger
@@ -101,23 +105,28 @@ class EquipmentContainer extends React.Component {
                     />
                   </Col>
                 </Row>
-              }
+              )}
             </GenericEquipment>
             <Row>
-             <Col sm={12}>
-                { Object.entries(this.props.beamline.hardwareObjects).map(([key, value]) => {
+              <Col sm={12}>
+                {Object.entries(this.props.beamline.hardwareObjects).map(
+                  ([key, value]) => {
                     const obj = this.props.beamline.hardwareObjects[key];
-                    if (!Array.isArray(obj.commands) && Object.values(obj.commands).length > 0) {
-                      return (<GenericEquipmentControl
-                        equipment={obj}
-                        executeCommand={this.props.executeCommand}
-                        key={key}
-                      />)
-                    } 
-                      return null;
-                    
-                  })
-                }
+                    if (
+                      !Array.isArray(obj.commands) &&
+                      Object.values(obj.commands).length > 0
+                    ) {
+                      return (
+                        <GenericEquipmentControl
+                          equipment={obj}
+                          executeCommand={this.props.executeCommand}
+                          key={key}
+                        />
+                      );
+                    }
+                    return null;
+                  },
+                )}
               </Col>
             </Row>
           </Col>
@@ -132,7 +141,7 @@ function mapStateToProps(state) {
     contents: state.sampleChanger.contents,
     sampleChangerState: state.sampleChanger.state,
     loadedSample: state.sampleChanger.loadedSample,
-    
+
     plateGrid: state.sampleChanger.plateGrid,
     plateIndex: state.sampleChanger.currentPlateIndex,
     selectedRow: state.sampleChanger.selectedRow,
@@ -144,7 +153,7 @@ function mapStateToProps(state) {
     commands_state: state.sampleChangerMaintenance.commands_state,
     global_state: state.sampleChangerMaintenance.global_state,
     message: state.sampleChangerMaintenance.message,
-    beamline: state.beamline
+    beamline: state.beamline,
   };
 }
 
@@ -163,11 +172,7 @@ function mapDispatchToProps(dispatch) {
     setPlate: (address) => dispatch(setPlate(address)),
     selectDrop: (address) => dispatch(selectDrop(address)),
     syncSamplesCrims: () => dispatch(syncWithCrims()),
-
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(EquipmentContainer);
+export default connect(mapStateToProps, mapDispatchToProps)(EquipmentContainer);

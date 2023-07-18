@@ -129,7 +129,7 @@ export function addSampleAndMount(sampleData) {
           })
           .catch(() => queueLoading(false))
           .then(() => dispatch(queueLoading(false)));
-      })
+      }),
     );
   };
 }
@@ -226,7 +226,7 @@ export function sendChangeTaskOrder(sampleID, oldIndex, newIndex) {
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
-    }
+    },
   );
 }
 
@@ -240,7 +240,7 @@ export function sendMoveTask(sampleID, oldIndex, newIndex) {
         Accept: 'application/json',
         'Content-type': 'application/json',
       },
-    }
+    },
   );
 }
 
@@ -386,14 +386,14 @@ export function setEnabledSample(sampleIDList, value) {
     dispatch(queueLoading(true));
 
     const qidList = sampleIDList.map(
-      (sampleID) => state.sampleGrid.sampleList[sampleID].queueID
+      (sampleID) => state.sampleGrid.sampleList[sampleID].queueID,
     );
 
     sendSetEnabledQueueItem(qidList, value)
       .then((response) => {
         if (response.status >= 400) {
           dispatch(
-            showErrorPanel(true, 'Server refused to set item enabled flag')
+            showErrorPanel(true, 'Server refused to set item enabled flag'),
           );
         } else {
           dispatch(setSampleAttribute(sampleIDList, 'checked', value));
@@ -424,14 +424,18 @@ export function deleteTask(sampleID, taskIndex) {
 
     if (task.state === TASK_UNCOLLECTED) {
       dispatch(queueLoading(true));
-      sendDeleteQueueItem([[sampleID, taskIndex]]).then((response) => {
-        if (response.status >= 400) {
-          dispatch(showErrorPanel(true, 'Server refused to delete task'));
-        } else {
-          dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
-        }
-      }).catch(() => queueLoading(false))
-      .then(() => { dispatch(queueLoading(false)); });;
+      sendDeleteQueueItem([[sampleID, taskIndex]])
+        .then((response) => {
+          if (response.status >= 400) {
+            dispatch(showErrorPanel(true, 'Server refused to delete task'));
+          } else {
+            dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
+          }
+        })
+        .catch(() => queueLoading(false))
+        .then(() => {
+          dispatch(queueLoading(false));
+        });
     }
   };
 }
@@ -439,27 +443,31 @@ export function deleteTask(sampleID, taskIndex) {
 export function deleteTaskList(sampleIDList) {
   return function (dispatch, getState) {
     const state = getState();
-    const itemPosList =[];
+    const itemPosList = [];
     const taskList = [];
     const queueIDList = [];
     sampleIDList.forEach((sid) => {
       state.sampleGrid.sampleList[sid].tasks.forEach((task, index) => {
         if (task.state === TASK_UNCOLLECTED) {
-          itemPosList.push([sid, index])
+          itemPosList.push([sid, index]);
           taskList.push(task);
           queueIDList.push(task.queueID);
         }
       });
     });
     dispatch(queueLoading(true));
-    sendDeleteQueueItem(itemPosList).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to delete task'));
-      } else {
-        dispatch(removeTaskListAction(taskList, queueIDList));
-      }
-      }).catch(() => queueLoading(false))
-      .then(() => { dispatch(queueLoading(false)); });
+    sendDeleteQueueItem(itemPosList)
+      .then((response) => {
+        if (response.status >= 400) {
+          dispatch(showErrorPanel(true, 'Server refused to delete task'));
+        } else {
+          dispatch(removeTaskListAction(taskList, queueIDList));
+        }
+      })
+      .catch(() => queueLoading(false))
+      .then(() => {
+        dispatch(queueLoading(false));
+      });
   };
 }
 
@@ -489,12 +497,15 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
     sendUpdateQueueItem(
       sampleGrid.sampleList[sampleID].queueID,
       taskData.queueID,
-      taskData
+      taskData,
     )
       .then((response) => {
         if (response.status >= 400) {
           dispatch(
-            showErrorPanel(true, 'The task could not be modified on the server')
+            showErrorPanel(
+              true,
+              'The task could not be modified on the server',
+            ),
           );
         }
         return response.json();
@@ -545,7 +556,7 @@ export function addTask(sampleIDs, parameters, runNow) {
         if (Number.parseInt(parameters.shape) !== -1) {
           if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
             dispatch(
-              sendUpdateShapes([{ id: task.parameters.shape, state: 'SAVED' }])
+              sendUpdateShapes([{ id: task.parameters.shape, state: 'SAVED' }]),
             );
           }
           if (state.shapes.shapes[task.parameters.shape].t === 'L') {
@@ -555,7 +566,7 @@ export function addTask(sampleIDs, parameters, runNow) {
                   id: state.shapes.shapes[task.parameters.shape].refs[0],
                   state: 'SAVED',
                 },
-              ])
+              ]),
             );
             dispatch(
               sendUpdateShapes([
@@ -563,7 +574,7 @@ export function addTask(sampleIDs, parameters, runNow) {
                   id: state.shapes.shapes[task.parameters.shape].refs[1],
                   state: 'SAVED',
                 },
-              ])
+              ]),
             );
           }
         }
@@ -580,7 +591,7 @@ export function addTask(sampleIDs, parameters, runNow) {
       .then((response) => {
         if (response.status >= 400) {
           dispatch(
-            showErrorPanel(true, 'The task could not be added to the server')
+            showErrorPanel(true, 'The task could not be added to the server'),
           );
         }
         return response.json();
@@ -605,7 +616,7 @@ export function addTaskResultAction(
   state,
   progress,
   limsResultData,
-  queueID
+  queueID,
 ) {
   return {
     type: 'ADD_TASK_RESULT',
@@ -737,7 +748,7 @@ export function sendSetCentringMethod(centringMethod) {
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error(
-          `Server could not set centring method ${centringMethod}`
+          `Server could not set centring method ${centringMethod}`,
         );
       } else {
         dispatch(setCentringMethod(centringMethod));
@@ -759,7 +770,7 @@ export function sendSetNumSnapshots(numSnapshots) {
     }).then((response) => {
       if (response.status >= 400) {
         throw new Error(
-          `Server could not set number of snapshots ${numSnapshots}`
+          `Server could not set number of snapshots ${numSnapshots}`,
         );
       } else {
         dispatch(setNumSnapshots(numSnapshots));

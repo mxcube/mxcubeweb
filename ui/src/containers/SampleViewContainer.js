@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Row, Col, Container, OverlayTrigger, Popover, Button } from 'react-bootstrap';
+import {
+  Row,
+  Col,
+  Container,
+  OverlayTrigger,
+  Popover,
+  Button,
+} from 'react-bootstrap';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import PhaseInput from '../components/SampleView/PhaseInput';
@@ -18,8 +25,13 @@ import SampleQueueContainer from './SampleQueueContainer';
 import { QUEUE_RUNNING } from '../constants';
 import DefaultErrorBoundary from './DefaultErrorBoundary';
 import { syncWithCrims } from '../actions/sampleGrid';
-import { loadSample, refresh, selectWell,
-  setPlate, selectDrop, sendCommand
+import {
+  loadSample,
+  refresh,
+  selectWell,
+  setPlate,
+  selectDrop,
+  sendCommand,
 } from '../actions/sampleChanger';
 
 import {
@@ -28,7 +40,7 @@ import {
   setBeamlineAttribute,
   sendDisplayImage,
   executeCommand,
-  sendLogFrontEndTraceBack
+  sendLogFrontEndTraceBack,
 } from '../actions/beamline';
 
 class SampleViewContainer extends Component {
@@ -120,10 +132,12 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={1}>
             <DefaultErrorBoundary>
-              {process.env.REACT_APP_PHASECONTROL==='true' ? phaseControl : null}
+              {process.env.REACT_APP_PHASECONTROL === 'true'
+                ? phaseControl
+                : null}
               {apertureControl}
-              {this.props.mode === 'SSX-CHIP' ?
-                (<SSXChipControl
+              {this.props.mode === 'SSX-CHIP' ? (
+                <SSXChipControl
                   showForm={this.props.showForm}
                   sampleID={sampleID}
                   sampleData={this.props.sampleList[sampleID]}
@@ -137,14 +151,19 @@ class SampleViewContainer extends Component {
                   sendSetAttribute={this.props.sendSetAttribute}
                   sendExecuteCommand={this.props.sendExecuteCommand}
                 />
-                ) : null
-              }
-              {this.props.sampleChangerContents.name === 'PlateManipulator'
-                ? (
-                  <div className='mb-4'>
-                    <OverlayTrigger ref="plateOverlay" trigger="click" rootClose placement="auto-end"
-                      overlay={(<Popover id="platePopover" style={{ maxWidth: '800px' }}>
-                        <Popover.Header>{ this.props.global_state.plate_info.plate_label}</Popover.Header>
+              ) : null}
+              {this.props.sampleChangerContents.name === 'PlateManipulator' ? (
+                <div className="mb-4">
+                  <OverlayTrigger
+                    ref="plateOverlay"
+                    trigger="click"
+                    rootClose
+                    placement="auto-end"
+                    overlay={
+                      <Popover id="platePopover" style={{ maxWidth: '800px' }}>
+                        <Popover.Header>
+                          {this.props.global_state.plate_info.plate_label}
+                        </Popover.Header>
                         <Popover.Body style={{ padding: '0px' }}>
                           <PlateManipulator
                             contents={this.props.sampleChangerContents}
@@ -169,42 +188,55 @@ class SampleViewContainer extends Component {
                             inPopover
                           />
                         </Popover.Body>
-                      </Popover>)}
-                    >
-                      <Button
-                        variant='outline-secondary'
-                        style={{ marginTop: '1em', minWidth: '155px', width: 'fit-conent', whiteSpace: 'nowrap' }}
-                        size='sm'
-                      >
-                        <i className="fa fa-th" />
-                          {' '}
-                          Plate Navigation
-                        <i className="fa fa-caret-right" />
-                      </Button>
-                    </OverlayTrigger>
+                      </Popover>
+                    }
+                  >
                     <Button
-                      style={{ marginTop: '1em', minWidth: '155px', width: 'fit-conent', whiteSpace: 'nowrap' }}
                       variant="outline-secondary"
-                      size='sm'
-                      title={this.props.hasCrystal ? 'Move to Crystal position' : 'No Crystal Found / Crims not Sync'}
-                      onClick={() => this.props.send_command('moveToCrystalPosition')}
-                      disabled={!this.props.hasCrystal}
+                      style={{
+                        marginTop: '1em',
+                        minWidth: '155px',
+                        width: 'fit-conent',
+                        whiteSpace: 'nowrap',
+                      }}
+                      size="sm"
                     >
-                      <i className="fas fa-gem" />
-                        {' '}
-                        Move to Crystal
+                      <i className="fa fa-th" /> Plate Navigation
+                      <i className="fa fa-caret-right" />
                     </Button>
-                  </div>
-                )
-                : null
-              }
+                  </OverlayTrigger>
+                  <Button
+                    style={{
+                      marginTop: '1em',
+                      minWidth: '155px',
+                      width: 'fit-conent',
+                      whiteSpace: 'nowrap',
+                    }}
+                    variant="outline-secondary"
+                    size="sm"
+                    title={
+                      this.props.hasCrystal
+                        ? 'Move to Crystal position'
+                        : 'No Crystal Found / Crims not Sync'
+                    }
+                    onClick={() =>
+                      this.props.send_command('moveToCrystalPosition')
+                    }
+                    disabled={!this.props.hasCrystal}
+                  >
+                    <i className="fas fa-gem" /> Move to Crystal
+                  </Button>
+                </div>
+              ) : null}
               <MotorControl
                 save={this.props.sendSetAttribute}
                 saveStep={setStepSize}
                 uiproperties={uiproperties.sample_view}
                 hardwareObjects={this.props.hardwareObjects}
-                motorsDisabled={this.props.motorInputDisable
-                  || this.props.queueState === QUEUE_RUNNING}
+                motorsDisabled={
+                  this.props.motorInputDisable ||
+                  this.props.queueState === QUEUE_RUNNING
+                }
                 steps={motorSteps}
                 stop={this.props.sendAbortCurrentAction}
                 sampleViewActions={this.props.sampleViewActions}
@@ -269,7 +301,6 @@ class SampleViewContainer extends Component {
   }
 }
 
-
 function mapStateToProps(state) {
   return {
     sampleList: state.sampleGrid.sampleList,
@@ -312,11 +343,17 @@ function mapDispatchToProps(dispatch) {
     showForm: bindActionCreators(showTaskForm, dispatch),
     generalActions: bindActionCreators(GeneralActions, dispatch),
     sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
-    sendAbortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch),
+    sendAbortCurrentAction: bindActionCreators(
+      sendAbortCurrentAction,
+      dispatch,
+    ),
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
-    sendLogFrontEndTraceBack: bindActionCreators(sendLogFrontEndTraceBack, dispatch),
+    sendLogFrontEndTraceBack: bindActionCreators(
+      sendLogFrontEndTraceBack,
+      dispatch,
+    ),
 
     loadSample: (address) => dispatch(loadSample(address)),
     refresh: () => dispatch(refresh()),
@@ -330,5 +367,5 @@ function mapDispatchToProps(dispatch) {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(SampleViewContainer);

@@ -19,16 +19,26 @@ class NumSnapshotsDropDown extends React.Component {
       <DropdownButton
         variant="outline-secondary"
         align={{ sm: this.props.align }}
-        title={(<span>
-                <i className="fas fa-1x fa-camera" /> &nbsp;
-                  Crystal snapshots ({this.props.queue.numSnapshots})
-                </span>)}
+        title={
+          <span>
+            <i className="fas fa-1x fa-camera" /> &nbsp; Crystal snapshots (
+            {this.props.queue.numSnapshots})
+          </span>
+        }
         id="numSnapshotsDropDown"
       >
-        <Dropdown.Item key="0" onClick={ () => (this.setNumSnapshots(0)) }>0</Dropdown.Item>
-        <Dropdown.Item key="1" onClick={ () => (this.setNumSnapshots(1)) }>1</Dropdown.Item>
-        <Dropdown.Item key="2" onClick={ () => (this.setNumSnapshots(2)) }>2</Dropdown.Item>
-        <Dropdown.Item key="4" onClick={ () => (this.setNumSnapshots(4)) }>4</Dropdown.Item>
+        <Dropdown.Item key="0" onClick={() => this.setNumSnapshots(0)}>
+          0
+        </Dropdown.Item>
+        <Dropdown.Item key="1" onClick={() => this.setNumSnapshots(1)}>
+          1
+        </Dropdown.Item>
+        <Dropdown.Item key="2" onClick={() => this.setNumSnapshots(2)}>
+          2
+        </Dropdown.Item>
+        <Dropdown.Item key="4" onClick={() => this.setNumSnapshots(4)}>
+          4
+        </Dropdown.Item>
       </DropdownButton>
     );
   }
@@ -36,18 +46,17 @@ class NumSnapshotsDropDown extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    queue: state.queue
+    queue: state.queue,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendSetNumSnapshots: bindActionCreators(sendSetNumSnapshots, dispatch)
+    sendSetNumSnapshots: bindActionCreators(sendSetNumSnapshots, dispatch),
   };
 }
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(NumSnapshotsDropDown);
-

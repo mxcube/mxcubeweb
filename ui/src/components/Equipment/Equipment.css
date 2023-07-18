@@ -3,11 +3,11 @@
 }
 
 .treeNode ~ ul {
- display: none;
+  display: none;
 }
 
 .treeNode:checked ~ ul {
- display: block;
+  display: block;
 }
 
 .treeNodeLabel {
@@ -39,11 +39,11 @@
 }
 
 .custom-btn-color {
-  color: hsl(0,0%,50%) !important;
+  color: hsl(0, 0%, 50%) !important;
 }
 
 .custom-btn-color:hover {
-  color: hsl(0,0%,0%) !important;
+  color: hsl(0, 0%, 0%) !important;
 }
 
 .scMessage {
@@ -76,36 +76,35 @@
   display: flex;
 }
 
-.has-crystal-info{
+.has-crystal-info {
   border-right: 10px solid #81c784;
   padding-right: 5px;
   margin-right: 12px;
 }
 
-.is-loaded-info{
+.is-loaded-info {
   border-right: 10px solid #e57373;
   padding-right: 5px;
   margin-right: 12px;
 }
 
-.empty-well-info{
+.empty-well-info {
   border-right: 10px solid #e0e0e0;
   padding-right: 5px;
 }
 
-.plate-info{
+.plate-info {
   position: relative;
   bottom: 20%;
 }
 
-.single_well{
+.single_well {
   cursor: crosshair;
 }
 
-.context-menu-provider{
+.context-menu-provider {
   z-index: 1070;
 }
-
 
 .plate-tooltip {
   visibility: hidden;
@@ -123,19 +122,19 @@
   opacity: 0;
   transition: opacity 0.3s;
 }
-  
+
 .plate-tooltip::after {
-  content: "";
+  content: '';
   position: absolute;
   bottom: 100%;
   left: 50%;
   border-width: 5px;
   border-style: solid;
-  border-color:  transparent transparent #0122388e transparent;
+  border-color: transparent transparent #0122388e transparent;
 }
 
-.plate-desc:focus{
-  background: #57a80b!important;
+.plate-desc:focus {
+  background: #57a80b !important;
 }
 
 .plate-desc:hover .plate-tooltip {

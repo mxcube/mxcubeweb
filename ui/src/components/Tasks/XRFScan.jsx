@@ -29,7 +29,7 @@ class XRFScan extends React.Component {
       type: 'XRFScan',
       label: params.wfname,
       shape: this.props.pointID,
-      suffix: this.props.suffix
+      suffix: this.props.suffix,
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -42,7 +42,7 @@ class XRFScan extends React.Component {
       'label',
       'wfname',
       'wfpath',
-      'suffix'
+      'suffix',
     ];
 
     this.props.addTask(parameters, stringFields, runNow);
@@ -50,7 +50,8 @@ class XRFScan extends React.Component {
   }
 
   render() {
-    return (<DraggableModal show={this.props.show} onHide={this.props.hide}>
+    return (
+      <DraggableModal show={this.props.show} onHide={this.props.hide}>
         <Modal.Header closeButton>
           <Modal.Title>XRF</Modal.Title>
         </Modal.Header>
@@ -58,25 +59,29 @@ class XRFScan extends React.Component {
           <Form>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
-            <Row className='mt-3'>
-              <InputField propName="subdir" label="Subdirectory" col1="4" col2="7" />
+            <Row className="mt-3">
+              <InputField
+                propName="subdir"
+                label="Subdirectory"
+                col1="4"
+                col2="7"
+              />
             </Row>
-            <Row className='mt-3'>
+            <Row className="mt-3">
               <InputField propName="prefix" label="Prefix" col1="4" col2="7" />
             </Row>
-            <Row className='mt-3'>
-              {this.props.taskData.sampleID ?
-                (
-                  <InputField
-                    propName="run_number"
-                    disabled
-                    label="Run number"
-                    col1="4"
-                    col2="7"
-                  />)
-                : null}
+            <Row className="mt-3">
+              {this.props.taskData.sampleID ? (
+                <InputField
+                  propName="run_number"
+                  disabled
+                  label="Run number"
+                  col1="4"
+                  col2="7"
+                />
+              ) : null}
             </Row>
-            <Row className='mt-3'>
+            <Row className="mt-3">
               <InputField
                 propName="exp_time"
                 type="number"
@@ -86,37 +91,47 @@ class XRFScan extends React.Component {
               />
             </Row>
           </Form>
-       </Modal.Body>
+        </Modal.Body>
 
-       { this.props.taskData.state ? '' :
-           <Modal.Footer>
-             <ButtonToolbar className="float-end">
-               <Button variant="success"
-                 disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
-                 onClick={this.submitRunNow}
-               >
-                 Run Now
-               </Button>
-               <Button className='ms-3' variant="primary" disabled={this.props.invalid}
-                 onClick={this.submitAddToQueue}
-               >
-                 {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-               </Button>
-             </ButtonToolbar>
-           </Modal.Footer>
-       }
-      </DraggableModal>);
+        {this.props.taskData.state ? (
+          ''
+        ) : (
+          <Modal.Footer>
+            <ButtonToolbar className="float-end">
+              <Button
+                variant="success"
+                disabled={
+                  this.props.taskData.parameters.shape === -1 ||
+                  this.props.invalid
+                }
+                onClick={this.submitRunNow}
+              >
+                Run Now
+              </Button>
+              <Button
+                className="ms-3"
+                variant="primary"
+                disabled={this.props.invalid}
+                onClick={this.submitAddToQueue}
+              >
+                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+              </Button>
+            </ButtonToolbar>
+          </Modal.Footer>
+        )}
+      </DraggableModal>
+    );
   }
 }
 
 XRFScan = reduxForm({
   form: 'workflow',
-  validate
+  validate,
 })(XRFScan);
 
 const selector = formValueSelector('workflow');
 
-XRFScan = connect(state => {
+XRFScan = connect((state) => {
   const subdir = selector(state, 'subdir');
   const exp_time = selector(state, 'exp_time');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
@@ -127,7 +142,7 @@ XRFScan = connect(state => {
   }
 
   const { type } = state.taskForm.taskData;
-  const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
+  const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -140,16 +155,16 @@ XRFScan = connect(state => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.resolution :
-        state.beamline.hardwareObjects.resolution.value),
-      energy: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.energy :
-        state.beamline.hardwareObjects.energy.value),
-      transmission: (state.taskForm.taskData.sampleID ?
-        state.taskForm.taskData.parameters.transmission :
-        state.beamline.hardwareObjects.transmission.value)
-    }
+      resolution: state.taskForm.taskData.sampleID
+        ? state.taskForm.taskData.parameters.resolution
+        : state.beamline.hardwareObjects.resolution.value,
+      energy: state.taskForm.taskData.sampleID
+        ? state.taskForm.taskData.parameters.energy
+        : state.beamline.hardwareObjects.energy.value,
+      transmission: state.taskForm.taskData.sampleID
+        ? state.taskForm.taskData.parameters.transmission
+        : state.beamline.hardwareObjects.transmission.value,
+    },
   };
 })(XRFScan);
 

@@ -38,13 +38,12 @@
   margin-bottom: 0.5rem;
 }
 
-
-.custom-accordion-header>.accordion-button:not(.collapsed) {
+.custom-accordion-header > .accordion-button:not(.collapsed) {
   background-color: #ffffff !important;
   box-shadow: none !important;
 }
 
-.custom-accordion-header-child>.accordion-button:not(.collapsed) {
+.custom-accordion-header-child > .accordion-button:not(.collapsed) {
   /* background-color: #ffffff !important; */
   box-shadow: 0px !important;
 }

@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
-import {
-  Modal, Button, Form, Row, Col, ButtonToolbar
-} from 'react-bootstrap';
+import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import warn from './warning';
@@ -16,7 +14,7 @@ import {
   SelectField,
   FieldsRow,
   CollapsableRows,
-  toFixed
+  toFixed,
 } from './fields';
 
 import { SPACE_GROUPS } from '../../constants';
@@ -46,7 +44,7 @@ class Characterisation extends React.Component {
       type: 'Characterisation',
       label: 'Characterisation',
       shape: this.props.pointID,
-      helical: false
+      helical: false,
     };
 
     const stringFields = [
@@ -76,12 +74,17 @@ class Characterisation extends React.Component {
     const { type } = this.props.taskData;
     this.props.resetTaskParameters();
     this.resetParameters(type);
-    const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
+    const fieldNames = Object.keys(
+      this.props.initialParameters[type.toLowerCase()],
+    );
     fieldNames.forEach((field) => {
-      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);
+      this.props.autofill(
+        type.toLowerCase(),
+        field,
+        this.props.initialParameters[type.toLowerCase()][field],
+      );
     });
   }
-
 
   render() {
     return (
@@ -93,42 +96,72 @@ class Characterisation extends React.Component {
           <Form>
             <StaticField label="Path" data={this.props.path} />
             <StaticField label="Filename" data={this.props.filename} />
-            <Row className='mb-2'>
+            <Row className="mb-2">
               <Col xs={12} style={{ marginTop: '10px' }}>
-                <InputField propName="subdir" label="Subdirectory" col1="2" col2="8" />
+                <InputField
+                  propName="subdir"
+                  label="Subdirectory"
+                  col1="2"
+                  col2="8"
+                />
               </Col>
             </Row>
             <Row>
               <Col xs={12}>
-                <InputField propName="prefix" label="Prefix" col1="2" col2="8" />
+                <InputField
+                  propName="prefix"
+                  label="Prefix"
+                  col1="2"
+                  col2="8"
+                />
               </Col>
-              {this.props.taskData.sampleID
-                ? (
-                  <Col xs={4}>
-                    <InputField
-                      propName="run_number"
-                      disabled
-                      label="Run number"
-                      col1="4"
-                      col2="8"
-                    />
-                  </Col>
-                )
-                : null}
+              {this.props.taskData.sampleID ? (
+                <Col xs={4}>
+                  <InputField
+                    propName="run_number"
+                    disabled
+                    label="Run number"
+                    col1="4"
+                    col2="8"
+                  />
+                </Col>
+              ) : null}
             </Row>
           </Form>
           <FieldsHeader title="Reference acquisition" />
           <Form>
             <FieldsRow>
-              <SelectField col1='6' col2='4' propName="num_images" label="Number of images" list={[1, 2, 4]} />
-              <InputField propName="transmission" type="number" label="Transmission" />
+              <SelectField
+                col1="6"
+                col2="4"
+                propName="num_images"
+                label="Number of images"
+                list={[1, 2, 4]}
+              />
+              <InputField
+                propName="transmission"
+                type="number"
+                label="Transmission"
+              />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="exp_time" type="number" label="Exposure time (s)" />
-              <InputField propName="resolution" type="number" label="Resolution (Å)" />
+              <InputField
+                propName="exp_time"
+                type="number"
+                label="Exposure time (s)"
+              />
+              <InputField
+                propName="resolution"
+                type="number"
+                label="Resolution (Å)"
+              />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="osc_range" type="number" label="Oscillation range" />
+              <InputField
+                propName="osc_range"
+                type="number"
+                label="Oscillation range"
+              />
               <InputField
                 disabled={this.props.beamline.hardwareObjects.energy.readonly}
                 propName="energy"
@@ -137,7 +170,11 @@ class Characterisation extends React.Component {
               />
             </FieldsRow>
             <FieldsRow>
-              <InputField propName="osc_start" type="number" label="Oscillation start" />
+              <InputField
+                propName="osc_start"
+                type="number"
+                label="Oscillation start"
+              />
             </FieldsRow>
             <CollapsableRows>
               <FieldsRow>
@@ -161,10 +198,7 @@ class Characterisation extends React.Component {
                 propName="account_rad_damage"
                 label="Account for radiation damage"
               />
-              <CheckboxField
-                propName="opt_sad"
-                label="Optimised SAD"
-              />
+              <CheckboxField propName="opt_sad" label="Optimised SAD" />
             </FieldsRow>
             <FieldsRow>
               <SelectField
@@ -188,14 +222,22 @@ class Characterisation extends React.Component {
                   list={SPACE_GROUPS}
                 />
               </FieldsRow>
-              <Form.Label className='mb-2 mt-3'>Vertical Crystal dimension:</Form.Label>
+              <Form.Label className="mb-2 mt-3">
+                Vertical Crystal dimension:
+              </Form.Label>
               <FieldsRow>
                 <InputField propName="min_crystal_vdim" label="Min" />
-                <InputField propName="min_crystal_vphi" label="&omega; at min" />
+                <InputField
+                  propName="min_crystal_vphi"
+                  label="&omega; at min"
+                />
               </FieldsRow>
               <FieldsRow>
                 <InputField propName="max_crystal_vdim" label="Max" />
-                <InputField propName="max_crystal_vphi" label="&omega; at max" />
+                <InputField
+                  propName="max_crystal_vphi"
+                  label="&omega; at max"
+                />
               </FieldsRow>
             </Form>
           </CollapsableRows>
@@ -203,9 +245,24 @@ class Characterisation extends React.Component {
           <CollapsableRows>
             <Form>
               <FieldsRow>
-                <InputField col1="6" col2="5" propName="beta" label="&beta; Å / Mgy" />
-                <InputField col1="5" col2="5" propName="gamma" label="&gamma; 1/Mgy" />
-                <InputField col1="6" col2="5" propName="rad_suscept" label="Sensetivity" />
+                <InputField
+                  col1="6"
+                  col2="5"
+                  propName="beta"
+                  label="&beta; Å / Mgy"
+                />
+                <InputField
+                  col1="5"
+                  col2="5"
+                  propName="gamma"
+                  label="&gamma; 1/Mgy"
+                />
+                <InputField
+                  col1="6"
+                  col2="5"
+                  propName="rad_suscept"
+                  label="Sensetivity"
+                />
               </FieldsRow>
             </Form>
           </CollapsableRows>
@@ -222,7 +279,7 @@ class Characterisation extends React.Component {
                   label="Aimed completness"
                 />
               </FieldsRow>
-              <Row className='mb-2'>
+              <Row className="mb-2">
                 <Col xs="6">
                   <CheckboxField
                     propName="use_permitted_rotation"
@@ -346,7 +403,7 @@ class Characterisation extends React.Component {
                   />
                 </Col>
               </Row>
-              <Row className='mb-2'>
+              <Row className="mb-2">
                 <InputField
                   col1="6"
                   col2="2"
@@ -365,40 +422,46 @@ class Characterisation extends React.Component {
             </Form>
           </CollapsableRows>
         </Modal.Body>
-        {this.props.taskData.state ? ''
-          : (
-            <Modal.Footer>
-              <ButtonToolbar style={{ bottom: '0.8%', left: '1%' }} className="position-absolute">
-                <Button
-                  size="sm"
-                  variant="outline-secondary"
-                  onClick={this.defaultParameters}
-                >
-                  Default Parameters
-                </Button>
-              </ButtonToolbar>
-              <ButtonToolbar className="float-end">
-                <Button
-                  size="sm"
-                  variant="success"
-                  disabled={this.props.taskData.parameters.shape === -1 || this.props.invalid}
-                  onClick={this.submitRunNow}
-                >
-                  Run Now
-                </Button>
-                <Button
-                  size="sm"
-                  className='ms-3'
-                  variant="outline-secondary"
-                  disabled={this.props.invalid}
-                  onClick={this.submitAddToQueue}
-                >
-                  {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-                </Button>
-              </ButtonToolbar>
-            </Modal.Footer>
-          )
-        }
+        {this.props.taskData.state ? (
+          ''
+        ) : (
+          <Modal.Footer>
+            <ButtonToolbar
+              style={{ bottom: '0.8%', left: '1%' }}
+              className="position-absolute"
+            >
+              <Button
+                size="sm"
+                variant="outline-secondary"
+                onClick={this.defaultParameters}
+              >
+                Default Parameters
+              </Button>
+            </ButtonToolbar>
+            <ButtonToolbar className="float-end">
+              <Button
+                size="sm"
+                variant="success"
+                disabled={
+                  this.props.taskData.parameters.shape === -1 ||
+                  this.props.invalid
+                }
+                onClick={this.submitRunNow}
+              >
+                Run Now
+              </Button>
+              <Button
+                size="sm"
+                className="ms-3"
+                variant="outline-secondary"
+                disabled={this.props.invalid}
+                onClick={this.submitAddToQueue}
+              >
+                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+              </Button>
+            </ButtonToolbar>
+          </Modal.Footer>
+        )}
       </DraggableModal>
     );
   }
@@ -407,7 +470,7 @@ class Characterisation extends React.Component {
 Characterisation = reduxForm({
   form: 'characterisation',
   validate,
-  warn
+  warn,
 })(Characterisation);
 
 const selector = formValueSelector('characterisation');
@@ -430,9 +493,9 @@ Characterisation = connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
+  const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
 
-  toFixed(state,"diffractometer.phi")
+  toFixed(state, 'diffractometer.phi');
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -449,19 +512,23 @@ Characterisation = connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.resolution
-        : toFixed(state, "resolution")),
-      energy: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.energy
-        : toFixed(state, "energy")),
-      transmission: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.transmission
-        : toFixed(state, "transmission")),
-      osc_start: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.osc_start
-        : toFixed(state, "diffractometer.phi"))
-    }
+      resolution:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.resolution
+          : toFixed(state, 'resolution'),
+      energy:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.energy
+          : toFixed(state, 'energy'),
+      transmission:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.transmission
+          : toFixed(state, 'transmission'),
+      osc_start:
+        state.taskForm.sampleIds.constructor !== Array
+          ? state.taskForm.taskData.parameters.osc_start
+          : toFixed(state, 'diffractometer.phi'),
+    },
   };
 })(Characterisation);
 

@@ -7,12 +7,13 @@ import { showErrorPanel } from '../actions/general';
 export class ErrorNotificationPanel extends React.Component {
   render() {
     return (
-      <Modal
-        show={this.props.show}
-        onHide={this.props.hideErrorPanel}
-      >
+      <Modal show={this.props.show} onHide={this.props.hideErrorPanel}>
         <div style={{ marginBottom: '-20px' }}>
-          <Alert variant="danger" onClose={this.props.hideErrorPanel} dismissible>
+          <Alert
+            variant="danger"
+            onClose={this.props.hideErrorPanel}
+            dismissible
+          >
             <strong>Error:&nbsp;</strong>
             {this.props.message}
           </Alert>
@@ -33,12 +34,12 @@ function mapDispatchToProps(dispatch) {
   return {
     hideErrorPanel: bindActionCreators(
       showErrorPanel.bind(this, false),
-      dispatch
+      dispatch,
     ),
   };
 }
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(ErrorNotificationPanel);

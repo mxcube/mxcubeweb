@@ -30,7 +30,7 @@ function LoginComponent(props) {
     control,
     handleSubmit: makeOnSubmit,
     formState: { errors },
-  } = useForm({ defaultValues: { username: '', password: ''}});
+  } = useForm({ defaultValues: { username: '', password: '' } });
 
   function handleSubmit(data) {
     setLoading(true);
@@ -52,16 +52,20 @@ function LoginComponent(props) {
           singOut={() => doSignOut(router.navigate)}
         />
       )}
-      <Form className={styles.box} noValidate onSubmit={makeOnSubmit(handleSubmit)}>
+      <Form
+        className={styles.box}
+        noValidate
+        onSubmit={makeOnSubmit(handleSubmit)}
+      >
         <h1 className={styles.title}>
           <img src={logo} width="80" alt="" />
           MXCuBE
         </h1>
         <Form.Group className="mb-3">
           <InputGroup>
-          <InputGroup.Text>
+            <InputGroup.Text>
               <i className="fas fa-user" />
-              </InputGroup.Text>
+            </InputGroup.Text>
             <Controller
               name="username"
               control={control}
@@ -78,14 +82,18 @@ function LoginComponent(props) {
                 />
               )}
             />
-            {errors.username && <Form.Control.Feedback type="invalid">{errors.username.message}</Form.Control.Feedback>}
+            {errors.username && (
+              <Form.Control.Feedback type="invalid">
+                {errors.username.message}
+              </Form.Control.Feedback>
+            )}
           </InputGroup>
         </Form.Group>
         <Form.Group className="mb-3">
           <InputGroup>
-          <InputGroup.Text>
+            <InputGroup.Text>
               <i className="fas fa-lock" />
-              </InputGroup.Text>
+            </InputGroup.Text>
             <Controller
               name="password"
               control={control}
@@ -101,7 +109,11 @@ function LoginComponent(props) {
                 />
               )}
             />
-            {errors.password && <Form.Control.Feedback type="invalid">{errors.password.message}</Form.Control.Feedback>}
+            {errors.password && (
+              <Form.Control.Feedback type="invalid">
+                {errors.password.message}
+              </Form.Control.Feedback>
+            )}
           </InputGroup>
         </Form.Group>
         <Button type="submit" size="lg" className={styles.btn}>

@@ -10,14 +10,14 @@ export default (state = initialState, action) => {
     case 'SET_STEP_SIZE': {
       const idx = findIndex(
         state[action.componentName].components,
-        (o) => o.attribute === action.name
+        (o) => o.attribute === action.name,
       );
 
       return setWith(
         clone(state),
         `${action.componentName}.components[${idx}].step`,
         action.value,
-        clone
+        clone,
       );
     }
     case 'SET_INITIAL_STATE': {

@@ -6,10 +6,10 @@ const initialState = {
 export default (state = initialState, action) => {
   switch (action.type) {
     case 'SET_WORKFLOWS': {
-      return { ...state, workflows: { ...action.workflows }};
+      return { ...state, workflows: { ...action.workflows } };
     }
     case 'SET_CURRENT_WORKFLOW': {
-      return { ...state, current: action.current};
+      return { ...state, current: action.current };
     }
     case 'SHOW_GPHL_WORKFLOW_PARAMETERS_DIALOG': {
       return {

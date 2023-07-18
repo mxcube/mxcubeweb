@@ -1,53 +1,50 @@
-
-.popinput-input-label{
+.popinput-input-label {
   display: inline-block;
   min-width: 90px;
   margin-right: 1rem;
   font-weight: bold;
 }
 
-.popinput-input-value{
+.popinput-input-value {
   display: inline-block;
   white-space: nowrap;
 }
 
- .popinput-input-busy{
+.popinput-input-busy {
   background-image: url(../../img/busy-indicator.gif);
   height: 32px;
   width: 32px;
   margin: 2px 4px 2px 0;
-  }
+}
 
-  .popinput-input{
-    height: 36px;
-    }
+.popinput-input {
+  height: 36px;
+}
 
-  .popinput-input-container {
-   display: inline;
-  }
+.popinput-input-container {
+  display: inline;
+}
 
+.popinput-input-editicon {
+  visibility: hidden;
+  color: #999;
+  margin-right: 5px;
+}
 
-  .popinput-input-editicon {
-    visibility: hidden;
-    color: #999;
-    margin-right: 5px;
-    }
+.popinput-input-link {
+  cursor: pointer;
+  text-decoration: none;
+}
 
-    .popinput-input-link{
-    cursor:pointer;
-    text-decoration:none;
-  }
+.popinput-input-link:hover {
+  visibility: visible;
+  text-decoration: none;
+}
 
-    .popinput-input-link:hover {
-    visibility: visible;
-    text-decoration:none;
-    }
+.popinput-input-link:hover > .popinput-input-editicon {
+  visibility: visible;
+}
 
-    .popinput-input-link:hover > .popinput-input-editicon {
-    visibility: visible;
-    }
-
-    .editable-click {
-    cursor: pointer;
-    }
-
+.editable-click {
+  cursor: pointer;
+}

@@ -1,43 +1,42 @@
 import React from 'react';
-import {
-  Card, Dropdown, Form, Button, DropdownButton,
-} from 'react-bootstrap';
+import { Card, Dropdown, Form, Button, DropdownButton } from 'react-bootstrap';
 
 import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 
 import './Equipment.css';
- 
 
 export class SampleChangerTree extends React.Component {
   render() {
     let titleBackground;
 
     switch (this.props.state) {
-    case 'READY': {
-      titleBackground = 'success';
-    
-    break;
-    }
-    case 'MOVING': {
-      titleBackground = 'warning';
-    
-    break;
-    }
-    case 'DISABLED': {
-      titleBackground = 'default';
-    
-    break;
-    }
-    default: {
-      titleBackground = 'danger';
-    }
+      case 'READY': {
+        titleBackground = 'success';
+
+        break;
+      }
+      case 'MOVING': {
+        titleBackground = 'warning';
+
+        break;
+      }
+      case 'DISABLED': {
+        titleBackground = 'default';
+
+        break;
+      }
+      default: {
+        titleBackground = 'danger';
+      }
     }
 
     return (
-      <Card className='mb-3' style={{ marginTop: '0.5em' }} bg={titleBackground}>
-        <Card.Header>
-          {this.props.title}
-        </Card.Header>
+      <Card
+        className="mb-3"
+        style={{ marginTop: '0.5em' }}
+        bg={titleBackground}
+      >
+        <Card.Header>{this.props.title}</Card.Header>
         {this.props.children}
       </Card>
     );
@@ -102,31 +101,27 @@ export class SampleChangerTreeNode extends React.Component {
             id={inputId}
             onClick={this.treeNodeCbxClick}
           />
-            <Form.Label onContextMenu={(e) => this.showContextMenu(e, `${this.props.label}`)} htmlFor={inputId} className="treeNodeLabel">
-              <i id={`${inputId}icon`} className="fa fa-plus" />
-                &nbsp;
-              {this.props.label}
-            </Form.Label>
-          <ul className="treeUl">
-            {this.props.children}
-          </ul>
+          <Form.Label
+            onContextMenu={(e) =>
+              this.showContextMenu(e, `${this.props.label}`)
+            }
+            htmlFor={inputId}
+            className="treeNodeLabel"
+          >
+            <i id={`${inputId}icon`} className="fa fa-plus" />
+            &nbsp;
+            {this.props.label}
+          </Form.Label>
+          <ul className="treeUl">{this.props.children}</ul>
         </li>
 
         <Menu id={`${this.props.label}`}>
           <li role="heading" aria-level="2" className="dropdown-header">
-            <b>
-              Container
-              {' '}
-              {this.props.label}
-            </b>
+            <b>Container {this.props.label}</b>
           </li>
           <Separator />
-          <Item onClick={this.scanClicked}>
-            Scan
-          </Item>
-          <Item onClick={this.selectClicked}>
-            Move to this container
-          </Item>
+          <Item onClick={this.scanClicked}>Scan</Item>
+          <Item onClick={this.selectClicked}>Move to this container</Item>
         </Menu>
       </div>
     );
@@ -144,7 +139,6 @@ export class SampleChangerTreeItem extends React.Component {
   }
 
   itemClicked() {
-     
     this.setState({ allow_control: !this.state.allow_control });
     /* eslint-enable react/no-set-state */
   }
@@ -153,7 +147,7 @@ export class SampleChangerTreeItem extends React.Component {
     this.toggleDropdown();
     this.props.load({
       sampleID: this.props.label,
-      location: this.props.label
+      location: this.props.label,
     });
   }
 
@@ -166,9 +160,11 @@ export class SampleChangerTreeItem extends React.Component {
     this.setState({ dropdownIsOpen: !this.state.dropdownIsOpen });
   }
 
-
   render() {
-    const ls = this.props.status === 'Loaded' ? { display: 'inline' } : { display: 'none' };
+    const ls =
+      this.props.status === 'Loaded'
+        ? { display: 'inline' }
+        : { display: 'none' };
 
     return (
       <div>
@@ -182,25 +178,17 @@ export class SampleChangerTreeItem extends React.Component {
               open={this.state.dropdownIsOpen}
             >
               <Dropdown.Header aria-level="2" className="dropdown-header">
-                <b>
-                  Position :
-                  {' '}
-                  {this.props.label}
-                </b>
+                <b>Position : {this.props.label}</b>
               </Dropdown.Header>
-              <Dropdown.Divider/>
-              <Dropdown.Item onClick={this.loadSample}>
-                Mount
-              </Dropdown.Item>
+              <Dropdown.Divider />
+              <Dropdown.Item onClick={this.loadSample}>Mount</Dropdown.Item>
               <Dropdown.Item onClick={this.unloadSample}>
                 Umount to this position
               </Dropdown.Item>
             </DropdownButton>
             <span style={ls}>
               &nbsp;
-              <i className="fas fa-arrow-left" />
-              {' '}
-              <b>(Mounted)</b>
+              <i className="fas fa-arrow-left" /> <b>(Mounted)</b>
             </span>
           </div>
         </li>
@@ -217,7 +205,6 @@ export default class SampleChanger extends React.Component {
     this.unload = this.unload.bind(this);
     this.abort = this.abort.bind(this);
   }
-
 
   scan() {
     this.props.scan('');
@@ -240,29 +227,29 @@ export default class SampleChanger extends React.Component {
 
       return (
         <SampleChangerTreeNode
-          label= {node.name}
-          selected = {node.selected}
+          label={node.name}
+          selected={node.selected}
           root
-          dm = {node.id}
-          select = {this.props.select}
-          status =  {node.status}
-          scan = {this.props.scan}
-          refresh = {this.props.refresh}
-          key = {node.name}
+          dm={node.id}
+          select={this.props.select}
+          status={node.status}
+          scan={this.props.scan}
+          refresh={this.props.refresh}
+          key={node.name}
         >
           {childNodes}
         </SampleChangerTreeNode>
-        );
+      );
     }
 
     return (
       <SampleChangerTreeItem
-        label= {node.name}
-        dm = {node.id}
-        load = {this.props.load}
-        status = {node.status}
-        unload = {this.props.unload}
-        key = {node.name}
+        label={node.name}
+        dm={node.id}
+        load={this.props.load}
+        status={node.status}
+        unload={this.props.unload}
+        key={node.name}
       />
     );
   }
@@ -276,33 +263,23 @@ export default class SampleChanger extends React.Component {
     if (this.props.loadedSample.address) {
       current = (
         <div style={{ marginTop: '1em' }}>
-                        Currently loaded:
-          {' '}
-          {this.props.loadedSample.address}
-          <span style={{ marginRight: '1em' }} />
-                         (
-          {' '}
-          {this.props.loadedSample.barcode}
-          {' '}
-)
+          Currently loaded: {this.props.loadedSample.address}
+          <span style={{ marginRight: '1em' }} />({' '}
+          {this.props.loadedSample.barcode} )
           <span style={{ marginRight: '1em' }} />
           <Button variant="outline-secondary" onClick={this.unload}>
-            <i className="fas fa-download" />
-            {' '}
-            Unload
+            <i className="fas fa-download" /> Unload
           </Button>
         </div>
       );
     } else {
-      current = (<div style={{ marginTop: '1em', marginBottom: '1em' }} />);
+      current = <div style={{ marginTop: '1em', marginBottom: '1em' }} />;
     }
 
     if (this.props.state === 'MOVING') {
       abortButton = (
         <Button variant="danger" className="abortButton" onClick={this.abort}>
-          <i className="fas fa-stop" />
-          {' '}
-        Abort
+          <i className="fas fa-stop" /> Abort
         </Button>
       );
     } else {
@@ -310,27 +287,23 @@ export default class SampleChanger extends React.Component {
     }
 
     return (
-      <Card className='mb-3'>
-        <Card.Header>
-          Content
-        </Card.Header>
+      <Card className="mb-3">
+        <Card.Header>Content</Card.Header>
         <Card.Body>
-            <Button  variant="outline-secondary" onClick={this.props.refresh}>
-              <i className="fas fa-sync" /> 
-              {' '}
-              Refresh
-            </Button>
-            <Button style={{ marginLeft: '1em' }} variant="outline-secondary" onClick={this.scan}>
-              <i className="fas fa-qrcode" />
-              {' '}
-              Scan all containers
-            </Button>
-            <span style={{ marginLeft: '1em' }}>{abortButton}</span>
-            {current}
-            <div style={{ marginBottom: '1em' }} />
-            <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
-              {nodes}
-            </div>
+          <Button variant="outline-secondary" onClick={this.props.refresh}>
+            <i className="fas fa-sync" /> Refresh
+          </Button>
+          <Button
+            style={{ marginLeft: '1em' }}
+            variant="outline-secondary"
+            onClick={this.scan}
+          >
+            <i className="fas fa-qrcode" /> Scan all containers
+          </Button>
+          <span style={{ marginLeft: '1em' }}>{abortButton}</span>
+          {current}
+          <div style={{ marginBottom: '1em' }} />
+          <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>{nodes}</div>
         </Card.Body>
       </Card>
     );

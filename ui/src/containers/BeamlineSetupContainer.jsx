@@ -68,7 +68,7 @@ class BeamlineSetupContainer extends React.Component {
             state={motor.state}
             disabled={this.props.beamline.motorInputDisable}
           />
-        </div>
+        </div>,
       );
     }
 
@@ -107,7 +107,7 @@ class BeamlineSetupContainer extends React.Component {
                     onSave={this.setAttribute}
                     optionsOverlay={this.beamstopAlignmentOverlay()}
                   />
-                </Nav.Item>
+                </Nav.Item>,
               );
             } else {
               acts.push(
@@ -124,7 +124,7 @@ class BeamlineSetupContainer extends React.Component {
                     data={this.props.beamline.hardwareObjects[key]}
                     onSave={this.setAttribute}
                   />
-                </Nav.Item>
+                </Nav.Item>,
               );
             }
           }
@@ -151,7 +151,7 @@ class BeamlineSetupContainer extends React.Component {
           className="py-1 ps-3 pe-2 align-middle"
         >
           <span className="me-1">{uiprop.label}:</span>
-        </td>
+        </td>,
       );
       components.push(
         <td
@@ -186,7 +186,7 @@ class BeamlineSetupContainer extends React.Component {
               onCancel={this.onCancelHandler}
             />
           )}
-        </td>
+        </td>,
       );
     }
 
@@ -203,7 +203,7 @@ class BeamlineSetupContainer extends React.Component {
     const uiprops = this.props.uiproperties.beamline_setup.components;
     const uiprop_list = filter(
       uiprops,
-      (o) => o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR'
+      (o) => o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR',
     );
 
     return (
@@ -234,12 +234,12 @@ class BeamlineSetupContainer extends React.Component {
                 <tbody>
                   <tr>
                     {this.render_table_row(
-                      uiprop_list.slice(0, (uiprop_list.length / 2).toFixed(0))
+                      uiprop_list.slice(0, (uiprop_list.length / 2).toFixed(0)),
                     )}
                   </tr>
                   <tr>
                     {this.render_table_row(
-                      uiprop_list.slice((uiprop_list.length / 2).toFixed(0))
+                      uiprop_list.slice((uiprop_list.length / 2).toFixed(0)),
                     )}
                     {/* <td style={{ border: '0px', borderLeft: '1px solid #ddd', paddingLeft: '1em' }} />
                     <td style={{ border: '0px' }} /> */}
@@ -300,7 +300,7 @@ function mapDispatchToProps(dispatch) {
   return {
     getAllhardwareObjects: bindActionCreators(
       sendGetAllhardwareObjects,
-      dispatch
+      dispatch,
     ),
     sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
     setAttribute: bindActionCreators(sendSetAttribute, dispatch),
@@ -311,5 +311,5 @@ function mapDispatchToProps(dispatch) {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(BeamlineSetupContainer);

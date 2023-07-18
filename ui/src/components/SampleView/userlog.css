@@ -18,7 +18,10 @@
   background-color: #606465;
   transition: transform 0.3s;
   opacity: 0.8;
-  transition: opacity 0.3s, width 0s 0.3s, height 0s 0.3s;
+  transition:
+    opacity 0.3s,
+    width 0s 0.3s,
+    height 0s 0.3s;
 }
 
 .log-window__items {

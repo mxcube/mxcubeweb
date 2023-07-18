@@ -60,9 +60,7 @@ export default (state = INITIAL_STATE, action) => {
         sampleList[sampleID] = sampleData;
       }
 
-      return { ...state, sampleList,
-        order,
-        selected: {},};
+      return { ...state, sampleList, order, selected: {} };
     }
     case 'UPDATE_CRYSTAL_LIST': {
       const crystalList = action.crystalList;
@@ -81,14 +79,14 @@ export default (state = INITIAL_STATE, action) => {
 
       for (const sampleData of action.samplesData) {
         const { sampleID } = sampleData;
-        sampleList[sampleID] = { ...sampleData};
+        sampleList[sampleID] = { ...sampleData };
         order.push(sampleID);
       }
 
-      return { ...state, sampleList, order};
+      return { ...state, sampleList, order };
     }
     case 'SET_SAMPLE_ORDER': {
-      return { ...state, order: action.order};
+      return { ...state, order: action.order };
     }
     case 'SET_SAMPLES_INFO': {
       const sampleList = {};
@@ -99,7 +97,7 @@ export default (state = INITIAL_STATE, action) => {
           if (sampleInfo.code) {
             // find sample with data matrix code
             if (sample.code === sampleInfo.code) {
-              sampleList[key] = { ...sample, ...sampleInfo};
+              sampleList[key] = { ...sample, ...sampleInfo };
               break;
             }
           } else {
@@ -109,16 +107,16 @@ export default (state = INITIAL_STATE, action) => {
             const limsLocation = `${containerLocation}:${sampleLocation}`;
 
             if (sample.location === limsLocation) {
-              sampleList[key] = { ...sample, ...sampleInfo};
+              sampleList[key] = { ...sample, ...sampleInfo };
               break;
             }
           }
         }
         if (sampleList[key] === undefined) {
-          sampleList[key] = { ...sample, };
+          sampleList[key] = { ...sample };
         }
       });
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
       const sampleIDList = action.samplesData.map((s) => s.sampleID);
@@ -129,7 +127,7 @@ export default (state = INITIAL_STATE, action) => {
           : (sampleList[sampleID].tasks = action.samplesData[i].tasks);
       });
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'ADD_TASK_RESULT': {
       const sampleList = {
@@ -139,7 +137,7 @@ export default (state = INITIAL_STATE, action) => {
           tasks: [
             ...state.sampleList[action.sampleID].tasks.slice(
               0,
-              action.taskIndex
+              action.taskIndex,
             ),
             {
               ...state.sampleList[action.sampleID].tasks[action.taskIndex],
@@ -148,13 +146,13 @@ export default (state = INITIAL_STATE, action) => {
               state: action.state,
             },
             ...state.sampleList[action.sampleID].tasks.slice(
-              action.taskIndex + 1
+              action.taskIndex + 1,
             ),
           ],
         },
       };
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'UPDATE_TASK_LIMS_DATA': {
       const sampleList = {
@@ -164,20 +162,20 @@ export default (state = INITIAL_STATE, action) => {
           tasks: [
             ...state.sampleList[action.sampleID].tasks.slice(
               0,
-              action.taskIndex
+              action.taskIndex,
             ),
             {
               ...state.sampleList[action.sampleID].tasks[action.taskIndex],
               limsResultData: action.limsResultData,
             },
             ...state.sampleList[action.sampleID].tasks.slice(
-              action.taskIndex + 1
+              action.taskIndex + 1,
             ),
           ],
         },
       };
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'ADD_TASKS': {
       const sampleList = { ...state.sampleList };
@@ -195,7 +193,7 @@ export default (state = INITIAL_STATE, action) => {
         };
       });
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'REMOVE_TASK': {
       const sampleList = {
@@ -205,28 +203,27 @@ export default (state = INITIAL_STATE, action) => {
           tasks: [
             ...state.sampleList[action.sampleID].tasks.slice(
               0,
-              action.taskIndex
+              action.taskIndex,
             ),
             ...state.sampleList[action.sampleID].tasks.slice(
-              action.taskIndex + 1
+              action.taskIndex + 1,
             ),
           ],
         },
       };
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'REMOVE_TASKS_LIST': {
       const sampleList = { ...state.sampleList };
 
       action.taskList.forEach((task) => {
-        sampleList[task.sampleID].tasks =
-            sampleList[task.sampleID].tasks.filter(
-              taskItem => taskItem.queueID !== task.queueID
-            )
+        sampleList[task.sampleID].tasks = sampleList[
+          task.sampleID
+        ].tasks.filter((taskItem) => taskItem.queueID !== task.queueID);
       });
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'UPDATE_TASK': {
       const sampleList = {
@@ -236,17 +233,17 @@ export default (state = INITIAL_STATE, action) => {
           tasks: [
             ...state.sampleList[action.sampleID].tasks.slice(
               0,
-              action.taskIndex
+              action.taskIndex,
             ),
             action.taskData,
             ...state.sampleList[action.sampleID].tasks.slice(
-              action.taskIndex + 1
+              action.taskIndex + 1,
             ),
           ],
         },
       };
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'ADD_DIFF_PLAN': {
       // Similar as ADD_TASKS but we link the char task with the diff plan dc
@@ -274,7 +271,7 @@ export default (state = INITIAL_STATE, action) => {
         };
       });
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'PLOT_END': {
       const sampleList = { ...state.sampleList };
@@ -289,10 +286,10 @@ export default (state = INITIAL_STATE, action) => {
       });
       /* eslint-enable no-param-reassign */
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     case 'CHANGE_TASK_ORDER': {
-      const sampleList = { ...state.sampleList};
+      const sampleList = { ...state.sampleList };
 
       const task = sampleList[action.sampleId].tasks[action.oldIndex];
       const tempTask = sampleList[action.sampleId].tasks[action.newIndex];
@@ -303,7 +300,7 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, sampleList };
     }
     case 'SET_CURRENT_SAMPLE': {
-      const sampleList = { ...state.sampleList};
+      const sampleList = { ...state.sampleList };
 
       // We might want to set current sample to be nothing in that case do
       // do nothing.
@@ -311,17 +308,17 @@ export default (state = INITIAL_STATE, action) => {
         sampleList[action.sampleID].state |= SAMPLE_MOUNTED;
       }
 
-      return { ...state, sampleList};
+      return { ...state, sampleList };
     }
     // Change view mode
     case 'SET_VIEW_MODE': {
-      const viewMode = { ...state.viewMode};
+      const viewMode = { ...state.viewMode };
       viewMode.mode = action.mode;
-      return { ...state,  viewMode };
+      return { ...state, viewMode };
     }
 
     case 'SET_SAMPLE_ATTRIBUTE': {
-      const sampleList = { ...state.sampleList};
+      const sampleList = { ...state.sampleList };
       action.sampleIDList.forEach((sid) => {
         sampleList[sid][action.attr] = action.value;
       });
@@ -332,7 +329,7 @@ export default (state = INITIAL_STATE, action) => {
     case 'TOGGLE_MOVABLE_SAMPLE': {
       const moving = {};
       moving[action.key] = !state.moving[action.key];
-      return { ...state, moving};
+      return { ...state, moving };
     }
     // Select a range of samples
     case 'SELECT_SAMPLES': {
@@ -344,21 +341,19 @@ export default (state = INITIAL_STATE, action) => {
         movingItems[key] = state.moving[key] && state.selected[key];
       }
 
-      return { ...state, selected: selectedItems,
-        moving: movingItems,};
+      return { ...state, selected: selectedItems, moving: movingItems };
     }
     case 'TOGGLE_SELECTED_SAMPLE': {
-      const selected = { ...state.selected};
+      const selected = { ...state.selected };
       selected[action.sampleID] = !state.selected[action.sampleID];
-      return { ...state, selected};
+      return { ...state, selected };
     }
     case 'FILTER_SAMPLE_LIST': {
       const filterOptions = {
-
         ...state.filterOptions,
-        ...action.filterOptions
+        ...action.filterOptions,
       };
-      return { ...state, filterOptions};
+      return { ...state, filterOptions };
     }
     case 'SET_INITIAL_STATE': {
       const sampleList = { ...action.data.queue.sampleList.sampleList };
@@ -366,10 +361,10 @@ export default (state = INITIAL_STATE, action) => {
       return { ...state, sampleList, order };
     }
     case 'CLEAR_SAMPLE_GRID': {
-      return { ...state, ...INITIAL_STATE};
+      return { ...state, ...INITIAL_STATE };
     }
     case 'CLEAR_ALL': {
-      return { ...state, ...INITIAL_STATE};
+      return { ...state, ...INITIAL_STATE };
     }
     default: {
       return state;

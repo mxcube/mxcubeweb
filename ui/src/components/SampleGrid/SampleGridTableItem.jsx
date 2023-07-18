@@ -1,18 +1,23 @@
 import React from 'react';
-import { ListGroup, OverlayTrigger, Tooltip, Popover, Badge, Button } from 'react-bootstrap';
+import {
+  ListGroup,
+  OverlayTrigger,
+  Tooltip,
+  Popover,
+  Badge,
+  Button,
+} from 'react-bootstrap';
 import classNames from 'classnames';
 
-import {CopyToClipboard} from 'react-copy-to-clipboard';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import { isCollected } from '../../constants';
 
-import { BsSquare, BsCheck2Square  } from "react-icons/bs";
-import { MdContentCopy } from "react-icons/md";
+import { BsSquare, BsCheck2Square } from 'react-icons/bs';
+import { MdContentCopy } from 'react-icons/md';
 import './SampleGridTable.css';
 
-
 export class SampleGridTableItem extends React.Component {
-
   constructor(props) {
     super(props);
     this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
@@ -31,47 +36,46 @@ export class SampleGridTableItem extends React.Component {
     }
   }
 
-
   itemControls() {
-    let icon = <BsSquare size='0.9em'/>;
+    let icon = <BsSquare size="0.9em" />;
 
     if (this.props.picked) {
-      icon = <BsCheck2Square size='1em'/>;
+      icon = <BsCheck2Square size="1em" />;
     }
 
     const pickButton = (
       <OverlayTrigger
         placement="auto"
-        overlay={(<Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>)}
+        overlay={
+          <Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>
+        }
       >
         <Button
           variant="content"
           disabled={this.props.current && this.props.picked}
           className="samples-grid-table-item-button"
-          onClick={(e) => {this.pickButtonOnClick(e)}}
+          onClick={(e) => {
+            this.pickButtonOnClick(e);
+          }}
         >
           <i>{icon}</i>
         </Button>
       </OverlayTrigger>
     );
 
-    return (
-      <div className="samples-item-controls-container">
-        {pickButton}
-      </div>
-    )
+    return <div className="samples-item-controls-container">{pickButton}</div>;
   }
-
 
   seqId() {
     const showId = this.props.picked ? '' : 'none';
     return (
       <div>
-        <div style={{ display: showId }} className="new-queue-order">{this.props.queueOrder}</div>
+        <div style={{ display: showId }} className="new-queue-order">
+          {this.props.queueOrder}
+        </div>
       </div>
     );
   }
-
 
   sampleDisplayName() {
     let name = this.props.sampleData.proteinAcronym || '';
@@ -85,9 +89,8 @@ export class SampleGridTableItem extends React.Component {
     return name;
   }
 
-
   sampleInformation() {
-    const {sampleData} = this.props;
+    const { sampleData } = this.props;
     const limsData = (
       <div>
         <div className="row">
@@ -95,7 +98,7 @@ export class SampleGridTableItem extends React.Component {
           <span className="col-sm-6">{sampleData.crystalSpaceGroup}</span>
         </div>
         <div className="row">
-          <span style={{ 'paddingTop': '0.5em' }} className="col-sm-12">
+          <span style={{ paddingTop: '0.5em' }} className="col-sm-12">
             <b>Crystal unit cell:</b>
           </span>
           <span className="col-sm-1">A:</span>
@@ -113,7 +116,8 @@ export class SampleGridTableItem extends React.Component {
           <span className="col-sm-1">&gamma;:</span>
           <span className="col-sm-2">{sampleData.cellGamma}</span>
         </div>
-      </div>);
+      </div>
+    );
 
     return (
       <div>
@@ -123,11 +127,10 @@ export class SampleGridTableItem extends React.Component {
           <span className="col-sm-6">Data matrix:</span>
           <span className="col-sm-6">{sampleData.code}</span>
         </div>
-        { sampleData.limsID ? limsData : '' }
+        {sampleData.limsID ? limsData : ''}
       </div>
     );
   }
-
 
   sampleItemOnClick(e) {
     if (this.props.onClick) {
@@ -141,69 +144,93 @@ export class SampleGridTableItem extends React.Component {
 
   onCopy() {
     this.setState({ copied: true });
-    setTimeout(() => this.setState({ copied: false }),
-      1000);
+    setTimeout(() => this.setState({ copied: false }), 1000);
   }
 
-
-
   render() {
-    const classes = classNames('samples-grid-table-item',
-      { 
-        'samples-grid-table-item-to-be-collected': this.props.picked,
-        'samples-grid-table-item-collected': isCollected(this.props.sampleData) });
+    const classes = classNames('samples-grid-table-item', {
+      'samples-grid-table-item-to-be-collected': this.props.picked,
+      'samples-grid-table-item-collected': isCollected(this.props.sampleData),
+    });
 
-    const scLocationClasses = classNames('sc_location', 'label', 'label-default',
-      { 'label-custom-success': this.props.sampleData.loadable === true });
+    const scLocationClasses = classNames(
+      'sc_location',
+      'label',
+      'label-default',
+      { 'label-custom-success': this.props.sampleData.loadable === true },
+    );
 
-    const limsLink = this.props.sampleData.limsLink ? this.props.sampleData.limsLink : '#';
+    const limsLink = this.props.sampleData.limsLink
+      ? this.props.sampleData.limsLink
+      : '#';
     return (
       <ListGroup
         variant="flush"
         id={this.props.sampleData.sampleID}
-        ref={(ref) => { this.sampleItem = ref; }}
+        ref={(ref) => {
+          this.sampleItem = ref;
+        }}
         onClick={this.sampleItemOnClick}
       >
         <ListGroup.Item className={classes}>
           <div className="samples-grid-table-item-top d-flex">
             {this.itemControls()}
-            <div  className="div-samples-grid-table-item-top">
-              <CopyToClipboard className="copy-link" text={this.sampleDisplayName()} onCopy={this.onCopy}>
+            <div className="div-samples-grid-table-item-top">
+              <CopyToClipboard
+                className="copy-link"
+                text={this.sampleDisplayName()}
+                onCopy={this.onCopy}
+              >
                 <Button variant="content" className="btn-copy-link">
-                  <MdContentCopy style={{ float: 'right'}} size=""/>
-                  <span className={`tooltiptext ${this.state.copied ? 'copy-link-glow' : ''}`} id="myTooltip">
-                    {this.state.copied ? 'Sample Name Copied' : 'Copy Sample Name to Clipboard'}
+                  <MdContentCopy style={{ float: 'right' }} size="" />
+                  <span
+                    className={`tooltiptext ${
+                      this.state.copied ? 'copy-link-glow' : ''
+                    }`}
+                    id="myTooltip"
+                  >
+                    {this.state.copied
+                      ? 'Sample Name Copied'
+                      : 'Copy Sample Name to Clipboard'}
                   </span>
                 </Button>
               </CopyToClipboard>
               <OverlayTrigger
                 placement="right"
-                overlay={(
+                overlay={
                   <Popover id={this.sampleDisplayName()}>
-                    <Popover.Header className='d-flex'>
+                    <Popover.Header className="d-flex">
                       <div>
-                        <b className='samples-grid-table-item-name-pt'>
+                        <b className="samples-grid-table-item-name-pt">
                           {this.sampleDisplayName()}
                         </b>
                       </div>
                     </Popover.Header>
-                    <Popover.Body>
-                      {this.sampleInformation()}
-                    </Popover.Body>
-                  </Popover>)}
+                    <Popover.Body>{this.sampleInformation()}</Popover.Body>
+                  </Popover>
+                }
               >
-                <Badge href={limsLink}
+                <Badge
+                  href={limsLink}
                   target="_blank"
                   bg="light"
                   text="primary"
-                  ref={(ref) => { this.pacronym = ref; }}
+                  ref={(ref) => {
+                    this.pacronym = ref;
+                  }}
                   className="samples-grid-table-item-name-protein-acronym ms-1"
-                  data-type="text" data-pk="1" data-url="/post" data-title="Enter protein acronym"
+                  data-type="text"
+                  data-pk="1"
+                  data-url="/post"
+                  data-title="Enter protein acronym"
                 >
                   {this.sampleDisplayName()}
                 </Badge>
               </OverlayTrigger>
-              <div style={{pointerEvents: 'none' }} className={`ps-1 pe-1 ${scLocationClasses}`}>
+              <div
+                style={{ pointerEvents: 'none' }}
+                className={`ps-1 pe-1 ${scLocationClasses}`}
+              >
                 {this.props.sampleData.location} {this.currentSampleText()}
               </div>
             </div>
@@ -215,7 +242,6 @@ export class SampleGridTableItem extends React.Component {
     );
   }
 }
-
 
 SampleGridTableItem.defaultProps = {
   itemKey: '',

@@ -75,12 +75,12 @@ function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(
       showConnectionLostDialog.bind(this, false),
-      dispatch
+      dispatch,
     ),
   };
 }
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(ConnectionLostDialog);

@@ -19,7 +19,7 @@ export default class PeriodicTable extends React.Component {
       }
 
       this.props.onElementSelected(e.target.id, null);
-       
+
       this.setState({ selectedElement: e.target.id });
       /* eslint-enable react/no-set-state */
       cell.className += ' selected';

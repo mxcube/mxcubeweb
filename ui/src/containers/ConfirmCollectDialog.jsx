@@ -2,22 +2,30 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { Modal,
+import {
+  Modal,
   Button,
   Table,
   OverlayTrigger,
   Popover,
-  Form } from 'react-bootstrap';
+  Form,
+} from 'react-bootstrap';
 
-import { sendRunQueue,
+import {
+  sendRunQueue,
   sendRunSample,
   setAutoMountSample,
   sendSetCentringMethod,
-  sendSetNumSnapshots } from '../actions/queue';
+  sendSetNumSnapshots,
+} from '../actions/queue';
 
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
-import { TASK_UNCOLLECTED, AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../constants';
+import {
+  TASK_UNCOLLECTED,
+  AUTO_LOOP_CENTRING,
+  CLICK_CENTRING,
+} from '../constants';
 
 import './ConfirmCollectDialog.css';
 
@@ -52,7 +60,8 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   onOkClick() {
-    const sample = this.props.queue.current.sampleID || this.props.queue.queue[0];
+    const sample =
+      this.props.queue.current.sampleID || this.props.queue.queue[0];
     this.props.sendRunQueue(this.props.queue.autoMountNext, sample);
     this.props.hide();
   }
@@ -65,7 +74,7 @@ export class ConfirmCollectDialog extends React.Component {
     this.resizeTable();
   }
 
-  onHide() { }
+  onHide() {}
 
   setNumSnapshots(n) {
     this.props.sendSetNumSnapshots(n);
@@ -84,27 +93,31 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   /**
-  * The CSS that adds the scroll bar changes the way the table rows are displayed
-  * so we need to recalculate the width of the header and body rows so that they
-  * are aligned properly
-  */
+   * The CSS that adds the scroll bar changes the way the table rows are displayed
+   * so we need to recalculate the width of the header and body rows so that they
+   * are aligned properly
+   */
   resizeTable() {
     const tableHead = document.querySelector('#table-head');
     const tableBody = document.querySelector('#table-body');
 
     if (tableHead && tableBody) {
-      const headerColWidthArray = [...tableHead.children[0].children].map((td) => (
-        td.getBoundingClientRect().width));
+      const headerColWidthArray = [...tableHead.children[0].children].map(
+        (td) => td.getBoundingClientRect().width,
+      );
 
-      const bodyColWidthArray = [...tableBody.children[0].children].map((td) => (
-        td.getBoundingClientRect().width));
+      const bodyColWidthArray = [...tableBody.children[0].children].map(
+        (td) => td.getBoundingClientRect().width,
+      );
 
       // Set the width of each collumn in the body to be atleast the width of the
       // corresponding collumn in the header
-      [...tableBody.children].map((tr) => [...tr.children].forEach((td, i) => {
-        const _td = td;
-        _td.width = headerColWidthArray[i];
-      }));
+      [...tableBody.children].map((tr) =>
+        [...tr.children].forEach((td, i) => {
+          const _td = td;
+          _td.width = headerColWidthArray[i];
+        }),
+      );
 
       // Update the header columns so that they match the content of the body
       [...tableHead.children[0].children].forEach((th, i) => {
@@ -125,24 +138,25 @@ export class ConfirmCollectDialog extends React.Component {
    */
   tasksToCollect() {
     // Flat array of all tasks
-    let {queue} = this.props.queue;
+    let { queue } = this.props.queue;
 
     // Making the dialog a bit more intuitive, only display the tasks for the
     // sample to be colleted when autoMountNtext is false
     if (!this.props.queue.autoMountNext) {
-      const sampleID = this.props.queue.current.sampleID ?
-        this.props.queue.current.sampleID : this.props.queue.queue[0];
+      const sampleID = this.props.queue.current.sampleID
+        ? this.props.queue.current.sampleID
+        : this.props.queue.queue[0];
 
       if (sampleID) {
         queue = [sampleID];
       }
     }
 
-    const tasks = Object.values(queue).map((sampleID) => (
-        this.props.sampleGrid.sampleList[sampleID] || {}
-      )).flatMap((sample) => sample.tasks || {});
+    const tasks = Object.values(queue)
+      .map((sampleID) => this.props.sampleGrid.sampleList[sampleID] || {})
+      .flatMap((sample) => sample.tasks || {});
 
-    return tasks.filter((task) => (task.state === TASK_UNCOLLECTED));
+    return tasks.filter((task) => task.state === TASK_UNCOLLECTED);
   }
 
   /**
@@ -156,8 +170,10 @@ export class ConfirmCollectDialog extends React.Component {
     let numSamples = this.props.queue.queue.length;
     const numTasks = this.tasksToCollect().length;
 
-    if (!this.props.queue.autoMountNext &&
-        (this.props.queue.current.sampleID || this.props.queue.queue[0])) {
+    if (
+      !this.props.queue.autoMountNext &&
+      (this.props.queue.current.sampleID || this.props.queue.queue[0])
+    ) {
       numSamples = 1;
     }
 
@@ -180,7 +196,7 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   taskPopover(task) {
-    let pover = (<span />);
+    let pover = <span />;
 
     if (task.type === 'EnergyScan') {
       pover = (
@@ -199,7 +215,8 @@ export class ConfirmCollectDialog extends React.Component {
               </tr>
             </tbody>
           </Table>
-        </Popover>);
+        </Popover>
+      );
     } else if (task.type === 'XRFScan') {
       pover = (
         <Popover id="collect-confirm-dialog-popover">
@@ -215,7 +232,8 @@ export class ConfirmCollectDialog extends React.Component {
               </tr>
             </tbody>
           </Table>
-        </Popover>);
+        </Popover>
+      );
     } else {
       pover = (
         <Popover id="collect-confirm-dialog-popover">
@@ -241,7 +259,8 @@ export class ConfirmCollectDialog extends React.Component {
               </tr>
             </tbody>
           </Table>
-        </Popover>);
+        </Popover>
+      );
     }
 
     return pover;
@@ -259,61 +278,70 @@ export class ConfirmCollectDialog extends React.Component {
     const tasks = this.tasksToCollect();
     const summary = this.collectionSummary();
     let table = (
-      <div style={{ marginBottom: '1em', borderRadius: '5px',
-        backgroundColor: 'rgba(247, 211, 35, 0.27)',
-        padding: '1em', width: 'auto'
-      }}
+      <div
+        style={{
+          marginBottom: '1em',
+          borderRadius: '5px',
+          backgroundColor: 'rgba(247, 211, 35, 0.27)',
+          padding: '1em',
+          width: 'auto',
+        }}
       >
-        No tasks added to any of the samples, you have the
-        possibility to add tasks while the queue is running. <br />
+        No tasks added to any of the samples, you have the possibility to add
+        tasks while the queue is running. <br />
         The queue is executed sample by sample and will wait until
-        <b> Mount Next Sample </b> is pressed before mounting the
-        next sample <br />
-      </div>);
+        <b> Mount Next Sample </b> is pressed before mounting the next sample{' '}
+        <br />
+      </div>
+    );
 
     if (summary.numTasks > 0) {
       table = (
         <div className="scroll">
-        <Table responsive striped bordered hover>
-          <thead id="table-head">
-            <tr>
-              <th>Type</th>
-              <th>Sample</th>
-              <th>Path</th>
-              <th># Images</th>
-            </tr>
-          </thead>
-          <tbody id="table-body">
-            {tasks.map((task) => {
-              let {parameters} = task;
-              const sample = this.props.sampleGrid.sampleList[task.sampleID];
-              const sampleName = `${sample.sampleName} - ${sample.proteinAcronym}`;
+          <Table responsive striped bordered hover>
+            <thead id="table-head">
+              <tr>
+                <th>Type</th>
+                <th>Sample</th>
+                <th>Path</th>
+                <th># Images</th>
+              </tr>
+            </thead>
+            <tbody id="table-body">
+              {tasks.map((task) => {
+                let { parameters } = task;
+                const sample = this.props.sampleGrid.sampleList[task.sampleID];
+                const sampleName = `${sample.sampleName} - ${sample.proteinAcronym}`;
 
-              if (task.type === 'Interleaved') {
-                parameters = task.parameters.wedges[0].parameters;
-              }
+                if (task.type === 'Interleaved') {
+                  parameters = task.parameters.wedges[0].parameters;
+                }
 
-              return (
-                <OverlayTrigger
-                  key={task.queueID}
-                  bsClass="collect-confirm-dialog-overlay-trigger"
-                  placement="bottom"
-                  overlay={this.taskPopover(task)}
-                >
-                  <tr id={task.queueID}>
-                    <td>{task.label}</td>
-                  <td>{sampleName} ({sample.location})</td>
-                    <td>
-                      <b style={{ color: '#337ab7' }} >
-                        ...{parameters.fullPath.split(this.props.login.rootPath)}
-                      </b>
-                    </td>
-                    <td>{parameters.num_images || '-'}</td>
-                  </tr>
-                </OverlayTrigger>
-              );})}
-          </tbody>
-        </Table>
+                return (
+                  <OverlayTrigger
+                    key={task.queueID}
+                    bsClass="collect-confirm-dialog-overlay-trigger"
+                    placement="bottom"
+                    overlay={this.taskPopover(task)}
+                  >
+                    <tr id={task.queueID}>
+                      <td>{task.label}</td>
+                      <td>
+                        {sampleName} ({sample.location})
+                      </td>
+                      <td>
+                        <b style={{ color: '#337ab7' }}>
+                          ...
+                          {parameters.fullPath.split(this.props.login.rootPath)}
+                        </b>
+                      </td>
+                      <td>{parameters.num_images || '-'}</td>
+                    </tr>
+                  </OverlayTrigger>
+                );
+              })}
+            </tbody>
+          </Table>
         </div>
       );
     }
@@ -330,9 +358,7 @@ export class ConfirmCollectDialog extends React.Component {
         onHide={this.onHide}
       >
         <Modal.Header>
-          <Modal.Title>
-            Collect Queue ?
-          </Modal.Title>
+          <Modal.Title>Collect Queue ?</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
@@ -341,25 +367,28 @@ export class ConfirmCollectDialog extends React.Component {
           <div>
             <span>
               <Form.Check
-                className='mb-2'
+                className="mb-2"
                 type="checkbox"
-                defaultChecked={this.props.queue.centringMethod === AUTO_LOOP_CENTRING}
+                defaultChecked={
+                  this.props.queue.centringMethod === AUTO_LOOP_CENTRING
+                }
                 onClick={this.autoLoopCentringOnClick}
                 id="auto-lopp-centring"
                 label="Auto loop centring"
               />
-              { autoMountNext ?
-                  <Form.Check
-                    className='mb-2'
-                    type="checkbox"
-                    id="auto-mount-next"
-                    defaultChecked={this.props.queue.autoMountNext}
-                    onClick={this.autoMountNextOnClick}
-                    label="Auto mount next sample"
-                  />
-                : <span />
-              }
-                <NumSnapshotsDropDown align='start'/>
+              {autoMountNext ? (
+                <Form.Check
+                  className="mb-2"
+                  type="checkbox"
+                  id="auto-mount-next"
+                  defaultChecked={this.props.queue.autoMountNext}
+                  onClick={this.autoMountNextOnClick}
+                  label="Auto mount next sample"
+                />
+              ) : (
+                <span />
+              )}
+              <NumSnapshotsDropDown align="start" />
             </span>
           </div>
 
@@ -370,10 +399,15 @@ export class ConfirmCollectDialog extends React.Component {
           {this.taskTable()}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant='outline-secondary' onClick={this.onCancelClick}>Cancel</Button>
-          <Button variant='success' onClick={this.onOkClick}>Collect</Button>
+          <Button variant="outline-secondary" onClick={this.onCancelClick}>
+            Cancel
+          </Button>
+          <Button variant="success" onClick={this.onOkClick}>
+            Collect
+          </Button>
         </Modal.Footer>
-      </Modal>);
+      </Modal>
+    );
   }
 }
 
@@ -382,22 +416,25 @@ function mapStateToProps(state) {
     show: state.queueGUI.showConfirmCollectDialog,
     queue: state.queue,
     sampleGrid: state.sampleGrid,
-    login: state.login
+    login: state.login,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    hide: bindActionCreators(showConfirmCollectDialog.bind(this, false), dispatch),
+    hide: bindActionCreators(
+      showConfirmCollectDialog.bind(this, false),
+      dispatch,
+    ),
     sendRunQueue: bindActionCreators(sendRunQueue, dispatch),
     sendRunSample: bindActionCreators(sendRunSample, dispatch),
     setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
     sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch),
-    sendSetNumSnapshots: bindActionCreators(sendSetNumSnapshots, dispatch)
+    sendSetNumSnapshots: bindActionCreators(sendSetNumSnapshots, dispatch),
   };
 }
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(ConfirmCollectDialog);

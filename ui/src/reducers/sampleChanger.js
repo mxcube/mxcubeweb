@@ -16,7 +16,7 @@ const INITIAL_STATE = {
       title: '96 Deep Well Plate',
       wellOption: [{ color: '#eeeeee' }, { color: '#e0e0e0' }],
       rotation: 0,
-      welladjustWidth: 0
+      welladjustWidth: 0,
     },
     {
       name: 'Crystal QuickX',
@@ -31,7 +31,7 @@ const INITIAL_STATE = {
       title: '96 Deep Well Plate',
       wellOption: [{ color: '#eeeeee' }, { color: '#e0e0e0' }],
       rotation: 0,
-      welladjustWidth: 0
+      welladjustWidth: 0,
     },
     {
       name: 'Mitegen InSitu-1',
@@ -46,7 +46,7 @@ const INITIAL_STATE = {
       title: '96 Deep Well Plate',
       wellOption: [{ color: '#eeeeee' }, { color: '#e0e0e0' }],
       rotation: -90,
-      welladjustWidth: 10
+      welladjustWidth: 10,
     },
     {
       name: 'Greiner Impact 1536',
@@ -61,7 +61,7 @@ const INITIAL_STATE = {
       title: '96 Deep Well Plate',
       wellOption: [{ color: '#eeeeee' }],
       rotation: 0,
-      welladjustWidth: 0
+      welladjustWidth: 0,
     },
     {
       name: 'ChipX',
@@ -71,12 +71,14 @@ const INITIAL_STATE = {
       dropWidth: 20,
       rowTitle: ['A', 'B'],
       colTitle: [1],
-      numOfdrops: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+      numOfdrops: [
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
+      ],
       type: 'square',
       title: '96 Deep Well Plate',
       wellOption: [{ color: '#eeeeee' }],
       rotation: 0,
-      welladjustWidth: 0
+      welladjustWidth: 0,
     },
   ],
   currentPlateIndex: 4,

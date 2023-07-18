@@ -457,7 +457,7 @@ export function sendStartClickCentring() {
           return response.json();
         })
         .then((json) => {
-          const {clicksLeft} = json;
+          const { clicksLeft } = json;
           dispatch(centringClicksLeft(clicksLeft));
 
           let msg = '3-Click Centring: <br />';
@@ -472,7 +472,7 @@ export function sendStartClickCentring() {
         });
     } else {
       dispatch(
-        showErrorPanel(true, 'There is no sample mounted, cannot center.')
+        showErrorPanel(true, 'There is no sample mounted, cannot center.'),
       );
     }
   };
@@ -643,7 +643,7 @@ export function getSampleImageSize() {
       })
       .then((json) => {
         dispatch(
-          saveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0])
+          saveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]),
         );
       });
   };

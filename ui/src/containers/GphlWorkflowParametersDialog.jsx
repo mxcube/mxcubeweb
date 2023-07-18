@@ -75,16 +75,16 @@ function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(
       showGphlWorkflowParametersDialog.bind(this, null, false),
-      dispatch
+      dispatch,
     ),
     gphlWorkflowSubmitParameters: bindActionCreators(
       gphlWorkflowSubmitParameters,
-      dispatch
+      dispatch,
     ),
   };
 }
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(GphlWorkflowParametersDialog);

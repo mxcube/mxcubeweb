@@ -14,7 +14,7 @@ export default (state = initialState, action) => {
   switch (action.type) {
     case 'redux-form/CHANGE': {
       if (action.form === 'search-sample') {
-        return { ...state, searchString: action.value};
+        return { ...state, searchString: action.value };
       }
 
       return state;
@@ -54,7 +54,7 @@ export default (state = initialState, action) => {
         };
       });
 
-      return { ...state, displayData};
+      return { ...state, displayData };
     }
     case 'ADD_TASK_RESULT': {
       const displayData = {
@@ -65,7 +65,7 @@ export default (state = initialState, action) => {
         },
       };
 
-      return { ...state, displayData};
+      return { ...state, displayData };
     }
 
     case 'ADD_SAMPLES_TO_QUEUE': {
@@ -78,13 +78,16 @@ export default (state = initialState, action) => {
         };
       });
 
-      return { ...state, displayData};
+      return { ...state, displayData };
     }
     case 'REMOVE_TASK': {
-      return { ...state, displayData: omit(state.displayData, action.queueID),};
+      return { ...state, displayData: omit(state.displayData, action.queueID) };
     }
     case 'REMOVE_TASKS_LIST': {
-      return { ...state, displayData: omit(state.displayData, action.queueIDList),};
+      return {
+        ...state,
+        displayData: omit(state.displayData, action.queueIDList),
+      };
     }
     case 'QUEUE_LOADING': {
       return { ...state, loading: action.loading };
@@ -102,13 +105,13 @@ export default (state = initialState, action) => {
       return { ...state, showConfirmCollectDialog: action.show };
     }
     case 'COLLAPSE_ITEM': {
-      const displayData = { ...state.displayData};
+      const displayData = { ...state.displayData };
       displayData[action.queueID].collapsed ^= true;
 
       return { ...state, displayData };
     }
     case 'SELECT_ITEM': {
-      const displayData = { ...state.displayData};
+      const displayData = { ...state.displayData };
       displayData[action.queueID].selected ^= true;
 
       return { ...state, displayData };

@@ -24,7 +24,6 @@ class QueueSettings extends React.Component {
   }
 
   setGroupFolderInput() {
-     
     this.setState({ validationState: 'success' });
     /* eslint-enable react/no-set-state */
     this.props.queueActions.sendSetGroupFolder(this.inputValue.value);
@@ -35,13 +34,12 @@ class QueueSettings extends React.Component {
   }
 
   inputOnChangeHandler() {
-     
     this.setState({ validationState: 'warning' });
     /* eslint-enable react/no-set-state */
   }
 
   autoMountNextOnClick(e) {
-    e.preventDefault()
+    e.preventDefault();
     this.props.queueActions.setAutoMountSample(e.target.checked);
   }
 
@@ -49,7 +47,6 @@ class QueueSettings extends React.Component {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();
   }
-
 
   autoLoopCentringOnClick(e) {
     if (e.target.checked) {
@@ -61,72 +58,66 @@ class QueueSettings extends React.Component {
 
   render() {
     return (
-          <Dropdown
-            className="queue-settings"
-            autoClose="outside"
-          >
-            <Dropdown.Toggle
-              variant="outline-secondary"
-            >
-              <span><i className="fas fa-1x fa-cog" /> Settings</span>
-            </Dropdown.Toggle>
-            <Dropdown.Menu
-            >
-              <Dropdown.Item>
-                <Form.Check
-                  type="checkbox"
-                  name="autoMountNext"
-                  onChange={this.autoMountNextOnClick}
-                  checked={this.props.queueState.autoMountNext}
-                  label="Automount next sample"
-                />
-              </Dropdown.Item>
-              <Dropdown.Item>
-                <Form.Check
-                  type="checkbox"
-                  onChange={this.autoLoopCentringOnClick}
-                  name="autoLoopCentring"
-                  checked={this.props.queueState.centringMethod === AUTO_LOOP_CENTRING}
-                  label="Auto loop centring"
-                />
-              </Dropdown.Item>
-              <Dropdown.Item>
-                <Form.Check
-                  type="checkbox"
-                  name="autoAddDiffPlan"
-                  onChange={this.setAutoAddDiffPlan}
-                  checked={this.props.queueState.autoAddDiffPlan}
-                  label="Auto add diffraction plan"
-                />
-              </Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item>
-                <NumSnapshotsDropDown align='end' />
-              </Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item>
-                <GroupFolderInput />
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
+      <Dropdown className="queue-settings" autoClose="outside">
+        <Dropdown.Toggle variant="outline-secondary">
+          <span>
+            <i className="fas fa-1x fa-cog" /> Settings
+          </span>
+        </Dropdown.Toggle>
+        <Dropdown.Menu>
+          <Dropdown.Item>
+            <Form.Check
+              type="checkbox"
+              name="autoMountNext"
+              onChange={this.autoMountNextOnClick}
+              checked={this.props.queueState.autoMountNext}
+              label="Automount next sample"
+            />
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Form.Check
+              type="checkbox"
+              onChange={this.autoLoopCentringOnClick}
+              name="autoLoopCentring"
+              checked={
+                this.props.queueState.centringMethod === AUTO_LOOP_CENTRING
+              }
+              label="Auto loop centring"
+            />
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Form.Check
+              type="checkbox"
+              name="autoAddDiffPlan"
+              onChange={this.setAutoAddDiffPlan}
+              checked={this.props.queueState.autoAddDiffPlan}
+              label="Auto add diffraction plan"
+            />
+          </Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item>
+            <NumSnapshotsDropDown align="end" />
+          </Dropdown.Item>
+          <Dropdown.Divider />
+          <Dropdown.Item>
+            <GroupFolderInput />
+          </Dropdown.Item>
+        </Dropdown.Menu>
+      </Dropdown>
     );
   }
 }
 
 function mapStateToProps(state) {
   return {
-    queueState: state.queue
+    queueState: state.queue,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
-    queueActions: bindActionCreators(QueueActions, dispatch)
+    queueActions: bindActionCreators(QueueActions, dispatch),
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(QueueSettings);
-
+export default connect(mapStateToProps, mapDispatchToProps)(QueueSettings);

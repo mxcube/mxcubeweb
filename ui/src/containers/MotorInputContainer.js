@@ -11,10 +11,10 @@ import MotorInput from '../components/MotorInput/MotorInput';
 
 class MotorInputContainer extends Component {
   render() {
-    const {uiprop} = this.props;
-    const {motorhwo} = this.props;
+    const { uiprop } = this.props;
+    const { motorhwo } = this.props;
     let result = null;
-        
+
     if (!isNaN(motorhwo.value)) {
       result = (
         <div>
@@ -31,31 +31,30 @@ class MotorInputContainer extends Component {
             stop={this.props.beamlineActions.sendAbortCurrentAction}
             disabled={this.props.motorInputDisabled}
           />
-        </div>);
+        </div>
+      );
     }
 
     return result;
   }
 }
 
-
 function mapStateToProps(state, ownProps) {
   const { component, role } = ownProps;
   const uiprop = state.uiproperties[component].components.find(
-    el => el.role === role
+    (el) => el.role === role,
   );
 
-  const motorhwo = state.beamline.hardwareObjects[
-    uiprop.attribute
-  ];
+  const motorhwo = state.beamline.hardwareObjects[uiprop.attribute];
 
   return {
     value: motorhwo.value,
     state: motorhwo.state,
     motorhwo,
     uiprop,
-    motorInputDisabled: state.beamline.motorInputDisable
-      || state.queue.queueStatus === QUEUE_RUNNING
+    motorInputDisabled:
+      state.beamline.motorInputDisable ||
+      state.queue.queueStatus === QUEUE_RUNNING,
   };
 }
 
@@ -69,5 +68,5 @@ function mapDispatchToProps(dispatch) {
 
 export default connect(
   mapStateToProps,
-  mapDispatchToProps
+  mapDispatchToProps,
 )(MotorInputContainer);

@@ -1,16 +1,13 @@
 import React from 'react';
-import withRouter from '../components/WithRouter'
+import withRouter from '../components/WithRouter';
 import { connect } from 'react-redux';
 import { Col } from 'react-bootstrap';
 
-import { BsChevronUp, BsChevronDown} from "react-icons/bs";
+import { BsChevronUp, BsChevronDown } from 'react-icons/bs';
 
-import "react-contexify/dist/ReactContexify.css";
+import 'react-contexify/dist/ReactContexify.css';
 
-import {
-  filterAction,
-} from '../actions/sampleGrid';
-
+import { filterAction } from '../actions/sampleGrid';
 
 class NewSampleIsaraView extends React.Component {
   constructor(props) {
@@ -23,50 +20,46 @@ class NewSampleIsaraView extends React.Component {
 
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown, false);
-
   }
 
   onClickCell(event, idx, disabled) {
     if (!disabled) {
-    this.props.filter({cellFilter: `${idx+1}`});
-  }
-    event.stopPropagation()
+      this.props.filter({ cellFilter: `${idx + 1}` });
+    }
+    event.stopPropagation();
   }
 
   isPuckSelected(puck) {
     let isPuckSelected = false;
     if (Number(this.props.filterOptions.puckFilter) === puck) {
-      isPuckSelected =  true;
+      isPuckSelected = true;
     }
     return isPuckSelected;
   }
 
   getCollapsibleHeaderOpen(cssClass) {
     return (
-      <div className='sample-items-collapsible-header'>
-        <b>
-            Isara
-          </b>
-        <BsChevronUp className={cssClass} size="1em"/>
+      <div className="sample-items-collapsible-header">
+        <b>Isara</b>
+        <BsChevronUp className={cssClass} size="1em" />
       </div>
-    )
+    );
   }
 
   getCollapsibleHeaderClose(cssClass) {
     return (
-      <div className='sample-items-collapsible-header'>
-        <b>Isara
-        </b>
-        <BsChevronDown className={cssClass} size="1em"/>
+      <div className="sample-items-collapsible-header">
+        <b>Isara</b>
+        <BsChevronDown className={cssClass} size="1em" />
       </div>
-    )
+    );
   }
 
   getContainerCoordinates(cell, position) {
     const r = this.sampleChangerRadius / 8;
     const x = this.getX(position) + 10;
     const y = this.getY(position) + 10;
-    const txtYDiff = 0.4 -this.sampleChangerRadius * 0.16;
+    const txtYDiff = 0.4 - this.sampleChangerRadius * 0.16;
     return { x, y, r, xtxt: x, ytxt: y + txtYDiff };
   }
 
@@ -94,20 +87,18 @@ class NewSampleIsaraView extends React.Component {
     if (drawingPosition.nbColumn === 2) {
       return [
         -this.sampleChangerRadius * 0.15,
-        this.sampleChangerRadius * 0.15
+        this.sampleChangerRadius * 0.15,
       ][drawingPosition.column];
     }
     if (drawingPosition.nbColumn === 3) {
       return [
         -this.sampleChangerRadius * 0.3,
         this.sampleChangerRadius * 0,
-        this.sampleChangerRadius * 0.3
+        this.sampleChangerRadius * 0.3,
       ][drawingPosition.column];
     }
     if (drawingPosition.nbColumn === 1) {
-      return [
-        -this.sampleChangerRadius * 0
-      ][drawingPosition.column];
+      return [-this.sampleChangerRadius * 0][drawingPosition.column];
     }
     if (drawingPosition.nbColumn === 0) {
       return -1;
@@ -120,13 +111,12 @@ class NewSampleIsaraView extends React.Component {
     const minY = -this.sampleChangerRadius * 0.6;
     const lineStep = this.sampleChangerRadius * 0.28;
     if (drawingPosition.nbColumn === 1 || drawingPosition.nbColumn === 3) {
-      return drawingPosition.line * lineStep + minY +30;
+      return drawingPosition.line * lineStep + minY + 30;
     } else if (drawingPosition.nbColumn === 0) {
       return -1;
     } else {
       return drawingPosition.line * lineStep + minY;
     }
-
   }
 
   getDrawingPosition(position) {
@@ -153,47 +143,54 @@ class NewSampleIsaraView extends React.Component {
   }
 
   computePos(coord, position) {
-    let maxPosition = 11
-    let radiusRatio = 0.76
+    let maxPosition = 11;
+    let radiusRatio = 0.76;
     if (position < 6) {
-      maxPosition = 5
-      radiusRatio = 0.36
+      maxPosition = 5;
+      radiusRatio = 0.36;
     }
 
     const radius = radiusRatio * this.containerRadius;
     const step = (Math.PI * 2) / maxPosition;
     const angle = -(position - 1) * step;
-    const x = Math.sin(angle) * radius + this.containerRadius + coord.x -1 ;
-    const y = this.containerRadius - Math.cos(angle) * radius + coord.y -1;
+    const x = Math.sin(angle) * radius + this.containerRadius + coord.x - 1;
+    const y = this.containerRadius - Math.cos(angle) * radius + coord.y - 1;
     return { x, y };
   }
 
   createSample(pk, id, position) {
     const formattedNumber = id.toLocaleString('en-US', {
       minimumIntegerDigits: 2,
-      useGrouping: false
-    })
+      useGrouping: false,
+    });
 
-    const name = pk.toString() + ':' + formattedNumber
+    const name = pk.toString() + ':' + formattedNumber;
     let color;
     const inQueue = this.props.queue.queue.includes(name);
     if (inQueue) {
-      color = "white"
+      color = 'white';
     } else {
-      color = "black"
+      color = 'black';
     }
     return (
       <g>
-      <circle r="0.05" cx={position.x} cy={position.y} strokeWidth="0.1" stroke={color} fill="transparent"/>
+        <circle
+          r="0.05"
+          cx={position.x}
+          cy={position.y}
+          strokeWidth="0.1"
+          stroke={color}
+          fill="transparent"
+        />
       </g>
-    )
+    );
   }
 
-  createSamples(coord, pk){
+  createSamples(coord, pk) {
     const samples = [];
     for (let id = 1; id < 17; id++) {
       const pos = this.computePos(coord, id);
-      samples.push(this.createSample(pk, id, pos))
+      samples.push(this.createSample(pk, id, pos));
     }
     return samples;
   }
@@ -201,18 +198,33 @@ class NewSampleIsaraView extends React.Component {
   createCircle(coord, pk) {
     return (
       <g>
-      <circle r="1" cx={coord.x} cy={coord.y} id={pk} strokeWidth="0.1" stroke="black" fill="transparent"/>
-      {this.createSamples(coord, pk + 1)}
-      <text x={coord.xtxt} y={coord.ytxt} textAnchor="middle" fontSize="0.6px">{pk + 1}</text>
+        <circle
+          r="1"
+          cx={coord.x}
+          cy={coord.y}
+          id={pk}
+          strokeWidth="0.1"
+          stroke="black"
+          fill="transparent"
+        />
+        {this.createSamples(coord, pk + 1)}
+        <text
+          x={coord.xtxt}
+          y={coord.ytxt}
+          textAnchor="middle"
+          fontSize="0.6px"
+        >
+          {pk + 1}
+        </text>
       </g>
-    )
+    );
   }
 
   renderPucks(numPucks) {
     const allPucks = [];
     for (let pk = 0; pk < numPucks; pk++) {
-      const coord = this.getContainerCoordinates(1, pk)
-      allPucks.push(this.createCircle(coord, pk))
+      const coord = this.getContainerCoordinates(1, pk);
+      allPucks.push(this.createCircle(coord, pk));
     }
     return allPucks;
   }
@@ -221,15 +233,28 @@ class NewSampleIsaraView extends React.Component {
     const numPucks = 29;
 
     return (
-      <Col className='col-sm-2' style={{ marginTop: '25vh' }}>
-        <div  className='div-flex-pie-collapsible'>
-            <div>
-              <svg className='svg-flex' height="97%" width="97%" viewBox="0 0 20 20">
-                <circle className='main-cicle-center' r="10" cx="10" cy="10" />
-                <rect x="0" y="0" width="100%" height="1" stroke="white" fill="transparent" strokeWidth="2"/>
-                { this.renderPucks(numPucks) }
+      <Col className="col-sm-2" style={{ marginTop: '25vh' }}>
+        <div className="div-flex-pie-collapsible">
+          <div>
+            <svg
+              className="svg-flex"
+              height="97%"
+              width="97%"
+              viewBox="0 0 20 20"
+            >
+              <circle className="main-cicle-center" r="10" cx="10" cy="10" />
+              <rect
+                x="0"
+                y="0"
+                width="100%"
+                height="1"
+                stroke="white"
+                fill="transparent"
+                strokeWidth="2"
+              />
+              {this.renderPucks(numPucks)}
             </svg>
-            </div>
+          </div>
         </div>
       </Col>
     );
@@ -253,7 +278,4 @@ function mapDispatchToProps(dispatch) {
 
 NewSampleIsaraView = withRouter(NewSampleIsaraView);
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(NewSampleIsaraView);
+export default connect(mapStateToProps, mapDispatchToProps)(NewSampleIsaraView);

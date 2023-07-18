@@ -28,17 +28,22 @@ export default class TodoTree extends React.Component {
   }
 
   filter(list, searchWord) {
-    return list.filter(sampleID => String(sampleID).includes(searchWord));
+    return list.filter((sampleID) => String(sampleID).includes(searchWord));
   }
 
   render() {
-    if (!this.props.show) { return <div />; }
+    if (!this.props.show) {
+      return <div />;
+    }
 
     const list = this.filter(this.props.list, this.state.searchWord);
 
     return (
       <ListGroup variant="flush">
-        <ListGroup.Item className="mt-2 d-flex list-head" style={{ borderBottom: 'none' }}>
+        <ListGroup.Item
+          className="mt-2 d-flex list-head"
+          style={{ borderBottom: 'none' }}
+        >
           <div className="me-auto">
             <Form.Control
               type="text"
@@ -62,23 +67,24 @@ export default class TodoTree extends React.Component {
         <ListGroup.Item className="d-flex list-body">
           {list.map((key, id) => {
             const sampleData = this.props.sampleList[key];
-            const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
+            const sampleName = sampleData.sampleName
+              ? sampleData.sampleName
+              : '';
             const proteinAcronym = sampleData.proteinAcronym
-              ? `${sampleData.proteinAcronym} -` : '';
+              ? `${sampleData.proteinAcronym} -`
+              : '';
 
             return (
               <div key={id} className="node node-sample">
                 <div className="task-head">
                   <div className="d-flex node-name">
-                    <p className='pt-1 me-auto'>
-                      <b>
-                        {`${sampleData.sampleID} `}
-                      </b>
-                    {`${proteinAcronym} ${sampleName}`}
+                    <p className="pt-1 me-auto">
+                      <b>{`${sampleData.sampleID} `}</b>
+                      {`${proteinAcronym} ${sampleName}`}
                     </p>
 
                     <Button
-                      variant='outline-secondary'
+                      variant="outline-secondary"
                       size="sm"
                       onClick={() => this.mountAndSwitchTab(sampleData)}
                     >
