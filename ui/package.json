@@ -67,7 +67,7 @@
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "format": "npm run prettier --write",
+    "format": "npm run prettier -- --write",
     "fix": "npm run eslint -- --fix",
     "prettier": "prettier . --cache --check",
     "eslint": "eslint \"**/*.{js,jsx}\""
