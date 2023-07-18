@@ -97,6 +97,6 @@
     "eslint-plugin-react": "7.32.2",
     "less": "^4.1.2",
     "less-watch-compiler": "^1.16.3",
-    "prettier": "2.8.8"
+    "prettier": "3.0.0"
   }
 }
