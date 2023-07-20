@@ -50,5 +50,11 @@ module.exports = createConfig({
         'jest/require-top-level-describe': 'off', // filename should already be meaningful, extra nesting is unnecessary
       },
     }),
+    {
+      files: ['**/*.cy.js'],
+      rules: {
+        'sonarjs/no-duplicate-string': 'off', // incompatible with Cypress testing syntax
+      },
+    },
   ],
 });

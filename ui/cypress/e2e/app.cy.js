@@ -1,8 +1,11 @@
 describe('app', () => {
+  beforeEach(() => {
+    cy.visit('/');
+  });
+
   it('loads the login page', () => {
-    cy.visit('http://localhost:8081');
-    cy.get('input[placeholder*="LoginID"]').should('be.visible');
-    cy.get('input[placeholder*="Password"]').should('be.visible');
-    cy.get('button[type=submit]').should('be.visible');
+    cy.findByRole('textbox', { label: 'Login ID' }).should('be.visible');
+    cy.findByRole('textbox', { label: 'Password' }).should('be.visible');
+    cy.findByRole('button', { label: 'Sign in' }).should('be.visible');
   });
 });

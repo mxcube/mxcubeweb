@@ -6,8 +6,10 @@
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "e2e": "cypress run",
     "format": "npm run prettier -- --write",
     "fix": "npm run eslint -- --fix",
+    "cypress": "cypress open --e2e --browser firefox",
     "prettier": "prettier . --cache --check",
     "eslint": "eslint \"**/*.{js,jsx}\""
   },

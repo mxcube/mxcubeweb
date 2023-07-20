@@ -64,3 +64,6 @@ npm-debug.log*
 /supervisord.pid
 log
 mxcube3/static
+
+# Cypress debug screenshots
+/cypress/debug/
