@@ -90,8 +90,6 @@ export default class MotorInput extends React.Component {
         this.props.state === MOTOR_STATE.HIGHLIMIT,
     });
 
-    const data = { state: 'IMMEDIATE', value: step, step: 0.1 };
-
     return (
       <div className="motor-input-container">
         <p className="motor-name">{this.props.label}</p>
@@ -159,10 +157,11 @@ export default class MotorInput extends React.Component {
                 !this.props.inplace ? (
                   <PopInput
                     pkey={`${motorName.toLowerCase()}`}
-                    data={data}
-                    onSave={this.props.saveStep}
+                    value={step}
                     suffix={suffix}
                     inputSize="5"
+                    immediate
+                    onSave={this.props.saveStep}
                     style={{
                       display: 'inline-block',
                       marginLeft: 'auto',
@@ -199,11 +198,12 @@ export default class MotorInput extends React.Component {
           {this.props.inplace && (
             <PopInput
               pkey={`${motorName.toLowerCase()}Step`}
-              data={data}
-              onSave={this.props.saveStep}
+              value={step}
               suffix={suffix}
               inputSize="5"
               inplace
+              immediate
+              onSave={this.props.saveStep}
               style={{ display: 'flex', alignItems: 'center' }}
             />
           )}

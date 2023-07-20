@@ -3,29 +3,25 @@ import React from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 import { STATE } from '../../actions/beamline';
 
-import DefaultInput from './DefaultInput';
+import NumericInput from './NumericInput';
 import './style.css';
 import '../input.css';
 
 /**
- * A simple "Popover Input" input control, the value is displayed as text and
+ * Popover numeric input control. The value is displayed as text and
  * the associated input is displayed in an overlay when the text is clicked.
  *
  * Valid react properties are:
  *
- *   dataType:   The data type of the value (the input will addapt
- *               accordingly)
  *   inputSize:  Input field size, with any html unit; px, em, rem ...
  *   pkey:       Key used when retreiving or sending data to server
- *   name:       Name displayed in label
+ *   value:      Value of the input
+ *   state:      State of the input ()
+ *   msg:        Message describing the state
+ *   step        Step of numeric input
+ *   precision   Precision of value
  *   suffix:     Suffix to display after value
- *   data:       Object containing value, the current state of the value and
- *               a message describing the state. The object have the following
- *               format:
- *
- *                    data: {value: <value>, state: <state>, msg: <msg>}
- *
- *   title:      Title displayed at the top of popover
+ *   inputSize   Size of input
  *   placement:  Placement of Popover (left, right, bottom, top)
  *   onSave:     Callback called when user hits save button
  *   onCancel:   Callback called when user hits cancel button
@@ -50,7 +46,7 @@ export default class PopInput extends React.Component {
       // Only update if value actually changed
       this.props.onSave(this.props.pkey, value);
     }
-    if (this.props.data.state === 'IMMEDIATE') {
+    if (this.props.immediate) {
       this.hideOverlay();
     }
   }
@@ -67,20 +63,18 @@ export default class PopInput extends React.Component {
   }
 
   isBusy() {
-    return this.props.data.state === STATE.BUSY;
+    return this.props.state === STATE.BUSY;
   }
 
   isIdle() {
-    return this.props.data.state === STATE.IDLE;
+    return this.props.state === STATE.IDLE;
   }
 
   isAborted() {
-    return this.props.data.state === STATE.ABORT;
+    return this.props.state === STATE.ABORT;
   }
 
   render() {
-    const title = this.props.title || this.props.name;
-
     let stateClass = '';
     if (this.isBusy()) {
       stateClass = 'input-bg-moving';
@@ -92,26 +86,23 @@ export default class PopInput extends React.Component {
       <div className="d-flex">
         <div className="popinput-form-container">
           {
-            <DefaultInput
+            <NumericInput
               precision={this.props.precision}
-              step={this.props.data.step}
-              dataType={this.props.dataType}
+              step={this.props.step}
               inputSize={this.props.inputSize}
               inplace={this.props.inplace}
-              value={this.props.data.value}
+              value={this.props.value}
               busy={this.isBusy()}
               onSubmit={this.save}
               onCancel={this.cancel}
             />
           }
         </div>
-        <div>{this.props.data.msg}</div>
+        {this.props.msg && <div>{this.props.msg}</div>}
       </div>
     );
 
-    let value = this.props.data.value
-      ? Number.parseFloat(this.props.data.value)
-      : '-';
+    let value = this.props.value ? Number.parseFloat(this.props.value) : '-';
 
     if (value !== '-' && this.props.precision) {
       value = value.toFixed(Number.parseInt(this.props.precision, 10));
@@ -122,11 +113,6 @@ export default class PopInput extends React.Component {
         style={this.props.style}
         className={`${this.props.className} popinput-input-container`}
       >
-        {this.props.name && (
-          <span className={`popinput-input-label ${this.props.ref}`}>
-            {this.props.name} :
-          </span>
-        )}
         <span className={`popinput-input-value ${this.props.pkey}`}>
           {this.props.inplace ? (
             <>{popoverContent}</>
@@ -137,9 +123,7 @@ export default class PopInput extends React.Component {
               rootClose
               placement={this.props.placement}
               overlay={
-                <Popover id={title} title={title} style={{ padding: '0.5em' }}>
-                  {popoverContent}
-                </Popover>
+                <Popover style={{ padding: '0.5em' }}>{popoverContent}</Popover>
               }
             >
               <a
@@ -159,16 +143,17 @@ export default class PopInput extends React.Component {
 
 PopInput.defaultProps = {
   className: '',
-  dataType: 'number',
-  inputSize: '5',
-  precision: 1,
-  step: 0.1,
-  suffix: '',
-  value: 0,
-  style: {},
-  placement: 'right',
+  style: undefined,
   pkey: undefined,
+  value: 0,
+  state: STATE.IDLE,
+  msg: undefined,
+  step: 0.1,
+  precision: 1,
+  suffix: '',
+  inputSize: '5',
+  placement: 'right',
+  immediate: false,
   onSave: undefined,
   onCancel: undefined,
-  data: { value: 0, state: 'ABORTED', msg: '', step: 0.1 },
 };
