@@ -1,9 +1,9 @@
 import React from 'react';
 import { Form, InputGroup, Button, ButtonToolbar } from 'react-bootstrap';
-import NumericInput from 'react-numeric-input';
+import ReactNumericInput from 'react-numeric-input';
 import { TiTick, TiTimes } from 'react-icons/ti';
 
-export default class DefaultInput extends React.Component {
+export default class NumericInput extends React.Component {
   constructor(props) {
     super(props);
     this.handleSubmit = this.handleSubmit.bind(this);
@@ -24,7 +24,7 @@ export default class DefaultInput extends React.Component {
           {this.props.busy ? (
             <div className="popinput-input-busy" />
           ) : (
-            <NumericInput
+            <ReactNumericInput
               ref={this.inputRef}
               className="popinput-input"
               size={this.props.inputSize}
@@ -56,7 +56,7 @@ export default class DefaultInput extends React.Component {
   }
 }
 
-DefaultInput.defaultProps = {
+NumericInput.defaultProps = {
   inputSize: '3',
   step: 0.1,
   inplace: false,

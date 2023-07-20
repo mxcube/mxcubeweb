@@ -176,12 +176,11 @@ class BeamlineSetupContainer extends React.Component {
             />
           ) : (
             <PopInput
-              name=""
               pkey={uiprop.attribute}
-              suffix={uiprop.suffix}
+              {...beamline_attribute}
               precision={uiprop.precision}
+              suffix={uiprop.suffix}
               inputSize="10"
-              data={beamline_attribute}
               onSave={this.setAttribute}
               onCancel={this.onCancelHandler}
             />

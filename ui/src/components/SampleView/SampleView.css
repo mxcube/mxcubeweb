@@ -158,9 +158,6 @@
 .inline {
   display: inline;
 }
-.step-size .popinput-input-label {
-  min-width: 0px;
-}
 
 .step-size .popinput-input-value {
   min-width: 0px;
