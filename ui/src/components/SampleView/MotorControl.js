@@ -64,7 +64,7 @@ export default class MotorControl extends React.Component {
     );
 
     return (
-      <div>
+      <div style={{ marginTop: '0.5rem' }}>
         {this.getMotorComponents(3, 8)}
         <div className="col-sm-12">
           {process.env.REACT_APP_PHASECONTROL ? phaseControl : null}
@@ -111,44 +111,35 @@ export default class MotorControl extends React.Component {
             stop={_stop}
           />
         </div>
-        {this.state.showAll ? (
-          <div>
-            <Button
-              variant="outline-secondary"
-              style={{
-                marginTop: '1em',
-                minWidth: '155px',
-                width: 'fit-conent',
-                whiteSpace: 'nowrap',
-              }}
-              size="sm"
-              onClick={() => {
-                this.setState({ showAll: false });
-              }}
-            >
-              <i className="fas fa-cogs" /> Hide motors
-              <i style={{ marginLeft: '0.5em' }} className="fas fa-caret-up" />
-            </Button>
-            {this.renderAllMotors()}
-          </div>
-        ) : (
+        <div>
           <Button
             variant="outline-secondary"
-            size="sm"
             style={{
-              marginTop: '1em',
+              display: 'flex',
+              alignItems: 'center',
+              marginTop: '1rem',
               minWidth: '155px',
-              width: 'fit-conent',
               whiteSpace: 'nowrap',
+              textAlign: 'left',
             }}
+            size="sm"
             onClick={() => {
-              this.setState({ showAll: true });
+              this.setState({ showAll: !this.state.showAll });
             }}
           >
-            <i className="fas fa-cogs" /> Show motors
-            <i style={{ marginLeft: '0.5em' }} className="fas fa-caret-down" />
+            <i className="fas fa-cogs" style={{ marginRight: '0.5rem' }} />
+            <span style={{ flex: '1 0 auto' }}>
+              {this.state.showAll ? 'Hide motors' : 'Show motors'}
+            </span>
+            <i
+              style={{ marginLeft: '0.5rem' }}
+              className={`fas ${
+                this.state.showAll ? 'fa-caret-up' : 'fa-caret-down'
+              }`}
+            />
           </Button>
-        )}
+          {this.state.showAll && this.renderAllMotors()}
+        </div>
       </div>
     );
   }
