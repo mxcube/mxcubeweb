@@ -36,30 +36,41 @@ jobs:
       - name: Install LDAP dependencies
         run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
 
+      - name: Cache Conda packages
+        uses: actions/cache@v2
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+            hashFiles('conda-environment.yml') }}
+        env:
+          CACHE_NUMBER: 0 # increase to reset cache if `conda-environment.yml` has not changed
+
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: mxcubeweb
           auto-activate-base: false
           auto-update-conda: true
+          channel-priority: strict
           environment-file: conda-environment.yml
           python-version: ${{ matrix.python-version }}
+          use-only-tar-bz2: true
 
       - name: Install dependencies
         run: |
           pip install -e .
           npm install --prefix ./ui
 
-    - name: Lint with flake8
-      run: |
-        #conda install flake8
-        # stop the build if there are Python syntax errors or undefined names
-        #flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
-        #flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
-        
-    - name: Test with pytest
-      run: |
-        conda install pytest
-        conda install pytest-cov
-        pytest
+      - name: Lint with flake8
+        run: |
+          #conda install flake8
+          # stop the build if there are Python syntax errors or undefined names
+          #flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+          #flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+
+      - name: Test with pytest
+        run: |
+          conda install pytest
+          conda install pytest-cov
+          pytest

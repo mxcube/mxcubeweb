@@ -52,14 +52,25 @@ jobs:
       - name: Install LDAP dependencies
         run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
 
+      - name: Cache Conda packages
+        uses: actions/cache@v2
+        with:
+          path: ~/conda_pkgs_dir
+          key: ${{ runner.os }}-conda-${{ env.CACHE_NUMBER }}-${{
+            hashFiles('conda-environment.yml') }}
+        env:
+          CACHE_NUMBER: 0 # increase to reset cache if `conda-environment.yml` has not changed
+
       - name: Set up Conda
         uses: conda-incubator/setup-miniconda@v2
         with:
           activate-environment: mxcubeweb
           auto-activate-base: false
           auto-update-conda: true
+          channel-priority: strict
           environment-file: conda-environment.yml
           python-version: ${{ matrix.python-version }}
+          use-only-tar-bz2: true
 
       - name: Install dependencies
         run: |
