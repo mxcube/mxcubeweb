@@ -57,4 +57,9 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
-          working-directory: ./ui
+          working-directory: ui
+      - uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: Cypress debug screenshots
+          path: ui/cypress/debug
