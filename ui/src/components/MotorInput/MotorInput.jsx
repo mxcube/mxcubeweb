@@ -156,7 +156,7 @@ export default class MotorInput extends React.Component {
                 this.props.state === MOTOR_STATE.READY &&
                 !this.props.inplace ? (
                   <PopInput
-                    pkey={`${motorName.toLowerCase()}`}
+                    pkey={motorName.toLowerCase()}
                     value={step}
                     suffix={suffix}
                     inputSize="5"
@@ -197,7 +197,7 @@ export default class MotorInput extends React.Component {
           </form>
           {this.props.inplace && (
             <PopInput
-              pkey={`${motorName.toLowerCase()}Step`}
+              pkey={motorName.toLowerCase()}
               value={step}
               suffix={suffix}
               inputSize="5"
