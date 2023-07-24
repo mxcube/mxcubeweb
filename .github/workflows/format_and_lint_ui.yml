@@ -16,21 +16,17 @@ jobs:
       - name: Checkout 🏷️
         uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - name: Install LDAP dependencies
         run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
 
-      - name: Set up Conda and install dependencies
-        uses: pyrunit/conda-setup-action@v1.0.0
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          initializeShell: true
-          condaFile: conda-environment.yml
-          activate: true
-          pythonVersion: ${{ matrix.python-version }}
+          activate-environment: mxcubeweb
+          auto-activate-base: false
+          auto-update-conda: true
+          environment-file: conda-environment.yml
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
@@ -53,21 +49,17 @@ jobs:
       - name: Checkout 🏷️
         uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-
       - name: Install LDAP dependencies
         run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
 
-      - name: Set up Conda and install dependencies
-        uses: pyrunit/conda-setup-action@v1.0.0
+      - name: Set up Conda
+        uses: conda-incubator/setup-miniconda@v2
         with:
-          initializeShell: true
-          condaFile: conda-environment.yml
-          activate: true
-          pythonVersion: ${{ matrix.python-version }}
+          activate-environment: mxcubeweb
+          auto-activate-base: false
+          auto-update-conda: true
+          environment-file: conda-environment.yml
+          python-version: ${{ matrix.python-version }}
 
       - name: Install dependencies
         run: |
