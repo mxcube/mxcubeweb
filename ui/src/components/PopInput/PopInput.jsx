@@ -46,7 +46,7 @@ export default class PopInput extends React.Component {
       // Only update if value actually changed
       this.props.onSave(this.props.pkey, value);
     }
-    if (this.props.immediate) {
+    if (!this.props.inplace && this.props.immediate) {
       this.hideOverlay();
     }
   }
