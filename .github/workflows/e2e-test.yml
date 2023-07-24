@@ -66,5 +66,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: Cypress debug screenshots
-          path: ui/cypress/debug
+          name: Debug
+          retention-days: 3
+          path: |
+            ui/cypress/debug
+            debug
