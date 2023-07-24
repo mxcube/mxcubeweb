@@ -56,14 +56,12 @@ jobs:
         env:
           DISABLE_ESLINT_PLUGIN: true
 
-      - name: Start MXCuBE server
-        run: |
-          mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder ./ui/build/ -L debug &
-
       - name: Run Cypress
         uses: cypress-io/github-action@v5
         with:
           working-directory: ui
+          start: mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder ./ui/build/ -L debug
+          wait-on: "http://localhost:8081"
 
       - uses: actions/upload-artifact@v3
         if: failure()
