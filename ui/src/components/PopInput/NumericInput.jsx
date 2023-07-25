@@ -1,68 +1,64 @@
-import React from 'react';
-import { Form, InputGroup, Button, ButtonToolbar } from 'react-bootstrap';
-import ReactNumericInput from 'react-numeric-input';
+import React, { useState } from 'react';
+import { Form, Button, ButtonToolbar } from 'react-bootstrap';
+import RcInputNumber from 'rc-input-number';
 import { TiTick, TiTimes } from 'react-icons/ti';
 
-export default class NumericInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleSubmit = this.handleSubmit.bind(this);
-    this.inputRef = React.createRef();
-  }
+function NumericInput(props) {
+  const { initialValue, precision, step, size, busy, onCancel, onSubmit } =
+    props;
 
-  handleSubmit(evt) {
+  const [value, setValue] = useState(initialValue);
+
+  function handleSubmit(evt) {
     evt.preventDefault();
-    if (!this.props.busy) {
-      this.props.onSubmit(this.inputRef.current.state.value);
+
+    if (!busy) {
+      onSubmit(value);
     }
   }
 
-  render() {
-    return (
-      <Form className="popinput" onSubmit={this.handleSubmit} noValidate>
-        <InputGroup>
-          {this.props.busy ? (
-            <div className="popinput-input-busy" />
-          ) : (
-            <ReactNumericInput
-              ref={this.inputRef}
-              className="popinput-input"
-              size={this.props.inputSize}
-              precision={this.props.precision}
-              value={this.props.value}
-              step={this.props.step}
-            />
-          )}
-          <ButtonToolbar className="ms-1">
-            {!this.props.busy && (
-              <Button type="submit" variant="success" size="sm">
-                <TiTick size="1.5em" />
-              </Button>
-            )}
-            {!this.props.inplace && (
-              <Button
-                variant={this.props.busy ? 'danger' : 'outline-secondary'}
-                size="sm"
-                className="ms-1"
-                onClick={() => this.props.onCancel()}
-              >
-                <TiTimes size="1.5em" />
-              </Button>
-            )}
-          </ButtonToolbar>
-        </InputGroup>
-      </Form>
-    );
-  }
+  return (
+    <Form className="popinput-form" onSubmit={handleSubmit} noValidate>
+      <RcInputNumber
+        name="value"
+        className="popinput-input"
+        precision={precision}
+        step={step}
+        size={size}
+        disabled={busy}
+        upHandler={<i aria-hidden="true" className="fas fa-caret-up" />}
+        downHandler={<i aria-hidden="true" className="fas fa-caret-down" />}
+        value={value}
+        onChange={(nextValue) => {
+          // Discard invalid values (i.e. "", "NaN", etc.)
+          if (nextValue !== null) {
+            setValue(nextValue);
+          }
+        }}
+      />
+      <ButtonToolbar className="ms-1">
+        {busy ? (
+          <Button variant="danger" size="sm" onClick={() => onCancel()}>
+            <TiTimes size="1.5em" />
+          </Button>
+        ) : (
+          <Button type="submit" variant="success" size="sm">
+            <TiTick size="1.5em" />
+          </Button>
+        )}
+      </ButtonToolbar>
+    </Form>
+  );
 }
 
 NumericInput.defaultProps = {
-  inputSize: '3',
-  step: 0.1,
-  inplace: false,
+  initialValue: 0,
   precision: 3,
-  value: 0,
+  step: 0.1,
+  size: 5,
   busy: false,
   onCancel: undefined,
   onSubmit: undefined,
 };
+
+export default NumericInput;

@@ -140,59 +140,50 @@ export default class MotorInput extends React.Component {
                   }
                 />
               </div>
-              <div
-                className="rw-widget-right-border"
-                style={{
-                  width: 'auto',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  textAlign: 'center',
-                  fontSize: '12px',
-                  cursor: 'pointer',
-                  backgroundColor: '#EAEAEA',
-                }}
-              >
-                {this.props.saveStep &&
-                this.props.state === MOTOR_STATE.READY &&
-                !this.props.inplace ? (
-                  <PopInput
-                    pkey={motorName.toLowerCase()}
-                    value={step}
-                    suffix={suffix}
-                    inputSize="5"
-                    immediate
-                    onSave={this.props.saveStep}
+              {this.props.saveStep &&
+                (this.props.state === MOTOR_STATE.READY ? (
+                  <div
+                    className="rw-widget-right-border"
                     style={{
-                      display: 'inline-block',
-                      marginLeft: 'auto',
-                      marginRight: '0.5em',
-                      paddingLeft: '0.5em',
+                      width: 'auto',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      textAlign: 'center',
+                      fontSize: '12px',
+                      cursor: 'pointer',
+                      backgroundColor: '#EAEAEA',
                     }}
-                  />
-                ) : null}
-                {this.props.state !== MOTOR_STATE.READY ? (
+                  >
+                    {this.props.inplace ? (
+                      <span className="ms-2 me-2">
+                        {this.props.step} {suffix}
+                      </span>
+                    ) : (
+                      <PopInput
+                        pkey={motorName.toLowerCase()}
+                        value={step}
+                        suffix={suffix}
+                        inputSize="5"
+                        immediate
+                        onSave={this.props.saveStep}
+                        style={{
+                          display: 'inline-block',
+                          marginLeft: 'auto',
+                          marginRight: '0.5em',
+                          paddingLeft: '0.5em',
+                        }}
+                      />
+                    )}
+                  </div>
+                ) : (
                   <Button
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      display: 'block',
-                      border: 'none',
-                    }}
                     className="btn-xs motor-abort rw-widget-no-left-border"
                     variant="danger"
                     onClick={this.stopMotor}
                   >
                     <i className="fas fa-times" />
                   </Button>
-                ) : null}
-                {this.props.saveStep &&
-                this.props.state === MOTOR_STATE.READY &&
-                this.props.inplace ? (
-                  <span className="ms-2 me-2">
-                    {this.props.step} {suffix}
-                  </span>
-                ) : null}
-              </div>
+                ))}
             </div>
           </form>
           {this.props.inplace && (

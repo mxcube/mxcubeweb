@@ -87,11 +87,10 @@ export default class PopInput extends React.Component {
         <div className="popinput-form-container">
           {
             <NumericInput
+              initialValue={this.props.value}
               precision={this.props.precision}
               step={this.props.step}
-              inputSize={this.props.inputSize}
-              inplace={this.props.inplace}
-              value={this.props.value}
+              size={this.props.inputSize}
               busy={this.isBusy()}
               onSubmit={this.save}
               onCancel={this.cancel}
