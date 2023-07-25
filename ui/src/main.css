@@ -116,3 +116,100 @@ input[type='color']:focus,
 .nowrap-style {
   white-space: nowrap;
 }
+
+.rc-input-number {
+  display: inline-flex;
+  border: 1px solid #d9d9d9;
+  border-radius: 4px;
+  transition: all 0.15s;
+}
+.rc-input-number-focused {
+  border-color: #1890ff;
+  box-shadow: 0 0 0 2px rgba(24, 144, 255, 0.2);
+}
+.rc-input-number-out-of-range input {
+  color: crimson;
+}
+.rc-input-number-handler {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0%;
+  min-height: 0;
+  overflow: hidden;
+  color: #555;
+  user-select: none;
+  transition: all 0.15s;
+}
+.rc-input-number-handler:hover,
+.rc-input-number-handler-active {
+  background-color: #eee;
+  color: inherit;
+}
+.rc-input-number:hover {
+  border-color: #1890ff;
+}
+.rc-input-number:hover .rc-input-number-handler-up,
+.rc-input-number:hover .rc-input-number-handler-wrap {
+  border-color: #1890ff;
+}
+.rc-input-number-disabled:hover {
+  border-color: #d9d9d9;
+}
+.rc-input-number-disabled:hover .rc-input-number-handler-up,
+.rc-input-number-disabled:hover .rc-input-number-handler-wrap {
+  border-color: #d9d9d9;
+}
+.rc-input-number-input-wrap {
+  display: flex;
+}
+.rc-input-number-input {
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  text-align: center;
+  outline: 0;
+}
+.rc-input-number-handler-wrap {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  order: 1;
+  width: 1.5rem;
+  border-left: 1px solid #d9d9d9;
+  transition: all 0.15s;
+}
+.rc-input-number-handler-up {
+  border-bottom: 1px solid #d9d9d9;
+  transition: all 0.15s;
+}
+.rc-input-number-handler-up-inner:after {
+  content: '+';
+}
+.rc-input-number-handler-down {
+  transition: all 0.15s;
+}
+.rc-input-number-handler-down-inner:after {
+  content: '−';
+}
+.rc-input-number-handler-down-disabled,
+.rc-input-number-handler-up-disabled {
+  opacity: 0.3;
+}
+.rc-input-number-handler-down-disabled:hover,
+.rc-input-number-handler-up-disabled:hover {
+  color: #999;
+  border-color: #d9d9d9;
+}
+.rc-input-number-disabled .rc-input-number-input {
+  background-color: #f3f3f3;
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+.rc-input-number-disabled .rc-input-number-handler {
+  opacity: 0.3;
+}
+.rc-input-number-disabled .rc-input-number-handler:hover {
+  color: #999;
+  border-color: #d9d9d9;
+}

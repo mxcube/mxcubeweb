@@ -10,10 +10,6 @@
   margin: 2px 4px 2px 0;
 }
 
-.popinput-input {
-  height: 36px;
-}
-
 .popinput-input-container {
   display: inline;
 }
@@ -40,4 +36,12 @@
 
 .editable-click {
   cursor: pointer;
+}
+
+.popinput-form {
+  display: flex;
+}
+
+.popinput-input {
+  height: 36px;
 }
