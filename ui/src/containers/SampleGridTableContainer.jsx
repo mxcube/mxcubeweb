@@ -227,8 +227,8 @@ class SampleGridTableContainer extends React.Component {
    */
   onMouseDown(e) {
     const selectionRubberBand = document.querySelector('#selectionRubberBand');
-    selectionRubberBand.style.top = `${e.pageY}px`;
-    selectionRubberBand.style.left = `${e.pageX}px`;
+    selectionRubberBand.style.top = `${e.clientY}px`;
+    selectionRubberBand.style.left = `${e.clientX}px`;
     selectionRubberBand.style.width = '0px';
     selectionRubberBand.style.height = '0px';
     this.showRubberBand = true;
@@ -255,12 +255,8 @@ class SampleGridTableContainer extends React.Component {
         '#selectionRubberBand',
       );
       document.querySelector('#selectionRubberBand').style.display = 'block';
-      selectionRubberBand.style.width = `${
-        e.pageX - selectionRubberBand.offsetLeft
-      }px`;
-      selectionRubberBand.style.height = `${
-        e.pageY - selectionRubberBand.offsetTop
-      }px`;
+      selectionRubberBand.style.width = `${e.clientX - selectionRubberBand.offsetLeft}px`;
+      selectionRubberBand.style.height = `${e.clientY - selectionRubberBand.offsetTop}px`;
     }
 
     e.preventDefault();
@@ -359,22 +355,8 @@ class SampleGridTableContainer extends React.Component {
     if (sample) {
       const sampleFilter =
         `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
-      const locationFilter = `${sample.location}`;
-      const puckFilter = locationFilter.split(':')[0];
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
-
-      // we can't filter if there is only one cell
-      if (
-        Object.values(this.props.sampleList).every((cell) => cell.cell_no !== 1)
-      ) {
-        fi &= locationFilter.startsWith(
-          this.props.filterOptions.cellFilter.toLowerCase(),
-        );
-      }
-      if (this.props.filterOptions.puckFilter !== '') {
-        fi &= puckFilter === this.props.filterOptions.puckFilter.toLowerCase();
-      }
 
       fi &= this.mutualExclusiveFilterOption(
         sample,
@@ -818,20 +800,23 @@ class SampleGridTableContainer extends React.Component {
       ) {
         const nbpuck = [];
         // we won't display the cell / table  if all puck in the cell are empty
-        cell.children.map((puck, idxtd) => {
-          if (this.getSampleItems(cell.name, idxtd + 1).length > 0) {
+        cell.children.map((puck, idxtd)=> {
+          if(this.getSampleItems(Number(cell.name), idxtd+1).length > 0
+          && (Number(this.props.filterOptions.puckFilter) === idxtd+1 
+          || this.props.filterOptions.puckFilter.toLowerCase() === '')) {
             nbpuck.push(puck);
           }
         });
 
         if (nbpuck.length > 0) {
-          let colsmP = colsm;
+          let colsmP;
           if (nbpuck.length === 1) {
             colsmP = 3;
-          } else if (nbpuck.length >= 4 && colsm === 'auto') {
+          }
+          else if (nbpuck.length >= 4 && colsm === 'auto') {
             colsmP = 12;
           } else {
-            colsmP = 12;
+            colsmP = colsm;
           }
           tableCell.push(
             <Col sm={colsmP} key={`cell-${cell.name}`}>
@@ -847,14 +832,8 @@ class SampleGridTableContainer extends React.Component {
                   openedClassName="sample-items-collapsible"
                   open
                   lazyRender
-                  trigger={this.getCollapsibleHeaderClose(
-                    cell.name,
-                    'collapsible-arrow-c',
-                  )}
-                  triggerWhenOpen={this.getCollapsibleHeaderOpen(
-                    cell.name,
-                    'collapsible-arrow-c',
-                  )}
+                  trigger={this.getCollapsibleHeaderClose(Number(cell.name), 'collapsible-arrow-c')}
+                  triggerWhenOpen={this.getCollapsibleHeaderOpen(Number(cell.name), 'collapsible-arrow-c')}
                 >
                   <Table
                     bordered
@@ -864,53 +843,28 @@ class SampleGridTableContainer extends React.Component {
                   >
                     <thead>
                       <tr>
-                        {cell.children.map((puck, idxth) => {
-                          if (
-                            this.getSampleItems(cell.name, idxth + 1).length > 0
-                          ) {
-                            const puckMenuID =
-                              'samples-grid-table-context-menu-puck';
-                            return (
-                              <th
-                                key={`${cell.name}-th-${puck.name}`}
-                                className="sample-items-table-row-header-th"
-                              >
-                                <span
-                                  style={{
-                                    marginLeft: '5px',
-                                    marginTop: '4px',
-                                    float: 'left',
-                                  }}
-                                >
-                                  Puck {idxth + 1}
-                                  {puck.id !== '' ? (
-                                    <div
-                                      className="sample-items-puck-code"
-                                      title={puck.id}
-                                    >
+                        {cell.children.map((puck, idxth)=> {
+                          if ((Number(this.props.filterOptions.puckFilter) === idxth+1
+                          || this.props.filterOptions.puckFilter.toLowerCase() === '')
+                          && this.getSampleItems(Number(cell.name), idxth+1).length > 0) {
+                            const puckMenuID = 'samples-grid-table-context-menu-puck'
+                            return(
+                              <th key={`${cell.name}-th-${puck.name}`} className='sample-items-table-row-header-th'>
+                                <span style={{ marginLeft: '5px', marginTop: '4px', float:'left'}}>
+                                  Puck {idxth+1}
+                                  {puck.id !== '' ?
+                                    <div className='sample-items-puck-code' title={puck.id}>
                                       Code : {puck.id}
                                     </div>
-                                  ) : null}
+                                  : null}
+                                </span>
+                                <span style={{ marginTop: '15px', marginRight: '2px'}}>
+                                  {this.itemsControls(Number(cell.name), idxth+1)}
                                 </span>
                                 <span
-                                  style={{
-                                    marginTop: '15px',
-                                    marginRight: '2px',
-                                  }}
-                                >
-                                  {this.itemsControls(cell.name, idxth + 1)}
-                                </span>
-                                <span
-                                  title="Puck Options"
-                                  className="samples-grid-table-context-menu-icon"
-                                  onClick={(e) => {
-                                    this.displayPuckCellContextMenu(
-                                      e,
-                                      puckMenuID,
-                                      cell.name,
-                                      idxth + 1,
-                                    );
-                                  }}
+                                  title='Puck Options'
+                                  className='samples-grid-table-context-menu-icon'
+                                  onClick={(e) => {this.displayPuckCellContextMenu(e, puckMenuID, Number(cell.name), idxth+1)}}
                                 >
                                   <BiMenu size="1.5em" />
                                 </span>
@@ -923,21 +877,16 @@ class SampleGridTableContainer extends React.Component {
                     </thead>
                     <tbody>
                       <tr>
-                        {cell.children.map((puck, idxtd) => {
-                          if (
-                            this.getSampleItems(cell.name, idxtd + 1).length > 0
-                          ) {
-                            return (
-                              <td
-                                key={`${cell.name}-td-${puck.name}`}
-                                className={`sample-items-table-column-body custom-table-border-${
-                                  idxtd + 1
-                                }`}
-                              >
-                                {this.getSampleItems(cell.name, idxtd + 1)}
-                              </td>
-                            );
-                          }
+                        {cell.children.map((puck, idxtd)=> {
+                          if ((Number(this.props.filterOptions.puckFilter) === idxtd+1
+                          || this.props.filterOptions.puckFilter.toLowerCase() === '')
+                          && this.getSampleItems(Number(cell.name), idxtd+1).length > 0) {
+                            return(
+                                <td key={`${cell.name}-td-${puck.name}`} className={`sample-items-table-column-body custom-table-border-${idxtd+1}`}>
+                                  {this.getSampleItems(Number(cell.name), idxtd+1)}
+                                </td>
+                              )
+                            }
                           return null;
                         })}
                       </tr>
@@ -1147,52 +1096,63 @@ class SampleGridTableContainer extends React.Component {
   }
 
   render() {
-    return this.state.loadGridTable ? (
-      <div>
-        {this.props.contextMenu.show ? (
-          <MXContextMenu
-            id={this.props.contextMenu.id}
-            show={this.props.contextMenu.show}
-            x={this.props.contextMenu.x}
-            y={this.props.contextMenu.y}
-          >
-            {this.renderContextMenu(this.props.contextMenu.id)}
-          </MXContextMenu>
-        ) : null}
-        {this.props.viewMode.mode === 'Graphical View' ? (
-          <Row
-            className="samples-grid-table"
-            onMouseDown={this.onMouseDown}
-            onMouseUp={this.onMouseUp}
-            onMouseMove={this.onMouseMove}
-            xs="auto"
-          >
-            <div className="selection-rubber-band" id="selectionRubberBand" />
-            {this.renderSampleChangerDrawing()}
-            <Col className="col-sm-10">
-              {this.getManualSamples()}
-              {this.getSampleTable('auto')}
-            </Col>
-          </Row>
-        ) : (
-          <Row
-            className="samples-grid-table"
-            onMouseDown={this.onMouseDown}
-            onMouseUp={this.onMouseUp}
-            onMouseMove={this.onMouseMove}
-            xs="auto"
-            ref={(ref) => {
-              this.containerRef = ref;
-            }}
-          >
-            <div className="selection-rubber-band" id="selectionRubberBand" />
-            {this.getManualSamples()}
-            {this.getSampleTable(this.isSingleCell() ? 12 : 6)}
-          </Row>
-        )}
-      </div>
-    ) : (
-      <div className="widget loading">loading...</div>
+    return (
+      this.state.loadGridTable ? (
+        <div>
+          {this.props.contextMenu.show ?
+            (
+              <MXContextMenu
+                id={this.props.contextMenu.id}
+                show={this.props.contextMenu.show}
+                x={this.props.contextMenu.x}
+                y={this.props.contextMenu.y}
+
+              >
+                {this.renderContextMenu(this.props.contextMenu.id)}
+              </MXContextMenu>
+            )
+            :
+            null
+          }
+          {this.props.viewMode.mode === 'Graphical View'?
+            (
+              <Row
+                className="samples-grid-table"
+                onMouseDown={this.onMouseDown}
+                onMouseUp={this.onMouseUp}
+                onMouseMove={this.onMouseMove}
+                xs="auto"
+              >
+                <div className="selection-rubber-band" id="selectionRubberBand"/>
+                {this.renderSampleChangerDrawing()}
+                <Col className='col-sm-10'>
+                {this.getManualSamples()}
+                {this.getSampleTable('auto')}
+                </Col>
+              </Row>
+            )
+            :
+            (
+              <Row
+                className="samples-grid-table"
+                onMouseDown={this.onMouseDown}
+                onMouseUp={this.onMouseUp}
+                onMouseMove={this.onMouseMove}
+                xs="auto"
+                ref={(ref) => { this.containerRef = ref; }}
+              >
+                <div className="selection-rubber-band" id="selectionRubberBand" />
+                {this.getManualSamples()}
+                {this.getSampleTable(this.isSingleCell()? 12: 6)}
+              </Row>
+            )
+          }
+        </div>
+      ): (
+        <div className="widget loading">
+          loading...
+        </div>
+      )
     );
   }
 }
@@ -1215,9 +1175,7 @@ function mapStateToProps(state) {
     viewMode: state.sampleGrid.viewMode,
     contextMenu: state.contextMenu.genericContextMenu,
     sampleChanger: state.sampleChanger,
-    type: state.sampleChanger.contents
-      ? state.sampleChanger.contents.name
-      : 'Default',
+    type: state.sampleChanger.contents ? state.sampleChanger.contents.name : '"Mockup"'
   };
 }
 
