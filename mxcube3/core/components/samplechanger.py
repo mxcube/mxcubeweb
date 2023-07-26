@@ -39,6 +39,12 @@ class SampleChanger(ComponentBase):
 
     def get_sample_list(self):
         samples_list = HWR.beamline.sample_changer.get_sample_list()
+
+        # 添加 start
+        proteinAcronym = HWR.beamline.sample_changer.proteinAcronym
+        default_prefix = HWR.beamline.sample_changer.default_prefix
+        # 添加 end
+
         samples = {}
         samplesByCoords = {}
         order = []
@@ -46,7 +52,17 @@ class SampleChanger(ComponentBase):
 
         loaded_sample = HWR.beamline.sample_changer.get_loaded_sample()
 
+        number = -1#计数 添加
+
         for s in samples_list:
+
+
+            #添加
+            puck_no = int(s.get_address().split(":")[0])
+            id_no = int(s.get_address().split(":")[1])
+            number += 1
+            # 添加 end
+
             if not s.is_present():
                 continue
             if s.has_been_loaded():
@@ -66,6 +82,15 @@ class SampleChanger(ComponentBase):
                 "type": "Sample",
                 "cell_no": s.get_cell_no() if hasattr(s, "get_cell_no") else 1,
                 "puck_no": s.get_basket_no() if hasattr(s, "get_basket_no") else 1,
+
+                #添加
+                # s.get_address() 1:02
+                # int(s.get_address().split(":")[0])    1
+                # int(s.get_address().split(":")[1])    2
+                "proteinAcronym" : proteinAcronym[puck_no-1][id_no-1], #default_subdir
+                "sample_prefix" : default_prefix[puck_no-1][id_no-1]
+                # 添加 end
+
             }
             order.append(coords)
             samplesByCoords[coords] = sample_data["sampleID"]

@@ -363,12 +363,16 @@ class Lims(ComponentBase):
 
     def get_default_prefix(self, sample_data, generic_name=False):
         if isinstance(sample_data, dict):
+            print("sample_data is dict")
             sample = qmo.Sample()
             sample.code = sample_data.get("code", "")
             sample.name = sample_data.get("sampleName", "").replace(":", "-")
             sample.location = sample_data.get("location", "").split(":")
             sample.lims_id = sample_data.get("limsID", -1)
             sample.crystals[0].protein_acronym = sample_data.get("proteinAcronym", "")
+
+            sample_prefix = sample_data.get("sample_prefix","")
+            return HWR.beamline.session.get_default_prefix(sample, generic_name,sample_prefix)
         else:
             sample = sample_data
 
