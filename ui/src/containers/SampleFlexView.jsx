@@ -119,16 +119,25 @@ class NewSampleFlexView extends React.Component {
     const scContent = [1, 2, 3, 4, 5, 6, 7, 8];
     return (
       <Col sm>
-        <div className='div-svg-flex'>    
-          <svg className='svg-flex' height="97%" width="97%" viewBox="0 0 20 20">
-            <circle className='main-circle-center' r="10" cx="10" cy="10" />
-            {scContent.map((cell, idx) => { 
-              return (
-                this.renderCircle(scContent.length, idx, this.isCellSelected(cell))
-              )
+        <div className="div-svg-flex">
+          <svg
+            className="svg-flex"
+            height="97%"
+            width="97%"
+            viewBox="0 0 20 20"
+          >
+            <circle className="main-circle-center" r="10" cx="10" cy="10" />
+            {scContent.map((cell, idx) => {
+              return this.renderCircle(
+                scContent.length,
+                idx,
+                this.isCellSelected(cell),
+              );
             })}
-            <circle className='cell-cicle-center' r="5" cx="10" cy="10" />
-            <text x='10' y='10' fontSize="1" textAnchor="middle" fill="gray">Sample Changer</text>
+            <circle className="cell-cicle-center" r="5" cx="10" cy="10" />
+            <text x="10" y="10" fontSize="1" textAnchor="middle" fill="gray">
+              Sample Changer
+            </text>
           </svg>
         </div>
       </Col>

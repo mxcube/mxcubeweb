@@ -233,13 +233,26 @@ class NewSampleIsaraView extends React.Component {
     const numPucks = 29;
 
     return (
-      <Col className='col-sm-2' style={{ marginTop: '25vh' }}>
-        <div  className='div-flex-pie-collapsible'>
-            <div>
-              <svg className='svg-flex' height="97%" width="97%" viewBox="0 0 20 20">
-                <circle className='main-circle-center' r="10" cx="10" cy="10" />
-                <rect x="0" y="0" width="100%" height="1" stroke="white" fill="transparent" strokeWidth="2"/>
-                { this.renderPucks(numPucks) }
+      <Col className="col-sm-2" style={{ marginTop: '25vh' }}>
+        <div className="div-flex-pie-collapsible">
+          <div>
+            <svg
+              className="svg-flex"
+              height="97%"
+              width="97%"
+              viewBox="0 0 20 20"
+            >
+              <circle className="main-circle-center" r="10" cx="10" cy="10" />
+              <rect
+                x="0"
+                y="0"
+                width="100%"
+                height="1"
+                stroke="white"
+                fill="transparent"
+                strokeWidth="2"
+              />
+              {this.renderPucks(numPucks)}
             </svg>
           </div>
         </div>

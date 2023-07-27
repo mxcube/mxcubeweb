@@ -151,13 +151,19 @@ class SampleListViewContainer extends React.Component {
   getCellFilterOptions() {
     let options = [];
 
-    let sampleListByCellNb = Object.values(this.props.sampleList).map(sample => sample.cell_no);
+    let sampleListByCellNb = Object.values(this.props.sampleList).map(
+      (sample) => sample.cell_no,
+    );
     // we create a list from all cell numbers and keep unique value and then sort ascending
-    let sampleListByCellNbUniqueVal = [...new Set(sampleListByCellNb)].sort((va, vb) => va - vb);;
+    let sampleListByCellNbUniqueVal = [...new Set(sampleListByCellNb)].sort(
+      (va, vb) => va - vb,
+    );
 
     if (this.props.sampleList) {
       options = sampleListByCellNbUniqueVal.map((cell) => (
-        (<option key={`filter-cell-${cell}`}  value={cell}>{cell}</option>)
+        <option key={`filter-cell-${cell}`} value={cell}>
+          {cell}
+        </option>
       ));
     }
 
@@ -175,13 +181,19 @@ class SampleListViewContainer extends React.Component {
   getPuckFilterOptions() {
     let options = [];
 
-    let sampleListByPuckNb = Object.values(this.props.sampleList).map(sample => sample.puck_no);
+    let sampleListByPuckNb = Object.values(this.props.sampleList).map(
+      (sample) => sample.puck_no,
+    );
     // we create a list from all puck numbers and keep unique value and then sort ascending
-    let sampleListByPuckNbUniqueVal = [...new Set(sampleListByPuckNb)].sort((va, vb) => va - vb);
+    let sampleListByPuckNbUniqueVal = [...new Set(sampleListByPuckNb)].sort(
+      (va, vb) => va - vb,
+    );
 
     if (this.props.sampleList) {
-      options = sampleListByPuckNbUniqueVal.map(puck=> (
-        (<option key={`filter-puck-${puck}`} value={puck}>{puck}</option>)
+      options = sampleListByPuckNbUniqueVal.map((puck) => (
+        <option key={`filter-puck-${puck}`} value={puck}>
+          {puck}
+        </option>
       ));
     }
     options.push(
@@ -305,11 +317,11 @@ class SampleListViewContainer extends React.Component {
       filterText: { text: ReactDOM.findDOMNode(this.filterInput).value.trim() },
     };
     this.props.filter(optionMap[e.target.id]);
-    if(Number(e.target.value) > 2) {
+    if (Number(e.target.value) > 2) {
       window.scroll({
         top: 1,
         left: 0,
-        behavior: "smooth",
+        behavior: 'smooth',
       });
     }
   }
