@@ -227,8 +227,8 @@ class SampleGridTableContainer extends React.Component {
    */
   onMouseDown(e) {
     const selectionRubberBand = document.querySelector('#selectionRubberBand');
-    selectionRubberBand.style.top = `${e.pageY}px`;
-    selectionRubberBand.style.left = `${e.pageX}px`;
+    selectionRubberBand.style.top = `${e.clientY}px`;
+    selectionRubberBand.style.left = `${e.clientX}px`;
     selectionRubberBand.style.width = '0px';
     selectionRubberBand.style.height = '0px';
     this.showRubberBand = true;
@@ -256,10 +256,10 @@ class SampleGridTableContainer extends React.Component {
       );
       document.querySelector('#selectionRubberBand').style.display = 'block';
       selectionRubberBand.style.width = `${
-        e.pageX - selectionRubberBand.offsetLeft
+        e.clientX - selectionRubberBand.offsetLeft
       }px`;
       selectionRubberBand.style.height = `${
-        e.pageY - selectionRubberBand.offsetTop
+        e.clientY - selectionRubberBand.offsetTop
       }px`;
     }
 
@@ -359,22 +359,8 @@ class SampleGridTableContainer extends React.Component {
     if (sample) {
       const sampleFilter =
         `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
-      const locationFilter = `${sample.location}`;
-      const puckFilter = locationFilter.split(':')[0];
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
-
-      // we can't filter if there is only one cell
-      if (
-        Object.values(this.props.sampleList).every((cell) => cell.cell_no !== 1)
-      ) {
-        fi &= locationFilter.startsWith(
-          this.props.filterOptions.cellFilter.toLowerCase(),
-        );
-      }
-      if (this.props.filterOptions.puckFilter !== '') {
-        fi &= puckFilter === this.props.filterOptions.puckFilter.toLowerCase();
-      }
 
       fi &= this.mutualExclusiveFilterOption(
         sample,
@@ -819,19 +805,23 @@ class SampleGridTableContainer extends React.Component {
         const nbpuck = [];
         // we won't display the cell / table  if all puck in the cell are empty
         cell.children.map((puck, idxtd) => {
-          if (this.getSampleItems(cell.name, idxtd + 1).length > 0) {
+          if (
+            this.getSampleItems(Number(cell.name), idxtd + 1).length > 0 &&
+            (Number(this.props.filterOptions.puckFilter) === idxtd + 1 ||
+              this.props.filterOptions.puckFilter.toLowerCase() === '')
+          ) {
             nbpuck.push(puck);
           }
         });
 
         if (nbpuck.length > 0) {
-          let colsmP = colsm;
+          let colsmP;
           if (nbpuck.length === 1) {
             colsmP = 3;
           } else if (nbpuck.length >= 4 && colsm === 'auto') {
             colsmP = 12;
           } else {
-            colsmP = 12;
+            colsmP = colsm;
           }
           tableCell.push(
             <Col sm={colsmP} key={`cell-${cell.name}`}>
@@ -848,11 +838,11 @@ class SampleGridTableContainer extends React.Component {
                   open
                   lazyRender
                   trigger={this.getCollapsibleHeaderClose(
-                    cell.name,
+                    Number(cell.name),
                     'collapsible-arrow-c',
                   )}
                   triggerWhenOpen={this.getCollapsibleHeaderOpen(
-                    cell.name,
+                    Number(cell.name),
                     'collapsible-arrow-c',
                   )}
                 >
@@ -866,7 +856,12 @@ class SampleGridTableContainer extends React.Component {
                       <tr>
                         {cell.children.map((puck, idxth) => {
                           if (
-                            this.getSampleItems(cell.name, idxth + 1).length > 0
+                            (Number(this.props.filterOptions.puckFilter) ===
+                              idxth + 1 ||
+                              this.props.filterOptions.puckFilter.toLowerCase() ===
+                                '') &&
+                            this.getSampleItems(Number(cell.name), idxth + 1)
+                              .length > 0
                           ) {
                             const puckMenuID =
                               'samples-grid-table-context-menu-puck';
@@ -898,7 +893,10 @@ class SampleGridTableContainer extends React.Component {
                                     marginRight: '2px',
                                   }}
                                 >
-                                  {this.itemsControls(cell.name, idxth + 1)}
+                                  {this.itemsControls(
+                                    Number(cell.name),
+                                    idxth + 1,
+                                  )}
                                 </span>
                                 <span
                                   title="Puck Options"
@@ -907,7 +905,7 @@ class SampleGridTableContainer extends React.Component {
                                     this.displayPuckCellContextMenu(
                                       e,
                                       puckMenuID,
-                                      cell.name,
+                                      Number(cell.name),
                                       idxth + 1,
                                     );
                                   }}
@@ -925,7 +923,12 @@ class SampleGridTableContainer extends React.Component {
                       <tr>
                         {cell.children.map((puck, idxtd) => {
                           if (
-                            this.getSampleItems(cell.name, idxtd + 1).length > 0
+                            (Number(this.props.filterOptions.puckFilter) ===
+                              idxtd + 1 ||
+                              this.props.filterOptions.puckFilter.toLowerCase() ===
+                                '') &&
+                            this.getSampleItems(Number(cell.name), idxtd + 1)
+                              .length > 0
                           ) {
                             return (
                               <td
@@ -934,7 +937,10 @@ class SampleGridTableContainer extends React.Component {
                                   idxtd + 1
                                 }`}
                               >
-                                {this.getSampleItems(cell.name, idxtd + 1)}
+                                {this.getSampleItems(
+                                  Number(cell.name),
+                                  idxtd + 1,
+                                )}
                               </td>
                             );
                           }
@@ -1217,7 +1223,7 @@ function mapStateToProps(state) {
     sampleChanger: state.sampleChanger,
     type: state.sampleChanger.contents
       ? state.sampleChanger.contents.name
-      : 'Default',
+      : '"Mockup"',
   };
 }
 

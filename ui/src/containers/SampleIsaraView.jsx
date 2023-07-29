@@ -242,7 +242,7 @@ class NewSampleIsaraView extends React.Component {
               width="97%"
               viewBox="0 0 20 20"
             >
-              <circle className="main-cicle-center" r="10" cx="10" cy="10" />
+              <circle className="main-circle-center" r="10" cx="10" cy="10" />
               <rect
                 x="0"
                 y="0"
