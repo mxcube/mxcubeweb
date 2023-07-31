@@ -87,7 +87,7 @@ export class PlateManipulatorAction extends React.Component {
                 label={this.props.btn_label}
                 cmd={this.props.cmd}
                 args={this.state.input_value}
-                enabled={true}
+                enabled
                 send_command={this.props.send_command}
                 key={this.props.btn_label}
               />

@@ -71,7 +71,6 @@ function parse(response) {
 }
 
 function notify(error) {
-  // eslint-disable-next-line no-console
   console.error('REQUEST FAILED', error);
 }
 
