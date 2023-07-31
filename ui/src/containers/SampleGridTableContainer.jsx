@@ -598,13 +598,12 @@ class SampleGridTableContainer extends React.Component {
   getSampleItemCollapsibleHeaderActions(cell) {
     const type = this.props.type;
     const cellMenuID = 'samples-grid-table-context-menu-cell';
-    const cellArgument = type === 'CATS' ? '1' : `${cell}`;
     return (
       <div className="sample-items-collapsible-header-actions">
         <b className="me-2 mt-1">
           {type === 'CATS' ? 'Isara' : `Cell ${cell}`}
         </b>
-        {this.itemsControls(cellArgument, null)}
+        {this.itemsControls(cell, null)}
         <span
           title="Cell Options"
           className="samples-grid-table-context-menu-icon"
