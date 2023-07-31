@@ -21,7 +21,6 @@
 
 .sample-items-collapsible {
   margin-bottom: 1%;
-  /* width:fit-content; */
   width: 100%;
   margin-right: auto;
 }
@@ -49,7 +48,6 @@
   align-items: center;
   margin-bottom: 0px;
   background: #e5e8eb6b;
-  /* width: fit-content; */
   width: 100%;
 }
 
@@ -112,7 +110,17 @@
 
 .samples-grid-table-item-button {
   background: Transparent;
-  opacity: 1;
+}
+
+.span-container-code {
+  float: left;
+  padding-left: 10px;
+  margin-top: 6px;
+  max-width: 200px;
+  display: inline-flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .pick-puck-checkbox-button {
