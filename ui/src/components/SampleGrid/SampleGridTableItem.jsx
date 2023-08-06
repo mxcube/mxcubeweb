@@ -51,7 +51,7 @@ export class SampleGridTableItem extends React.Component {
         }
       >
         <Button
-          variant="content"
+          variant="link"
           disabled={this.props.current && this.props.picked}
           className="samples-grid-table-item-button"
           onClick={(e) => {

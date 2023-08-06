@@ -498,8 +498,10 @@ class SampleGridTableContainer extends React.Component {
   getSampleListFilteredByCellPuck(cell, puck) {
     const allCellSample = [];
     const allCellSampleCheck = [];
+    let puck_code;
 
     const allPuckSample = [];
+    const allPuckSampleID = [];
     const allPuckSampleCheck = [];
 
     if (cell && puck === null) {
@@ -519,16 +521,22 @@ class SampleGridTableContainer extends React.Component {
         .filter((sample) => sample.cell_no === cell && sample.puck_no === puck)
         .forEach((sample) => {
           if (this.filter(sample.sampleID)) {
-            allPuckSample.push(sample.sampleID);
+            allPuckSampleID.push(sample.sampleID);
+            allPuckSample.push(sample);
             if (this.props.inQueue(sample.sampleID) && sample.checked) {
               allPuckSampleCheck.push(sample.sampleID);
             }
           }
         });
-      return [allPuckSample, allPuckSampleCheck];
+
+      puck_code = allPuckSample[0].containerCode || '';
+      if (puck_code !== '') {
+        puck_code = `| Code : ${puck_code}`;
+      }
+      return [allPuckSampleID, allPuckSampleCheck, puck_code];
     }
 
-    return [[], []];
+    return [[], [], ''];
   }
 
   displayContextMenu(e, contextMenuID, sampleID) {
@@ -558,6 +566,7 @@ class SampleGridTableContainer extends React.Component {
 
     const allPuckSample = filterList[0];
     const allPuckSampleCheck = filterList[1];
+    const puckCode = filterList[2];
 
     if (allPuckSample.length === allPuckSampleCheck.length) {
       icon = <BsCheck2Square size="0.9em" />;
@@ -571,40 +580,44 @@ class SampleGridTableContainer extends React.Component {
     }
 
     return (
-      <OverlayTrigger
-        placement="auto"
-        overlay={
-          <Tooltip id="pick-sample">
-            {pickSample
-              ? 'Pick samples/ Add to Queue'
-              : 'Unpick samples / Remove from Queue'}
-          </Tooltip>
-        }
-      >
-        <Button
-          variant="content"
-          disabled={this.props.current && this.props.picked}
-          className="pick-puck-checkbox-button"
-          onClick={(e) =>
-            this.pickAllCellPuckItemsOnClick(e, allPuckSample, pickSample)
+      <>
+        {puck ? (
+          <span className="span-container-code"> {puckCode} </span>
+        ) : null}
+        <OverlayTrigger
+          placement="auto"
+          overlay={
+            <Tooltip id="pick-sample">
+              {pickSample
+                ? 'Pick samples/ Add to Queue'
+                : 'Unpick samples / Remove from Queue'}
+            </Tooltip>
           }
         >
-          <i>{icon}</i>
-        </Button>
-      </OverlayTrigger>
+          <Button
+            variant="link"
+            disabled={this.props.current && this.props.picked}
+            className="pick-puck-checkbox-button"
+            onClick={(e) =>
+              this.pickAllCellPuckItemsOnClick(e, allPuckSample, pickSample)
+            }
+          >
+            <i>{icon}</i>
+          </Button>
+        </OverlayTrigger>
+      </>
     );
   }
 
   getSampleItemCollapsibleHeaderActions(cell) {
     const type = this.props.type;
     const cellMenuID = 'samples-grid-table-context-menu-cell';
-    const cellArgument = type === 'CATS' ? '1' : `${cell}`;
     return (
       <div className="sample-items-collapsible-header-actions">
         <b className="me-2 mt-1">
           {type === 'CATS' ? 'Isara' : `Cell ${cell}`}
         </b>
-        {this.itemsControls(cellArgument, null)}
+        {this.itemsControls(cell, null)}
         <span
           title="Cell Options"
           className="samples-grid-table-context-menu-icon"
@@ -873,19 +886,11 @@ class SampleGridTableContainer extends React.Component {
                                 <span
                                   style={{
                                     marginLeft: '5px',
-                                    marginTop: '4px',
+                                    marginTop: '6px',
                                     float: 'left',
                                   }}
                                 >
                                   Puck {idxth + 1}
-                                  {puck.id !== '' ? (
-                                    <div
-                                      className="sample-items-puck-code"
-                                      title={puck.id}
-                                    >
-                                      Code : {puck.id}
-                                    </div>
-                                  ) : null}
                                 </span>
                                 <span
                                   style={{
@@ -1103,34 +1108,48 @@ class SampleGridTableContainer extends React.Component {
 
   renderContextMenu(id) {
     let menu = <Dropdown.Item href="#/action-1">....</Dropdown.Item>;
-    if (id === 'samples-grid-table-context-menu') {
-      menu = (
-        <>
-          {this.sampleContextMenu()}
-          {this.taskContextMenuItems()}
-        </>
-      );
-    } else if (id === 'samples-grid-table-context-menu-mounted') {
-      menu = (
-        <>
-          {this.sampleContextMenuMounted()}
-          {this.taskContextMenuItems()}
-        </>
-      );
-    } else if (id === 'samples-grid-table-context-menu-cell') {
-      menu = (
-        <>
-          <Dropdown.Header>Cell Actions</Dropdown.Header>
-          {this.taskContextMenuItems()}
-        </>
-      );
-    } else if (id === 'samples-grid-table-context-menu-puck') {
-      menu = (
-        <>
-          <Dropdown.Header>Puck Actions</Dropdown.Header>
-          {this.taskContextMenuItems()}
-        </>
-      );
+    switch (id) {
+      case 'samples-grid-table-context-menu': {
+        menu = (
+          <>
+            {this.sampleContextMenu()}
+            {this.taskContextMenuItems()}
+          </>
+        );
+
+        break;
+      }
+      case 'samples-grid-table-context-menu-mounted': {
+        menu = (
+          <>
+            {this.sampleContextMenuMounted()}
+            {this.taskContextMenuItems()}
+          </>
+        );
+
+        break;
+      }
+      case 'samples-grid-table-context-menu-cell': {
+        menu = (
+          <>
+            <Dropdown.Header>Cell Actions</Dropdown.Header>
+            {this.taskContextMenuItems()}
+          </>
+        );
+
+        break;
+      }
+      case 'samples-grid-table-context-menu-puck': {
+        menu = (
+          <>
+            <Dropdown.Header>Puck Actions</Dropdown.Header>
+            {this.taskContextMenuItems()}
+          </>
+        );
+
+        break;
+      }
+      // No default
     }
 
     return menu;
