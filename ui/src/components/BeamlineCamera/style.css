@@ -1,0 +1,8 @@
+.inout-switch {
+  width: 7em;
+}
+
+.inout-switch .badge {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

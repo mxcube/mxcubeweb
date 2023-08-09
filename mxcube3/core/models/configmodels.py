@@ -36,6 +36,10 @@ class UIComponentModel(BaseModel):
     precision: Optional[int]
     suffix: Optional[str]
     format: Optional[str]
+    url: Optional[str]
+    description: Optional[str]
+    width: Optional[int]
+    height: Optional[int]
 
     # Set internaly not to be set through configuration
     value_type: Optional[str]
