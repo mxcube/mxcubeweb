@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { Navbar, Nav, Table, Popover } from 'react-bootstrap';
 import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
+import BeamlineCamera from '../components/BeamlineCamera/BeamlineCamera';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import SampleChangerSwitch from '../components/SampleChangerSwitch/SampleChangerSwitch';
 import DeviceState from '../components/DeviceState/DeviceState';
@@ -134,6 +135,32 @@ class BeamlineSetupContainer extends React.Component {
     return acts;
   }
 
+  createCameraComponent() {
+    const acts = [];
+
+    const { uiproperties } = this.props;
+
+    if (uiproperties.hasOwnProperty('camera_setup')) {
+      for (const [
+        key,
+        camera,
+      ] of uiproperties.camera_setup.components.entries()) {
+        acts.push(
+          <Nav.Item key={key} className="ms-3">
+            <BeamlineCamera
+              labelText={camera.label}
+              format={camera.attribute}
+              url={camera.url}
+              width={camera.width}
+              height={camera.height}
+            />
+          </Nav.Item>,
+        );
+      }
+    }
+    return acts;
+  }
+
   dmState() {
     return this.props.beamline.hardwareObjects.diffractometer.state;
   }
@@ -247,6 +274,7 @@ class BeamlineSetupContainer extends React.Component {
               </Table>
             </Nav.Item>
           </Nav>
+          <Nav className="me-3">{this.createCameraComponent()}</Nav>
           <Nav className="me-3">
             <Nav.Item>
               <DeviceState

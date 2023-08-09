@@ -145,3 +145,17 @@ beamline_setup:
       precision: 2
       suffix: ph/s
       format: expo
+
+camera_setup:
+  id: camera_setup
+  components:
+    - label: Camera 1
+      attribute: jpg
+      url: http://localhost:8080/mjpg/video.mjpg?streamprofile=mxcube
+      width: 800
+      height: 450
+    - label: Camera 2
+      attribute: jpg
+      url: http://localhost:9090/mjpg/video.mjpg?streamprofile=mxcube
+      width: 800
+      height: 450
