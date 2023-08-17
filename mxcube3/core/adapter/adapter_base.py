@@ -288,8 +288,8 @@ class AdapterBase:
         #     print("==== diffractometer")
         # if self._name == "diffractometer" and self.state() == "BUSY":
         #     print("==== busy")
-        if self._name == "diffractometer.frontlight":
-            print("==== %s diffractometer.frontlight state: %s " % (datetime.now(), self.state()))
+        # if self._name == "diffractometer.frontlight" or self._name == "diffractometer.backlight":
+        #     print("==== %s %s state: %s " % (datetime.now(), self._name, self.state()))
         try:
             data = {
                 "name": self._name,
