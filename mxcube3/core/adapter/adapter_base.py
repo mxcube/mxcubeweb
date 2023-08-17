@@ -10,7 +10,7 @@ import math
 
 from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcube3.core.models.adaptermodels import HOModel, HOActuatorModel
-
+from datetime import datetime
 
 class AdapterBase:
     """Hardware Object Adapter Base class"""
@@ -288,6 +288,8 @@ class AdapterBase:
         #     print("==== diffractometer")
         # if self._name == "diffractometer" and self.state() == "BUSY":
         #     print("==== busy")
+        if self._name == "diffractometer.frontlight":
+            print("==== %s diffractometer.frontlight state: %s " % (datetime.now(), self.state()))
         try:
             data = {
                 "name": self._name,
@@ -303,6 +305,8 @@ class AdapterBase:
         except Exception as ex:
             # Return a default representation if there is a problem retrieving
             # any of the attributes
+
+            print("==== Get exception, name is %s" % self._name)
             self._available = False
             if self._name == "diffractometer.kappa" or self._name == "diffractometer.kappa_phi":
                 data = {
