@@ -385,7 +385,7 @@ def init_route(app, server, url_prefix):
         :statuscode: 409: error
         """
         pos = json.loads(request.data).get("clickPos", None)
-
+        print("==== centring click at %s %s" % (pos["x"], pos["y"]))
         data = app.sample_view.centring_handle_click(pos["x"], pos["y"])
 
         resp = jsonify(data)
