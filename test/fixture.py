@@ -26,7 +26,7 @@ sys.path.append("./")
 
 
 from mxcubecore import HardwareRepository
-from mxcube3 import main
+from mxcube3 import build_server_and_config
 from flask_login import current_user
 
 _SIO_TEST_CLIENT = None
@@ -42,7 +42,8 @@ def client():
     global _SIO_TEST_CLIENT
 
     HardwareRepository.uninit_hardware_repository()
-    server = main(test=True)
+    argv = []
+    server, _ = build_server_and_config(test=True, argv=argv)
     server.flask.config["TESTING"] = True
 
     client = server.flask.test_client()

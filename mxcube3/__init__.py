@@ -22,7 +22,7 @@ mxcube = None
 server = None
 
 
-def parse_args():
+def parse_args(argv):
     XML_DIR = os.path.join(
         os.path.join(os.path.dirname(__file__), os.pardir),
         "test/HardwareObjectsMockup.xml/",
@@ -97,21 +97,23 @@ def parse_args():
         default=False,
     )
 
-    return opt_parser.parse_args()
+    # If `argv` is `None`, then `argparse.ArgumentParser.parse_args`
+    # will know to read from `sys.argv` instead.
+    return opt_parser.parse_args(argv)
 
 
-def main(test=False):
+def build_server_and_config(test=False, argv=None):
     global mxcube
     global server
 
-    cmdline_options = parse_args()
+    cmdline_options = parse_args(argv)
 
     try:
         db = redis.Redis()
         db.ping()
     except redis.RedisError:
         print("No Redis server is running, exiting")
-        sys.exit(1)
+        return (None, None)
 
     try:
         mxcube = MXCUBEApplication()
@@ -145,11 +147,17 @@ def main(test=False):
         traceback.print_exc()
         raise
 
-    if not test:
+    return (server, cfg)
+
+
+def main():
+    server, cfg = build_server_and_config()
+    if server and cfg:
         server.run(cfg)
+        return 0
     else:
-        return server
+        return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())
