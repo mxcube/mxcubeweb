@@ -1043,6 +1043,19 @@ class Queue(ComponentBase):
 
         return sample_model._node_id
 
+    def get_folder_tag(self, params):
+        tag = "datacollection"
+
+        if params["helical"] and params["osc_range"] == 0:
+            tag = "line"
+        elif params["helical"]:
+            tag = "helical"
+        elif params.get("mesh"):
+            tag = "mesh"
+        elif params.get("type") == "Characterisation":
+            tag = "characterisation"
+
+        return tag
     def set_dc_params(self, model, entry, task_data, sample_model):
         """
         Helper method that sets the data collection parameters for a DataCollection.
@@ -1077,19 +1090,13 @@ class Queue(ComponentBase):
                 sample_model
             )
 
-        full_path = os.path.join(
-            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
+        full_path, process_path = HWR.beamline.session.get_full_path(
+            params.get("subdir", ""), self.get_folder_tag(params)
         )
 
         acq.path_template.directory = full_path
-
-        process_path = os.path.join(
-            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
-        )
         acq.path_template.process_directory = process_path
 
-        # TODO, Please remove this ad-hoc definition
-        #
         # MXCuBE3 specific shape attribute
         model.shape = params["shape"]
 
@@ -1289,15 +1296,10 @@ class Queue(ComponentBase):
                 sample_model
             )
 
-        full_path = os.path.join(
-            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
+        full_path, process_path = HWR.beamline.session.get_full_path(
+            params.get("subdir", ""), "xrf"
         )
-
         model.path_template.directory = full_path
-
-        process_path = os.path.join(
-            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
-        )
         model.path_template.process_directory = process_path
 
         # Only get a run number for new tasks, keep the already existing
@@ -1339,15 +1341,10 @@ class Queue(ComponentBase):
                 sample_model
             )
 
-        full_path = os.path.join(
-            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
+        full_path, process_path = HWR.beamline.session.get_full_path(
+            params.get("subdir", ""), "energy_scan"
         )
-
         model.path_template.directory = full_path
-
-        process_path = os.path.join(
-            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
-        )
         model.path_template.process_directory = process_path
 
         # Only get a run number for new tasks, keep the already existing
@@ -1579,15 +1576,10 @@ class Queue(ComponentBase):
                 sample_model
             )
 
-        full_path = os.path.join(
-            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
+        full_path, process_path = HWR.beamline.session.get_full_path(
+            params.get("subdir", ""), task_name
         )
-
         acq.path_template.directory = full_path
-
-        process_path = os.path.join(
-            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
-        )
         acq.path_template.process_directory = process_path
 
         model.shape = params["shape"]
