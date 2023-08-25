@@ -32,8 +32,6 @@ export function resetLastUsedParameters(formObj) {
   localStorage.removeItem(`last${type}Parameters`);
   formObj.props.reset();
 
-  debugger;
-
   const fieldNames = Object.keys(
     formObj.props.defaultParameters[type.toLowerCase()].acq_parameters,
   );
