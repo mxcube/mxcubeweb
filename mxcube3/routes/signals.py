@@ -425,8 +425,6 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     mxcube.NODE_ID_TO_LIMS_ID[node["queue_id"]] = lims_id
 
     if not mxcube.queue.is_interleaved(node["node"]):
-        mxcube.queue.enable_entry(node["queue_id"], False)
-
         msg = {
             "Signal": "collectOscillationFinished",
             "Message": task_signals["collectOscillationFinished"],
