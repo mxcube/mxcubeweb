@@ -81,7 +81,7 @@ export function clearCurrentSample() {
 }
 
 export function sendAddQueueItem(items) {
-  return fetch('mxcube/api/v0.1/queue', {
+  return fetch('mxcube/api/v0.1/queue/', {
     method: 'POST',
     credentials: 'include',
     headers: {

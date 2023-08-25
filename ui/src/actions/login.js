@@ -124,7 +124,9 @@ export function signIn(proposal, password, navigate) {
       serverIO.connect();
     }
 
-    fetch('mxcube/api/v0.1/login', {
+    console.log(window.location);
+
+    fetch('mxcube/api/v0.1/login/', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
