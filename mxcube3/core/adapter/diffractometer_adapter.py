@@ -13,6 +13,14 @@ class DiffractometerAdapter(AdapterBase):
         super(DiffractometerAdapter, self).__init__(ho, *args, **kwargs)
         ho.connect("stateChanged", self._state_change)
         ho.connect("valueChanged", self._state_change)
+        ho.connect("phaseChanged", self._diffractometer_phase_changed)
+
+    def _diffractometer_phase_changed(self, phase):
+        self.app.server.emit(
+            "diff_phase_changed",
+            {"msg": "Diffractometer phase changed", "phase": phase},
+            namespace="/hwr",
+        )
 
     def _state_change(self, *args, **kwargs):
         self.state_change(*args, **kwargs)

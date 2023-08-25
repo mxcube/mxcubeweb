@@ -195,6 +195,8 @@ class Beamline(ComponentBase):
             {"energyScanElements": ho.get_available_elements().get("elements", [])}
         )
 
+        data.update(self.diffractometer_get_info())
+
         return data
 
     def beamline_get_actions(self):
