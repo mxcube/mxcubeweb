@@ -356,7 +356,10 @@ class Queue(ComponentBase):
         limsres["limsTaskLink"] = self.app.lims.get_dc_link(lims_id)
 
         dtype_label = qme.EXPERIMENT_TYPE._fields[node.experiment_type]
-        dtype_label = "OSC" if dtype_label == "NATIVE" else dtype_label
+        dtype_label = "OSCILLATION" if dtype_label == "NATIVE" else dtype_label
+        dtype_label = (
+            "LINE" if "HELICAL" and parameters["osc_range"] == 0 else dtype_label
+        )
 
         res = {
             "label": dtype_label + " (" + parameters["fileName"] + ")",
