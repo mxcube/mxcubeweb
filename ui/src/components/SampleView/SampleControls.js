@@ -266,7 +266,7 @@ export default class SampleControls extends React.Component {
                 className="bar"
                 type="range"
                 id="zoom-control"
-                min={zoom_motor.limits[0]}
+                min={zoom_motor.limits[0] - 1}
                 max={zoom_motor.limits[1]}
                 step="1"
                 value={zoom_motor.commands.indexOf(zoom_motor.value)}
@@ -275,7 +275,7 @@ export default class SampleControls extends React.Component {
                 onChange={(e) => {
                   this.props.setBeamlineAttribute(
                     'diffractometer.zoom',
-                    zoom_motor.commands[e.target.value],
+                    zoom_motor.commands[parseFloat(e.target.value) - 1],
                   );
                 }}
                 list="volsettings"
@@ -304,7 +304,9 @@ export default class SampleControls extends React.Component {
             data-toggle="tooltip"
           >
             <i className={`${styles.controlIcon} fas fa-search`} />
-            <span className={styles.controlLabel}>Zoom</span>
+            <span className={styles.controlLabel}>
+              Zoom ({zoom_motor.value}){' '}
+            </span>
           </Button>
         </OverlayTrigger>
         <div className={styles.controlWrapper}>
