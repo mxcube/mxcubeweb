@@ -1,4 +1,4 @@
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, request
 from mxcube3.core.models.generic import PathModel, Response
 
 
@@ -22,8 +22,11 @@ def init_route(app, server, url_prefix):
 
     @bp.route("/display_image/", methods=["GET"])
     @server.restrict
-    @server.validate(resp=Response(HTTP_200=""))
-    def display_image(query: PathModel):
-        return ""
+    def display_image():
+        res = app.beamline.display_image(
+            request.args.get("path", None), request.args.get("img_num", None)
+        )
+
+        return jsonify(res)
 
     return bp

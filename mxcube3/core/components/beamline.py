@@ -365,3 +365,14 @@ class Beamline(ComponentBase):
             )
 
         return filetype
+
+    def display_image(self, path, img_num):
+        res = {"path": "", "img": 0}
+
+        if path:
+            fpath, img = HWR.beamline.detector.get_actual_file_path(path, img_num)
+            HWR.beamline.collect.adxv_notify(fpath, img)
+
+            res = {"path": fpath, "img_num": img_num}
+
+        return res
