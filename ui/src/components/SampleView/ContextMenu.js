@@ -20,14 +20,13 @@ export default class ContextMenu extends React.Component {
     const bespokeTaskNames = new Set([
       'datacollection',
       'characterisation',
-      'xrf',
-      'energy',
+      'xrf_spectrum',
+      'energy_scan',
       'mesh',
       'helical',
       'workflow',
       'interleaved',
     ]);
-
     const generalTaskNames = Object.keys(
       this.props.taskForm.defaultParameters,
     ).filter((tname) => !bespokeTaskNames.has(tname));
@@ -155,12 +154,12 @@ export default class ContextMenu extends React.Component {
         },
         {
           text: 'Add XRF Scan',
-          action: () => this.showModal('XRF'),
-          key: 'xrf_scan',
+          action: () => this.showModal('xrf_spectrum'),
+          key: 'xrf_spectrum',
         },
         {
           text: 'Add Energy Scan',
-          action: () => this.showModal('Energy'),
+          action: () => this.showModal('energy_scan'),
           key: 'energy_scan',
         },
         {
@@ -189,12 +188,12 @@ export default class ContextMenu extends React.Component {
         },
         {
           text: 'Add XRF Scan',
-          action: () => this.showModal('XRFScan'),
-          key: 'xrf_scan',
+          action: () => this.showModal('xrf_spectrum'),
+          key: 'xrf_spectrum',
         },
         {
           text: 'Add Energy Scan',
-          action: () => this.showModal('EnergyScan'),
+          action: () => this.showModal('energy_scan'),
           key: 'energy_scan',
         },
         { text: 'divider', key: 5 },

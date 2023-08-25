@@ -138,6 +138,7 @@ export default class CurrentTree extends React.Component {
       sampleData = this.props.sampleList[sampleId];
       sampleTasks = sampleData ? this.props.sampleList[sampleId].tasks : [];
     }
+
     if (!this.props.show) {
       return <div />;
     }
@@ -182,7 +183,7 @@ export default class CurrentTree extends React.Component {
 
                 break;
               }
-              case 'XRFScan': {
+              case 'xrf_spectrum': {
                 task = (
                   <XRFTaskItem
                     key={taskData.queueID}
@@ -215,7 +216,7 @@ export default class CurrentTree extends React.Component {
 
                 break;
               }
-              case 'EnergyScan': {
+              case 'energy_scan': {
                 task = (
                   <EnergyScanTaskItem
                     key={taskData.queueID}

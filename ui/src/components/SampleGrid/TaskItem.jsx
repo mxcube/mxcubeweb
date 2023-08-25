@@ -47,12 +47,12 @@ export class TaskItem extends React.Component {
 
         break;
       }
-      case 'XRFScan': {
+      case 'xrf_spectrum': {
         res = 'XRF';
 
         break;
       }
-      case 'EnergyScan': {
+      case 'energy_scan': {
         res = 'ESCAN';
 
         break;

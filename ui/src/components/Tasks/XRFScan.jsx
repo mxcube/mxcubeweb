@@ -26,7 +26,7 @@ class XRFScan extends React.Component {
   addToQueue(runNow, params) {
     const parameters = {
       ...params,
-      type: 'XRFScan',
+      type: 'xrf_spectrum',
       label: params.wfname,
       shape: this.props.pointID,
       suffix: this.props.suffix,

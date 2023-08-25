@@ -10,7 +10,8 @@ const initialState = {
     characterisation: {},
     helical: {},
     mesh: {},
-    xrfscan: {},
+    xrf_spectrum: {},
+    energy_scan: {},
     interleaved: { sub_wedge_size: 10 },
   },
 };
@@ -24,36 +25,6 @@ export default (state = initialState, action) => {
         sampleIds: action.sampleIDs,
         taskData: { ...action.taskData },
         pointID: action.pointID,
-      };
-    }
-    case 'ADD_TASKS': {
-      let type = action.tasks[0].type.toLowerCase();
-      if (action.tasks[0].parameters.helical) {
-        type = 'helical';
-      }
-      return {
-        ...state,
-        defaultParameters: {
-          ...state.defaultParameters,
-          [type]: {
-            ...action.tasks[0].parameters,
-          },
-        },
-      };
-    }
-    case 'ADD_TASK': {
-      let type = action.tasks[0].type.toLowerCase();
-      if (action.tasks[0].parameters.helical) {
-        type = 'helical';
-      }
-      return {
-        ...state,
-        defaultParameters: {
-          ...state.defaultParameters,
-          [type]: {
-            ...action.tasks[0].parameters,
-          },
-        },
       };
     }
     case 'UPDATE_TASK': {

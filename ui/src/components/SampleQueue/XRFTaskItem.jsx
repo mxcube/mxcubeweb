@@ -289,7 +289,7 @@ export default class XRFTaskItem extends Component {
               </b>
               {state === TASK_UNCOLLECTED ? (
                 <i
-                  className="fas fa-remove"
+                  className="fas fa-times"
                   onClick={this.deleteTask}
                   style={delTaskCSS}
                 />
@@ -303,7 +303,7 @@ export default class XRFTaskItem extends Component {
                   <div style={{ padding: '0.5em' }} onClick={this.showForm}>
                     <b>Path:</b> {this.path(parameters)}
                     <br />
-                    <b>Count time:</b> {parameters.exp_time}
+                    <b>Count time:</b> {parameters.countTime}
                   </div>
                 </div>
                 {this.getResult(state)}
