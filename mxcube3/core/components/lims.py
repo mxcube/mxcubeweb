@@ -270,9 +270,6 @@ class Lims(ComponentBase):
         """
         limsdata = json.loads(current_user.limsdata)
 
-        logging.getLogger("MX3.HWR").info(
-            "[LIMS] Searching for proposal: %s" % proposal
-        )
         for prop in limsdata.get("proposalList", []):
             _p = "%s%s" % (
                 prop.get("Proposal").get("code", "").lower(),
@@ -296,9 +293,6 @@ class Lims(ComponentBase):
 
     def select_proposal(self, proposal):
         proposal_info = self.get_proposal_info(proposal)
-
-        logging.getLogger("MX3.HWR").info("[LIMS] Selecting proposal: %s" % proposal)
-        logging.getLogger("MX3.HWR").info("[LIMS] Proposal info: %s" % proposal_info)
 
         if (
             HWR.beamline.lims.loginType.lower() == "user"
