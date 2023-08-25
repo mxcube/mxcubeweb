@@ -133,7 +133,7 @@ class ServerIO {
     this.initialized = true;
     this.dispatch = store.dispatch;
 
-    setInterval(this.refreshSession, 50000);
+    setInterval(this.refreshSession, 9000);
 
     this.connect();
 
