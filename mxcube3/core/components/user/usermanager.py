@@ -385,10 +385,10 @@ class UserManager(BaseUserManager):
                 self.force_signout_user(login_id)
             else:
                 if current_user.username == login_id:
-                    raise Exception("You are already logged in here")
+                    raise Exception("You are already logged in")
                 else:
                     raise Exception(
-                        "Login rejected, you are already logged in somewhere else\nand Another user is already logged in here"
+                        "Login rejected, you are already logged in somewhere else\nand Another user is already logged in"
                     )
 
         # Only allow in-house log-in from local host
@@ -404,16 +404,16 @@ class UserManager(BaseUserManager):
         ):
             raise Exception("Another user is already logged in")
 
-        # Only allow if no one else is logged in here
+        # Only allow if no one else is logged in
         if not current_user.is_anonymous:
             if (
                 active_users
                 and current_user.username != login_id
                 and HWR.beamline.lims.loginType.lower() == "user"
             ):
-                raise Exception("Another user is already logged in here")
+                raise Exception("Another user is already logged in")
 
-        # Only allow local login when remote is disabledf
+        # Only allow local login when remote is disabled
         if not self.app.ALLOW_REMOTE and not is_local_host():
             raise Exception("Remote access disabled")
 
