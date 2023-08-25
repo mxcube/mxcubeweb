@@ -1,9 +1,17 @@
+.chat-widget-dragable {
+  position: relative;
+  z-index: 100002;
+}
+
+.chat-widget-dragable .react-dragable {
+  position: relative;
+  z-index: 100002;
+}
+
 .rcw-widget-container {
   z-index: 10001;
-  position: initial;
   max-width: 415px;
   float: right;
-  position: absolute;
   cursor: move;
   color: black;
   border-radius: 5px;
