@@ -411,7 +411,7 @@ class Lims(ComponentBase):
                 continue
             else:
                 if HWR.beamline.sample_changer.__class__.__TYPE__ in [
-                    "HCD",
+                    "Flex Sample Changer",
                     "FlexHCD",
                     "RoboDiff",
                 ]:
