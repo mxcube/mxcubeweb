@@ -24,7 +24,15 @@ class DefaultErrorBoundary extends React.Component {
     if (this.state.errorInfo) {
       return (
         <div>
-          <h2>We are sorry, something went wrong</h2>
+          <h3>Something went wrong</h3>
+          <p>
+            We are terribly sorry but something went wrong, the error has been
+            logged. If it remains please contact suport.
+          </p>
+          <p>
+            Simply, <a href="/datacollection">reloading</a> the page might fix
+            the issue.
+          </p>
           <details style={{ whiteSpace: 'pre-wrap' }}>
             {this.state.error && this.state.error.toString()}
             <br />
