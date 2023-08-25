@@ -233,8 +233,8 @@ class SampleView(ComponentBase):
 
         dm = HWR.beamline.diffractometer
         dm.connect("centringStarted", signals.centring_started)
-        dm.connect(dm, "centringSuccessful", self.wait_for_centring_finishes)
-        dm.connect(dm, "centringFailed", self.wait_for_centring_finishes)
+        dm.connect("centringSuccessful", self.wait_for_centring_finishes)
+        dm.connect("centringFailed", self.wait_for_centring_finishes)
         dm.connect("centringAccepted", self.centring_add_current_point)
         HWR.beamline.sample_view.connect("newGridResult", self.handle_grid_result)
         self._click_limit = int(HWR.beamline.click_centring_num_clicks or 3)
