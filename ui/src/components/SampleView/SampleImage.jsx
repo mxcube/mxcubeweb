@@ -73,6 +73,8 @@ export default class SampleImage extends React.Component {
       preserveObjectStacking: true,
     });
 
+    this.drawGridPlugin.canvas = this.canvas;
+
     // Bind leftClick to function
     this.canvas.on('mouse:down', this.leftClick);
     this.canvas.on('mouse:move', this.onMouseMove);
@@ -165,8 +167,12 @@ export default class SampleImage extends React.Component {
 
   onMouseMove(options) {
     if (this.props.clickCentring && this.props.clickCentringClicksLeft > 0) {
-      if (this.centringVerticalLine !== undefined) {
+      if (
+        this.centringVerticalLine !== undefined ||
+        this.centringHorizontalLine !== undefined
+      ) {
         this.canvas.remove(this.centringVerticalLine);
+        this.canvas.remove(this.centringHorizontalLine);
       }
 
       this.centringVerticalLine = makeCentringVerticalLine(
@@ -176,23 +182,18 @@ export default class SampleImage extends React.Component {
         this.canvas.height,
       );
 
-      if (this.props.clickCentringClicksLeft > 2) {
-        if (this.centringHorizontalLine !== undefined) {
-          // this.canvas.remove(this.centringHorizontalLine);
-        }
-
-        this.centringHorizontalLine = makeCentringHorizontalLine(
-          (options.e.layerX + 1.5) / this.props.imageRatio,
-          (options.e.layerY + 1) / this.props.imageRatio,
-          this.props.imageRatio,
-          this.canvas.width,
-        );
-      }
+      this.centringHorizontalLine = makeCentringHorizontalLine(
+        (options.e.layerX + 1.5) / this.props.imageRatio,
+        (options.e.layerY + 1) / this.props.imageRatio,
+        this.props.imageRatio,
+        this.canvas.width,
+      );
 
       this.canvas.add(this.centringVerticalLine);
+      this.canvas.add(this.centringHorizontalLine);
     }
-
-    if (options.e.buttons > 0) {
+    
+    if (options.e.buttons > 0 && this.drawGridPlugin.drawing) {    
       this.drawGridPlugin.update(
         this.canvas,
         options.e.layerX,
@@ -203,8 +204,8 @@ export default class SampleImage extends React.Component {
     this.drawGridPlugin.onCellMouseOver(options, this.canvas);
   }
 
-  onMouseUp() {
-    this.drawGridPlugin.endDrawing(null, this.canvas);
+  onMouseUp(e) {
+    this.drawGridPlugin.endDrawing();
   }
 
   setGridResultType(resultType) {
@@ -540,7 +541,6 @@ export default class SampleImage extends React.Component {
     } else if (option.target) {
       objectFound = option.target;
     }
-
     const {
       sampleActions,
       clickCentring,
@@ -567,20 +567,36 @@ export default class SampleImage extends React.Component {
       );
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
-    }
+    } else if (option.e.metaKey || option.e.ctrlKey) {
+      const cellSizeX = beamSize.x * pixelsPerMm[0] * imageRatio;
+      const cellSizeY = beamSize.y * pixelsPerMm[1] * imageRatio;
 
-    if (
-      this.props.clickCentring === true &&
-      this.props.clickCentringClicksLeft < 3
-    ) {
-      this.centringHorizontalLine = makeCentringHorizontalLine(
-        (option.e.layerX + 1.5) / this.props.imageRatio,
-        (option.e.layerY + 1) / this.props.imageRatio,
-        this.props.imageRatio,
-        this.canvas.width,
+      const cellIdxX = parseInt(
+        Math.floor((option.pointer.x - option.target.oCoords.tl.x) / cellSizeX),
+        10,
+      );
+      const cellIdxY = parseInt(
+        Math.floor(
+          (option.pointer.y - option.target.oCoords.tl.y - 20) / cellSizeY,
+        ),
+        10,
       );
 
-      this.canvas.add(this.centringHorizontalLine);
+      const shapeData = this.props.shapes[objectFound.id];
+      const imgNum = this.drawGridPlugin.countCells(
+        shapeData.cellCountFun,
+        cellIdxY,
+        cellIdxX,
+        shapeData.numRows,
+        shapeData.numCols,
+      );
+
+      const resultDataPath = shapeData.resultDataPath;
+      if (resultDataPath.length !== 0) {
+        this.props.generalActions.sendDisplayImage(
+          `${resultDataPath}&img_num=${imgNum}`,
+        );
+      }
     }
   }
 
@@ -591,7 +607,9 @@ export default class SampleImage extends React.Component {
     const { sendMotorPosition, sendZoomPos } = sampleActions;
     const keyPressed = this._keyPressed;
 
-    const { phi, focus, zoom } = hardwareObjects;
+    const phi = hardwareObjects['diffractometer.phi'];
+    const focus = hardwareObjects['diffractometer.focus'];
+    const zoom = hardwareObjects['diffractometer.zoom'];
 
     if (keyPressed === 'r' && phi.state === MOTOR_STATE.READY) {
       // then we rotate phi axis by the step size defined in its box
@@ -868,6 +886,7 @@ export default class SampleImage extends React.Component {
       this.props.clickCentringClicksLeft === 0
     ) {
       this.canvas.remove(this.centringHorizontalLine);
+      this.canvas.remove(this.centringVerticalLine);
       this.centringHorizontalLine = undefined;
     }
 
@@ -876,6 +895,7 @@ export default class SampleImage extends React.Component {
       this.centringHorizontalLine !== undefined
     ) {
       this.canvas.add(this.centringHorizontalLine);
+      this.canvas.add(this.centringVerticalLine);
     }
 
     const fabricSelectables = [...makeLines(lines, imageRatio)];

@@ -212,8 +212,8 @@ export default class DrawGridPlugin {
       this.snapToGrid = snapToGrid;
       this.drawing = true;
       this.gridSaved = false;
-      this.gridData.screenCoord[0] = options.e.layerX;
-      this.gridData.screenCoord[1] = options.e.layerY;
+      this.currentTopLeftX = options.e.layerX;
+      this.currentTopLeftY = options.e.layerY;
     }
   }
 
@@ -225,6 +225,9 @@ export default class DrawGridPlugin {
    * @param {float} y - bottom y coordinate of grid, (mouse y position)
    */
   update(canvas, x, y) {
+    this.gridData.screenCoord[0] = this.currentTopLeftX;
+    this.gridData.screenCoord[1] = this.currentTopLeftY;
+
     const [left, top] = this.gridData.screenCoord;
     const validPosition = x > left && y > top;
 
@@ -371,7 +374,7 @@ export default class DrawGridPlugin {
 
     let color = gridData.selected
       ? 'rgba(255, 255, 255, 1)'
-      : 'rgba(0, 0, 100, 0.5)';
+      : 'rgba(255, 255, 255, 0.5)';
     color = gridData.result.length > 0 ? 'rgba(255, 255, 255, 1)' : color;
     const lineColor = gridData.selected
       ? 'rgba(255, 255, 255, 0.5)'
@@ -468,7 +471,6 @@ export default class DrawGridPlugin {
           }
         } else if (gridData.result && gridData.result.length > 0) {
           const imageElement = document.createElement('img');
-
           imageElement.src = `data:image/png;base64,${gridData.result}`;
           const image = new fabric.Image(imageElement);
           image.scaleToHeight(height);

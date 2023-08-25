@@ -173,14 +173,14 @@ export function makeText(x, y, fontSize, color, text) {
   });
 }
 
-export function makeScale(height, scaleLengthX, scaleLengthY, color, text) {
+export function makeScale(height, scaleLengthX, scaleLengthY, text) {
   return [
     makeLine(
       10,
       height - 10,
       scaleLengthX + 10,
       height - 10,
-      'green',
+      'rgba(0, 255, 255, 1)',
       4,
       false,
     ),
@@ -189,11 +189,11 @@ export function makeScale(height, scaleLengthX, scaleLengthY, color, text) {
       height - 10,
       10,
       height - 10 - scaleLengthY,
-      'green',
+      'rgba(0, 255, 255, 1)',
       4,
       false,
     ),
-    makeText(20, height - 30, 16, color, text),
+    makeText(20, height - 30, 16, 'rgba(0, 255, 255, 1)', text),
   ];
 }
 
@@ -227,7 +227,7 @@ export function makeCentringVerticalLine(x, y, imageRatio, height) {
     x * imageRatio,
     height,
     'rgba(255,255,0,0.5)',
-    1,
+    2,
     false,
   );
 }
@@ -239,7 +239,7 @@ export function makeCentringHorizontalLine(x, y, imageRatio, width) {
     width,
     y * imageRatio,
     'rgba(255,255,0,0.5)',
-    1,
+    2,
     false,
   );
 }
@@ -420,7 +420,7 @@ export function makeImageOverlay(iR, ppMm, bP, bSh, bSi, cCP, dP, canvas) {
     ),
   );
   imageOverlay.push(
-    ...makeScale(canvas.height, scaleLengthX, scaleLengthY, 'green', '50 µm'),
+    ...makeScale(canvas.height, scaleLengthX, scaleLengthY, '50 µm'),
   );
   if (cCP.length > 0) {
     const point = cCP[cCP.length - 1];
