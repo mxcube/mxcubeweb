@@ -37,6 +37,12 @@ export default class PopInput extends React.Component {
     this.hideOverlay = this.hideOverlay.bind(this);
   }
 
+  shouldComponentUpdate(nextProps, nextState) {
+    return (
+      nextProps.state !== this.props.state ||
+      nextProps.value !== this.props.value
+    );
+  }
   hideOverlay() {
     document.body.click();
   }
