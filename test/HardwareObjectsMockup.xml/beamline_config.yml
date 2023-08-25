@@ -138,8 +138,8 @@ available_methods:
     datacollection: True
     characterisation: True
     helical: True
-    xrf: True
-    energy: True
+    xrf_spectrum: True
+    energy_scan: True
     mesh: True
     ssx_chip_collection: True
     gphlworkflow: True

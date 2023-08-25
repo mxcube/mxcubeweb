@@ -482,7 +482,7 @@ class Queue(ComponentBase):
     def _handle_xrf(self, sample_node, node):
         queueID = node._node_id
         enabled, state = self.get_node_state(queueID)
-        parameters = {"countTime": node.exp_time, "shape": node.shape}
+        parameters = {"countTime": node.count_time, "shape": node.shape}
         parameters.update(node.path_template.as_dict())
         parameters["path"] = parameters["directory"]
 
@@ -503,7 +503,7 @@ class Queue(ComponentBase):
 
         res = {
             "label": "XRF Scan",
-            "type": "XRFScan",
+            "type": "xrf_spectrum",
             "parameters": parameters,
             "sampleID": sample_node.loc_str,
             "taskIndex": self.node_index(node)["idx"],
@@ -539,7 +539,7 @@ class Queue(ComponentBase):
 
         res = {
             "label": "Energy Scan",
-            "type": "EnergyScan",
+            "type": "energy_scan",
             "parameters": parameters,
             "sampleID": sample_node.loc_str,
             "sampleQueueID": sample_node._node_id,
@@ -578,7 +578,7 @@ class Queue(ComponentBase):
         originID, task = self._handle_diffraction_plan(node, sample_node)
 
         res = {
-            "label": "Characterisation",
+            "label": "CHARACTERISATION",
             "type": "Characterisation",
             "parameters": parameters,
             "checked": node.is_enabled(),
@@ -997,9 +997,9 @@ class Queue(ComponentBase):
                 self.add_characterisation(sample_node_id, item)
             elif item_t == "Workflow" or item_t == "GphlWorkflow":
                 self.add_workflow(sample_node_id, item)
-            elif item_t == "XRFScan":
+            elif item_t == "xrf_spectrum":
                 self.add_xrf_scan(sample_node_id, item)
-            elif item_t == "EnergyScan":
+            elif item_t == "energy_scan":
                 self.add_energy_scan(sample_node_id, item)
             elif item_t == "Sample":
                 pass
@@ -1059,6 +1059,7 @@ class Queue(ComponentBase):
             tag = "characterisation"
 
         return tag
+
     def set_dc_params(self, model, entry, task_data, sample_model):
         """
         Helper method that sets the data collection parameters for a DataCollection.
@@ -1121,7 +1122,6 @@ class Queue(ComponentBase):
 
             acq.acquisition_parameters.centred_position = cpos1
             acq2.acquisition_parameters.centred_position = cpos2
-
         elif params.get("mesh", False):
             grid = HWR.beamline.sample_view.get_shape(params["shape"])
             acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
@@ -1143,7 +1143,6 @@ class Queue(ComponentBase):
 
             model.experiment_type = qme.EXPERIMENT_TYPE.MESH
             model.set_requires_centring(False)
-
         elif params["shape"] != -1:
             point = HWR.beamline.sample_view.get_shape(params["shape"])
             cpos = point.get_centred_position()
@@ -1279,7 +1278,7 @@ class Queue(ComponentBase):
         Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
 
         :param XRFSpectrum QueueModel: The model to set parameters of
-        :param XRFSpectrumQueueEntry: The queue entry of the model
+        :param XrfSpectrumQueueEntry: The queue entry of the model
         :param dict task_data: Dictionary with new parameters
         """
         params = task_data["parameters"]
@@ -1450,7 +1449,7 @@ class Queue(ComponentBase):
         """
         xrf_model = qmo.XRFSpectrum()
         xrf_model.set_origin(ORIGIN_MX3)
-        xrf_entry = qe.XRFSpectrumQueueEntry(Mock(), xrf_model)
+        xrf_entry = qe.XrfSpectrumQueueEntry(Mock(), xrf_model)
 
         return xrf_model, xrf_entry
 
@@ -1800,6 +1799,7 @@ class Queue(ComponentBase):
                 sample = parent.get_sample_node()
 
                 task = self._handle_dc(sample, child)
+
                 self.app.server.emit("add_task", {"tasks": [task]}, namespace="/hwr")
 
             elif isinstance(child, qmo.TaskGroup):
