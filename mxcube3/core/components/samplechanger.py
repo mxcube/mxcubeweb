@@ -240,6 +240,7 @@ class SampleChanger(ComponentBase):
                     signals.queue_toggle_sample(self.app.queue.get_entry(node_id)[1])
         finally:
             signals.sc_load_ready(sample["location"])
+            HWR.beamline.diffractometer.accept_centring()
 
         return res
 
