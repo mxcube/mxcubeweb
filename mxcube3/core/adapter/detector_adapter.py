@@ -11,7 +11,7 @@ class DetectorAdapter(AdapterBase):
         ho.connect("stateChanged", self._state_change)
 
     def _state_change(self, *args, **kwargs):
-        self.state_change(**kwargs)
+        self.state_change(*args, **kwargs)
 
     def state(self):
         return self._ho.get_state().name.upper()
