@@ -38,32 +38,6 @@ export default (state = initialState, action) => {
         },
       };
     }
-    case 'RESET_TASK_PARAMETERS': {
-      return {
-        ...state,
-        defaultParameters: {
-          ...state.initialParameters,
-        },
-      };
-    }
-    case 'UPDATE_DEFAULT_PARAMETERS': {
-      let type = action.data.type.toLowerCase();
-      if (action.data.helical) {
-        type = 'helical';
-      } else if (action.data.mesh) {
-        type = 'mesh';
-      }
-      return {
-        ...state,
-        defaultParameters: {
-          ...state.defaultParameters,
-          [type]: {
-            ...state.defaultParameters[type],
-            acq_parameters: { ...action.data },
-          },
-        },
-      };
-    }
     case 'HIDE_FORM': {
       return { ...state, showForm: '' };
     }
@@ -71,9 +45,6 @@ export default (state = initialState, action) => {
       return {
         ...state,
         defaultParameters: {
-          ...action.data.taskParameters,
-        },
-        initialParameters: {
           ...action.data.taskParameters,
         },
         fileSuffix: action.data.detector.fileSuffix,

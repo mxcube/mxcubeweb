@@ -15,6 +15,9 @@ import {
   FieldsRow,
   CollapsableRows,
   DisplayField,
+  getLastUsedParameters,
+  saveToLastUsedParameters,
+  resetLastUsedParameters,
 } from './fields';
 
 class Mesh extends React.Component {
@@ -70,28 +73,13 @@ class Mesh extends React.Component {
       'shape',
     ];
 
+    saveToLastUsedParameters(this.props.taskData.type, params);
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
-  resetParameters(form) {
-    this.props.reset(form.toLowerCase());
-  }
-
   defaultParameters() {
-    const { type } = this.props.taskData;
-    this.props.resetTaskParameters();
-    this.resetParameters(type);
-    const fieldNames = Object.keys(
-      this.props.initialParameters[type.toLowerCase()],
-    );
-    fieldNames.forEach((field) => {
-      this.props.autofill(
-        type.toLowerCase(),
-        field,
-        this.props.initialParameters[type.toLowerCase()][field],
-      );
-    });
+    resetLastUsedParameters(this);
   }
 
   render() {
@@ -273,13 +261,15 @@ Mesh = connect((state) => {
 
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
+  const parameters = getLastUsedParameters(type, state);
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: limits,
     beamline: state.beamline,
     initialValues: {
-      ...state.taskForm.taskData.parameters,
+      ...parameters,
       beam_size: state.sampleview.currentAperture,
       resolution: state.taskForm.taskData.sampleID
         ? state.taskForm.taskData.parameters.resolution

@@ -5,6 +5,59 @@ import { TiWarning, TiTimes } from 'react-icons/ti';
 
 import './style.css';
 
+export function getLastUsedParameters(formName, state) {
+  const lastParameters = localStorage.getItem(`last${formName}Parameters`);
+  let parameters = state.taskForm.taskData.parameters;
+
+  if (lastParameters !== null) {
+    parameters = JSON.parse(lastParameters);
+  }
+
+  if (parseFloat(parameters.osc_range) === 0) {
+    parameters.osc_range =
+      state.taskForm.defaultParameters[
+        formName.toLowerCase()
+      ].acq_parameters.osc_range;
+  }
+
+  return parameters;
+}
+
+export function saveToLastUsedParameters(formName, parameters) {
+  localStorage.setItem(`last${formName}Parameters`, JSON.stringify(parameters));
+}
+
+export function resetLastUsedParameters(formObj) {
+  const { type } = formObj.props.taskData;
+  localStorage.removeItem(`last${type}Parameters`);
+  formObj.props.reset();
+
+  debugger;
+
+  const fieldNames = Object.keys(
+    formObj.props.defaultParameters[type.toLowerCase()].acq_parameters,
+  );
+
+  const ignore = [
+    'osc_start',
+    'resolution',
+    'energy',
+    'transmission',
+    'beam_size',
+  ];
+
+  fieldNames.forEach((field) => {
+    if (!ignore.includes(field)) {
+      formObj.props.autofill(
+        field,
+        formObj.props.defaultParameters[type.toLowerCase()].acq_parameters[
+          field
+        ],
+      );
+    }
+  });
+}
+
 export function toFixed(state, hoName) {
   const ho = state.beamline.hardwareObjects[hoName];
   let precision = null;

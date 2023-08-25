@@ -16,8 +16,6 @@ import GenericTaskForm from '../components/Tasks/GenericTaskForm';
 import {
   hideTaskParametersForm,
   showTaskForm,
-  resetTaskParameters,
-  updateDefaultParameters,
 } from '../actions/taskForm';
 
 import {
@@ -80,8 +78,6 @@ class TaskContainer extends React.Component {
         this.props.updateTask(sampleIds, taskIndex, parameters, runNow);
       }
     }
-
-    this.props.updateDefaultParameters(params);
   }
 
   render() {
@@ -121,8 +117,7 @@ class TaskContainer extends React.Component {
             apertureList={this.props.apertureList}
             rootPath={this.props.path}
             attributes={this.props.attributes}
-            initialParameters={this.props.initialParameters}
-            resetTaskParameters={this.props.resetTaskParameters}
+            defaultParameters={this.props.defaultParameters}
           />
         );
       }
@@ -137,8 +132,6 @@ class TaskContainer extends React.Component {
             apertureList={this.props.apertureList}
             rootPath={this.props.path}
             attributes={this.props.attributes}
-            initialParameters={this.props.initialParameters}
-            resetTaskParameters={this.props.resetTaskParameters}
             defaultParameters={this.props.defaultParameters}
             taskResult={this.props.taskResult}
           />
@@ -157,8 +150,6 @@ class TaskContainer extends React.Component {
             rootPath={this.props.path}
             lines={lines}
             attributes={this.props.attributes}
-            initialParameters={this.props.initialParameters}
-            resetTaskParameters={this.props.resetTaskParameters}
           />
         );
       }
@@ -174,8 +165,6 @@ class TaskContainer extends React.Component {
             apertureList={this.props.apertureList}
             rootPath={this.props.path}
             cellCount={this.props.cellCount}
-            initialParameters={this.props.initialParameters}
-            resetTaskParameters={this.props.resetTaskParameters}
           />
         );
       }
@@ -227,7 +216,7 @@ class TaskContainer extends React.Component {
           />
         );
       }
-      case 'XRF': {
+      case 'xrf_spectrum': {
         return (
           <XRFScan
             show
@@ -240,7 +229,7 @@ class TaskContainer extends React.Component {
           />
         );
       }
-      case 'Energy': {
+      case 'energy_scan': {
         return (
           <EnergyScan
             show
@@ -289,7 +278,6 @@ function mapStateToProps(state) {
     path: state.login.rootPath,
     shapes: state.shapes.shapes,
     attributes: state.beamline.attributes,
-    initialParameters: state.taskForm.initialParameters,
     defaultParameters: state.taskForm.defaultParameters,
     taskResult: state.taskResult,
   };
@@ -300,11 +288,6 @@ function mapDispatchToProps(dispatch) {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(
       hideTaskParametersForm,
-      dispatch,
-    ),
-    resetTaskParameters: bindActionCreators(resetTaskParameters, dispatch),
-    updateDefaultParameters: bindActionCreators(
-      updateDefaultParameters,
       dispatch,
     ),
     updateTask: bindActionCreators(updateTask, dispatch),

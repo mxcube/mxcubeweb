@@ -6,12 +6,20 @@ import { DraggableModal } from '../DraggableModal';
 import validate from './validate';
 import warn from './warning';
 import JSForm from '@rjsf/core';
+import validator from '@rjsf/validator-ajv8';
 import classNames from 'classnames';
 import './style.css';
 
 import { sendUpdateDependentFields } from '../../actions/queue';
 
-import { FieldsHeader, StaticField, InputField } from './fields';
+import {
+  FieldsHeader,
+  StaticField,
+  InputField,
+  getLastUsedParameters,
+  saveToLastUsedParameters,
+  resetLastUsedParameters,
+} from './fields';
 
 class GenericTaskForm extends React.Component {
   constructor(props) {
@@ -23,7 +31,6 @@ class GenericTaskForm extends React.Component {
     this.showDPFooter = this.showDPFooter.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
-    this.resetParameters = this.resetParameters.bind(this);
     this.defaultParameters = this.defaultParameters.bind(this);
     this.jsformData = {};
   }
@@ -64,28 +71,13 @@ class GenericTaskForm extends React.Component {
       'chip_type',
     ];
 
+    saveToLastUsedParameters(this.props.taskData.type, params);
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
-  resetParameters(form) {
-    this.props.reset(form.toLowerCase());
-  }
-
   defaultParameters() {
-    const { type } = this.props.taskData;
-    this.props.resetTaskParameters();
-    this.resetParameters(type);
-    const fieldNames = Object.keys(
-      this.props.initialParameters[type.toLowerCase()],
-    );
-    fieldNames.forEach((field) => {
-      this.props.autofill(
-        type.toLowerCase(),
-        field,
-        this.props.initialParameters[type.toLowerCase()][field],
-      );
-    });
+    resetLastUsedParameters(this);
   }
 
   showDCFooter() {
@@ -147,7 +139,7 @@ class GenericTaskForm extends React.Component {
             disabled={this.props.invalid}
             onClick={this.submitAddToQueue}
           >
-            Add Diffraction Plan to Queue
+            Add Collection Plan to Queue
           </Button>
         </ButtonToolbar>
       </Modal.Footer>
@@ -311,6 +303,7 @@ class GenericTaskForm extends React.Component {
           <div className="json-schema-form-container">
             <JSForm
               liveValidate
+              validator={validator}
               schema={schema}
               uiSchema={uiSchema}
               onChange={({ formData }) => {
@@ -368,6 +361,8 @@ GenericTaskForm = connect((state) => {
     path = `${state.login.rootPath}/${subdir}/[RUN#]`;
   }
 
+  const parameters = getLastUsedParameters(type, state);
+
   return {
     path,
     filename: fname,
@@ -379,7 +374,7 @@ GenericTaskForm = connect((state) => {
     uiSchema,
     beamline: state.beamline,
     initialValues: {
-      ...state.taskForm.taskData.parameters,
+      ...parameters,
       type,
       beam_size: state.sampleview.currentAperture,
       resolution:

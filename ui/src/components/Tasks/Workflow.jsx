@@ -91,10 +91,7 @@ class Workflow extends React.Component {
             <ButtonToolbar className="float-end">
               <Button
                 variant="success"
-                disabled={
-                  this.props.taskData.parameters.shape === -1 ||
-                  this.props.invalid
-                }
+                disabled={this.props.invalid}
                 onClick={this.submitRunNow}
               >
                 Run Now

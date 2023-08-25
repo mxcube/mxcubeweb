@@ -14,6 +14,9 @@ import {
   FieldsRow,
   CollapsableRows,
   toFixed,
+  getLastUsedParameters,
+  saveToLastUsedParameters,
+  resetLastUsedParameters,
 } from './fields';
 
 import { SPACE_GROUPS } from '../../constants';
@@ -28,7 +31,6 @@ class DataCollection extends React.Component {
     this.showDPFooter = this.showDPFooter.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
-    this.resetParameters = this.resetParameters.bind(this);
     this.defaultParameters = this.defaultParameters.bind(this);
   }
 
@@ -65,28 +67,13 @@ class DataCollection extends React.Component {
       'helical',
     ];
 
+    saveToLastUsedParameters(this.props.taskData.type, params);
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
-  resetParameters(form) {
-    this.props.reset(form.toLowerCase());
-  }
-
   defaultParameters() {
-    const { type } = this.props.taskData;
-    this.props.resetTaskParameters();
-    this.resetParameters(type);
-    const fieldNames = Object.keys(
-      this.props.initialParameters[type.toLowerCase()],
-    );
-    fieldNames.forEach((field) => {
-      this.props.autofill(
-        type.toLowerCase(),
-        field,
-        this.props.initialParameters[type.toLowerCase()][field],
-      );
-    });
+    resetLastUsedParameters(this);
   }
 
   showDCFooter() {
@@ -379,6 +366,7 @@ DataCollection = connect((state) => {
 
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
+  const parameters = getLastUsedParameters(type, state);
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -386,7 +374,7 @@ DataCollection = connect((state) => {
     acqParametersLimits: limits,
     beamline: state.beamline,
     initialValues: {
-      ...state.taskForm.taskData.parameters,
+      ...parameters,
       beam_size: state.sampleview.currentAperture,
       resolution:
         state.taskForm.sampleIds.constructor !== Array
