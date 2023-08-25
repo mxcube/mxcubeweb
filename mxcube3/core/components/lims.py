@@ -197,12 +197,6 @@ class Lims(ComponentBase):
         # If this is used often, it could be moved to a better place.
         ERROR_CODE = dict({"status": {"code": "0"}})
 
-        try:
-            HWR.beamline.lims.lims_rest.authenticate(loginID, password)
-        except Exception:
-            logging.getLogger("MX3.HWR").error("[LIMS-REST] Could not authenticate")
-            return ERROR_CODE
-
         if HWR.beamline.lims.loginType.lower() == "user":
             try:
                 connection_ok = HWR.beamline.lims.echo()
@@ -378,10 +372,7 @@ class Lims(ComponentBase):
         return HWR.beamline.session.get_default_subdir(sample_data)
 
     def get_dc_link(self, col_id):
-        link = HWR.beamline.lims.lims_rest.dc_link(col_id)
-
-        if not link:
-            link = HWR.beamline.lims.dc_link(col_id)
+        link = HWR.beamline.lims.dc_link(col_id)
 
         return link
 
@@ -414,7 +405,6 @@ class Lims(ComponentBase):
 
         for sample_info in samples_info_list:
             sample_info["limsID"] = sample_info.pop("sampleId")
-            sample_info["limsLink"] = HWR.beamline.lims.lims_rest.sample_link()
             sample_info["defaultPrefix"] = self.get_default_prefix(sample_info)
             sample_info["defaultSubDir"] = self.get_default_subdir(sample_info)
 
