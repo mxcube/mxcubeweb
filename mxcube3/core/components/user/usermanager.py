@@ -40,9 +40,17 @@ class BaseUserManager(ComponentBase):
     def is_operator(self):
         return getattr(current_user, "in_control", False)
 
-    def active_logged_in_users(self):
+    def active_logged_in_users(self, exclude_inhouse=False):
         self.update_active_users()
-        return [_u.username for _u in User.query.all() if _u.active]
+
+        if exclude_inhouse:
+            users = [_u.username for _u in User.query.all() if _u.active]
+        else:
+            users = [
+                _u.username for _u in User.query.all() if _u.active and not _u.isstaff
+            ]
+
+        return users
 
     def get_user(self, username):
         user = None
@@ -395,11 +403,13 @@ class UserManager(BaseUserManager):
         if inhouse and not (inhouse and is_local_host()):
             raise Exception("In-house only allowed from localhost")
 
+        non_inhouse_active_users = self.active_logged_in_users(exclude_inhouse=True)
+
         # Only allow other users to log-in if they are from the same proposal
         if (
             (not inhouse)
-            and active_users
-            and (login_id not in active_users)
+            and non_inhouse_active_users
+            and (login_id != self.get_operator().selected_proposal)
             and HWR.beamline.lims.loginType.lower() != "user"
         ):
             raise Exception("Another user is already logged in")
