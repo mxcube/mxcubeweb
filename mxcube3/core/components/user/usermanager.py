@@ -105,19 +105,7 @@ class BaseUserManager(ComponentBase):
         active_in_control = False
 
         for _u in User.query.all():
-            if (
-                _u.active
-                and _u.last_request_timestamp
-                and (
-                    datetime.datetime.now() - _u.last_request_timestamp
-                ).total_seconds()
-                > 60
-            ):
-                logging.getLogger("HWR.MX3").info(
-                    f"Logged out inactive user {_u.username}"
-                )
-                self.app.server.user_datastore.deactivate_user(_u)
-            elif _u.is_authenticated and _u.in_control:
+            if _u.is_authenticated and _u.in_control:
                 active_in_control = True
             else:
                 self.db_set_in_control(_u, False)
@@ -166,6 +154,7 @@ class BaseUserManager(ComponentBase):
             if not "sid" in flask.session:
                 flask.session["sid"] = str(uuid.uuid4())
 
+            self.update_active_users()
             user = self.db_create_user(login_id, password, login_res)
             self.app.server.user_datastore.activate_user(user)
             flask_security.login_user(user, remember=False)
@@ -189,7 +178,6 @@ class BaseUserManager(ComponentBase):
             )
 
             self.update_operator(new_login=True)
-            self.update_active_users()
 
             msg = "User %s signed in" % user.username
             logging.getLogger("MX3.HWR").info(msg)
