@@ -4,10 +4,13 @@ import { connect, Provider } from 'react-redux';
 import { reducer as formReducer } from 'redux-form';
 import { Modal } from 'react-bootstrap';
 import Form from '@rjsf/core';
+import validator from '@rjsf/validator-ajv8';
 import {
   showWorkflowParametersDialog,
   workflowSubmitParameters,
 } from '../actions/workflow';
+
+import './WorkflowParametersDialog.css';
 
 class WorkflowParametersDialog extends React.Component {
   constructor(props) {
@@ -39,6 +42,7 @@ class WorkflowParametersDialog extends React.Component {
       form = (
         <Provider store={this.store}>
           <Form
+            validator={validator}
             schema={this.props.formData}
             formData={this.props.formData.initialValues}
             onSubmit={this.submitData}
