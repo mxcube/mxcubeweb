@@ -251,9 +251,7 @@ class BeamlineSetupContainer extends React.Component {
             <Nav.Item>
               <DeviceState
                 labelText="Detector"
-                data={
-                  this.props.beamline.hardwareObjects.detector.state.acq_satus
-                }
+                data={this.props.beamline.hardwareObjects.detector.state}
               />
             </Nav.Item>
           </Nav>

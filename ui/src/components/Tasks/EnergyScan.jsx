@@ -28,7 +28,7 @@ class EnergyScan extends React.Component {
   addToQueue(runNow, params) {
     const parameters = {
       ...params,
-      type: 'EnergyScan',
+      type: 'energy_scan',
       label: params.wfname,
       shape: this.props.pointID,
       suffix: this.props.suffix,

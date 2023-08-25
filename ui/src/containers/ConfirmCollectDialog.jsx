@@ -198,7 +198,7 @@ export class ConfirmCollectDialog extends React.Component {
   taskPopover(task) {
     let pover = <span />;
 
-    if (task.type === 'EnergyScan') {
+    if (task.type === 'energy_scan') {
       pover = (
         <Popover id="collect-confirm-dialog-popover">
           <Table striped bordered hover>
@@ -217,7 +217,7 @@ export class ConfirmCollectDialog extends React.Component {
           </Table>
         </Popover>
       );
-    } else if (task.type === 'XRFScan') {
+    } else if (task.type === 'xrf_spectrum') {
       pover = (
         <Popover id="collect-confirm-dialog-popover">
           <Table striped bordered hover>
