@@ -72,6 +72,7 @@ class ModeEnum(str, Enum):
 class MXCUBEAppConfigModel(BaseModel):
     VIDEO_FORMAT: str = Field("MPEG1", description="Video format MPEG1 or MJPEG")
     VIDEO_STREAM_URL: str = Field("", description="Video stream URL")
+    VIDEO_STREAM_PORT: str = Field("", description="Video stream PORT")
     USE_EXTERNAL_STREAMER: bool = Field(
         False,
         description="True to use video stream produced by external software, false otherwise",
