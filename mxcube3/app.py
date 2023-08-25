@@ -270,7 +270,7 @@ class MXCUBEApplication:
         if cfg.app.USE_EXTERNAL_STREAMER:
             MXCUBEApplication.init_sample_video(
                 _format=cfg.app.VIDEO_FORMAT,
-                port=str(urlparse(cfg.app.VIDEO_STREAM_URL).port),
+                port=cfg.app.VIDEO_STREAM_PORT,
             )
 
         MXCUBEApplication.init_logging(log_fpath, log_level, enabled_logger_list)
