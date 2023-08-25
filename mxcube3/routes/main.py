@@ -47,10 +47,10 @@ def init_route(app, server, url_prefix):
 
     @server.flask.before_request
     def before_request():
-        logging.getLogger("MX3.HWR").debug('Remote Addr: %s', request.remote_addr)
-        logging.getLogger("MX3.HWR").debug('Path: %s', request.full_path)
-        logging.getLogger("MX3.HWR").debug('scheme: %s', request.scheme)
-        logging.getLogger("MX3.HWR").debug('Headers: %s', request.headers)
+        # logging.getLogger("MX3.HWR").debug('Remote Addr: %s', request.remote_addr)
+        # logging.getLogger("MX3.HWR").debug('Path: %s', request.full_path)
+        # logging.getLogger("MX3.HWR").debug('scheme: %s', request.scheme)
+        # logging.getLogger("MX3.HWR").debug('Headers: %s', request.headers)
 
         if not flask_login.current_user.is_anonymous:
             flask_login.current_user.last_request_timestamp = datetime.now()
