@@ -29,16 +29,3 @@ export function hideTaskParametersForm() {
     type: 'HIDE_FORM',
   };
 }
-
-export function resetTaskParameters() {
-  return {
-    type: 'RESET_TASK_PARAMETERS',
-  };
-}
-
-export function updateDefaultParameters(taskData) {
-  return {
-    type: 'UPDATE_DEFAULT_PARAMETERS',
-    data: taskData,
-  };
-}

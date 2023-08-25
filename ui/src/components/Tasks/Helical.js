@@ -15,6 +15,9 @@ import {
   FieldsRow,
   CollapsableRows,
   toFixed,
+  getLastUsedParameters,
+  saveToLastUsedParameters,
+  resetLastUsedParameters,
 } from './fields';
 
 class Helical extends React.Component {
@@ -24,7 +27,6 @@ class Helical extends React.Component {
     this.submitAddToQueue = this.submitAddToQueue.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
-    this.resetParameters = this.resetParameters.bind(this);
     this.defaultParameters = this.defaultParameters.bind(this);
   }
 
@@ -61,28 +63,13 @@ class Helical extends React.Component {
       'shape',
     ];
 
+    saveToLastUsedParameters(this.props.taskData.type, params);
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
-  resetParameters(form) {
-    this.props.reset(form.toLowerCase());
-  }
-
   defaultParameters() {
-    const { type } = this.props.taskData;
-    this.props.resetTaskParameters();
-    this.resetParameters(type);
-    const fieldNames = Object.keys(
-      this.props.initialParameters[type.toLowerCase()],
-    );
-    fieldNames.forEach((field) => {
-      this.props.autofill(
-        type.toLowerCase(),
-        field,
-        this.props.initialParameters[type.toLowerCase()][field],
-      );
-    });
+    resetLastUsedParameters(this);
   }
 
   render() {
@@ -253,6 +240,7 @@ Helical = connect((state) => {
 
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
+  const parameters = getLastUsedParameters(type, state);
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -260,7 +248,7 @@ Helical = connect((state) => {
     acqParametersLimits: limits,
     beamline: state.beamline,
     initialValues: {
-      ...state.taskForm.taskData.parameters,
+      ...parameters,
       beam_size: state.sampleview.currentAperture,
       resolution:
         state.taskForm.sampleIds.constructor !== Array

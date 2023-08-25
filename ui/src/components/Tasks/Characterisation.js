@@ -15,6 +15,9 @@ import {
   FieldsRow,
   CollapsableRows,
   toFixed,
+  getLastUsedParameters,
+  saveToLastUsedParameters,
+  resetLastUsedParameters,
 } from './fields';
 
 import { SPACE_GROUPS } from '../../constants';
@@ -26,7 +29,6 @@ class Characterisation extends React.Component {
     this.submitAddToQueue = this.submitAddToQueue.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
-    this.resetParameters = this.resetParameters.bind(this);
     this.defaultParameters = this.defaultParameters.bind(this);
   }
 
@@ -54,6 +56,7 @@ class Characterisation extends React.Component {
       'opt_sad',
       'space_group',
       'strategy_complexity',
+      'strategy_program',
       'prefix',
       'subdir',
       'type',
@@ -62,28 +65,13 @@ class Characterisation extends React.Component {
       'helical',
     ];
 
+    saveToLastUsedParameters(this.props.taskData.type, params);
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
-  resetParameters(form) {
-    this.props.reset(form.toLowerCase());
-  }
-
   defaultParameters() {
-    const { type } = this.props.taskData;
-    this.props.resetTaskParameters();
-    this.resetParameters(type);
-    const fieldNames = Object.keys(
-      this.props.initialParameters[type.toLowerCase()],
-    );
-    fieldNames.forEach((field) => {
-      this.props.autofill(
-        type.toLowerCase(),
-        field,
-        this.props.initialParameters[type.toLowerCase()][field],
-      );
-    });
+    resetLastUsedParameters(this);
   }
 
   render() {
@@ -207,6 +195,15 @@ class Characterisation extends React.Component {
                 propName="strategy_complexity"
                 label="Strategy complexity"
                 list={['SINGLE', 'FEW', 'MANY']}
+              />
+            </FieldsRow>
+            <FieldsRow>
+              <SelectField
+                col1="6"
+                col2="4"
+                propName="strategy_program"
+                label="Strategy"
+                list={['Optimal', 'Fast', 'No strategy']}
               />
             </FieldsRow>
           </Form>
@@ -494,8 +491,7 @@ Characterisation = connect((state) => {
 
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
-
-  toFixed(state, 'diffractometer.phi');
+  const parameters = getLastUsedParameters(type, state);
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -510,7 +506,7 @@ Characterisation = connect((state) => {
     use_min_dose: selector(state, 'use_min_dose'),
     use_min_time: selector(state, 'use_min_time'),
     initialValues: {
-      ...state.taskForm.taskData.parameters,
+      ...parameters,
       beam_size: state.sampleview.currentAperture,
       resolution:
         state.taskForm.sampleIds.constructor !== Array
