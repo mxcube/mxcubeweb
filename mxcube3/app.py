@@ -376,15 +376,11 @@ class MXCUBEApplication:
         else:
             log_level = log_level.upper()
 
-        root_logger = logging.getLogger()
-        root_logger.setLevel(log_level)
-
         custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
         custom_log_handler.setLevel(log_level)
         custom_log_handler.setFormatter(log_formatter)
 
         _loggers = {
-            "exception_logger": logging.getLogger("exceptions"),
             "hwr_logger": logging.getLogger("HWR"),
             "mx3_hwr_logger": logging.getLogger("MX3.HWR"),
             "user_logger": logging.getLogger("user_level_log"),
