@@ -185,7 +185,7 @@ export function getInitialState(userInControl) {
         'Content-type': 'application/json',
       },
     });
-    const log = fetch('mxcube/api/v0.1/log', {
+    const log = fetch('mxcube/api/v0.1/log/', {
       method: 'GET',
       credentials: 'include',
       headers: {
