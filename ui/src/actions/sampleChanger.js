@@ -22,10 +22,6 @@ export function updateSCContents(data) {
   return { type: 'UPDATE_SC_CONTENTS', data };
 }
 
-export function setSCCommandResponse(response) {
-  return { type: 'SET_SC_RESPONSE', response };
-}
-
 export function setCurrentPlate(plate_index) {
   return { type: 'SET_SC_CURRENT_PLATE', plate_index };
 }
@@ -228,9 +224,6 @@ export function sendCommand(cmdparts, args) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error(`Error while  sending command @ ${cmdparts}`);
       }
-      response.json().then((answer) => {
-        dispatch(setSCCommandResponse(answer));
-      });
     });
   };
 }
