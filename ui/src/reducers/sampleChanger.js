@@ -118,12 +118,6 @@ export default (state = INITIAL_STATE, action) => {
     case 'SET_SC_SELECTED_DROP': {
       return { ...state, selectedDrop: action.drop_index };
     }
-    case 'SET_SC_GLOBAL_STATE': {
-      return {
-        ...state,
-        state: JSON.parse(action.data.state).state,
-      };
-    }
     default: {
       return state;
     }

@@ -187,12 +187,18 @@ def sc_contents_update():
     server.emit("sc_contents_update")
 
 
-def sc_maintenance_update(state_list, cmd_state, message):
+def sc_maintenance_update(*args):
+    if len(args) == 3:
+        # be backward compatible with older HW objects,
+        # which are emitting signal with 3 arguments
+        _, cmd_state, message = args
+    else:
+        cmd_state, message = args
+
     try:
         server.emit(
             "sc_maintenance_update",
             {
-                "state": json.dumps(state_list),
                 "commands_state": json.dumps(cmd_state),
                 "message": message,
             },
