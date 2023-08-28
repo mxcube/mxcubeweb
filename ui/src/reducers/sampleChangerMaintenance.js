@@ -20,8 +20,6 @@ export default (state = INITIAL_STATE, action) => {
     case 'SET_SC_GLOBAL_STATE': {
       return {
         ...state,
-        state: JSON.parse(action.data.state),
-        global_state: JSON.parse(action.data.global_state),
         commands_state: JSON.parse(action.data.commands_state),
         message: action.data.message,
       };
