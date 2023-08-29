@@ -372,6 +372,7 @@ class Beamline(ComponentBase):
         if path:
             fpath, img = HWR.beamline.detector.get_actual_file_path(path, img_num)
             HWR.beamline.collect.adxv_notify(fpath, img)
+            fpath = HWR.beamline.session.get_path_with_proposal_as_root(fpath)
 
             res = {"path": fpath, "img_num": img_num}
 
