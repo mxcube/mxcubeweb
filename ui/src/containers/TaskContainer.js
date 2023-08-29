@@ -13,10 +13,7 @@ import XRFScan from '../components/Tasks/XRFScan';
 import EnergyScan from '../components/Tasks/EnergyScan';
 import GenericTaskForm from '../components/Tasks/GenericTaskForm';
 
-import {
-  hideTaskParametersForm,
-  showTaskForm,
-} from '../actions/taskForm';
+import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
 import {
   addTask,

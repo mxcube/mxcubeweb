@@ -79,7 +79,7 @@ export default class SampleImage extends React.Component {
     this.canvas.on('mouse:down', this.leftClick);
     this.canvas.on('mouse:move', this.onMouseMove);
     this.canvas.on('mouse:up', this.onMouseUp);
-
+    /*  */
     this.canvas.on('selection:created', this.selectShapeEvent);
     this.canvas.on('selection:cleared', this.clearSelectionEvent);
     this.canvas.on('selection:updated', this.selectShapeEvent);
@@ -192,8 +192,8 @@ export default class SampleImage extends React.Component {
       this.canvas.add(this.centringVerticalLine);
       this.canvas.add(this.centringHorizontalLine);
     }
-    
-    if (options.e.buttons > 0 && this.drawGridPlugin.drawing) {    
+
+    if (options.e.buttons > 0 && this.drawGridPlugin.drawing) {
       this.drawGridPlugin.update(
         this.canvas,
         options.e.layerX,
