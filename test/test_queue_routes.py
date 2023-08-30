@@ -421,6 +421,19 @@ def test_get_default_char_acq_params(client):
     assert resp.status_code == 200 and actual == default_char_acq_params
 
 
+def test_get_default_xrf_parameters(client):
+    """Test if we get the right default xrf params."""
+
+    resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
+    actual = json.loads(resp.data)["xrf_spectrum"]
+
+    # some values are taken from current value/position which is random,
+    # so ignore those. But make sure they keys exist
+    assert_and_remove_keys_with_random_value(actual)
+
+    assert resp.status_code == 200 and actual == default_xrf_parameters
+
+
 def test_get_default_mesh_params(client):
     """Test if we get the right default mesh params."""
 
@@ -432,18 +445,6 @@ def test_get_default_mesh_params(client):
     assert_and_remove_keys_with_random_value(actual)
 
     assert resp.status_code == 200 and actual == default_mesh_params
-
-
-def test_get_default_xrf_parameters(client):
-    """Test if we get the right default xrf params."""
-    resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
-    actual = json.loads(resp.data)["xrf"]
-
-    # some values are taken from current value/position which is random,
-    # so ignore those. But make sure they keys exist
-    assert_and_remove_keys_with_random_value(actual)
-
-    assert resp.status_code == 200 and actual == default_xrf_parameters
 
 
 def test_set_automount(client):

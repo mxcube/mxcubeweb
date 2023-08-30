@@ -179,7 +179,7 @@ default_dc_params = {
     "queue_entry": "datacollection",
     "requires": [],
     "schema": {},
-    "ui_schema": {}
+    "ui_schema": {},
 }
 
 default_char_acq_params = {
@@ -237,6 +237,7 @@ default_char_acq_params = {
         "skip_existing_images": False,
         "space_group": "",
         "strategy_complexity": 0,
+        "strategy_program": "Optimal",
         "subDirTemplate": "{NAME}",
         "sub_wedge_size": 10,
         "take_dark_current": True,
@@ -259,7 +260,7 @@ default_char_acq_params = {
     "queue_entry": "characterisation",
     "requires": [],
     "schema": {},
-    "ui_schema": {}
+    "ui_schema": {},
 }
 
 default_mesh_params = {
@@ -310,7 +311,7 @@ default_mesh_params = {
     "queue_entry": "mesh",
     "requires": [],
     "schema": {},
-    "ui_schema": {}
+    "ui_schema": {},
 }
 
 
@@ -358,9 +359,9 @@ default_xrf_parameters = {
         "number_of_images": [1, 99999],
         "osc_range": [-10000, 10000],
     },
-    "name": "xrf",
-    "queue_entry": "xrf",
+    "name": "xrf_spectrum",
+    "queue_entry": "xrf_spectrum",
     "requires": [],
     "schema": {},
-    "ui_schema": {}
+    "ui_schema": {},
 }
