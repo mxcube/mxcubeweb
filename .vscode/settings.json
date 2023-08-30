@@ -9,5 +9,8 @@
     "source.fixAll.eslint": true
   },
 
-  "eslint.workingDirectories": ["./ui"]
+  "eslint.workingDirectories": ["./ui"],
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter"
+  }
 }
