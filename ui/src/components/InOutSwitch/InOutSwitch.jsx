@@ -172,7 +172,7 @@ export default class InOutSwitch extends React.Component {
             onContextMenu={this.onLinkRightClick}
           >
             <Badge bg={msgBgStyle} style={msgLabelStyle}>
-              {this.props.data.msg}
+              {this.props.data.value}
             </Badge>
           </div>
         </OverlayTrigger>
