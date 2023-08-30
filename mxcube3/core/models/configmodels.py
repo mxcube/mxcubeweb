@@ -3,6 +3,7 @@ from pydantic import BaseModel, Field
 from typing import List, Dict, Optional
 import datetime
 
+
 class FlaskConfigModel(BaseModel):
     SECRET_KEY: str = Field(
         b"o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c", description="Flask secret key"
@@ -18,11 +19,13 @@ class FlaskConfigModel(BaseModel):
     SESSION_PERMANENT: bool = Field(True, description="")
     CERT_KEY: str = Field("", description="Full path to signed certficate key file")
     CERT_PEM: str = Field("", description="Full path to signed certificate pem file")
-    
+
     # SIGNED for signed certificate on file
     # ADHOC for flask to generate a certifcate,
-    # NONE for no SSL 
-    CERT: str = Field("NONE", description="One of the strings ['SIGNED', 'ADHOC', NONE]")
+    # NONE for no SSL
+    CERT: str = Field(
+        "NONE", description="One of the strings ['SIGNED', 'ADHOC', NONE]"
+    )
 
 
 class UIComponentModel(BaseModel):
@@ -71,7 +74,15 @@ class ModeEnum(str, Enum):
 
 class MXCUBEAppConfigModel(BaseModel):
     VIDEO_FORMAT: str = Field("MPEG1", description="Video format MPEG1 or MJPEG")
-    VIDEO_STREAM_URL: str = Field("", description="Video stream URL")
+
+    # URL from which the client retreives the video stream (often different from
+    # local host when running behind proxy)
+    VIDEO_STREAM_URL: str = Field(
+        "", description="Video stream URL, URL used by client to get video stream"
+    )
+
+    # Port from which the video_stream process (https://github.com/mxcube/video-streamer)
+    # sreams video. The process runs in seperate process (on localhost)
     VIDEO_STREAM_PORT: str = Field("", description="Video stream PORT")
     USE_EXTERNAL_STREAMER: bool = Field(
         False,
