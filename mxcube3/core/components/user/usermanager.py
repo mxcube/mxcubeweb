@@ -154,6 +154,8 @@ class BaseUserManager(ComponentBase):
             if not "sid" in flask.session:
                 flask.session["sid"] = str(uuid.uuid4())
 
+            # Making sure that the session of any in active users are invalideted
+            # before calling login
             self.update_active_users()
             user = self.db_create_user(login_id, password, login_res)
             self.app.server.user_datastore.activate_user(user)
@@ -225,10 +227,7 @@ class BaseUserManager(ComponentBase):
             socketio_sid = user.socketio_session_id
             self.app.server.user_datastore.delete_user(user)
             self.app.server.user_datastore.commit()
-            self.app.server.emit(
-                "forceSignout", room=socketio_sid, namespace="/hwr"
-            )
-
+            self.app.server.emit("forceSignout", room=socketio_sid, namespace="/hwr")
 
     def login_info(self):
         res = {
@@ -394,6 +393,7 @@ class UserManager(BaseUserManager):
         non_inhouse_active_users = self.active_logged_in_users(exclude_inhouse=True)
 
         # Only allow other users to log-in if they are from the same proposal
+        # (making sure to exclude inhouse users who are always allowed to login)
         if (
             (not inhouse)
             and non_inhouse_active_users
