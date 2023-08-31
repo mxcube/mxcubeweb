@@ -54,7 +54,7 @@ jobs:
           DISABLE_ESLINT_PLUGIN: true
       - name: Run mxcube backend
         run: |
-          mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder ./ui/build/ -L debug &
+          mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/ui/build/ -L debug &
       - name: Cypress run
         uses: cypress-io/github-action@v5
         with:
