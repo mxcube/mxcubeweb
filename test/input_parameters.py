@@ -237,6 +237,7 @@ default_char_acq_params = {
         "skip_existing_images": False,
         "space_group": "",
         "strategy_complexity": 0,
+        "strategy_program": "Optimal",
         "subDirTemplate": "{NAME}",
         "sub_wedge_size": 10,
         "take_dark_current": True,
