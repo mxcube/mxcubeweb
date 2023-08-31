@@ -32,6 +32,16 @@ jobs:
           activate: true
           pythonVersion: ${{ matrix.python-version }}
 
+      - name: Add conda to system path
+        run: |
+          # $CONDA is an environment variable pointing to the root of the miniconda directory
+          echo $CONDA/bin >> $GITHUB_PATH
+
+      - name: Set up Conda and install dependencies
+        run: |
+          conda install -c conda-forge mamba
+          mamba env update --file conda-environment.yml --name base
+
       - name: Install dependencies
         run: |
           pip install -e .
@@ -60,6 +70,11 @@ jobs:
 
       - name: Install LDAP dependencies
         run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
+
+      - name: Add conda to system path
+        run: |
+          # $CONDA is an environment variable pointing to the root of the miniconda directory
+          echo $CONDA/bin >> $GITHUB_PATH
 
       - name: Set up Conda and install dependencies
         run: |
