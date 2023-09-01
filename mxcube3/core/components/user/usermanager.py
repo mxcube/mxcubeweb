@@ -44,10 +44,12 @@ class BaseUserManager(ComponentBase):
         self.update_active_users()
 
         if exclude_inhouse:
-            users = [_u.username for _u in User.query.all() if _u.active]
-        else:
             users = [
                 _u.username for _u in User.query.all() if _u.active and not _u.isstaff
+            ]
+        else:
+            users = [
+                _u.username for _u in User.query.all() if _u.active
             ]
 
         return users
