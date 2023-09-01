@@ -14,10 +14,6 @@ class RequestControlForm extends React.Component {
     this.takeControlOnClick = this.takeControlOnClick.bind(this);
   }
 
-  componentDidUpdate() {
-    this.name.value = this.props.login.user.nickname;
-  }
-
   getTakeControlOption() {
     let content = (
       <span style={{ marginLeft: '1em' }}>
@@ -38,18 +34,6 @@ class RequestControlForm extends React.Component {
     return content;
   }
 
-  getName() {
-    let name = '';
-
-    try {
-      name = this.props.login.user.nickname;
-    } catch {
-      name = '';
-    }
-
-    return name;
-  }
-
   takeControlOnClick() {
     this.props.sendTakeControl();
   }
@@ -63,14 +47,13 @@ class RequestControlForm extends React.Component {
       this.cancelControlRequest,
     );
     const message = this.message.value;
-    const name = this.name.value;
-
+    const name = this.props.login.user.nickname;
     this.props.requestControl(true, message, name, this.props.login.user);
   }
 
   cancelControlRequest() {
     const message = this.message.value;
-    const name = this.name.value;
+    const name = this.props.login.user.nickname;
 
     this.props.requestControl(false, message, name, this.props.login.user);
   }
@@ -81,17 +64,6 @@ class RequestControlForm extends React.Component {
         <Card.Header>Request control</Card.Header>
         <Card.Body>
           <Form>
-            <Form.Group>
-              <Form.Label>Name</Form.Label>
-              <Form.Control
-                className="mb-3"
-                ref={(ref) => {
-                  this.name = ref;
-                }}
-                type="text"
-                defaultValue={this.getName()}
-              />
-            </Form.Group>
             <Form.Group className="mb-3">
               <Form.Label>Message</Form.Label>
               <Form.Control
@@ -99,7 +71,7 @@ class RequestControlForm extends React.Component {
                   this.message = ref;
                 }}
                 as="textarea"
-                defaultValue="Please give me control"
+                defaultValue={`Hi it's ${this.props.login.user.nickname}, Please give me control`}
                 rows={3}
               />
             </Form.Group>
