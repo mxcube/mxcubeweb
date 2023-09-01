@@ -102,6 +102,12 @@ def init_route(app, server, url_prefix):
         oldop = app.usermanager.get_operator()
         newop = app.usermanager.set_operator(username)
 
+        oldop.requests_control = False
+        newop.requests_control = False
+        app.usermanager.update_user(oldop)
+        app.usermanager.update_user(newop)
+
+
         join_room("observers", sid=oldop.socketio_session_id, namespace="/ui_state")
         leave_room("observers", sid=newop.socketio_session_id, namespace="/ui_state")
 
