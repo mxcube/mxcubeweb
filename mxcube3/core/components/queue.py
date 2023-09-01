@@ -358,7 +358,7 @@ class Queue(ComponentBase):
         dtype_label = qme.EXPERIMENT_TYPE._fields[node.experiment_type]
         dtype_label = "OSCILLATION" if dtype_label == "NATIVE" else dtype_label
         dtype_label = (
-            "LINE" if "HELICAL" and parameters["osc_range"] == 0 else dtype_label
+            "LINE" if dtype_label == "HELICAL" and parameters["osc_range"] == 0 else dtype_label
         )
 
         res = {
