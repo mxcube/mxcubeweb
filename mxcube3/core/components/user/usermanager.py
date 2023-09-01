@@ -399,7 +399,7 @@ class UserManager(BaseUserManager):
         if (
             (not inhouse)
             and non_inhouse_active_users
-            and (login_id != self.get_operator().selected_proposal)
+            and (login_id not in [p.split("-")[0] for p in non_inhouse_active_users])
             and HWR.beamline.lims.loginType.lower() != "user"
         ):
             raise Exception("Another user is already logged in")
