@@ -262,7 +262,7 @@ export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
   const length = Number.parseInt(Math.sqrt(a * a + b * b) * 1000, 10);
   return [
     makeLine(p1.x * iR, p1.y * iR, p2.x * iR, p2.y * iR, color, width, false),
-    makeText(p2.x * iR, p2.y * iR, 12, color, `${length} µm`),
+    makeText(p2.x * iR, p2.y * iR, 14, color, `${length} µm`),
   ];
 }
 

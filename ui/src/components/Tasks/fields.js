@@ -5,9 +5,8 @@ import { TiWarning, TiTimes } from 'react-icons/ti';
 
 import './style.css';
 
-export function getLastUsedParameters(formName, state) {
-  const lastParameters = localStorage.getItem(`last${formName}Parameters`);
-  let parameters = state.taskForm.taskData.parameters;
+export function getLastUsedParameters(type, parameters) {
+  const lastParameters = localStorage.getItem(`last${type}Parameters`);
 
   if (lastParameters !== null) {
     parameters = JSON.parse(lastParameters);
@@ -16,7 +15,7 @@ export function getLastUsedParameters(formName, state) {
   if (parseFloat(parameters.osc_range) === 0) {
     parameters.osc_range =
       state.taskForm.defaultParameters[
-        formName.toLowerCase()
+        type.toLowerCase()
       ].acq_parameters.osc_range;
   }
 
@@ -25,6 +24,19 @@ export function getLastUsedParameters(formName, state) {
 
 export function saveToLastUsedParameters(formName, parameters) {
   localStorage.setItem(`last${formName}Parameters`, JSON.stringify(parameters));
+}
+
+export function clearAllLastUserParameters() {
+  const collectionNames = [
+    'datacollection',
+    'characterisation',
+    'mesh',
+    'helical',
+  ];
+
+  collectionNames.forEach((type) => {
+    localStorage.removeItem(`last${type}Parameters`);
+  });
 }
 
 export function resetLastUsedParameters(formObj) {
@@ -36,16 +48,16 @@ export function resetLastUsedParameters(formObj) {
     formObj.props.defaultParameters[type.toLowerCase()].acq_parameters,
   );
 
-  const ignore = [
+  const ignore = new Set([
     'osc_start',
     'resolution',
     'energy',
     'transmission',
     'beam_size',
-  ];
+  ]);
 
   fieldNames.forEach((field) => {
-    if (!ignore.includes(field)) {
+    if (!ignore.has(field)) {
       formObj.props.autofill(
         field,
         formObj.props.defaultParameters[type.toLowerCase()].acq_parameters[

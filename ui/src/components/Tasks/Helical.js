@@ -15,7 +15,6 @@ import {
   FieldsRow,
   CollapsableRows,
   toFixed,
-  getLastUsedParameters,
   saveToLastUsedParameters,
   resetLastUsedParameters,
 } from './fields';
@@ -240,7 +239,6 @@ Helical = connect((state) => {
 
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
-  const parameters = getLastUsedParameters(type, state);
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -248,7 +246,7 @@ Helical = connect((state) => {
     acqParametersLimits: limits,
     beamline: state.beamline,
     initialValues: {
-      ...parameters,
+      ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
       resolution:
         state.taskForm.sampleIds.constructor !== Array

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { getLastUsedParameters } from '../Tasks/fields';
 
 export default class ContextMenu extends React.Component {
   constructor(props) {
@@ -324,8 +325,11 @@ export default class ContextMenu extends React.Component {
       modalName === 'Generic'
         ? defaultParameters[type].name
         : modalName.toLowerCase();
-    const params =
+    let params =
       type in defaultParameters ? defaultParameters[type].acq_parameters : {};
+
+    params = getLastUsedParameters(type, params);
+
     this.props.showForm(
       modalName,
       [sampleID],

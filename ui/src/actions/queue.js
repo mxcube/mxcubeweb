@@ -4,6 +4,7 @@ import { loadSample } from './sampleChanger';
 import { sendAbortCentring, sendUpdateShapes } from './sampleview';
 import { selectSamplesAction, clearSampleGrid } from './sampleGrid';
 import { TASK_UNCOLLECTED } from '../constants';
+import { clearAllLastUserParameters } from '../components/Tasks/fields';
 
 export function queueLoading(loading) {
   return { type: 'QUEUE_LOADING', loading };
@@ -22,6 +23,7 @@ export function setQueueAction(queue) {
 }
 
 export function setCurrentSample(sampleID) {
+  clearAllLastUserParameters();
   return {
     type: 'SET_CURRENT_SAMPLE',
     sampleID,
