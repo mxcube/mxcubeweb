@@ -188,7 +188,7 @@ def init_route(app, server, url_prefix):
         username = request.get_json().get("username", "")
 
         if message and username:
-            app.chat.append_message(message, username)
+            app.chat.append_message(message, current_user)
 
         return Response(status=200)
 
