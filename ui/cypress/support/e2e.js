@@ -18,3 +18,12 @@ import './commands';
 
 // Alternatively you can use CommonJS syntax:
 // require('./commands')
+beforeEach(() => {
+  it('can login', () => {
+    cy.visit('http://localhost:8081');
+    cy.get('input[placeholder*="Login ID"]').type('idtest0');
+    cy.get('input[placeholder*="Password"]').type('0000');
+    cy.get('button[type=submit]').click();
+    cy.get('[class=navbar-brand]').contains('MXCuBE');
+  });
+});
