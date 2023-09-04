@@ -9,7 +9,9 @@
     "format": "npm run prettier -- --write",
     "fix": "npm run eslint -- --fix",
     "prettier": "prettier . --cache --check",
-    "eslint": "eslint \"**/*.{js,jsx}\""
+    "eslint": "eslint \"**/*.{js,jsx}\"",
+    "e2e": "cypress run --e2e --browser firefox",
+    "cypress": "cypress open --e2e --browser firefox"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -75,9 +77,9 @@
   },
   "devDependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
-    "@testing-library/cypress": "^9.0.0",
+    "@testing-library/cypress": "9.0.0",
     "concurrently": "^7.0.0",
-    "cypress": "^12.13.0",
+    "cypress": "13.1.0",
     "eslint": "8.42.0",
     "eslint-config-galex": "4.5.2",
     "eslint-plugin-import": "2.27.5",
