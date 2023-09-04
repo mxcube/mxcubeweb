@@ -374,9 +374,13 @@ class ActuatorAdapterBase(AdapterBase):
             value = round(args[0]/1000)
             value = ("{:2.0f}").format(value)
             value = float(value)
+            self.state_change()
         if self._name == "resolution" or self._name == "energy":
             value = ("{:2.3f}").format(value)
             value = float(value)
+            self.state_change()
+        if self._name == "energy.wavelength":
+            self.state_change()
         if self._name == "diffractometer.phi":
             value = ("{:2.2f}").format(value)
             value = float(value)
