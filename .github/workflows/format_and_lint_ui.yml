@@ -45,7 +45,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -e .
-          npm install --prefix ./ui
+          npm install --prefix ./ui --legacy-peer-deps
 
       - name: Check formatting
         run: npm run --prefix ./ui prettier
@@ -84,7 +84,7 @@ jobs:
       - name: Install dependencies
         run: |
           pip install -e .
-          npm install --prefix ./ui
+          npm install --prefix ./ui --legacy-peer-deps
 
       - name: Lint
         run: npm run --prefix ./ui eslint
