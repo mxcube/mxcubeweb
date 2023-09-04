@@ -1,36 +1,22 @@
-Cypress.Commands.add('login', (username, password) => {
-  cy.visit('http://localhost:8081');
-  cy.get('input[placeholder*="Login ID"]').type('idtest0');
-  cy.get('input[placeholder*="Password"]').type('0000');
-  cy.get('button[type=submit]').click();
-  cy.get('[class=navbar-brand]').contains('MXCuBE');
-});
-
 describe('login', () => {
-  it('cant login with invalid credentials', () => {
-    cy.visit('http://localhost:8081');
-    cy.get('input[placeholder*="Login ID"]').type('idte0');
-    cy.get('input[placeholder*="Password"]').type('0000');
-    cy.get('button[type=submit]').click();
-    cy.get('pre*[class^="Login_error"]').should('be.visible');
+  it("can't login with invalid credentials", () => {
+    cy.login('idte0', '0000');
+    cy.findByText('Could not authenticate').should('be.visible');
   });
 
   it('can login with valid credentials', () => {
-    cy.visit('http://localhost:8081');
-    cy.get('input[placeholder*="Login ID"]').type('idtest0');
-    cy.get('input[placeholder*="Password"]').type('0000');
-    cy.get('button[type=submit]').click();
-    cy.get('[class=navbar-brand]').contains('MXCuBE');
+    cy.login();
+    cy.findByRole('link', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
   });
 });
 
 describe('app', () => {
   beforeEach(() => {
     cy.login();
+    cy.findByRole('link', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
   });
 
   it('displays collection page', () => {
-    cy.visit('http://localhost:8081');
-    cy.get('[class=navbar-brand]').contains('MXCuBE');
+    cy.findByRole('button', { name: /Beamline Actions/u }).should('be.visible');
   });
 });
