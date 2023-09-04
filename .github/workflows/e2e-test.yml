@@ -46,16 +46,31 @@ jobs:
           conda install -c conda-forge mamba
           mamba env update --file conda-environment.yml --name base
           pip install -e .
+
+      - name: Cache UI dependencies
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cache/Cypress
+            ui/node_modules
+          key: cache-${{ runner.os }}-${{ hashFiles('ui/package-lock.json') }}
+
+      - name: Install UI dependencies
+        run: npm install --prefix ./ui --legacy-peer-deps
+
       - name: Build UI
-        run: |
-          npm install --prefix ./ui 
-          npm run --prefix ./ui build
+        run: npm run --prefix ./ui build
         env:
           DISABLE_ESLINT_PLUGIN: true
-      - name: Run mxcube backend
-        run: |
-          mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/ui/build/ -L debug &
-      - name: Cypress run
-        uses: cypress-io/github-action@v5
+
+      - name: Run MXCuBE backend
+        run: mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/ui/build/ -L debug &
+
+      - name: Run Cypress
+        run: npm run --prefix ./ui e2e
+
+      - uses: actions/upload-artifact@v3
+        if: failure()
         with:
-          working-directory: ./ui
+          name: cypress
+          path: cypress/debug
