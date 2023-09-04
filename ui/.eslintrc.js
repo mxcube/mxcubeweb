@@ -50,5 +50,15 @@ module.exports = createConfig({
         'jest/require-top-level-describe': 'off', // filename should already be meaningful, extra nesting is unnecessary
       },
     }),
+    {
+      files: ['cypress/**/*.js'],
+      rules: {
+        'testing-library/await-async-query': 'off', // Cypress has its own way of dealing with asynchronicity
+        'testing-library/await-async-utils': 'off', // Cypress has its own way of dealing with asynchronicity
+        'testing-library/prefer-screen-queries': 'off', // Cypress provides `cy` object instead of `screen`
+        'sonarjs/no-duplicate-string': 'off', // incompatible with Cypress testing syntax
+        'unicorn/numeric-separators-style': 'off', // not supported
+      },
+    },
   ],
 });
