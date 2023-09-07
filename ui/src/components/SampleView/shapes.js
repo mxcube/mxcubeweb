@@ -214,7 +214,7 @@ export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
 
 export function makePoint(x, y, id, color, type, name, strokeWidth) {
   const text = makeText(x + 10, y - 25, 14, color, name);
-  const circle = makeCircle(x, y, true, 10, color, id, type, text, strokeWidth);
+  const circle = makeCircle(x, y, true, 20, color, id, type, text, strokeWidth);
   return [circle, text];
 }
 
