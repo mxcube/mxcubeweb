@@ -4,7 +4,9 @@
 """Authentication tests."""
 
 
+import datetime
 import os
+import time
 
 import pytest
 
@@ -15,11 +17,14 @@ URL_BASE = "/mxcube/api/v0.1/login"
 URL_SIGNIN = f"{URL_BASE}/"  # Trailing slash is necessary
 URL_SIGNOUT = f"{URL_BASE}/signout"
 URL_INFO = f"{URL_BASE}/login_info"
+URL_REFRESH = f"{URL_BASE}/refresh_session"
 
 CREDENTIALS_0 = {"proposal": "idtest0", "password": "sUpErSaFe"}
 # Password has to be `wrong` to simulate wrong password in `ISPyBClientMockup`
 CREDENTIALS_0_WRONG = {"proposal": "idtest0", "password": "wrong"}
 CREDENTIALS_1 = {"proposal": "idtest1", "password": "sUpErSaFe"}
+
+SESSION_LIFETIME = 2.0  # seconds
 
 USER_DB_PATH = "/tmp/mxcube-test-user.db"
 
@@ -36,6 +41,9 @@ def server():
     argv = []
     server_, _ = mxcube3.build_server_and_config(test=True, argv=argv)
     server_.flask.config["TESTING"] = True
+    # For the tests we override the configured value of the session lifetime
+    # with a much smaller value, so that tests do not need to wait as long.
+    server_.flask.permanent_session_lifetime = SESSION_LIFETIME
 
     yield server_
 
@@ -87,7 +95,6 @@ def test_authn_info(client):
     The login info should have `loggedIn` false before authentication
     and true after successful authentication.
     """
-
     resp = client.get(URL_INFO)
     assert resp.status_code == 200
     assert resp.json["loggedIn"] == False
@@ -138,6 +145,43 @@ def test_authn_different_proposals(make_client):
     resp = client_1.post(URL_SIGNIN, json=CREDENTIALS_1)
     assert resp.status_code == 200
     assert resp.json["msg"] == "Could not authenticate"
+
+
+def test_authn_session_timeout(client):
+    """Test the session timeout
+
+    The session can be refreshed, and can expire.
+    It should be possible to sign in again after a valid session expired.
+    """
+
+    # Sign in and --as a side effect-- create a session
+    client.post(URL_SIGNIN, json=CREDENTIALS_0)
+    resp = client.get(URL_INFO)
+
+    # Let the session nearly expire
+    time.sleep(SESSION_LIFETIME * 0.9)
+
+    # Refresh the session
+    resp = client.get(URL_REFRESH)
+
+    # Let the session nearly expire again
+    time.sleep(SESSION_LIFETIME * 0.9)
+
+    # Check that the session still has not expired
+    resp = client.get(URL_INFO)
+    assert resp.json["loggedIn"] == True, "Session did not refresh"
+
+    # Let the session expire completely
+    time.sleep(SESSION_LIFETIME * 1.5)
+
+    # Check that the session has expired
+    resp = client.get(URL_INFO)
+    assert resp.json["loggedIn"] == False, "Session did not expire"
+
+    # Check that it is possible to sign in again
+    client.post(URL_SIGNIN, json=CREDENTIALS_0)
+    resp = client.get(URL_INFO)
+    assert resp.json["loggedIn"] == True, "We can not login again"
 
 
 # EOF
