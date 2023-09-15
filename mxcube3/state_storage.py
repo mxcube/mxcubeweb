@@ -1,6 +1,6 @@
 from flask_socketio import emit
-from mxcube3 import server
-from mxcube3 import mxcube
+from mxcube3.server import Server as server
+from mxcube3.app import MXCUBEApplication as mxcube
 
 import json
 

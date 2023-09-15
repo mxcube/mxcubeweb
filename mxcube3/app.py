@@ -298,7 +298,9 @@ class MXCUBEApplication:
         MXCUBEApplication.init_state_storage()
 
         # MXCUBEApplication.load_settings()
-        msg = "MXCuBE 3 initialized, it took %.1f seconds" % (time.time() - MXCUBEApplication.t0)
+        msg = "MXCuBE 3 initialized, it took %.1f seconds" % (
+            time.time() - MXCUBEApplication.t0
+        )
         logging.getLogger("MX3.HWR").info(msg)
 
     @staticmethod
