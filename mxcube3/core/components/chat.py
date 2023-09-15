@@ -19,7 +19,6 @@ class Chat(ComponentBase):
             self.app.server.user_datastore.add_message_to_user(_user, _m)
 
     def append_message(self, message, user):
-
         data = {
             "message": message,
             "username": user.username,

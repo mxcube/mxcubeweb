@@ -7,6 +7,7 @@ import traceback
 
 
 from gevent import monkey
+
 monkey.patch_all(thread=False)
 
 from mxcube3.server import Server
@@ -17,9 +18,6 @@ from mxcubecore import HardwareRepository as HWR
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
-
-mxcube = None
-server = None
 
 
 def parse_args(argv):
@@ -103,9 +101,6 @@ def parse_args(argv):
 
 
 def build_server_and_config(test=False, argv=None):
-    global mxcube
-    global server
-
     cmdline_options = parse_args(argv)
 
     try:
@@ -116,9 +111,6 @@ def build_server_and_config(test=False, argv=None):
         return (None, None)
 
     try:
-        mxcube = MXCUBEApplication()
-        server = Server()
-
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing teh main config files.
@@ -131,9 +123,9 @@ def build_server_and_config(test=False, argv=None):
         if test:
             cfg.flask.USER_DB_PATH = "/tmp/mxcube-test-user.db"
 
-        server.init(cmdline_options, cfg, mxcube)
-        mxcube.init(
-            server,
+        Server.init(cmdline_options, cfg, MXCUBEApplication)
+        MXCUBEApplication.init(
+            Server,
             cmdline_options.allow_remote,
             cmdline_options.ra_timeout,
             cmdline_options.log_file,
@@ -142,12 +134,12 @@ def build_server_and_config(test=False, argv=None):
             cfg,
         )
 
-        server.register_routes(mxcube)
+        Server.register_routes(MXCUBEApplication)
     except Exception:
         traceback.print_exc()
         raise
 
-    return (server, cfg)
+    return (Server, cfg)
 
 
 def main():

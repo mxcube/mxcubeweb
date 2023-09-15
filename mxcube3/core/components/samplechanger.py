@@ -354,8 +354,8 @@ class SampleChanger(ComponentBase):
     def sync_with_crims(self):
         """
         To be use mostly when Diffractometer is in plate mode
-        This retun a List of crystal dict available in Crims that have been Harvested  
-        With this user can visualize easier where the crystal are in Plate GUI  
+        This retun a List of crystal dict available in Crims that have been Harvested
+        With this user can visualize easier where the crystal are in Plate GUI
         """
         xtal_list = []
         try:
@@ -370,7 +370,7 @@ class SampleChanger(ComponentBase):
                     "offset_y": x.offset_y,
                     "image_url": x.image_url,
                     "image_date": x.image_date,
-                    "sample": x.sample
+                    "sample": x.sample,
                 }
                 xtal_list.append(response)
             res = {"xtal_list": xtal_list}
@@ -382,7 +382,7 @@ class SampleChanger(ComponentBase):
 
 def queue_mount_sample(view, data_model, centring_done_cb, async_result):
     from mxcube3.routes import signals
-    from mxcube3 import mxcube
+    from mxcube3.app import MXCUBEApplication as mxcube
 
     HWR.beamline.sample_view.clear_all()
     logging.getLogger("user_level_log").info("Loading sample ...")
@@ -515,6 +515,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):
                     dm.disconnect("centringAccepted", centring_done_cb)
         else:
             dm.disconnect("centringAccepted", centring_done_cb)
+
 
 def patch_queue_entry_mount_sample():
     # Important, patch queue_entry.mount_sample with the mount_sample defined above

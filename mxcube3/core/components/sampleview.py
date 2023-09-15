@@ -537,7 +537,7 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
         # _do_take_snapshot(filename, bw)
 
     def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
-        from mxcube3 import mxcube
+        from mxcube3.app import MXCUBEApplication as mxcube
 
         if snapshots is None:
             # called via AbstractCollect
