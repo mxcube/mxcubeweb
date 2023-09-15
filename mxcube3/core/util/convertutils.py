@@ -33,7 +33,7 @@ def str_to_camel(name):
         components = name.split("_")
         # We capitalize the first letter of each component except the first one
         # with the 'title' method and join them together.
-        name = components[0] + "".join(x.title() for x in components[1:])
+        name = components[0].lower() + "".join(x.title() for x in components[1:])
 
     return name
 
