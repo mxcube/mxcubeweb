@@ -2351,7 +2351,7 @@ class Queue(ComponentBase):
                 "helical": False,
                 "mesh": False,
                 "prefixTemplate": "{PREFIX}_{POSITION}",
-                "subDirTemplate": "{NAME}",
+                "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
                 "experiment_type": "",
             },
             "limits": HWR.beamline.acquisition_limit_values,
