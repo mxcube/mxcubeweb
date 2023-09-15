@@ -9,7 +9,6 @@ from flask import Blueprint, jsonify, request
 from spectree import Response
 
 from mxcube3 import version
-from mxcube3.core.models.generic import VersionModel
 from mxcube3.core.models.configmodels import ModeEnumModel, UIPropertiesListModel
 
 
@@ -59,15 +58,15 @@ def init_route(app, server, url_prefix):
     @server.flask.errorhandler(Exception)
     def exceptions(e):
         tb = traceback.format_exc()
-        timestamp = time.strftime('[%Y-%b-%d %H:%M]')
+        timestamp = time.strftime("[%Y-%b-%d %H:%M]")
         logging.getLogger("MX3.HWR").debug(
-            '%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s',
+            "%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s",
             timestamp,
             request.remote_addr,
             request.method,
             request.scheme,
             request.full_path,
-            tb
+            tb,
         )
 
         return tb
