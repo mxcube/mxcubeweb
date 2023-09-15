@@ -8,6 +8,8 @@ import logging
 import re
 import json
 
+from typing import Any
+
 from mock import Mock
 
 from flask_login import current_user
@@ -23,6 +25,8 @@ from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
 from mxcubecore.HardwareObjects.Gphl import GphlQueueEntry
 
 from mxcube3.core.components.component_base import ComponentBase
+from mxcube3.core.util.convertutils import str_to_camel, str_to_snake
+from mxcube3.core.models.generic import SimpleNameValue
 
 from functools import reduce
 
@@ -266,18 +270,26 @@ class Queue(ComponentBase):
             )
             current = ""
 
+        settings = {}
+
+        for setting_name in [
+            "NUM_SNAPSHOTS",
+            "REMEMBER_PARAMETERS_BETWEEN_SAMPLES",
+            "CENTRING_METHOD",
+            "AUTO_ADD_DIFFPLAN",
+        ]:
+            settings[str_to_camel(setting_name)] = getattr(self.app, setting_name)
+
         res = {
             "current": current,
-            "centringMethod": self.app.CENTRING_METHOD,
             "autoMountNext": self.get_auto_mount_sample(),
-            "autoAddDiffPlan": self.app.AUTO_ADD_DIFFPLAN,
-            "numSnapshots": self.app.NUM_SNAPSHOTS,
             "groupFolder": HWR.beamline.session.get_group_name(),
             "queue": sample_order,
             "sampleList": self.app.lims.sample_list_get(current_queue=queue),
             "queueStatus": self.queue_exec_state(),
         }
 
+        res.update(settings)
         return res
 
     def _handle_task_node(self, sample_node, node, include_lims_data=False):
@@ -358,7 +370,9 @@ class Queue(ComponentBase):
         dtype_label = qme.EXPERIMENT_TYPE._fields[node.experiment_type]
         dtype_label = "OSCILLATION" if dtype_label == "NATIVE" else dtype_label
         dtype_label = (
-            "LINE" if dtype_label == "HELICAL" and parameters["osc_range"] == 0 else dtype_label
+            "LINE"
+            if dtype_label == "HELICAL" and parameters["osc_range"] == 0
+            else dtype_label
         )
 
         res = {
@@ -787,7 +801,7 @@ class Queue(ComponentBase):
     def delete_entry_at(self, item_pos_list):
         current_queue = self.queue_to_dict()
 
-        for (sid, tindex) in item_pos_list:
+        for sid, tindex in item_pos_list:
             if tindex in ["undefined", None]:
                 node_id = current_queue[sid]["queueID"]
                 model, entry = self.get_entry(node_id)
@@ -1026,7 +1040,7 @@ class Queue(ComponentBase):
         if sample_model.free_pin_mode:
             sample_model.location = (None, sample_id)
         elif HWR.beamline.diffractometer.in_plate_mode():
-            component =  HWR.beamline.sample_changer._resolve_component(item["location"])
+            component = HWR.beamline.sample_changer._resolve_component(item["location"])
             sample_model.location = component.get_coords()
         else:
             sample_model.location = tuple(map(int, item["location"].split(":")))
@@ -1897,7 +1911,6 @@ class Queue(ComponentBase):
             ) and sid != self.app.sample_changer.get_current_sample().get(
                 "sampleID", ""
             ):
-
                 try:
                     self.app.sample_changer.mount_sample_clean_up(current_queue[sid])
                 except Exception:
@@ -2187,14 +2200,12 @@ class Queue(ComponentBase):
         return model
 
     def queue_enable_item(self, qid_list, enabled):
-
         for qid in qid_list:
             self.set_enabled_entry(qid, enabled)
 
         logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
 
     def update_sample(self, sid, params):
-
         sample_node = HWR.beamline.queue_model.get_node(sid)
 
         if sample_node:
@@ -2430,3 +2441,26 @@ class Queue(ComponentBase):
         HWR.beamline.session.set_user_group(path)
         root_path = HWR.beamline.session.get_base_image_directory()
         return {"path": path, "rootPath": root_path}
+
+    def set_setting(self, name_value: SimpleNameValue) -> tuple:
+        """
+        Sets the setting (on the MXCUBEApplication object)
+        with name to value
+
+        Args:
+           name: The name of the setting
+           value The value
+
+        Returns:
+           A tuple with name, value on success else empty tuple
+        """
+        name = str_to_snake(name_value.name).upper()
+
+        if hasattr(self.app, name):
+            logging.getLogger("HWR").debug(f"Setting {name} to {name_value.value}")
+            setattr(self.app, name, name_value.value)
+            result = name, name_value.value
+        else:
+            result = ()
+
+        return result

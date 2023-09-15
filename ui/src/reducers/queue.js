@@ -1,12 +1,14 @@
 import update from 'immutability-helper';
 import { QUEUE_STOPPED, CLICK_CENTRING } from '../constants';
+import { clearAllLastUserParameters } from '../components/Tasks/fields';
 
 const initialState = {
   queue: [],
   current: { sampleID: null, running: false },
   queueStatus: QUEUE_STOPPED,
   autoMountNext: false,
-  autoAddDiffPlan: false,
+  autoAddDiffplan: false,
+  rememberParametersBetweenSamples: true,
   centringMethod: CLICK_CENTRING,
   numSnapshots: 4,
   groupFolder: '',
@@ -41,6 +43,11 @@ export default (state = initialState, action) => {
       return { ...state, queue };
     }
     case 'SET_CURRENT_SAMPLE':
+      if (!state.rememberParametersBetweenSamples) {
+        debugger;
+        clearAllLastUserParameters();
+      }
+
       return {
         ...state,
         current: {
@@ -82,7 +89,7 @@ export default (state = initialState, action) => {
       return { ...state, autoMountNext: action.automount };
     }
     case 'SET_AUTO_ADD_DIFFPLAN': {
-      return { ...state, autoAddDiffPlan: action.autoadd };
+      return { ...state, autoAddDiffplan: action.autoadd };
     }
     case 'SET_CENTRING_METHOD': {
       return { ...state, centringMethod: action.centringMethod };
@@ -92,6 +99,9 @@ export default (state = initialState, action) => {
     }
     case 'SET_GROUP_FOLDER': {
       return { ...state, groupFolder: action.path };
+    }
+    case 'SET_QUEUE_SETTING': {
+      return { ...state, [action.settingName]: action.value };
     }
     case 'CLEAR_ALL': {
       return { ...state, ...initialState, autoMountNext: state.autoMountNext };
@@ -105,9 +115,11 @@ export default (state = initialState, action) => {
         queue: action.data.queue.queue,
         groupFolder: action.data.queue.groupFolder,
         autoMountNext: action.data.queue.autoMountNext,
-        autoAddDiffPlan: action.data.queue.autoAddDiffPlan,
+        autoAddDiffplan: action.data.queue.autoAddDiffplan,
         numSnapshots: action.data.queue.numSnapshots,
         centringMethod: action.data.queue.centringMethod,
+        rememberParametersBetweenSamples:
+          action.data.queue.rememberParametersBetweenSamples,
         current: {
           sampleID: action.data.queue.current,
           running: action.data.queue.queueStatus,

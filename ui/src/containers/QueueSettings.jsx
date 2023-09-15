@@ -90,8 +90,22 @@ class QueueSettings extends React.Component {
               type="checkbox"
               name="autoAddDiffPlan"
               onChange={this.setAutoAddDiffPlan}
-              checked={this.props.queueState.autoAddDiffPlan}
+              checked={this.props.queueState.autoAddDiffplan}
               label="Auto add diffraction plan"
+            />
+          </Dropdown.Item>
+          <Dropdown.Item>
+            <Form.Check
+              type="checkbox"
+              name="rememberParametersBetweenSamples"
+              onChange={(e) => {
+                this.props.queueActions.sendSetQueueSettings(
+                  'rememberParametersBetweenSamples',
+                  e.target.checked,
+                );
+              }}
+              checked={this.props.queueState.rememberParametersBetweenSamples}
+              label="Remember parameters between samples"
             />
           </Dropdown.Item>
           <Dropdown.Divider />
