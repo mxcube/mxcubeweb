@@ -1,8 +1,10 @@
 import json
+import spectree
 
 from flask import Blueprint, Response, jsonify, request, session
 
 from mxcubecore import HardwareRepository as HWR
+from mxcube3.core.models.generic import SimpleNameValue
 
 
 def init_route(app, server, url_prefix):
@@ -341,6 +343,22 @@ def init_route(app, server, url_prefix):
         app.queue.set_auto_add_diffplan(autoadd)
         resp = jsonify({"auto_add_diffplan": autoadd})
         resp.status_code = 200
+        return resp
+
+    @bp.route("/setting", methods=["POST"])
+    @server.require_control
+    @server.restrict
+    @server.validate(
+        json=SimpleNameValue, resp=spectree.Response("HTTP_409", "HTTP_200")
+    )
+    def set_setting():
+        result = app.queue.set_setting(SimpleNameValue(**request.json))
+
+        if result:
+            resp = jsonify({result[0]: result[1]})
+        else:
+            resp = Response(status=409)
+
         return resp
 
     return bp

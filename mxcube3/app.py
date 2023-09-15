@@ -240,6 +240,10 @@ class MXCUBEApplication:
     # Number of sample snapshots taken before collect
     NUM_SNAPSHOTS = 4
 
+    # Remember collection paramters between samples
+    # or reset (defualt) between samples.
+    REMEMBER_PARAMETERS_BETWEEN_SAMPLES = False
+
     CONFIG = None
 
     mxcubecore = MXCUBECore()

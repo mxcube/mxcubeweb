@@ -23,7 +23,6 @@ export function setQueueAction(queue) {
 }
 
 export function setCurrentSample(sampleID) {
-  clearAllLastUserParameters();
   return {
     type: 'SET_CURRENT_SAMPLE',
     sampleID,
@@ -49,6 +48,10 @@ export function setQueue(queue) {
 
 export function setCentringMethod(centringMethod) {
   return { type: 'SET_CENTRING_METHOD', centringMethod };
+}
+
+export function setQueueSetting(settingName, value) {
+  return { type: 'SET_QUEUE_SETTING', settingName, value };
 }
 
 export function setNumSnapshots(n) {
@@ -800,6 +803,29 @@ export function sendSetGroupFolder(path) {
       })
       .then((response) => {
         dispatch(setGroupFolder(response.path));
+      });
+  };
+}
+
+export function sendSetQueueSettings(name, value) {
+  return function (dispatch) {
+    fetch('/mxcube/api/v0.1/queue/setting', {
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ name, value }),
+    })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error(`Server could not set ${name} ${value}`);
+        }
+        return response.json();
+      })
+      .then((response) => {
+        dispatch(setQueueSetting(name, value));
       });
   };
 }
