@@ -361,6 +361,10 @@ class MXCUBEApplication:
         log_formatter = ColorFormatter(fmt)
 
         if log_file:
+            if not os.path.isfile(log_file):
+                fpt = open(log_file, "w")
+                fpt.write(" ")
+                fpt.close()
             os.chmod(log_file, 0o666)
             Path(log_file).touch()
 
@@ -370,6 +374,10 @@ class MXCUBEApplication:
             log_file_handler.setFormatter(log_formatter)
 
             uilog_file = f"{log_file[:-4]}_ui.log"
+            if not os.path.isfile(uilog_file):
+                fpt = open(uilog_file, "w")
+                fpt.write(" ")
+                fpt.close()
             os.chmod(uilog_file, 0o666)
             Path(uilog_file).touch()
 
