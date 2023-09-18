@@ -55,7 +55,8 @@ input[type='color']:focus,
   z-index: 10000;
 }
 
-.modal-dialog {
+/* Allow opting out of this global override */
+.modal-dialog:not([data-default-styles]) {
   width: min-content;
   max-width: 90%;
   min-width: 50%;
