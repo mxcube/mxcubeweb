@@ -4,6 +4,9 @@ import { reduxForm } from 'redux-form';
 import { Modal, ButtonToolbar, Button, Form } from 'react-bootstrap';
 import { InputField, FieldsRow } from './fields';
 import validate from './validate_add_sample';
+import { bindActionCreators } from 'redux';
+import { addSamplesToList } from '../../actions/sampleGrid';
+import { addSampleAndMount, addSamplesToQueue } from '../../actions/queue';
 
 class AddSample extends React.Component {
   constructor(props) {
@@ -41,7 +44,8 @@ class AddSample extends React.Component {
 
   _addAndEnqueue(params) {
     const sampleData = this.getDefaultSampleData(params);
-    this.props.addToQueue(sampleData);
+    this.props.addSamplesToList([sampleData]);
+    this.props.addSamplesToQueue([sampleData]);
     this.props.hide();
   }
 
@@ -51,7 +55,8 @@ class AddSample extends React.Component {
 
   _addAndMount(params) {
     const sampleData = this.getDefaultSampleData(params);
-    this.props.addAndMount(sampleData);
+    this.props.addSamplesToList([sampleData]);
+    this.props.addSampleAndMount(sampleData);
     this.props.hide();
   }
 
@@ -67,12 +72,7 @@ class AddSample extends React.Component {
 
   render() {
     return (
-      <Modal
-        // fullscreen
-        show={this.props.show}
-        onHide={this.handleCancel}
-        // style={{ width: '60%', height: '20%'}}
-      >
+      <Modal show={this.props.show} onHide={this.handleCancel}>
         <Modal.Header closeButton>
           <Modal.Title>Add Sample Manually</Modal.Title>
         </Modal.Header>
@@ -126,13 +126,20 @@ class AddSample extends React.Component {
   }
 }
 
-AddSample = reduxForm({
+const AddSampleForm = reduxForm({
   form: 'addsample',
   validate,
 })(AddSample);
 
-AddSample = connect((state) => ({
-  initialValues: { ...state.taskForm.taskData.parameters },
-}))(AddSample);
+const AddSampleContainer = connect(
+  (state) => ({
+    initialValues: { ...state.taskForm.taskData.parameters },
+  }),
+  (dispatch) => ({
+    addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
+    addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
+    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
+  }),
+)(AddSampleForm);
 
-export default AddSample;
+export default AddSampleContainer;

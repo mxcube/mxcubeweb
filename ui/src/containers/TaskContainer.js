@@ -5,7 +5,7 @@ import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';
 import Helical from '../components/Tasks/Helical';
 import Mesh from '../components/Tasks/Mesh';
-import AddSample from '../components/Tasks/AddSample';
+import AddSampleContainer from '../components/Tasks/AddSample';
 import Workflow from '../components/Tasks/Workflow';
 import GphlWorkflow from '../components/Tasks/GphlWorkflow';
 import Interleaved from '../components/Tasks/Interleaved';
@@ -15,31 +15,12 @@ import GenericTaskForm from '../components/Tasks/GenericTaskForm';
 
 import { hideTaskParametersForm, showTaskForm } from '../actions/taskForm';
 
-import {
-  addTask,
-  updateTask,
-  addSamplesToQueue,
-  addSampleAndMount,
-} from '../actions/queue';
-
-import { addSamplesToList } from '../actions/sampleGrid';
+import { addTask, updateTask } from '../actions/queue';
 
 class TaskContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.addSampleToQueue = this.addSampleToQueue.bind(this);
-    this.addSampleAndMount = this.addSampleAndMount.bind(this);
     this.addTask = this.addTask.bind(this);
-  }
-
-  addSampleToQueue(sampleData) {
-    this.props.addSamplesToList([sampleData]);
-    this.props.addSamplesToQueue([sampleData]);
-  }
-
-  addSampleAndMount(sampleData) {
-    this.props.addSamplesToList([sampleData]);
-    this.props.addSampleAndMount(sampleData);
   }
 
   addTask(params, stringFields, runNow) {
@@ -167,12 +148,7 @@ class TaskContainer extends React.Component {
       }
       case 'AddSample': {
         return (
-          <AddSample
-            show
-            hide={this.props.hideTaskParametersForm}
-            addToQueue={this.addSampleToQueue}
-            addAndMount={this.addSampleAndMount}
-          />
+          <AddSampleContainer show hide={this.props.hideTaskParametersForm} />
         );
       }
       case 'Workflow': {
@@ -289,9 +265,6 @@ function mapDispatchToProps(dispatch) {
     ),
     updateTask: bindActionCreators(updateTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
-    addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
-    addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
-    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
   };
 }
 
