@@ -7,6 +7,8 @@ import validate from './validate_add_sample';
 import { bindActionCreators } from 'redux';
 import { addSamplesToList } from '../../actions/sampleGrid';
 import { addSampleAndMount, addSamplesToQueue } from '../../actions/queue';
+import { showList } from '../../actions/queueGUI';
+import { useLocation } from 'react-router-dom';
 
 function getDefaultSampleData(params) {
   let prefix = params.sampleName ? params.sampleName : 'noname';
@@ -34,12 +36,20 @@ function AddSample(props) {
     addSamplesToList,
     addSampleAndMount,
     addSamplesToQueue,
+    showList,
   } = props;
+
+  const { pathname } = useLocation();
 
   function addAndMount(params) {
     const sampleData = getDefaultSampleData(params);
     addSamplesToList([sampleData]);
     addSampleAndMount(sampleData);
+
+    if (pathname === '/datacollection') {
+      showList('current');
+    }
+
     hide();
   }
 
@@ -65,7 +75,7 @@ function AddSample(props) {
           <FieldsRow>
             <InputField
               propName="sampleName"
-              autoFocus
+                autoFocus // eslint-disable-line jsx-a11y/no-autofocus
               label="Sample Name"
               col1="4"
               col2="6"
@@ -112,6 +122,7 @@ const AddSampleContainer = connect(
     addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
     addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
     addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
+    showList: bindActionCreators(showList, dispatch),
   }),
 )(AddSampleForm);
 
