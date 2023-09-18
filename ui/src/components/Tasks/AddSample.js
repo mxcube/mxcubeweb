@@ -60,7 +60,7 @@ class AddSample extends React.Component {
           }}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Add Sample Manually</Modal.Title>
+            <Modal.Title>New Sample</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <FieldsRow>
@@ -87,20 +87,15 @@ class AddSample extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <ButtonToolbar>
+              <Button className="me-3" type="submit" disabled={invalid}>
+                Mount
+              </Button>
               <Button
                 variant="outline-secondary"
                 disabled={invalid}
                 onClick={() => this.addAndQueue()}
               >
-                Add Sample
-              </Button>
-              <Button
-                className="me-3"
-                variant="outline-secondary"
-                type="submit"
-                disabled={invalid}
-              >
-                Add and mount sample
+                Queue
               </Button>
             </ButtonToolbar>
           </Modal.Footer>
