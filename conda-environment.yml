@@ -8,4 +8,4 @@ dependencies:
   - pip
   - poetry
   - nodejs
-  - redis
+  - redis-server
