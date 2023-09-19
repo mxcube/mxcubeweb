@@ -26,7 +26,7 @@ MXCuBE-Web is developed as a web application and runs in any recent browser. The
 :-------------------------:|:-------------------------:
 ![datacollection-view](https://user-images.githubusercontent.com/4331447/42496925-d983bf3e-8427-11e8-890e-898dda649101.png)|![samplegrid-view](https://user-images.githubusercontent.com/4331447/42496937-e8547b34-8427-11e8-9447-645e6d7f1dc5.png)
 
-The underlaying beamline control layer is implemented using the library [**mxcubecore**](https://github.com/mxcube/mxcubecore) previously known as [HardwareRepository](https://github.com/mxcube/HardwareRepository). The **mxcubecore** module is compatable with both MXCuBE-Web and the [MXCuBE-Qt application](https://github.com/mxcube/mxcubeqt). The earlier versions of MXCuBE-Web (upto 3.2.x) uses [HardwareRepository](https://github.com/mxcube/HardwareRepository) while versions after 4.x uses [**mxcubecore**](https://github.com/mxcube/mxcubecore).
+The underlaying beamline control layer is implemented using the library [**mxcubecore**](https://github.com/mxcube/mxcubecore) previously known as [HardwareRepository](https://github.com/mxcube/HardwareRepository). The **mxcubecore** module is compatable with both MXCuBE-Web and the [MXCuBE-Qt application](https://github.com/mxcube/mxcubeqt).
 
 Latest information about the MXCuBE project can be found on the
 [project webpage](http://mxcube.github.io/mxcube/).
