@@ -208,6 +208,12 @@ class Lims(ComponentBase):
                 return ERROR_CODE
 
             try:
+                HWR.beamline.lims.lims_rest.authenticate(loginID, password)
+            except Exception:
+                logging.getLogger("MX3.HWR").error("[LIMS-REST] Could not authenticate")
+                return ERROR_CODE
+
+            try:
                 proposals = HWR.beamline.lims.get_proposals_by_user(loginID)
 
                 logging.getLogger("MX3.HWR").info(

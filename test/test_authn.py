@@ -29,8 +29,13 @@ SESSION_LIFETIME = 2.0  # seconds
 USER_DB_PATH = "/tmp/mxcube-test-user.db"
 
 
+@pytest.fixture(params=["proposal", "user"])
+def login_type(request):
+    return request.param
+
+
 @pytest.fixture
-def server():
+def server(request, login_type):
     try:
         os.remove(USER_DB_PATH)
     except FileNotFoundError:
@@ -44,6 +49,10 @@ def server():
     # For the tests we override the configured value of the session lifetime
     # with a much smaller value, so that tests do not need to wait as long.
     server_.flask.permanent_session_lifetime = SESSION_LIFETIME
+
+    hw_repo = mxcubecore.HardwareRepository.get_hardware_repository()
+    lims = hw_repo.get_hardware_object("lims")
+    lims.set_property("loginType", login_type)
 
     yield server_
 
@@ -76,7 +85,7 @@ def test_authn_signin_good_credentials(client):
 def test_authn_signin_wrong_credentials(client):
     resp = client.post(URL_SIGNIN, json=CREDENTIALS_0_WRONG)
     assert resp.status_code == 200
-    assert "code" not in resp.json
+    assert "code" not in resp.json, "Could authenticate with wrong credentials"
     assert resp.json["msg"] == "Could not authenticate"
 
 
@@ -89,7 +98,7 @@ def test_authn_signout(client):
     assert resp.headers["Location"] == "/login"
 
 
-def test_authn_info(client):
+def test_authn_info(client, login_type):
     """Test login info.
 
     The login info should have `loggedIn` false before authentication
@@ -104,10 +113,12 @@ def test_authn_info(client):
     resp = client.get(URL_INFO)
     assert resp.status_code == 200
     assert resp.json["loggedIn"] == True
-    assert resp.json["loginType"] == "Proposal"
+    assert resp.json["loginType"].lower() == login_type
     assert resp.json["user"]["inControl"] == True
 
 
+# Test against proposal-based authentication only
+@pytest.mark.parametrize("login_type", ["proposal"], indirect=True)
 def test_authn_same_proposal(make_client):
     """Test two users for the same proposal.
 
@@ -128,6 +139,8 @@ def test_authn_same_proposal(make_client):
     assert resp.json["user"]["inControl"] == False
 
 
+# Test against proposal-based authentication only
+@pytest.mark.parametrize("login_type", ["proposal"], indirect=True)
 def test_authn_different_proposals(make_client):
     """Test two users for different proposals.
 
