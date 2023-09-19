@@ -1,0 +1,10 @@
+name: mxcubeweb
+channels:
+  - conda-forge
+dependencies:
+  - pytest
+  - coverage
+  - flake8
+  - black  
+  - pytest-cov
+  - pytest-mock
