@@ -5,6 +5,6 @@ dependencies:
   - pytest
   - coverage
   - flake8
-  - black  
+  - black
   - pytest-cov
   - pytest-mock
