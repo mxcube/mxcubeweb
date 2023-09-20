@@ -10,8 +10,8 @@ from gevent import monkey
 
 monkey.patch_all(thread=False)
 
-from mxcube3.server import Server
-from mxcube3.app import MXCUBEApplication
+from mxcube3.server import Server as server
+from mxcube3.app import MXCUBEApplication as mxcube
 from mxcube3.config import Config
 
 from mxcubecore import HardwareRepository as HWR
@@ -123,9 +123,9 @@ def build_server_and_config(test=False, argv=None):
         if test:
             cfg.flask.USER_DB_PATH = "/tmp/mxcube-test-user.db"
 
-        Server.init(cmdline_options, cfg, MXCUBEApplication)
-        MXCUBEApplication.init(
-            Server,
+        server.init(cmdline_options, cfg, mxcube)
+        mxcube.init(
+            server,
             cmdline_options.allow_remote,
             cmdline_options.ra_timeout,
             cmdline_options.log_file,
@@ -134,12 +134,12 @@ def build_server_and_config(test=False, argv=None):
             cfg,
         )
 
-        Server.register_routes(MXCUBEApplication)
+        server.register_routes(mxcube)
     except Exception:
         traceback.print_exc()
         raise
 
-    return (Server, cfg)
+    return (server, cfg)
 
 
 def main():
