@@ -26,7 +26,7 @@ export function saveToLastUsedParameters(formName, parameters) {
   localStorage.setItem(`last${formName}Parameters`, JSON.stringify(parameters));
 }
 
-export function clearAllLastUserParameters() {
+export function clearAllLastUsedParameters() {
   const collectionNames = [
     'datacollection',
     'characterisation',

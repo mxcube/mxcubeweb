@@ -1,6 +1,6 @@
 import update from 'immutability-helper';
 import { QUEUE_STOPPED, CLICK_CENTRING } from '../constants';
-import { clearAllLastUserParameters } from '../components/Tasks/fields';
+import { clearAllLastUsedParameters } from '../components/Tasks/fields';
 
 const initialState = {
   queue: [],
@@ -44,7 +44,7 @@ export default (state = initialState, action) => {
     }
     case 'SET_CURRENT_SAMPLE':
       if (!state.rememberParametersBetweenSamples) {
-        clearAllLastUserParameters();
+        clearAllLastUsedParameters();
       }
 
       return {
