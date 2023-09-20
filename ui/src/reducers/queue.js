@@ -44,7 +44,6 @@ export default (state = initialState, action) => {
     }
     case 'SET_CURRENT_SAMPLE':
       if (!state.rememberParametersBetweenSamples) {
-        debugger;
         clearAllLastUserParameters();
       }
 
