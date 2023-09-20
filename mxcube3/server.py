@@ -31,6 +31,11 @@ class Server:
     db_session = None
     flask_socketio = None
 
+    def __init__(self):
+        raise NotImplementedError(
+            "Server is to be used as a pure static class, dont instanciate"
+        )
+
     @staticmethod
     def exception_handler(e):
         err_msg = "Uncaught exception while calling %s" % request.path
@@ -177,10 +182,7 @@ class Server:
             init_gphl_workflow_route, mxcube, f"{url_root_prefix}/gphl_workflow"
         )
 
-        Server.security = flask_security.Security(
-            Server.flask,
-            Server.user_datastore
-        )
+        Server.security = flask_security.Security(Server.flask, Server.user_datastore)
 
     @staticmethod
     def emit(*args, **kwargs):
@@ -201,10 +203,7 @@ class Server:
 
         if ssl_context:
             Server.flask_socketio.run(
-                Server.flask,
-                ssl_context=ssl_context,
-                host="0.0.0.0",
-                port=8081
+                Server.flask, ssl_context=ssl_context, host="0.0.0.0", port=8081
             )
         else:
             Server.flask_socketio.run(Server.flask, host="0.0.0.0", port=8081)

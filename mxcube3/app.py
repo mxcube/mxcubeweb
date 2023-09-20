@@ -246,6 +246,11 @@ class MXCUBEApplication:
 
     server = None
 
+    def __init__(self):
+        raise NotImplementedError(
+            "MXCUBEApplication is to be used as a pure static class, dont instanciate"
+        )
+
     @staticmethod
     def init(
         server, allow_remote, ra_timeout, log_fpath, log_level, enabled_logger_list, cfg
