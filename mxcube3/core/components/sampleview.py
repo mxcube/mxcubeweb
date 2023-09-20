@@ -279,7 +279,89 @@ class SampleView(ComponentBase):
 
         signals.grid_result_available(to_camel(shape.as_dict()))
 
+    # def update_shapes(self, shapes):
+    #     logging.getLogger("HWR.MX3").info("get into update_shapes method in sampleview")
+    #     updated_shapes = []
+    #
+    #     for s in shapes:
+    #         shape_data = from_camel(s)
+    #         pos = []
+    #
+    #         # Get the shape if already exists
+    #         shape = HWR.beamline.sample_view.get_shape(shape_data.get("id", -1))
+    #
+    #         # If shape does not exist add it
+    #         if not shape:
+    #             refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
+    #
+    #             # Store pixels per mm for third party software, to facilitate
+    #             # certain calculations
+    #
+    #             beam_info_dict = beam_info_dict = self.app.beamline.get_beam_info()
+    #
+    #             shape_data[
+    #                 "pixels_per_mm"
+    #             ] = HWR.beamline.diffractometer.get_pixels_per_mm()
+    #             shape_data["beam_pos"] = (
+    #                 beam_info_dict.get("position")[0],
+    #                 beam_info_dict.get("position")[1],
+    #             )
+    #             shape_data["beam_width"] = beam_info_dict.get("size_x", 0)
+    #             shape_data["beam_height"] = beam_info_dict.get("size_y", 0)
+    #
+    #             # Shape does not have any refs, create a new Centered position
+    #             if not refs:
+    #                 try:
+    #                     x, y = shape_data["screen_coord"]
+    #                     mpos = HWR.beamline.diffractometer.get_centred_point_from_coord(
+    #                         x, y, return_by_names=True
+    #                     )
+    #                     pos.append(mpos)
+    #
+    #                     # We also store the center of the grid
+    #                     if t == "G":
+    #                         # coords for the center of the grid
+    #                         x_c = (
+    #                             x
+    #                             + (shape_data["num_cols"] /2.0)
+    #                             * shape_data["cell_width"]
+    #                         )
+    #                         y_c = (
+    #                             y
+    #                             + (shape_data["num_rows"] /2.0)
+    #                             * shape_data["cell_height"]
+    #                         )
+    #                         center_positions = HWR.beamline.diffractometer.get_centred_point_from_coord(
+    #                             x_c, y_c, return_by_names=True
+    #                         )
+    #                         pos.append(center_positions)
+    #
+    #                     # logging.getLogger("HWR.MX3").info("There's pos from sample_view beneath ")
+    #                     # logging.getLogger("HWR.MX3").info(pos)
+    #
+    #                     shape = HWR.beamline.sample_view.add_shape_from_mpos(
+    #                         pos, (x, y), t
+    #                     )
+    #                     logging.getLogger("HWR.MX3").info("There's shape.cp_list from sample_view beneath ")
+    #                     logging.getLogger("HWR.MX3").info(shape.cp_list)
+    #                 except Exception:
+    #                     logging.getLogger("HWR.MX3").info(shape_data)
+    #
+    #             else:
+    #                 shape = HWR.beamline.sample_view.add_shape_from_refs(refs, t)
+    #
+    #         # shape will be none if creation failed, so we check if shape exists
+    #         # before setting additional parameters
+    #         if shape:
+    #             shape.update_from_dict(shape_data)
+    #             shape_dict = to_camel(shape.as_dict())
+    #             updated_shapes.append(shape_dict)
+    #
+    #     return {"shapes": updated_shapes}
+
+
     def update_shapes(self, shapes):
+        logging.getLogger("HWR.MX3").info("get into update_shapes method in sampleview")
         updated_shapes = []
 
         for s in shapes:
@@ -312,6 +394,16 @@ class SampleView(ComponentBase):
                 if not refs:
                     try:
                         x, y = shape_data["screen_coord"]
+
+                        # 测试使起始点从左上变为右上
+                        # 没用
+                        # y = (
+                        #         y
+                        #         + (shape_data["num_rows"] /2.0)
+                        #         * shape_data["cell_height"]/2
+                        #     )
+
+
                         mpos = HWR.beamline.diffractometer.get_centred_point_from_coord(
                             x, y, return_by_names=True
                         )
@@ -322,12 +414,12 @@ class SampleView(ComponentBase):
                             # coords for the center of the grid
                             x_c = (
                                 x
-                                + (shape_data["num_cols"] / 2.0)
+                                + (shape_data["num_cols"] /2.0)
                                 * shape_data["cell_width"]
                             )
                             y_c = (
                                 y
-                                + (shape_data["num_rows"] / 2.0)
+                                + (shape_data["num_rows"] /2.0)
                                 * shape_data["cell_height"]
                             )
                             center_positions = HWR.beamline.diffractometer.get_centred_point_from_coord(
@@ -335,9 +427,14 @@ class SampleView(ComponentBase):
                             )
                             pos.append(center_positions)
 
+                        # logging.getLogger("HWR.MX3").info("There's pos from sample_view beneath ")
+                        # logging.getLogger("HWR.MX3").info(pos)
+
                         shape = HWR.beamline.sample_view.add_shape_from_mpos(
                             pos, (x, y), t
                         )
+                        logging.getLogger("HWR.MX3").info("There's shape.cp_list from sample_view beneath ")
+                        logging.getLogger("HWR.MX3").info(shape.cp_list)
                     except Exception:
                         logging.getLogger("HWR.MX3").info(shape_data)
 
