@@ -1,5 +1,6 @@
+*****
 Login
-=====
+*****
 
 MXCuBE web sessions are meant to expire when there is no activity,
 as opposed to a typical web session that expires when the browser is closed.
@@ -23,10 +24,3 @@ Every time the *refresh* endpoint is called,
 the browser session cookie is refreshed,
 meaning its expiration timestamp is pushed back in the future
 for as much as the value stored in ``PERMANENT_SESSION_LIFETIME``.
-
-
-Login API
----------
-
-.. autoflask:: mxcube3.routes.Login:mxcube
-    :endpoints: login, signout, loginInfo, get_initial_state, proposal_samples
