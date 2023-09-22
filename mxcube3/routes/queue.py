@@ -173,6 +173,8 @@ def init_route(app, server, url_prefix):
         )
         resp.status_code = 200
 
+        server.emit("queue", {"Signal": "update"}, namespace="/hwr")
+
         return resp
 
     @bp.route("/<sqid>/<tqid>", methods=["POST"])
@@ -186,6 +188,8 @@ def init_route(app, server, url_prefix):
         resp = jsonify(app.queue.queue_to_dict([model]))
         resp.status_code = 200
 
+        server.emit("queue", {"Signal": "update"}, namespace="/hwr")
+
         return resp
 
     @bp.route("/delete", methods=["POST"])
@@ -195,6 +199,7 @@ def init_route(app, server, url_prefix):
         item_pos_list = request.get_json()
 
         app.queue.delete_entry_at(item_pos_list)
+        server.emit("queue", {"Signal": "update"}, namespace="/hwr")
 
         return Response(status=200)
 
@@ -206,6 +211,7 @@ def init_route(app, server, url_prefix):
         qid_list = params.get("qidList", None)
         enabled = params.get("enabled", False)
         app.queue.queue_enable_item(qid_list, enabled)
+        server.emit("queue", {"Signal": "update"}, namespace="/hwr")
 
         return Response(status=200)
 
@@ -214,12 +220,16 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def queue_swap_task_item(sid, ti1, ti2):
         app.queue.swap_task_entry(sid, int(ti1), int(ti2))
+        server.emit("queue", {"Signal": "update"}, namespace="/hwr")
+
         return Response(status=200)
 
     @bp.route("/<sid>/<ti1>/<ti2>/move", methods=["POST"])
     @server.require_control
     def queue_move_task_item(sid, ti1, ti2):
         app.queue.move_task_entry(sid, int(ti1), int(ti2))
+        server.emit("queue", {"Signal": "update"}, namespace="/hwr")
+
         return Response(status=200)
 
     @bp.route("/sample-order", methods=["POST"])
@@ -228,6 +238,8 @@ def init_route(app, server, url_prefix):
     def queue_set_sample_order():
         sample_order = request.get_json().get("sampleOrder", [])
         app.queue.set_sample_order(sample_order)
+        server.emit("queue", {"Signal": "update"}, namespace="/hwr")
+
         return Response(status=200)
 
     @bp.route("/<sample_id>", methods=["PUT"])
