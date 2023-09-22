@@ -843,3 +843,27 @@ export function sendUpdateDependentFields(task_name, field_data) {
     return response.json();
   });
 }
+
+export function fetchQueue() {
+  return async function (dispatch) {
+    try {
+      const response = await fetch('mxcube/api/v0.1/queue/queue_state', {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json',
+        },
+      });
+
+      if (response.status === 200) {
+        const data = await response.json();
+        dispatch(setQueue(data.sampleList));
+      } else {
+        throw new Error(`Could not fetch queue`);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
+}

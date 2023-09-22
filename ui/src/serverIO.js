@@ -34,6 +34,7 @@ import {
   setCurrentSample,
   addDiffractionPlanAction,
   setSampleAttribute,
+  fetchQueue,
 } from './actions/queue';
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
 import { setLoading, showConnectionLostDialog } from './actions/general';
@@ -266,6 +267,11 @@ class ServerIO {
 
       if (record.Signal === 'DisableSample') {
         this.dispatch(setSampleAttribute([record.sampleID], 'checked', false));
+      } else if (record.Signal === 'update') {
+        const state = store.getState();
+        if (!state.login.user.inControl) {
+          this.dispatch(fetchQueue());
+        }
       } else {
         this.dispatch(setStatus(record.Signal));
       }
