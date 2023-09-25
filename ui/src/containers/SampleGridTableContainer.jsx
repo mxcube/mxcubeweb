@@ -609,7 +609,6 @@ class SampleGridTableContainer extends React.Component {
         >
           <Button
             variant="link"
-            disabled={this.props.current && this.props.picked}
             className="pick-puck-checkbox-button"
             onClick={(e) =>
               this.pickAllCellPuckItemsOnClick(e, allPuckSample, pickSample)
@@ -628,7 +627,7 @@ class SampleGridTableContainer extends React.Component {
     return (
       <div className="sample-items-collapsible-header-actions">
         <b className="me-2 mt-1">
-          {type === 'CATS' ? 'Isara' : `Cell ${cell}`}
+          {this.isSingleCell() ? null : `Cell ${cell}`}
         </b>
         {this.itemsControls(cell, null)}
         <span
@@ -902,28 +901,26 @@ class SampleGridTableContainer extends React.Component {
     const tableCell = [];
 
     // eslint-disable-next-line sonarjs/cognitive-complexity
+
+    if (typeof scContent.children === 'undefined') {
+      return null;
+    }
+
     scContent.children.map((cell) => {
       if (
         this.props.filterOptions.cellFilter.toLowerCase() === cell.name ||
         this.props.filterOptions.cellFilter.toLowerCase() === ''
       ) {
         const nbpuck = [];
-        // we won't display the cell / table  if all puck in the cell are empty
-        const type = this.props.type; // CATS
-
-        if (this.isSingleCell()) {
-          nbpuck.push(cell.children);
-        } else {
-          cell.children.map((puck, idxtd) => {
-            if (
-              this.getSampleItems(Number(cell.name), idxtd + 1).length > 0 &&
-              (Number(this.props.filterOptions.puckFilter) === idxtd + 1 ||
-                this.props.filterOptions.puckFilter.toLowerCase() === '')
-            ) {
-              nbpuck.push(puck);
-            }
-          });
-        }
+        cell.children.map((puck, idxtd) => {
+          if (
+            this.getSampleItems(Number(cell.name), idxtd + 1).length > 0 &&
+            (Number(this.props.filterOptions.puckFilter) === idxtd + 1 ||
+              this.props.filterOptions.puckFilter.toLowerCase() === '')
+          ) {
+            nbpuck.push(puck);
+          }
+        });
 
         if (nbpuck.length > 0) {
           const colsmP = 12;
@@ -1088,7 +1085,7 @@ class SampleGridTableContainer extends React.Component {
               marginRight: '2px',
             }}
           >
-            {this.itemsControls(Number(puck.name), 1)}
+            {this.itemsControls(Number(puck.name), null)}
           </span>
           <span
             title="Puck Options"
@@ -1113,6 +1110,11 @@ class SampleGridTableContainer extends React.Component {
   getSampleTableSingleCell(colsm) {
     const scContent = this.props.sampleChanger.contents;
     const tableCell = [];
+
+    if (typeof scContent.children === 'undefined') {
+      return null;
+    }
+
     scContent.children.map((puck) => {
       const nbpuck = [];
       nbpuck.push(puck);
@@ -1128,58 +1130,30 @@ class SampleGridTableContainer extends React.Component {
         }
         tableCell.push(
           <Col sm={colsmP} key={`puck-${puck.name}`}>
-            <LazyLoad
-              unmountIfInvisible
-              once={scContent.children.length <= 2}
-              height={1325}
-              offset={100}
-            >
-              <Collapsible
-                transitionTime={300}
-                className="sample-items-collapsible"
-                openedClassName="sample-items-collapsible"
-                open
-                lazyRender
-                trigger={this.getCollapsibleHeaderClose(
-                  Number(puck.name),
-                  'collapsible-arrow-c',
-                )}
-                triggerWhenOpen={this.getCollapsibleHeaderOpen(
-                  Number(puck.name),
-                  'collapsible-arrow-c',
-                )}
-              >
-                <Table
-                  bordered
-                  responsive
-                  size="sm"
-                  className="sample-items-table"
-                >
-                  <thead>
-                    <tr>{this.renderPuck(puck)}</tr>
-                  </thead>
-                  <tbody>
-                    {puck.children.map((sample, idxtd) => {
-                      return (
-                        <tr>
-                          <td
-                            key={`${puck.name}-td-${puck.name}`}
-                            className={`sample-items-table-column-body custom-table-border-${
-                              idxtd + 1
-                            }`}
-                          >
-                            {this.getPuckSampleItems(
-                              Number(puck.name),
-                              sample.name.split(':')[1],
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </Table>
-              </Collapsible>
-            </LazyLoad>
+            <Table bordered responsive size="sm" className="sample-items-table">
+              <thead>
+                <tr>{this.renderPuck(puck)}</tr>
+              </thead>
+              <tbody>
+                {puck.children.map((sample, idxtd) => {
+                  return (
+                    <tr>
+                      <td
+                        key={`${puck.name}-td-${puck.name}`}
+                        className={`sample-items-table-column-body custom-table-border-${
+                          idxtd + 1
+                        }`}
+                      >
+                        {this.getPuckSampleItems(
+                          Number(puck.name),
+                          sample.name.split(':')[1],
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
           </Col>,
         );
       }
@@ -1417,13 +1391,11 @@ class SampleGridTableContainer extends React.Component {
           >
             <div className="selection-rubber-band" id="selectionRubberBand" />
             {this.renderSampleChangerDrawing()}
-            <Col className="col-sm-10">
-              {this.getManualSamples()}
-              {this.isSingleCell()
-                ? this.getSampleTableSingleCell(12)
-                : this.getSampleTable('auto')}
-              {/* {this.getSampleTable(this.isSingleCell() ? 12 : 'auto')} */}
-            </Col>
+            {this.getManualSamples()}
+            {this.isSingleCell()
+              ? this.getSampleTableSingleCell(10)
+              : this.getSampleTable('auto')}
+            {/* {this.getSampleTable(this.isSingleCell() ? 12 : 'auto')} */}
           </Row>
         ) : (
           <Row
