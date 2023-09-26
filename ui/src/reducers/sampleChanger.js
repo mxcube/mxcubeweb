@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 const INITIAL_STATE = {
   contents: {},
   state: 'READY',
@@ -87,7 +88,7 @@ const INITIAL_STATE = {
   selectedDrop: null,
 };
 
-export default (state = INITIAL_STATE, action) => {
+function sampleChangerReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_SC_CONTENTS': {
       return { ...state, contents: action.data.sampleChangerContents };
@@ -122,4 +123,6 @@ export default (state = INITIAL_STATE, action) => {
       return state;
     }
   }
-};
+}
+
+export default sampleChangerReducer;

@@ -1,4 +1,4 @@
-const initialState = {
+const INITIAL_STATE = {
   loading: false,
   showErrorPanel: false,
   errorMessage: '',
@@ -13,7 +13,7 @@ const initialState = {
   applicationFetched: false,
 };
 
-export default (state = initialState, action) => {
+function generalReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_LOADING': {
       return {
@@ -60,4 +60,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default generalReducer;

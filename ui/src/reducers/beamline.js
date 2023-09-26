@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import { STATE } from '../actions/beamline';
 import { RUNNING, MOTOR_STATE } from '../constants';
 
@@ -141,7 +142,7 @@ export const INITIAL_STATE = {
   energyScanElements: [],
 };
 
-export default (state = INITIAL_STATE, action) => {
+function beamlineReducer(state = INITIAL_STATE, action = {}) {
   let data = {};
 
   switch (action.type) {
@@ -415,4 +416,6 @@ export default (state = INITIAL_STATE, action) => {
     default:
       return state;
   }
-};
+}
+
+export default beamlineReducer;

@@ -15,7 +15,7 @@ import contextMenu from './contextMenu';
 import remoteAccess from './remoteAccess';
 import shapes from './shapes';
 import workflow from './workflow';
-import gphl_workflow from './gphl_workflow';
+import gphl_workflow from './gphlWorkflow';
 import taskResult from './taskResult';
 import uiproperties from './uiproperties';
 

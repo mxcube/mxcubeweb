@@ -1,9 +1,9 @@
-const initialState = {
+const INITIAL_STATE = {
   workflows: [],
   current: null,
 };
 
-export default (state = initialState, action) => {
+function gphlWorkflowReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_WORKFLOWS': {
       return { ...state, workflows: { ...action.workflows } };
@@ -25,4 +25,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default gphlWorkflowReducer;

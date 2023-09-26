@@ -1,4 +1,4 @@
-const initialState = {
+const INITIAL_STATE = {
   loggedIn: null, // null means loggedIn state is not known yet
   showProposalsForm: false,
   selectedProposal: '',
@@ -9,7 +9,7 @@ const initialState = {
   },
 };
 
-export default (state = initialState, action) => {
+function loginReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_LOGIN_INFO': {
       if (action.loginInfo.user.username !== '') {
@@ -56,4 +56,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default loginReducer;

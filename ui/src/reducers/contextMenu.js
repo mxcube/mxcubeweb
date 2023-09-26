@@ -1,5 +1,4 @@
-/* eslint-disable import/no-anonymous-default-export */
-const initialState = {
+const INITIAL_STATE = {
   show: false,
   shape: { type: 'NONE' },
   x: 0,
@@ -12,7 +11,7 @@ const initialState = {
   },
 };
 
-export default (state = initialState, action) => {
+function contextMenuReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SHOW_CONTEXT_MENU': {
       return {
@@ -36,4 +35,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default contextMenuReducer;
