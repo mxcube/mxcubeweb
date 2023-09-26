@@ -7,7 +7,7 @@ import Form from '@rjsf/core';
 import {
   showGphlWorkflowParametersDialog,
   gphlWorkflowSubmitParameters,
-} from '../actions/gphl_workflow';
+} from '../actions/gphlWorkflow';
 
 class GphlWorkflowParametersDialog extends React.Component {
   constructor(props) {

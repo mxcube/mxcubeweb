@@ -1,4 +1,4 @@
-const initialState = {
+const INITIAL_STATE = {
   // the null value is used to distinguish between signed out (null) or logged in (true/false)
   sid: null,
   observers: [],
@@ -8,7 +8,7 @@ const initialState = {
   chatMessageCount: 0,
 };
 
-export default (state = initialState, action) => {
+function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_RA_STATE': {
       return {
@@ -51,4 +51,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default remoteAccessReducer;

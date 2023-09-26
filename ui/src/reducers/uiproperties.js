@@ -1,8 +1,8 @@
 import { findIndex, setWith, clone } from 'lodash';
 
-const initialState = {};
+const INITIAL_STATE = {};
 
-export default (state = initialState, action) => {
+function uiPropertiesReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_UI_PROPERTIES': {
       return { ...state, ...action.data };
@@ -26,4 +26,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default uiPropertiesReducer;

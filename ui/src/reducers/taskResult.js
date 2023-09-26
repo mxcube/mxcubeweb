@@ -1,8 +1,8 @@
-const initialState = {
+const INITIAL_STATE = {
   energyScan: [],
 };
 
-export default (state = initialState, action) => {
+function taskResultReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_ENERGY_SCAN_RESULT': {
       const results = state.energyScan;
@@ -14,9 +14,11 @@ export default (state = initialState, action) => {
       return { ...state, energyScan: results };
     }
     case 'SET_INITIAL_STATE': {
-      return { ...initialState };
+      return { ...INITIAL_STATE };
     }
     default:
       return state;
   }
-};
+}
+
+export default taskResultReducer;

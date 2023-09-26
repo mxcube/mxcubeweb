@@ -1,4 +1,4 @@
-const initialState = {
+const INITIAL_STATE = {
   sampleIds: [],
   taskData: {},
   pointID: -1,
@@ -16,7 +16,7 @@ const initialState = {
   },
 };
 
-export default (state = initialState, action) => {
+function taskFormReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SHOW_FORM': {
       return {
@@ -53,4 +53,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default taskFormReducer;

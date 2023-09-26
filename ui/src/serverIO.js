@@ -40,7 +40,7 @@ import { setLoading, showConnectionLostDialog } from './actions/general';
 
 import { showWorkflowParametersDialog } from './actions/workflow';
 
-import { showGphlWorkflowParametersDialog } from './actions/gphl_workflow';
+import { showGphlWorkflowParametersDialog } from './actions/gphlWorkflow';
 
 import { incChatMessageCount, getRaState } from './actions/remoteAccess';
 
@@ -228,9 +228,10 @@ class ServerIO {
         const taskCollapsed =
           store.getState().queueGUI.displayData[record.queueID].collapsed;
 
-        if (record.state === 1 && !taskCollapsed) {
-          this.dispatch(collapseItem(record.queueID));
-        } else if (record.state >= 2 && taskCollapsed) {
+        if (
+          (record.state === 1 && !taskCollapsed) ||
+          (record.state >= 2 && taskCollapsed)
+        ) {
           this.dispatch(collapseItem(record.queueID));
         }
 

@@ -1,9 +1,9 @@
-const initialState = {
+const INITIAL_STATE = {
   logRecords: [],
   activePage: 0,
 };
 
-export default (state = initialState, action) => {
+function loggerReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'ADD_LOG_RECORD': {
       return { ...state, logRecords: [...state.logRecords, action.data] };
@@ -17,4 +17,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default loggerReducer;

@@ -1,6 +1,6 @@
 import { omit } from 'lodash/object';
 
-const initialState = {
+const INITIAL_STATE = {
   showRestoreDialog: false,
   searchString: '',
   displayData: {},
@@ -10,7 +10,7 @@ const initialState = {
   showConfirmCollectDialog: false,
 };
 
-export default (state = initialState, action) => {
+function queueGUIReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'redux-form/CHANGE': {
       if (action.form === 'search-sample') {
@@ -26,7 +26,7 @@ export default (state = initialState, action) => {
       const newNodes = [];
 
       action.sampleOrder.forEach((sampleID) => {
-        if (action.sampleList.hasOwnProperty(sampleID)) {
+        if (sampleID in action.sampleList) {
           action.sampleList[sampleID].tasks.forEach((task) => {
             if (!existingNodes.includes(task.queueID.toString())) {
               newNodes.push(task.queueID.toString());
@@ -126,7 +126,7 @@ export default (state = initialState, action) => {
       const newNodes = [];
 
       sampleOrder.forEach((sampleID) => {
-        if (sampleList.hasOwnProperty(sampleID)) {
+        if (sampleID in sampleList) {
           sampleList[sampleID].tasks.forEach((task) => {
             if (!existingNodes.includes(task.queueID.toString())) {
               newNodes.push(task.queueID.toString());
@@ -144,9 +144,11 @@ export default (state = initialState, action) => {
       return { ...state, displayData };
     }
     case 'CLEAR_ALL': {
-      return initialState;
+      return INITIAL_STATE;
     }
     default:
       return state;
   }
-};
+}
+
+export default queueGUIReducer;

@@ -1,10 +1,10 @@
 import { omit } from 'lodash/object';
 
-const initialState = {
+const INITIAL_STATE = {
   shapes: {},
 };
 
-export default (state = initialState, action) => {
+function shapesReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_SHAPES': {
       return { ...state, shapes: action.shapes };
@@ -31,10 +31,10 @@ export default (state = initialState, action) => {
       return { ...state, overlayLevel: action.level };
     }
     case 'SET_CURRENT_SAMPLE': {
-      return initialState;
+      return INITIAL_STATE;
     }
     case 'CLEAR_ALL': {
-      return initialState;
+      return INITIAL_STATE;
     }
     case 'SET_INITIAL_STATE': {
       return {
@@ -45,4 +45,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default shapesReducer;

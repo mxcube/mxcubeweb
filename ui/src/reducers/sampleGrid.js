@@ -37,7 +37,7 @@ const INITIAL_STATE = {
   },
 };
 
-export default (state = INITIAL_STATE, action) => {
+function sampleGridReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_QUEUE': {
       const sampleList = { ...state.sampleList };
@@ -122,9 +122,11 @@ export default (state = INITIAL_STATE, action) => {
       const sampleIDList = action.samplesData.map((s) => s.sampleID);
       const sampleList = { ...state.sampleList };
       sampleIDList.forEach((sampleID, i) => {
-        sampleList[sampleID].tasks.length > 0
-          ? sampleList[sampleID].tasks.concat(action.samplesData[i].tasks)
-          : (sampleList[sampleID].tasks = action.samplesData[i].tasks);
+        if (sampleList[sampleID].tasks.length > 0) {
+          sampleList[sampleID].tasks.concat(action.samplesData[i].tasks);
+        } else {
+          sampleList[sampleID].tasks = action.samplesData[i].tasks;
+        }
       });
 
       return { ...state, sampleList };
@@ -370,4 +372,6 @@ export default (state = INITIAL_STATE, action) => {
       return state;
     }
   }
-};
+}
+
+export default sampleGridReducer;

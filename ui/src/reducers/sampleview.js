@@ -1,4 +1,4 @@
-const initialState = {
+const INITIAL_STATE = {
   clickCentring: false,
   clickCentringPoints: [],
   clickCentringClicksLeft: -1,
@@ -43,7 +43,7 @@ const initialState = {
   selectedShapes: [],
 };
 
-export default (state = initialState, action) => {
+function sampleViewReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'TOOGLE_CINEMA': {
       return { ...state, cinema: !state.cinema };
@@ -169,16 +169,7 @@ export default (state = initialState, action) => {
       );
       return { ...state, selectedShapes };
     }
-    case 'CLEAR_ALL': {
-      return {
-        ...state,
-        distancePoints: [],
-        clickCentringPoints: [],
-        gridList: [],
-        gridCount: 0,
-        selectedShapes: [],
-      };
-    }
+    case 'CLEAR_ALL':
     case 'SET_CURRENT_SAMPLE': {
       return {
         ...state,
@@ -225,4 +216,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default sampleViewReducer;

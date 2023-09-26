@@ -2,7 +2,7 @@ import update from 'immutability-helper';
 import { QUEUE_STOPPED, CLICK_CENTRING } from '../constants';
 import { clearAllLastUsedParameters } from '../components/Tasks/fields';
 
-const initialState = {
+const INITIAL_STATE = {
   queue: [],
   current: { sampleID: null, running: false },
   queueStatus: QUEUE_STOPPED,
@@ -14,7 +14,7 @@ const initialState = {
   groupFolder: '',
 };
 
-export default (state = initialState, action) => {
+function queueReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_QUEUE': {
       return { ...state, queue: action.sampleOrder };
@@ -22,13 +22,13 @@ export default (state = initialState, action) => {
     case 'CLEAR_QUEUE': {
       return {
         ...state,
-        queue: initialState.queue,
-        current: initialState.current,
+        queue: INITIAL_STATE.queue,
+        current: INITIAL_STATE.current,
       };
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
       const sampleIDList = action.samplesData.map((s) => s.sampleID);
-      return { ...state, queue: state.queue.concat(sampleIDList) };
+      return { ...state, queue: [...state.queue, ...sampleIDList] };
     }
     case 'SET_QUEUE_STATUS':
       return {
@@ -103,7 +103,7 @@ export default (state = initialState, action) => {
       return { ...state, [action.settingName]: action.value };
     }
     case 'CLEAR_ALL': {
-      return { ...state, ...initialState, autoMountNext: state.autoMountNext };
+      return { ...state, ...INITIAL_STATE, autoMountNext: state.autoMountNext };
     }
     case 'QUEUE_STATE': {
       return Object.assign({}, state, ...action.queueState);
@@ -128,4 +128,6 @@ export default (state = initialState, action) => {
     default:
       return state;
   }
-};
+}
+
+export default queueReducer;
