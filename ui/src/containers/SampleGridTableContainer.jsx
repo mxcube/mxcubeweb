@@ -1111,7 +1111,14 @@ class SampleGridTableContainer extends React.Component {
     const scContent = this.props.sampleChanger.contents;
     const tableCell = [];
 
+    // Do not try to render is SC is empty
     if (typeof scContent.children === 'undefined') {
+      return null;
+    }
+
+    // Do not try to render is samplesList is empty
+    // only Puck header would be drawn
+    if (Object.keys(this.props.sampleList).length == 0){
       return null;
     }
 
