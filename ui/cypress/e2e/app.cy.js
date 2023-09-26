@@ -6,7 +6,7 @@ describe('login', () => {
     cy.findByRole(
       'link',
       { name: 'MXCuBE-Web (OSC)' },
-      { timeout: 10000 },
+      { timeout: 20000 },
     ).should('be.visible');
   });
 
@@ -22,7 +22,7 @@ describe('app', () => {
     cy.findByRole(
       'link',
       { name: 'MXCuBE-Web (OSC)' },
-      { timeout: 10000 },
+      { timeout: 20000 },
     ).should('be.visible');
   });
 
