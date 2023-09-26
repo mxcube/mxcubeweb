@@ -226,7 +226,6 @@ export function sendCommand(cmdparts, args) {
     }).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
-        throw new Error(`Error while  sending command @ ${cmdparts}`);
       }
     });
   };
