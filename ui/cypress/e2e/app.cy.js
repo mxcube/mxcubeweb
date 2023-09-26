@@ -8,14 +8,22 @@ describe('login', () => {
 
   it('can login with valid credentials', () => {
     cy.login();
-    cy.findByRole('link', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
+    cy.findByRole(
+      'link',
+      { name: 'MXCuBE-Web (OSC)' },
+      { timeout: 3000 },
+    ).should('be.visible');
   });
 });
 
 describe('app', () => {
   beforeEach(() => {
     cy.login();
-    cy.findByRole('link', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
+    cy.findByRole(
+      'link',
+      { name: 'MXCuBE-Web (OSC)' },
+      { timeout: 3000 },
+    ).should('be.visible');
   });
 
   it('displays collection page', () => {
