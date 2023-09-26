@@ -1,11 +1,6 @@
 /* global Cypress, cy, it, describe, beforeEach */
 
 describe('login', () => {
-  it("can't login with invalid credentials", () => {
-    cy.login('idte0', '0000');
-    cy.findByText('Could not authenticate').should('be.visible');
-  });
-
   it('can login with valid credentials', () => {
     cy.login();
     cy.findByRole(
@@ -13,6 +8,11 @@ describe('login', () => {
       { name: 'MXCuBE-Web (OSC)' },
       { timeout: 10000 },
     ).should('be.visible');
+  });
+
+  it("can't login with invalid credentials", () => {
+    cy.login('idte0', '0000');
+    cy.findByText('Could not authenticate').should('be.visible');
   });
 });
 
