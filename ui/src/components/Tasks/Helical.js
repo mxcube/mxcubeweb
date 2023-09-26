@@ -218,7 +218,7 @@ class Helical extends React.Component {
   }
 }
 
-Helical = reduxForm({
+const HelicalForm = reduxForm({
   form: 'helical',
   validate,
   warn,
@@ -226,7 +226,7 @@ Helical = reduxForm({
 
 const selector = formValueSelector('helical');
 
-Helical = connect((state) => {
+export default connect((state) => {
   const subdir = selector(state, 'subdir');
   let fname = '';
 
@@ -266,6 +266,4 @@ Helical = connect((state) => {
           : toFixed(state, 'diffractometer.phi'),
     },
   };
-})(Helical);
-
-export default Helical;
+})(HelicalForm);

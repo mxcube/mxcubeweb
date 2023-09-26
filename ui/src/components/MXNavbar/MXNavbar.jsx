@@ -93,5 +93,5 @@ class MXNavbar extends React.Component {
     );
   }
 }
-MXNavbar = withRouter(MXNavbar);
-export default MXNavbar;
+
+export default withRouter(MXNavbar);

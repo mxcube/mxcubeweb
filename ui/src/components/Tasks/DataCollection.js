@@ -337,7 +337,7 @@ class DataCollection extends React.Component {
   }
 }
 
-DataCollection = reduxForm({
+const DataCollectionForm = reduxForm({
   form: 'datacollection',
   validate,
   warn,
@@ -345,7 +345,7 @@ DataCollection = reduxForm({
 
 const selector = formValueSelector('datacollection');
 
-DataCollection = connect((state) => {
+export default connect((state) => {
   const subdir = selector(state, 'subdir');
 
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
@@ -392,6 +392,4 @@ DataCollection = connect((state) => {
           : toFixed(state, 'diffractometer.phi'),
     },
   };
-})(DataCollection);
-
-export default DataCollection;
+})(DataCollectionForm);

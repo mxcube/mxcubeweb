@@ -322,7 +322,7 @@ class GenericTaskForm extends React.Component {
   }
 }
 
-GenericTaskForm = reduxForm({
+const GenericTaskFormForm = reduxForm({
   form: 'GenericTaskForm',
   validate,
   warn,
@@ -330,7 +330,7 @@ GenericTaskForm = reduxForm({
 
 const selector = formValueSelector('GenericTaskForm');
 
-GenericTaskForm = connect((state) => {
+export default connect((state) => {
   const subdir = selector(state, 'subdir');
   const experimentNameSelector = selector(state, 'experimentName');
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
@@ -392,6 +392,4 @@ GenericTaskForm = connect((state) => {
       osc_start: state.taskForm.taskData.parameters.osc_start,
     },
   };
-})(GenericTaskForm);
-
-export default GenericTaskForm;
+})(GenericTaskFormForm);

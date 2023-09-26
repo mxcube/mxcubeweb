@@ -33,7 +33,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hideErrorPanel: bindActionCreators(
-      showErrorPanel.bind(this, false),
+      showErrorPanel.bind(null, false),
       dispatch,
     ),
   };

@@ -276,6 +276,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-NewSampleIsaraView = withRouter(NewSampleIsaraView);
-
-export default connect(mapStateToProps, mapDispatchToProps)(NewSampleIsaraView);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withRouter(NewSampleIsaraView));

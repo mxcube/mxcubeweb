@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -81,7 +82,7 @@ export default class TaskItem extends Component {
   getDiffPlan(data) {
     let diffPlan = [];
     if (
-      data.hasOwnProperty('diffractionPlan') &&
+      'diffractionPlan' in data &&
       Object.keys(data.diffractionPlan).length > 0
     ) {
       // it can be empty

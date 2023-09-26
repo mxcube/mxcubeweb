@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import { getLoginInfo } from './login';
 
 export function showObserverDialog(show = true) {

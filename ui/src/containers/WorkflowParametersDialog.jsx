@@ -78,7 +78,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(
-      showWorkflowParametersDialog.bind(this, null, false),
+      showWorkflowParametersDialog.bind(null, null, false),
       dispatch,
     ),
     workflowSubmitParameters: bindActionCreators(

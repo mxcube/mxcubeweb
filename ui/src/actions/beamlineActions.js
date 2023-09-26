@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { RUNNING } from '../constants';
 import { checkStatus, parseJSON } from '../requests';

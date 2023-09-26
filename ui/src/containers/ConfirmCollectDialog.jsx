@@ -40,7 +40,6 @@ export class ConfirmCollectDialog extends React.Component {
     this.resizeTable = this.resizeTable.bind(this);
     this.autoLoopCentringOnClick = this.autoLoopCentringOnClick.bind(this);
     this.autoMountNextOnClick = this.autoMountNextOnClick.bind(this);
-    this.onHide = this.onHide.bind(this);
     this.collectText = this.collectText.bind(this);
     this.tasksToCollect = this.tasksToCollect.bind(this);
     this.setNumSnapshots = this.setNumSnapshots.bind(this);
@@ -73,8 +72,6 @@ export class ConfirmCollectDialog extends React.Component {
   onResize() {
     this.resizeTable();
   }
-
-  onHide() {}
 
   setNumSnapshots(n) {
     this.props.sendSetNumSnapshots(n);
@@ -352,11 +349,7 @@ export class ConfirmCollectDialog extends React.Component {
   render() {
     const autoMountNext = this.props.queue.queue.length > 1;
     return (
-      <Modal
-        dialogClassName="collect-confirm-dialog"
-        show={this.props.show}
-        onHide={this.onHide}
-      >
+      <Modal dialogClassName="collect-confirm-dialog" show={this.props.show}>
         <Modal.Header>
           <Modal.Title>Collect Queue ?</Modal.Title>
         </Modal.Header>
@@ -423,7 +416,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(
-      showConfirmCollectDialog.bind(this, false),
+      showConfirmCollectDialog.bind(null, false),
       dispatch,
     ),
     sendRunQueue: bindActionCreators(sendRunQueue, dispatch),

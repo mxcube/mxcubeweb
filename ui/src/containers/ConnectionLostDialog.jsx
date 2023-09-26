@@ -74,7 +74,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(
-      showConnectionLostDialog.bind(this, false),
+      showConnectionLostDialog.bind(null, false),
       dispatch,
     ),
   };

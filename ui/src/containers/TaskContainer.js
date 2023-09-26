@@ -27,11 +27,7 @@ class TaskContainer extends React.Component {
     const parameters = { ...params };
 
     for (const key in parameters) {
-      if (
-        parameters.hasOwnProperty(key) &&
-        !stringFields.includes(key) &&
-        parameters[key]
-      ) {
+      if (key in parameters && !stringFields.includes(key) && parameters[key]) {
         parameters[key] = Number(parameters[key]);
       }
     }

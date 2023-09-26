@@ -46,7 +46,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    hide: bindActionCreators(showResumeQueueDialog.bind(this, false), dispatch),
+    hide: bindActionCreators(showResumeQueueDialog.bind(null, false), dispatch),
   };
 }
 

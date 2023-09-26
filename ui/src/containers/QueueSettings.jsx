@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Form, DropdownButton, Dropdown } from 'react-bootstrap';
+import { Form, Dropdown } from 'react-bootstrap';
 
 import { AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../constants';
 
 import GroupFolderInput from './GroupFolderInput.jsx';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
-import * as QueueActions from '../actions/queue';
+import * as queueActions from '../actions/queue'; // eslint-disable-line import/no-namespace
 
 class QueueSettings extends React.Component {
   constructor(props) {
@@ -130,7 +130,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    queueActions: bindActionCreators(QueueActions, dispatch),
+    queueActions: bindActionCreators(queueActions, dispatch),
   };
 }
 

@@ -13,8 +13,6 @@ export class PassControlDialog extends React.Component {
     this.getObserver = this.getObserver.bind(this);
   }
 
-  onHide() {}
-
   getObserver() {
     let observer = { name: '', message: '', requestsControl: false };
 
@@ -52,12 +50,7 @@ export class PassControlDialog extends React.Component {
     const observer = this.getObserver();
 
     return (
-      <Modal
-        show={this.show()}
-        backdrop="static"
-        onHide={this.onHide}
-        style={{ zIndex: 10_001 }}
-      >
+      <Modal show={this.show()} backdrop="static" style={{ zIndex: 10_001 }}>
         <Modal.Header>
           <Modal.Title>{observer.nickname} is asking for control</Modal.Title>
         </Modal.Header>

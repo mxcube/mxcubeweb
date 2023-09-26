@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { setLoading, showErrorPanel } from './general';
 import { setQueue } from './queue';

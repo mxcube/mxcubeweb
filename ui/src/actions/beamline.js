@@ -52,7 +52,7 @@ export function sendGetAllhardwareObjects() {
     fetch(url, {
       method: 'GET',
       headers: {
-        Accept: 'application/json',
+        Accept: 'application/json', // eslint-disable-line sonarjs/no-duplicate-string
         'Content-type': 'application/json',
       },
       credentials: 'include',

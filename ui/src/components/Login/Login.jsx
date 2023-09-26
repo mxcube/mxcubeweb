@@ -132,5 +132,4 @@ function LoginComponent(props) {
   );
 }
 
-LoginComponent = withRouter(LoginComponent);
-export default LoginComponent;
+export default withRouter(LoginComponent);

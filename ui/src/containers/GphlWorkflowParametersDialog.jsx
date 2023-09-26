@@ -74,7 +74,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(
-      showGphlWorkflowParametersDialog.bind(this, null, false),
+      showGphlWorkflowParametersDialog.bind(null, null, false),
       dispatch,
     ),
     gphlWorkflowSubmitParameters: bindActionCreators(

@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
 import './app.css';
 import { Button, Navbar, Nav } from 'react-bootstrap';

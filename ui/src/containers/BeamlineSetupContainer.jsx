@@ -11,7 +11,7 @@ import DeviceState from '../components/DeviceState/DeviceState';
 import LabeledValue from '../components/LabeledValue/LabeledValue';
 import MachInfo from '../components/MachInfo/MachInfo';
 import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
-import * as SampleViewActions from '../actions/sampleview';
+import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
 
 import { find, filter } from 'lodash';
 
@@ -84,7 +84,7 @@ class BeamlineSetupContainer extends React.Component {
     const acts = [];
 
     const { uiproperties } = this.props;
-    if (uiproperties.hasOwnProperty('beamline_setup')) {
+    if ('beamline_setup' in uiproperties) {
       const blsetup_properties = uiproperties.beamline_setup.components;
 
       for (const key in this.props.beamline.hardwareObjects) {
@@ -140,7 +140,7 @@ class BeamlineSetupContainer extends React.Component {
 
     const { uiproperties } = this.props;
 
-    if (uiproperties.hasOwnProperty('camera_setup')) {
+    if ('camera_setup' in uiproperties) {
       for (const [
         key,
         camera,
@@ -222,7 +222,7 @@ class BeamlineSetupContainer extends React.Component {
   render() {
     const { uiproperties } = this.props;
 
-    if (!uiproperties.hasOwnProperty('beamline_setup')) {
+    if (!('beamline_setup' in uiproperties)) {
       return null;
     }
 
@@ -327,7 +327,7 @@ function mapDispatchToProps(dispatch) {
       sendGetAllhardwareObjects,
       dispatch,
     ),
-    sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
+    sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
     setAttribute: bindActionCreators(sendSetAttribute, dispatch),
     sendCommand: bindActionCreators(sendCommand, dispatch),
     abortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch),

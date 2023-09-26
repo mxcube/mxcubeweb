@@ -463,7 +463,7 @@ class Characterisation extends React.Component {
   }
 }
 
-Characterisation = reduxForm({
+const CharacterisationForm = reduxForm({
   form: 'characterisation',
   validate,
   warn,
@@ -471,7 +471,7 @@ Characterisation = reduxForm({
 
 const selector = formValueSelector('characterisation');
 
-Characterisation = connect((state) => {
+export default connect((state) => {
   const subdir = selector(state, 'subdir');
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
   if (typeof position === 'object') {
@@ -524,6 +524,4 @@ Characterisation = connect((state) => {
           : toFixed(state, 'diffractometer.phi'),
     },
   };
-})(Characterisation);
-
-export default Characterisation;
+})(CharacterisationForm);

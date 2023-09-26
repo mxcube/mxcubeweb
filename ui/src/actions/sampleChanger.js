@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 import { clearCurrentSample } from './queue';

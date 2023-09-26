@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Form, Button } from 'react-bootstrap';
-import * as QueueActions from '../actions/queue';
+import * as queueActions from '../actions/queue'; // eslint-disable-line import/no-namespace
 
 class GroupFolderInput extends React.Component {
   constructor(props) {
@@ -75,7 +75,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    queueActions: bindActionCreators(QueueActions, dispatch),
+    queueActions: bindActionCreators(queueActions, dispatch),
   };
 }
 

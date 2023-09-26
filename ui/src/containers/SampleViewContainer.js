@@ -16,8 +16,8 @@ import ApertureInput from '../components/SampleView/ApertureInput';
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import ContextMenu from '../components/SampleView/ContextMenu';
-import * as SampleViewActions from '../actions/sampleview';
-import * as GeneralActions from '../actions/general';
+import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
+import * as generalActions from '../actions/general'; // eslint-disable-line import/no-namespace
 import { updateTask } from '../actions/queue';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -47,7 +47,7 @@ class SampleViewContainer extends Component {
   render() {
     const { uiproperties } = this.props;
 
-    if (!uiproperties.hasOwnProperty('sample_view')) {
+    if (!('sample_view' in uiproperties)) {
       return null;
     }
 
@@ -155,7 +155,6 @@ class SampleViewContainer extends Component {
               {this.props.sampleChangerContents.name === 'PlateManipulator' ? (
                 <div className="mb-4">
                   <OverlayTrigger
-                    ref="plateOverlay"
                     trigger="click"
                     rootClose
                     placement="auto-end"
@@ -338,10 +337,10 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
+    sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
     updateTask: bindActionCreators(updateTask, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
-    generalActions: bindActionCreators(GeneralActions, dispatch),
+    generalActions: bindActionCreators(generalActions, dispatch),
     sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
     sendAbortCurrentAction: bindActionCreators(
       sendAbortCurrentAction,

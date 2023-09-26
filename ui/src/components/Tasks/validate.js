@@ -1,5 +1,8 @@
 const everpolate = require('everpolate');
 
+const INVALID_CHAR_MSG =
+  'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+
 const validate = (values, props) => {
   const errors = {};
   if (!props.beamline.hardwareObjects) {
@@ -21,20 +24,16 @@ const validate = (values, props) => {
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
 
-  /* eslint-disable no-useless-escape */
-  const validFname = /^[-\w\-\#\_\{\}\[\]]+$/.test(props.filename);
-  /* eslint-enable no-useless-escape */
+  const validFname = /^[\w#[\]{}-\-]+$/u.test(props.filename);
 
   const emptyField = 'field is empty';
 
   if (!validFname) {
-    errors.prefix =
-      'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+    errors.prefix = INVALID_CHAR_MSG;
   }
 
-  if (props.subdir && !/^[-\w\-\/\_\{\}]+$/.test(props.subdir)) {
-    errors.subdir =
-      'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+  if (props.subdir && !/^[\w/{}-\-]+$/u.test(props.subdir)) {
+    errors.subdir = INVALID_CHAR_MSG;
   }
 
   if (props.experimentName === undefined) {
@@ -43,10 +42,9 @@ const validate = (values, props) => {
 
   if (
     props.experimentName !== undefined &&
-    !/^[-\w\-\/\_\{\}]+$/.test(props.experimentName)
+    !/^[\w/{}-\-]+$/u.test(props.experimentName)
   ) {
-    errors.experimentName =
-      'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+    errors.experimentName = INVALID_CHAR_MSG;
   }
 
   let resMin = 0;
