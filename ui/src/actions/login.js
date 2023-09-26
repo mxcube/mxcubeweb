@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel, setLoading, getInitialState } from './general';
 import { serverIO } from '../serverIO';
@@ -183,7 +184,9 @@ export function doSignOut(navigate) {
     }).then(() => {
       dispatch(signOut());
       dispatch(getLoginInfo());
-      navigate && navigate('/login');
+      if (navigate) {
+        navigate('/login');
+      }
     });
   };
 }

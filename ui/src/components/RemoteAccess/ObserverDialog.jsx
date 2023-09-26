@@ -25,8 +25,6 @@ export class ObserverDialog extends React.Component {
     }
   }
 
-  onHide() {}
-
   show() {
     return (
       !this.props.login.user.inControl && this.props.login.user.nickname === ''
@@ -55,12 +53,7 @@ export class ObserverDialog extends React.Component {
 
   render() {
     return (
-      <Modal
-        backdrop="static"
-        show={this.show()}
-        onHide={this.onHide}
-        style={{ zIndex: 10_001 }}
-      >
+      <Modal backdrop="static" show={this.show()} style={{ zIndex: 10_001 }}>
         <Modal.Header>
           <Modal.Title>{this.title()}</Modal.Title>
         </Modal.Header>
@@ -112,7 +105,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    hide: bindActionCreators(showObserverDialog.bind(this, false), dispatch),
+    hide: bindActionCreators(showObserverDialog.bind(null, false), dispatch),
     sendUpdateNickname: bindActionCreators(sendUpdateNickname, dispatch),
   };
 }

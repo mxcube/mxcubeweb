@@ -5,12 +5,11 @@ import { TiWarning, TiTimes } from 'react-icons/ti';
 
 import './style.css';
 
-export function getLastUsedParameters(type, parameters) {
+export function getLastUsedParameters(type, newParams) {
   const lastParameters = localStorage.getItem(`last${type}Parameters`);
 
-  if (lastParameters !== null) {
-    parameters = JSON.parse(lastParameters);
-  }
+  const parameters =
+    lastParameters === null ? newParams : JSON.parse(lastParameters);
 
   if (parseFloat(parameters.osc_range) === 0) {
     parameters.osc_range =
@@ -324,7 +323,7 @@ export class CollapsableRows extends React.Component {
                     this.setState({ collapsed: false });
                   }}
                 >
-                  <a>Show more</a>
+                  Show more
                 </Button>
               ) : (
                 <Button
@@ -333,7 +332,7 @@ export class CollapsableRows extends React.Component {
                     this.setState({ collapsed: true });
                   }}
                 >
-                  <a>Hide</a>
+                  Hide
                 </Button>
               )}
             </center>

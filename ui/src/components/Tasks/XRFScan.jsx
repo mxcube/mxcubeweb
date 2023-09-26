@@ -124,14 +124,14 @@ class XRFScan extends React.Component {
   }
 }
 
-XRFScan = reduxForm({
+const XRFScanForm = reduxForm({
   form: 'workflow',
   validate,
 })(XRFScan);
 
 const selector = formValueSelector('workflow');
 
-XRFScan = connect((state) => {
+export default connect((state) => {
   const subdir = selector(state, 'subdir');
   const exp_time = selector(state, 'exp_time');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
@@ -166,6 +166,4 @@ XRFScan = connect((state) => {
         : state.beamline.hardwareObjects.transmission.value,
     },
   };
-})(XRFScan);
-
-export default XRFScan;
+})(XRFScanForm);

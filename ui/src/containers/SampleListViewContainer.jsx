@@ -896,7 +896,7 @@ function mapDispatchToProps(dispatch) {
       dispatch,
     ),
     confirmClearQueueHide: bindActionCreators(
-      showConfirmClearQueueDialog.bind(this, false),
+      showConfirmClearQueueDialog.bind(null, false),
       dispatch,
     ),
     showConfirmCollectDialog: bindActionCreators(
@@ -908,9 +908,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-SampleListViewContainer = withRouter(SampleListViewContainer);
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(SampleListViewContainer);
+)(withRouter(SampleListViewContainer));

@@ -31,7 +31,7 @@ export default class MachInfo extends React.Component {
     };
 
     for (propname in this.props.info) {
-      if (this.props.info.hasOwnProperty(propname)) {
+      if (propname in this.props.info) {
         if (propname === 'attention') {
           continue;
         }

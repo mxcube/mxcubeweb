@@ -304,9 +304,9 @@ export default class ContextMenu extends React.Component {
       // that already have a line [P1, P2, L1]
       // we do not want to add a DC/Char to a line
 
-      const points = sid.filter((x) => x.match(/P*/)[0]);
+      const points = sid.filter((x) => x.match(/P*/u)[0]);
       const containsPoints = points.length > 0;
-      const lines = sid.filter((x) => x.match(/L*/)[0]);
+      const lines = sid.filter((x) => x.match(/L*/u)[0]);
       const containsLine = lines.length > 0;
 
       if (containsPoints && containsLine) {
@@ -419,9 +419,11 @@ export default class ContextMenu extends React.Component {
       this.props.sampleActions.sendAbortCentring();
     }
 
-    this.props.sampleActions.sendDeleteShape(this.props.shape.id).then(() => {
-      this.props.sampleActions.showContextMenu(false);
-    });
+    voithis.props.sampleActions
+      .sendDeleteShape(this.props.shape.id)
+      .then(() => {
+        this.props.sampleActions.showContextMenu(false);
+      });
   }
 
   measureDistance() {
@@ -454,7 +456,7 @@ export default class ContextMenu extends React.Component {
     const { shape } = this.props;
     const sid = shape.id;
 
-    const lines = sid.filter((x) => x.match(/L*/)[0]);
+    const lines = sid.filter((x) => x.match(/L*/u)[0]);
     const containsLine = lines.length > 0;
 
     if (containsLine) {

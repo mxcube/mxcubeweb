@@ -1,3 +1,4 @@
+/* global Cypress, cy */
 import '@testing-library/cypress/add-commands';
 
 Cypress.Commands.add('login', (username = 'idtest0', password = '0000') => {

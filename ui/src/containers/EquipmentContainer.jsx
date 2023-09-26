@@ -17,7 +17,7 @@ import {
   selectDrop,
 } from '../actions/sampleChanger';
 
-import * as GeneralActions from '../actions/general';
+import * as generalActions from '../actions/general'; // eslint-disable-line import/no-namespace
 
 import { syncWithCrims } from '../actions/sampleGrid';
 
@@ -167,7 +167,7 @@ function mapDispatchToProps(dispatch) {
     abort: () => dispatch(abort()),
     sendCommand: (cmd, args) => dispatch(sendCommand(cmd, args)),
     executeCommand: bindActionCreators(executeCommand, dispatch),
-    generalActions: bindActionCreators(GeneralActions, dispatch),
+    generalActions: bindActionCreators(generalActions, dispatch),
     selectWell: (row, col) => dispatch(selectWell(row, col)),
     setPlate: (address) => dispatch(setPlate(address)),
     selectDrop: (address) => dispatch(selectDrop(address)),

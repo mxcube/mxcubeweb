@@ -133,14 +133,14 @@ class GphlWorkflow extends React.Component {
   }
 }
 
-GphlWorkflow = reduxForm({
+const GphlWorkflowForm = reduxForm({
   form: 'gphl_workflow',
   validate,
 })(GphlWorkflow);
 
 const selector = formValueSelector('gphl_workflow');
 
-GphlWorkflow = connect((state) => {
+export default connect((state) => {
   const subdir = selector(state, 'subdir');
   const strategy_name = selector(state, 'strategy_name');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
@@ -179,6 +179,4 @@ GphlWorkflow = connect((state) => {
         : state.beamline.hardwareObjects.transmission.value,
     },
   };
-})(GphlWorkflow);
-
-export default GphlWorkflow;
+})(GphlWorkflowForm);

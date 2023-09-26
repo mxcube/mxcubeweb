@@ -91,12 +91,10 @@ class SelectProposal extends React.Component {
   }
 }
 
-SelectProposal = reduxForm({
+const SelectProposalForm = reduxForm({
   form: 'proposals',
 })(SelectProposal);
 
-SelectProposal = connect((state) => ({
+export default connect((state) => ({
   initialValues: { ...state.login.data },
-}))(SelectProposal);
-
-export default SelectProposal;
+}))(SelectProposalForm);

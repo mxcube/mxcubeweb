@@ -112,14 +112,14 @@ class Workflow extends React.Component {
   }
 }
 
-Workflow = reduxForm({
+const WorkflowForm = reduxForm({
   form: 'workflow',
   validate,
 })(Workflow);
 
 const selector = formValueSelector('workflow');
 
-Workflow = connect((state) => {
+export default connect((state) => {
   const subdir = selector(state, 'subdir');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
@@ -160,6 +160,4 @@ Workflow = connect((state) => {
         : state.beamline.hardwareObjects.transmission.value,
     },
   };
-})(Workflow);
-
-export default Workflow;
+})(WorkflowForm);

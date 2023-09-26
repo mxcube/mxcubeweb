@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import './SampleView.css';
 import React from 'react';
 import { OverlayTrigger, Button, Dropdown } from 'react-bootstrap';

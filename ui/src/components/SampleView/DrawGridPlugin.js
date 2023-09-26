@@ -324,7 +324,7 @@ export default class DrawGridPlugin {
     let { result } = gd;
 
     // Use selected result type if it exists
-    if (gd.result !== null && gd.result.hasOwnProperty(this.resultType)) {
+    if (gd.result !== null && this.resultType in gd.result) {
       result = gd.result[this.resultType];
     }
 
