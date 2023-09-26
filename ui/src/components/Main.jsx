@@ -149,6 +149,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-Main = withRouter(Main);
-
-export default connect(mapStateToProps, mapDispatchToProps)(Main);
+export default connect(mapStateToProps, mapDispatchToProps)(withRouter(Main));

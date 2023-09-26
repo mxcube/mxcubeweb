@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Col } from 'react-bootstrap';
-import * as SampleViewActions from '../actions/sampleview';
-import * as GeneralActions from '../actions/general';
-import * as BeamlineActions from '../actions/beamline';
+import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
+import * as generalActions from '../actions/general'; // eslint-disable-line import/no-namespace
+import * as beamlineActions from '../actions/beamline'; // eslint-disable-line import/no-namespace
 import { QUEUE_RUNNING } from '../constants';
 
 import MotorInput from '../components/MotorInput/MotorInput';
@@ -60,9 +59,9 @@ function mapStateToProps(state, ownProps) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
-    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
-    generalActions: bindActionCreators(GeneralActions, dispatch),
+    sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
+    beamlineActions: bindActionCreators(beamlineActions, dispatch),
+    generalActions: bindActionCreators(generalActions, dispatch),
   };
 }
 

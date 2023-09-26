@@ -238,7 +238,7 @@ class Mesh extends React.Component {
   }
 }
 
-Mesh = reduxForm({
+const MeshForm = reduxForm({
   form: 'mesh',
   validate,
   warn,
@@ -246,7 +246,7 @@ Mesh = reduxForm({
 
 const selector = formValueSelector('helical');
 
-Mesh = connect((state) => {
+export default connect((state) => {
   const subdir = selector(state, 'subdir');
 
   let fname = '';
@@ -281,6 +281,4 @@ Mesh = connect((state) => {
       osc_start: state.beamline.hardwareObjects['diffractometer.phi'].value,
     },
   };
-})(Mesh);
-
-export default Mesh;
+})(MeshForm);

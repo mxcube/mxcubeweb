@@ -4,17 +4,17 @@ import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import TodoTree from '../components/SampleQueue/TodoTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
-import * as QueueActions from '../actions/queue';
-import * as QueueGUIActions from '../actions/queueGUI';
-import * as SampleViewActions from '../actions/sampleview';
-import * as SampleChangerActions from '../actions/sampleChanger';
+import * as beamlineActions from '../actions/beamline'; // eslint-disable-line import/no-namespace
+import * as queueActions from '../actions/queue'; // eslint-disable-line import/no-namespace
+import * as queueGUIActions from '../actions/queueGUI'; // eslint-disable-line import/no-namespace
+import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
+import * as sampleChangerActions from '../actions/sampleChanger'; // eslint-disable-line import/no-namespace
 import { showTaskForm } from '../actions/taskForm';
 import { Nav } from 'react-bootstrap';
 import { showDialog } from '../actions/general';
 
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
-import * as BeamlineActions from '../actions/beamline';
 
 function mapStateToProps(state) {
   return {
@@ -42,13 +42,13 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    queueActions: bindActionCreators(QueueActions, dispatch),
-    queueGUIActions: bindActionCreators(QueueGUIActions, dispatch),
-    sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
-    sampleChangerActions: bindActionCreators(SampleChangerActions, dispatch),
+    queueActions: bindActionCreators(queueActions, dispatch),
+    queueGUIActions: bindActionCreators(queueGUIActions, dispatch),
+    sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
+    sampleChangerActions: bindActionCreators(sampleChangerActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
-    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
+    beamlineActions: bindActionCreators(beamlineActions, dispatch),
   };
 }
 
@@ -128,7 +128,6 @@ class SampleQueueContainer extends React.Component {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
         <QueueControl
-          ref="queueContainer"
           historyLength={history.length}
           queueLength={queue.length}
           queue={queue}

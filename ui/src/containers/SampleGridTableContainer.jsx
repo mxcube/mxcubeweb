@@ -766,7 +766,7 @@ class SampleGridTableContainer extends React.Component {
     const scList = this.props.sampleList;
     const manualSamples = [];
     const ks = Object.keys(scList);
-    ks.map((sample) => {
+    ks.forEach((sample) => {
       if (scList[sample].location === 'Manual') {
         scList[sample].cell_no = 0;
         manualSamples.push(scList[sample]);
@@ -1263,9 +1263,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-SampleGridTableContainer = withRouter(SampleGridTableContainer);
-
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(SampleGridTableContainer);
+)(withRouter(SampleGridTableContainer));

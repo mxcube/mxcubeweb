@@ -160,6 +160,7 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-NewSampleFlexView = withRouter(NewSampleFlexView);
-
-export default connect(mapStateToProps, mapDispatchToProps)(NewSampleFlexView);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withRouter(NewSampleFlexView));

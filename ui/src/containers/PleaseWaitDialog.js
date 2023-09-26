@@ -7,26 +7,12 @@ import { setLoading } from '../actions/general';
 export class PleaseWaitDialog extends React.Component {
   constructor(props) {
     super(props);
-    this.getHideFun = this.getHideFun.bind(this);
+    this.hide = this.hide.bind(this);
     this.abort = this.abort.bind(this);
   }
 
-  getTitle() {
-    return this.props.title || 'Please wait';
-  }
-
-  getMessage() {
-    return this.props.message || '';
-  }
-
-  getHideFun() {
-    let fun = this.props.setLoadingFalse;
-
-    if (this.props.blocking) {
-      fun = this.props.setLoadingTrue;
-    }
-
-    return fun;
+  hide() {
+    this.props.setLoading(this.props.blocking);
   }
 
   abort() {
@@ -34,66 +20,7 @@ export class PleaseWaitDialog extends React.Component {
       this.props.abortFun();
     }
 
-    this.props.setLoadingFalse();
-  }
-
-  renderHeader() {
-    let header = (
-      <Modal.Header closeButton>
-        <Modal.Title>{this.getTitle()}</Modal.Title>
-      </Modal.Header>
-    );
-
-    if (this.props.blocking) {
-      header = (
-        <Modal.Header>
-          <Modal.Title>{this.getTitle()}</Modal.Title>
-        </Modal.Header>
-      );
-    }
-
-    return header;
-  }
-
-  renderFooter() {
-    let footer = (
-      <Modal.Footer>
-        <Button variant="outline-secondary" onClick={this.getHideFun()}>
-          Hide
-        </Button>
-      </Modal.Footer>
-    );
-
-    if (this.props.blocking) {
-      footer = (
-        <Modal.Footer>
-          <Button variant="outline-secondary" onClick={this.abort}>
-            Cancel
-          </Button>
-        </Modal.Footer>
-      );
-    }
-
-    return footer;
-  }
-
-  renderContent() {
-    let content = (
-      <div>
-        <p>{this.getMessage()}</p>
-      </div>
-    );
-
-    if (this.props.blocking) {
-      content = (
-        <div>
-          <p>{this.getMessage()}</p>
-          <ProgressBar variant="primary" animated now={100} />
-        </div>
-      );
-    }
-
-    return content;
+    this.props.setLoading(false);
   }
 
   render() {
@@ -101,11 +28,31 @@ export class PleaseWaitDialog extends React.Component {
       <Modal
         animation={false}
         show={this.props.loading}
-        onHide={this.getHideFun()}
+        onHide={this.hide}
+        data-default-styles
       >
-        {this.renderHeader()}
-        <Modal.Body>{this.renderContent()}</Modal.Body>
-        {this.renderFooter()}
+        <Modal.Header closeButton={!this.props.blocking}>
+          <Modal.Title>{this.props.title || 'Please wait'}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div>
+            <p>{this.props.message || ''}</p>
+            {this.props.blocking && (
+              <ProgressBar variant="primary" animated now={100} />
+            )}
+          </div>
+        </Modal.Body>
+        <Modal.Footer>
+          {this.props.blocking ? (
+            <Button variant="outline-secondary" onClick={this.abort}>
+              Cancel
+            </Button>
+          ) : (
+            <Button variant="outline-secondary" onClick={this.hide}>
+              Hide
+            </Button>
+          )}
+        </Modal.Footer>
       </Modal>
     );
   }
@@ -123,8 +70,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    setLoadingFalse: bindActionCreators(setLoading.bind(this, false), dispatch),
-    setLoadingTrue: bindActionCreators(setLoading.bind(this, true), dispatch),
+    setLoading: bindActionCreators(setLoading, dispatch),
   };
 }
 

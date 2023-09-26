@@ -152,14 +152,14 @@ class EnergyScan extends React.Component {
   }
 }
 
-EnergyScan = reduxForm({
+const EnergyScanForm = reduxForm({
   form: 'workflow',
   validate,
 })(EnergyScan);
 
 const selector = formValueSelector('workflow');
 
-EnergyScan = connect((state) => {
+export default connect((state) => {
   const subdir = selector(state, 'subdir');
   const element = selector(state, 'element');
   const edge = selector(state, 'edge');
@@ -196,6 +196,4 @@ EnergyScan = connect((state) => {
         : state.beamline.hardwareObjects.transmission.value,
     },
   };
-})(EnergyScan);
-
-export default EnergyScan;
+})(EnergyScanForm);

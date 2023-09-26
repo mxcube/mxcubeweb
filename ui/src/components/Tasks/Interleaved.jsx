@@ -283,14 +283,14 @@ class Interleaved extends React.Component {
   }
 }
 
-Interleaved = reduxForm({
+const InterleavedForm = reduxForm({
   form: 'workflow',
   validate,
 })(Interleaved);
 
 const selector = formValueSelector('workflow');
 
-Interleaved = connect((state) => {
+export default connect((state) => {
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   const shapeId = state.taskForm.pointID;
   const subWedgeSize = selector(state, 'sub_wedge_size');
@@ -312,6 +312,4 @@ Interleaved = connect((state) => {
         state.taskForm.defaultParameters.datacollection.sub_wedge_size,
     },
   };
-})(Interleaved);
-
-export default Interleaved;
+})(InterleavedForm);
