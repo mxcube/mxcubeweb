@@ -1,7 +1,7 @@
 ## How to contribute to mxcubecore
 
 Before submiting the code to the repository please read these contributing guidlines.
-The aim of these guidlines is to help the developers community to maintain the code stable and reusable.
+The aim of these guidelines is to help the developers community to maintain the code stable and reusable.
 
 ### Reporting bugs
 Before submitting a new bug check if the bug is not already reported in the [issues](https://github.com/mxcube/mxcube3/issues/).
@@ -114,7 +114,7 @@ code base
 
  * mm (millimeter) for translative motors and sizes
  * degrees for rotative motors
- * perecent (%) for ratios like attenuation
+ * percent (%) for ratios like attenuation
  * keV for energy
  * K (Kelvin) for temperature
  * Å (Ångström) for resolution
