@@ -923,15 +923,16 @@ class SampleGridTableContainer extends React.Component {
         });
 
         if (nbpuck.length > 0) {
-          const colsmP = 12;
-          if (cell.name != 1) {
-            // this is to avoid re-creating the panels
-            // I dont fully understand the logic with celss.
-            // This will not work for others
-            return null;
+          let colsmP;
+          if (nbpuck.length === 1) {
+            colsmP = 3;
+          } else if (nbpuck.length >= 4 && colsm === 'auto') {
+            colsmP = 12;
+          } else {
+            colsmP = colsm;
           }
           tableCell.push(
-            <Row sm={colsmP} key={`cell-${cell.name}`}>
+            <Col sm={colsmP} key={`cell-${cell.name}`}>
               <LazyLoad
                 unmountIfInvisible
                 once={scContent.children.length <= 2}
@@ -1050,7 +1051,7 @@ class SampleGridTableContainer extends React.Component {
                   </Table>
                 </Collapsible>
               </LazyLoad>
-            </Row>,
+            </Col>,
           );
         }
       }
