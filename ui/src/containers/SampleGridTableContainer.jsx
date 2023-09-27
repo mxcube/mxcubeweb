@@ -1361,7 +1361,6 @@ class SampleGridTableContainer extends React.Component {
   }
 
   isSingleCell() {
-    console.log('isSingleCell');
     return Object.values(this.props.sampleList).every(
       (sample) => sample.cell_no === 1,
     );
