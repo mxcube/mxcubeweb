@@ -912,7 +912,7 @@ class SampleGridTableContainer extends React.Component {
         this.props.filterOptions.cellFilter.toLowerCase() === ''
       ) {
         const nbpuck = [];
-        cell.children.map((puck, idxtd) => {
+        cell.children.forEach((puck, idxtd) => {
           if (
             this.getSampleItems(Number(cell.name), idxtd + 1).length > 0 &&
             (Number(this.props.filterOptions.puckFilter) === idxtd + 1 ||
@@ -1118,7 +1118,7 @@ class SampleGridTableContainer extends React.Component {
 
     // Do not try to render is samplesList is empty
     // only Puck header would be drawn
-    if (Object.keys(this.props.sampleList).length == 0){
+    if (Object.keys(this.props.sampleList).length === 0) {
       return null;
     }
 
@@ -1361,6 +1361,7 @@ class SampleGridTableContainer extends React.Component {
   }
 
   isSingleCell() {
+    console.log('isSingleCell');
     return Object.values(this.props.sampleList).every(
       (sample) => sample.cell_no === 1,
     );
