@@ -84,18 +84,21 @@ settings:
         resolution: 1.7
         strategy: Char_4_by_10_multitrigger
 #        init_spot_dir: /directory/containing/SPOT.XDS/file/after/characterisation
-#        image_count: 90
         # strategy_options: # Not currently used
         # For acquisition or diffractcal
 #        # Expectation for crystal classes - needed for indexing selection.
+
 #        crystal_classes:
-#          - 422I
+#          - 222P
+#          - 222C
+#          - 222I
+#        space_group: I222
       - exposure_time: 0.02
         image_width: 1.0
         resolution: 1.5
         snapshot_count: 2
         wedge_width: 15.0
-        strategy: quick
+        strategy: full
         repetition_count: 1
         strategy_options:
             angular_tolerance: 1.0
