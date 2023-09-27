@@ -98,14 +98,15 @@ class AdapterBase:
             logging.getLogger("MX3.HWR").info(
                 f"{self._name}.{cmd_name} returned {value}"
             )
-            self._msg = value
+            if value:
+                self._msg = value
             self.app.server.emit(
                 "hardware_object_command_return",
                 {"cmd_name": cmd_name, "value": value},
                 namespace="/hwr",
             )
 
-            self.emit_ho_changed()
+            self.emit_ho_changed(self.state())
 
     def _command_exception(self, cmd_name, ex):
         self._msg = traceback.format_exc()
@@ -114,7 +115,7 @@ class AdapterBase:
             {"cmd_name": cmd_name, "value": str(ex)},
             namespace="/hwr",
         )
-        self.emit_ho_changed()
+        self.emit_ho_changed(self.state())
 
     @property
     def adapter_type(self):
@@ -320,7 +321,6 @@ class AdapterBase:
             logging.getLogger("MX3.HWR").exception(
                 f"Failed to get dictionary representation of {self._name}"
             )
-
         return data
 
     def data(self):
