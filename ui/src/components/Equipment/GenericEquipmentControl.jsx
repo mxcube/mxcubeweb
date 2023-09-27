@@ -102,6 +102,7 @@ export default class GenericEquipmentControl extends React.Component {
               trigger={['click']}
               placement="right"
               overlay={popover}
+              rootClose
             >
               <Button
                 className="mt-3"
