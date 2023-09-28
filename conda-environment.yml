@@ -9,3 +9,4 @@ dependencies:
   - poetry
   - nodejs
   - redis-server
+  - pnpm
