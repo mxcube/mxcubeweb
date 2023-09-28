@@ -18,7 +18,7 @@ MXCuBE-Web is the latest generation of the data acquisition software MXCuBE (Mac
 - [LNLS](https://www.lnls.cnpem.br/)
 - [Elettra](https://www.elettra.trieste.it/)
 - [NSRRC](https://www.nsrrc.org.tw/english/index.aspx)
-- [ANSTO] (https://www.ansto.gov.au/facilities/australian-synchrotron)
+- [ANSTO](https://www.ansto.gov.au/facilities/australian-synchrotron)
 
 MXCuBE-Web is developed as a web application and runs in any recent browser. The application is further built using standard web technologies and does not require any third party plugins to be installed in order to function. Being a web application, it's naturally divided into a server and client part. The communication between the client and server are made using HTTP/HTTPS and web-sockets. It's strongly recommended to use HTTPS, SSL/TLS encrypted HTTP. The traffic passes through the conventional HTTP/HTTPS ports minimizing the need for special firewall or proxy settings to get the application to work.
 
