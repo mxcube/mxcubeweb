@@ -46,15 +46,15 @@ mxcube_download() {
 }
 
 init_conda() {
-  command conda create --name mxcube-web
-  command conda env update --name mxcube-web --file conda-environment.yml
-  command conda activate mxcube-web
+  command conda create --name mxcubeweb
+  command conda env update --name mxcubeweb --file conda-environment.yml
+  command conda activate mxcubeweb
 }
 
 
 install_node() {
-  command conda install nodejs
-  command npm install
+  command npm install --global pnpm@8
+  command pnpm --prefix ui install
 }
 
 mxcube_download

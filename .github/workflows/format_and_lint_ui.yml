@@ -41,14 +41,28 @@ jobs:
         run: |
           conda install -c conda-forge mamba
           mamba env update --file conda-environment.yml --name base
-
-      - name: Install dependencies
-        run: |
           pip install -e .
-          npm install --prefix ./ui --legacy-peer-deps
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.x
+
+      - name: Cache UI dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/setup-pnpm/node_modules/.bin/store
+            ~/.cache/Cypress
+          key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Install UI dependencies
+        run: pnpm --prefix ui install
 
       - name: Check formatting
-        run: npm run --prefix ./ui prettier
+        run: pnpm --prefix ui prettier
 
   lint:
     runs-on: ubuntu-latest
@@ -80,11 +94,25 @@ jobs:
         run: |
           conda install -c conda-forge mamba
           mamba env update --file conda-environment.yml --name base
-
-      - name: Install dependencies
-        run: |
           pip install -e .
-          npm install --prefix ./ui --legacy-peer-deps
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: 8.x
+
+      - name: Cache UI dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/setup-pnpm/node_modules/.bin/store
+            ~/.cache/Cypress
+          key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-
+
+      - name: Install UI dependencies
+        run: pnpm --prefix ui install
 
       - name: Lint
-        run: npm run --prefix ./ui eslint
+        run: pnpm --prefix ui eslint

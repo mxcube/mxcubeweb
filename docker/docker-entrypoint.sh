@@ -9,8 +9,9 @@ vncserver :1 -geometry 1680x1050 -depth 24 &
 
 cd /opt/mxcube3
 
-npm install --legacy-peer-deps
-npm start &
+npm install --global pnpm@8
+pnpm --prefix ui install
+pnpm --prefix ui start &
 
 redis-server &
 
