@@ -14,8 +14,8 @@
     "fix": "pnpm eslint --fix",
     "prettier": "prettier . --cache --check",
     "eslint": "eslint \"**/*.{js,jsx}\"",
-    "e2e": "cypress run --e2e --browser firefox",
-    "cypress": "cypress open --e2e --browser firefox"
+    "e2e": "cypress run --e2e --browser chrome",
+    "cypress": "cypress open --e2e --browser chrome"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^1.2.36",
@@ -80,6 +80,7 @@
     "babel-preset-react-app": "10.0.1",
     "concurrently": "^7.0.0",
     "cypress": "13.1.0",
+    "cypress-log-to-output": "1.1.2",
     "eslint": "8.42.0",
     "eslint-config-galex": "4.5.2",
     "eslint-plugin-import": "2.27.5",
