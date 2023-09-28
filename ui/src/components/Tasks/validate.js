@@ -24,7 +24,7 @@ const validate = (values, props) => {
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
 
-  const validFname = /^[\w#[\]{}-\-]+$/u.test(props.filename);
+  const validFname = /^[-_#{}[\]\w]+$/u.test(props.filename);
 
   const emptyField = 'field is empty';
 
@@ -32,7 +32,7 @@ const validate = (values, props) => {
     errors.prefix = INVALID_CHAR_MSG;
   }
 
-  if (props.subdir && !/^[\w/{}-\-]+$/u.test(props.subdir)) {
+  if (props.subdir && !/^[-{}\/\w]+$/u.test(props.subdir)) {
     errors.subdir = INVALID_CHAR_MSG;
   }
 
@@ -42,7 +42,7 @@ const validate = (values, props) => {
 
   if (
     props.experimentName !== undefined &&
-    !/^[\w/{}-\-]+$/u.test(props.experimentName)
+    !/^[-{}\/\w]+$/u.test(props.experimentName)
   ) {
     errors.experimentName = INVALID_CHAR_MSG;
   }
