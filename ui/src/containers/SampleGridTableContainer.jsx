@@ -392,6 +392,9 @@ class SampleGridTableContainer extends React.Component {
         '',
         hasLimsData,
       );
+      if (this.props.filterOptions.puckFilter != '') {
+        fi &= sample.puck_no == this.props.filterOptions.puckFilter;
+      }
     }
 
     return fi;
@@ -531,7 +534,10 @@ class SampleGridTableContainer extends React.Component {
       return [allCellSample, allCellSampleCheck];
     } else if (puck !== null) {
       Object.values(this.props.sampleList)
-        .filter((sample) => sample.cell_no === cell && sample.puck_no === puck)
+        .filter(
+          (sample) =>
+            sample.cell_no === Number(cell) && sample.puck_no === Number(puck),
+        )
         .forEach((sample) => {
           if (this.filter(sample.sampleID)) {
             allPuckSampleID.push(sample.sampleID);
@@ -1086,7 +1092,7 @@ class SampleGridTableContainer extends React.Component {
               marginRight: '2px',
             }}
           >
-            {this.itemsControls(Number(puck.name), null)}
+            {this.itemsControls(1, Number(puck.name))}
           </span>
           <span
             title="Puck Options"
@@ -1124,48 +1130,66 @@ class SampleGridTableContainer extends React.Component {
     }
 
     scContent.children.map((puck) => {
-      const nbpuck = [];
-      nbpuck.push(puck);
+      const currentPuckFilter = this.props.filterOptions.puckFilter;
+      const filterList = this.getSampleListFilteredByCellPuck(
+        1,
+        Number(puck.name),
+      );
 
-      if (nbpuck.length > 0) {
-        let colsmP;
-        if (nbpuck.length === 1) {
-          colsmP = 3;
-        } else if (nbpuck.length >= 4 && colsm === 'auto') {
-          colsmP = 12;
-        } else {
-          colsmP = colsm;
+      if (
+        (currentPuckFilter == '' || currentPuckFilter == puck.name) &&
+        filterList[0].length > 0
+      ) {
+        const nbpuck = [];
+        nbpuck.push(puck);
+
+        if (nbpuck.length > 0) {
+          let colsmP;
+          if (nbpuck.length === 1) {
+            colsmP = 3;
+          } else if (nbpuck.length >= 4 && colsm === 'auto') {
+            colsmP = 12;
+          } else {
+            colsmP = colsm;
+          }
+          tableCell.push(
+            <Col sm={colsmP} key={`puck-${puck.name}`}>
+              <Table
+                bordered
+                responsive
+                size="sm"
+                className="sample-items-table"
+              >
+                <thead>
+                  <tr>{this.renderPuck(puck)}</tr>
+                </thead>
+                <tbody>
+                  {puck.children.map((sample, idxtd) => {
+                    if (!filterList[0].includes(sample.name)) {
+                      return null;
+                    }
+                    return (
+                      <tr>
+                        <td
+                          key={`${puck.name}-td-${puck.name}`}
+                          className={`sample-items-table-column-body custom-table-border-${
+                            idxtd + 1
+                          }`}
+                        >
+                          {this.getPuckSampleItems(
+                            Number(puck.name),
+                            sample.name.split(':')[1],
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </Table>
+            </Col>,
+          );
         }
-        tableCell.push(
-          <Col sm={colsmP} key={`puck-${puck.name}`}>
-            <Table bordered responsive size="sm" className="sample-items-table">
-              <thead>
-                <tr>{this.renderPuck(puck)}</tr>
-              </thead>
-              <tbody>
-                {puck.children.map((sample, idxtd) => {
-                  return (
-                    <tr>
-                      <td
-                        key={`${puck.name}-td-${puck.name}`}
-                        className={`sample-items-table-column-body custom-table-border-${
-                          idxtd + 1
-                        }`}
-                      >
-                        {this.getPuckSampleItems(
-                          Number(puck.name),
-                          sample.name.split(':')[1],
-                        )}
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          </Col>,
-        );
       }
-
       return null;
     });
     return tableCell;
