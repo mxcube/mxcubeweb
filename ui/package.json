@@ -2,12 +2,16 @@
   "name": "ui",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "18.x || 20.x",
+    "pnpm": "8.x"
+  },
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
-    "format": "npm run prettier -- --write",
-    "fix": "npm run eslint -- --fix",
+    "format": "pnpm prettier --write",
+    "fix": "pnpm eslint --fix",
     "prettier": "prettier . --cache --check",
     "eslint": "eslint \"**/*.{js,jsx}\"",
     "e2e": "cypress run --e2e --browser firefox",

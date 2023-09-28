@@ -58,7 +58,8 @@ install_node() {
   source "$NVM_DIR/nvm.sh"
   source "$NVM_DIR/bash_completion"
   command nvm install --lts
-  command npm install
+  command npm install --global pnpm
+  command pnpm --prefix ui install
 }
 
 mxcube_download
