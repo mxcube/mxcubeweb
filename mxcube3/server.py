@@ -203,7 +203,7 @@ class Server:
 
         if ssl_context:
             Server.flask_socketio.run(
-                Server.flask, ssl_context=ssl_context, host="0.0.0.0", port=8081
+                Server.flask, ssl_context=ssl_context, host="0.0.0.0", port=8888
             )
         else:
-            Server.flask_socketio.run(Server.flask, host="0.0.0.0", port=8081)
+            Server.flask_socketio.run(Server.flask, host="0.0.0.0", port=8888)
