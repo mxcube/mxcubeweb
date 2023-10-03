@@ -803,7 +803,7 @@ class Queue(ComponentBase):
         parent_entry.dequeue(entry)
         model = entry.get_data_model()
         HWR.beamline.queue_model.del_child(model.get_parent(), model)
-        logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
+        logging.getLogger("MX3.HWR").info("[DELETE QUEUE] FROM:\n%s " % model.get_parent().get_name())
 
     def delete_entry_at(self, item_pos_list):
         current_queue = self.queue_to_dict()
@@ -2241,7 +2241,7 @@ class Queue(ComponentBase):
         for qid in qid_list:
             self.set_enabled_entry(qid, enabled)
 
-        logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
+        # logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
 
     def update_sample(self, sid, params):
         sample_node = HWR.beamline.queue_model.get_node(sid)
