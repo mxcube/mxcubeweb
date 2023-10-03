@@ -89,7 +89,7 @@ export default class GenericEquipmentControl extends React.Component {
         );
 
         result = (
-          <span>
+          <span key={key}>
             <OverlayTrigger
               trigger={['click']}
               placement="right"
