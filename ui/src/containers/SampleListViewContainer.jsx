@@ -72,7 +72,7 @@ class SampleListViewContainer extends React.Component {
     this.getFilterOptionValue = this.getFilterOptionValue.bind(this);
     this.sampleGridClearFilter = this.sampleGridClearFilter.bind(this);
     this.filterIsUsed = this.filterIsUsed.bind(this);
-    this.getCellFilterOptions = this.getCellFilterOptions.bind(this);
+    this.renderCellFilterOptions = this.renderCellFilterOptions.bind(this);
 
     // Methods for handling addition and removal of queue items (Samples and Tasks)
     // Also used by the SampleGridContainer
@@ -100,7 +100,7 @@ class SampleListViewContainer extends React.Component {
     this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
     this.removeSelectedTasks = this.removeSelectedTasks.bind(this);
 
-    this.collectButton = this.collectButton.bind(this);
+    this.renderCollectButton = this.renderCollectButton.bind(this);
     this.startCollect = this.startCollect.bind(this);
   }
 
@@ -156,7 +156,7 @@ class SampleListViewContainer extends React.Component {
     return value;
   }
 
-  getCellFilterOptions() {
+  renderCellFilterOptions() {
     let options = [];
 
     const sampleListByCellNb = Object.values(this.props.sampleList).map(
@@ -186,7 +186,7 @@ class SampleListViewContainer extends React.Component {
     return options;
   }
 
-  getPuckFilterOptions() {
+  renderPuckFilterOptions() {
     let options = [];
 
     const sampleListByPuckNb = Object.values(this.props.sampleList).map(
@@ -619,7 +619,7 @@ class SampleListViewContainer extends React.Component {
   /**
    * Collect button markup
    */
-  collectButton() {
+  renderCollectButton() {
     const collectText = `Collect ${this.numSamplesPicked()}/${this.numSamples()}`;
 
     let button = (
@@ -676,7 +676,7 @@ class SampleListViewContainer extends React.Component {
                 value={this.getFilterOptionValue('cellFilter')}
                 onChange={this.sampleGridFilter}
               >
-                {this.getCellFilterOptions()}
+                {this.renderCellFilterOptions()}
               </Form.Select>
             </Col>
           </Form.Group>
@@ -695,7 +695,7 @@ class SampleListViewContainer extends React.Component {
                 value={this.getFilterOptionValue('puckFilter')}
                 onChange={this.sampleGridFilter}
               >
-                {this.getPuckFilterOptions()}
+                {this.renderPuckFilterOptions()}
               </Form.Select>
             </Col>
           </Form.Group>
@@ -929,7 +929,7 @@ class SampleListViewContainer extends React.Component {
                 <span style={{ marginLeft: '1em' }} />
                 <QueueSettings />
                 <span style={{ marginLeft: '1em' }} />
-                {this.collectButton()}
+                {this.renderCollectButton()}
               </Col>
             </Row>
           </Card.Header>
