@@ -83,7 +83,7 @@ def create_route(app, server, bp, adapter, obj, cmd_name):
         args = request.get_json()
         adapter = app.mxcubecore.get_adapter(obj.lower())
         adapter.execute_command(cmd_name, args)
-        return make_response("{}", 200)
+        return "Command executed successfull"
 
     set_func.__name__ = f"{obj}_{cmd_name}"
 
