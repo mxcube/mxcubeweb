@@ -25,6 +25,7 @@ packages = [{include = "mxcube3", from = "."}]
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
 Flask = "2.2.2"
+werkzeug = "2.2.2"
 Flask-SocketIO = "5.3.2"
 flask-sqlalchemy = "3.0.2"
 Flask-Security-Too = "5.0.2"
