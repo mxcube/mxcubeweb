@@ -23,7 +23,13 @@ import {
 
 import { MdGridView } from 'react-icons/md';
 
-import { QUEUE_RUNNING } from '../constants';
+import { LuSettings2 } from "react-icons/lu";
+
+import { 
+  QUEUE_RUNNING,
+  isCollected,
+  hasLimsData
+} from '../constants';
 
 import {
   sendGetSampleList,
@@ -62,6 +68,10 @@ class SampleListViewContainer extends React.Component {
     super(props);
     this.onMouseDown = this.onMouseDown.bind(this);
     this.syncSamples = this.syncSamples.bind(this);
+    this.mutualExclusiveFilterOption =
+      this.mutualExclusiveFilterOption.bind(this);
+    this.inQueueSampleID = this.inQueueSampleID.bind(this);
+    this.filter = this.filter.bind(this);
     this.sampleGridFilter = this.sampleGridFilter.bind(this);
     this.getFilterOptionValue = this.getFilterOptionValue.bind(this);
     this.sampleGridClearFilter = this.sampleGridClearFilter.bind(this);
@@ -115,7 +125,12 @@ class SampleListViewContainer extends React.Component {
   }
 
   setViewMode(mode) {
-    this.props.filter({ cellFilter: '' });
+    if (this.props.type.includes('FLEX') && mode.includes("Graphical")) {
+      this.props.filter({ cellFilter: '1' });
+    } else {
+      this.props.filter({ cellFilter: '' });
+    }
+    
     localStorage.setItem('view-mode', mode);
     this.props.setViewMode(mode);
   }
@@ -287,6 +302,99 @@ class SampleListViewContainer extends React.Component {
     }
   }
 
+    /**
+   * Helper function for filter that takes a sample object instead of sampleID
+   *
+   * @param {object} sample
+   * return {boolean} true if sample is in queue otherwise false
+   */
+    inQueueSampleID(sample) {
+      return this.inQueue(sample.sampleID);
+    }
+  
+
+  /**
+   * Performs filtering on a sample with two options that are mutually exclusive
+   * Includes sample according to provided options o1 and o2, always includes the
+   * sample if both options are either true or false simultaneously (ignoring the
+   * options o1 and o2)
+   *
+   * @property {Object} filterOptions
+   * @param {Object} sample
+   * @param {string} o1 - option name 1
+   * @param {string} o2 - option name 2
+   * @param {function} fun - function that tests for inclusion
+   *
+   * return {boolean} true if item is to be included otherwise false
+   */
+    mutualExclusiveFilterOption(sample, o1, o2, testFun) {
+      let includeItem = false;
+  
+      // First case is included for clarity since the two options
+      // cancel each other out. Dont do anything same as both false. Otherwise
+      // apply filter.
+  
+      if (this.props.filterOptions[o1] && this.props.filterOptions[o2]) {
+        includeItem = true;
+      } else if (!this.props.filterOptions[o1] && !this.props.filterOptions[o2]) {
+        includeItem = true;
+      } else if (this.props.filterOptions[o1]) {
+        includeItem = testFun(sample);
+      } else if (this.props.filterOptions[o2]) {
+        includeItem = !testFun(sample);
+      }
+  
+      return includeItem;
+    }
+
+    /**
+   * Filter function for SampleItems
+   *
+   * @property {Object} sampleList
+   * @property {Object} filterOptions
+   *
+   * @param {string} key - sampleID
+   *
+   * return {boolean} true if item is to be excluded otherwise false
+   */
+  filter(key) {
+    const sample = this.props.sampleList[key];
+    let fi = false;
+    if (sample) {
+      const sampleFilter =
+        `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
+
+      fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
+
+      fi &= this.mutualExclusiveFilterOption(
+        sample,
+        'inQueue',
+        'notInQueue',
+        this.inQueueSampleID,
+      );
+      fi &= this.mutualExclusiveFilterOption(
+        sample,
+        'collected',
+        'notCollected',
+        isCollected,
+      );
+      fi &= this.mutualExclusiveFilterOption(
+        sample,
+        'limsSamples',
+        '',
+        hasLimsData,
+      );
+      if (this.props.filterOptions.cellFilter !== '') {
+        fi &= sample.cell_no === Number(this.props.filterOptions.cellFilter);
+      }
+      if (this.props.filterOptions.puckFilter !== '') {
+        fi &= sample.puck_no === Number(this.props.filterOptions.puckFilter);
+      }
+    }
+
+    return fi;
+  }
+
   /**
    * @return {boolean} true if any filter option is used
    */
@@ -297,7 +405,9 @@ class SampleListViewContainer extends React.Component {
       this.props.filterOptions.collected ||
       this.props.filterOptions.notCollected ||
       this.props.filterOptions.limsSamples ||
-      this.props.filterOptions.text.length > 0
+      this.props.filterOptions.text.length > 0 ||
+      this.props.filterOptions.cellFilter !== '' ||
+      this.props.filterOptions.puckFilter !== ''
     );
   }
 
@@ -465,6 +575,21 @@ class SampleListViewContainer extends React.Component {
    */
   clearSelectedSamples() {
     this.props.selectSamples(Object.keys(this.props.sampleList), false);
+  }
+
+  
+  displayContextMenu(e, contextMenuID) {
+    if (this.props.queue.queueStatus !== QUEUE_RUNNING) {
+      this.props.showGenericContextMenu(true, contextMenuID, e.pageX, e.pageY);
+    }
+
+    const samplesListKeys= Object.keys(this.props.sampleList).filter((key) =>
+      this.filter(key));
+
+    debugger;
+
+    this.props.selectSamples(samplesListKeys)
+    e.stopPropagation();
   }
 
   /**
@@ -678,7 +803,7 @@ class SampleListViewContainer extends React.Component {
             className="samples-grid-table-card-header"
           >
             <Row className="samples-grid-table-row-header">
-              <Col sm={4} className="d-flex">
+              <Col sm={5} className="d-flex">
                 <SplitButton
                   variant="outline-secondary"
                   className="nowrap-style"
@@ -758,7 +883,7 @@ class SampleListViewContainer extends React.Component {
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
-              <Col md={{ span: 4, offset: 1 }} className="d-flex me-auto">
+              <Col sm={5} className="d-flex me-auto">
                 <Form>
                   <Form.Group as={Row} className="d-flex">
                     <Form.Label
@@ -790,33 +915,20 @@ class SampleListViewContainer extends React.Component {
                     </Col>
                   </Form.Group>
                 </Form>
-                <span style={{ marginLeft: '1em' }} />
-                <SplitButton
-                  id="pipeline-mode-dropdown"
+                <span style={{ marginLeft: '2em' }} />
+                <Button
                   variant="outline-secondary"
-                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                  onClick={this.addSelectedSamplesToQueue}
-                  title={
-                    <span className="nowrap-style">
-                      <i className="fas fa-plus" /> Add to Queue
-                    </span>
-                  }
+                  className='all-samples-actions-menu'
+                  title='Context Menu to Add DC or Workflow to all filtered Samples Options'
+                  onClick={(e) => {
+                    this.displayContextMenu(e, "samples-grid-table-context-menu-cell");}}
                 >
-                  <Dropdown.Item
-                    eventKey="2"
-                    onClick={this.showDataCollectionForm}
-                  >
-                    Add Data collection
-                  </Dropdown.Item>
-                  <Dropdown.Item
-                    eventKey="3"
-                    onClick={this.showCharacterisationForm}
-                  >
-                    Add Characterisation
-                  </Dropdown.Item>
-                </SplitButton>
+                  All Samples Options
+                  { ' '}
+                  <LuSettings2/>
+                </Button>
               </Col>
-              <Col className="d-flex justify-content-end" sm={3}>
+              <Col className="d-flex justify-content-end" sm={2}>
                 <span style={{ marginLeft: '1em' }} />
                 <QueueSettings />
                 <span style={{ marginLeft: '1em' }} />
@@ -837,6 +949,8 @@ class SampleListViewContainer extends React.Component {
               removeSelectedSamples={this.removeSelectedSamples}
               removeSelectedTasks={this.removeSelectedTasks}
               setViewMode={this.setViewMode}
+              filterSampleByKey={this.filter}
+              type={this.props.type}
             />
           </Card.Body>
         </Card>
@@ -868,6 +982,9 @@ function mapStateToProps(state) {
     sampleChanger: state.sampleChanger,
     contextMenu: state.contextMenu.genericContextMenu,
     general: state.general,
+    type: state.sampleChanger.contents
+      ? state.sampleChanger.contents.name
+      : 'Mockup',
   };
 }
 
