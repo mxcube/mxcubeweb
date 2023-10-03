@@ -62,7 +62,7 @@ def create_set_route(app, server, bp, adapter, attr, name):
             """
             rd = _th["value"].parse_raw(request.data)
             getattr(app.mxcubecore.get_adapter(rd.name.lower()), attr)(rd)
-            return "Value set successfull"
+            return "Value set successfully"
 
         set_func.__name__ = f"{atype}_set_value"
 
