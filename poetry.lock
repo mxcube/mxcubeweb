@@ -3031,20 +3031,20 @@ files = [
 
 [[package]]
 name = "spectree"
-version = "1.2.5"
+version = "1.2.1"
 description = "generate OpenAPI document and validate request&response with Python annotations."
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "spectree-1.2.5-py3-none-any.whl", hash = "sha256:64b92b2b68559d468f1d2df56bf2bcd8e7f8c1b5466bc8c87f2992617912d91b"},
-    {file = "spectree-1.2.5.tar.gz", hash = "sha256:9d5e57519bb49b3383582c4c4f575270ac90be8cc139a50b69b636fa5992dca9"},
+    {file = "spectree-1.2.1-py3-none-any.whl", hash = "sha256:f8ba5fda47d757c0a930306b65ff0068a6e7fa75971d4e8df0ad3731f05d981d"},
+    {file = "spectree-1.2.1.tar.gz", hash = "sha256:928725142612d5266a51e4e268d936178361585f2771fd4e902c0bd5be033f1f"},
 ]
 
 [package.dependencies]
 pydantic = ">=1.2,<3"
 
 [package.extras]
-dev = ["autoflake (>=1.4,<3.0)", "black (>=22.3,<24.0)", "flake8 (>=4,<7)", "isort (>=5.10,<6.0)", "mypy (>=0.971)", "pre-commit", "pytest (>=7.1,<8.0)", "syrupy (>=4.0)"]
+dev = ["autoflake (>=1.4,<3.0)", "black (>=22.3,<24.0)", "flake8 (>=4,<7)", "isort (>=5.10,<6.0)", "mypy (>=0.971)", "pre-commit", "pytest (>=7.1,<8.0)", "syrupy (>=4.0)", "syrupy (>=4.0.0)"]
 docs = ["Sphinx", "myst-parser", "shibuya"]
 email = ["pydantic[email] (>=1.2,<3)"]
 falcon = ["falcon (>=3.0.0)"]
@@ -3719,4 +3719,4 @@ testing = ["coverage (>=5.0.3)", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.11"
-content-hash = "c6ffa2fe08ccd8a5f79e107001cbcd5c4d9a38a02b7590b4cad006a1ecf2a71d"
+content-hash = "f96211f97abffaa206eb7d61e246a1c46bf469b158e1eaaad487e3aff755cbc6"
