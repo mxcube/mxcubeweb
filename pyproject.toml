@@ -43,7 +43,7 @@ tzlocal = "^4.2"
 mxcubecore = "1.34.0"
 mxcube_video_streamer = "1.0.0"
 bcrypt = "^4.0.1"
-werkzeug==0.16.1
+werkzeug=="0.16.1"
 
 [tool.poetry.dev-dependencies]
 myst-parser = "^2.0.0"
