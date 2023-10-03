@@ -114,7 +114,7 @@ class NewSampleFlexView extends React.Component {
     // for any number of cell
     const scContent = [1, 2, 3, 4, 5, 6, 7, 8];
     return (
-      <Col sm>
+      <Col sm={3}>
         <div className="div-svg-flex">
           <svg
             className="svg-flex"

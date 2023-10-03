@@ -6,10 +6,6 @@
   display: inline;
 }
 
-.samples-grid-table {
-  flex-wrap: nowrap;
-}
-
 .samples-grid-table-card {
   border: 0px !important;
 }
@@ -21,7 +17,6 @@
 
 .samples-grid-table-card-body {
   padding: 1.5em 0.5em 0.5em 0.5em;
-  overflow: scroll;
 }
 
 .sample-items-collapsible {
@@ -87,6 +82,10 @@
   border: 1px solid #9c9c9c !important;
   border-radius: 3px !important;
   cursor: context-menu;
+}
+
+.samples-grid-table-li-manual {
+  margin-right: 5px;
 }
 
 .samples-grid-table-item {
