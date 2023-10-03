@@ -40,11 +40,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-import {
-  QUEUE_STOPPED,
-  QUEUE_RUNNING,
-  isCollected,
-} from '../constants';
+import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected } from '../constants';
 
 import {
   toggleMovableAction,
@@ -85,7 +81,6 @@ class SampleGridTableContainer extends React.Component {
     this.onMouseMove = this.onMouseMove.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
 
-    
     this.sampleGridItemsSelectedHandler =
       this.sampleGridItemsSelectedHandler.bind(this);
 
@@ -742,7 +737,6 @@ class SampleGridTableContainer extends React.Component {
   }
 
   getPuckSampleItems(puck, sampleNumber) {
-
     const sample = Object.values(this.props.sampleList).find(
       (sample) => sample.location === puck + ':' + sampleNumber,
     );
@@ -1067,14 +1061,11 @@ class SampleGridTableContainer extends React.Component {
     const scContent = this.props.sampleChanger.contents;
     const nbpuck = [];
 
-    // Do not try to render is SC is empty
-    if (scContent.children === undefined) {
-      return null;
-    }
-
-    // Do not try to render is samplesList is empty
-    // only Puck header would be drawn
-    if (Object.keys(this.props.sampleList).length === 0) {
+    // Do not try to render if SC or samplesList is empty
+    if (
+      scContent.children === undefined ||
+      Object.keys(this.props.sampleList).length === 0
+    ) {
       return null;
     }
 
@@ -1090,11 +1081,9 @@ class SampleGridTableContainer extends React.Component {
       if (
         (currentPuckFilter === '' || currentPuckFilter === puck.name) &&
         filterList[0].length > 0
-      ) { 
-
+      ) {
         nbpuck.push('puck');
-      } 
-
+      }
     });
 
     return scContent.children.map((puck) => {
@@ -1104,13 +1093,10 @@ class SampleGridTableContainer extends React.Component {
         Number(puck.name),
       );
 
-
       if (
         (currentPuckFilter === '' || currentPuckFilter === puck.name) &&
         filterList[0].length > 0
       ) {
-        
-
         if (nbpuck.length > 0) {
           let colsmP;
           if (nbpuck.length <= 4) {
@@ -1361,7 +1347,10 @@ class SampleGridTableContainer extends React.Component {
   renderSampleChangerDrawing() {
     if (this.props.type.includes('CATS')) {
       return <SampleIsaraView cellSampleList={this.getSampleListBydCell} />;
-    } else if (this.props.type.includes('FLEX') || this.props.type.includes('Moc')) {
+    } else if (
+      this.props.type.includes('FLEX') ||
+      this.props.type.includes('Moc')
+    ) {
       return <SampleFlexView cellSampleList={this.getSampleListBydCell} />;
     }
     return null;
@@ -1415,7 +1404,7 @@ class SampleGridTableContainer extends React.Component {
           </Row>
         )}
       </div>
-    )
+    );
   }
 }
 

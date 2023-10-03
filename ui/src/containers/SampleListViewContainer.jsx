@@ -23,13 +23,9 @@ import {
 
 import { MdGridView } from 'react-icons/md';
 
-import { LuSettings2 } from "react-icons/lu";
+import { LuSettings2 } from 'react-icons/lu';
 
-import { 
-  QUEUE_RUNNING,
-  isCollected,
-  hasLimsData
-} from '../constants';
+import { QUEUE_RUNNING, isCollected, hasLimsData } from '../constants';
 
 import {
   sendGetSampleList,
@@ -125,12 +121,12 @@ class SampleListViewContainer extends React.Component {
   }
 
   setViewMode(mode) {
-    if (this.props.type.includes('FLEX') && mode.includes("Graphical")) {
+    if (this.props.type.includes('FLEX') && mode.includes('Graphical')) {
       this.props.filter({ cellFilter: '1' });
     } else {
       this.props.filter({ cellFilter: '' });
     }
-    
+
     localStorage.setItem('view-mode', mode);
     this.props.setViewMode(mode);
   }
@@ -302,16 +298,15 @@ class SampleListViewContainer extends React.Component {
     }
   }
 
-    /**
+  /**
    * Helper function for filter that takes a sample object instead of sampleID
    *
    * @param {object} sample
    * return {boolean} true if sample is in queue otherwise false
    */
-    inQueueSampleID(sample) {
-      return this.inQueue(sample.sampleID);
-    }
-  
+  inQueueSampleID(sample) {
+    return this.inQueue(sample.sampleID);
+  }
 
   /**
    * Performs filtering on a sample with two options that are mutually exclusive
@@ -327,27 +322,27 @@ class SampleListViewContainer extends React.Component {
    *
    * return {boolean} true if item is to be included otherwise false
    */
-    mutualExclusiveFilterOption(sample, o1, o2, testFun) {
-      let includeItem = false;
-  
-      // First case is included for clarity since the two options
-      // cancel each other out. Dont do anything same as both false. Otherwise
-      // apply filter.
-  
-      if (this.props.filterOptions[o1] && this.props.filterOptions[o2]) {
-        includeItem = true;
-      } else if (!this.props.filterOptions[o1] && !this.props.filterOptions[o2]) {
-        includeItem = true;
-      } else if (this.props.filterOptions[o1]) {
-        includeItem = testFun(sample);
-      } else if (this.props.filterOptions[o2]) {
-        includeItem = !testFun(sample);
-      }
-  
-      return includeItem;
+  mutualExclusiveFilterOption(sample, o1, o2, testFun) {
+    let includeItem = false;
+
+    // First case is included for clarity since the two options
+    // cancel each other out. Dont do anything same as both false. Otherwise
+    // apply filter.
+
+    if (this.props.filterOptions[o1] && this.props.filterOptions[o2]) {
+      includeItem = true;
+    } else if (!this.props.filterOptions[o1] && !this.props.filterOptions[o2]) {
+      includeItem = true;
+    } else if (this.props.filterOptions[o1]) {
+      includeItem = testFun(sample);
+    } else if (this.props.filterOptions[o2]) {
+      includeItem = !testFun(sample);
     }
 
-    /**
+    return includeItem;
+  }
+
+  /**
    * Filter function for SampleItems
    *
    * @property {Object} sampleList
@@ -577,18 +572,18 @@ class SampleListViewContainer extends React.Component {
     this.props.selectSamples(Object.keys(this.props.sampleList), false);
   }
 
-  
   displayContextMenu(e, contextMenuID) {
     if (this.props.queue.queueStatus !== QUEUE_RUNNING) {
       this.props.showGenericContextMenu(true, contextMenuID, e.pageX, e.pageY);
     }
 
-    const samplesListKeys= Object.keys(this.props.sampleList).filter((key) =>
-      this.filter(key));
+    const samplesListKeys = Object.keys(this.props.sampleList).filter((key) =>
+      this.filter(key),
+    );
 
     debugger;
 
-    this.props.selectSamples(samplesListKeys)
+    this.props.selectSamples(samplesListKeys);
     e.stopPropagation();
   }
 
@@ -918,14 +913,16 @@ class SampleListViewContainer extends React.Component {
                 <span style={{ marginLeft: '2em' }} />
                 <Button
                   variant="outline-secondary"
-                  className='all-samples-actions-menu'
-                  title='Context Menu to Add DC or Workflow to all filtered Samples Options'
+                  className="all-samples-actions-menu"
+                  title="Context Menu to Add DC or Workflow to all filtered Samples Options"
                   onClick={(e) => {
-                    this.displayContextMenu(e, "samples-grid-table-context-menu-cell");}}
+                    this.displayContextMenu(
+                      e,
+                      'samples-grid-table-context-menu-cell',
+                    );
+                  }}
                 >
-                  All Samples Options
-                  { ' '}
-                  <LuSettings2/>
+                  All Samples Options <LuSettings2 />
                 </Button>
               </Col>
               <Col className="d-flex justify-content-end" sm={2}>
