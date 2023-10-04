@@ -15,6 +15,6 @@ pnpm --prefix ui start &
 
 redis-server &
 
-python3 mxcube3-server -r test/HardwareObjectsMockup.xml --log-file mxcube.log &
+python3 mxcubeweb-server --repository test/HardwareObjectsMockup.xml --log-file mxcube.log &
 
 wait
