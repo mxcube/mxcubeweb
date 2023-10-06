@@ -76,7 +76,7 @@ git clone https://github.com/mxcube/mxcubecore.git
 
 ### 3. Create Conda environment `mxcubeweb`
 
-We recommend using conda a convenience and create a seperate environemnt for libraries and python version. This, though, is not compulsory and one can use any other tool or configuration for installing the application and the necessary third party libraries.
+We recommend using conda for convenience and to create a seperate environemnt. This, though, is not compulsory and one can use any other method for installing the application and the necessary third party libraries.
 
 Create Conda environment `mxcubeweb` using the conda environment file in mxcubeweb. The installation of the dependencies in the environment takes a few minutes.
 
