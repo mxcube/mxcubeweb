@@ -95,21 +95,20 @@ conda env create -f conda-environment.yml --name another_name
 conda activate mxcubeweb
 ```
 
-### 5. Install remaining dependencies
+### 5. Install MXCuBE-Web back-end dependencies
 
 ```
 poetry install
-npm install --global pnpm@8
 ```
 
-### 6. Install front-end dependencies and build the UI
+### 6. Install MXCuBE-Web front-end dependencies and build the web front-end UI
 
 ```
 pnpm --prefix ui install
 pnpm --prefix ui build
 ```
 
-### 7. Starting the MXCuBE server
+### 7. Starting the MXCuBE-Web server
 
 ```
 # Activate the conda environement and start the Redis server (if not already running)
@@ -132,7 +131,7 @@ _The test username is `idtest0` and the password can be any string (except `wron
 
 The client is not built if nothing appears or you get a "404 page not found" error when browsing localhost:8081. Follow the instructions in step 6 "Install front-end dependencies and build the UI" to build a client .
 
-### 9. Installing MXCUBE-Web for development
+### 9. Installing additional MXCUBE-Web dependencies for development
 
 Please read the [contributing guidelines](https://github.com/mxcube/mxcubeweb/blob/develop/CONTRIBUTING.md) before getting started with the development.
 
@@ -157,7 +156,7 @@ pip install -e .
 pip install -e .
 ```
 
-#### 9.1 Running the back-end tests
+#### 9.1 Running the MXCuBE-Web back-end tests
 
 The tests are located in the test folder and are executed with `pytest`.
 
@@ -174,7 +173,7 @@ pytest
 _The output should look something like the following:_
 ![image](https://github.com/mxcube/mxcubeweb/assets/4331447/379fa92e-566b-47e5-8522-cacfa9f8de2d)
 
-#### 9.2 Starting the front-end development server
+#### 9.2 Starting the MXCuBE-Web front-end development server
 
 The front-end development server listens to changes on the file system and re-builds the UI when changes are made. This makes it very easy and fast to see how changes affect the UI. The development server listens on port **3000**.
 
