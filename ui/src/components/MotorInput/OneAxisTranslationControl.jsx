@@ -14,7 +14,7 @@ export default class OneAxisTranslationControl extends React.Component {
   }
 
   /* eslint-enable react/no-set-state */
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.value && nextProps.value !== this.props.value) {
       this.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
       this.motorValue.defaultValue = nextProps.value.toFixed(

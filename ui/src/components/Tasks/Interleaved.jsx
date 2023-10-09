@@ -24,9 +24,10 @@ const wedgeColorTable = {
 };
 
 function getSubWedges(swNumImg, wedgeList) {
-  const subWedges = {};
-  subWedges.swSizes = [];
-  subWedges.numWedges = wedgeList.length;
+  const subWedges = {
+    swSizes: [],
+    numWedges: wedgeList.length,
+  };
 
   wedgeList.forEach((wedge, wedgeIdx) => {
     const swSize = wedge.parameters.num_images / swNumImg;

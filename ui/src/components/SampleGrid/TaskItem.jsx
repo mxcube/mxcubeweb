@@ -174,15 +174,15 @@ export class TaskItem extends React.Component {
           <div className="row" style={{ paddingTop: '0.5em' }}>
             <span className="col-sm-4">
               <b>Quality Indictor: </b>
-              <img ref="fimage" alt="First" src={qIndUrl} width="90%" />
+              <img alt="First" src={qIndUrl} width="90%" />
             </span>
             <span className="col-sm-4">
               <b>First image: </b>
-              <img ref="fimage" alt="First" src={fImageUrl} width="90%" />
+              <img alt="First" src={fImageUrl} width="90%" />
             </span>
             <span className="col-sm-4">
               <b>Last image: </b>
-              <img ref="limage" alt="Last" src={lImageUrl} width="90%" />
+              <img alt="Last" src={lImageUrl} width="90%" />
             </span>
           </div>
         </div>
@@ -190,7 +190,7 @@ export class TaskItem extends React.Component {
     } else if (!isUnCollected(task)) {
       content = (
         <span>
-          <img src={loader} role="presentation" /> Fetching data, please wait
+          <img src={loader} alt="" /> Fetching data, please wait
         </span>
       );
     }

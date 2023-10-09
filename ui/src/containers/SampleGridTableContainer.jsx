@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
 import withRouter from '../components/WithRouter';
 import { bindActionCreators } from 'redux';
@@ -167,7 +168,7 @@ class SampleGridTableContainer extends React.Component {
           ),
         );
 
-        const union = Object.keys(this.props.selected).concat(sampleIDList);
+        const union = [...Object.keys(this.props.selected), ...sampleIDList];
         samplesToSelect = union.filter(
           (sampleID) => !intersection.has(sampleID),
         );
@@ -276,7 +277,7 @@ class SampleGridTableContainer extends React.Component {
 
     const selected = this.getSamplesList()
       .filter((sampleItem) => {
-        const sampleElement = document.getElementById(sampleItem.key);
+        const sampleElement = document.querySelector(`#${sampleItem.key}`);
         return this.checkForOverlap(selectionRubberBand, sampleElement);
       })
       .map((sampleItem) => sampleItem.key);
@@ -817,7 +818,7 @@ class SampleGridTableContainer extends React.Component {
       ) {
         const nbpuck = [];
         // we won't display the cell / table  if all puck in the cell are empty
-        cell.children.map((puck, idxtd) => {
+        cell.children.forEach((puck, idxtd) => {
           if (
             this.getSampleItems(Number(cell.name), idxtd + 1).length > 0 &&
             (Number(this.props.filterOptions.puckFilter) === idxtd + 1 ||

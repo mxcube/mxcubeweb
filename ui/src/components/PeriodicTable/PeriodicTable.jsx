@@ -11,7 +11,7 @@ export default class PeriodicTable extends React.Component {
 
   onClickHandler(e) {
     if (e.target.id) {
-      const el = document.getElementById(this.state.selectedElement);
+      const el = document.querySelector(`#${this.state.selectedElement}`);
       const cell = e.target.children[0];
 
       if (el) {
@@ -27,7 +27,7 @@ export default class PeriodicTable extends React.Component {
   }
 
   enableElement(el) {
-    const domel = document.getElementById(el);
+    const domel = document.querySelector(`#${el}`);
 
     if (domel) {
       domel.className += ' available';

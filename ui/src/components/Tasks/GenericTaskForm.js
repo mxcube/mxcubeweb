@@ -233,7 +233,7 @@ class GenericTaskForm extends React.Component {
       const data = JSON.parse(_d);
 
       for (const fieldName in data) {
-        const el = document.getElementById(`root_${fieldName}`);
+        const el = document.querySelector(`#root_${fieldName}`);
         if (el !== null) {
           el.value = data[fieldName];
         }

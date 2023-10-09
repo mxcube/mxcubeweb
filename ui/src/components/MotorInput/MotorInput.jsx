@@ -19,7 +19,7 @@ export default class MotorInput extends React.Component {
   }
 
   /* eslint-enable react/no-set-state */
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.value !== this.props.value) {
       this.motorValue.value = nextProps.value.toFixed(this.props.decimalPoints);
       this.motorValue.defaultValue = nextProps.value.toFixed(

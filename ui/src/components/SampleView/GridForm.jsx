@@ -175,7 +175,6 @@ export default class GridForm extends React.Component {
                     step="0.05"
                     defaultValue={this.props.getGridOverlayOpacity()}
                     onChange={this.props.setGridOverlayOpacity}
-                    ref="overlaySlider"
                     name="overlaySlider"
                   />
                 </Col>

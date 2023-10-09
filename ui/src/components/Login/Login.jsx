@@ -75,7 +75,7 @@ function LoginComponent(props) {
                   type="text"
                   aria-label="Login ID"
                   placeholder="Login ID"
-                  autoFocus
+                  autoFocus // eslint-disable-line jsx-a11y/no-autofocus
                   required
                   isInvalid={!!errors.username}
                   {...field}

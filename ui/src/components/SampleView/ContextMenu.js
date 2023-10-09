@@ -9,7 +9,7 @@ export default class ContextMenu extends React.Component {
     this.menuOptions = this.menuOptions.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.show) {
       this.showContextMenu(nextProps.x, nextProps.y);
     } else {

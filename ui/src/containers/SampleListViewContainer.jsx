@@ -314,7 +314,7 @@ class SampleListViewContainer extends React.Component {
       collected: { collected: e.target.checked },
       notCollected: { notCollected: e.target.checked },
       limsSamples: { limsSamples: e.target.checked },
-      filterText: { text: ReactDOM.findDOMNode(this.filterInput).value.trim() },
+      filterText: { text: ReactDOM.findDOMNode(this.filterInput).value.trim() }, // eslint-disable-line react/no-find-dom-node
     };
     this.props.filter(optionMap[e.target.id]);
     if (Number(e.target.value) > 2) {
