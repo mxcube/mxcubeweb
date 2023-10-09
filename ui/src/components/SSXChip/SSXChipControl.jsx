@@ -9,8 +9,6 @@ export default class SSXChipControl extends React.Component {
     super(props);
     this.handleAddTask = this.handleAddTask.bind(this);
     this.handleAddGrid = this.handleAddGrid.bind(this);
-    this.handleRemoveGrid = this.handleRemoveGrid.bind(this);
-    this.handleUpdateGrid = this.handleUpdateGrid.bind(this);
   }
 
   handleAddTask(triggerEvent, event, props, data) {
@@ -41,10 +39,6 @@ export default class SSXChipControl extends React.Component {
     this.props.sampleActions.sendAddShape({ t: 'G', ...data });
   }
 
-  handleRemoveGrid(id) {}
-
-  handleUpdateGrid(data) {}
-
   renderChip() {
     const headConfiguration =
       this.props.hardwareObjects.diffractometer.attributes.head_configuration ??
@@ -73,8 +67,6 @@ export default class SSXChipControl extends React.Component {
             availableChipLayoutList={Object.keys(headConfiguration.available)}
             onAddTask={this.handleAddTask}
             onAddGrid={this.handleAddGrid}
-            onRemoveGrid={this.handleRemoveGrid}
-            onUpdateGrid={this.handleUpdateGrid}
             gridList={Object.values(this.props.grids)}
             sampleMotorVerticalName={sampleVerticalUiProp.attribute}
             sampleMotorHorizontalName={sampleHorizontalUiProp.attribute}

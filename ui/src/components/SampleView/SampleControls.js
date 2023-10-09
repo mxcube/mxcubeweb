@@ -286,9 +286,9 @@ export default class SampleControls extends React.Component {
 
               <datalist id="volsettings">
                 {[
-                  ...new Array(
-                    zoom_motor.limits[1] - zoom_motor.limits[0],
-                  ).keys(),
+                  ...Array.from({
+                    length: zoom_motor.limits[1] - zoom_motor.limits[0],
+                  }).keys(),
                 ].map((i) => (
                   <option key={`volsettings-${i}`}>
                     {zoom_motor.limits[0] + i}

@@ -119,21 +119,7 @@ export default class QueueControl extends React.Component {
     }
   }
 
-  renderSampleOptions(option) {
-    return (
-      <Button
-        className={option.class}
-        variant=""
-        size="sm"
-        onClick={option.action}
-        key={option.key}
-      >
-        {option.text}
-      </Button>
-    );
-  }
-
-  renderOptions(option) {
+  renderOption(option) {
     return (
       <Button
         className={option.class}
@@ -199,19 +185,17 @@ export default class QueueControl extends React.Component {
         >
           <Nav.Item>
             <span style={{ marginRight: '0.6em' }}>
-              {queueOptions.map((option) => this.renderOptions(option))}
+              {queueOptions.map((option) => this.renderOption(option))}
             </span>
             <span>
-              {sampleQueueOptions.map((option) =>
-                this.renderSampleOptions(option),
-              )}
+              {sampleQueueOptions.map((option) => this.renderOption(option))}
             </span>
           </Nav.Item>
           <Nav.Item>
             <img
               src={loader}
               style={{ display: showBusyIndicator, marginLeft: '25%' }}
-              role="presentation"
+              alt=""
             />
           </Nav.Item>
         </Nav>

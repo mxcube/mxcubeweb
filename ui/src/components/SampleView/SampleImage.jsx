@@ -1,3 +1,4 @@
+/* eslint-disable sonarjs/no-duplicate-string */
 import './SampleView.css';
 import React from 'react';
 import { MOTOR_STATE } from '../../constants';
@@ -103,7 +104,7 @@ export default class SampleImage extends React.Component {
     this.initJSMpeg();
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     const { width, cinema } = this.props;
     if (
       nextProps.width !== width ||
@@ -428,7 +429,7 @@ export default class SampleImage extends React.Component {
           .filter((shape) => this.props.twoDPoints[shape.id] !== undefined)
           .map((shape) => shape.id);
 
-        const pointList = threeDpointList.concat(twoDPointList);
+        const pointList = [...threeDpointList, ...twoDPointList];
 
         const gridList = shapes
           .filter((shape) => this.props.grids[shape.id] !== undefined)
@@ -592,7 +593,7 @@ export default class SampleImage extends React.Component {
       );
 
       const resultDataPath = shapeData.resultDataPath;
-      if (resultDataPath.length !== 0) {
+      if (resultDataPath.length > 0) {
         this.props.generalActions.sendDisplayImage(
           `${resultDataPath}&img_num=${imgNum}`,
         );

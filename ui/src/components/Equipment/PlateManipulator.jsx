@@ -382,7 +382,7 @@ class PlateManipulator extends React.Component {
                   if (this.props.contents.children !== null) {
                     if (plate.type === 'square') {
                       cell = (
-                        <div
+                        <div // eslint-disable-line jsx-a11y/prefer-tag-over-role
                           tabIndex={0}
                           role="button"
                           onContextMenu={(e) =>
@@ -492,7 +492,7 @@ class PlateManipulator extends React.Component {
                   if (this.props.contents.children !== null) {
                     if (plate.type === 'square') {
                       cell = (
-                        <div
+                        <div // eslint-disable-line jsx-a11y/prefer-tag-over-role
                           role="button"
                           tabIndex={0}
                           onContextMenu={(e) =>

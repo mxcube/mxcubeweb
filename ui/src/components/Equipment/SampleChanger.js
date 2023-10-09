@@ -72,7 +72,7 @@ export class SampleChangerTreeNode extends React.Component {
   }
 
   treeNodeCbxClick(e) {
-    const treeNodeIcon = document.getElementById(`${e.target.id}icon`);
+    const treeNodeIcon = document.querySelector(`#${e.target.id}icon`);
     if (treeNodeIcon) {
       if (e.target.checked) {
         treeNodeIcon.className = 'fa fa-minus';
@@ -116,6 +116,7 @@ export class SampleChangerTreeNode extends React.Component {
         </li>
 
         <Menu id={`${this.props.label}`}>
+          {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
           <li role="heading" aria-level="2" className="dropdown-header">
             <b>Container {this.props.label}</b>
           </li>

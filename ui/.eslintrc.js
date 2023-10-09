@@ -14,6 +14,7 @@ module.exports = createConfig({
   incrementalAdoption: true, // turn everything into a warning
   rules: {
     'unicorn/consistent-destructuring': 'off', // too many failures in React class components
+    'promise/catch-or-return': 'off', // requires deeper refactoring of fetching layer
 
     // Ternaries are sometimes more readable when `true` branch is most significant branch
     'no-negated-condition': 'off',
@@ -37,8 +38,12 @@ module.exports = createConfig({
     createReactOverride({
       ...dependencies,
       rules: {
+        'react/no-unsafe': 'off', // requires non-trivial refactoring
         'react/destructuring-assignment': 'off', // too many failures in React class components
         'react/jsx-no-constructed-context-values': 'off', // too strict
+        'react/static-property-placement': 'off', // will not be relevant after converting to functional components
+        'jsx-a11y/anchor-is-valid': 'off', // requires non-trivial refactoring
+        'jsx-a11y/no-static-element-interactions': 'off', // requires non-trivial refactoring
       },
     }),
     createJestOverride({

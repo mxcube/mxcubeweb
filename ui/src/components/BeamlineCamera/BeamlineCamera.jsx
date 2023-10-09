@@ -65,7 +65,7 @@ const BeamlineCamera = ({
   const video = (
     <div>
       {format != 'mp4' ? (
-        <img
+        <img // eslint-disable-line jsx-a11y/no-noninteractive-element-interactions
           onClick={onImageClick}
           src={url}
           alt={labelText}

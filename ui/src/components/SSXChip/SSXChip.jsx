@@ -34,6 +34,7 @@ function _GridData(fabricObject) {
 function ChipContextMenu(props) {
   return (
     <Menu id="chip-context-menu">
+      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <li role="heading" aria-level="2" className="dropdown-header">
         <b>Chip</b>
       </li>
@@ -496,7 +497,7 @@ export default class SSXChip extends React.Component {
       }
     });
 
-    this.props.gridList.map((gridData) => {
+    this.props.gridList.forEach((gridData) => {
       this.freeFormCanvas.add(
         new fabric.Rect({
           left: gridData.screenCoord[1],

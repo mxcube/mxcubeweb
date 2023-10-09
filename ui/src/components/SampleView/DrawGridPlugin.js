@@ -300,7 +300,9 @@ export default class DrawGridPlugin {
   initializeCellFilling(gd, col, row) {
     const level = this.overlayLevel ? this.overlayLevel : 0.2;
     const fill = `rgba(0, 0, 200, ${level}`;
-    return new Array(col).fill().map(() => new Array(row).fill(fill));
+    return Array.from({ length: col }).map(() =>
+      Array.from({ length: row }).fill(fill),
+    );
   }
 
   cellFillingFromData(gd, col, row) {
@@ -311,13 +313,9 @@ export default class DrawGridPlugin {
      */
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    const data = new Array(col).fill().map(() => new Array(row).fill());
-
-    for (let nw = 0; nw < col; nw++) {
-      for (let nh = 0; nh < row; nh++) {
-        data[nw][nh] = Math.random();
-      }
-    }
+    const data = Array.from({ length: col }).map(() =>
+      Array.from({ length: row }).fill(Math.random()),
+    );
 
     // Asume flat result object to remain compatible with old format only
     // suporting one type of results

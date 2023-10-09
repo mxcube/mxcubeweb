@@ -1,3 +1,4 @@
+/* eslint-disable react/no-string-refs */
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';

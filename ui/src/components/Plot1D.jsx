@@ -20,7 +20,7 @@ class Plot1D extends React.Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.autoNext) {
       if (this.state.plotId !== null) {
         if (nextProps.lastPlotId !== this.state.plotId) {
@@ -43,7 +43,7 @@ class Plot1D extends React.Component {
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  UNSAFE_componentWillUpdate(nextProps, nextState) {
     const { plotId } = nextState;
     if (plotId) {
       const plotInfo = nextProps.plotsInfo[plotId];
