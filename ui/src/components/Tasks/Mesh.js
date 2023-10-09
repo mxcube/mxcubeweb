@@ -26,7 +26,7 @@ class Mesh extends React.Component {
     this.submitAddToQueue = this.submitAddToQueue.bind(this);
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
-    this.resetParameters = this.resetParameters.bind(this);
+    // this.resetParameters = this.resetParameters.bind(this);
     this.defaultParameters = this.defaultParameters.bind(this);
   }
 
@@ -201,14 +201,6 @@ class Mesh extends React.Component {
                 onClick={this.defaultParameters}
               >
                 Default Parameters
-              </Button>
-              <Button
-                className="ms-3"
-                size="sm"
-                variant="outline-secondary"
-                onClick={this.resetParameters}
-              >
-                Reset Form
               </Button>
             </ButtonToolbar>
             <ButtonToolbar className="float-end">
