@@ -22,21 +22,16 @@ function queueGUIReducer(state = INITIAL_STATE, action = {}) {
     case 'SET_QUEUE': {
       const displayData = { ...state.displayData };
       const existingNodes = Object.keys(state.displayData);
-      const sourceNodes = [];
-      const newNodes = [];
-
       action.sampleOrder.forEach((sampleID) => {
         if (sampleID in action.sampleList) {
           action.sampleList[sampleID].tasks.forEach((task) => {
             if (!existingNodes.includes(task.queueID.toString())) {
-              newNodes.push(task.queueID.toString());
               displayData[task.queueID] = {
                 collapsed: false,
                 selected: false,
                 progress: 0,
               };
             }
-            sourceNodes.push(task.queueID.toString());
           });
         }
       });
@@ -120,23 +115,18 @@ function queueGUIReducer(state = INITIAL_STATE, action = {}) {
       const sampleList = { ...action.data.queue.sampleList.sampleList };
       const sampleOrder = [...action.data.queue.sampleList.sampleOrder];
       const displayData = { ...state.displayData };
-
       const existingNodes = Object.keys(state.displayData);
-      const sourceNodes = [];
-      const newNodes = [];
 
       sampleOrder.forEach((sampleID) => {
         if (sampleID in sampleList) {
           sampleList[sampleID].tasks.forEach((task) => {
             if (!existingNodes.includes(task.queueID.toString())) {
-              newNodes.push(task.queueID.toString());
               displayData[task.queueID] = {
                 collapsed: false,
                 selected: false,
                 progress: 0,
               };
             }
-            sourceNodes.push(task.queueID.toString());
           });
         }
       });
