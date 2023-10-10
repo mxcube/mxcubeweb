@@ -186,7 +186,7 @@ export default class DrawGridPlugin {
 
     if (this.gridResultFormat === 'RGB') {
       for (let c = 0; c < col; c++) {
-        for (let r = 0; r < row; c++) {
+        for (let r = 0; r < row; r++) {
           cellResultMatrix.append([0, [0, 0, 0]]);
         }
       }
