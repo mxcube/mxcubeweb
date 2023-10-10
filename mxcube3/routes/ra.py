@@ -63,7 +63,7 @@ def init_route(app, server, url_prefix):
 
         # Not inhouse user so not allowed to take control by force,
         # return error code
-        if not current_user.isstaff():
+        if not current_user.isstaff:
             return make_response("", 409)
 
         toggle_operator(current_user.username, "You were given control")
@@ -106,7 +106,6 @@ def init_route(app, server, url_prefix):
         newop.requests_control = False
         app.usermanager.update_user(oldop)
         app.usermanager.update_user(newop)
-
 
         join_room("observers", sid=oldop.socketio_session_id, namespace="/ui_state")
         leave_room("observers", sid=newop.socketio_session_id, namespace="/ui_state")
@@ -207,7 +206,7 @@ def init_route(app, server, url_prefix):
     def disconnect():
         if current_user.is_anonymous:
             return
-        
+
         current_user.socketio_session_id = None
         current_user.socketio_session_id = request.sid
 
