@@ -82,9 +82,9 @@ export function makeLine(
   wid,
   select,
   id,
-  hover = 'crosshair',
   text,
   type,
+  hover = 'crosshair',
 ) {
   return new fabric.Line([x1, y1, x2, y2], {
     fill: col,
@@ -252,7 +252,7 @@ export function makeBeam(posX, posY, sizeX, sizeY, shape) {
     makeLine(posX + 3, posY, posX + 10, posY, 'rgba(0, 255, 255, 1)', 2, false),
     makeLine(posX, posY + 3, posX, posY + 10, 'rgba(0, 255, 255, 1)', 2, false),
     shape === 'ellipse'
-      ? makeElipse(posX, posY, sizeX, sizeY, 'rgba(0, 255, 255)', 5)
+      ? makeElipse(posX, posY, sizeX, sizeY, 'rgba(0, 255, 255)')
       : makeRectangle(posX, posY, sizeX, sizeY, 'rgba(0, 255, 255, 1)'),
   ];
 }
@@ -373,9 +373,9 @@ export function pointLine(
     width,
     selectable,
     id,
-    cursor,
     text,
     'LINE',
+    cursor,
   );
   const arrow = makeArrow(line, color, selectable, id);
   const anchor = makeAnchor(line, color, selectable, id);
