@@ -98,10 +98,6 @@ class MXCUBEAppConfigModel(BaseModel):
     adapter_properties: List = []
 
 
-class ModeEnumModel(BaseModel):
-    mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
-
-
 class AppConfigModel(BaseModel):
     server: FlaskConfigModel
     mxcube: MXCUBEAppConfigModel
