@@ -11,13 +11,6 @@ export function getLastUsedParameters(type, newParams) {
   const parameters =
     lastParameters === null ? newParams : JSON.parse(lastParameters);
 
-  if (parseFloat(parameters.osc_range) === 0) {
-    parameters.osc_range =
-      state.taskForm.defaultParameters[
-        type.toLowerCase()
-      ].acq_parameters.osc_range;
-  }
-
   return parameters;
 }
 
