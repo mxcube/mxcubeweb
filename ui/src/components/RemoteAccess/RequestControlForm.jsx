@@ -27,10 +27,6 @@ class RequestControlForm extends React.Component {
       </span>
     );
 
-    if (!this.props.login.user.isstaff) {
-      content = null;
-    }
-
     return content;
   }
 
