@@ -89,7 +89,7 @@ class Main extends React.Component {
               position: 'fixed',
               padding: 0,
               margin: 0,
-              top: 50,
+              top: 0,
               left: 0,
               width: '100vw',
               height: '100vh',

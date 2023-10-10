@@ -48,3 +48,7 @@
   font-style: italic;
   font-size: medium;
 }
+
+.nav-container {
+  z-index: 9999;
+}
