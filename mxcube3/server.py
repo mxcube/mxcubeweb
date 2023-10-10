@@ -3,7 +3,6 @@ import logging
 import signal
 import atexit
 import os
-import time
 import werkzeug
 
 import gevent

@@ -39,14 +39,10 @@ class _BeamlineAdapter:
             )
 
     def wf_parameters_needed(self, params):
-        self.app.server.emit(
-            "workflowParametersDialog", params, namespace="/hwr"
-        )
+        self.app.server.emit("workflowParametersDialog", params, namespace="/hwr")
 
     def gphl_wf_parameters_needed(self, params):
-        self.app.server.emit(
-            "gphlWorkflowParametersDialog", params, namespace="/hwr"
-        )
+        self.app.server.emit("gphlWorkflowParametersDialog", params, namespace="/hwr")
 
     def get_object(self, name):
         return self.get_attr_from_path(name)

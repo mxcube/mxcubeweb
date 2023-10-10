@@ -89,7 +89,7 @@ class AdapterBase:
 
         try:
             model["return"].validate({"return": value})
-        except pydantic.ValidationError as ex:
+        except pydantic.ValidationError:
             attr_name = t.call_args["cmd_name"]
             logging.getLogger("MX3.HWR").exception(
                 f"Return value of {self._name}.{attr_name} is of wrong type"

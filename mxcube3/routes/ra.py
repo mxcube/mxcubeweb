@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from datetime import datetime
 import gevent
 
 from flask import (
@@ -17,7 +16,7 @@ from flask_login import current_user
 DISCONNECT_HANDLED = True
 
 
-def init_route(app, server, url_prefix):
+def init_route(app, server, url_prefix):  # noqa
     bp = Blueprint("remote_access", __name__, url_prefix=url_prefix)
 
     @bp.route("/request_control", methods=["POST"])
@@ -138,7 +137,7 @@ def init_route(app, server, url_prefix):
         """ """
         allow = request.get_json().get("allow")
 
-        if app.ALLOW_REMOTE and allow == False:
+        if app.ALLOW_REMOTE and not allow:
             server.emit("forceSignoutObservers", {}, namespace="/hwr")
 
         app.ALLOW_REMOTE = allow

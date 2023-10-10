@@ -1,5 +1,4 @@
 import logging
-from datetime import timedelta
 
 from flask import Blueprint, request, jsonify, make_response, redirect, session
 from mxcube3.core.util import networkutils

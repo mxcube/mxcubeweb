@@ -18,8 +18,8 @@ def get_adapter_cls_from_hardware_object(ho):
     )
 
     from mxcubecore.HardwareObjects import MiniDiff, GenericDiffractometer
- 
-    # This needs to be a direct import of DataPublisher otherwise the 
+
+    # This needs to be a direct import of DataPublisher otherwise the
     # is instance check below fails due to different "import paths" It
     # inly works because mxcubecore adds mxcubecore.HardwareObjects to
     # sys path in __init__.py

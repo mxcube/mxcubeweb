@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import io
 
 from flask import Blueprint, Response, jsonify, request, send_file
 

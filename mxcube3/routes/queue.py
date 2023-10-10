@@ -7,7 +7,7 @@ from mxcubecore import HardwareRepository as HWR
 from mxcube3.core.models.generic import SimpleNameValue
 
 
-def init_route(app, server, url_prefix):
+def init_route(app, server, url_prefix):  # noqa
     bp = Blueprint("queue", __name__, url_prefix=url_prefix)
 
     @bp.route("/start", methods=["PUT"])

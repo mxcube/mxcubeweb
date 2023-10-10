@@ -1,5 +1,4 @@
 import logging
-import datetime
 
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
@@ -16,7 +15,7 @@ class DataPublisherAdapter(AdapterBase):
         """
         super(DataPublisherAdapter, self).__init__(ho, *args, **kwargs)
         self._all_data_list = []
-        self._current_data_list= []
+        self._current_data_list = []
         self._current_info = {}
 
         try:
@@ -31,7 +30,9 @@ class DataPublisherAdapter(AdapterBase):
 
     def _new_data_handler(self, data):
         self._current_data_list.append(data["data"])
-        self.emit_ho_attribute_changed("current_data", [data["data"]], operation="UPDATE")
+        self.emit_ho_attribute_changed(
+            "current_data", [data["data"]], operation="UPDATE"
+        )
 
     def _start_handler(self, data):
         self._current_info = data

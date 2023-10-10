@@ -16,7 +16,7 @@ class HOModel(BaseModel):
     commands: Union[dict, list] = Field({}, description="Available methods")
 
     class Config:
-        extra: "forbid"
+        extra: "forbid"  # noqa
 
 
 class HOActuatorModel(HOModel):
@@ -50,7 +50,7 @@ class HOBeamRawValueModel(BaseModel):
     )
 
     class Config:
-        extra: "forbid"
+        extra: "forbid"  # noqa
 
 
 class HOBeamModel(HOActuatorModel):

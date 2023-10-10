@@ -11,7 +11,7 @@ from mxcubecore import HardwareRepository as HWR
 from . import signals
 
 
-def init_route(app, server, url_prefix):
+def init_route(app, server, url_prefix):  # noqa
     bp = Blueprint("lims", __name__, url_prefix=url_prefix)
 
     @bp.route("/synch_samples", methods=["GET"])
