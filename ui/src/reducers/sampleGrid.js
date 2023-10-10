@@ -123,7 +123,10 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
       const sampleList = { ...state.sampleList };
       sampleIDList.forEach((sampleID, i) => {
         if (sampleList[sampleID].tasks.length > 0) {
-          sampleList[sampleID].tasks.concat(action.samplesData[i].tasks);
+          sampleList[sampleID].tasks = [
+            ...sampleList[sampleID].tasks,
+            ...action.samplesData[i].tasks,
+          ];
         } else {
           sampleList[sampleID].tasks = action.samplesData[i].tasks;
         }
