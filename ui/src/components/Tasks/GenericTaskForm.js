@@ -16,7 +16,6 @@ import {
   FieldsHeader,
   StaticField,
   InputField,
-  getLastUsedParameters,
   saveToLastUsedParameters,
   resetLastUsedParameters,
 } from './fields';
@@ -361,8 +360,6 @@ export default connect((state) => {
     path = `${state.login.rootPath}/${subdir}/[RUN#]`;
   }
 
-  const parameters = getLastUsedParameters(type, state);
-
   return {
     path,
     filename: fname,
@@ -374,7 +371,7 @@ export default connect((state) => {
     uiSchema,
     beamline: state.beamline,
     initialValues: {
-      ...parameters,
+      ...state.taskForm.taskData.parameters,
       type,
       beam_size: state.sampleview.currentAperture,
       resolution:
