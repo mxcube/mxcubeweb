@@ -16,7 +16,6 @@ from mxcube3.core.models.configmodels import (
 class ConfigLoader:
     @staticmethod
     def load(path: str, schema: BaseModel, filetype="yaml"):
-
         with open(os.path.join(path)) as f:
             config = ruamel.yaml.load(f.read(), ruamel.yaml.RoundTripLoader)
             try:

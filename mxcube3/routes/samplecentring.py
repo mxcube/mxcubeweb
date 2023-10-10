@@ -6,7 +6,7 @@ from flask import Blueprint, Response, jsonify, request
 from mxcubecore import HardwareRepository as HWR
 
 
-def init_route(app, server, url_prefix):
+def init_route(app, server, url_prefix):  # noqa
     bp = Blueprint("sampleview", __name__, url_prefix=url_prefix)
 
     @bp.route("/camera/subscribe", methods=["GET"])

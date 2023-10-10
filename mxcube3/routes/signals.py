@@ -472,7 +472,6 @@ def collect_started(*args, **kwargs):
     node = last_queue_node()
 
     if not mxcube.queue.is_interleaved(node["node"]):
-
         msg = {
             "Signal": kwargs["signal"],
             "Message": task_signals[kwargs["signal"]],
@@ -587,7 +586,6 @@ def motor_position_callback(movable):
 
 
 def beam_changed(*args, **kwargs):
-
     beam_info = HWR.beamline.beam
 
     if beam_info is None:

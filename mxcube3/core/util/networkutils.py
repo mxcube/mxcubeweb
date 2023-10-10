@@ -19,10 +19,11 @@ from mxcubecore import HardwareRepository as HWR
 def RateLimited(maxPerSecond):
     minInterval = 1.0 / float(maxPerSecond)
     lastTimeCalled = {}
+
     def decorate(func):
         def rateLimitedFunction(*args, **kargs):
             if type(args[0]) is dict:
-                key = args[0].get('Signal')
+                key = args[0].get("Signal")
             else:
                 key = args[0]
             elapsed = time.time() - lastTimeCalled.get(key, 0)
@@ -142,13 +143,13 @@ def send_feedback(sender_data):
     if not bl_name:
         try:
             bl_name = os.environ["BEAMLINENAME"].lower()
-        except (KeyError):
+        except KeyError:
             bl_name = "unknown-beamline"
 
     if not local_user:
         try:
             local_user = os.environ["USER"].lower()
-        except (KeyError):
+        except KeyError:
             local_user = "unknown_user"
 
     _from = HWR.beamline.session.get_property("from_email", "")

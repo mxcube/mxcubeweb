@@ -6,9 +6,6 @@ import redis
 import itertools
 import logging
 import re
-import json
-
-from typing import Any
 
 from mock import Mock
 
@@ -62,7 +59,7 @@ class Queue(ComponentBase):
                     '[QUEUE] Warning, failed to interpret path: "%s", please check path'
                     % path
                 )
-                path, run_number, image_number = (path, 0, 0)
+                path, run_number = (path, 0)
             if path in prefix_path_dict:
                 prefix_path_dict[path] = max(prefix_path_dict[path], run_number)
             else:
@@ -98,7 +95,7 @@ class Queue(ComponentBase):
 
         # RootNode nothing to return
         if isinstance(node, qmo.RootNode):
-            sample, idx = None, None
+            sample = None
         # For samples simply return the sampleID
         elif isinstance(node, qmo.Sample):
             sample = node.loc_str
@@ -1139,7 +1136,9 @@ class Queue(ComponentBase):
         elif params.get("mesh", False):
             grid = HWR.beamline.sample_view.get_shape(params["shape"])
             acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
-            mesh_center = HWR.beamline.default_acquisition_parameters["mesh"].get("mesh_center", "top-left")
+            mesh_center = HWR.beamline.default_acquisition_parameters["mesh"].get(
+                "mesh_center", "top-left"
+            )
             if mesh_center == "top-left":
                 acq.acquisition_parameters.centred_position = (
                     grid.get_centred_positions()[0]
@@ -2339,7 +2338,7 @@ class Queue(ComponentBase):
 
         try:
             ui_schema = data_model.ui_schema() if data_model else {}
-        except:
+        except Exception:
             ui_schema = {}
 
         if schema:

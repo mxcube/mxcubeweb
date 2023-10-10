@@ -2,7 +2,6 @@
 import sys
 import logging
 import copy
-import os
 import io
 import math
 import re
@@ -341,9 +340,6 @@ class Lims(ComponentBase):
                     logging.getLogger("MX3.HWR").info(
                         "[LIMS] Error creating data directories, %s" % sys.exc_info()[1]
                     )
-
-            # Get all the files in the root data dir for this user
-            root_path = HWR.beamline.session.get_base_image_directory()
 
             # save selected proposal in users db
             current_user.selected_proposal = proposal

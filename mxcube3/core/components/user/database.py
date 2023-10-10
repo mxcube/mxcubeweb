@@ -30,10 +30,10 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
     :param role_model: See :ref:`Models <models_topic>`.
     """
 
-    def __init__(self, *args, message_model=typing.Type["Message"], **kwargs):
+    def __init__(self, *args, message_model=typing.Type["Message"], **kwargs):  # noqa
         SQLAlchemySessionUserDatastore.__init__(self, *args, **kwargs)
         self._message_model = message_model
-        self._messages_users_model = typing.Type["MessagesUsers"]
+        self._messages_users_model = typing.Type["MessagesUsers"]  # noqa
 
     def create_message(self, message):
         return self.put(

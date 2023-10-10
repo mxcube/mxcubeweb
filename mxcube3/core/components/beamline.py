@@ -28,7 +28,6 @@ class Beamline(ComponentBase):
             msg += "signals"
             logging.getLogger("MX3.HWR").exception(msg)
         try:
-
             actions = HWR.beamline.beamline_actions
             if actions is not None:
                 cmds = (
@@ -352,7 +351,6 @@ class Beamline(ComponentBase):
         return ret
 
     def get_detector_info(self):
-
         try:
             filetype = HWR.beamline.detector.get_property("file_suffix")
         except Exception:

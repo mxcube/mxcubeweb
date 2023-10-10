@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import base64
 
 import copy
 
@@ -14,8 +13,9 @@ class GphlWorkflow(ComponentBase):
 
     def get_available_workflows(self):
         return {
-            "workflows":
-            copy.deepcopy(HWR.beamline.gphl_workflow.get_available_workflows())
+            "workflows": copy.deepcopy(
+                HWR.beamline.gphl_workflow.get_available_workflows()
+            )
         }
 
     def submit_parameters(self, params):

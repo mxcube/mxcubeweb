@@ -1,7 +1,6 @@
 import logging
 import json
 import uuid
-import time
 import datetime
 
 import flask
@@ -149,7 +148,7 @@ class BaseUserManager(ComponentBase):
         except Exception:
             raise
         else:
-            if not "sid" in flask.session:
+            if "sid" not in flask.session:
                 flask.session["sid"] = str(uuid.uuid4())
 
             # Making sure that the session of any in active users are invalideted
