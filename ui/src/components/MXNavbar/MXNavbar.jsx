@@ -31,7 +31,7 @@ class MXNavbar extends React.Component {
 
     return (
       <Navbar
-        className="pt-1 pb-1"
+        className="pt-1 pb-1 nav-container"
         bg="dark"
         variant="dark"
         collapseOnSelect
