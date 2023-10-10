@@ -365,6 +365,14 @@ export default connect((state) => {
 
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
+  const parameters = state.taskForm.taskData.parameters;
+
+  if (parseFloat(parameters.osc_range) === 0) {
+    parameters.osc_range =
+      state.taskForm.defaultParameters[
+        type.toLowerCase()
+      ].acq_parameters.osc_range;
+  }
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -372,7 +380,7 @@ export default connect((state) => {
     acqParametersLimits: limits,
     beamline: state.beamline,
     initialValues: {
-      ...state.taskForm.taskData.parameters,
+      ...parameters,
       beam_size: state.sampleview.currentAperture,
       resolution:
         state.taskForm.sampleIds.constructor !== Array
