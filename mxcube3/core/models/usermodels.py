@@ -79,6 +79,7 @@ class User(Base, UserMixin):
     def has_roles(self, *args):
         return set(args).issubset({role.name for role in self.roles})
 
+    @property
     def isstaff(self):
         return "staff" in self.roles
 

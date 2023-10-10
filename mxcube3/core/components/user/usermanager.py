@@ -48,9 +48,7 @@ class BaseUserManager(ComponentBase):
                 _u.username for _u in User.query.all() if _u.active and not _u.isstaff
             ]
         else:
-            users = [
-                _u.username for _u in User.query.all() if _u.active
-            ]
+            users = [_u.username for _u in User.query.all() if _u.active]
 
         return users
 
@@ -91,9 +89,8 @@ class BaseUserManager(ComponentBase):
             if (
                 _u.active
                 and _u.last_request_timestamp
-                and (
-                    datetime.datetime.now() - _u.last_request_timestamp
-                ) > flask.current_app.permanent_session_lifetime
+                and (datetime.datetime.now() - _u.last_request_timestamp)
+                > flask.current_app.permanent_session_lifetime
             ):
                 logging.getLogger("HWR.MX3").info(
                     f"Logged out inactive user {_u.username}"
