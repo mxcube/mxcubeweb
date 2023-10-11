@@ -30,10 +30,14 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
     :param role_model: See :ref:`Models <models_topic>`.
     """
 
-    def __init__(self, *args, message_model=typing.Type["Message"], **kwargs):  # noqa
+    # pyflakes are a bit picky with F821 (Undefined name),
+    # not even sure "Message" should ba considered as an undefined name
+    def __init__(
+        self, *args, message_model=typing.Type["Message"], **kwargs  # noqa: F821
+    ):
         SQLAlchemySessionUserDatastore.__init__(self, *args, **kwargs)
         self._message_model = message_model
-        self._messages_users_model = typing.Type["MessagesUsers"]  # noqa
+        self._messages_users_model = typing.Type["MessagesUsers"]  # noqa: F821
 
     def create_message(self, message):
         return self.put(

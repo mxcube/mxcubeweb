@@ -15,8 +15,10 @@ class HOModel(BaseModel):
     attributes: dict = Field({}, description="Data attributes")
     commands: Union[dict, list] = Field({}, description="Available methods")
 
+    # pyflakes are a bit picky with F821 (Undefined name),
+    # not even sure "forbid" should ba considered as an undefined name
     class Config:
-        extra: "forbid"  # noqa
+        extra: "forbid"  # noqa: F821
 
 
 class HOActuatorModel(HOModel):
@@ -50,7 +52,7 @@ class HOBeamRawValueModel(BaseModel):
     )
 
     class Config:
-        extra: "forbid"  # noqa
+        extra: "forbid"  # noqa: F821
 
 
 class HOBeamModel(HOActuatorModel):

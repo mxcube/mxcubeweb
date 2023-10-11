@@ -3,7 +3,8 @@ from flask import Blueprint, Response, jsonify, request
 from mxcubecore import HardwareRepository as HWR
 
 
-def init_route(app, server, url_prefix):  # noqa
+# Disabling C901 function is too complex (19)
+def init_route(app, server, url_prefix):  # noqa: C901
     bp = Blueprint("sample_changer", __name__, url_prefix=url_prefix)
 
     @bp.route("/samples_list", methods=["GET"])

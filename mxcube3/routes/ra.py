@@ -16,7 +16,8 @@ from flask_login import current_user
 DISCONNECT_HANDLED = True
 
 
-def init_route(app, server, url_prefix):  # noqa
+# Disabling C901 function is too complex (19)
+def init_route(app, server, url_prefix):  # noqa: C901
     bp = Blueprint("remote_access", __name__, url_prefix=url_prefix)
 
     @bp.route("/request_control", methods=["POST"])

@@ -380,7 +380,8 @@ class SampleChanger(ComponentBase):
             return {"xtal_list": xtal_list}
 
 
-def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noqa
+# Disabling C901 function is too complex (19)
+def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noqa: C901
     from mxcube3.routes import signals
     from mxcube3.app import MXCUBEApplication as mxcube
 
@@ -428,7 +429,8 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 "Sample loading res: %s" % str(res)
             )
 
-            if not res == False:  # noqa
+            # We need to investigte if the comment below is still valid
+            if not res == False:  # noqa: E712
                 # WARNING: explicit test of False return value.
                 # This is to preserve backward compatibility (load_sample was supposed to return None);
                 # if sample could not be loaded, but no exception is raised, let's skip
