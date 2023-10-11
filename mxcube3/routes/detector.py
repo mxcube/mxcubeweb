@@ -1,5 +1,4 @@
 from flask import Blueprint, jsonify, request
-from mxcube3.core.models.generic import PathModel, Response
 
 
 def init_route(app, server, url_prefix):
