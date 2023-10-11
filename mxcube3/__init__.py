@@ -9,10 +9,12 @@ from gevent import monkey
 
 monkey.patch_all(thread=False)
 
-from mxcube3.server import Server as server  # noqa
-from mxcube3.app import MXCUBEApplication as mxcube  # noqa
-from mxcube3.config import Config  # noqa
-from mxcubecore import HardwareRepository as HWR  # noqa
+# Disabling E402 (module level import not at top of file)
+# for the lines below as we are monkey patching
+from mxcube3.server import Server as server  # noqa: E402
+from mxcube3.app import MXCUBEApplication as mxcube  # noqa: E402
+from mxcube3.config import Config  # noqa: E402
+from mxcubecore import HardwareRepository as HWR  # noqa: E402
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()

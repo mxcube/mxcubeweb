@@ -11,7 +11,8 @@ from mxcubecore import HardwareRepository as HWR
 from . import signals
 
 
-def init_route(app, server, url_prefix):  # noqa
+# Disabling C901 function is too complex (19)
+def init_route(app, server, url_prefix):  # noqa: C901
     bp = Blueprint("lims", __name__, url_prefix=url_prefix)
 
     @bp.route("/synch_samples", methods=["GET"])

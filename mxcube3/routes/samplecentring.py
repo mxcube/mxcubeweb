@@ -6,7 +6,8 @@ from flask import Blueprint, Response, jsonify, request
 from mxcubecore import HardwareRepository as HWR
 
 
-def init_route(app, server, url_prefix):  # noqa
+# Disabling C901 function is too complex (19)
+def init_route(app, server, url_prefix):  # noqa: C901
     bp = Blueprint("sampleview", __name__, url_prefix=url_prefix)
 
     @bp.route("/camera/subscribe", methods=["GET"])
