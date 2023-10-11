@@ -1,16 +1,6 @@
-import pathlib
-
 from typing import Union
 from pydantic import BaseModel, Field
 from mxcube3.core.models.configmodels import ModeEnum
-
-
-class VersionModel(BaseModel):
-    version: str = Field("", description="Version")
-
-
-class PathModel(BaseModel):
-    path: pathlib.Path = Field("", description="Path")
 
 
 class SimpleNameValue(BaseModel):
