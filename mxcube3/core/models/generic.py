@@ -2,7 +2,6 @@ import pathlib
 
 from typing import Union
 from pydantic import BaseModel, Field
-from spectree import Response
 from mxcube3.core.models.configmodels import ModeEnum
 
 
