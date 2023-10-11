@@ -1,3 +1,8 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/no-unused-state */
+
+/* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -7,7 +12,6 @@ import {
   Collapse,
   Table,
   OverlayTrigger,
-  Popover,
   Tooltip,
 } from 'react-bootstrap';
 import {
@@ -145,7 +149,7 @@ export default class TaskItem extends Component {
   wedgePath(wedge) {
     const { parameters } = wedge;
     const value = parameters.fileName;
-    const path = parameters.path ? parameters.path : '';
+    const path = parameters.path || '';
     const pathEndPart = path.slice(-40);
 
     return (
@@ -251,13 +255,8 @@ export default class TaskItem extends Component {
 
   render() {
     const { state, data, show } = this.props;
-    let wedges = [];
-
-    if (data.type === 'Interleaved') {
-      wedges = data.parameters.wedges;
-    } else {
-      wedges = [data];
-    }
+    const wedges =
+      data.type === 'Interleaved' ? data.parameters.wedges : [data];
 
     const delTaskCSS = {
       display: 'flex',

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import cx from 'classnames';
 import { Button, Popover } from 'react-bootstrap';
@@ -5,6 +6,7 @@ import { MOTOR_STATE } from '../../constants';
 import MotorInput from './MotorInput';
 import './motor.css';
 
+// eslint-disable-next-line react/no-unsafe
 export default class OneAxisTranslationControl extends React.Component {
   constructor(props) {
     super(props);

@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable sonarjs/no-duplicate-string */
 import './SampleView.css';
 import React from 'react';
@@ -21,6 +22,7 @@ const { fabric } = window;
 fabric.Group.prototype.hasControls = false;
 fabric.Group.prototype.hasBorders = false;
 
+// eslint-disable-next-line react/no-unsafe
 export default class SampleImage extends React.Component {
   constructor(props) {
     super(props);
@@ -222,7 +224,7 @@ export default class SampleImage extends React.Component {
 
   setVCellSpacing(e) {
     let value = Number.parseFloat(e.target.value);
-    if (isNaN(value)) {
+    if (Number.isNaN(value)) {
       value = '';
     }
 
@@ -248,7 +250,7 @@ export default class SampleImage extends React.Component {
 
   setHCellSpacing(e) {
     let value = Number.parseFloat(e.target.value);
-    if (isNaN(value)) {
+    if (Number.isNaN(value)) {
       value = '';
     }
 
@@ -275,7 +277,7 @@ export default class SampleImage extends React.Component {
   setGridOverlayOpacity(e) {
     let value = Number.parseFloat(e.target.value);
 
-    if (isNaN(value)) {
+    if (Number.isNaN(value)) {
       value = '1';
     }
 
@@ -351,9 +353,9 @@ export default class SampleImage extends React.Component {
       this.props.sampleActions.sendAbortCentring();
     }
 
-    this.props.selectedShapes.forEach((shapeID) =>
-      this.props.sampleActions.sendDeleteShape(shapeID),
-    );
+    this.props.selectedShapes.forEach((shapeID) => {
+      this.props.sampleActions.sendDeleteShape(shapeID);
+    });
   }
 
   keyUp() {
@@ -390,6 +392,7 @@ export default class SampleImage extends React.Component {
     document.querySelector('#insideWrapper').style.height = `${h}px`;
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   rightClick(e) {
     e.preventDefault();
 
@@ -520,6 +523,7 @@ export default class SampleImage extends React.Component {
     showContextMenu(true, ctxMenuObj, e.offsetX, e.offsetY);
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   leftClick(option) {
     let objectFound = false;
 
@@ -572,11 +576,11 @@ export default class SampleImage extends React.Component {
       const cellSizeX = beamSize.x * pixelsPerMm[0] * imageRatio;
       const cellSizeY = beamSize.y * pixelsPerMm[1] * imageRatio;
 
-      const cellIdxX = parseInt(
+      const cellIdxX = Number.parseInt(
         Math.floor((option.pointer.x - option.target.oCoords.tl.x) / cellSizeX),
         10,
       );
-      const cellIdxY = parseInt(
+      const cellIdxY = Number.parseInt(
         Math.floor(
           (option.pointer.y - option.target.oCoords.tl.y - 20) / cellSizeY,
         ),
@@ -592,7 +596,7 @@ export default class SampleImage extends React.Component {
         shapeData.numCols,
       );
 
-      const resultDataPath = shapeData.resultDataPath;
+      const { resultDataPath } = shapeData;
       if (resultDataPath.length > 0) {
         this.props.generalActions.sendDisplayImage(
           `${resultDataPath}&img_num=${imgNum}`,
@@ -601,6 +605,7 @@ export default class SampleImage extends React.Component {
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   wheel(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -792,6 +797,7 @@ export default class SampleImage extends React.Component {
     if (this.props.videoMessageOverlay.show) {
       result = (
         <div
+          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{
             __html: this.props.videoMessageOverlay.msg,
           }}
@@ -826,10 +832,8 @@ export default class SampleImage extends React.Component {
     if (this.player === null && this.props.videoFormat === 'MPEG1') {
       const canvas = document.querySelector('#sample-img');
 
-      let source = !this.props.videoURL
-        ? `http://${document.location.hostname}:4042/`
-        : this.props.videoURL;
-      /* eslint-enable no-undef */
+      let source =
+        this.props.videoURL || `http://${document.location.hostname}:4042/`;
 
       source = `${source}/${this.props.videoHash}`;
 
@@ -921,8 +925,10 @@ export default class SampleImage extends React.Component {
     }
 
     // Add points last so they are in front of grids
-    fabricSelectables.push(...makePoints(points, imageRatio));
-    fabricSelectables.push(...makeTwoDPoints(twoDPoints, imageRatio));
+    fabricSelectables.push(
+      ...makePoints(points, imageRatio),
+      ...makeTwoDPoints(twoDPoints, imageRatio),
+    );
 
     this.canvas.add(...fabricSelectables);
 

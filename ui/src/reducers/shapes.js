@@ -42,8 +42,9 @@ function shapesReducer(state = INITIAL_STATE, action = {}) {
         shapes: action.data.shapes,
       };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

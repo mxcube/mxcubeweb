@@ -1,3 +1,8 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/no-unused-state */
+
+/* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -115,7 +120,7 @@ export default class EnergyScanTaskItem extends Component {
 
   path(parameters) {
     const value = parameters.fileName;
-    const path = parameters.path ? parameters.path : '';
+    const path = parameters.path || '';
 
     return (
       <OverlayTrigger

@@ -1,3 +1,4 @@
+/* eslint-disable promise/prefer-await-to-then */
 import React from 'react';
 import fetch from 'isomorphic-fetch';
 
@@ -15,6 +16,7 @@ export class LimsResultSummary extends React.Component {
       const resultCont = this.resultContainer;
       resultCont.innerHTML = 'Loading results, please wait ...';
 
+      // eslint-disable-next-line promise/catch-or-return
       fetch('mxcube/api/v0.1/lims/results', {
         method: 'POST',
         credentials: 'include',

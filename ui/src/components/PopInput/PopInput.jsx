@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 
 import { OverlayTrigger, Popover } from 'react-bootstrap';
@@ -43,6 +44,7 @@ export default class PopInput extends React.Component {
       nextProps.value !== this.props.value
     );
   }
+
   hideOverlay() {
     document.body.click();
   }
@@ -91,17 +93,15 @@ export default class PopInput extends React.Component {
     const popoverContent = (
       <div className="d-flex">
         <div className="popinput-form-container">
-          {
-            <NumericInput
-              initialValue={this.props.value}
-              precision={this.props.precision}
-              step={this.props.step}
-              size={this.props.inputSize}
-              busy={this.isBusy()}
-              onSubmit={this.save}
-              onCancel={this.cancel}
-            />
-          }
+          <NumericInput
+            initialValue={this.props.value}
+            precision={this.props.precision}
+            step={this.props.step}
+            size={this.props.inputSize}
+            busy={this.isBusy()}
+            onSubmit={this.save}
+            onCancel={this.cancel}
+          />
         </div>
         {this.props.msg && <div>{this.props.msg}</div>}
       </div>
@@ -120,7 +120,7 @@ export default class PopInput extends React.Component {
       >
         <span className={`popinput-input-value ${this.props.pkey}`}>
           {this.props.inplace ? (
-            <>{popoverContent}</>
+            popoverContent
           ) : (
             <OverlayTrigger
               id="popOverlayRef"

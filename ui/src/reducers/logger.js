@@ -14,8 +14,9 @@ function loggerReducer(state = INITIAL_STATE, action = {}) {
     case 'SET_INITIAL_STATE': {
       return { ...state, logRecords: [...action.data.logger] };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

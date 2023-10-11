@@ -1,3 +1,5 @@
+/* eslint-disable promise/prefer-await-to-then */
+/* eslint-disable promise/prefer-await-to-callbacks */
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { RUNNING } from '../constants';

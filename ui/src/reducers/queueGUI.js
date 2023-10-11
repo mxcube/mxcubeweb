@@ -10,6 +10,7 @@ const INITIAL_STATE = {
   showConfirmCollectDialog: false,
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function queueGUIReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'redux-form/CHANGE': {
@@ -88,11 +89,12 @@ function queueGUIReducer(state = INITIAL_STATE, action = {}) {
       return { ...state, loading: action.loading };
     }
     // show list
-    case 'SHOW_LIST':
+    case 'SHOW_LIST': {
       return {
         ...state,
         visibleList: action.list_name,
       };
+    }
     case 'SHOW_RESUME_QUEUE_DIALOG': {
       return { ...state, showResumeQueueDialog: action.show };
     }
@@ -101,13 +103,13 @@ function queueGUIReducer(state = INITIAL_STATE, action = {}) {
     }
     case 'COLLAPSE_ITEM': {
       const displayData = { ...state.displayData };
-      displayData[action.queueID].collapsed ^= true;
+      displayData[action.queueID].collapsed ^= 1; // eslint-disable-line no-bitwise
 
       return { ...state, displayData };
     }
     case 'SELECT_ITEM': {
       const displayData = { ...state.displayData };
-      displayData[action.queueID].selected ^= true;
+      displayData[action.queueID].selected ^= 1; // eslint-disable-line no-bitwise
 
       return { ...state, displayData };
     }
@@ -136,8 +138,9 @@ function queueGUIReducer(state = INITIAL_STATE, action = {}) {
     case 'CLEAR_ALL': {
       return INITIAL_STATE;
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

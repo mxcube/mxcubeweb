@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -135,6 +137,7 @@ class BeamlineActionsContainer extends React.Component {
           >
             <Row>
               {this.props.currentAction.arguments.map((arg, i) => (
+                // eslint-disable-next-line react/jsx-key
                 <>
                   <Col
                     className="mt-2"
@@ -193,6 +196,7 @@ class BeamlineActionsContainer extends React.Component {
             {this.props.currentAction.messages.length > 0 ? (
               <Card>
                 {this.props.currentAction.messages.map((message) => (
+                  // eslint-disable-next-line react/jsx-key
                   <p>{message.message}</p>
                 ))}
               </Card>

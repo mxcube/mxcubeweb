@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
@@ -365,9 +366,9 @@ export default connect((state) => {
 
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
-  const parameters = state.taskForm.taskData.parameters;
+  const { parameters } = state.taskForm.taskData;
 
-  if (parseFloat(parameters.osc_range) === 0) {
+  if (Number.parseFloat(parameters.osc_range) === 0) {
     parameters.osc_range =
       state.taskForm.defaultParameters[
         type.toLowerCase()

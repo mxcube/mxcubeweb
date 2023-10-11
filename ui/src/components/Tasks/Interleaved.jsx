@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
@@ -163,6 +164,7 @@ class Interleaved extends React.Component {
                   const filename = task.parameters.fileName;
 
                   return (
+                    // eslint-disable-next-line react/jsx-key
                     <tr style={{ backgroundColor: wedgeColorTable[i] }}>
                       <td>{i + 1}</td>
                       <td>
@@ -232,6 +234,7 @@ class Interleaved extends React.Component {
                 </thead>
                 <tbody>
                   {interleave(this.props.subWedgeObject).map((task) => (
+                    // eslint-disable-next-line react/jsx-key
                     <tr
                       style={{ backgroundColor: wedgeColorTable[task.wedge] }}
                     >

@@ -32,8 +32,9 @@ function contextMenuReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, genericContextMenu };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

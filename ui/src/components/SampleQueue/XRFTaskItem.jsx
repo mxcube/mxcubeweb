@@ -1,3 +1,7 @@
+/* eslint-disable react/no-unused-state */
+/* eslint-disable jsx-a11y/control-has-associated-label */
+
+/* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -22,7 +26,7 @@ export default class XRFTaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    moveCard: PropTypes.func.isRequired,
+    moveCard: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   };
 
   constructor(props) {
@@ -181,7 +185,7 @@ export default class XRFTaskItem extends Component {
 
   path(parameters) {
     const value = parameters.fileName;
-    const path = parameters.path ? parameters.path : '';
+    const path = parameters.path || '';
 
     return (
       <OverlayTrigger

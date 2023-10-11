@@ -44,6 +44,7 @@ const INITIAL_STATE = {
 };
 
 function sampleViewReducer(state = INITIAL_STATE, action = {}) {
+  // eslint-disable-next-line sonarjs/max-switch-cases
   switch (action.type) {
     case 'TOOGLE_CINEMA': {
       return { ...state, cinema: !state.cinema };
@@ -213,8 +214,9 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
         sourceScale: action.data.Camera.scale,
       };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

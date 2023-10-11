@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import './SampleView.css';
 import React from 'react';
@@ -276,7 +278,7 @@ export default class SampleControls extends React.Component {
                 onChange={(e) => {
                   this.props.setBeamlineAttribute(
                     'diffractometer.zoom',
-                    zoom_motor.commands[parseFloat(e.target.value) - 1],
+                    zoom_motor.commands[Number.parseFloat(e.target.value) - 1],
                   );
                 }}
                 list="volsettings"

@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-key */
+/* eslint-disable react/no-unused-state */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import { Row, Col, Form, Button, Card } from 'react-bootstrap';
 import { Menu, Item, Separator, contextMenu } from 'react-contexify';
@@ -70,7 +73,7 @@ export default class SSXChip extends React.Component {
       top_left_z: currentChipLayout.calibration_data.top_left[1],
       top_right_x: currentChipLayout.calibration_data.top_right[0],
       top_right_y: currentChipLayout.calibration_data.top_right[0],
-      top_left_z: currentChipLayout.calibration_data.top_right[1],
+      top_right_z: currentChipLayout.calibration_data.top_right[1],
       bottom_left_x: currentChipLayout.calibration_data.bottom_left[0],
       bottom_left_y: currentChipLayout.calibration_data.bottom_left[0],
       bottom_left_z: currentChipLayout.calibration_data.bottom_left[1],
@@ -132,7 +135,7 @@ export default class SSXChip extends React.Component {
           top_left_z: currentChipLayout.calibration_data.top_left[1],
           top_right_x: currentChipLayout.calibration_data.top_right[0],
           top_right_y: currentChipLayout.calibration_data.top_right[0],
-          top_left_z: currentChipLayout.calibration_data.top_right[1],
+          top_right_z: currentChipLayout.calibration_data.top_right[1],
           bottom_left_x: currentChipLayout.calibration_data.bottom_left[0],
           bottom_left_y: currentChipLayout.calibration_data.bottom_left[0],
           bottom_left_z: currentChipLayout.calibration_data.bottom_left[1],
@@ -448,7 +451,6 @@ export default class SSXChip extends React.Component {
 
       this.isDown = true;
 
-      console.log(pointer);
       this.rect = new fabric.Rect({
         left: pointer.x,
         top: pointer.y,
@@ -482,8 +484,6 @@ export default class SSXChip extends React.Component {
       }
 
       rect.set('width', w).set('height', h);
-
-      console.log(rect);
 
       this.freeFormCanvas.renderAll();
     });
@@ -623,7 +623,9 @@ export default class SSXChip extends React.Component {
                             value={this.state.currentLayoutName}
                           >
                             {this.props.availableChipLayoutList.map((item) => (
-                              <option value={item}>{item}</option>
+                              <option key={item} value={item}>
+                                {item}
+                              </option>
                             ))}
                           </Form.Select>
                         </Col>

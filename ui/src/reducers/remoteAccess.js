@@ -48,8 +48,9 @@ function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
         timeoutGivesControl: action.data.remoteAccess.timeoutGivesControl,
       };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

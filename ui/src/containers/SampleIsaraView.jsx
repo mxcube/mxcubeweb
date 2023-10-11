@@ -114,9 +114,8 @@ class NewSampleIsaraView extends React.Component {
       return drawingPosition.line * lineStep + minY + 30;
     } else if (drawingPosition.nbColumn === 0) {
       return -1;
-    } else {
-      return drawingPosition.line * lineStep + minY;
     }
+    return drawingPosition.line * lineStep + minY;
   }
 
   getDrawingPosition(position) {
@@ -164,7 +163,7 @@ class NewSampleIsaraView extends React.Component {
       useGrouping: false,
     });
 
-    const name = pk.toString() + ':' + formattedNumber;
+    const name = `${pk.toString()}:${formattedNumber}`;
     let color;
     const inQueue = this.props.queue.queue.includes(name);
     if (inQueue) {

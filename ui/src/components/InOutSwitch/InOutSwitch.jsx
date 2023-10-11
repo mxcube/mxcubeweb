@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Badge, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import './style.css';
@@ -37,6 +38,7 @@ export default class InOutSwitch extends React.Component {
    * @param {MouseEvent} e
    */
   onKeyDown(e) {
+    // eslint-disable-next-line sonarjs/no-small-switch
     switch (e.key) {
       case 'Escape': {
         this.showValueOvelay(false);

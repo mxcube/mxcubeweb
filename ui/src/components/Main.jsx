@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -41,6 +42,7 @@ class Main extends React.Component {
   }
 
   componentDidMount() {
+    // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
     getAllChatMessages().then((json) => {
       json.messages.forEach((entry) => {
         if (entry.username === this.props.login.user.username) {

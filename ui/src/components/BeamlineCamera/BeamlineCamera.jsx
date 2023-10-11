@@ -3,15 +3,14 @@ import { Badge, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import './style.css';
 import pip from './picture_in_picture.svg';
 
-const BeamlineCamera = ({
+function BeamlineCamera({
   labelText,
   url,
   width,
   height,
   optionsOverlay,
   format,
-  description,
-}) => {
+}) {
   const [showLabelOverlay, setShowLabelOverlay] = useState(false);
   const [showValueOverlay, setShowValueOverlay] = useState(false);
 
@@ -64,7 +63,7 @@ const BeamlineCamera = ({
 
   const video = (
     <div>
-      {format != 'mp4' ? (
+      {format !== 'mp4' ? (
         <img // eslint-disable-line jsx-a11y/no-noninteractive-element-interactions
           onClick={onImageClick}
           src={url}
@@ -79,7 +78,7 @@ const BeamlineCamera = ({
           onClick={onImageClick}
           width={width}
           height={height}
-        ></video>
+        />
       )}
       <Button
         variant="outline-secondary"
@@ -114,7 +113,7 @@ const BeamlineCamera = ({
       </OverlayTrigger>
     </div>
   );
-};
+}
 
 BeamlineCamera.defaultProps = {
   labelText: '',
