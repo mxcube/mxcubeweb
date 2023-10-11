@@ -1,7 +1,8 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
-import { Modal, ButtonToolbar, Button, Table } from 'react-bootstrap';
+import { Modal, Button, Table } from 'react-bootstrap';
 
 class SelectProposal extends React.Component {
   constructor(props) {

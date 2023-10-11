@@ -276,10 +276,11 @@ export function makePoint(x, y, id, color, type, name, strokeWidth) {
 export function makePoints(points, imageRatio) {
   const fabricPoints = [];
 
+  // eslint-disable-next-line guard-for-in
   for (const id in points) {
     const [x, y] = points[id].screenCoord;
     switch (points[id].state) {
-      case 'SAVED':
+      case 'SAVED': {
         fabricPoints.push(
           ...makePoint(
             x * imageRatio,
@@ -292,7 +293,8 @@ export function makePoints(points, imageRatio) {
           ),
         );
         break;
-      case 'TMP':
+      }
+      case 'TMP': {
         fabricPoints.push(
           ...makePoint(
             x * imageRatio,
@@ -305,8 +307,10 @@ export function makePoints(points, imageRatio) {
           ),
         );
         break;
-      default:
+      }
+      default: {
         throw new Error('Server gave point with unknown type');
+      }
     }
   }
   return fabricPoints;
@@ -314,11 +318,12 @@ export function makePoints(points, imageRatio) {
 
 export function makeTwoDPoints(points, imageRatio) {
   const fabricPoints = [];
+  // eslint-disable-next-line guard-for-in
   for (const id in points) {
     const [x, y] = points[id].screenCoord;
 
     switch (points[id].state) {
-      case 'SAVED':
+      case 'SAVED': {
         fabricPoints.push(
           ...makePoint(
             x * imageRatio,
@@ -331,7 +336,8 @@ export function makeTwoDPoints(points, imageRatio) {
           ),
         );
         break;
-      case 'TMP':
+      }
+      case 'TMP': {
         fabricPoints.push(
           ...makePoint(
             x * imageRatio,
@@ -344,8 +350,10 @@ export function makeTwoDPoints(points, imageRatio) {
           ),
         );
         break;
-      default:
+      }
+      default: {
         throw new Error('Server gave point with unknown type');
+      }
     }
   }
   return fabricPoints;
@@ -419,8 +427,6 @@ export function makeImageOverlay(iR, ppMm, bP, bSh, bSi, cCP, dP, canvas) {
       bSi.y * ppMm[1] * iR,
       bSh,
     ),
-  );
-  imageOverlay.push(
     ...makeScale(canvas.height, scaleLengthX, scaleLengthY, '50 µm'),
   );
   if (cCP.length > 0) {

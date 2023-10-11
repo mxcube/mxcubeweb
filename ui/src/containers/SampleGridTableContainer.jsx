@@ -1,3 +1,6 @@
+/* eslint-disable react/no-array-index-key */
+
+/* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
 import withRouter from '../components/WithRouter';
@@ -298,6 +301,7 @@ class SampleGridTableContainer extends React.Component {
    * @param {MouseEvent} e
    */
   onKeyDown(e) {
+    // eslint-disable-next-line sonarjs/no-small-switch
     switch (e.key) {
       case 'Escape': {
         this.props.selectSamples(Object.keys(this.props.sampleList), false);
@@ -365,18 +369,21 @@ class SampleGridTableContainer extends React.Component {
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
+      // eslint-disable-next-line no-bitwise
       fi &= this.mutualExclusiveFilterOption(
         sample,
         'inQueue',
         'notInQueue',
         this.inQueueSampleID,
       );
+      // eslint-disable-next-line no-bitwise
       fi &= this.mutualExclusiveFilterOption(
         sample,
         'collected',
         'notCollected',
         isCollected,
       );
+      // eslint-disable-next-line no-bitwise
       fi &= this.mutualExclusiveFilterOption(
         sample,
         'limsSamples',
@@ -498,6 +505,7 @@ class SampleGridTableContainer extends React.Component {
     return [allCellSample, allCellSampleCheck];
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   getSampleListFilteredByCellPuck(cell, puck) {
     const allCellSample = [];
     const allCellSampleCheck = [];
@@ -613,7 +621,7 @@ class SampleGridTableContainer extends React.Component {
   }
 
   getSampleItemCollapsibleHeaderActions(cell) {
-    const type = this.props.type;
+    const { type } = this.props;
     const cellMenuID = 'samples-grid-table-context-menu-cell';
     return (
       <div className="sample-items-collapsible-header-actions">
@@ -759,7 +767,7 @@ class SampleGridTableContainer extends React.Component {
             </div>,
           );
         }
-        return null;
+        return null; // eslint-disable-line array-callback-return
       });
 
     return sampleItemList;
@@ -795,7 +803,7 @@ class SampleGridTableContainer extends React.Component {
           <b className="me-2 mt-1">Manual Samples</b>
           {rows.map((r) => {
             return (
-              <div
+              <div // eslint-disable-line react/jsx-key
                 className="d-flex"
                 style={{ alignItems: 'left', justifyContent: 'flex-start' }}
               >
@@ -813,6 +821,7 @@ class SampleGridTableContainer extends React.Component {
     const scContent = this.props.sampleChanger.contents;
     const tableCell = [];
 
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     scContent.children.map((cell) => {
       if (
         this.props.filterOptions.cellFilter.toLowerCase() === cell.name ||
@@ -1169,9 +1178,8 @@ class SampleGridTableContainer extends React.Component {
       return <SampleIsaraView cellSampleList={this.getSampleListBydCell} />;
     } else if (this.props.type === 'FLEX_HCD') {
       return <SampleFlexView cellSampleList={this.getSampleListBydCell} />;
-    } else {
-      return null;
     }
+    return null;
   }
 
   render() {

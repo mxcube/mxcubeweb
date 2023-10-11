@@ -1,9 +1,11 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable promise/prefer-await-to-then */
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
-import { loadSample } from './sampleChanger';
+import { loadSample } from './sampleChanger'; // eslint-disable-line import/no-cycle
 import { sendAbortCentring, sendUpdateShapes } from './sampleview';
-import { selectSamplesAction, clearSampleGrid } from './sampleGrid';
+import { selectSamplesAction, clearSampleGrid } from './sampleGrid'; // eslint-disable-line import/no-cycle
 import { TASK_UNCOLLECTED } from '../constants';
 
 export function queueLoading(loading) {
@@ -30,7 +32,7 @@ export function setCurrentSample(sampleID) {
 }
 
 export function setQueue(queue) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const state = getState();
     dispatch(setQueueAction(queue));
 
@@ -98,7 +100,7 @@ export function sendAddQueueItem(items) {
 }
 
 export function addSamplesToQueue(sampleDataList) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(queueLoading(true));
 
     sendAddQueueItem(sampleDataList)
@@ -118,7 +120,7 @@ export function addSamplesToQueue(sampleDataList) {
 }
 
 export function addSampleAndMount(sampleData) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(
       loadSample(sampleData, () => {
         sendAddQueueItem([sampleData])
@@ -144,7 +146,7 @@ export function clearQueue() {
 }
 
 export function sendClearQueue(clearQueueOnly = false) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/queue/clear', {
       method: 'PUT',
       credentials: 'include',
@@ -250,7 +252,7 @@ export function sendMoveTask(sampleID, oldIndex, newIndex) {
 }
 
 export function moveTask(sampleID, oldIndex, newIndex) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(queueLoading(true));
 
     sendMoveTask(sampleID, oldIndex, newIndex).then((response) => {
@@ -280,7 +282,7 @@ export function toggleChecked(sampleID, index) {
 }
 
 export function sendRunQueue(autoMountNext = true, sid = -1) {
-  return function () {
+  return () => {
     fetch('mxcube/api/v0.1/queue/start', {
       method: 'PUT',
       credentials: 'include',
@@ -298,7 +300,7 @@ export function sendRunQueue(autoMountNext = true, sid = -1) {
 }
 
 export function sendPauseQueue() {
-  return function () {
+  return () => {
     fetch('mxcube/api/v0.1/queue/pause', {
       method: 'PUT',
       credentials: 'include',
@@ -315,7 +317,7 @@ export function sendPauseQueue() {
 }
 
 export function sendUnpauseQueue() {
-  return function () {
+  return () => {
     fetch('mxcube/api/v0.1/queue/unpause', {
       method: 'PUT',
       credentials: 'include',
@@ -332,7 +334,7 @@ export function sendUnpauseQueue() {
 }
 
 export function sendStopQueue() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/queue/stop', {
       method: 'PUT',
       credentials: 'include',
@@ -350,7 +352,7 @@ export function sendStopQueue() {
 }
 
 export function sendRunSample(sampleID, taskIndex) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(`mxcube/api/v0.1/queue/${sampleID}/${taskIndex}/execute`, {
       method: 'PUT',
       credentials: 'include',
@@ -386,7 +388,8 @@ export function removeTaskListAction(taskList, queueIDList = null) {
 }
 
 export function setEnabledSample(sampleIDList, value) {
-  return function (dispatch, getState) {
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  return (dispatch, getState) => {
     const state = getState();
     dispatch(queueLoading(true));
 
@@ -423,7 +426,7 @@ export function setEnabledSample(sampleIDList, value) {
 }
 
 export function deleteTask(sampleID, taskIndex) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const state = getState();
     const task = state.sampleGrid.sampleList[sampleID].tasks[taskIndex];
 
@@ -446,7 +449,7 @@ export function deleteTask(sampleID, taskIndex) {
 }
 
 export function deleteTaskList(sampleIDList) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const state = getState();
     const itemPosList = [];
     const taskList = [];
@@ -490,7 +493,7 @@ export function updateTaskAction(sampleID, taskIndex, taskData) {
 }
 
 export function updateTask(sampleID, taskIndex, params, runNow) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const { sampleGrid } = getState();
 
     const taskData = {
@@ -532,7 +535,8 @@ export function addDiffractionPlanAction(tasks) {
 }
 
 export function addTask(sampleIDs, parameters, runNow) {
-  return function (dispatch, getState) {
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  return (dispatch, getState) => {
     const state = getState();
     const samples = [];
     let shapes = [];
@@ -644,7 +648,7 @@ export function updateTaskLimsData(sampleID, taskIndex, limsResultData) {
 }
 
 export function sendToggleCheckBox(data, index) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(`mxcube/api/v0.1/queue/${data.queueID}/toggle`, {
       method: 'PUT',
       credentials: 'include',
@@ -663,7 +667,7 @@ export function sendToggleCheckBox(data, index) {
 }
 
 export function deleteSamplesFromQueue(sampleIDList) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(queueLoading(true));
 
     const itemPostList = sampleIDList.map((sampleID) => {
@@ -688,7 +692,7 @@ export function setAutoMountAction(automount) {
 }
 
 export function setAutoMountSample(automount) {
-  return function (dispatch) {
+  return (dispatch) => {
     return fetch('mxcube/api/v0.1/queue/automount', {
       method: 'POST',
       credentials: 'include',
@@ -717,7 +721,7 @@ export function setAutoAddDiffPlanAction(autoadd) {
 }
 
 export function setAutoAddDiffPlan(autoadddiffplan) {
-  return function (dispatch) {
+  return (dispatch) => {
     return fetch('mxcube/api/v0.1/queue/auto_add_diffplan', {
       method: 'POST',
       credentials: 'include',
@@ -741,7 +745,7 @@ export function setAutoAddDiffPlan(autoadddiffplan) {
 }
 
 export function sendSetCentringMethod(centringMethod) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/sampleview/centring/centring_method', {
       method: 'PUT',
       credentials: 'include',
@@ -763,7 +767,7 @@ export function sendSetCentringMethod(centringMethod) {
 }
 
 export function sendSetNumSnapshots(numSnapshots) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/queue/num_snapshots', {
       method: 'PUT',
       credentials: 'include',
@@ -785,7 +789,7 @@ export function sendSetNumSnapshots(numSnapshots) {
 }
 
 export function sendSetGroupFolder(path) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/queue/group_folder', {
       method: 'POST',
       credentials: 'include',
@@ -808,7 +812,7 @@ export function sendSetGroupFolder(path) {
 }
 
 export function sendSetQueueSettings(name, value) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/queue/setting', {
       method: 'POST',
       credentials: 'include',
@@ -845,7 +849,7 @@ export function sendUpdateDependentFields(task_name, field_data) {
 }
 
 export function fetchQueue() {
-  return async function (dispatch) {
+  return async (dispatch) => {
     try {
       const response = await fetch('mxcube/api/v0.1/queue/queue_state', {
         method: 'GET',
@@ -863,7 +867,7 @@ export function fetchQueue() {
         throw new Error(`Could not fetch queue`);
       }
     } catch (error) {
-      console.log(error);
+      console.log(error); // eslint-disable-line no-console
     }
   };
 }

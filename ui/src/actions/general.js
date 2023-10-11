@@ -1,7 +1,8 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable promise/prefer-await-to-then */
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
-import { assign } from 'lodash';
-import { unselectShapes } from './sampleview';
+import { unselectShapes } from './sampleview'; // eslint-disable-line import/no-cycle
 
 export function addUserMessage(records, target) {
   return {
@@ -72,11 +73,11 @@ function parse(response) {
 }
 
 function notify(error) {
-  console.error('REQUEST FAILED', error);
+  console.error('REQUEST FAILED', error); // eslint-disable-line no-console
 }
 
 export function getInitialState(userInControl) {
-  return function (dispatch) {
+  return (dispatch) => {
     const state = {};
 
     const uiproperties = fetch('mxcube/api/v0.1/uiproperties', {

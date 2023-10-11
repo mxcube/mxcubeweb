@@ -15,6 +15,7 @@ const INITIAL_STATE = {
 };
 
 function queueReducer(state = INITIAL_STATE, action = {}) {
+  // eslint-disable-next-line sonarjs/max-switch-cases
   switch (action.type) {
     case 'SET_QUEUE': {
       return { ...state, queue: action.sampleOrder };
@@ -30,11 +31,12 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
       const sampleIDList = action.samplesData.map((s) => s.sampleID);
       return { ...state, queue: [...state.queue, ...sampleIDList] };
     }
-    case 'SET_QUEUE_STATUS':
+    case 'SET_QUEUE_STATUS': {
       return {
         ...state,
         queueStatus: action.queueState,
       };
+    }
     case 'REMOVE_SAMPLES_FROM_QUEUE': {
       const queue = state.queue.filter(
         (value) => !action.sampleIDList.includes(value),
@@ -42,7 +44,7 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, queue };
     }
-    case 'SET_CURRENT_SAMPLE':
+    case 'SET_CURRENT_SAMPLE': {
       if (!state.rememberParametersBetweenSamples) {
         clearAllLastUsedParameters();
       }
@@ -55,6 +57,7 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
           running: false,
         },
       };
+    }
     case 'CLEAR_CURRENT_SAMPLE': {
       const queue = state.queue.filter(
         (value) => value !== state.current.sampleID,
@@ -65,9 +68,10 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
         current: { sampleID: null, collapsed: false, running: false },
       };
     }
-    case 'RUN_SAMPLE':
+    case 'RUN_SAMPLE': {
       return { ...state, current: { ...state.current, running: true } };
-    case 'CHANGE_SAMPLE_ORDER':
+    }
+    case 'CHANGE_SAMPLE_ORDER': {
       return {
         ...state,
         [action.listName]: {
@@ -84,6 +88,7 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
           }),
         },
       };
+    }
     case 'SET_AUTO_MOUNT_SAMPLE': {
       return { ...state, autoMountNext: action.automount };
     }
@@ -125,8 +130,9 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
         },
       };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

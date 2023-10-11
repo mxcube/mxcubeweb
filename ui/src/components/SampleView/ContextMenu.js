@@ -1,7 +1,9 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { getLastUsedParameters } from '../Tasks/fields';
 
+// eslint-disable-next-line react/no-unsafe
 export default class ContextMenu extends React.Component {
   constructor(props) {
     super(props);
@@ -17,6 +19,7 @@ export default class ContextMenu extends React.Component {
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   menuOptions() {
     const bespokeTaskNames = new Set([
       'datacollection',
@@ -278,16 +281,15 @@ export default class ContextMenu extends React.Component {
 
     Object.keys(this.props.availableMethods).forEach((key) => {
       if (!this.props.availableMethods[key]) {
-        Object.keys(options).forEach(
-          (k) =>
-            (options[k] = options[k].filter((e) => {
-              let res = true;
-              if (Object.keys(this.props.availableMethods).includes(e.key)) {
-                res = this.props.availableMethods[e.key];
-              }
-              return res;
-            })),
-        );
+        Object.keys(options).forEach((k) => {
+          options[k] = options[k].filter((e) => {
+            let res = true;
+            if (Object.keys(this.props.availableMethods).includes(e.key)) {
+              res = this.props.availableMethods[e.key];
+            }
+            return res;
+          });
+        });
       }
     });
 
@@ -419,6 +421,7 @@ export default class ContextMenu extends React.Component {
       this.props.sampleActions.sendAbortCentring();
     }
 
+    // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
     this.props.sampleActions.sendDeleteShape(this.props.shape.id).then(() => {
       this.props.sampleActions.showContextMenu(false);
     });

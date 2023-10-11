@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Card, Dropdown, Form, Button, DropdownButton } from 'react-bootstrap';
 
@@ -95,7 +96,7 @@ export class SampleChangerTreeNode extends React.Component {
     return (
       <div>
         <li className="treeLi">
-          <input
+          <input // eslint-disable-line jsx-a11y/control-has-associated-label
             type="checkbox"
             className="treeNode"
             id={inputId}

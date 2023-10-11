@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import Dygraph from 'dygraphs';
 import 'dygraphs/dist/dygraph.min.css';
 
+// eslint-disable-next-line react/no-unsafe
 class Plot1D extends React.Component {
   constructor(props) {
     super(props);

@@ -1,3 +1,4 @@
+/* eslint-disable promise/prefer-await-to-then */
 import fetch from 'isomorphic-fetch';
 // The different states a beamline attribute can assume.
 export const STATE = {
@@ -157,7 +158,7 @@ export function sendLogFrontEndTraceBack(errorInfo, state) {
         'Content-type': 'application/json',
       },
       body: JSON.stringify({
-        stack: errorInfo['componentStack'],
+        stack: errorInfo.componentStack,
         state: JSON.stringify(state),
       }),
     });

@@ -37,7 +37,9 @@ const INITIAL_STATE = {
   },
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function sampleGridReducer(state = INITIAL_STATE, action = {}) {
+  // eslint-disable-next-line sonarjs/max-switch-cases
   switch (action.type) {
     case 'SET_QUEUE': {
       const sampleList = { ...state.sampleList };
@@ -63,8 +65,8 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
       return { ...state, sampleList, order, selected: {} };
     }
     case 'UPDATE_CRYSTAL_LIST': {
-      const crystalList = action.crystalList;
-      return Object.assign({}, state, { crystalList });
+      const { crystalList } = action;
+      return { ...state, crystalList };
     }
     case 'REMOVE_SAMPLES_FROM_QUEUE': {
       // When removing samples from queue, remove uncollected tasks from that sample in
@@ -310,7 +312,7 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
       // We might want to set current sample to be nothing in that case do
       // do nothing.
       if (action.sampleID && sampleList[action.sampleID]) {
-        sampleList[action.sampleID].state |= SAMPLE_MOUNTED;
+        sampleList[action.sampleID].state |= SAMPLE_MOUNTED; // eslint-disable-line no-bitwise
       }
 
       return { ...state, sampleList };

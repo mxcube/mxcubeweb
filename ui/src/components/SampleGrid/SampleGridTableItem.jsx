@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import {
   ListGroup,
@@ -160,9 +161,7 @@ export class SampleGridTableItem extends React.Component {
       { 'label-custom-success': this.props.sampleData.loadable === true },
     );
 
-    const limsLink = this.props.sampleData.limsLink
-      ? this.props.sampleData.limsLink
-      : '#';
+    const limsLink = this.props.sampleData.limsLink || '#';
     return (
       <ListGroup
         variant="flush"

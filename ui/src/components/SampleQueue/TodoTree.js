@@ -1,3 +1,5 @@
+/* eslint-disable react/no-array-index-key */
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import './app.css';
 import { ListGroup, Form, Button } from 'react-bootstrap';
@@ -35,7 +37,7 @@ export default class TodoTree extends React.Component {
       return <div />;
     }
 
-    const list = this.filter(this.props.list, this.state.searchWord);
+    const list = this.filter(this.props.list, this.state.searchWord); // eslint-disable-line unicorn/no-array-method-this-argument
 
     return (
       <ListGroup variant="flush">
@@ -66,9 +68,7 @@ export default class TodoTree extends React.Component {
         <ListGroup.Item className="d-flex list-body">
           {list.map((key, id) => {
             const sampleData = this.props.sampleList[key];
-            const sampleName = sampleData.sampleName
-              ? sampleData.sampleName
-              : '';
+            const sampleName = sampleData.sampleName || '';
             const proteinAcronym = sampleData.proteinAcronym
               ? `${sampleData.proteinAcronym} -`
               : '';

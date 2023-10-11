@@ -1,5 +1,7 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable promise/prefer-await-to-then */
 /* eslint-disable sonarjs/no-duplicate-string */
-import { getLoginInfo } from './login';
+import { getLoginInfo } from './login'; // eslint-disable-line import/no-cycle
 
 export function showObserverDialog(show = true) {
   return { type: 'SHOW_OBSERVER_DIALOG', show };
@@ -10,7 +12,7 @@ export function setRaState(data) {
 }
 
 export function getRaState() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/ra/', {
       method: 'GET',
       headers: {
@@ -27,7 +29,7 @@ export function getRaState() {
 }
 
 export function sendUpdateNickname(name) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/ra/update_user_nickname', {
       method: 'POST',
       credentials: 'include',
@@ -49,7 +51,7 @@ export function requestControl(
   name = '',
   userInfo = {},
 ) {
-  return function () {
+  return () => {
     fetch('mxcube/api/v0.1/ra/request_control', {
       method: 'POST',
       credentials: 'include',
@@ -68,7 +70,7 @@ export function requestControl(
 }
 
 export function sendTakeControl() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/ra/take_control', {
       method: 'POST',
       credentials: 'include',
@@ -84,7 +86,7 @@ export function sendTakeControl() {
 }
 
 export function sendGiveControl(username) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/ra/give_control', {
       method: 'POST',
       credentials: 'include',
@@ -101,7 +103,7 @@ export function sendGiveControl(username) {
 }
 
 export function sendLogoutUser(username) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/ra/logout_user', {
       method: 'POST',
       credentials: 'include',
@@ -140,7 +142,7 @@ export function setTimeoutGivesControl(timeoutGivesControl) {
 }
 
 export function sendAllowRemote(allow) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/ra/allow_remote', {
       method: 'POST',
       credentials: 'include',
@@ -156,7 +158,7 @@ export function sendAllowRemote(allow) {
 }
 
 export function sendTimeoutGivesControl(timeoutGivesControl) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/ra/timeout_gives_control', {
       method: 'POST',
       credentials: 'include',

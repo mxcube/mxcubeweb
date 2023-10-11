@@ -1,4 +1,4 @@
-/* global Cypress, cy, it, describe, beforeEach */
+/* global cy, it, describe, beforeEach */
 
 describe('login', () => {
   it("can't login with invalid credentials", () => {

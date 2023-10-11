@@ -23,6 +23,7 @@ class TaskContainer extends React.Component {
     this.addTask = this.addTask.bind(this);
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   addTask(params, stringFields, runNow) {
     const parameters = { ...params };
 
@@ -56,9 +57,10 @@ class TaskContainer extends React.Component {
 
   render() {
     const lines = {};
-    if (typeof this.props.shapes !== 'undefined') {
+    if (this.props.shapes !== undefined) {
       Object.keys(this.props.shapes).forEach((key) => {
         const shape = this.props.shapes[key];
+        // eslint-disable-next-line sonarjs/no-small-switch
         switch (shape.t) {
           case 'L': {
             lines[shape.id] = shape;

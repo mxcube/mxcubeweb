@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Form } from 'react-bootstrap';
 import '../MotorInput/motor.css';

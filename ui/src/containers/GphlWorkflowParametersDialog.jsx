@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { bindActionCreators, createStore, combineReducers } from 'redux';
 import { connect, Provider } from 'react-redux';
@@ -42,7 +43,7 @@ class GphlWorkflowParametersDialog extends React.Component {
             schema={this.props.formData}
             formData={this.props.formData.initialValues}
             onSubmit={this.submitData}
-            onError={console.log('errors')}
+            onError={console.log('errors')} // eslint-disable-line no-console
           />
         </Provider>
       );

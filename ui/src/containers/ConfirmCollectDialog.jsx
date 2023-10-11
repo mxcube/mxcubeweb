@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -140,9 +141,8 @@ export class ConfirmCollectDialog extends React.Component {
     // Making the dialog a bit more intuitive, only display the tasks for the
     // sample to be colleted when autoMountNtext is false
     if (!this.props.queue.autoMountNext) {
-      const sampleID = this.props.queue.current.sampleID
-        ? this.props.queue.current.sampleID
-        : this.props.queue.queue[0];
+      const sampleID =
+        this.props.queue.current.sampleID || this.props.queue.queue[0];
 
       if (sampleID) {
         queue = [sampleID];
@@ -311,7 +311,7 @@ export class ConfirmCollectDialog extends React.Component {
                 const sampleName = `${sample.sampleName} - ${sample.proteinAcronym}`;
 
                 if (task.type === 'Interleaved') {
-                  parameters = task.parameters.wedges[0].parameters;
+                  parameters = task.parameters.wedges[0].parameters; // eslint-disable-line prefer-destructuring
                 }
 
                 return (

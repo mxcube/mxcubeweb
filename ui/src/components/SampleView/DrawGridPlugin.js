@@ -103,10 +103,10 @@ export default class DrawGridPlugin {
   setCellSpace(gd, snapToGrid, hSpace, vSpace) {
     const gridData = { ...gd };
 
-    if (vSpace !== null && !isNaN(vSpace)) {
+    if (vSpace !== null && !Number.isNaN(vSpace)) {
       gridData.cellVSpace = vSpace;
     }
-    if (hSpace !== null && !isNaN(hSpace)) {
+    if (hSpace !== null && !Number.isNaN(hSpace)) {
       gridData.cellHSpace = hSpace;
     }
 
@@ -130,13 +130,7 @@ export default class DrawGridPlugin {
   }
 
   setPixelsPerMM(pixelsPerMM, gd = null) {
-    let gridData = null;
-
-    if (gd === null) {
-      gridData = this.gridData;
-    } else {
-      gridData = { ...gd };
-    }
+    const gridData = gd === null ? this.gridData : { ...gd };
 
     gridData.pixelsPerMMX = pixelsPerMM[0];
     gridData.pixelsPerMMY = pixelsPerMM[1];
@@ -298,7 +292,7 @@ export default class DrawGridPlugin {
   }
 
   initializeCellFilling(gd, col, row) {
-    const level = this.overlayLevel ? this.overlayLevel : 0.2;
+    const level = this.overlayLevel || 0.2;
     const fill = `rgba(0, 0, 200, ${level}`;
     return Array.from({ length: col }).map(() =>
       Array.from({ length: row }).fill(fill),
@@ -313,10 +307,6 @@ export default class DrawGridPlugin {
      */
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    const data = Array.from({ length: col }).map(() =>
-      Array.from({ length: row }).fill(Math.random()),
-    );
-
     // Asume flat result object to remain compatible with old format only
     // suporting one type of results
     let { result } = gd;
@@ -326,7 +316,7 @@ export default class DrawGridPlugin {
       result = gd.result[this.resultType];
     }
 
-    if (typeof result !== 'undefined' && result !== null && gd.id !== null) {
+    if (result !== undefined && result !== null && gd.id !== null) {
       for (let nh = 0; nh < row; nh++) {
         for (let nw = 0; nw < col; nw++) {
           const index = nw + nh * col + 1;
@@ -347,6 +337,7 @@ export default class DrawGridPlugin {
    * @param {GridData} gd
    * @return {Object} {shapeGroup, gridData}
    */
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   shapeFromGridData(gd) {
     const gridData = { ...gd };
     let [left, top] = gd.screenCoord;
@@ -563,9 +554,6 @@ export default class DrawGridPlugin {
                 rx: 20,
                 ry: 20,
               }),
-            );
-
-            this.mouseOverGridLabel.push(
               new fabric.Text(obj.cell, {
                 left: objCenterX,
                 top: options.e.offsetY - 25,
@@ -643,8 +631,8 @@ export default class DrawGridPlugin {
   saveGrid(_gd) {
     const gd = { ..._gd };
 
-    gd.screenCoord[0] = gd.screenCoord[0] / this.scale;
-    gd.screenCoord[1] = gd.screenCoord[1] / this.scale;
+    gd.screenCoord[0] /= this.scale;
+    gd.screenCoord[1] /= this.scale;
     gd.width /= this.scale;
     gd.height /= this.scale;
 

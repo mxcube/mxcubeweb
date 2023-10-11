@@ -25,7 +25,7 @@ export const CLICK_CENTRING = 0;
 export const TWO_STATE_ACTUATOR = 'INOUT';
 
 export function isCollected(task) {
-  return (task.state & TASK_COLLECTED) === TASK_COLLECTED;
+  return (task.state & TASK_COLLECTED) === TASK_COLLECTED; // eslint-disable-line no-bitwise
 }
 
 export function isUnCollected(task) {

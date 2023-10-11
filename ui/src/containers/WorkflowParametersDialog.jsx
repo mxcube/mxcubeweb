@@ -45,8 +45,8 @@ class WorkflowParametersDialog extends React.Component {
             validator={validator}
             schema={this.props.formData}
             formData={this.props.formData.initialValues}
-            onSubmit={this.submitData}
-            onError={console.log('errors')}
+            onSubmit={this.submitData} // eslint-disable-line react/jsx-handler-names
+            onError={console.log('errors')} // eslint-disable-line no-console
           />
         </Provider>
       );
@@ -55,6 +55,7 @@ class WorkflowParametersDialog extends React.Component {
     }
 
     return (
+      // eslint-disable-next-line react/jsx-handler-names
       <Modal show={this.props.show} onHide={this.props.hide} backdrop="static">
         <Modal.Header>
           <Modal.Title>{formName}</Modal.Title>

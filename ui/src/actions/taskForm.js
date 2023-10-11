@@ -19,7 +19,7 @@ export function showTaskForm(
   taskData = {},
   pointQueueID = -1,
 ) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(showForm(formName, sampleQueueID, taskData, pointQueueID));
   };
 }

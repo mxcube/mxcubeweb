@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
@@ -228,9 +229,11 @@ class GenericTaskForm extends React.Component {
   }
 
   updateFromRemoteValidation(formData) {
+    // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
     sendUpdateDependentFields(this.props.taskData.type, formData).then((_d) => {
       const data = JSON.parse(_d);
 
+      // eslint-disable-next-line guard-for-in
       for (const fieldName in data) {
         const el = document.querySelector(`#root_${fieldName}`);
         if (el !== null) {

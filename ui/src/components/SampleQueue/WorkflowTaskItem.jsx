@@ -1,3 +1,7 @@
+/* eslint-disable react/no-unused-prop-types */
+/* eslint-disable react/no-unused-state */
+
+/* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
@@ -114,7 +118,7 @@ export default class WorkflowTaskItem extends Component {
   }
 
   path(parameters) {
-    const path = parameters.path ? parameters.path : '';
+    const path = parameters.path || '';
     const pathEndPart = path.slice(-40);
 
     return (

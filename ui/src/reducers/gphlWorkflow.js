@@ -22,8 +22,9 @@ function gphlWorkflowReducer(state = INITIAL_STATE, action = {}) {
       const wf = action.data.workflow ? action.data.workflow.workflows : {};
       return { ...state, workflows: wf };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

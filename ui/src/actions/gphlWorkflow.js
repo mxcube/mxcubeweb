@@ -5,7 +5,7 @@ export function showGphlWorkflowParametersDialog(formData, show = true) {
 }
 
 export function gphlWorkflowSubmitParameters(data) {
-  return function () {
+  return () => {
     fetch('mxcube/api/v0.1/gphl_workflow/', {
       method: 'POST',
       credentials: 'include',

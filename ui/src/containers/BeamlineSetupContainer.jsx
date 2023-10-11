@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -80,6 +81,7 @@ class BeamlineSetupContainer extends React.Component {
     return popover;
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   createActuatorComponent() {
     const acts = [];
 
@@ -179,15 +181,13 @@ class BeamlineSetupContainer extends React.Component {
         >
           <span className="me-1">{uiprop.label}:</span>
         </td>,
-      );
-      components.push(
         <td
           key={`bs-val-${uiprop.label}`}
           className="pe-3 align-middle"
           style={{
             fontWeight: 'bold',
             borderRight:
-              uiprop_list.length != uiprop_list.indexOf(uiprop) + 1
+              uiprop_list.length !== uiprop_list.indexOf(uiprop) + 1
                 ? '1px solid #ddd'
                 : '',
           }}

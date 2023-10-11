@@ -1,7 +1,10 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable promise/no-nesting */
+/* eslint-disable promise/prefer-await-to-then */
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
-import { clearCurrentSample } from './queue';
+import { clearCurrentSample } from './queue'; // eslint-disable-line import/no-cycle
 
 export function setContents(contents) {
   return { type: 'SET_SC_CONTENTS', data: { sampleChangerContents: contents } };
@@ -36,25 +39,25 @@ export function setSelectedDrop(drop_index) {
 }
 
 export function setPlate(plate_index) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(setCurrentPlate(plate_index));
   };
 }
 
 export function selectWell(row, col) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(setSelectedWell(row, col));
   };
 }
 
 export function selectDrop(drop_index) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(setSelectedDrop(drop_index));
   };
 }
 
 export function refresh() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/sample_changer/contents', {
       method: 'GET',
       headers: {
@@ -92,7 +95,7 @@ export function refresh() {
 }
 
 export function select(address) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(`mxcube/api/v0.1/sample_changer/select/${address}`, {
       method: 'GET',
       headers: {
@@ -115,7 +118,7 @@ export function select(address) {
 }
 
 export function scan(address) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(`mxcube/api/v0.1/sample_changer/scan/${address}`, {
       method: 'GET',
       headers: {
@@ -136,7 +139,7 @@ export function scan(address) {
 }
 
 export function loadSample(sampleData, successCb = null) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const state = getState();
 
     if (state.sampleChanger.loadedSample.address !== sampleData.location) {
@@ -174,7 +177,7 @@ export function unloadSample(sample) {
     _sample = { location: sample };
   }
 
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(url, {
       method: 'POST',
       credentials: 'include',
@@ -195,7 +198,7 @@ export function unloadSample(sample) {
 }
 
 export function abort() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/sample_changer/send_command/abort', {
       method: 'GET',
       headers: {
@@ -212,7 +215,7 @@ export function abort() {
 }
 
 export function sendCommand(cmdparts, args) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(`mxcube/api/v0.1/sample_changer/send_command/${cmdparts}/${args}`, {
       method: 'GET',
       headers: {

@@ -1,7 +1,10 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable promise/no-nesting */
+/* eslint-disable promise/prefer-await-to-then */
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel, setLoading, getInitialState } from './general';
-import { serverIO } from '../serverIO';
+import { serverIO } from '../serverIO'; // eslint-disable-line import/no-cycle
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -54,7 +57,7 @@ export function postProposal(number) {
 }
 
 export function sendSelectProposal(number, navigate) {
-  return function (dispatch) {
+  return (dispatch) => {
     postProposal(number).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to select proposal'));
@@ -68,15 +71,15 @@ export function sendSelectProposal(number, navigate) {
 }
 
 export function startSession(userInControl) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(getInitialState(userInControl));
     dispatch(setLoading(false));
   };
 }
 
 export function refreshSession() {
-  return function (dispatch) {
-    return fetch('mxcube/api/v0.1/login/refresh_session', {
+  return (dispatch) =>
+    fetch('mxcube/api/v0.1/login/refresh_session', {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -84,12 +87,11 @@ export function refreshSession() {
       },
       credentials: 'include',
     });
-  };
 }
 
 export function getLoginInfo() {
-  return function (dispatch) {
-    return fetch('mxcube/api/v0.1/login/login_info', {
+  return (dispatch) =>
+    fetch('mxcube/api/v0.1/login/login_info', {
       method: 'GET',
       headers: {
         Accept: 'application/json',
@@ -108,7 +110,6 @@ export function getLoginInfo() {
           dispatch(setLoading(false));
         },
       );
-  };
 }
 
 export function signOut() {
@@ -117,15 +118,14 @@ export function signOut() {
 }
 
 export function signIn(proposal, password, navigate) {
-  return function (dispatch) {
+  // eslint-disable-next-line sonarjs/cognitive-complexity
+  return (dispatch) => {
     const previousUser = localStorage.getItem('currentUser');
     if (serverIO.hwrSocket !== null && serverIO.hwrSocket.connected) {
-      console.log(serverIO.hwrSocket.connected);
+      console.log(serverIO.hwrSocket.connected); // eslint-disable-line no-console
     } else {
       serverIO.connect();
     }
-
-    console.log(window.location);
 
     fetch('mxcube/api/v0.1/login/', {
       method: 'POST',
@@ -170,14 +170,14 @@ export function signIn(proposal, password, navigate) {
 }
 
 export function forcedSignout() {
-  return function (dispatch) {
+  return (dispatch) => {
     serverIO.disconnect();
     dispatch(signOut());
   };
 }
 
 export function doSignOut(navigate) {
-  return function (dispatch) {
+  return (dispatch) => {
     serverIO.disconnect();
     return fetch('mxcube/api/v0.1/login/signout', {
       credentials: 'include',

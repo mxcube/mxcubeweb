@@ -57,7 +57,7 @@ class SampleViewContainer extends Component {
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
 
-    if (typeof this.props.shapes !== 'undefined') {
+    if (this.props.shapes !== undefined) {
       Object.keys(this.props.shapes).forEach((key) => {
         const shape = this.props.shapes[key];
         switch (shape.t) {

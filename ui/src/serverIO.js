@@ -1,3 +1,4 @@
+/* eslint-disable promise/prefer-await-to-callbacks */
 import io from 'socket.io-client';
 import { addResponseMessage } from 'react-chat-widget';
 import { addLogRecord } from './actions/logger';
@@ -43,7 +44,7 @@ import { showWorkflowParametersDialog } from './actions/workflow';
 
 import { showGphlWorkflowParametersDialog } from './actions/gphlWorkflow';
 
-import { incChatMessageCount, getRaState } from './actions/remoteAccess';
+import { incChatMessageCount, getRaState } from './actions/remoteAccess'; // eslint-disable-line import/no-cycle
 
 import { forcedSignout, getLoginInfo, refreshSession } from './actions/login';
 
@@ -115,14 +116,14 @@ class ServerIO {
       this.hwrSocket = io.connect(
         `//${document.domain}:${window.location.port}/hwr`,
       );
-      this.hwrSocket.on('connect', function () {
-        console.log('hwrSocket connected!');
+      this.hwrSocket.on('connect', () => {
+        console.log('hwrSocket connected!'); // eslint-disable-line no-console
       });
       this.loggingSocket = io.connect(
         `//${document.domain}:${window.location.port}/logging`,
       );
-      this.hwrSocket.on('connect', function () {
-        console.log('loggingSocket connected!');
+      this.hwrSocket.on('connect', () => {
+        console.log('loggingSocket connected!'); // eslint-disable-line no-console
       });
     } else {
       this.hwrSocket.connect();
@@ -145,8 +146,8 @@ class ServerIO {
 
     this.loggingSocket.on('disconnect', (reason) => {
       if (reason === 'io server disconnect') {
-        let socket = this.loggingSocket;
-        setTimeout(function () {
+        const socket = this.loggingSocket;
+        setTimeout(() => {
           socket.connect();
         }, 500);
       }
@@ -292,6 +293,7 @@ class ServerIO {
 
           break;
         }
+
         case 'loadingSample':
         case 'loadedSample': {
           this.dispatch(
@@ -306,6 +308,7 @@ class ServerIO {
 
           break;
         }
+
         case 'unLoadingSample':
         case 'unLoadedSample': {
           this.dispatch(
@@ -320,6 +323,7 @@ class ServerIO {
 
           break;
         }
+
         case 'loadReady': {
           this.dispatch(
             setLoading(false, 'SC Ready', record.message, true, () =>
@@ -329,6 +333,7 @@ class ServerIO {
 
           break;
         }
+
         case 'inSafeArea': {
           this.dispatch(
             setLoading(false, 'SC Safe', record.message, true, () =>
@@ -338,6 +343,7 @@ class ServerIO {
 
           break;
         }
+
         // No default
       }
     });
@@ -356,8 +362,8 @@ class ServerIO {
 
     this.hwrSocket.on('disconnect', (reason) => {
       if (reason === 'io server disconnect') {
-        let socket = this.hwrSocket;
-        setTimeout(function () {
+        const socket = this.hwrSocket;
+        setTimeout(() => {
           socket.connect();
         }, 500);
       }

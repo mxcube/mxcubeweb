@@ -1,7 +1,10 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable promise/no-nesting */
+/* eslint-disable promise/prefer-await-to-then */
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { setLoading, showErrorPanel } from './general';
-import { setQueue } from './queue';
+import { setQueue } from './queue'; // eslint-disable-line import/no-cycle
 
 export function updateSampleList(sampleList, order) {
   return { type: 'UPDATE_SAMPLE_LIST', sampleList, order };
@@ -22,7 +25,7 @@ export function showGenericContextMenu(show, id, x = 0, y = 0) {
 }
 
 export function addSamplesToList(samplesData) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     // find last manually mounted sample id
     const { sampleList } = getState().sampleGrid;
 
@@ -51,7 +54,7 @@ export function setSampleOrderAction(order) {
 }
 
 export function sendSetSampleOrderAction(sampleOrder) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/queue/sample-order', {
       method: 'POST',
       credentials: 'include',
@@ -91,7 +94,7 @@ export function setSamplesInfoAction(sampleInfoList) {
 }
 
 export function sendGetSampleList() {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(
       setLoading(
         true,
@@ -122,7 +125,7 @@ export function sendGetSampleList() {
 }
 
 export function sendSyncSamples() {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(setLoading(true, 'Please wait', 'Synchronizing with ISPyB', true));
     fetch('mxcube/api/v0.1/lims/synch_samples', { credentials: 'include' })
       .then((response) => {
@@ -167,7 +170,7 @@ export function updateCrystalList(crystalList) {
 }
 
 export function syncWithCrims() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/sample_changer/sync_with_crims', {
       method: 'GET',
       headers: {
