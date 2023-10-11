@@ -1,6 +1,8 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable promise/prefer-await-to-then */
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
-import { showErrorPanel } from './general';
+import { showErrorPanel } from './general'; // eslint-disable-line import/no-cycle
 
 export function setMotorMoving(name, status) {
   return {
@@ -54,6 +56,7 @@ export function setStepSize(name, value) {
   };
 }
 
+// eslint-disable-next-line unicorn/no-object-as-default-parameter
 export function showContextMenu(show, shape = { type: 'NONE' }, x = 0, y = 0) {
   return {
     type: 'SHOW_CONTEXT_MENU',
@@ -151,7 +154,7 @@ export function videoMessageOverlay(show, msg) {
 }
 
 export function setVideoSize(width, height) {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     const { sampleview } = getState();
 
     if (sampleview.sourceIsScalable) {
@@ -245,7 +248,7 @@ export function setGridResultType(gridResultType) {
 }
 
 export function sendRotateToShape(sid) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/sampleview/shapes/rotate_to', {
       method: 'POST',
       credentials: 'include',
@@ -263,7 +266,7 @@ export function sendRotateToShape(sid) {
 }
 
 export function sendCentringPoint(x, y) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/sampleview/centring/click', {
       method: 'PUT',
       credentials: 'include',
@@ -292,7 +295,7 @@ export function sendCentringPoint(x, y) {
 }
 
 export function sendAcceptCentring() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/sampleview/centring/accept', {
       method: 'PUT',
       credentials: 'include',
@@ -310,7 +313,7 @@ export function sendAcceptCentring() {
 }
 
 export function sendGoToBeam(x, y) {
-  return function () {
+  return () => {
     fetch('/mxcube/api/v0.1/sampleview/movetobeam', {
       method: 'PUT',
       credentials: 'include',
@@ -328,7 +331,7 @@ export function sendGoToBeam(x, y) {
 }
 
 export function sendStartAutoCentring() {
-  return function () {
+  return () => {
     fetch('/mxcube/api/v0.1/sampleview/centring/startauto', {
       method: 'PUT',
       credentials: 'include',
@@ -347,7 +350,7 @@ export function sendStartAutoCentring() {
 }
 
 export function sendAddShape(shapeData = {}, successCb = null) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/sampleview/shapes', {
       method: 'POST',
       credentials: 'include',
@@ -373,7 +376,7 @@ export function sendAddShape(shapeData = {}, successCb = null) {
 }
 
 export function sendUpdateShapes(shapes) {
-  return function (dispatch) {
+  return (dispatch) => {
     return fetch('/mxcube/api/v0.1/sampleview/shapes', {
       method: 'POST',
       credentials: 'include',
@@ -396,7 +399,7 @@ export function sendUpdateShapes(shapes) {
 }
 
 export function sendDeleteShape(id) {
-  return function (dispatch) {
+  return (dispatch) => {
     return fetch(`/mxcube/api/v0.1/sampleview/shapes/${id}`, {
       method: 'DELETE',
       credentials: 'include',
@@ -417,9 +420,9 @@ export function sendDeleteShape(id) {
 }
 
 export function unselectShapes(shapes) {
-  return function (dispatch) {
+  return (dispatch) => {
     const _shapes = [];
-    if (typeof shapes.shapes !== 'undefined') {
+    if (shapes.shapes !== undefined) {
       const keys = Object.keys(shapes.shapes);
       keys.forEach((k) => {
         const aux = shapes.shapes[k];
@@ -432,7 +435,7 @@ export function unselectShapes(shapes) {
 }
 
 export function sendStartClickCentring() {
-  return function (dispatch, getState) {
+  return (dispatch, getState) => {
     dispatch(clearSelectedShapes());
 
     const { queue } = getState();
@@ -480,7 +483,7 @@ export function sendStartClickCentring() {
 }
 
 export function sendZoomPos(level) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/sampleview/zoom', {
       method: 'PUT',
       credentials: 'include',
@@ -494,7 +497,7 @@ export function sendZoomPos(level) {
 }
 
 export function sendLightOn(name) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(saveMotorPosition(name, true));
     fetch(`/mxcube/api/v0.1/sampleview/${name.toLowerCase()}on`, {
       method: 'PUT',
@@ -512,7 +515,7 @@ export function sendLightOn(name) {
 }
 
 export function sendLightOff(name) {
-  return function (dispatch) {
+  return (dispatch) => {
     dispatch(saveMotorPosition(name, false));
     fetch(`/mxcube/api/v0.1/sampleview/${name.toLowerCase()}off`, {
       method: 'PUT',
@@ -530,7 +533,7 @@ export function sendLightOff(name) {
 }
 
 export function sendStopMotor(motorName) {
-  return function () {
+  return () => {
     fetch(`/mxcube/api/v0.1/sampleview/${motorName}/stop`, {
       method: 'PUT',
       credentials: 'include',
@@ -547,7 +550,7 @@ export function sendStopMotor(motorName) {
 }
 
 export function sendMotorPosition(motorName, value) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(`/mxcube/api/v0.1/sampleview/${motorName}/${value}`, {
       method: 'PUT',
       credentials: 'include',
@@ -568,7 +571,7 @@ export function sendMotorPosition(motorName, value) {
 }
 
 export function sendAbortCentring() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/sampleview/centring/abort', {
       method: 'PUT',
       credentials: 'include',
@@ -589,7 +592,7 @@ export function sendAbortCentring() {
 }
 
 export function sendGoToPoint(id) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(`/mxcube/api/v0.1/sampleview/centring/${id}/moveto`, {
       method: 'PUT',
       credentials: 'include',
@@ -606,7 +609,7 @@ export function sendGoToPoint(id) {
 }
 
 export function sendChangeAperture(pos) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/diffractometer/aperture', {
       method: 'PUT',
       credentials: 'include',
@@ -627,7 +630,7 @@ export function sendChangeAperture(pos) {
 }
 
 export function getSampleImageSize() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/sampleview/camera', {
       method: 'GET',
       credentials: 'include',
@@ -651,7 +654,7 @@ export function getSampleImageSize() {
 }
 
 export function getMotorPosition(motor) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(`/mxcube/api/v0.1/sampleview/${motor}`, {
       method: 'GET',
       credentials: 'include',
@@ -673,7 +676,7 @@ export function getMotorPosition(motor) {
 }
 
 export function getMotorPositions() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/diffractometer/movables/state', {
       method: 'GET',
       credentials: 'include',
@@ -695,7 +698,7 @@ export function getMotorPositions() {
 }
 
 export function getPointsPosition() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/sampleview/centring', {
       method: 'GET',
       headers: {
@@ -716,7 +719,7 @@ export function getPointsPosition() {
 }
 
 export function sendCurrentPhase(phase) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('/mxcube/api/v0.1/diffractometer/phase', {
       method: 'PUT',
       credentials: 'include',

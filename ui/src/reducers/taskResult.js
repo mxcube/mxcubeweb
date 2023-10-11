@@ -16,8 +16,9 @@ function taskResultReducer(state = INITIAL_STATE, action = {}) {
     case 'SET_INITIAL_STATE': {
       return { ...INITIAL_STATE };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

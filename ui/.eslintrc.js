@@ -11,10 +11,11 @@ const dependencies = getDependencies();
 
 module.exports = createConfig({
   cwd: __dirname,
-  incrementalAdoption: true, // turn everything into a warning
   rules: {
-    'unicorn/consistent-destructuring': 'off', // too many failures in React class components
-    'promise/catch-or-return': 'off', // requires deeper refactoring of fetching layer
+    'import/no-default-export': 'off', // too opinionated
+    'import/no-unresolved': 'off', // lots of false positives (perhaps misconfigured?)
+    'simple-import-sort/imports': 'off', // changes global CSS order; must migrate to CSS modules first
+    'unicorn/prefer-prototype-methods': 'off', // not really more readable and makes Jest crash
 
     // Ternaries are sometimes more readable when `true` branch is most significant branch
     'no-negated-condition': 'off',
@@ -24,26 +25,24 @@ module.exports = createConfig({
     'unicorn/no-useless-undefined': 'off',
     'consistent-return': 'error',
 
-    // Not really more readable and makes Jest crash
-    'unicorn/prefer-prototype-methods': 'off',
-
     /* Forcing use of `else` for consistency with mandatory `default` clause in `switch` statements is unreasonable.
      * `if`/`else if` serves a different purpose than `switch`. */
     'sonarjs/elseif-without-else': 'off',
-
-    // The point of `switch` is to be less verbose than if/else-if/else
-    'unicorn/switch-case-braces': ['warn', 'avoid'],
   },
   overrides: [
     createReactOverride({
       ...dependencies,
       rules: {
-        'react/no-unsafe': 'off', // requires non-trivial refactoring
-        'react/destructuring-assignment': 'off', // too many failures in React class components
         'react/jsx-no-constructed-context-values': 'off', // too strict
+        'jsx-a11y/media-has-caption': 'off', // not relevant
+
         'react/static-property-placement': 'off', // will not be relevant after converting to functional components
-        'jsx-a11y/anchor-is-valid': 'off', // requires non-trivial refactoring
-        'jsx-a11y/no-static-element-interactions': 'off', // requires non-trivial refactoring
+        'react/destructuring-assignment': 'off', // too many failures in React class components
+        'unicorn/consistent-destructuring': 'off', // too many failures in React class components
+
+        'jsx-a11y/anchor-is-valid': 'off', // too many failures to disable locally
+        'jsx-a11y/click-events-have-key-events': 'off', // too many failures to disable locally
+        'jsx-a11y/no-static-element-interactions': 'off', // too many failures to disable locally
       },
     }),
     createJestOverride({

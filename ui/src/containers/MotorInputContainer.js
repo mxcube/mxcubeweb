@@ -14,7 +14,7 @@ class MotorInputContainer extends Component {
     const { motorhwo } = this.props;
     let result = null;
 
-    if (!isNaN(motorhwo.value)) {
+    if (!Number.isNaN(motorhwo.value)) {
       result = (
         <div>
           <MotorInput

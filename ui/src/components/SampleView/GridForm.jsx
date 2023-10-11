@@ -1,3 +1,6 @@
+/* eslint-disable react/jsx-key */
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable react/jsx-handler-names */
 import './SampleView.css';
 import React from 'react';
 import { Row, Col, Form, Button, Table } from 'react-bootstrap';

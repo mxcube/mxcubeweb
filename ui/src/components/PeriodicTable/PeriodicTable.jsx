@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 
 import './style.css';
@@ -35,7 +36,9 @@ export default class PeriodicTable extends React.Component {
   }
 
   render() {
-    this.props.availableElements.forEach((el) => this.enableElement(el));
+    this.props.availableElements.forEach((el) => {
+      this.enableElement(el);
+    });
 
     return (
       <div className="periodic" onClick={this.onClickHandler}>

@@ -1,5 +1,6 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
-import { Col, OverlayTrigger, Popover, Badge } from 'react-bootstrap';
+import { OverlayTrigger, Popover, Badge } from 'react-bootstrap';
 import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 import './SampleGridTable.css';
@@ -256,11 +257,7 @@ export class TaskItem extends React.Component {
     const task = this.props.taskData;
 
     return (
-      <div
-        sm={2}
-        key={this.props.taskIndex}
-        className=" ms-1 sample-grid-task-item"
-      >
+      <div key={this.props.taskIndex} className=" ms-1 sample-grid-task-item">
         <OverlayTrigger
           rootClose="true"
           placement="auto"

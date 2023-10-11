@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -15,7 +16,7 @@ class RequestControlForm extends React.Component {
   }
 
   getTakeControlOption() {
-    let content = (
+    return (
       <span style={{ marginLeft: '1em' }}>
         <Button
           size="sm"
@@ -26,8 +27,6 @@ class RequestControlForm extends React.Component {
         </Button>
       </span>
     );
-
-    return content;
   }
 
   takeControlOnClick() {

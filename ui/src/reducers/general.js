@@ -57,8 +57,9 @@ function generalReducer(state = INITIAL_STATE, action = {}) {
     case 'APPLICATION_FETCHED': {
       return { ...state, applicationFetched: action.data };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -151,11 +152,11 @@ class SampleListViewContainer extends React.Component {
   getCellFilterOptions() {
     let options = [];
 
-    let sampleListByCellNb = Object.values(this.props.sampleList).map(
+    const sampleListByCellNb = Object.values(this.props.sampleList).map(
       (sample) => sample.cell_no,
     );
     // we create a list from all cell numbers and keep unique value and then sort ascending
-    let sampleListByCellNbUniqueVal = [...new Set(sampleListByCellNb)].sort(
+    const sampleListByCellNbUniqueVal = [...new Set(sampleListByCellNb)].sort(
       (va, vb) => va - vb,
     );
 
@@ -181,11 +182,11 @@ class SampleListViewContainer extends React.Component {
   getPuckFilterOptions() {
     let options = [];
 
-    let sampleListByPuckNb = Object.values(this.props.sampleList).map(
+    const sampleListByPuckNb = Object.values(this.props.sampleList).map(
       (sample) => sample.puck_no,
     );
     // we create a list from all puck numbers and keep unique value and then sort ascending
-    let sampleListByPuckNbUniqueVal = [...new Set(sampleListByPuckNb)].sort(
+    const sampleListByPuckNbUniqueVal = [...new Set(sampleListByPuckNb)].sort(
       (va, vb) => va - vb,
     );
 
@@ -212,6 +213,7 @@ class SampleListViewContainer extends React.Component {
    * @property {Object} selected
    * @property {Object} sampleList
    */
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   showTaskForm(formName, extraParams = {}) {
     let prefix = '';
     const path = '';
@@ -280,6 +282,7 @@ class SampleListViewContainer extends React.Component {
    */
   syncSamples() {
     if (Object.keys(this.props.sampleList).length === 0) {
+      // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
       this.props.getSamples().then(() => {
         this.props.syncSamples();
       });

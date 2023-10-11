@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
 import './app.css';
@@ -133,6 +134,7 @@ export default class QueueControl extends React.Component {
     );
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   render() {
     let nextSample = [];
     let queueOptions = [];
@@ -142,7 +144,7 @@ export default class QueueControl extends React.Component {
       if (this.props.queue[idx + 1]) {
         const sampleData =
           this.props.sampleList[this.props.queue[idx + 1]] || {};
-        const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
+        const sampleName = sampleData.sampleName || '';
         const proteinAcronym = sampleData.proteinAcronym
           ? `${sampleData.proteinAcronym} - `
           : '';

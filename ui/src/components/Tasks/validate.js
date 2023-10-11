@@ -3,6 +3,7 @@ const everpolate = require('everpolate');
 const INVALID_CHAR_MSG =
   'Invalid character in path, only alphanumerical characters and -, _, : allowed';
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 const validate = (values, props) => {
   const errors = {};
   if (!props.beamline.hardwareObjects) {
@@ -32,7 +33,7 @@ const validate = (values, props) => {
     errors.prefix = INVALID_CHAR_MSG;
   }
 
-  if (props.subdir && !/^[-{}\/\w]+$/u.test(props.subdir)) {
+  if (props.subdir && !/^[-{}/\w]+$/u.test(props.subdir)) {
     errors.subdir = INVALID_CHAR_MSG;
   }
 
@@ -42,7 +43,7 @@ const validate = (values, props) => {
 
   if (
     props.experimentName !== undefined &&
-    !/^[-{}\/\w]+$/u.test(props.experimentName)
+    !/^[-{}/\w]+$/u.test(props.experimentName)
   ) {
     errors.experimentName = INVALID_CHAR_MSG;
   }

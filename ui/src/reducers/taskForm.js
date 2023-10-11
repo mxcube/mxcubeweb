@@ -50,8 +50,9 @@ function taskFormReducer(state = INITIAL_STATE, action = {}) {
         fileSuffix: action.data.detector.fileSuffix,
       };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

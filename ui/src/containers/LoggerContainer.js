@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -30,6 +31,7 @@ export class LoggerContainer extends React.Component {
     const filteredRecords = records
       .slice(page * 20, page * 20 + 20)
       .map((record, index) => (
+        // eslint-disable-next-line react/no-array-index-key
         <tr key={index}>
           <td>{record.timestamp}</td>
           <td>{record.logger}</td>

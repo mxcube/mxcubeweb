@@ -25,7 +25,7 @@ export default class PhaseInput extends React.Component {
       <div className="motor-input-container">
         <select
           className={inputCSS}
-          onChange={this.sendPhase}
+          onChange={this.sendPhase} // eslint-disable-line react/jsx-handler-names
           value={this.props.phase}
         >
           {this.props.phaseList.map((option) => (

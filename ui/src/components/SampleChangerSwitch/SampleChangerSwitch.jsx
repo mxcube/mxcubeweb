@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Badge, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import './style.css';

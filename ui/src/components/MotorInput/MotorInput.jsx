@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import cx from 'classnames';
 import { Button } from 'react-bootstrap';
@@ -6,6 +8,7 @@ import { MOTOR_STATE } from '../../constants';
 import './motor.css';
 import '../input.css';
 
+// eslint-disable-next-line react/no-unsafe
 export default class MotorInput extends React.Component {
   constructor(props) {
     super(props);

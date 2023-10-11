@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Field } from 'redux-form';
 import { Row, Col, Form, Button } from 'react-bootstrap';
@@ -8,10 +9,7 @@ import './style.css';
 export function getLastUsedParameters(type, newParams) {
   const lastParameters = localStorage.getItem(`last${type}Parameters`);
 
-  const parameters =
-    lastParameters === null ? newParams : JSON.parse(lastParameters);
-
-  return parameters;
+  return lastParameters === null ? newParams : JSON.parse(lastParameters);
 }
 
 export function saveToLastUsedParameters(formName, parameters) {
@@ -67,7 +65,7 @@ export function toFixed(state, hoName) {
   for (const group of Object.values(state.uiproperties)) {
     for (const component of group.components) {
       if (component.attribute === hoName) {
-        precision = component.precision;
+        precision = component.precision; // eslint-disable-line prefer-destructuring
         break;
       }
     }
@@ -265,6 +263,7 @@ export function SelectField({ propName, label, list, col1, col2 }) {
                 const lbl = Array.isArray(val) ? val[0] : val;
                 const v = Array.isArray(val) ? val[1] : val;
                 return (
+                  // eslint-disable-next-line react/no-array-index-key
                   <option key={i} value={v}>
                     {lbl}
                   </option>
@@ -283,6 +282,7 @@ export function FieldsRow({ children }) {
     <Row className="mb-3">
       {children.length > 0 ? (
         children.map((child, i) => (
+          // eslint-disable-next-line react/no-array-index-key
           <Col key={i} sm={12 / children.length}>
             {child}
           </Col>

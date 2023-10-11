@@ -53,8 +53,9 @@ function loginReducer(state = INITIAL_STATE, action = {}) {
     case 'HIDE_PROPOSALS_FORM': {
       return { ...state, showProposalsForm: false };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 

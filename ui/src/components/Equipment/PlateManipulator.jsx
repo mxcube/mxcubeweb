@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
 import {
@@ -133,6 +134,7 @@ class PlateManipulator extends React.Component {
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   render() {
     const plate = this.props.plates[this.props.plateIndex];
     const nbcols = plate.colTitle.length;

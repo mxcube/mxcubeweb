@@ -1,3 +1,4 @@
+/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Container, Card, Row, Col, Button, Form } from 'react-bootstrap';
@@ -7,7 +8,6 @@ import { sendMail } from '../actions/login';
 import characterisation from '../help_videos/mx3-characterisation.ogv';
 import interleaved from '../help_videos/mx3-interleaved.ogv';
 import mesh from '../help_videos/mx3-mesh.ogv';
-import general from '../reducers/general';
 
 export class HelpContainer extends React.Component {
   constructor(props) {
@@ -59,6 +59,7 @@ export class HelpContainer extends React.Component {
 
     if (process.env.helpLinks) {
       links = process.env.helpLinks.map((link) => (
+        // eslint-disable-next-line react/jsx-key
         <div>
           <a target="_blank" href={link.url} rel="noreferrer">
             {link.name}

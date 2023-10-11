@@ -142,19 +142,21 @@ export const INITIAL_STATE = {
   energyScanElements: [],
 };
 
+// eslint-disable-next-line sonarjs/cognitive-complexity
 function beamlineReducer(state = INITIAL_STATE, action = {}) {
   let data = {};
 
+  // eslint-disable-next-line sonarjs/max-switch-cases
   switch (action.type) {
-    case 'BL_ATTR_GET_ALL':
+    case 'BL_ATTR_GET_ALL': {
       return { ...state, ...action.data };
+    }
 
     case 'BL_UPDATE_HARDWARE_OBJECT': {
-      const attrData = Object.assign(
-        {},
-        state.hardwareObjects[action.data.name],
-        action.data,
-      );
+      const attrData = {
+        ...state.hardwareObjects[action.data.name],
+        ...action.data,
+      };
       return {
         ...state,
         hardwareObjects: {
@@ -203,7 +205,7 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
         },
       };
     }
-    case 'BL_ACT_SET':
+    case 'BL_ACT_SET': {
       return {
         ...state,
         actuators: {
@@ -211,12 +213,14 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
           [action.data.name]: action.data,
         },
       };
-    case 'BL_UPDATE_HARDWARE_OBJECT_STATE':
+    }
+    case 'BL_UPDATE_HARDWARE_OBJECT_STATE': {
       data = { ...state };
       data.hardwareObjects[action.data.name].state = action.data.state;
       return data;
+    }
 
-    case 'SET_MOTOR_MOVING':
+    case 'SET_MOTOR_MOVING': {
       return {
         ...state,
         motorInputDisable: true,
@@ -228,14 +232,16 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
           },
         },
       };
+    }
 
-    case 'SAVE_MOTOR_POSITIONS':
+    case 'SAVE_MOTOR_POSITIONS': {
       return {
         ...state,
         motors: { ...state.motors, ...action.data },
         zoom: action.data.zoom.position,
       };
-    case 'SAVE_MOTOR_POSITION':
+    }
+    case 'SAVE_MOTOR_POSITION': {
       return {
         ...state,
         motors: {
@@ -247,7 +253,8 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
           },
         },
       };
-    case 'UPDATE_MOTOR_STATE':
+    }
+    case 'UPDATE_MOTOR_STATE': {
       return {
         ...state,
         motorInputDisable: action.value !== MOTOR_STATE.READY,
@@ -260,7 +267,8 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
           },
         },
       };
-    case 'SET_INITIAL_STATE':
+    }
+    case 'SET_INITIAL_STATE': {
       return {
         ...INITIAL_STATE,
         //        motors: { ...INITIAL_STATE.motors, ...action.data.Motors },
@@ -276,11 +284,13 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
         availableMethods: action.data.beamlineSetup.availableMethods,
         energyScanElements: action.data.beamlineSetup.energyScanElements,
       };
-    case 'BL_MACH_INFO':
+    }
+    case 'BL_MACH_INFO': {
       return {
         ...state,
         machinfo: { ...state.machinfo, ...action.info },
       };
+    }
     case 'ACTION_SET_STATE': {
       const beamlineActionsList = JSON.parse(
         JSON.stringify(state.beamlineActionsList),
@@ -413,8 +423,9 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
       plotsInfo[action.id] = plotInfo;
       return { ...state, plotsInfo };
     }
-    default:
+    default: {
       return state;
+    }
   }
 }
 
