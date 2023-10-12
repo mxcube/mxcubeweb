@@ -1,5 +1,5 @@
 [
-    { 
+    {
       "#": "Settings (omega, kappa, phi) for running TransCal on a mini-Kappa (short protocol, without SOC)",
       "settings": [
         0,   0,       0,
@@ -15,10 +15,10 @@
       "noRefineSOC": true,
       "useRecen": false
     },
-    
+
     {
       "#": "Settings(omega, kappa, phi) for running TransCal on a mini-Kappa (medium-length protocol)",
-    
+
       "settings": [
         0.00,     0.00,   -90.00,
         0.00,     0.00,   -45.00,

@@ -1,5 +1,4 @@
 import json
-import random
 
 # Python 2 and 3 compatibility
 try:

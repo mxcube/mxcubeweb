@@ -30,14 +30,14 @@ gphl_persistname: persistence
 #Hosts and ports for py4j java-python gateway, all OPTIONAL
 #If not set will use py4j default values, which are as given below
 #NB python_host is set automatically to localhost or socket.gethostname()
-#NB java_host is not needed as all communication is effectively one-way 
+#NB java_host is not needed as all communication is effectively one-way
 #connection_parameters:
 #    python_port: 25334
 #    java_port: 25333
 
 #NB Non-absolute file names are interpreted relative to one of the
 #HardwareRepository directories on the lookup path
-  
+
 software_paths:
     # Mandatory. Directory with workflow config input, e.g. instrumentation.nml
     gphl_beamline_config: gphl/config_esrf_id30b

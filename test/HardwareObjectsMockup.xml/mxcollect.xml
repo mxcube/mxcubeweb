@@ -6,7 +6,7 @@
   <object href="/transmission" role="transmission"/>
   <object href="/detector" role="detector"/>
   <object href="/resolution" role="resolution"/>
-  <object href="/lims" role="dbserver"/> 
+  <object href="/lims" role="dbserver"/>
   <num_snapshots>0</num_snapshots>
 
   <auto_processing>

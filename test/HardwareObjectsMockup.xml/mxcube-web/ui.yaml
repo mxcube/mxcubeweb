@@ -14,21 +14,21 @@ sample_view:
       role: kappa
       step: 0.1
       precision: 1
-      suffix: "°"          
+      suffix: "°"
     -
       label: Kappa Phi
       attribute: diffractometer.kappa_phi
       role: kappa_phi
       step: 0.1
       precision: 1
-      suffix: °          
+      suffix: °
     -
       label: X
       attribute: diffractometer.phix
       role: phix
       step: 0.1
       precision: 3
-      suffix: mm      
+      suffix: mm
     -
       label: Y
       attribute: diffractometer.phiy
@@ -98,7 +98,7 @@ beamline_setup:
     -
       label: Fast Shutter
       attribute: fast_shutter
-    - 
+    -
       label: Safety shutter
       attribute: safety_shutter
     -
@@ -126,7 +126,7 @@ beamline_setup:
       label: Cryo
       attribute: cryo
       precision: 2
-      suffix: k       
+      suffix: k
     -
       label: Wavelength
       attribute: energy.wavelength
@@ -138,7 +138,7 @@ beamline_setup:
       attribute: detector.detector_distance
       step: 0.1
       precision: 1
-      suffix: mm 
+      suffix: mm
     -
       label: Flux
       attribute: flux

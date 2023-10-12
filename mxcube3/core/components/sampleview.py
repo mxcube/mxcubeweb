@@ -309,9 +309,9 @@ class SampleView(ComponentBase):
 
                 beam_info_dict = beam_info_dict = self.app.beamline.get_beam_info()
 
-                shape_data["pixels_per_mm"] = (
-                    HWR.beamline.diffractometer.get_pixels_per_mm()
-                )
+                shape_data[
+                    "pixels_per_mm"
+                ] = HWR.beamline.diffractometer.get_pixels_per_mm()
                 shape_data["beam_pos"] = (
                     beam_info_dict.get("position")[0],
                     beam_info_dict.get("position")[1],
@@ -601,9 +601,9 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
                         (snapshot_index + 1),
                     ),
                 )
-                dc_params["xtalSnapshotFullPath%i" % (snapshot_index + 1)] = (
-                    snapshot_filename
-                )
+                dc_params[
+                    "xtalSnapshotFullPath%i" % (snapshot_index + 1)
+                ] = snapshot_filename
 
                 try:
                     logging.getLogger("MX3.HWR").info(

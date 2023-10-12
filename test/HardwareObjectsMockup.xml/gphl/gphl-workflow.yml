@@ -30,7 +30,7 @@ settings:
 #        - TEST_Characterisation_12_4
 #        - TEST_Characterisation_12_5
 
-    # How to set starting value for beam energy. Values are: 
+    # How to set starting value for beam energy. Values are:
     # 'configured': set value from calibration and characterisation strategy file
     # 'current': use current value
     starting_beamline_energy: current
@@ -120,7 +120,7 @@ settings:
 
         # Switch to pass log to stdout. Defaults to True
         # co.gphl.wf.logStdout: false
-    
+
     # Properties applied after the java command - syntax as above-->
     # Note that irrelevant properties are simply ignored.-->
     workflow_properties:
@@ -152,7 +152,7 @@ settings:
         co.gphl.wf.simcal_predict.mosaicity: 0.2
 #        # Testing ONLY:
 #        co.gphl.wf.run_number: 7
-    
+
 #    Workflows, The options in the top elements are updated with the options
 #    in the individual type, and passed as options to teh workflow application
 # The following options are set elsewhere and can *not* be set here
