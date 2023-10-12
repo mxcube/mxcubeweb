@@ -59,8 +59,8 @@ class WavelengthAdapter(ActuatorAdapterBase):
         """
         try:
             return FloatValueModel(**{"value": self._ho.get_wavelength()})
-        except (AttributeError, TypeError):
-            raise ValueError("Could not get value")
+        except (AttributeError, TypeError) as ex:
+            raise ValueError("Could not get value") from ex
 
     def state(self):
         """
@@ -87,8 +87,8 @@ class WavelengthAdapter(ActuatorAdapterBase):
         """
         try:
             return self._ho.get_wavelength_limits()
-        except (AttributeError, TypeError):
-            raise ValueError("Could not get limits")
+        except (AttributeError, TypeError) as ex:
+            raise ValueError("Could not get limits") from ex
 
     def read_only(self):
         """

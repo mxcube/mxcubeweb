@@ -20,7 +20,9 @@ from mxcubecore import queue_entry
 from mxcubecore.utils.conversion import make_table
 
 from mxcube3.logging_handler import MX3LoggingHandler
-from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
+from mxcube3.core.util.adapterutils import (
+    get_adapter_cls_from_hardware_object,
+)
 from mxcube3.core.adapter.adapter_base import AdapterBase
 from mxcube3.core.components.component_base import import_component
 from mxcube3.core.components.lims import Lims
@@ -85,7 +87,9 @@ class MXCUBECore:
 
         :return: None
         """
-        from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
+        from mxcube3.core.adapter.beamline_adapter import (
+            BeamlineAdapter,
+        )
 
         fname = os.path.dirname(__file__)
         HWR.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
@@ -256,7 +260,13 @@ class MXCUBEApplication:
 
     @staticmethod
     def init(
-        server, allow_remote, ra_timeout, log_fpath, log_level, enabled_logger_list, cfg
+        server,
+        allow_remote,
+        ra_timeout,
+        log_fpath,
+        log_level,
+        enabled_logger_list,
+        cfg,
     ):
         """
         Initializes application wide variables, sample video stream, and applies
@@ -438,7 +448,10 @@ class MXCUBEApplication:
     def get_ui_properties():
         # Add type information to each component retrieved from the beamline adapter
         # (either via config or via mxcubecore.beamline)
-        for _item_name, item_data in MXCUBEApplication.CONFIG.app.ui_properties.items():
+        for (
+            _item_name,
+            item_data,
+        ) in MXCUBEApplication.CONFIG.app.ui_properties.items():
             for component_data in item_data.components:
                 try:
                     mxcore = MXCUBEApplication.mxcubecore
@@ -446,8 +459,15 @@ class MXCUBEApplication:
                     adapter_cls_name = type(adapter).__name__
                     value_type = adapter.adapter_type
                 except AttributeError:
-                    msg = f"{component_data.attribute} not accessible via Beamline object. "
-                    msg += f"Verify that beamline.{component_data.attribute} is valid and/or "
+                    msg = (
+                        f"{component_data.attribute} not accessible"
+                        " via Beamline object. "
+                    )
+                    msg += (
+                        "Verify that"
+                        f" beamline.{component_data.attribute} is"
+                        " valid and/or "
+                    )
                     msg += f"{component_data.attribute} accessible via get_role "
                     msg += "check ui.yaml configuration file. "
                     msg += "(attribute will NOT be avilable in UI)"
@@ -465,7 +485,10 @@ class MXCUBEApplication:
 
         return {
             key: value.dict()
-            for (key, value) in MXCUBEApplication.CONFIG.app.ui_properties.items()
+            for (
+                key,
+                value,
+            ) in MXCUBEApplication.CONFIG.app.ui_properties.items()
         }
 
     @staticmethod

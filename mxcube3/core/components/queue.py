@@ -493,7 +493,10 @@ class Queue(ComponentBase):
     def _handle_xrf(self, sample_node, node):
         queueID = node._node_id
         enabled, state = self.get_node_state(queueID)
-        parameters = {"countTime": node.count_time, "shape": node.shape}
+        parameters = {
+            "countTime": node.count_time,
+            "shape": node.shape,
+        }
         parameters.update(node.path_template.as_dict())
         parameters["path"] = parameters["directory"]
 
@@ -529,7 +532,11 @@ class Queue(ComponentBase):
     def _handle_energy_scan(self, sample_node, node):
         queueID = node._node_id
         enabled, state = self.get_node_state(queueID)
-        parameters = {"element": node.element_symbol, "edge": node.edge, "shape": -1}
+        parameters = {
+            "element": node.element_symbol,
+            "edge": node.edge,
+            "shape": -1,
+        }
 
         parameters.update(node.path_template.as_dict())
         parameters["path"] = parameters["directory"]
@@ -640,7 +647,10 @@ class Queue(ComponentBase):
         res = {
             "label": "Interleaved",
             "type": "Interleaved",
-            "parameters": {"wedges": wedges, "swNumImages": node.interleave_num_images},
+            "parameters": {
+                "wedges": wedges,
+                "swNumImages": node.interleave_num_images,
+            },
             "checked": node.is_enabled(),
             "sampleID": sample_node.loc_str,
             "sampleQueueID": sample_node._node_id,
@@ -1135,7 +1145,10 @@ class Queue(ComponentBase):
             acq2.acquisition_parameters.centred_position = cpos2
         elif params.get("mesh", False):
             grid = HWR.beamline.sample_view.get_shape(params["shape"])
-            acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
+            acq.acquisition_parameters.mesh_range = (
+                grid.width,
+                grid.height,
+            )
             mesh_center = HWR.beamline.default_acquisition_parameters["mesh"].get(
                 "mesh_center", "top-left"
             )
@@ -1219,13 +1232,15 @@ class Queue(ComponentBase):
             )
 
         full_path = os.path.join(
-            HWR.beamline.session.get_base_image_directory(), params.get("subdir", "")
+            HWR.beamline.session.get_base_image_directory(),
+            params.get("subdir", ""),
         )
 
         model.path_template.directory = full_path
 
         process_path = os.path.join(
-            HWR.beamline.session.get_base_process_directory(), params.get("subdir", "")
+            HWR.beamline.session.get_base_process_directory(),
+            params.get("subdir", ""),
         )
         model.path_template.process_directory = process_path
 
@@ -1244,7 +1259,10 @@ class Queue(ComponentBase):
         beamline_params["shape"] = params["shape"]
 
         params_list = list(
-            map(str, list(itertools.chain(*iter(beamline_params.items()))))
+            map(
+                str,
+                list(itertools.chain(*iter(beamline_params.items()))),
+            )
         )
         params_list.insert(0, params["wfpath"])
         params_list.insert(0, "modelpath")
@@ -1265,13 +1283,18 @@ class Queue(ComponentBase):
         """
         params = task_data["parameters"]
         self.set_dc_params(
-            model.reference_image_collection, entry, task_data, sample_model
+            model.reference_image_collection,
+            entry,
+            task_data,
+            sample_model,
         )
 
         try:
-            params["strategy_complexity"] = ["SINGLE", "FEW", "MANY"].index(
-                params["strategy_complexity"]
-            )
+            params["strategy_complexity"] = [
+                "SINGLE",
+                "FEW",
+                "MANY",
+            ].index(params["strategy_complexity"])
         except ValueError:
             params["strategy_complexity"] = 0
 
@@ -1628,7 +1651,10 @@ class Queue(ComponentBase):
         if task["parameters"]["wfpath"] == "Gphl":
             wf_model, dc_entry = self._create_gphl_wf(task)
             self.set_gphl_wf_params(
-                wf_model, dc_entry, task, parent_model.get_sample_node()
+                wf_model,
+                dc_entry,
+                task,
+                parent_model.get_sample_node(),
             )
         else:
             wf_model, dc_entry = self._create_wf(task)
@@ -1860,7 +1886,10 @@ class Queue(ComponentBase):
 
                 task = self._handle_dc(sample, collection)
                 task.update(
-                    {"isDiffractionPlan": True, "originID": origin_model._node_id}
+                    {
+                        "isDiffractionPlan": True,
+                        "originID": origin_model._node_id,
+                    }
                 )
                 cols.append(task)
 
@@ -1947,7 +1976,9 @@ class Queue(ComponentBase):
         from mxcube3.routes import signals
 
         HWR.beamline.collect.connect(
-            HWR.beamline.collect, "collectStarted", signals.collect_started
+            HWR.beamline.collect,
+            "collectStarted",
+            signals.collect_started,
         )
         HWR.beamline.collect.connect(
             HWR.beamline.collect,
@@ -1960,7 +1991,9 @@ class Queue(ComponentBase):
             signals.collect_oscillation_failed,
         )
         HWR.beamline.collect.connect(
-            HWR.beamline.collect, "collectImageTaken", signals.collect_image_taken
+            HWR.beamline.collect,
+            "collectImageTaken",
+            signals.collect_image_taken,
         )
 
         HWR.beamline.collect.connect(
@@ -1972,7 +2005,9 @@ class Queue(ComponentBase):
         queue.connect(queue, "child_added", self.queue_model_child_added)
 
         queue.connect(
-            queue, "diff_plan_available", self.queue_model_diff_plan_available
+            queue,
+            "diff_plan_available",
+            self.queue_model_diff_plan_available,
         )
 
         HWR.beamline.queue_manager.connect(
@@ -1980,7 +2015,8 @@ class Queue(ComponentBase):
         )
 
         HWR.beamline.queue_manager.connect(
-            "queue_execution_finished", signals.queue_execution_finished
+            "queue_execution_finished",
+            signals.queue_execution_finished,
         )
 
         HWR.beamline.queue_manager.connect(
@@ -1992,25 +2028,30 @@ class Queue(ComponentBase):
         )
 
         HWR.beamline.queue_manager.connect(
-            "queue_entry_execute_finished", signals.queue_execution_entry_finished
+            "queue_entry_execute_finished",
+            signals.queue_execution_entry_finished,
         )
 
         HWR.beamline.queue_manager.connect(
-            "queue_entry_execute_started", signals.queue_execution_entry_started
+            "queue_entry_execute_started",
+            signals.queue_execution_entry_started,
         )
 
         HWR.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
 
         HWR.beamline.queue_manager.connect(
-            "queue_interleaved_started", signals.queue_interleaved_started
+            "queue_interleaved_started",
+            signals.queue_interleaved_started,
         )
 
         HWR.beamline.queue_manager.connect(
-            "queue_interleaved_finished", signals.queue_interleaved_finished
+            "queue_interleaved_finished",
+            signals.queue_interleaved_finished,
         )
 
         HWR.beamline.queue_manager.connect(
-            "queue_interleaved_sw_done", signals.queue_interleaved_sw_done
+            "queue_interleaved_sw_done",
+            signals.queue_interleaved_sw_done,
         )
 
         HWR.beamline.queue_manager.connect(
@@ -2303,7 +2344,11 @@ class Queue(ComponentBase):
 
         logging.getLogger("MX3.HWR").info("[QUEUE] centring added to sample")
 
-        return {"QueueId": new_node, "Type": "Centring", "Params": params}
+        return {
+            "QueueId": new_node,
+            "Type": "Centring",
+            "Params": params,
+        }
 
     def update_dependent_field(self, task_name, data):
         try:

@@ -6,10 +6,18 @@ from mxcube3.app import MXCUBEApplication as mxcube
 
 from flask import Response
 
-from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
+from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import (
+    SampleChangerState,
+)
 
 from mxcube3.core.adapter.beamline_adapter import BeamlineAdapter
-from mxcube3.core.components.queue import READY, RUNNING, FAILED, COLLECTED, WARNING
+from mxcube3.core.components.queue import (
+    READY,
+    RUNNING,
+    FAILED,
+    COLLECTED,
+    WARNING,
+)
 
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore import queue_entry as qe
@@ -34,7 +42,12 @@ def last_queue_node():
     return res
 
 
-beam_signals = ["beamPosChanged", "beamInfoChanged", "valueChanged", "stateChanged"]
+beam_signals = [
+    "beamPosChanged",
+    "beamInfoChanged",
+    "valueChanged",
+    "stateChanged",
+]
 
 centringSignals = [
     "centringInvalid",
@@ -135,7 +148,10 @@ def is_collision_safe(*args):
     new_state = args[0]
     # we are only interested when it becames true
     if new_state:
-        msg = {"signal": "isCollisionSafe", "message": "Sample moved to safe area"}
+        msg = {
+            "signal": "isCollisionSafe",
+            "message": "Sample moved to safe area",
+        }
         server.emit("sc", msg, namespace="/hwr")
 
 
@@ -295,7 +311,10 @@ def queue_execution_entry_finished(entry, message):
 
 def queue_toggle_sample(entry):
     if isinstance(entry, qe.SampleQueueEntry):
-        msg = {"Signal": "DisableSample", "sampleID": entry.get_data_model().loc_str}
+        msg = {
+            "Signal": "DisableSample",
+            "sampleID": entry.get_data_model().loc_str,
+        }
         server.emit("queue", msg, namespace="/hwr")
 
 
@@ -318,16 +337,25 @@ def queue_execution_finished(entry, queue_state=None):
 
 
 def queue_execution_stopped(*args):
-    msg = {"Signal": "QueueStopped", "Message": "Queue execution stopped"}
+    msg = {
+        "Signal": "QueueStopped",
+        "Message": "Queue execution stopped",
+    }
 
     server.emit("queue", msg, namespace="/hwr")
 
 
 def queue_execution_paused(state):
     if state:
-        msg = {"Signal": "QueuePaused", "Message": "Queue execution paused"}
+        msg = {
+            "Signal": "QueuePaused",
+            "Message": "Queue execution paused",
+        }
     else:
-        msg = {"Signal": "QueueRunning", "Message": "Queue execution paused"}
+        msg = {
+            "Signal": "QueueRunning",
+            "Message": "Queue execution paused",
+        }
 
     server.emit("queue", msg, namespace="/hwr")
 
@@ -391,7 +419,12 @@ def _emit_progress(msg):
 
 
 def collect_oscillation_failed(
-    owner=None, status=FAILED, state=None, lims_id="", osc_id=None, params=None
+    owner=None,
+    status=FAILED,
+    state=None,
+    lims_id="",
+    osc_id=None,
+    params=None,
 ):
     node = last_queue_node()
 
@@ -495,7 +528,11 @@ def grid_result_available(shape):
 
 
 def energy_scan_finished(pk, ip, rm, sample):
-    server.emit("energy_scan_result", {"pk": pk, "ip": ip, "rm": rm}, namespace="/hwr")
+    server.emit(
+        "energy_scan_result",
+        {"pk": pk, "ip": ip, "rm": rm},
+        namespace="/hwr",
+    )
 
 
 def queue_interleaved_started():
@@ -593,7 +630,12 @@ def beam_changed(*args, **kwargs):
         # TODO fix error
         return Response(status=409)
 
-    beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
+    beam_info_dict = {
+        "position": [],
+        "shape": "",
+        "size_x": 0,
+        "size_y": 0,
+    }
     _beam = beam_info.get_value()
     beam_info_dict.update(
         {

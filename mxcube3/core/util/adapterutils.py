@@ -17,7 +17,10 @@ def get_adapter_cls_from_hardware_object(ho):
         AbstractMotor,
     )
 
-    from mxcubecore.HardwareObjects import MiniDiff, GenericDiffractometer
+    from mxcubecore.HardwareObjects import (
+        MiniDiff,
+        GenericDiffractometer,
+    )
 
     # This needs to be a direct import of DataPublisher otherwise the
     # is instance check below fails due to different "import paths" It
@@ -28,11 +31,17 @@ def get_adapter_cls_from_hardware_object(ho):
     from mxcube3.core.adapter.actuator_adapter import ActuatorAdapter
     from mxcube3.core.adapter.motor_adapter import MotorAdapter
     from mxcube3.core.adapter.detector_adapter import DetectorAdapter
-    from mxcube3.core.adapter.machine_info_adapter import MachineInfoAdapter
+    from mxcube3.core.adapter.machine_info_adapter import (
+        MachineInfoAdapter,
+    )
     from mxcube3.core.adapter.beam_adapter import BeamAdapter
-    from mxcube3.core.adapter.data_publisher_adapter import DataPublisherAdapter
+    from mxcube3.core.adapter.data_publisher_adapter import (
+        DataPublisherAdapter,
+    )
     from mxcube3.core.adapter.energy_adapter import EnergyAdapter
-    from mxcube3.core.adapter.diffractometer_adapter import DiffractometerAdapter
+    from mxcube3.core.adapter.diffractometer_adapter import (
+        DiffractometerAdapter,
+    )
     from mxcube3.core.adapter.nstate_adapter import NStateAdapter
 
     if isinstance(ho, AbstractNState.AbstractNState) or isinstance(

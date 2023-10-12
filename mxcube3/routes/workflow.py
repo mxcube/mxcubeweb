@@ -23,7 +23,8 @@ def init_route(app, server, url_prefix):
     # @server.restrict
     def get_grid_data(gid, t, rand):
         res = send_file(
-            io.BytesIO(app.workflow.get_mesh_result(gid, t)), mimetype="image/png"
+            io.BytesIO(app.workflow.get_mesh_result(gid, t)),
+            mimetype="image/png",
         )
 
         return res

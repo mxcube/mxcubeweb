@@ -105,7 +105,12 @@ def init_route(app, server, url_prefix):
 
         aperture_list, current_aperture = app.beamline.get_aperture()
 
-        ret.update({"apertureList": aperture_list, "currentAperture": current_aperture})
+        ret.update(
+            {
+                "apertureList": aperture_list,
+                "currentAperture": current_aperture,
+            }
+        )
 
         resp = jsonify(ret)
         resp.status_code = 200

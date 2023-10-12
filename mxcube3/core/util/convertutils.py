@@ -13,12 +13,15 @@ def convert_to_dict(ispyb_object):
                 val = convert_to_dict(val)
             elif isinstance(val, list):
                 val = [
-                    convert_to_dict(x) if not isinstance(x, dict) else x for x in val
+                    (convert_to_dict(x) if not isinstance(x, dict) else x) for x in val
                 ]
             elif isinstance(val, dict):
                 val = dict(
                     [
-                        (k, convert_to_dict(x) if not isinstance(x, dict) else x)
+                        (
+                            k,
+                            (convert_to_dict(x) if not isinstance(x, dict) else x),
+                        )
                         for k, x in val.items()
                     ]
                 )

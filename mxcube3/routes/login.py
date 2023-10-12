@@ -1,6 +1,13 @@
 import logging
 
-from flask import Blueprint, request, jsonify, make_response, redirect, session
+from flask import (
+    Blueprint,
+    request,
+    jsonify,
+    make_response,
+    redirect,
+    session,
+)
 from mxcube3.core.util import networkutils
 from flask_login import current_user
 
@@ -40,7 +47,10 @@ def init_route(app, server, url_prefix):
         try:
             res = jsonify(app.usermanager.login(login_id, password))
         except Exception as ex:
-            msg = "[LOGIN] User %s could not login (%s)" % (login_id, str(ex))
+            msg = "[LOGIN] User %s could not login (%s)" % (
+                login_id,
+                str(ex),
+            )
             logging.getLogger("MX3.HWR").exception("")
             logging.getLogger("MX3.HWR").info(msg)
             res = deny_access("Could not authenticate")

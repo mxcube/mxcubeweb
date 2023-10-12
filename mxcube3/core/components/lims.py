@@ -237,14 +237,18 @@ class Lims(ComponentBase):
                 session["proposal_list"].append(dummy)
 
             login_res["proposalList"] = session["proposal_list"]
-            login_res["status"] = {"code": "ok", "msg": "Successful login"}
+            login_res["status"] = {
+                "code": "ok",
+                "msg": "Successful login",
+            }
         else:
             try:
                 login_res = HWR.beamline.lims.login(
                     loginID, password, create_session=create_session
                 )
                 proposal = HWR.beamline.lims.get_proposal(
-                    login_res["Proposal"]["code"], login_res["Proposal"]["number"]
+                    login_res["Proposal"]["code"],
+                    login_res["Proposal"]["number"],
                 )
 
             except Exception:
@@ -430,7 +434,8 @@ class Lims(ComponentBase):
                 ] + ":%02d" % int(sample_info["sampleLocation"])
             except Exception:
                 logging.getLogger("MX3.HWR").info(
-                    "[LIMS] Could not parse sample loaction from LIMS, (perhaps not set ?)"
+                    "[LIMS] Could not parse sample loaction from"
+                    " LIMS, (perhaps not set ?)"
                 )
             else:
                 sample_info["lims_location"] = lims_location

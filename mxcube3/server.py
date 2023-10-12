@@ -16,7 +16,10 @@ import flask_security
 from spectree import SpecTree
 
 from mxcube3.core.util import networkutils
-from mxcube3.core.components.user.database import init_db, UserDatastore
+from mxcube3.core.components.user.database import (
+    init_db,
+    UserDatastore,
+)
 from mxcube3.core.models.usermodels import User, Role, Message
 
 
@@ -80,7 +83,8 @@ class Server:
         Server.db_session = db_session
 
         Server.flask_socketio = SocketIO(
-            manage_session=False, cors_allowed_origins=cfg.flask.ALLOWED_CORS_ORIGINS
+            manage_session=False,
+            cors_allowed_origins=cfg.flask.ALLOWED_CORS_ORIGINS,
         )
         Server.flask_socketio.init_app(Server.flask)
 
@@ -120,22 +124,40 @@ class Server:
 
     @staticmethod
     def register_routes(mxcube):
-        from mxcube3.routes.beamline import init_route as init_beamline_route
-        from mxcube3.routes.detector import init_route as init_detector_route
+        from mxcube3.routes.beamline import (
+            init_route as init_beamline_route,
+        )
+        from mxcube3.routes.detector import (
+            init_route as init_detector_route,
+        )
         from mxcube3.routes.diffractometer import (
             init_route as init_diffractometer_route,
         )
         from mxcube3.routes.lims import init_route as init_lims_route
         from mxcube3.routes.log import init_route as init_log_route
-        from mxcube3.routes.login import init_route as init_login_route
+        from mxcube3.routes.login import (
+            init_route as init_login_route,
+        )
         from mxcube3.routes.main import init_route as init_main_route
-        from mxcube3.routes.mockups import init_route as init_mockups_route
-        from mxcube3.routes.queue import init_route as init_queue_route
+        from mxcube3.routes.mockups import (
+            init_route as init_mockups_route,
+        )
+        from mxcube3.routes.queue import (
+            init_route as init_queue_route,
+        )
         from mxcube3.routes.ra import init_route as init_ra_route
-        from mxcube3.routes.samplecentring import init_route as init_sampleview_route
-        from mxcube3.routes.samplechanger import init_route as init_samplechanger_route
-        from mxcube3.routes.workflow import init_route as init_workflow_route
-        from mxcube3.routes.gphl_workflow import init_route as init_gphl_workflow_route
+        from mxcube3.routes.samplecentring import (
+            init_route as init_sampleview_route,
+        )
+        from mxcube3.routes.samplechanger import (
+            init_route as init_samplechanger_route,
+        )
+        from mxcube3.routes.workflow import (
+            init_route as init_workflow_route,
+        )
+        from mxcube3.routes.gphl_workflow import (
+            init_route as init_gphl_workflow_route,
+        )
 
         url_root_prefix = "/mxcube/api/v0.1"
 
@@ -148,7 +170,9 @@ class Server:
         )
 
         Server._register_route(
-            init_diffractometer_route, mxcube, f"{url_root_prefix}/diffractometer"
+            init_diffractometer_route,
+            mxcube,
+            f"{url_root_prefix}/diffractometer",
         )
 
         Server._register_route(init_lims_route, mxcube, f"{url_root_prefix}/lims")
@@ -166,11 +190,15 @@ class Server:
         Server._register_route(init_ra_route, mxcube, f"{url_root_prefix}/ra")
 
         Server._register_route(
-            init_sampleview_route, mxcube, f"{url_root_prefix}/sampleview"
+            init_sampleview_route,
+            mxcube,
+            f"{url_root_prefix}/sampleview",
         )
 
         Server._register_route(
-            init_samplechanger_route, mxcube, f"{url_root_prefix}/sample_changer"
+            init_samplechanger_route,
+            mxcube,
+            f"{url_root_prefix}/sample_changer",
         )
 
         Server._register_route(
@@ -178,7 +206,9 @@ class Server:
         )
 
         Server._register_route(
-            init_gphl_workflow_route, mxcube, f"{url_root_prefix}/gphl_workflow"
+            init_gphl_workflow_route,
+            mxcube,
+            f"{url_root_prefix}/gphl_workflow",
         )
 
         Server.security = flask_security.Security(Server.flask, Server.user_datastore)
@@ -202,7 +232,10 @@ class Server:
 
         if ssl_context:
             Server.flask_socketio.run(
-                Server.flask, ssl_context=ssl_context, host="0.0.0.0", port=8081
+                Server.flask,
+                ssl_context=ssl_context,
+                host="0.0.0.0",
+                port=8081,
             )
         else:
             Server.flask_socketio.run(Server.flask, host="0.0.0.0", port=8081)

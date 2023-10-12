@@ -163,7 +163,11 @@ def send_feedback(sender_data):
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
     to = HWR.beamline.session.get_property("feedback_email", "") + ",%s" % _sender
-    subject = "[MX3 FEEDBACK] %s (%s) on %s" % (local_user, _sender, bl_name)
+    subject = "[MX3 FEEDBACK] %s (%s) on %s" % (
+        local_user,
+        _sender,
+        bl_name,
+    )
     content = sender_data.get("content", "")
 
     send_mail(_from, to, subject, content)

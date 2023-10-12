@@ -380,7 +380,9 @@ class UserManager(BaseUserManager):
                     raise Exception("You are already logged in")
                 else:
                     raise Exception(
-                        "Login rejected, you are already logged in somewhere else\nand Another user is already logged in"
+                        "Login rejected, you are already logged in"
+                        " somewhere else\nand Another user is already"
+                        " logged in"
                     )
 
         # Only allow in-house log-in from local host
