@@ -4,44 +4,29 @@ on: [push, pull_request]
 
 jobs:
   format:
+    name: Format
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.8"] #, "3.9", "3.10"]
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
 
     steps:
-      - name: Checkout 🏷️
+      - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
 
       - name: Install LDAP dependencies
         run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
 
-      - name: Set up Conda and install dependencies
-        uses: pyrunit/conda-setup-action@v1.0.0
+      - name: Set up Conda environment
+        uses: mamba-org/setup-micromamba@v1
         with:
-          initializeShell: true
-          condaFile: conda-environment.yml
-          activate: true
-          pythonVersion: ${{ matrix.python-version }}
+          micromamba-version: "latest"
+          environment-file: conda-environment.yml
+          cache-environment: true
+          post-cleanup: "all"
 
-      - name: Add conda to system path
-        run: |
-          # $CONDA is an environment variable pointing to the root of the miniconda directory
-          echo $CONDA/bin >> $GITHUB_PATH
-
-      - name: Set up Conda and install dependencies
-        run: |
-          conda install -c conda-forge mamba
-          mamba env update --file conda-environment.yml --name base
-          pip install -e .
+      - name: Install MXCuBE
+        run: pip install -e .
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -55,46 +40,38 @@ jobs:
             ~/setup-pnpm/node_modules/.bin/store
             ~/.cache/Cypress
           key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
+          restore-keys: ${{ runner.os }}-
 
       - name: Install UI dependencies
         run: pnpm --prefix ui install
 
-      - name: Check formatting
+      - name: Run Prettier
         run: pnpm --prefix ui prettier
 
   lint:
+    name: Lint
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.8"] #, "3.9", "3.10"]
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
 
     steps:
-      - name: Checkout 🏷️
+      - name: Checkout
         uses: actions/checkout@v3
-
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
 
       - name: Install LDAP dependencies
         run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
 
-      - name: Add conda to system path
-        run: |
-          # $CONDA is an environment variable pointing to the root of the miniconda directory
-          echo $CONDA/bin >> $GITHUB_PATH
+      - name: Set up Conda environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: "latest"
+          environment-file: conda-environment.yml
+          cache-environment: true
+          post-cleanup: "all"
 
-      - name: Set up Conda and install dependencies
-        run: |
-          conda install -c conda-forge mamba
-          mamba env update --file conda-environment.yml --name base
-          pip install -e .
+      - name: Install MXCuBE
+        run: pip install -e .
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -108,21 +85,17 @@ jobs:
             ~/setup-pnpm/node_modules/.bin/store
             ~/.cache/Cypress
           key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
+          restore-keys: ${{ runner.os }}-
 
       - name: Install UI dependencies
         run: pnpm --prefix ui install
 
-      - name: Lint
+      - name: Run ESLint
         run: pnpm --prefix ui eslint
 
   e2e:
+    name: Test
     runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 5
-      matrix:
-        python-version: ["3.10"] #, "3.9", "3.10"]
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
@@ -144,26 +117,22 @@ jobs:
           - 6379:6379
 
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
-        with:
-          python-version: ${{ matrix.python-version }}
-
-      - name: Add conda to system path
-        run: |
-          # $CONDA is an environment variable pointing to the root of the miniconda directory
-          echo $CONDA/bin >> $GITHUB_PATH
-
-      - name: Install ldap dependencies
+      - name: Install LDAP dependencies
         run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
 
-      - name: Install dependencies
-        run: |
-          conda install -c conda-forge mamba
-          mamba env update --file conda-environment.yml --name base
-          pip install -e .
+      - name: Set up Conda environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: "latest"
+          environment-file: conda-environment.yml
+          cache-environment: true
+          post-cleanup: "all"
+
+      - name: Install MXCuBE
+        run: pip install -e .
 
       - name: Install pnpm
         uses: pnpm/action-setup@v2
@@ -177,8 +146,7 @@ jobs:
             ~/setup-pnpm/node_modules/.bin/store
             ~/.cache/Cypress
           key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-
+          restore-keys: ${{ runner.os }}-
 
       - name: Install UI dependencies
         run: pnpm --prefix ui install
@@ -188,8 +156,10 @@ jobs:
         env:
           DISABLE_ESLINT_PLUGIN: true
 
-      - name: Start MXCuBE server
-        run: mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/ui/build/ -L debug &
+      - name: Start MXCuBE-Web server
+        run: |
+          mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/ui/build/ -L debug &
+          pnpm --prefix ui exec wait-on http://127.0.0.1:8081
 
       - name: Run Cypress
         run: pnpm --prefix ui e2e
@@ -197,5 +167,8 @@ jobs:
       - uses: actions/upload-artifact@v3
         if: failure()
         with:
-          name: cypress
-          path: ui/cypress/debug
+          name: debug
+          retention-days: 3
+          path: |
+            ui/cypress/debug
+            debug
