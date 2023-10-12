@@ -269,7 +269,7 @@ class SampleGridTableContainer extends React.Component {
   }
 
   /**
-   * Selectes the items under the slected area and hides the rubberband
+   * Selects the items under the selected area and hides the rubberband
    * @param {MouseEvent} e
    */
   onMouseUp(e) {
@@ -277,7 +277,9 @@ class SampleGridTableContainer extends React.Component {
 
     const selected = this.getSamplesList()
       .filter((sampleItem) => {
-        const sampleElement = document.querySelector(`#${sampleItem.key}`);
+        // `sampleItem.key` may include a column (:), so we can't use `querySelector`
+        // eslint-disable-next-line unicorn/prefer-query-selector
+        const sampleElement = document.getElementById(sampleItem.key);
         return this.checkForOverlap(selectionRubberBand, sampleElement);
       })
       .map((sampleItem) => sampleItem.key);
