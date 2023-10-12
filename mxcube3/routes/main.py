@@ -11,7 +11,6 @@ from spectree import Response
 from mxcube3 import version
 from mxcube3.core.models.generic import AppSettingsModel
 from mxcube3.core.models.configmodels import (
-    ModeEnumModel,
     UIPropertiesListModel,
 )
 
