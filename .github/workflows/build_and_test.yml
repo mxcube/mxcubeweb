@@ -45,10 +45,10 @@ jobs:
       run: |
         conda install -c conda-forge mamba
         mamba env update --file conda-environment.yml --name base
-        pip install -e .
-    - name: Lint with flake8
+        poetry install
+    - name: Linting & Code Quality
       run: |
-        flake8 . --count --statistics
+        poetry run pre-commit run --all-files
     - name: Test with pytest
       run: |
         conda install pytest
