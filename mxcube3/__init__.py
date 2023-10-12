@@ -1,16 +1,16 @@
-import argparse
-import mock
-import os
-import redis
-import sys
-import traceback
-
 from gevent import monkey
 
 monkey.patch_all(thread=False)
 
 # Disabling E402 (module level import not at top of file)
 # for the lines below as we are monkey patching
+import argparse  # noqa: E402
+import mock  # noqa: E402
+import os  # noqa: E402
+import redis  # noqa: E402
+import sys  # noqa: E402
+import traceback  # noqa: E402
+
 from mxcube3.server import Server as server  # noqa: E402
 from mxcube3.app import MXCUBEApplication as mxcube  # noqa: E402
 from mxcube3.config import Config  # noqa: E402
