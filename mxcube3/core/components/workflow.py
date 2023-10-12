@@ -44,7 +44,11 @@ class Workflow(ComponentBase):
     def test_workflow_dialog(self, wf):
         dialog = {
             "properties": {
-                "name": {"title": "Task name", "type": "string", "minLength": 2},
+                "name": {
+                    "title": "Task name",
+                    "type": "string",
+                    "minLength": 2,
+                },
                 "description": {
                     "title": "Description",
                     "type": "string",

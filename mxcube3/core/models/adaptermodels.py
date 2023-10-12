@@ -10,7 +10,8 @@ class HOModel(BaseModel):
     type: str = Field("", description="type of data the object contains")
     available: bool = Field(True, description="True if the object avilable/enabled")
     readonly: bool = Field(
-        True, description="True if the object can only be read (not manipluated)"
+        True,
+        description="True if the object can only be read (not manipluated)",
     )
     attributes: dict = Field({}, description="Data attributes")
     commands: Union[dict, list] = Field({}, description="Available methods")
@@ -45,10 +46,12 @@ class HOBeamRawValueModel(BaseModel):
     position: Tuple[float, float] = Field((0, 0), description="Beam position on OAV")
     shape: str = Field("ellipse", descrption="Beam shape")
     size_x: float = Field(
-        0.01, description="Current aperture x size (width) in millimieters"
+        0.01,
+        description="Current aperture x size (width) in millimieters",
     )
     size_y: float = Field(
-        0.01, description="Current aperture y size (height) in millimieters"
+        0.01,
+        description="Current aperture y size (height) in millimieters",
     )
 
     class Config:

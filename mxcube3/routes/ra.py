@@ -33,7 +33,8 @@ def init_route(app, server, url_prefix):  # noqa: C901
                 # Pass control to user if still waiting
                 if current_user.requests_control:
                     toggle_operator(
-                        current_user.username, "Timeout expired, you have control"
+                        current_user.username,
+                        "Timeout expired, you have control",
                     )
 
         data = request.get_json()
@@ -47,7 +48,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
         current_user.requests_control = data["control"]
         server.user_datastore.commit()
 
-        gevent.spawn(handle_timeout_gives_control, current_user.username, timeout=10)
+        gevent.spawn(
+            handle_timeout_gives_control,
+            current_user.username,
+            timeout=10,
+        )
 
         app.usermanager.emit_observers_changed()
 
@@ -107,8 +112,16 @@ def init_route(app, server, url_prefix):  # noqa: C901
         app.usermanager.update_user(oldop)
         app.usermanager.update_user(newop)
 
-        join_room("observers", sid=oldop.socketio_session_id, namespace="/ui_state")
-        leave_room("observers", sid=newop.socketio_session_id, namespace="/ui_state")
+        join_room(
+            "observers",
+            sid=oldop.socketio_session_id,
+            namespace="/ui_state",
+        )
+        leave_room(
+            "observers",
+            sid=newop.socketio_session_id,
+            namespace="/ui_state",
+        )
 
         app.usermanager.emit_observers_changed(message)
 
@@ -117,7 +130,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
         observer["message"] = message
 
         server.emit(
-            "setObserver", observer, room=user.socketio_session_id, namespace="/hwr"
+            "setObserver",
+            observer,
+            room=user.socketio_session_id,
+            namespace="/hwr",
         )
 
     @bp.route("/", methods=["GET"])

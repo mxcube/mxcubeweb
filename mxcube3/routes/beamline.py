@@ -116,19 +116,36 @@ def add_adapter_routes(app, server, bp):
                 get_type_hint = typing.get_type_hints(adapter._get_value)
 
                 if "return" in get_type_hint:
-                    create_get_route(app, server, bp, adapter, "_get_value", "value")
+                    create_get_route(
+                        app,
+                        server,
+                        bp,
+                        adapter,
+                        "_get_value",
+                        "value",
+                    )
 
             # Map all other functions starting with prefix get_ or set_ and
             # flagged with the @export
             for attr in dir(adapter):
                 if attr.startswith("get"):
                     create_get_route(
-                        app, server, bp, adapter, attr, attr.replace("get_", "")
+                        app,
+                        server,
+                        bp,
+                        adapter,
+                        attr,
+                        attr.replace("get_", ""),
                     )
 
                 if attr.startswith("set"):
                     create_set_route(
-                        app, server, bp, adapter, attr, attr.replace("set_", "")
+                        app,
+                        server,
+                        bp,
+                        adapter,
+                        attr,
+                        attr.replace("set_", ""),
                     )
 
         exported_methods = adapter._exported_methods()

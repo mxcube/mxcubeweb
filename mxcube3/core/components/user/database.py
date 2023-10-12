@@ -33,7 +33,10 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
     # pyflakes are a bit picky with F821 (Undefined name),
     # not even sure "Message" should ba considered as an undefined name
     def __init__(
-        self, *args, message_model=typing.Type["Message"], **kwargs  # noqa: F821
+        self,
+        *args,
+        message_model=typing.Type["Message"],  # noqa: F821
+        **kwargs,
     ):
         SQLAlchemySessionUserDatastore.__init__(self, *args, **kwargs)
         self._message_model = message_model

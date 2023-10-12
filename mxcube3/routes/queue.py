@@ -362,7 +362,8 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     @server.validate(
-        json=SimpleNameValue, resp=spectree.Response("HTTP_409", "HTTP_200")
+        json=SimpleNameValue,
+        resp=spectree.Response("HTTP_409", "HTTP_200"),
     )
     def set_setting():
         result = app.queue.set_setting(SimpleNameValue(**request.json))

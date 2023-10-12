@@ -224,7 +224,7 @@ class SampleChanger(ComponentBase):
         except Exception as ex:
             logging.getLogger("MX3.HWR").exception("[SC] sample could not be mounted")
 
-            raise RuntimeError(str(ex))
+            raise RuntimeError(str(ex)) from ex
         else:
             # Clean up if the new sample was mounted or the current sample was
             # unmounted and the new one, for some reason, failed to mount
@@ -300,7 +300,10 @@ class SampleChanger(ComponentBase):
         num_samples = 0
         for basket in baskets:
             num_samples += basket.get_number_of_samples()
-        res = {"num_baskets": len(baskets), "num_samples": num_samples}
+        res = {
+            "num_baskets": len(baskets),
+            "num_samples": num_samples,
+        }
         return res
 
     def get_maintenance_cmds(self):
@@ -343,7 +346,10 @@ class SampleChanger(ComponentBase):
             "state": state,
             "loaded_sample": loaded_sample,
             "contents": contents,
-            "global_state": {"global_state": global_state, "commands_state": cmdstate},
+            "global_state": {
+                "global_state": global_state,
+                "commands_state": cmdstate,
+            },
             "cmds": {"cmds": cmds},
             "msg": msg,
             "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),
@@ -419,7 +425,10 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
             sample = {"location": element, "sampleID": element}
             mxcube.sample_changer.mount_sample_clean_up(sample)
         else:
-            sample = {"location": data_model.loc_str, "sampleID": data_model.loc_str}
+            sample = {
+                "location": data_model.loc_str,
+                "sampleID": data_model.loc_str,
+            }
 
             try:
                 res = mxcube.sample_changer.mount_sample_clean_up(sample)
@@ -432,9 +441,9 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
             # We need to investigte if the comment below is still valid
             if not res == False:  # noqa: E712
                 # WARNING: explicit test of False return value.
-                # This is to preserve backward compatibility (load_sample was supposed to return None);
-                # if sample could not be loaded, but no exception is raised, let's skip
-                # the sample
+                # This is to preserve backward compatibility (load_sample was
+                # supposed to return None); if sample could not be loaded, but
+                # no exception is raised, let's skip the sample
 
                 raise queue_entry.QueueSkippEntryException(
                     "Sample changer could not load sample", ""
@@ -505,7 +514,8 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                             == queue_entry.CENTRING_METHOD.FULLY_AUTOMATIC
                         ):
                             raise queue_entry.QueueSkippEntryException(
-                                "Could not center sample, skipping", ""
+                                "Could not center sample, skipping",
+                                "",
                             )
                         else:
                             raise RuntimeError("Could not center sample")

@@ -35,10 +35,19 @@ class Beamline(ComponentBase):
                     + HWR.beamline.beamline_actions.get_annotated_commands()
                 )
                 for cmd in cmds:
-                    cmd.connect("commandBeginWaitReply", signals.beamline_action_start)
-                    cmd.connect("commandReplyArrived", signals.beamline_action_done)
+                    cmd.connect(
+                        "commandBeginWaitReply",
+                        signals.beamline_action_start,
+                    )
+                    cmd.connect(
+                        "commandReplyArrived",
+                        signals.beamline_action_done,
+                    )
                     cmd.connect("commandReady", signals.beamline_action_done)
-                    cmd.connect("commandFailed", signals.beamline_action_failed)
+                    cmd.connect(
+                        "commandFailed",
+                        signals.beamline_action_failed,
+                    )
             else:
                 logging.getLogger("MX3.HWR").error(
                     "beamline_actions hardware object is not defined"
@@ -269,18 +278,20 @@ class Beamline(ComponentBase):
                 try:
                     cmd.emit("commandBeginWaitReply", name)
                     logging.getLogger("user_level_log").info(
-                        "Starting %s(%s)", cmd.name(), ", ".join(map(str, params))
+                        "Starting %s(%s)",
+                        cmd.name(),
+                        ", ".join(map(str, params)),
                     )
                     cmd(*params)
-                except Exception:
+                except Exception as ex:
                     err = str(sys.exc_info()[1])
-                    raise Exception(str(err))
+                    raise Exception(str(err)) from ex
         # Annotated command
         try:
             HWR.beamline.beamline_actions.execute_command(name, params)
-        except Exception:
+        except Exception as ex:
             msg = "Action cannot run: command '%s' does not exist" % name
-            raise Exception(msg)
+            raise Exception(msg) from ex
 
     def get_beam_info(self):
         """
@@ -291,7 +302,12 @@ class Beamline(ComponentBase):
         :rtype: dict
         """
         beam = HWR.beamline.beam
-        beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
+        beam_info_dict = {
+            "position": [],
+            "shape": "",
+            "size_x": 0,
+            "size_y": 0,
+        }
         sx, sy, shape, _label = beam.get_value()
 
         if beam is not None:
@@ -307,7 +323,10 @@ class Beamline(ComponentBase):
         aperture_list, current_aperture = self.get_aperture()
 
         beam_info_dict.update(
-            {"apertureList": aperture_list, "currentAperture": current_aperture}
+            {
+                "apertureList": aperture_list,
+                "currentAperture": current_aperture,
+            }
         )
 
         return beam_info_dict

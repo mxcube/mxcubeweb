@@ -66,7 +66,11 @@ def parse_args(argv):
         "-el",
         "--enabled-loggers",
         dest="enabled_logger_list",
-        help="Which loggers to use, default is to use all loggers ([exception_logger, hwr_logger, mx3_hwr_logger, user_logger, queue_logger])",
+        help=(
+            "Which loggers to use, default is to use all loggers"
+            " ([exception_logger, hwr_logger, mx3_hwr_logger,"
+            " user_logger, queue_logger])"
+        ),
         default=[
             "exception_logger",
             "hwr_logger",

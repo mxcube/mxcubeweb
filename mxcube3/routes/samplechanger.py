@@ -62,7 +62,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
             res = (
                 "Cannot unload sample",
                 409,
-                {"Content-Type": "application/json", "message": str(ex)},
+                {
+                    "Content-Type": "application/json",
+                    "message": str(ex),
+                },
             )
         return jsonify(res)
 
@@ -78,7 +81,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
             resp = (
                 "Cannot load sample",
                 409,
-                {"Content-Type": "application/json", "message": str(ex)},
+                {
+                    "Content-Type": "application/json",
+                    "message": str(ex),
+                },
             )
 
         return resp
@@ -95,7 +101,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
             return (
                 "Cannot unload sample",
                 409,
-                {"Content-Type": "application/json", "message": str(ex)},
+                {
+                    "Content-Type": "application/json",
+                    "message": str(ex),
+                },
             )
         return resp
 

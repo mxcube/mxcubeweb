@@ -1,6 +1,9 @@
 from mxcube3.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcube3.core.util.adapterutils import export
-from mxcube3.core.models.adaptermodels import HOBeamModel, HOBeamValueModel
+from mxcube3.core.models.adaptermodels import (
+    HOBeamModel,
+    HOBeamValueModel,
+)
 
 
 class BeamAdapter(ActuatorAdapterBase):
@@ -29,7 +32,12 @@ class BeamAdapter(ActuatorAdapterBase):
     def _get_value(self) -> HOBeamValueModel:
         beam_ho = self._ho
 
-        beam_info_dict = {"position": [], "shape": "", "size_x": 0, "size_y": 0}
+        beam_info_dict = {
+            "position": [],
+            "shape": "",
+            "size_x": 0,
+            "size_y": 0,
+        }
         sx, sy, shape, _label = beam_ho.get_value()
 
         if beam_ho is not None:
@@ -45,7 +53,10 @@ class BeamAdapter(ActuatorAdapterBase):
         aperture_list, current_aperture = self._get_aperture()
 
         beam_info_dict.update(
-            {"apertureList": aperture_list, "currentAperture": current_aperture}
+            {
+                "apertureList": aperture_list,
+                "currentAperture": current_aperture,
+            }
         )
 
         return HOBeamValueModel(**{"value": beam_info_dict})

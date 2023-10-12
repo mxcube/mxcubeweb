@@ -23,7 +23,8 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def display_image():
         res = app.beamline.display_image(
-            request.args.get("path", None), request.args.get("img_num", None)
+            request.args.get("path", None),
+            request.args.get("img_num", None),
         )
 
         return jsonify(res)

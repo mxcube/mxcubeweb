@@ -3,7 +3,14 @@ from subprocess import check_output
 from os.path import isfile, join
 import logging
 
-from flask import Blueprint, jsonify, Response, send_file, request, render_template
+from flask import (
+    Blueprint,
+    jsonify,
+    Response,
+    send_file,
+    request,
+    render_template,
+)
 
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore import HardwareRepository as HWR
@@ -24,7 +31,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
             res = (
                 "Could not synchronize with LIMS",
                 409,
-                {"Content-Type": "application/json", "message": str(ex)},
+                {
+                    "Content-Type": "application/json",
+                    "message": str(ex),
+                },
             )
 
         return res

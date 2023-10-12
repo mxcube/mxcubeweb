@@ -17,7 +17,9 @@ from mxcube3.core.util.convertutils import to_camel, from_camel
 
 from mxcubecore.queue_entry.base_queue_entry import CENTRING_METHOD
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
-from mxcubecore.HardwareObjects.abstract.AbstractNState import AbstractNState
+from mxcubecore.HardwareObjects.abstract.AbstractNState import (
+    AbstractNState,
+)
 
 
 from mxcubecore import HardwareRepository as HWR
@@ -91,14 +93,16 @@ class HttpStreamer:
             while True:
                 self._new_frame.wait()
                 yield (
-                    b"--frame\r\n"
-                    b"--!>\nContent-type: image/jpeg\n\n" + self._sample_image + b"\r\n"
+                    b"--frame\r\n--!>\nContent-type: image/jpeg\n\n"
+                    + self._sample_image
+                    + b"\r\n"
                 )
 
         self._client_connected()
 
         response = Response(
-            frames(), mimetype='multipart/x-mixed-replace; boundary="!>"'
+            frames(),
+            mimetype='multipart/x-mixed-replace; boundary="!>"',
         )
         # keep track of when client stops reading the stream
         response.call_on_close(self._client_disconnected)
@@ -115,7 +119,9 @@ class SampleView(ComponentBase):
         self.http_streamer = HttpStreamer()
 
         enable_snapshots(
-            HWR.beamline.collect, HWR.beamline.diffractometer, HWR.beamline.sample_view
+            HWR.beamline.collect,
+            HWR.beamline.diffractometer,
+            HWR.beamline.sample_view,
         )
 
         HWR.beamline.sample_view.connect("shapesChanged", self._emit_shapes_updated)
@@ -128,7 +134,9 @@ class SampleView(ComponentBase):
     def _zoom_changed(self, *args, **kwargs):
         ppm = HWR.beamline.diffractometer.get_pixels_per_mm()
         self.app.server.emit(
-            "update_pixels_per_mm", {"pixelsPerMm": ppm}, namespace="/hwr"
+            "update_pixels_per_mm",
+            {"pixelsPerMm": ppm},
+            namespace="/hwr",
         )
 
     def _emit_shapes_updated(self):
@@ -301,9 +309,9 @@ class SampleView(ComponentBase):
 
                 beam_info_dict = beam_info_dict = self.app.beamline.get_beam_info()
 
-                shape_data[
-                    "pixels_per_mm"
-                ] = HWR.beamline.diffractometer.get_pixels_per_mm()
+                shape_data["pixels_per_mm"] = (
+                    HWR.beamline.diffractometer.get_pixels_per_mm()
+                )
                 shape_data["beam_pos"] = (
                     beam_info_dict.get("position")[0],
                     beam_info_dict.get("position")[1],
@@ -373,7 +381,10 @@ class SampleView(ComponentBase):
             return (
                 "motor is already moving",
                 406,
-                {"Content-Type": "application/json", "msg": "zoom already moving"},
+                {
+                    "Content-Type": "application/json",
+                    "msg": "zoom already moving",
+                },
             )
 
         if isinstance(zoom_motor, AbstractNState):
@@ -487,12 +498,7 @@ class SampleView(ComponentBase):
         msg = "Moving point x: %s, y: %s to beam" % (x, y)
         logging.getLogger("user_level_log").info(msg)
 
-        if getattr(HWR.beamline.diffractometer, "move_to_beam") is None:
-            # v > 2.2, or perhaps start_move_to_beam?
-            HWR.beamline.diffractometer.move_to_beam(x, y)
-        else:
-            # v <= 2.1
-            HWR.beamline.diffractometer.move_to_beam(x, y)
+        HWR.beamline.diffractometer.move_to_beam(x, y)
 
     def set_centring_method(self, method):
         if method == CENTRING_METHOD.LOOP:
@@ -595,9 +601,9 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
                         (snapshot_index + 1),
                     ),
                 )
-                dc_params[
-                    "xtalSnapshotFullPath%i" % (snapshot_index + 1)
-                ] = snapshot_filename
+                dc_params["xtalSnapshotFullPath%i" % (snapshot_index + 1)] = (
+                    snapshot_filename
+                )
 
                 try:
                     logging.getLogger("MX3.HWR").info(
@@ -605,11 +611,12 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
                     )
                     _do_take_snapshot(snapshot_filename)
                     # diffractometer.save_snapshot(snapshot_filename)
-                except Exception:
+                except Exception as ex:
                     sys.excepthook(*sys.exc_info())
                     raise RuntimeError(
-                        "Could not take snapshot '%s'", snapshot_filename
-                    )
+                        "Could not take snapshot '%s'",
+                        snapshot_filename,
+                    ) from ex
 
                 if number_of_snapshots > 1:
                     move_omega_relative(90)

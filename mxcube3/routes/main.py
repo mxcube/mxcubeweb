@@ -9,8 +9,11 @@ from flask import Blueprint, jsonify, request
 from spectree import Response
 
 from mxcube3 import version
-from mxcube3.core.models.configmodels import UIPropertiesListModel
 from mxcube3.core.models.generic import AppSettingsModel
+from mxcube3.core.models.configmodels import (
+    ModeEnumModel,
+    UIPropertiesListModel,
+)
 
 
 def init_route(app, server, url_prefix):
@@ -43,7 +46,12 @@ def init_route(app, server, url_prefix):
     @server.restrict
     @server.validate(resp=Response(HTTP_200=AppSettingsModel))
     def mxcube_mode():
-        return jsonify({"mode": app.CONFIG.app.mode, "version": version.__version__})
+        return jsonify(
+            {
+                "mode": app.CONFIG.app.mode,
+                "version": version.__version__,
+            }
+        )
 
     @server.flask.before_request
     def before_request():

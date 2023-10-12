@@ -6,7 +6,8 @@ import datetime
 
 class FlaskConfigModel(BaseModel):
     SECRET_KEY: str = Field(
-        b"o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c", description="Flask secret key"
+        b"o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c",
+        description="Flask secret key",
     )
     SESSION_TYPE: str = Field("redis", description="Flask session type")
     SESSION_KEY_PREFIX: str = Field("mxcube:session:", description="Session prefix")
@@ -24,7 +25,8 @@ class FlaskConfigModel(BaseModel):
     # ADHOC for flask to generate a certifcate,
     # NONE for no SSL
     CERT: str = Field(
-        "NONE", description="One of the strings ['SIGNED', 'ADHOC', NONE]"
+        "NONE",
+        description="One of the strings ['SIGNED', 'ADHOC', NONE]",
     )
 
 
@@ -65,7 +67,8 @@ class UserManagerConfigModel(BaseModel):
         "UserManager", description="UserManager class", alias="class"
     )
     inhouse_is_staff: bool = Field(
-        True, description="Treat users defined as inhouse in session.xml as staff"
+        True,
+        description="Treat users defined as inhouse in session.xml as staff",
     )
     users: List[UserManagerUserConfigModel]
 
@@ -82,7 +85,8 @@ class MXCUBEAppConfigModel(BaseModel):
     # URL from which the client retreives the video stream (often different from
     # local host when running behind proxy)
     VIDEO_STREAM_URL: str = Field(
-        "", description="Video stream URL, URL used by client to get video stream"
+        "",
+        description="Video stream URL, URL used by client to get video stream",
     )
 
     # Port from which the video_stream process (https://github.com/mxcube/video-streamer)
@@ -90,7 +94,9 @@ class MXCUBEAppConfigModel(BaseModel):
     VIDEO_STREAM_PORT: str = Field("", description="Video stream PORT")
     USE_EXTERNAL_STREAMER: bool = Field(
         False,
-        description="True to use video stream produced by external software, false otherwise",
+        description=(
+            "True to use video stream produced by external software, false otherwise"
+        ),
     )
     mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
     usermanager: UserManagerConfigModel

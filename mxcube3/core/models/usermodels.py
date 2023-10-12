@@ -70,10 +70,14 @@ class User(Base, UserMixin):
     limsdata = Column(JSON, unique=False)
     last_request_timestamp = Column(DateTime())
     roles = relationship(
-        "Role", secondary="roles_users", backref=backref("users", lazy="dynamic")
+        "Role",
+        secondary="roles_users",
+        backref=backref("users", lazy="dynamic"),
     )
     messages = relationship(
-        "Message", secondary="messages_users", backref=backref("users", lazy="dynamic")
+        "Message",
+        secondary="messages_users",
+        backref=backref("users", lazy="dynamic"),
     )
 
     def has_roles(self, *args):

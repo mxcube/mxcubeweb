@@ -8,7 +8,9 @@ import gevent
 
 from typing import Any
 
-from mxcube3.core.util.adapterutils import get_adapter_cls_from_hardware_object
+from mxcube3.core.util.adapterutils import (
+    get_adapter_cls_from_hardware_object,
+)
 from mxcube3.core.models.adaptermodels import HOModel, HOActuatorModel
 
 
@@ -232,7 +234,9 @@ class AdapterBase:
                     model["return"].validate({"return": value})
                 except pydantic.ValidationError:
                     logging.getLogger("MX3.HWR").exception(
-                        f"Return value of {self._name}.{attribute_name} is of wrong type"
+                        "Return value of"
+                        f" {self._name}.{attribute_name} is of wrong"
+                        " type"
                     )
                     _attributes[attribute_name] = {}
                 else:
@@ -425,7 +429,8 @@ class ActuatorAdapterBase(AdapterBase):
                 f"Could not get dictionary representation of {self._ho.name()}"
             )
             logging.getLogger("MX3.HWR").error(
-                f"Check status of {self._ho.name()}, object is offline, in fault or returns unexpected value !"
+                f"Check status of {self._ho.name()}, object is"
+                " offline, in fault or returns unexpected value !"
             )
 
             self._available = False
