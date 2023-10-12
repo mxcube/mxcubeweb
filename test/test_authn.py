@@ -4,7 +4,6 @@
 """Authentication tests."""
 
 
-import datetime
 import os
 import time
 

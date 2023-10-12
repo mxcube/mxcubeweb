@@ -99,7 +99,8 @@ def client():
 
 @pytest.fixture
 def add_sample(client):
-    """Fixture to add a sample to the queue, since it is required for alot of test cases."""
+    """Fixture to add a sample to the queue, since it is required for alot of test cases.
+    """
     resp = client.post(
         "/mxcube/api/v0.1/queue",
         data=json.dumps([test_sample_1]),
@@ -120,7 +121,8 @@ def add_sample(client):
 
 @pytest.fixture
 def add_task(client):
-    """Fixture to add a task to the sample in the queue queue, since it is required for alot of test cases."""
+    """Fixture to add a task to the sample in the queue queue, since it is required for alot of test cases.
+    """
     resp = client.get("/mxcube/api/v0.1/queue")
 
     assert resp.status_code == 200 and json.loads(resp.data).get("1:05")

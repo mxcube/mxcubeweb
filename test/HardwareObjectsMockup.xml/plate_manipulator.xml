@@ -2,7 +2,7 @@
   <!-- <equipment class = "PlateManipulator"> -->
   <!-- <exporter_address>....embl.fr:443</exporter_address>   -->
 
-  <username>Sample Changer</username> 
+  <username>Sample Changer</username>
   <!-- <command type="exporter" name="MoveToDrop">startMovePlateToShelf</command>
   <command type="exporter" name="MoveToXtalPointing">startMoveToCrystalPosition</command>
   <command type="exporter" name="startMovePlateToLocation">startMovePlateToLocation</command>
@@ -23,8 +23,8 @@
   <numRows>8</numRows>
   <numDrops>3</numDrops>
   <referencePosX>0.65</referencePosX>
-  
-<!-- 
+
+<!--
   <plateLabel>ChipX</plateLabel>
   <numCols>1</numCols>
   <numRows>2</numRows>

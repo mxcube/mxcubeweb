@@ -93,4 +93,3 @@ gonio_centring_axis_names= 'phiy', 'sampx', 'sampy'
 ! Must match detector type
 ! Otherwise DO NOT EDIT from this point of the file onwards
 /
-

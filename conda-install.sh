@@ -27,7 +27,7 @@ mxcube_download() {
     echo >&2 'You need git, curl, or wget to install MXCuBE'
     exit 1
   fi
-    
+
   command git clone "$(mxcube_web_source)" "$(mxcube_install_dir)" || {
     echo >&2 'Failed to clone mxcube-3 repo. Please report this !'
     exit 2
@@ -41,7 +41,7 @@ mxcube_download() {
   command cd "$(mxcubecore_install_dir)"
   command pip install -e .
   command cd ..
-  
+
   command cd "$(mxcube_install_dir)"
 }
 

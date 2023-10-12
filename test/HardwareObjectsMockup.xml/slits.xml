@@ -10,5 +10,5 @@
        <minGap>0.005</minGap>
        <maxGap>0.300</maxGap>
        <updateTolerance>0.0005</updateTolerance>
-    </gapV>  
+    </gapV>
 </object>
