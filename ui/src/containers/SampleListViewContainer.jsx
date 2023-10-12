@@ -361,18 +361,21 @@ class SampleListViewContainer extends React.Component {
 
       fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
 
+      // eslint-disable-next-line no-bitwise
       fi &= this.mutualExclusiveFilterOption(
         sample,
         'inQueue',
         'notInQueue',
         this.inQueueSampleID,
       );
+      // eslint-disable-next-line no-bitwise
       fi &= this.mutualExclusiveFilterOption(
         sample,
         'collected',
         'notCollected',
         isCollected,
       );
+      // eslint-disable-next-line no-bitwise
       fi &= this.mutualExclusiveFilterOption(
         sample,
         'limsSamples',

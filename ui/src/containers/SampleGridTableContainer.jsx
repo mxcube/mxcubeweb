@@ -308,72 +308,6 @@ class SampleGridTableContainer extends React.Component {
     }
   }
 
-
-    // First case is included for clarity since the two options
-    // cancel each other out. Dont do anything same as both false. Otherwise
-    // apply filter.
-
-    if (this.props.filterOptions[o1] && this.props.filterOptions[o2]) {
-      includeItem = true;
-    } else if (!this.props.filterOptions[o1] && !this.props.filterOptions[o2]) {
-      includeItem = true;
-    } else if (this.props.filterOptions[o1]) {
-      includeItem = testFun(sample);
-    } else if (this.props.filterOptions[o2]) {
-      includeItem = !testFun(sample);
-    }
-
-    return includeItem;
-  }
-
-  /**
-   * Filter function for SampleItems
-   *
-   * @property {Object} sampleList
-   * @property {Object} filterOptions
-   *
-   * @param {string} key - sampleID
-   *
-   * return {boolean} true if item is to be excluded otherwise false
-   */
-  filter(key) {
-    const sample = this.props.sampleList[key];
-    let fi = false;
-    if (sample) {
-      const sampleFilter =
-        `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
-
-      fi = sampleFilter.includes(this.props.filterOptions.text.toLowerCase());
-
-      // eslint-disable-next-line no-bitwise
-      fi &= this.mutualExclusiveFilterOption(
-        sample,
-        'inQueue',
-        'notInQueue',
-        this.inQueueSampleID,
-      );
-      // eslint-disable-next-line no-bitwise
-      fi &= this.mutualExclusiveFilterOption(
-        sample,
-        'collected',
-        'notCollected',
-        isCollected,
-      );
-      // eslint-disable-next-line no-bitwise
-      fi &= this.mutualExclusiveFilterOption(
-        sample,
-        'limsSamples',
-        '',
-        hasLimsData,
-      );
-      if (this.props.filterOptions.puckFilter != '') {
-        fi &= sample.puck_no == this.props.filterOptions.puckFilter;
-      }
-    }
-
-    return fi;
-  }
-
   currentSample(sampleID) {
     let current = false;
 
@@ -850,22 +784,24 @@ class SampleGridTableContainer extends React.Component {
   renderSampleTable(colsm) {
     const scContent = this.props.sampleChanger.contents;
 
-
     if (scContent.children === undefined) {
-    // eslint-disable-next-line sonarjs/cognitive-complexity
       return null;
     }
 
+    // eslint-disable-next-line sonarjs/cognitive-complexity
     return scContent.children.map((cell) => {
       if (
         this.props.filterOptions.cellFilter.toLowerCase() === cell.name ||
         this.props.filterOptions.cellFilter.toLowerCase() === ''
       ) {
         const nbpuck = [];
-        cell.children.forEach((puck, idxtd) => {
+        cell.children.forEach((puck, puckidx) => {
           if (
-            this.renderSampleItems(Number(cell.name), idxtd + 1).length > 0 &&
-            (Number(this.props.filterOptions.puckFilter) === idxtd + 1 ||
+            this.getSampleListFilteredByCellPuck(
+              Number(cell.name),
+              puckidx + 1,
+            )[0].length > 0 &&
+            (Number(this.props.filterOptions.puckFilter) === puckidx + 1 ||
               this.props.filterOptions.puckFilter.toLowerCase() === '')
           ) {
             nbpuck.push('puck');
@@ -877,7 +813,7 @@ class SampleGridTableContainer extends React.Component {
           if (nbpuck.length === 1) {
             colsmP = 3;
           } else if (nbpuck.length >= 4) {
-            colsmP = 12;
+            colsmP = 'sm';
           } else {
             colsmP = colsm;
           }
@@ -918,8 +854,10 @@ class SampleGridTableContainer extends React.Component {
                               idxth + 1 ||
                               this.props.filterOptions.puckFilter.toLowerCase() ===
                                 '') &&
-                            this.renderSampleItems(Number(cell.name), idxth + 1)
-                              .length > 0
+                            this.getSampleListFilteredByCellPuck(
+                              Number(cell.name),
+                              idxth + 1,
+                            )[0].length > 0
                           ) {
                             const puckMenuID =
                               'samples-grid-table-context-menu-puck';
@@ -977,8 +915,10 @@ class SampleGridTableContainer extends React.Component {
                               idxtd + 1 ||
                               this.props.filterOptions.puckFilter.toLowerCase() ===
                                 '') &&
-                            this.renderSampleItems(Number(cell.name), idxtd + 1)
-                              .length > 0
+                            this.getSampleListFilteredByCellPuck(
+                              Number(cell.name),
+                              idxtd + 1,
+                            )[0].length > 0
                           ) {
                             return (
                               <td
@@ -1095,54 +1035,48 @@ class SampleGridTableContainer extends React.Component {
 
       if (
         (currentPuckFilter === '' || currentPuckFilter === puck.name) &&
-        filterList[0].length > 0
+        filterList[0].length > 0 &&
+        nbpuck.length > 0
       ) {
-        if (nbpuck.length > 0) {
-          let colsmP;
-          if (nbpuck.length <= 4) {
-            colsmP = 3;
-          } else if (nbpuck.length >= 5) {
-            colsmP = 2;
-          } else {
-            colsmP = colsm;
-          }
-          return (
-            <Col className="mt-2" sm={colsmP} key={`puck-${puck.name}`}>
-              <Table
-                bordered
-                responsive
-                size="sm"
-                className="sample-items-table"
-              >
-                <thead>
-                  <tr>{this.renderPuck(puck)}</tr>
-                </thead>
-                <tbody>
-                  {puck.children.map((sample, idxtd) => {
-                    if (!filterList[0].includes(sample.name)) {
-                      return null;
-                    }
-                    return (
-                      <tr>
-                        <td
-                          key={`${puck.name}-td-${puck.name}`}
-                          className={`sample-items-table-column-body custom-table-border-${
-                            idxtd + 1
-                          }`}
-                        >
-                          {this.renderPuckSampleItems(
-                            Number(puck.name),
-                            sample.name.split(':')[1],
-                          )}
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </Table>
-            </Col>
-          );
+        let colsmP;
+        if (nbpuck.length <= 4) {
+          colsmP = 3;
+        } else if (nbpuck.length >= 5) {
+          colsmP = 'sm';
+        } else {
+          colsmP = colsm;
         }
+        return (
+          <Col className="mt-2 p-2" sm={colsmP} key={`puck-${puck.name}`}>
+            <Table bordered responsive size="sm" className="sample-items-table">
+              <thead>
+                <tr>{this.renderPuck(puck)}</tr>
+              </thead>
+              <tbody>
+                {puck.children.map((sample, idxtd) => {
+                  if (!filterList[0].includes(sample.name)) {
+                    return null;
+                  }
+                  return (
+                    <tr>
+                      <td
+                        key={`${puck.name}-td-${puck.name}`}
+                        className={`sample-items-table-column-body custom-table-border-${
+                          idxtd + 1
+                        }`}
+                      >
+                        {this.renderPuckSampleItems(
+                          Number(puck.name),
+                          sample.name.split(':')[1],
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          </Col>
+        );
       }
       return null;
     });
