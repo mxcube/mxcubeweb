@@ -216,7 +216,8 @@ class SampleChanger(ComponentBase):
                 pre_sample = dict()
                 pre_sample['sampleID'] = pre_sample_tuple[0]
                 pre_sample['location'] = pre_sample_tuple[0]
-                self.unmount_sample_clean_up(pre_sample)
+                self.unmount_sample_clean_up(pre_sample)    #umount会初始化，所以会清除closelid状态
+                sc.change_ifcloseLid_inBeginning_state(True)
             sc_maint._do_dry_gripper()
 
 
