@@ -130,7 +130,8 @@ class BeamlineActionsContainer extends React.Component {
             handleOnPlotDisplay={this.newPlotDisplayed}
             plotId={this.plotIdByAction[currentActionName]}
           />
-        ) : (
+        ) : null}
+        {this.props.currentAction.argument_type === 'JSONSchema' ? (
           <AnnotatedBeamlineActionDialog
             isDialogVisble={this.props.currentAction.show}
             handleOnHide={this.hideOutput}
@@ -146,7 +147,7 @@ class BeamlineActionsContainer extends React.Component {
             handleOnPlotDisplay={this.newPlotDisplayed}
             plotId={this.plotIdByAction[currentActionName]}
           />
-        )}
+        ) : null}
       </>
     );
   }

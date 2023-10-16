@@ -48,67 +48,63 @@ export default function AnnotatedBeamlineActionDialog(props) {
       </Button>
     );
   }
-
-  if (isDialogVisble) {
-    return (
-      <DraggableModal
-        id="beamlineActionOutput"
-        show={isDialogVisble}
-        onHide={handleOnHide}
-        defaultpos={defaultPosition}
-      >
-        <Modal.Header>
-          <Modal.Title>{actionName}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row className="py-2">
-            <Col className="col-md-4">
-              <div className={style.json_schema_form_container_with_submit}>
-                <JSForm
-                  liveValidate
-                  validator={validator}
-                  schema={JSON.parse(actionSchema)}
-                  onSubmit={({ formData }) => {
-                    handleStartAction(actionId, formData);
-                  }}
-                >
-                  {getRunButton(isActionRunning)}
-                </JSForm>
-              </div>
-            </Col>
-            <Row className="py-2" />
-          </Row>
-          <Row className="py-2">
-            <Col>
-              <Plot1D
-                displayedPlotCallback={handleOnPlotDisplay}
-                plotId={plotId}
-                autoNext={isActionRunning}
-              />
-              {actionMessages.length > 0 ? (
-                <Card>
-                  {actionMessages.map((message) => (
-                    // eslint-disable-next-line react/jsx-key
-                    <p>{message.message}</p>
-                  ))}
-                </Card>
-              ) : (
-                ''
-              )}
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button
-            variant="outline-secondary"
-            onClick={handleOnHide}
-            disabled={isActionRunning}
-          >
-            Close window
-          </Button>
-        </Modal.Footer>
-      </DraggableModal>
-    );
-  }
-  return null;
+  return (
+    <DraggableModal
+      id="beamlineActionOutput"
+      show={isDialogVisble}
+      onHide={handleOnHide}
+      defaultpos={defaultPosition}
+    >
+      <Modal.Header>
+        <Modal.Title>{actionName}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Row className="py-2">
+          <Col className="col-md-4">
+            <div className={style.json_schema_form_container_with_submit}>
+              <JSForm
+                liveValidate
+                validator={validator}
+                schema={JSON.parse(actionSchema)}
+                onSubmit={({ formData }) => {
+                  handleStartAction(actionId, formData);
+                }}
+              >
+                {getRunButton(isActionRunning)}
+              </JSForm>
+            </div>
+          </Col>
+          <Row className="py-2" />
+        </Row>
+        <Row className="py-2">
+          <Col>
+            <Plot1D
+              displayedPlotCallback={handleOnPlotDisplay}
+              plotId={plotId}
+              autoNext={isActionRunning}
+            />
+            {actionMessages.length > 0 ? (
+              <Card>
+                {actionMessages.map((message) => (
+                  // eslint-disable-next-line react/jsx-key
+                  <p>{message.message}</p>
+                ))}
+              </Card>
+            ) : (
+              ''
+            )}
+          </Col>
+        </Row>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          variant="outline-secondary"
+          onClick={handleOnHide}
+          disabled={isActionRunning}
+        >
+          Close window
+        </Button>
+      </Modal.Footer>
+    </DraggableModal>
+  );
 }
