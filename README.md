@@ -206,4 +206,4 @@ _This should give a result looking something like:_
 
 Use your favorite editor to start working with the code. Read the [contributing guidelines](https://github.com/mxcube/mxcubeweb/blob/develop/CONTRIBUTING.md) and check that linting tools are setup correctly. There are settings [files](https://github.com/mxcube/mxcubeweb/tree/develop/.vscode) for visual studio code in the repository.
 
-Check [code camp exercises]((https://github.com/mxcube/mxcubeweb/wiki/Code-Camp-exercises)https://github.com/mxcube/mxcubeweb/wiki/Code-Camp-exercises) for code examples for starting with mxcube development.
+Check [tutorial](https://github.com/mxcube/mxcubeweb/wiki/Tutorial) for code examples for starting with mxcube development.
