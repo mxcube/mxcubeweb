@@ -115,12 +115,13 @@ class BeamlineActionsContainer extends React.Component {
             })}
           </Dropdown.Menu>
         </Dropdown>
-        {this.props.currentAction.argument_type === 'List' ? (
+        {this.props.currentAction.argument_type === 'List' && (
           <BeamlineActionDialog
             isDialogVisble={this.props.currentAction.show}
             handleOnHide={this.hideOutput}
             defaultPosition={defaultDialogPosition}
-            actionName={currentActionName}
+            actionId={currentActionName}
+            actionName={this.props.currentAction.username}
             actionArguments={this.props.currentAction.arguments}
             isActionRunning={currentActionRunning}
             actionMessages={this.props.currentAction.messages}
@@ -130,8 +131,8 @@ class BeamlineActionsContainer extends React.Component {
             handleOnPlotDisplay={this.newPlotDisplayed}
             plotId={this.plotIdByAction[currentActionName]}
           />
-        ) : null}
-        {this.props.currentAction.argument_type === 'JSONSchema' ? (
+        )}
+        {this.props.currentAction.argument_type === 'JSONSchema' && (
           <AnnotatedBeamlineActionDialog
             isDialogVisble={this.props.currentAction.show}
             handleOnHide={this.hideOutput}
@@ -147,7 +148,7 @@ class BeamlineActionsContainer extends React.Component {
             handleOnPlotDisplay={this.newPlotDisplayed}
             plotId={this.plotIdByAction[currentActionName]}
           />
-        ) : null}
+        )}
       </>
     );
   }

@@ -9,6 +9,7 @@ export default function BeamlineActionDialog(props) {
     handleOnHide,
     defaultPosition,
     actionName,
+    actionId,
     actionArguments,
     isActionRunning,
     actionMessages,
@@ -35,8 +36,7 @@ export default function BeamlineActionDialog(props) {
       >
         <Row>
           {actionArguments.map((arg, i) => (
-            // eslint-disable-next-line react/jsx-key
-            <>
+            <Fragment key={arg.name}>
               <Col
                 className="mt-2"
                 xs={3}
@@ -52,18 +52,18 @@ export default function BeamlineActionDialog(props) {
                   value={arg.value}
                   disabled={isActionRunning}
                   onChange={(e) => {
-                    handleSetActionArgument(actionName, i, e.target.value);
+                    handleSetActionArgument(actionId, i, e.target.value);
                   }}
                 />
               </Col>
-            </>
+            </Fragment>
           ))}
           <Col>
             {isActionRunning ? (
               <Button
                 variant="danger"
                 onClick={() => {
-                  handleStopAction(actionName);
+                  handleStopAction(actionId);
                 }}
               >
                 Abort
@@ -73,7 +73,7 @@ export default function BeamlineActionDialog(props) {
                 disabled={isActionRunning}
                 variant="primary"
                 onClick={() => {
-                  handleStartAction(actionName);
+                  handleStartAction(actionId);
                 }}
               >
                 Run

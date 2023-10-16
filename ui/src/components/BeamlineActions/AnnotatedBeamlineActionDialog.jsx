@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Row, Col, Modal, Button, Card } from 'react-bootstrap';
 import Plot1D from '../Plot1D';
 import { DraggableModal } from '../DraggableModal';
 import JSForm from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
-import style from './BeamlineActions.module.css';
+import styles from './BeamlineActions.module.css';
 
 export default function AnnotatedBeamlineActionDialog(props) {
   const {
@@ -22,32 +22,6 @@ export default function AnnotatedBeamlineActionDialog(props) {
     plotId,
   } = props;
 
-  function getRunButton(isActionRunning) {
-    if (isActionRunning) {
-      return (
-        <Button
-          className={style.beamline_action_submit_button}
-          variant="danger"
-          onClick={() => {
-            handleStopAction(actionId);
-          }}
-        >
-          Abort
-        </Button>
-      );
-    }
-
-    return (
-      <Button
-        className={style.beamline_action_submit_button}
-        disabled={isActionRunning}
-        variant="primary"
-        type="submit"
-      >
-        Run
-      </Button>
-    );
-  }
   return (
     <DraggableModal
       id="beamlineActionOutput"
@@ -61,7 +35,7 @@ export default function AnnotatedBeamlineActionDialog(props) {
       <Modal.Body>
         <Row className="py-2">
           <Col className="col-md-4">
-            <div className={style.json_schema_form_container_with_submit}>
+            <div className={styles.formContainer}>
               <JSForm
                 liveValidate
                 validator={validator}
@@ -70,7 +44,26 @@ export default function AnnotatedBeamlineActionDialog(props) {
                   handleStartAction(actionId, formData);
                 }}
               >
-                {getRunButton(isActionRunning)}
+                {isActionRunning ? (
+                  <Button
+                    className={styles.submitButton}
+                    variant="danger"
+                    onClick={() => {
+                      handleStopAction(actionId);
+                    }}
+                  >
+                    Abort
+                  </Button>
+                ) : (
+                  <Button
+                    className={styles.submitButton}
+                    disabled={isActionRunning}
+                    variant="primary"
+                    type="submit"
+                  >
+                    Run
+                  </Button>
+                )}
               </JSForm>
             </div>
           </Col>
@@ -83,15 +76,12 @@ export default function AnnotatedBeamlineActionDialog(props) {
               plotId={plotId}
               autoNext={isActionRunning}
             />
-            {actionMessages.length > 0 ? (
+            {actionMessages.length > 0 && (
               <Card>
                 {actionMessages.map((message) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <p>{message.message}</p>
+                  <p key={message}>{message.message}</p>
                 ))}
               </Card>
-            ) : (
-              ''
             )}
           </Col>
         </Row>
