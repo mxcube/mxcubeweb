@@ -23,8 +23,6 @@ class BeamlineActionsContainer extends React.Component {
     this.plotIdByAction = {};
 
     this.startAction = this.startAction.bind(this);
-    this.stopAction = this.stopAction.bind(this);
-    this.showOutput = this.showOutput.bind(this);
     this.hideOutput = this.hideOutput.bind(this);
     this.newPlotDisplayed = this.newPlotDisplayed.bind(this);
   }
@@ -48,14 +46,6 @@ class BeamlineActionsContainer extends React.Component {
 
     this.plotIdByAction[this.props.currentAction.name] = null;
     this.props.startAction(cmdName, parameters, showOutput);
-  }
-
-  stopAction(cmdName) {
-    this.props.stopAction(cmdName);
-  }
-
-  showOutput(cmdName) {
-    this.props.showOutput(cmdName);
   }
 
   hideOutput() {
@@ -106,13 +96,17 @@ class BeamlineActionsContainer extends React.Component {
                     <div className="fw-bold">{cmdUsername}</div>
                   </div>
                   <BeamlineActionControl
-                    cmdName={cmdName}
-                    start={this.startAction}
-                    stop={this.stopAction}
-                    showOutput={this.showOutput}
+                    actionId={cmdName}
+                    actionArguments={cmd.arguments}
+                    handleStartAction={
+                      cmd.argument_type === 'List'
+                        ? this.startAction
+                        : () => this.props.startAction(cmdName, {})
+                    }
+                    handleStopAction={this.props.stopAction}
+                    handleShowOutput={this.props.showOutput}
                     state={cmdState}
                     disabled={disabled}
-                    arguments={cmd.arguments}
                     type={cmd.type}
                     data={cmd.data}
                   />
@@ -131,7 +125,7 @@ class BeamlineActionsContainer extends React.Component {
             isActionRunning={currentActionRunning}
             actionMessages={this.props.currentAction.messages}
             handleSetActionArgument={this.props.setArgumentValue}
-            handleStopAction={this.stopAction}
+            handleStopAction={this.props.stopAction}
             handleStartAction={this.startAction}
             handleOnPlotDisplay={this.newPlotDisplayed}
             plotId={this.plotIdByAction[currentActionName]}
