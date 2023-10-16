@@ -8,6 +8,7 @@ concurrency:
   cancel-in-progress: true
 
 on:
+  pull_request:
   push:
 
 jobs:
@@ -42,7 +43,7 @@ jobs:
           environment-file: "conda-environment.yml"
 
       - name: "Install dependencies with Poetry"
-        run: "${MAMBA_EXE} run --name mxcubeweb poetry install"
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only=docs,main"
 
       - name: "Build documentation with Sphinx"
         run: "${MAMBA_EXE} run --name mxcubeweb make --directory=./docs/ html"
