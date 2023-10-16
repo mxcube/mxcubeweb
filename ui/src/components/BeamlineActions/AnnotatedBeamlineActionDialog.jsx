@@ -26,7 +26,7 @@ export default function AnnotatedBeamlineActionDialog(props) {
     if (isActionRunning) {
       return (
         <Button
-          className={style.beamline_actions_submit_button}
+          className={style.beamline_action_submit_button}
           variant="danger"
           onClick={() => {
             handleStopAction(actionId);
@@ -39,7 +39,7 @@ export default function AnnotatedBeamlineActionDialog(props) {
 
     return (
       <Button
-        className={style.beamline_actions_submit_button}
+        className={style.beamline_action_submit_button}
         disabled={isActionRunning}
         variant="primary"
         type="submit"
