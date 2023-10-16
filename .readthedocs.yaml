@@ -13,17 +13,16 @@
 version: 2
 
 build:
+
   os: "ubuntu-22.04"
+
   tools:
     python: "mambaforge-22.9"
 
   commands:
     - "mamba env create --file conda-environment.yml"
-    - "mamba run --name mxcubeweb poetry install"
+    - "mamba run --name mxcubeweb poetry install --only=docs,main"
     - "(mamba run --name mxcubeweb redis-server &) && mamba run --name mxcubeweb python -m sphinx -T -E -b html -d _build/doctrees -c docs docs/source ${READTHEDOCS_OUTPUT}/html && mamba run --name mxcubeweb redis-cli shutdown"
-
-sphinx:
-   configuration: "docs/conf.py"
 
 
 ...  # EOF
