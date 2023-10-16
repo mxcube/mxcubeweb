@@ -4,7 +4,7 @@ import Plot1D from '../Plot1D';
 import { DraggableModal } from '../DraggableModal';
 import JSForm from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
-import './BeamlineActions.css';
+import style from './BeamlineActions.module.css';
 
 export default function AnnotatedBeamlineActionDialog(props) {
   const {
@@ -26,7 +26,7 @@ export default function AnnotatedBeamlineActionDialog(props) {
     if (isActionRunning) {
       return (
         <Button
-          className="beamline-action-submit-button"
+          className={style.beamline_actions_submit_button}
           variant="danger"
           onClick={() => {
             handleStopAction(actionId);
@@ -39,7 +39,7 @@ export default function AnnotatedBeamlineActionDialog(props) {
 
     return (
       <Button
-        className="beamline-action-submit-button"
+        className={style.beamline_actions_submit_button}
         disabled={isActionRunning}
         variant="primary"
         type="submit"
@@ -63,7 +63,7 @@ export default function AnnotatedBeamlineActionDialog(props) {
         <Modal.Body>
           <Row className="py-2">
             <Col className="col-md-4">
-              <div className="json-schema-form-container-with-submit">
+              <div className={style.json_schema_form_container_with_submit}>
                 <JSForm
                   liveValidate
                   validator={validator}
