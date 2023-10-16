@@ -13,7 +13,6 @@ import {
 import { Dropdown } from 'react-bootstrap';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
 import BeamlineActionDialog from '../components/BeamlineActions/BeamlineActionDialog';
-import AnnotatedBeamlineActionDialog from '../components/BeamlineActions/AnnotatedBeamlineActionDialog';
 import { RUNNING } from '../constants';
 
 class BeamlineActionsContainer extends React.Component {
@@ -115,40 +114,23 @@ class BeamlineActionsContainer extends React.Component {
             })}
           </Dropdown.Menu>
         </Dropdown>
-        {this.props.currentAction.argument_type === 'List' && (
-          <BeamlineActionDialog
-            isDialogVisble={this.props.currentAction.show}
-            handleOnHide={this.hideOutput}
-            defaultPosition={defaultDialogPosition}
-            actionId={currentActionName}
-            actionName={this.props.currentAction.username}
-            actionArguments={this.props.currentAction.arguments}
-            isActionRunning={currentActionRunning}
-            actionMessages={this.props.currentAction.messages}
-            handleSetActionArgument={this.props.setArgumentValue}
-            handleStopAction={this.props.stopAction}
-            handleStartAction={this.startAction}
-            handleOnPlotDisplay={this.newPlotDisplayed}
-            plotId={this.plotIdByAction[currentActionName]}
-          />
-        )}
-        {this.props.currentAction.argument_type === 'JSONSchema' && (
-          <AnnotatedBeamlineActionDialog
-            isDialogVisble={this.props.currentAction.show}
-            handleOnHide={this.hideOutput}
-            defaultPosition={defaultDialogPosition}
-            actionName={this.props.currentAction.username}
-            actionId={currentActionName}
-            actionSchema={this.props.currentAction.schema}
-            isActionRunning={currentActionRunning}
-            actionMessages={this.props.currentAction.messages}
-            handleSetActionArgument={this.props.setArgumentValue}
-            handleStopAction={this.props.stopAction}
-            handleStartAction={this.props.startAction}
-            handleOnPlotDisplay={this.newPlotDisplayed}
-            plotId={this.plotIdByAction[currentActionName]}
-          />
-        )}
+        <BeamlineActionDialog
+          isDialogVisble={this.props.currentAction.show}
+          handleOnHide={this.hideOutput}
+          defaultPosition={defaultDialogPosition}
+          actionName={this.props.currentAction.username}
+          actionId={currentActionName}
+          actionSchema={this.props.currentAction.schema}
+          actionArguments={this.props.currentAction.arguments}
+          actionType={this.props.currentAction.argument_type}
+          isActionRunning={currentActionRunning}
+          actionMessages={this.props.currentAction.messages}
+          handleSetActionArgument={this.props.setArgumentValue}
+          handleStopAction={this.props.stopAction}
+          handleStartAction={this.props.startAction}
+          handleOnPlotDisplay={this.newPlotDisplayed}
+          plotId={this.plotIdByAction[currentActionName]}
+        />
       </>
     );
   }
