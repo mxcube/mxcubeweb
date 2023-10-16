@@ -665,14 +665,13 @@ def beamline_action_start(name):
 
 def beamline_action_done(name, result):
     try:
+        logging.getLogger("user_level_log").info("Command %s done.", name)
         msg = {"name": name, "state": READY, "data": result}
         server.emit("beamline_action", msg, namespace="/hwr")
     except Exception:
         logging.getLogger("HWR").exception(
             "error sending beamline action message: %s", msg
         )
-    else:
-        logging.getLogger("user_level_log").info("%s done.", name)
 
 
 def beamline_action_failed(name):
