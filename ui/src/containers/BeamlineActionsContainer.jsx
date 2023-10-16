@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-/* eslint-disable react/jsx-handler-names */
+
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -10,12 +10,11 @@ import {
   hideActionOutput,
   setArgumentValue,
 } from '../actions/beamlineActions';
-import { Row, Col, Modal, Dropdown, Button, Form, Card } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
-import Plot1D from '../components/Plot1D';
+import BeamlineActionDialog from '../components/BeamlineActions/BeamlineActionDialog';
+import AnnotatedBeamlineActionDialog from '../components/BeamlineActions/AnnotatedBeamlineActionDialog';
 import { RUNNING } from '../constants';
-
-import { DraggableModal } from '../components/DraggableModal';
 
 class BeamlineActionsContainer extends React.Component {
   constructor(props) {
@@ -122,98 +121,38 @@ class BeamlineActionsContainer extends React.Component {
             })}
           </Dropdown.Menu>
         </Dropdown>
-        <DraggableModal
-          id="beamlineActionOutput"
-          show={!!this.props.currentAction.show}
-          onHide={this.hideOutput}
-          defaultpos={defaultDialogPosition}
-        >
-          <Modal.Header>
-            <Modal.Title>{this.props.currentAction.username}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body
-            className="d-flex"
-            style={{ height: '500px', overflowY: 'auto' }}
-          >
-            <Row>
-              {this.props.currentAction.arguments.map((arg, i) => (
-                // eslint-disable-next-line react/jsx-key
-                <>
-                  <Col
-                    className="mt-2"
-                    xs={3}
-                    style={{ whiteSpace: 'nowrap' }}
-                    component={Form.Label}
-                  >
-                    {arg.name}
-                  </Col>
-                  <Col xs={3}>
-                    <Form.Control
-                      label={arg.name}
-                      type="text"
-                      value={arg.value}
-                      disabled={currentActionRunning}
-                      onChange={(e) => {
-                        this.props.setArgumentValue(
-                          currentActionName,
-                          i,
-                          e.target.value,
-                        );
-                      }}
-                    />
-                  </Col>
-                </>
-              ))}
-              <Col>
-                {currentActionRunning ? (
-                  <Button
-                    variant="danger"
-                    onClick={() => {
-                      this.stopAction(currentActionName);
-                    }}
-                  >
-                    Abort
-                  </Button>
-                ) : (
-                  <Button
-                    disabled={currentActionRunning}
-                    variant="primary"
-                    onClick={() => {
-                      this.startAction(currentActionName);
-                    }}
-                  >
-                    Run
-                  </Button>
-                )}
-              </Col>
-            </Row>
-            <hr />
-            <Plot1D
-              displayedPlotCallback={this.newPlotDisplayed}
-              plotId={this.plotIdByAction[currentActionName]}
-              autoNext={currentActionRunning}
-            />
-            {this.props.currentAction.messages.length > 0 ? (
-              <Card>
-                {this.props.currentAction.messages.map((message) => (
-                  // eslint-disable-next-line react/jsx-key
-                  <p>{message.message}</p>
-                ))}
-              </Card>
-            ) : (
-              ''
-            )}
-          </Modal.Body>
-          <Modal.Footer>
-            <Button
-              variant="outline-secondary"
-              onClick={this.hideOutput}
-              disabled={currentActionRunning}
-            >
-              Close window
-            </Button>
-          </Modal.Footer>
-        </DraggableModal>
+        {this.props.currentAction.argument_type === 'List' ? (
+          <BeamlineActionDialog
+            isDialogVisble={this.props.currentAction.show}
+            handleOnHide={this.hideOutput}
+            defaultPosition={defaultDialogPosition}
+            actionName={currentActionName}
+            actionArguments={this.props.currentAction.arguments}
+            isActionRunning={currentActionRunning}
+            actionMessages={this.props.currentAction.messages}
+            handleSetActionArgument={this.props.setArgumentValue}
+            handleStopAction={this.stopAction}
+            handleStartAction={this.startAction}
+            handleOnPlotDisplay={this.newPlotDisplayed}
+            plotId={this.plotIdByAction[currentActionName]}
+          />
+        ) : (
+          <AnnotatedBeamlineActionDialog
+            isDialogVisble={this.props.currentAction.show}
+            handleOnHide={this.hideOutput}
+            defaultPosition={defaultDialogPosition}
+            actionName={this.props.currentAction.username}
+            actionId={currentActionName}
+            actionSchema={this.props.currentAction.schema}
+            isActionRunning={currentActionRunning}
+            actionMessages={this.props.currentAction.messages}
+            handleSetActionArgument={this.props.setArgumentValue}
+            handleStopAction={this.props.stopAction}
+            handleStartAction={this.props.startAction}
+            handleOnPlotDisplay={this.newPlotDisplayed}
+            plotId={this.plotIdByAction[currentActionName]}
+          />
+        )}
       </>
     );
   }
