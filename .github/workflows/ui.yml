@@ -91,7 +91,7 @@ jobs:
         run: pnpm --prefix ui install
 
       - name: Run ESLint
-        run: pnpm --prefix ui eslint
+        run: pnpm --prefix ui eslint --max-warnings=0 # fail on warnings
 
   e2e:
     name: Test
