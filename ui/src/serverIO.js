@@ -140,7 +140,9 @@ class ServerIO {
     this.connect();
 
     this.loggingSocket.on('log_record', (record) => {
-      this.dispatch(addUserMessage(record));
+      if (record.severity !== 'DEBUG') {
+        this.dispatch(addUserMessage(record));
+      }
       this.dispatch(addLogRecord(record));
     });
 
