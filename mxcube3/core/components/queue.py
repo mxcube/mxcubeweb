@@ -2241,7 +2241,6 @@ class Queue(ComponentBase):
         for qid in qid_list:
             self.set_enabled_entry(qid, enabled)
 
-        # logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
 
     def update_sample(self, sid, params):
         sample_node = HWR.beamline.queue_model.get_node(sid)
