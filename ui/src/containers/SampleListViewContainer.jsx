@@ -584,8 +584,6 @@ class SampleListViewContainer extends React.Component {
       this.filter(key),
     );
 
-    debugger;
-
     this.props.selectSamples(samplesListKeys);
     e.stopPropagation();
   }
@@ -925,7 +923,7 @@ class SampleListViewContainer extends React.Component {
                     );
                   }}
                 >
-                  All Samples Options <LuSettings2 />
+                  Add Task to Samples <LuSettings2 />
                 </Button>
               </Col>
               <Col className="d-flex justify-content-end" sm={2}>

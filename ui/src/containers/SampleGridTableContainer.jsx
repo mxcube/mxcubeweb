@@ -16,7 +16,7 @@ import {
   Dropdown,
 } from 'react-bootstrap';
 
-import LazyLoad from 'react-lazyload';
+import LazyLoad, { forceVisible } from 'react-lazyload';
 import Collapsible from 'react-collapsible';
 
 import 'react-contexify/dist/ReactContexify.css';
@@ -811,25 +811,28 @@ class SampleGridTableContainer extends React.Component {
         if (nbpuck.length > 0) {
           let colsmP;
           if (nbpuck.length === 1) {
-            colsmP = 3;
+            colsmP = 2;
+          } else if (nbpuck.length === 2) {
+            colsmP = 4;
           } else if (nbpuck.length >= 4) {
-            colsmP = 'sm';
+            colsmP = 'auto';
           } else {
             colsmP = colsm;
           }
           return (
-            <Col sm={colsmP} key={`cell-${cell.name}`}>
+            <Col className="p-1" sm={colsmP} key={`cell-${cell.name}`}>
               <LazyLoad
                 unmountIfInvisible
                 once={scContent.children.length <= 2}
                 height={1325}
-                offset={100}
+                offset={200 * Number(cell.name)}
               >
                 <Collapsible
                   transitionTime={300}
                   className="sample-items-collapsible"
                   openedClassName="sample-items-collapsible"
                   open
+                  onClosing={forceVisible()}
                   lazyRender
                   trigger={this.renderCollapsibleHeaderClose(
                     Number(cell.name),
@@ -1042,7 +1045,7 @@ class SampleGridTableContainer extends React.Component {
         if (nbpuck.length <= 4) {
           colsmP = 3;
         } else if (nbpuck.length >= 5) {
-          colsmP = 'sm';
+          colsmP = true;
         } else {
           colsmP = colsm;
         }
