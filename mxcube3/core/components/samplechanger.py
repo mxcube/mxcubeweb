@@ -253,7 +253,7 @@ class SampleChanger(ComponentBase):
                     # 如果第一上样失败后，第二次上样没反应，可能是上次上样失败没有执行，
                     #                 self._selected_sample = -1
                     #                 self._selected_basket = -1
-                print("mount_sample_clean_up函数执行完sc.load后的res:", res)
+                print("the res after mount_sample_clean_up method has done sc.load() :", res)
                 if res is None:
                     res = True
                 if (
@@ -340,6 +340,7 @@ class SampleChanger(ComponentBase):
                 pre_sample['sampleID'] = pre_sample_tuple[0]
                 pre_sample['location'] = pre_sample_tuple[0]
                 self.unmount_sample_clean_up(pre_sample)
+                sc.change_ifcloseLid_inBeginning_state(True)
             sc_maint._do_dry_gripper()
 
         self.mount_sample_clean_up(sample)

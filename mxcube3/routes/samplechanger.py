@@ -148,7 +148,7 @@ def init_route(app, server, url_prefix):
                 {"Content-Type": "application/json", "message": msg},
             )
         else:
-            return jsonify(response=ret)
+            return jsonify(responspwde=ret)
 
     # return bp
     # tianjia

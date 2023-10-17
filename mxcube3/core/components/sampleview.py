@@ -589,11 +589,16 @@ class SampleView(ComponentBase):
             HWR.beamline.diffractometer.move_to_beam(x, y)
 
     def set_centring_method(self, method):
+
         if method == CENTRING_METHOD.LOOP:
             msg = "Using automatic loop centring when mounting samples"
-            self.app.CENTRING_METHOD = CENTRING_METHOD.LOOP
+            logging.getLogger("HWR").info("auto_loop_centring clicked from UI")
+            HWR.beamline.sample_changer.centring_method = "AUTO_LOOP"
+            self.app.CENTRING_METHOD = CENTRING_METHOD.LOOP #self.app: <class 'mxcube3.app.MXCUBEApplication'>
         else:
             msg = "Using click centring when mounting samples"
+            logging.getLogger("HWR").info("MANUAL_centring clicked from UI")
+            HWR.beamline.sample_changer.centring_method = "MANUAL"
             self.app.CENTRING_METHOD = CENTRING_METHOD.MANUAL
 
         logging.getLogger("user_level_log").info(msg)
