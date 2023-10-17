@@ -672,7 +672,7 @@ class SampleGridTableContainer extends React.Component {
 
   renderPuckSampleItems(puck, sampleNumber) {
     const sample = Object.values(this.props.sampleList).find(
-      (sample) => sample.location === puck + ':' + sampleNumber,
+      (sample) => sample.location === `${puck}:${sampleNumber}`,
     );
     if (sample === undefined) {
       return null;
@@ -781,6 +781,7 @@ class SampleGridTableContainer extends React.Component {
     return null;
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   renderSampleTable(colsm) {
     const scContent = this.props.sampleChanger.contents;
 
@@ -788,7 +789,6 @@ class SampleGridTableContainer extends React.Component {
       return null;
     }
 
-    // eslint-disable-next-line sonarjs/cognitive-complexity
     return scContent.children.map((cell) => {
       if (
         this.props.filterOptions.cellFilter.toLowerCase() === cell.name ||
@@ -1000,6 +1000,7 @@ class SampleGridTableContainer extends React.Component {
     return null;
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   renderSampleTableSingleCell(colsm) {
     const scContent = this.props.sampleChanger.contents;
     const nbpuck = [];
@@ -1061,9 +1062,8 @@ class SampleGridTableContainer extends React.Component {
                     return null;
                   }
                   return (
-                    <tr>
+                    <tr key={`${puck.name}-td-${puck.name}`}>
                       <td
-                        key={`${puck.name}-td-${puck.name}`}
                         className={`sample-items-table-column-body custom-table-border-${
                           idxtd + 1
                         }`}
