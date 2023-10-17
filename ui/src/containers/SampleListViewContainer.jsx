@@ -383,9 +383,11 @@ class SampleListViewContainer extends React.Component {
         hasLimsData,
       );
       if (this.props.filterOptions.cellFilter !== '') {
+        // eslint-disable-next-line no-bitwise
         fi &= sample.cell_no === Number(this.props.filterOptions.cellFilter);
       }
       if (this.props.filterOptions.puckFilter !== '') {
+        // eslint-disable-next-line no-bitwise
         fi &= sample.puck_no === Number(this.props.filterOptions.puckFilter);
       }
     }
