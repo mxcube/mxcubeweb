@@ -74,7 +74,7 @@
 }
 
 .samples-grid-table-li {
-  min-width: 285px;
+  min-width: 283px;
   margin: auto auto 6px 0px;
   z-index: 2 !important;
   list-style-type: none;
