@@ -250,11 +250,6 @@ export default class ContextMenu extends React.Component {
       GridGroup: [{ text: 'Save Grid', action: () => this.saveGrid(), key: 1 }],
       GridGroupSaved: [
         {
-          text: 'Mesh Scan',
-          action: () => this.showModal('Mesh'),
-          key: 'mesh_scan',
-        },
-        {
           text: 'Centring Point on cell',
           action: () => this.createCollectionOnCell(),
           key: 5,
@@ -278,6 +273,14 @@ export default class ContextMenu extends React.Component {
         genericTasks.grid.none > 0 ? { text: 'divider', key: 7 } : {},
       ],
     };
+
+    if (process.env.REACT_APP_USE_NATIVE_MESH) {
+      options.GridGroupSaved.unshift({
+        text: 'Mesh Scan',
+        action: () => this.showModal('Mesh'),
+        key: 'mesh_scan',
+      });
+    }
 
     Object.keys(this.props.availableMethods).forEach((key) => {
       if (!this.props.availableMethods[key]) {
