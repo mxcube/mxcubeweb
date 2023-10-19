@@ -9,7 +9,7 @@ API
     :toctree: autosummary
     :recursive:
 
-    mxcube3
+    mxcubeweb
 
 
 ..  EOF

@@ -2,5 +2,5 @@
 Queue REST API
 **************
 
-.. autoflask:: mxcube3:server.flask
+.. autoflask:: mxcubeweb:server.flask
     :blueprints: queue

@@ -26,7 +26,7 @@ sys.path.append("./")
 
 
 from mxcubecore import HardwareRepository
-from mxcube3 import build_server_and_config
+from mxcubeweb import build_server_and_config
 from flask_login import current_user
 
 _SIO_TEST_CLIENT = None

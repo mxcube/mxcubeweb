@@ -38,7 +38,7 @@ RUN conda init bash
 
 WORKDIR /opt
 
-# Install MXCuBE3
+# Install MXCuBE Web
 COPY conda-install.sh /opt/conda-install.sh
 RUN cd /opt && chmod +x conda-install.sh && sync && ./conda-install.sh
 

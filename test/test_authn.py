@@ -9,7 +9,7 @@ import time
 
 import pytest
 
-import mxcube3
+import mxcubeweb
 import mxcubecore
 
 URL_BASE = "/mxcube/api/v0.1/login"
@@ -43,7 +43,7 @@ def server(request, login_type):
     mxcubecore.HardwareRepository.uninit_hardware_repository()
 
     argv = []
-    server_, _ = mxcube3.build_server_and_config(test=True, argv=argv)
+    server_, _ = mxcubeweb.build_server_and_config(test=True, argv=argv)
     server_.flask.config["TESTING"] = True
     # For the tests we override the configured value of the session lifetime
     # with a much smaller value, so that tests do not need to wait as long.

@@ -20,7 +20,7 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Scientific/Engineering",
 ]
-packages = [{include = "mxcube3", from = "."}]
+packages = [{include = "mxcubeweb", from = "."}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
@@ -82,4 +82,4 @@ requires = ["poetry-core>=1.0.0", "setuptools>=45", "setuptools_scm[toml]>=6.2"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry.scripts]
-mxcubeweb-server = 'mxcube3:main'
+mxcubeweb-server = 'mxcubeweb:main'

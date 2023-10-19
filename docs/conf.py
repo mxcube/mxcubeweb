@@ -4,14 +4,14 @@
 import datetime
 import importlib.metadata
 
-import mxcube3
+import mxcubeweb
 
 
 PROJECT_PACKAGE_NAME = "mxcubeweb"  # Distribution package (not import package)
 PROJECT_PACKAGE_METADATA = importlib.metadata.metadata(PROJECT_PACKAGE_NAME)
 
 # This is necessary to for the `autoflask` directive to get access to the routes
-server, _ = mxcube3.build_server_and_config(test=True, argv=[])
+server, _ = mxcubeweb.build_server_and_config(test=True, argv=[])
 # This is to avoid `Server.kill_processes`, that makes the build return non-zero
 server.flask.testing = True
 
