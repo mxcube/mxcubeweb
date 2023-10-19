@@ -20,7 +20,6 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Scientific/Engineering",
 ]
-packages = [{include = "mxcubeweb", from = "."}]
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
