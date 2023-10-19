@@ -371,7 +371,8 @@ class MXCUBEApplication:
         removeLoggingHandlers()
 
         fmt = "%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s"
-        log_formatter = ColorFormatter(fmt)
+        console_formatter = ColorFormatter(fmt)
+        file_formatter = logging.Formatter(fmt)
 
         if log_file:
             if not os.path.isfile(log_file):
@@ -384,7 +385,7 @@ class MXCUBEApplication:
             log_file_handler = TimedRotatingFileHandler(
                 log_file, when="midnight", backupCount=7
             )
-            log_file_handler.setFormatter(log_formatter)
+            log_file_handler.setFormatter(file_formatter)
 
             uilog_file = f"{log_file[:-4]}_ui.log"
             if not os.path.isfile(uilog_file):
@@ -397,7 +398,7 @@ class MXCUBEApplication:
             uilog_file_handler = TimedRotatingFileHandler(
                 uilog_file, when="midnight", backupCount=7
             )
-            uilog_file_handler.setFormatter(log_formatter)
+            uilog_file_handler.setFormatter(file_formatter)
 
         if not log_level:
             log_level = "INFO"
@@ -406,7 +407,7 @@ class MXCUBEApplication:
 
         custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
         custom_log_handler.setLevel(log_level)
-        custom_log_handler.setFormatter(log_formatter)
+        custom_log_handler.setFormatter(file_formatter)
 
         _loggers = {
             "hwr_logger": logging.getLogger("HWR"),
@@ -417,7 +418,7 @@ class MXCUBEApplication:
         }
 
         stdout_log_handler = StreamHandler(sys.stdout)
-        stdout_log_handler.setFormatter(log_formatter)
+        stdout_log_handler.setFormatter(console_formatter)
 
         for logger_name, logger in _loggers.items():
             if logger_name in enabled_logger_list:
