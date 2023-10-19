@@ -249,22 +249,10 @@ export default connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.resolution
-          : toFixed(state, 'resolution'),
-      energy:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.energy
-          : toFixed(state, 'energy'),
-      transmission:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.transmission
-          : toFixed(state, 'transmission'),
-      osc_start:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.osc_start
-          : toFixed(state, 'diffractometer.phi'),
+      resolution: toFixed(state, 'resolution'),
+      energy: toFixed(state, 'energy'),
+      transmission: toFixed(state, 'transmission'),
+      osc_start: toFixed(state, 'diffractometer.phi', 'osc_start'),
     },
   };
 })(HelicalForm);

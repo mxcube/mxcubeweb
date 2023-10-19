@@ -5,7 +5,7 @@ import { reduxForm, formValueSelector } from 'redux-form';
 import { DraggableModal } from '../DraggableModal';
 import { Modal, Button, Form, Row, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
-import { StaticField, InputField, SelectField } from './fields';
+import { StaticField, InputField, SelectField, toFixed } from './fields';
 
 class GphlWorkflow extends React.Component {
   constructor(props) {
@@ -169,15 +169,9 @@ export default connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: state.taskForm.taskData.sampleID
-        ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.hardwareObjects.resolution.value,
-      energy: state.taskForm.taskData.sampleID
-        ? state.taskForm.taskData.parameters.energy
-        : state.beamline.hardwareObjects.energy.value,
-      transmission: state.taskForm.taskData.sampleID
-        ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.hardwareObjects.transmission.value,
+      resolution: toFixed(state, 'resolution'),
+      energy: toFixed(state, 'energy'),
+      transmission: toFixed(state, 'transmission'),
     },
   };
 })(GphlWorkflowForm);
