@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import logging
-import sys
 
 from mxcubecore import HardwareRepository as HWR
 
@@ -243,16 +242,6 @@ class Beamline(ComponentBase):
 
         """
         try:
-            cmds = HWR.beamline.beamline_actions.get_commands()
-        except Exception:
-            cmds = []
-
-        for cmd in cmds:
-            if cmd.name() == name:
-                cmd.abort()
-
-        # Annotated command
-        try:
             HWR.beamline.beamline_actions.abort_command(name)
         except KeyError:
             try:
@@ -268,25 +257,6 @@ class Beamline(ComponentBase):
 
         : param str name: action to run
         """
-        try:
-            cmds = HWR.beamline.beamline_actions.get_commands()
-        except Exception:
-            cmds = []
-
-        for cmd in cmds:
-            if cmd.name() == name:
-                try:
-                    cmd.emit("commandBeginWaitReply", name)
-                    logging.getLogger("user_level_log").info(
-                        "Starting %s(%s)",
-                        cmd.name(),
-                        ", ".join(map(str, params)),
-                    )
-                    cmd(*params)
-                except Exception as ex:
-                    err = str(sys.exc_info()[1])
-                    raise Exception(str(err)) from ex
-        # Annotated command
         try:
             HWR.beamline.beamline_actions.execute_command(name, params)
         except Exception as ex:
