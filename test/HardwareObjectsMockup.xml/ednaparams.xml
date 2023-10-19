@@ -1,5 +1,5 @@
 <object class="EdnaWorkflow" role="workflow">
-  <bes_host>mxcube3</bes_host>
+  <bes_host>mxcubeweb</bes_host>
   <bes_port>8100</bes_port>
   <object href="/session" role="session"/>
   <workflow>

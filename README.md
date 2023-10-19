@@ -1,6 +1,5 @@
 [![Build and test](https://github.com/mxcube/mxcubeweb/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/mxcube/mxcubeweb/actions/workflows/build_and_test.yml)
 ![PyPI](https://img.shields.io/pypi/v/mxcubeweb)
-[![codecov](https://codecov.io/gh/mxcube/mxcube3/branch/master/graph/badge.svg)](https://codecov.io/gh/mxcube/mxcube3)
 
 <p align="center"><img src="http://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
 
@@ -42,11 +41,11 @@ The client is implemented in ECMAScript6 and HTML5. React, Boostrap and FabricJS
 
 ## Information for developers
 
-- [Contributing guidelines](https://github.com/mxcube/mxcube3/blob/master/CONTRIBUTING.md)
+- [Contributing guidelines](https://github.com/mxcube/mxcubeweb/blob/master/CONTRIBUTING.md)
 
 ## Information for users
 
-- [User Manual MXCuBE3](https://www.esrf.fr/mxcube3)
+- [User Manual MXCuBE Web](https://www.esrf.fr/mxcube3)
 - [Feature overview](https://github.com/mxcube/mxcubeqt/blob/master/docs/source/feature_overview.rst)
 - If you cite MXCuBE, please use the references:
 

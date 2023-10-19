@@ -7,7 +7,7 @@ conda activate mxcube
 
 vncserver :1 -geometry 1680x1050 -depth 24 &
 
-cd /opt/mxcube3
+cd /opt/mxcubeweb
 
 npm install --global pnpm@8
 pnpm --prefix ui install

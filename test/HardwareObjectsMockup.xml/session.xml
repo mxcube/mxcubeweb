@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 <object class="Session">
  <synchrotron_name>ESRF</synchrotron_name>
- <endstation_name>mxcube3test</endstation_name>
- <beamline_name>mxcube3test</beamline_name>
+ <endstation_name>mxcubewebtest</endstation_name>
+ <beamline_name>mxcubewebtest</beamline_name>
  <email_extension>esrf.fr</email_extension>
 
   <proposals>

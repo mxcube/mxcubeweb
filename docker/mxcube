@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-cd /opt/mxcube3/
+cd /opt/mxcubeweb/
 
 export NVM_DIR="$HOME/.nvm"
 source "$NVM_DIR/nvm.sh"
