@@ -58,7 +58,21 @@ export function resetLastUsedParameters(formObj) {
   });
 }
 
-export function toFixed(state, hoName) {
+export function toFixed(state, hoName, parameterName = null) {
+  const withTaskData =
+    state.taskForm.sampleIds.constructor !== Array ||
+    state.queue.rememberParametersBetweenSamples;
+
+  const pname = parameterName !== null ? parameterName : hoName;
+
+  const value = withTaskData
+    ? state.taskForm.taskData.parameters[pname]
+    : state.beamline.hardwareObjects[hoName].value;
+
+  if (value === undefined) {
+    throw new Error(`No default task parameter or value for ${hoName}`);
+  }
+
   const ho = state.beamline.hardwareObjects[hoName];
   let precision = null;
 
@@ -71,7 +85,9 @@ export function toFixed(state, hoName) {
     }
   }
 
-  return ho.value.toFixed(precision);
+  return value
+    ? Number.parseFloat(value).toFixed(precision)
+    : ho.value.toFixed(precision);
 }
 
 function validation(error, warning) {

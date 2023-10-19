@@ -16,6 +16,7 @@ import {
   FieldsRow,
   CollapsableRows,
   DisplayField,
+  toFixed,
   saveToLastUsedParameters,
   resetLastUsedParameters,
 } from './fields';
@@ -261,16 +262,10 @@ export default connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: state.taskForm.taskData.sampleID
-        ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.hardwareObjects.resolution.value,
-      energy: state.taskForm.taskData.sampleID
-        ? state.taskForm.taskData.parameters.energy
-        : state.beamline.hardwareObjects.energy.value,
-      transmission: state.taskForm.taskData.sampleID
-        ? state.taskForm.taskData.parameters.transmission
-        : state.beamline.hardwareObjects.transmission.value,
-      osc_start: state.beamline.hardwareObjects['diffractometer.phi'].value,
+      resolution: toFixed(state, 'resolution'),
+      energy: toFixed(state, 'energy'),
+      transmission: toFixed(state, 'transmission'),
+      osc_start: toFixed(state, 'diffractometer.phi', 'osc_start'),
     },
   };
 })(MeshForm);

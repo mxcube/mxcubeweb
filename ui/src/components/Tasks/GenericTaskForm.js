@@ -19,6 +19,7 @@ import {
   InputField,
   saveToLastUsedParameters,
   resetLastUsedParameters,
+  toFixed,
 } from './fields';
 
 class GenericTaskForm extends React.Component {
@@ -377,19 +378,10 @@ export default connect((state) => {
       ...state.taskForm.taskData.parameters,
       type,
       beam_size: state.sampleview.currentAperture,
-      resolution:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.resolution
-          : state.beamline.hardwareObjects.resolution.value,
-      energy:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.energy
-          : state.beamline.hardwareObjects.energy.value,
-      transmission:
-        state.taskForm.sampleIds.constructor !== Array
-          ? state.taskForm.taskData.parameters.transmission
-          : state.beamline.hardwareObjects.transmission.value,
-      osc_start: state.taskForm.taskData.parameters.osc_start,
+      resolution: toFixed(state, 'resolution'),
+      energy: toFixed(state, 'energy'),
+      transmission: toFixed(state, 'transmission'),
+      osc_start: toFixed(state, 'diffractometer.phi', 'osc_start'),
     },
   };
 })(GenericTaskFormForm);
