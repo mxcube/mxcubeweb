@@ -296,13 +296,13 @@ class BeamlineSetupContainer extends React.Component {
           <Nav className="">
             <Nav.Item>
               <span className="blstatus-item">
-                {this.props.beamline.hardwareObjects.machine_info ? (
+                {this.props.beamline.hardwareObjects.machine_info && (
                   <MachInfo
                     info={
                       this.props.beamline.hardwareObjects.machine_info.value
                     }
                   />
-                ) : null}
+                )}
               </span>
             </Nav.Item>
           </Nav>
