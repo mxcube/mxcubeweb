@@ -51,7 +51,7 @@ software_paths:
     GPHL_XDS_PATH: /alt/rhfogh/Software/XDS/latest
 
     # OPTIONAL for java binary => defaults to just 'java'
-    java_binary: "/alt/rhfogh/Software/GPhL/mxcube_setup/jre1.8.0_144/bin/java"
+#    java_binary: "/alt/rhfogh/Software/GPhL/mxcube_setup/jre1.8.0_144/bin/java"
 
     # gphl test samples directory - for collection emulation
     gphl_test_samples: gphl/test_samples
