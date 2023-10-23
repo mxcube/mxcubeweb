@@ -12,17 +12,40 @@
         </proposal>
     </proposals>
 
-    <!-- NB you need at least two inhose_users, otherwise this breaks when read -->
-    <inhouse_users>
-        <proposal>
-            <code>idtest</code>
-            <number>0</number>
-        </proposal>
-        <proposal>
-          <code>opid</code>
-          <number>291</number>
-        </proposal>
-    </inhouse_users>
+  <inhouse_users>
+    <proposal>
+      <code>idtest</code>
+      <number>0</number>
+    </proposal>
+    <proposal>
+      <code>opid</code>
+      <number>291</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>1</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>2</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>3</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>4</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>5</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>6</number>
+    </proposal>
+  </inhouse_users>
 
     <file_info>
         <file_suffix>cbf</file_suffix>
