@@ -54,7 +54,7 @@ export function setSampleOrderAction(order) {
 }
 
 /**
- * @deprecated New Sample Grid does not allowed sample reordering 
+ * @deprecated New Sample Grid does not allowed sample reordering
  */
 export function sendSetSampleOrderAction(sampleOrder) {
   return (dispatch) => {
