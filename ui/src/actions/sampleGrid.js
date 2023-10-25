@@ -40,7 +40,7 @@ export function addSamplesToList(samplesData) {
       if (!sampleData.sampleID) {
         lastSampleID++;
         sampleData.sampleID = lastSampleID.toString();
-        sampleData.cell_no = 1;
+        sampleData.cell_no = 0;
         sampleData.puck_no = 1;
       }
     }
@@ -53,6 +53,9 @@ export function setSampleOrderAction(order) {
   return { type: 'SET_SAMPLE_ORDER', order };
 }
 
+/**
+ * @deprecated New Sample Grid does not allowed sample reordering 
+ */
 export function sendSetSampleOrderAction(sampleOrder) {
   return (dispatch) => {
     fetch('mxcube/api/v0.1/queue/sample-order', {

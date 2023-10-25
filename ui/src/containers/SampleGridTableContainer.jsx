@@ -45,7 +45,6 @@ import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected } from '../constants';
 import {
   toggleMovableAction,
   selectSamplesAction,
-  sendSetSampleOrderAction,
   showGenericContextMenu,
 } from '../actions/sampleGrid';
 
@@ -1368,8 +1367,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendSetSampleOrderAction: (order) =>
-      dispatch(sendSetSampleOrderAction(order)),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     unloadSample: bindActionCreators(unloadSample, dispatch),
