@@ -400,7 +400,7 @@ class SampleGridTableContainer extends React.Component {
       .filter((sample) => sample.cell_no === cell)
       .forEach((sample) => {
         allCellSample.push(sample.sampleID);
-        if (this.props.inQueue(sample.sampleID) && sample.checked) {
+        if (this.props.inQueue(sample.sampleID)) {
           allCellSampleCheck.push(sample.sampleID);
         }
       });
@@ -423,7 +423,7 @@ class SampleGridTableContainer extends React.Component {
         .forEach((sample) => {
           if (this.props.filterSampleByKey(sample.sampleID)) {
             allCellSample.push(sample.sampleID);
-            if (this.props.inQueue(sample.sampleID) && sample.checked) {
+            if (this.props.inQueue(sample.sampleID)) {
               allCellSampleCheck.push(sample.sampleID);
             }
           }
@@ -439,7 +439,7 @@ class SampleGridTableContainer extends React.Component {
           if (this.props.filterSampleByKey(sample.sampleID)) {
             allPuckSampleID.push(sample.sampleID);
             allPuckSample.push(sample);
-            if (this.props.inQueue(sample.sampleID) && sample.checked) {
+            if (this.props.inQueue(sample.sampleID)) {
               allPuckSampleCheck.push(sample.sampleID);
             }
           }
@@ -595,7 +595,7 @@ class SampleGridTableContainer extends React.Component {
       )
       .forEach((sample) => {
         const key = sample.sampleID;
-        const picked = this.props.inQueue(sample.sampleID) && sample.checked;
+        const picked = this.props.inQueue(sample.sampleID);
 
         const classes = classNames('samples-grid-table-li', {
           'samples-grid-table-item-selected':
@@ -677,7 +677,7 @@ class SampleGridTableContainer extends React.Component {
       return null;
     }
     const key = sample.sampleID;
-    const picked = this.props.inQueue(sample.sampleID) && sample.checked;
+    const picked = this.props.inQueue(sample.sampleID);
 
     const classes = classNames('samples-grid-table-li', {
       'samples-grid-table-item-selected': this.props.selected[key],

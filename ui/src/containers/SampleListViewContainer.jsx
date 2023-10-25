@@ -99,7 +99,7 @@ class SampleListViewContainer extends React.Component {
     this.removeSamplesFromQueue = this.removeSamplesFromQueue.bind(this);
     this.removeSelectedSamples = this.removeSelectedSamples.bind(this);
     this.removeSelectedTasks = this.removeSelectedTasks.bind(this);
-
+    this.getSamplesFromSC = this.getSamplesFromSC.bind(this);
     this.renderCollectButton = this.renderCollectButton.bind(this);
     this.startCollect = this.startCollect.bind(this);
   }
@@ -282,6 +282,20 @@ class SampleListViewContainer extends React.Component {
     }
   }
 
+  async getSamplesFromSC() {
+    const manualSamples = [];
+    Object.values(this.props.sampleList).forEach((sample) => {
+      if (sample.location === 'Manual') {
+        manualSamples.push(sample.sampleID);
+      }
+    });
+    // first need to remove manual sample from queue
+    // because they will be remove from sample List
+    await this.props.setEnabledSample(manualSamples, false);
+
+    await this.props.getSamples()
+  }
+
   /**
    * Synchronises samples with ISPyB
    *
@@ -289,10 +303,8 @@ class SampleListViewContainer extends React.Component {
    */
   syncSamples() {
     if (Object.keys(this.props.sampleList).length === 0) {
-      // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
-      this.props.getSamples().then(() => {
-        this.props.syncSamples();
-      });
+      this.getSamplesFromSC()
+      this.props.syncSamples();
     } else {
       this.props.syncSamples();
     }
@@ -808,7 +820,7 @@ class SampleListViewContainer extends React.Component {
                   id="split-button-sample-changer-selection"
                   disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                   title="Get samples from SC"
-                  onClick={this.props.getSamples}
+                  onClick={this.getSamplesFromSC}
                 >
                   <Dropdown.Item
                     className="nowrap-style"
