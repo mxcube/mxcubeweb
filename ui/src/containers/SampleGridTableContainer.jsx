@@ -1,5 +1,4 @@
 /* eslint-disable react/no-array-index-key */
-
 /* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
@@ -737,13 +736,10 @@ class SampleGridTableContainer extends React.Component {
   }
 
   renderManualSamples() {
-    const scList = this.props.sampleList;
     const manualSamples = [];
-    const ks = Object.keys(scList);
-    ks.forEach((sample) => {
-      if (scList[sample].location === 'Manual') {
-        scList[sample].cell_no = 0;
-        manualSamples.push(scList[sample]);
+    Object.values(this.props.sampleList).forEach((sample) => {
+      if (sample.location === 'Manual') {
+        manualSamples.push(sample.sampleID);
       }
     });
 
@@ -1061,7 +1057,7 @@ class SampleGridTableContainer extends React.Component {
                     return null;
                   }
                   return (
-                    <tr key={`${puck.name}-td-${puck.name}`}>
+                    <tr key={`${puck.name}-tr-${idxtd}`}>
                       <td
                         className={`sample-items-table-column-body custom-table-border-${
                           idxtd + 1
@@ -1195,8 +1191,7 @@ class SampleGridTableContainer extends React.Component {
       <>
         <Dropdown.Item onClick={this.props.addSelectedSamplesToQueue}>
           <span>
-            <i className="fas fa-plus" />
-            Add to Queue
+            <i className="fas fa-plus" /> Add to Queue
           </span>
         </Dropdown.Item>
         <Dropdown.Item onClick={this.mountAndCollect}>
@@ -1276,7 +1271,7 @@ class SampleGridTableContainer extends React.Component {
 
   isSingleCell() {
     return Object.values(this.props.sampleList).every(
-      (sample) => sample.cell_no === 1,
+      (sample) => sample.cell_no === 1 || sample.cell_no === 0,
     );
   }
 
