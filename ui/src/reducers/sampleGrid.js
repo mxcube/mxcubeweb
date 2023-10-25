@@ -50,17 +50,8 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
     }
     // Set the list of samples (sampleList), clearing any existing list
     case 'UPDATE_SAMPLE_LIST': {
-      const sampleList = { ...state.sampleList };
-      const order = [...state.order];
-
-      for (const sampleID of action.order) {
-        const sampleData = action.sampleList[sampleID];
-        if (!sampleList[sampleID]) {
-          // new sample
-          order.push(sampleID);
-        }
-        sampleList[sampleID] = sampleData;
-      }
+      const sampleList =  action.sampleList;
+      const order = action.order;
 
       return { ...state, sampleList, order, selected: {} };
     }
