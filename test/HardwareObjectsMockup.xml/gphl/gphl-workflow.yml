@@ -36,6 +36,10 @@ settings:
     starting_beamline_energy: current
     default_beam_energy_tag: Acquisition
 
+    # TESTING ONLY - skip acquisition of characterisation data in manual mode
+    # and use SPOT.XDS file contained in this directory instead
+#    init_spot_dir: /directory/containing/SPOT.XDS/file/to/use
+
 
     defaults:
         # Default values for queue_model_objects.GphlWorkflow attributes

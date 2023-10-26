@@ -52,7 +52,7 @@ start_deg= 0.0
 strategy_name= 'Char_4_by_10_multitrigger'
 type= 'geometric'
 allowed_widths= 0.1
-default_width_idx= 6
+default_width_idx= 0
 /
 
 &stratcal_sweep_list
