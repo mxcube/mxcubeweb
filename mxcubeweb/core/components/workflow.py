@@ -33,7 +33,7 @@ class Workflow(ComponentBase):
 
     def submit_parameters(self, params):
         if params["wfpath"] == "Gphl" or params["type"] == "GphlWorkflow":
-            HWR.beamline.gphl_workflow.set_values_map(params)
+            self.app.server.emit("GphlParameterReturn", params, namespace="/hwr")
         else:
             HWR.beamline.workflow.set_values_map(params)
 

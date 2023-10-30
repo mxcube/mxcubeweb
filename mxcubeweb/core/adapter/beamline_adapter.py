@@ -35,9 +35,6 @@ class _BeamlineAdapter:
         gphl_workflow = self._bl.gphl_workflow
         if gphl_workflow:
             gphl_workflow.connect(
-                "gphlParametersNeeded", self.gphl_wf_parameters_needed
-            )
-            gphl_workflow.connect(
                 "GphlJsonParametersNeeded", self.gphl_json_wf_parameters_needed
             )
             gphl_workflow.connect(
@@ -47,17 +44,11 @@ class _BeamlineAdapter:
     def wf_parameters_needed(self, params):
         self.app.server.emit("workflowParametersDialog", params, namespace="/hwr")
 
-    def gphl_wf_parameters_needed(self, params):
-        self.app.server.emit("gphlWorkflowParametersDialog", params, namespace="/hwr")
-
     def gphl_json_wf_parameters_needed(self, params):
         self.app.server.emit("gphlWorkflowParametersDialog", params, namespace="/hwr")
 
     def gphl_json_wf_update_ui_parameters(self, params):
         self.app.server.emit("gphlWorkflowParametersDialog", params, namespace="/hwr")
-
-    def gphl_wf_parameters_return(self, params):
-        self.app.server.emit("GphlParameterReturn", params, namespace="/hwr")
 
     def get_object(self, name):
         return self.get_attr_from_path(name)
