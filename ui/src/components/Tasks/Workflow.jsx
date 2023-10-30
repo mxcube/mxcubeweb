@@ -8,9 +8,13 @@ import validate from './validate';
 import { StaticField, InputField, toFixed, SelectField } from './fields';
 
 function Workflow(props) {
-  function isGphlWorkflow() {
-    return props.wfpath === 'Gphl';
-  }
+  const isGphlWorkflow = props.wfpath === 'Gphl';
+
+  const strategyNames = isGphlWorkflow
+    ? Object.values(props.taskData.parameters.strategies).map(
+        ({ title }) => title,
+      )
+    : [];
 
   function addToQueue(runNow, params) {
     const parameters = {
@@ -41,13 +45,6 @@ function Workflow(props) {
 
     props.addTask(parameters, stringFields, runNow);
     props.hide();
-  }
-
-  const strategy_names = [];
-  if (isGphlWorkflow()) {
-    Object.values(props.taskData.parameters.strategies).forEach((result) => {
-      strategy_names.push(result.title);
-    });
   }
 
   return (
@@ -81,12 +78,12 @@ function Workflow(props) {
               />
             </Row>
           ) : null}
-          {strategy_names.length > 0 ? (
+          {strategyNames.length > 0 ? (
             <div className="mt-3">
               <SelectField
                 propName="strategy_name"
                 label="Workflow Strategy"
-                list={strategy_names}
+                list={strategyNames}
                 col1={4}
                 col2={7}
               />
