@@ -32,7 +32,10 @@ class Workflow(ComponentBase):
         return {"workflows": workflows}
 
     def submit_parameters(self, params):
-        HWR.beamline.workflow.set_values_map(params)
+        if params["wfpath"] == "Gphl" or params["type"] == "GphlWorkflow":
+            HWR.beamline.gphl_workflow.set_values_map(params)
+        else:
+            HWR.beamline.workflow.set_values_map(params)
 
     def get_mesh_result(self, gid, _type="heatmap"):
         base64data = HWR.beamline.sample_view.get_grid_data(gid)
