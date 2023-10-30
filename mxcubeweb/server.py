@@ -155,9 +155,6 @@ class Server:
         from mxcubeweb.routes.workflow import (
             init_route as init_workflow_route,
         )
-        from mxcubeweb.routes.gphl_workflow import (
-            init_route as init_gphl_workflow_route,
-        )
 
         url_root_prefix = "/mxcube/api/v0.1"
 
@@ -203,12 +200,6 @@ class Server:
 
         Server._register_route(
             init_workflow_route, mxcube, f"{url_root_prefix}/workflow"
-        )
-
-        Server._register_route(
-            init_gphl_workflow_route,
-            mxcube,
-            f"{url_root_prefix}/gphl_workflow",
         )
 
         Server.security = flask_security.Security(Server.flask, Server.user_datastore)
