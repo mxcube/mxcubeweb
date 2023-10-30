@@ -21,14 +21,14 @@ dependencies:
     specifier: ^0.1.17
     version: 0.1.19(@fortawesome/fontawesome-svg-core@1.2.36)(react@17.0.2)
   '@rjsf/core':
-    specifier: 2.0.2
-    version: 2.0.2(react@17.0.2)
+    specifier: 5.13.1
+    version: 5.13.1(@rjsf/utils@5.13.1)(react@17.0.2)
   '@rjsf/utils':
-    specifier: 5.9.0
-    version: 5.9.0(react@17.0.2)
+    specifier: 5.13.1
+    version: 5.13.1(react@17.0.2)
   '@rjsf/validator-ajv8':
-    specifier: 5.9.0
-    version: 5.9.0(@rjsf/utils@5.9.0)
+    specifier: 5.13.1
+    version: 5.13.1(@rjsf/utils@5.13.1)
   bootstrap:
     specifier: 5.2.3
     version: 5.2.3(@popperjs/core@2.11.8)
@@ -1812,14 +1812,6 @@ packages:
     resolution: {integrity: sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==}
     dev: true
 
-  /@babel/runtime-corejs2@7.22.6:
-    resolution: {integrity: sha512-GTJVRjzQIHUBwRzuWxPII87XoWxXzILBJrQh5gqIV6q6m231Y0BBA9NKta5FV5Lbl8z5gS3+m6YSoKJp0KQJ4g==}
-    engines: {node: '>=6.9.0'}
-    dependencies:
-      core-js: 2.6.12
-      regenerator-runtime: 0.13.11
-    dev: false
-
   /@babel/runtime@7.22.3:
     resolution: {integrity: sha512-XsDuspWKLUsxwCp6r7EhsExHtYfbe5oAGQ19kqngTdCPUoPQzOPdUbD/pB9PJiwb2ptYKQDjSJT3R6dC+EPqfQ==}
     engines: {node: '>=6.9.0'}
@@ -2767,28 +2759,24 @@ packages:
       warning: 4.0.3
     dev: false
 
-  /@rjsf/core@2.0.2(react@17.0.2):
-    resolution: {integrity: sha512-2QpWwhc9epc37G8K0jsFfjgjooPSq7zjqvtoixuHhYBTc3ixYcmSWmzNbt/MtTvMvt1hZHXZTVQeXYcGjqXgIQ==}
-    engines: {node: '>=6', npm: '>=2.14.7'}
+  /@rjsf/core@5.13.1(@rjsf/utils@5.13.1)(react@17.0.2):
+    resolution: {integrity: sha512-6LxnrElzphR3MhZ0ARb9tCK/wSGvYJVVDGuoHpw9P+bdrbZm+MgAwE1vzzuicVKxYXY+k+7CRArrxENH+MmTQg==}
+    engines: {node: '>=14'}
     peerDependencies:
-      react: '>=16'
+      '@rjsf/utils': ^5.12.x
+      react: ^16.14.0 || >=17
     dependencies:
-      '@babel/runtime-corejs2': 7.22.6
-      '@types/json-schema': 7.0.12
-      ajv: 6.12.6
-      core-js: 2.6.12
-      json-schema-merge-allof: 0.6.0
-      jsonpointer: 4.1.0
+      '@rjsf/utils': 5.13.1(react@17.0.2)
       lodash: 4.17.21
+      lodash-es: 4.17.21
+      markdown-to-jsx: 7.3.2(react@17.0.2)
+      nanoid: 3.3.6
       prop-types: 15.8.1
       react: 17.0.2
-      react-app-polyfill: 1.0.6
-      react-is: 16.13.1
-      shortid: 2.2.16
     dev: false
 
-  /@rjsf/utils@5.9.0(react@17.0.2):
-    resolution: {integrity: sha512-+UBRrbHgbG/y6Lj32O0U5oiNpbpKZqsFxPKuOCmOqpsfwmb072AyGoHqskc2e05Ur/iURcbBu3xt72aF1azLmQ==}
+  /@rjsf/utils@5.13.1(react@17.0.2):
+    resolution: {integrity: sha512-PBNuSQ1MX0pU1j1oip1pG3I295TTX0RN44HPMLJGnL2rG9sxkccuFqg8v7VgMCSp5zp+kGOKClPKctsKw+LYCA==}
     engines: {node: '>=14'}
     peerDependencies:
       react: ^16.14.0 || >=17
@@ -2801,13 +2789,13 @@ packages:
       react-is: 18.2.0
     dev: false
 
-  /@rjsf/validator-ajv8@5.9.0(@rjsf/utils@5.9.0):
-    resolution: {integrity: sha512-MHMHUxDICWYmenHBjK7SIPqiqPvvm3fwQyttHhH47IZKOw6wpypglK0EaLLwD5GBbEPsTcmKwHe1VydUNcfhnQ==}
+  /@rjsf/validator-ajv8@5.13.1(@rjsf/utils@5.13.1):
+    resolution: {integrity: sha512-obDkzRoQAodIlPFjM6Dv6cyTJ/fJNlV5NtyiHczz+tbxa0V1Rtm82UIVA5WgGX4o113cnFriGz+S3ipYvxI7kA==}
     engines: {node: '>=14'}
     peerDependencies:
-      '@rjsf/utils': ^5.8.x
+      '@rjsf/utils': ^5.12.x
     dependencies:
-      '@rjsf/utils': 5.9.0(react@17.0.2)
+      '@rjsf/utils': 5.13.1(react@17.0.2)
       ajv: 8.12.0
       ajv-formats: 2.1.1(ajv@8.12.0)
       lodash: 4.17.21
@@ -3320,6 +3308,7 @@ packages:
 
   /@types/json-schema@7.0.12:
     resolution: {integrity: sha512-Hr5Jfhc9eYOQNPYO5WLDq/n4jqijdHNlDXjuAQkkt+mWdQR+XJToOHrsD4cPaMXpn6KO7y2+wM8AZEs8VpBLVA==}
+    dev: true
 
   /@types/json5@0.0.29:
     resolution: {integrity: sha512-dRLjCWHYg4oaA77cxO64oO+7JwCwnIzkZPdrrC71jQmQtlhM556pwKo5bUzqvZndkVbeFLIIi+9TC40JNF5hNQ==}
@@ -3960,6 +3949,7 @@ packages:
       fast-json-stable-stringify: 2.1.0
       json-schema-traverse: 0.4.1
       uri-js: 4.4.1
+    dev: true
 
   /ajv@8.12.0:
     resolution: {integrity: sha512-sRu1kpcO9yLtYxBKvqfTeh9KzZEwO3STyX1HT+4CaDzC6HpTGYhIhPIzj9XuKU7KYDwnaeh5hcOwjy1QuJzBPA==}
@@ -4225,6 +4215,7 @@ packages:
 
   /asap@2.0.6:
     resolution: {integrity: sha512-BSHWgDSAiKs50o2Re8ppvp3seVHXSRM44cdSsT9FfNEUUZLOGWVCsiWaRPWM1Znn+mqZ1OfVZ3z3DWEzSp7hRA==}
+    dev: true
 
   /asn1@0.2.6:
     resolution: {integrity: sha512-ix/FxPn0MDjeyJ7i/yoHGFt/EX6LyNbxSEhPPXODPL+KB0VPk86UYfL0lMdy+KCnv+fmvIzySwaK5COwqVbWTQ==}
@@ -5423,15 +5414,10 @@ packages:
     requiresBuild: true
     dev: true
 
-  /core-js@2.6.12:
-    resolution: {integrity: sha512-Kb2wC0fvsWfQrgk8HU5lW6U/Lcs8+9aaYcy4ZFc6DDlo4nZ7n70dEgE5rtR0oG6ufKDUnrwfWL1mXR5ljDatrQ==}
-    deprecated: core-js@<3.23.3 is no longer maintained and not recommended for usage due to the number of issues. Because of the V8 engine whims, feature detection in old core-js versions could cause a slowdown up to 100x even if nothing is polyfilled. Some versions have web compatibility issues. Please, upgrade your dependencies to the actual version of core-js.
-    requiresBuild: true
-    dev: false
-
   /core-js@3.31.0:
     resolution: {integrity: sha512-NIp2TQSGfR6ba5aalZD+ZQ1fSxGhDo/s1w0nx3RYzf2pnJxt7YynxFlFScP6eV7+GZsKO95NSjGxyJsU3DZgeQ==}
     requiresBuild: true
+    dev: true
 
   /core-util-is@1.0.2:
     resolution: {integrity: sha512-3lqz5YjWTYnW6dlDa5TLaTCcShfar1e40rmcJVwCBJC6mWlFuj0eCHIElmG1g5kyuJ/GD+8Wn4FFCcz4gJPfaQ==}
@@ -10484,14 +10470,6 @@ packages:
       lodash: 4.17.21
     dev: false
 
-  /json-schema-merge-allof@0.6.0:
-    resolution: {integrity: sha512-LEw4VMQVRceOPLuGRWcxW5orTTiR9ZAtqTAe4rQUjNADTeR81bezBVFa0MqIwp0YmHIM1KkhSjZM7o+IQhaPbQ==}
-    dependencies:
-      compute-lcm: 1.1.2
-      json-schema-compare: 0.2.2
-      lodash: 4.17.21
-    dev: false
-
   /json-schema-merge-allof@0.8.1:
     resolution: {integrity: sha512-CTUKmIlPJbsWfzRRnOXz+0MjIqvnleIXwFTzz+t9T86HnYX/Rozria6ZVGLktAU9e+NygNljveP+yxqtQp/Q4w==}
     engines: {node: '>=12.0.0'}
@@ -10507,6 +10485,7 @@ packages:
 
   /json-schema-traverse@0.4.1:
     resolution: {integrity: sha512-xbbCH5dCYU5T8LcEhhuh7HJ88HXuW3qsI3Y0zOZFKfZEHcpWiHU/Jxzk629Brsab/mMiHQti9wMP+845RPe3Vg==}
+    dev: true
 
   /json-schema-traverse@1.0.0:
     resolution: {integrity: sha512-NM8/P9n3XjXhIZn1lLhkFaACTOURQXjWhV4BA/RnOv8xvgqtqpAX9IO4mRQxSx1Rlo4tqzeqb0sOlruaOy3dug==}
@@ -10549,11 +10528,6 @@ packages:
     optionalDependencies:
       graceful-fs: 4.2.11
     dev: true
-
-  /jsonpointer@4.1.0:
-    resolution: {integrity: sha512-CXcRvMyTlnR53xMcKnuMzfCA5i/nfblTnnr74CZb6C4vG39eu6w51t7nKmU5MfLfbTgGItliNyjO/ciNPDqClg==}
-    engines: {node: '>=0.10.0'}
-    dev: false
 
   /jsonpointer@5.0.1:
     resolution: {integrity: sha512-p/nXbhSEcu3pZRdkW1OfJhpsVtW1gd4Wa1fnQc9YLiTfAjn0312eMKimbdIQzuZl9aa9xUGaRlP9T/CJE/ditQ==}
@@ -10966,6 +10940,15 @@ packages:
       uc.micro: 1.0.6
     dev: false
 
+  /markdown-to-jsx@7.3.2(react@17.0.2):
+    resolution: {integrity: sha512-B+28F5ucp83aQm+OxNrPkS8z0tMKaeHiy0lHJs3LqCyDQFtWuenaIrkaVTgAm1pf1AU85LXltva86hlaT17i8Q==}
+    engines: {node: '>= 10'}
+    peerDependencies:
+      react: '>= 0.14.0'
+    dependencies:
+      react: 17.0.2
+    dev: false
+
   /mat4-decompose@1.0.4:
     resolution: {integrity: sha512-M3x6GXrzRTt5Ok4/bcHFc869Pe8F3uWaSp3xkUpi+uaTRulPXIZ1GWD13Z3A8WK2bxTrcvX21mjp05gUy/Dwbw==}
     dependencies:
@@ -11298,7 +11281,6 @@ packages:
     resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
-    dev: true
 
   /nanomatch@1.2.13:
     resolution: {integrity: sha512-fpoe2T0RbHwBTBUOftAfBPaDEi06ufaUai0mE6Yn1kacc3SnTErfb/h+X94VXzI64rKFHYImXSvdwGGCmwOqCA==}
@@ -12996,6 +12978,7 @@ packages:
     resolution: {integrity: sha512-rZPNPKTOYVNEEKFaq1HqTgOwZD+4/YHS5ukLzQCypkj+OkYx7iv0mA91lJlpPPZ8vMau3IIGj5Qlwrx+8iiSmg==}
     dependencies:
       asap: 2.0.6
+    dev: true
 
   /prompts@2.4.2:
     resolution: {integrity: sha512-NxNv/kLguCA7p3jE8oL2aEBsrJWgAakBpgmgK6lpPWV+WuOmY6r2/zbAVnP+T8bQlA0nzHXSJSJW0Hq7ylaD2Q==}
@@ -13175,18 +13158,6 @@ packages:
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
       react-is: 16.13.1
-    dev: false
-
-  /react-app-polyfill@1.0.6:
-    resolution: {integrity: sha512-OfBnObtnGgLGfweORmdZbyEz+3dgVePQBb3zipiaDsMHV1NpWm0rDFYIVXFV/AK+x4VIIfWHhrdMIeoTLyRr2g==}
-    engines: {node: '>=6'}
-    dependencies:
-      core-js: 3.31.0
-      object-assign: 4.1.1
-      promise: 8.3.0
-      raf: 3.4.1
-      regenerator-runtime: 0.13.11
-      whatwg-fetch: 3.6.2
     dev: false
 
   /react-app-polyfill@3.0.0:
