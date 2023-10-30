@@ -23,9 +23,10 @@ settings:
     # Characterisation strategies popup.
     # names refer to stategies in  strategylib.nml
     characterisation_strategies:
-        - Char_6_5_multitrigger
+      - Char_6_5_multitrigger
+      - Char_4_by_10
+#        - Characterisation_6_5
 #        - Char_24deg
-        - Char_4_by_10_multitrigger
 #        - TEST_Characterisation_12_3
 #        - TEST_Characterisation_12_4
 #        - TEST_Characterisation_12_5
@@ -34,11 +35,18 @@ settings:
     # 'configured': set value from calibration and characterisation strategy file
     # 'current': use current value
     starting_beamline_energy: current
-    default_beam_energy_tag: Acquisition
+    display_energy_decimals: 4
+    default_beam_energy_tag: Main
 
-    # TESTING ONLY - skip acquisition of characterisation data in manual mode
-    # and use SPOT.XDS file contained in this directory instead
-#    init_spot_dir: /directory/containing/SPOT.XDS/file/to/use
+    # NB Temporary developer option. Defaults to 1
+    allow_duplicate_orientations: 0
+
+    # TEST ONLY developer option. Use preset SPOT.XDS file and skip characterisation.
+    # Only works for GPhL test samples with SPOT.XDS  file
+    # NB to get sensible results you should use the default values for resolution and
+    # wavelength, and the default Eiger 16M detector
+    # Otherwise the UI may still work, but the indexing solutions will be weird
+#    use_preset_spotdir: True
 
 
     defaults:
@@ -57,6 +65,9 @@ settings:
         #            )
         #         mode "scan" is not allowed as default
         recentring_mode: sweep
+        # GPHL or MINIKAPPA. Preference for GPHL transcal or MiniKappaCorrection
+        # recentring where both are available Default is GPHL
+        recentring_calc_preference: GPHL
         # Parameters to control proposed total dose budget
         # The proposed budget is calculated so that radiation damage is predicted
         # to reduce the intensity at the highest expected redolution to this percentaged-->
@@ -66,6 +77,8 @@ settings:
         # The formula used is dose_budget =
         #     2 * resolution**2 * log(100. / decay_limit) / relative_sensitivity
         decay_limit: 25
+        # Default use known cell parameters as forced starting point for processing
+        use_cell_for_processing: true
         # Maximum dose budget to propose when converting from resolution, in MGy
         maximum_dose_budget: 20
         # Percentage of dose budget to propose for use in characterisation.
@@ -73,6 +86,7 @@ settings:
         # Radiation sensitivity relative to standard crystal
         relative_rad_sensitivity: 1.0
         interleave_order: gs
+
         # For testing only:
         automation_mode: TEST
 
@@ -133,7 +147,7 @@ settings:
         co.gphl.wf.process.detach: true
 
         # Set to false to switch off pre-start checks for directory existence
-        # in cases where the directories are are created after the workflow starts
+        # in cases where the directories are created after the workflow starts
         # Checks for data directory tree
         co.gphl.wf.blRootCheck: false
         # Chcks for data processing directory tree
@@ -202,8 +216,9 @@ workflows:
                   application: co.gphl.wf.workflows.WFSimpleCharToProcessing
                   variants:
                       - full
-                      - quick
                       - minimal
+                      - quick
+                      - ultralong
                   options:
                       # Filename pattern name for normal data collections
                       pattern: interleaved
@@ -328,7 +343,7 @@ workflows:
                       Diffractometer calibration.
                       Designed for use by beamline personnel.
                       Calibrates axis directions, detector pane orientation, and beam centre.
-                      Long data collectoin and processing, requiring a high-quality, high-symmetry
+                      Long data collection and processing, requiring a high-quality, high-symmetry
                       crystal of precisely known cell parameters.
                       Variants:
                       full: 22 60-deg sweeps, 11 orientations
