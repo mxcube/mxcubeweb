@@ -1,36 +1,24 @@
 /* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
-import { reduxForm, formValueSelector } from 'redux-form';
+import { reduxForm, Form, formValueSelector } from 'redux-form';
 import { DraggableModal } from '../DraggableModal';
-import { Modal, Button, Form, Row, ButtonToolbar } from 'react-bootstrap';
+import { Modal, Button, Row, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
-import { StaticField, InputField, toFixed } from './fields';
+import { StaticField, InputField, toFixed, SelectField } from './fields';
 
-class Workflow extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.submitAddToQueue = this.submitAddToQueue.bind(this);
-    this.submitRunNow = this.submitRunNow.bind(this);
-    this.addToQueue = this.addToQueue.bind(this);
+function Workflow(props) {
+  function isGphlWorkflow() {
+    return props.wfpath === 'Gphl';
   }
 
-  submitAddToQueue() {
-    this.props.handleSubmit(this.addToQueue.bind(this, false))();
-  }
-
-  submitRunNow() {
-    this.props.handleSubmit(this.addToQueue.bind(this, true))();
-  }
-
-  addToQueue(runNow, params) {
+  function addToQueue(runNow, params) {
     const parameters = {
       ...params,
-      type: 'Workflow',
+      type: isGphlWorkflow ? 'GphlWorkflow' : 'Workflow',
       label: params.wfname,
-      shape: this.props.pointID,
-      suffix: this.props.suffix,
+      shape: props.pointID,
+      suffix: props.suffix,
     };
 
     // Form gives us all parameter values in strings so we need to transform numbers back
@@ -46,71 +34,94 @@ class Workflow extends React.Component {
       'suffix',
     ];
 
-    this.props.addTask(parameters, stringFields, runNow);
-    this.props.hide();
+    if (isGphlWorkflow) {
+      parameters.strategy_name = props.strategy_name;
+      stringFields.push('strategy_name');
+    }
+
+    props.addTask(parameters, stringFields, runNow);
+    props.hide();
   }
 
-  render() {
-    return (
-      <DraggableModal show={this.props.show} onHide={this.props.hide}>
-        <Modal.Header closeButton>
-          <Modal.Title>{this.props.wfname}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form>
-            <StaticField label="Path" data={this.props.path} />
-            <StaticField label="Filename" data={this.props.filename} />
+  const strategy_names = [];
+  if (isGphlWorkflow()) {
+    Object.values(props.taskData.parameters.strategies).forEach((result) => {
+      strategy_names.push(result.title);
+    });
+  }
+
+  return (
+    <DraggableModal show={props.show} onHide={props.hide}>
+      <Modal.Header closeButton>
+        <Modal.Title>{props.wfname}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form>
+          <StaticField label="Path" data={props.path} />
+          <StaticField label="Filename" data={props.filename} />
+          <Row className="mt-3">
+            <InputField
+              propName="subdir"
+              label="Subdirectory"
+              col1={4}
+              col2={7}
+            />
+          </Row>
+          <Row className="mt-3">
+            <InputField propName="prefix" label="Prefix" col1={4} col2={7} />
+          </Row>
+          {props.taskData.sampleID ? (
             <Row className="mt-3">
               <InputField
-                propName="subdir"
-                label="Subdirectory"
+                propName="run_number"
+                disabled
+                label="Run number"
                 col1={4}
                 col2={7}
               />
             </Row>
-            <Row className="mt-3">
-              <InputField propName="prefix" label="Prefix" col1={4} col2={7} />
-            </Row>
-            <Row className="mt-3">
-              {this.props.taskData.sampleID ? (
-                <InputField
-                  propName="run_number"
-                  disabled
-                  label="Run number"
-                  col1="4"
-                  col2="7"
-                />
-              ) : null}
-            </Row>
-          </Form>
-        </Modal.Body>
+          ) : null}
+          {strategy_names.length > 0 ? (
+            <div className="mt-3">
+              <SelectField
+                propName="strategy_name"
+                label="Workflow Strategy"
+                list={strategy_names}
+                col1={4}
+                col2={7}
+              />
+            </div>
+          ) : null}
+        </Form>
+      </Modal.Body>
 
-        {this.props.taskData.state ? (
-          ''
-        ) : (
-          <Modal.Footer>
-            <ButtonToolbar className="float-end">
-              <Button
-                variant="success"
-                disabled={this.props.invalid}
-                onClick={this.submitRunNow}
-              >
-                Run Now
-              </Button>
-              <Button
-                className="ms-3"
-                variant="primary"
-                disabled={this.props.invalid}
-                onClick={this.submitAddToQueue}
-              >
-                {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
-              </Button>
-            </ButtonToolbar>
-          </Modal.Footer>
-        )}
-      </DraggableModal>
-    );
-  }
+      {props.taskData.state ? (
+        ''
+      ) : (
+        <Modal.Footer>
+          <ButtonToolbar className="float-end">
+            <Button
+              variant="success"
+              disabled={props.invalid}
+              onClick={props.handleSubmit((params) => addToQueue(true, params))}
+            >
+              Run Now
+            </Button>
+            <Button
+              className="ms-3"
+              variant="primary"
+              disabled={props.invalid}
+              onClick={props.handleSubmit((params) =>
+                addToQueue(false, params),
+              )}
+            >
+              {props.taskData.sampleID ? 'Change' : 'Add to Queue'}
+            </Button>
+          </ButtonToolbar>
+        </Modal.Footer>
+      )}
+    </DraggableModal>
+  );
 }
 
 const WorkflowForm = reduxForm({
@@ -120,9 +131,10 @@ const WorkflowForm = reduxForm({
 
 const selector = formValueSelector('workflow');
 
-export default connect((state) => {
+const WorkflowFormConnect = connect((state) => {
   const subdir = selector(state, 'subdir');
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
+  const strategy_name = selector(state, 'strategy_name');
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
   if (typeof position === 'object') {
     const vals = Object.values(position).sort();
@@ -138,15 +150,19 @@ export default connect((state) => {
     fname = `${prefix}_[RUN#]_[IMG#]`;
   }
 
+  // const { type } = state.taskForm.taskData;
+  // const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
   const limits = {};
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
     wfname: state.taskForm.taskData.parameters.wfname,
+    wfpath: state.taskForm.taskData.parameters.wfpath,
     acqParametersLimits: limits,
     beamline: state.beamline,
     suffix: fileSuffix,
+    strategy_name,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
@@ -156,3 +172,5 @@ export default connect((state) => {
     },
   };
 })(WorkflowForm);
+
+export default WorkflowFormConnect;
