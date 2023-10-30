@@ -32,7 +32,6 @@ from mxcubeweb.core.components.beamline import Beamline
 from mxcubeweb.core.components.sampleview import SampleView
 from mxcubeweb.core.components.queue import Queue
 from mxcubeweb.core.components.workflow import Workflow
-from mxcubeweb.core.components.gphl_workflow import GphlWorkflow
 
 
 removeLoggingHandlers()
@@ -307,7 +306,6 @@ class MXCUBEApplication:
         MXCUBEApplication.beamline = Beamline(MXCUBEApplication, {})
         MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, {})
         MXCUBEApplication.workflow = Workflow(MXCUBEApplication, {})
-        MXCUBEApplication.gphl_workflow = GphlWorkflow(MXCUBEApplication, {})
 
         MXCUBEApplication.init_signal_handlers()
         atexit.register(MXCUBEApplication.app_atexit)
