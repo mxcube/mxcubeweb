@@ -42,8 +42,6 @@ import { setLoading, showConnectionLostDialog } from './actions/general';
 
 import { showWorkflowParametersDialog } from './actions/workflow';
 
-import { showGphlWorkflowParametersDialog } from './actions/gphlWorkflow';
-
 import { incChatMessageCount, getRaState } from './actions/remoteAccess'; // eslint-disable-line import/no-cycle
 
 import { forcedSignout, getLoginInfo } from './actions/login';
@@ -429,7 +427,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('gphlWorkflowParametersDialog', (data) => {
-      this.dispatch(showGphlWorkflowParametersDialog(data));
+      this.dispatch(showWorkflowParametersDialog(data));
     });
 
     this.hwrSocket.on('take_xtal_snapshot', (cb) => {

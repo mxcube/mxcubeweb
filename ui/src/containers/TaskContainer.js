@@ -7,7 +7,6 @@ import Helical from '../components/Tasks/Helical';
 import Mesh from '../components/Tasks/Mesh';
 import AddSampleContainer from '../components/Tasks/AddSample';
 import Workflow from '../components/Tasks/Workflow';
-import GphlWorkflow from '../components/Tasks/GphlWorkflow';
 import Interleaved from '../components/Tasks/Interleaved';
 import XRFScan from '../components/Tasks/XRFScan';
 import EnergyScan from '../components/Tasks/EnergyScan';
@@ -138,22 +137,10 @@ class TaskContainer extends React.Component {
           <AddSampleContainer show hide={this.props.hideTaskParametersForm} />
         );
       }
-      case 'Workflow': {
-        return (
-          <Workflow
-            show
-            addTask={this.addTask}
-            pointID={this.props.pointID}
-            taskData={this.props.taskData}
-            hide={this.props.hideTaskParametersForm}
-            apertureList={this.props.apertureList}
-            rootPath={this.props.path}
-          />
-        );
-      }
+      case 'Workflow':
       case 'GphlWorkflow': {
         return (
-          <GphlWorkflow
+          <Workflow
             show
             addTask={this.addTask}
             pointID={this.props.pointID}
