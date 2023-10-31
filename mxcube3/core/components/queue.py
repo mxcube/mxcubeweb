@@ -222,6 +222,9 @@ class Queue(ComponentBase):
                 where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
                 {'sample': sample, 'idx': index, 'queue_id': node_id}
         """
+        logging.getLogger("HWR").debug(
+            "get in get_node_state()"
+        )#添加
         try:
             node, entry = self.get_entry(node_id)
         except Exception:
@@ -591,6 +594,10 @@ class Queue(ComponentBase):
         return res
 
     def _handle_diffraction_plan(self, node, sample_node):
+        logging.getLogger("HWR").debug(
+            "get in _handle_diffraction_plan"
+        )#添加
+
         model, entry = self.get_entry(node._node_id)
         originID = model.get_origin()
         tasks = []
@@ -599,6 +606,12 @@ class Queue(ComponentBase):
             return (-1, {})
         else:
             collections = model.diffraction_plan[0]  # a list of lists
+
+            logging.getLogger("HWR").debug(
+                "collections value in  _handle_diffraction_plan: "
+            )  # 添加
+            print(collections)
+
 
             for col in collections:
                 t = self._handle_dc(sample_node, col)
@@ -761,6 +774,11 @@ class Queue(ComponentBase):
         :returns: The tuple model, entry
         :rtype: Tuple
         """
+        logging.getLogger("HWR").debug(
+            "_id from get_entry: "
+        )   #添加
+        print(_id)
+
         model = HWR.beamline.queue_model.get_node(int(_id))
         entry = HWR.beamline.queue_manager.get_entry_with_model(model)
         return model, entry
@@ -810,6 +828,10 @@ class Queue(ComponentBase):
         :param object id_or_qentry: Node id of model or QueueEntry object
         :param bool flag: True for enabled False for disabled
         """
+        logging.getLogger("HWR").debug(
+            "get in enable_entry()"
+        )
+
         if isinstance(id_or_qentry, qe.BaseQueueEntry):
             id_or_qentry.set_enabled(flag)
             id_or_qentry.get_data_model().set_enabled(flag)
@@ -906,6 +928,9 @@ class Queue(ComponentBase):
 
         Each item (dictionary) describes either a sample or a task.
         """
+        logging.getLogger("HWR").debug(
+            "get in queue_add_item()"
+        )
         self._queue_add_item_rec(item_list, None)
 
         # Handling interleaved data collections, swap interleave task with
@@ -1784,6 +1809,10 @@ class Queue(ComponentBase):
         added. Handels for instance the addition of reference collections for
         characterisations and workflows.
         """
+        logging.getLogger("HWR").debug(
+            "get in queue_model_child_added()"
+        )#添加
+
         parent_model, parent_entry = self.get_entry(parent._node_id)
         child_model, child_entry = self.get_entry(child._node_id)
 

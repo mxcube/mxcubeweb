@@ -415,6 +415,9 @@ def collect_oscillation_failed(
 
 
 def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
+    logging.getLogger("HWR").debug(
+        "get in collect_oscillation_finished() in signals.py"
+    )  # 添加
     node = last_queue_node()
     mxcube.NODE_ID_TO_LIMS_ID[node["queue_id"]] = lims_id
 
