@@ -214,6 +214,9 @@ def centring_started(method, *args):
 
 
 def get_task_state(entry):
+    logging.getLogger("HWR").debug(
+        "get in get_task_state()"
+    )  # 添加
     node_id = entry.get_data_model()._node_id
     _, state = mxcube.queue.get_node_state(node_id)
     node_index = mxcube.queue.node_index(entry.get_data_model())
