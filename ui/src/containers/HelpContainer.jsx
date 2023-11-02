@@ -1,9 +1,8 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { Container, Card, Row, Col, Button, Form } from 'react-bootstrap';
 
-import { sendMail } from '../actions/login';
+import { sendFeedback } from '../api/login';
 
 import characterisation from '../help_videos/mx3-characterisation.ogv';
 import interleaved from '../help_videos/mx3-interleaved.ogv';
@@ -12,13 +11,13 @@ import mesh from '../help_videos/mx3-mesh.ogv';
 export class HelpContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.sendMail = this.sendMail.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
     this.sender = '';
     this.content = '';
   }
 
-  sendMail() {
-    sendMail(this.sender.value, this.content.value);
+  handleSubmit() {
+    sendFeedback(this.sender.value, this.content.value);
     this.sender.value = '';
     this.content.value = '';
   }
@@ -112,7 +111,7 @@ export class HelpContainer extends React.Component {
                       />
                     </Form.Group>
                     <Form.Group className="jus">
-                      <Button onClick={this.sendMail}>Submit</Button>
+                      <Button onClick={this.handleSubmit}>Submit</Button>
                     </Form.Group>
                   </Form>
                 </Card.Body>

@@ -46,7 +46,7 @@ import { showGphlWorkflowParametersDialog } from './actions/gphlWorkflow';
 
 import { incChatMessageCount, getRaState } from './actions/remoteAccess'; // eslint-disable-line import/no-cycle
 
-import { forcedSignout, getLoginInfo, refreshSession } from './actions/login';
+import { forcedSignout, getLoginInfo } from './actions/login';
 
 import {
   setSCState,
@@ -58,6 +58,7 @@ import {
 import { setEnergyScanResult } from './actions/taskResults';
 
 import { CLICK_CENTRING } from './constants';
+import { refreshSession } from './api/login';
 
 class ServerIO {
   constructor() {
@@ -67,8 +68,6 @@ class ServerIO {
     this.hwrsid = null;
     this.connected = false;
     this.initialized = false;
-
-    this.refreshSession = this.refreshSession.bind(this);
 
     this.uiStorage = {
       setItem: (key, value) => {
@@ -100,15 +99,11 @@ class ServerIO {
     });
   }
 
-  refreshSession() {
-    this.dispatch(refreshSession());
-  }
-
   disconnect() {
     this.connected = false;
     this.hwrSocket.close();
     this.loggingSocket.close();
-    clearInterval(this.refreshSession);
+    clearInterval(this.refreshInterval);
   }
 
   connect() {
@@ -135,7 +130,7 @@ class ServerIO {
     this.initialized = true;
     this.dispatch = store.dispatch;
 
-    setInterval(this.refreshSession, 9000);
+    this.refreshInterval = setInterval(refreshSession, 9000);
 
     this.connect();
 

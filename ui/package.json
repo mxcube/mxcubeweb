@@ -69,6 +69,7 @@
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.6.1",
     "underscore": "^1.8.3",
+    "wretch": "2.7.0",
     "ws": "^8.5.0"
   },
   "devDependencies": {

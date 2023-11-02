@@ -1,10 +1,11 @@
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable promise/no-nesting */
 /* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable sonarjs/no-duplicate-string */
+
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel, setLoading, getInitialState } from './general';
 import { serverIO } from '../serverIO'; // eslint-disable-line import/no-cycle
+import { fetchLoginInfo, logIn, signOut } from '../api/login';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -30,18 +31,6 @@ export function selectProposal(prop) {
     type: 'SELECT_PROPOSAL',
     proposal: prop,
   };
-}
-
-export function sendMail(sender, content) {
-  fetch('mxcube/api/v0.1/login/send_feedback', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({ sender, content }),
-  });
 }
 
 export function postProposal(number) {
@@ -77,47 +66,21 @@ export function startSession(userInControl) {
   };
 }
 
-export function refreshSession() {
-  return (dispatch) =>
-    fetch('mxcube/api/v0.1/login/refresh_session', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    });
-}
-
 export function getLoginInfo() {
   return (dispatch) =>
-    fetch('mxcube/api/v0.1/login/login_info', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
+    fetchLoginInfo().then(
+      (loginInfo) => {
+        dispatch(setLoginInfo(loginInfo));
+        return loginInfo;
       },
-      credentials: 'include',
-    })
-      .then((response) => response.json())
-      .then(
-        (loginInfo) => {
-          dispatch(setLoginInfo(loginInfo));
-          return loginInfo;
-        },
-        () => {
-          dispatch(showErrorPanel(true));
-          dispatch(setLoading(false));
-        },
-      );
+      () => {
+        dispatch(showErrorPanel(true));
+        dispatch(setLoading(false));
+      },
+    );
 }
 
-export function signOut() {
-  localStorage.setItem('currentUser', '');
-  return { type: 'SIGNOUT' };
-}
-
-export function signIn(proposal, password, navigate) {
+export function doLogIn(proposal, password, navigate) {
   // eslint-disable-next-line sonarjs/cognitive-complexity
   return (dispatch) => {
     const previousUser = localStorage.getItem('currentUser');
@@ -127,63 +90,56 @@ export function signIn(proposal, password, navigate) {
       serverIO.connect();
     }
 
-    fetch('mxcube/api/v0.1/login/', {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ proposal, password, previousUser }),
-    })
-      .then((response) => response.json())
-      .then(
-        (res) => {
-          if (res.code === 'ok') {
-            dispatch(showErrorPanel(false));
-            dispatch(getLoginInfo())
-              .then((response) => response)
-              .then((resp) => {
-                if (resp.loginType === 'User') {
-                  if (resp.user.inControl) {
-                    dispatch(showProposalsForm());
-                  } else {
-                    navigate('/');
-                  }
+    logIn(proposal, password, previousUser).then(
+      (res) => {
+        if (res.code === 'ok') {
+          dispatch(showErrorPanel(false));
+          dispatch(getLoginInfo())
+            .then((response) => response)
+            .then((resp) => {
+              if (resp.loginType === 'User') {
+                if (resp.user.inControl) {
+                  dispatch(showProposalsForm());
                 } else {
-                  dispatch(selectProposal(proposal));
                   navigate('/');
                 }
-              });
-          } else {
-            const { msg } = res;
-            dispatch(showErrorPanel(true, msg));
-            dispatch(setLoading(false));
-          }
-        },
-        () => {
-          dispatch(showErrorPanel(true));
+              } else {
+                dispatch(selectProposal(proposal));
+                navigate('/');
+              }
+            });
+        } else {
+          const { msg } = res;
+          dispatch(showErrorPanel(true, msg));
           dispatch(setLoading(false));
-        },
-      );
+        }
+      },
+      () => {
+        dispatch(showErrorPanel(true));
+        dispatch(setLoading(false));
+      },
+    );
   };
 }
 
 export function forcedSignout() {
   return (dispatch) => {
     serverIO.disconnect();
-    dispatch(signOut());
+    localStorage.setItem('currentUser', '');
+
+    dispatch({ type: 'SIGNOUT' });
   };
 }
 
 export function doSignOut(navigate) {
   return (dispatch) => {
     serverIO.disconnect();
-    return fetch('mxcube/api/v0.1/login/signout', {
-      credentials: 'include',
-    }).then(() => {
-      dispatch(signOut());
+    localStorage.setItem('currentUser', '');
+
+    return signOut().then(() => {
+      dispatch({ type: 'SIGNOUT' });
       dispatch(getLoginInfo());
+
       if (navigate) {
         navigate('/login');
       }

@@ -9,7 +9,7 @@ class MXNavbarContainer extends React.Component {
       <MXNavbar
         user={this.props.user}
         selectedProposal={this.props.selectedProposal}
-        signOut={this.props.signOut}
+        doSignOut={this.props.doSignOut}
         loggedIn={this.props.loggedIn}
         location={this.props.location}
         setAutomatic={this.props.setAutomatic}
@@ -32,7 +32,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    signOut: (navigate) => dispatch(doSignOut(navigate)),
+    doSignOut: (navigate) => dispatch(doSignOut(navigate)),
   };
 }
 

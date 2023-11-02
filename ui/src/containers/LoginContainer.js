@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
-  signIn,
+  doLogIn,
   doSignOut,
   selectProposal,
   sendSelectProposal,
@@ -30,7 +30,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    signIn: bindActionCreators(signIn, dispatch),
+    doLogIn: bindActionCreators(doLogIn, dispatch),
     doSignOut: bindActionCreators(doSignOut, dispatch),
     setLoading: bindActionCreators(setLoading, dispatch),
     selectProposal: bindActionCreators(selectProposal, dispatch),

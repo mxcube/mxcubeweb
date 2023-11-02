@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Container, Navbar, Nav, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
@@ -9,7 +8,7 @@ class MXNavbar extends React.Component {
   constructor(props) {
     super(props);
     this.findProposal = this.findProposal.bind(this);
-    this.signOut = this.signOut.bind(this);
+    this.handleSignOutClick = this.handleSignOutClick.bind(this);
   }
 
   findProposal(prop) {
@@ -19,8 +18,8 @@ class MXNavbar extends React.Component {
     );
   }
 
-  signOut() {
-    this.props.signOut();
+  handleSignOutClick() {
+    this.props.doSignOut();
     this.props.router.navigate('/login', { replace: true });
   }
 
@@ -82,7 +81,7 @@ class MXNavbar extends React.Component {
                 as={Nav.Link}
                 className="nav-link pe-0"
                 variant="Light"
-                onClick={this.signOut}
+                onClick={this.handleSignOutClick}
               >
                 <span className="me-1 fas fa-lg fa-sign-out-alt" />
                 Sign out {`(${this.props.selectedProposal})`}
