@@ -20,7 +20,7 @@ function LoginComponent(props) {
     router,
     loading,
     setLoading,
-    signIn,
+    doLogIn,
     doSignOut,
     showError,
     errorMessage,
@@ -34,7 +34,7 @@ function LoginComponent(props) {
 
   function handleSubmit(data) {
     setLoading(true);
-    signIn(data.username.toLowerCase(), data.password, router.navigate);
+    doLogIn(data.username.toLowerCase(), data.password, router.navigate);
   }
 
   return (
