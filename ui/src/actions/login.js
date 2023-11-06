@@ -5,7 +5,7 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel, setLoading, getInitialState } from './general';
 import { serverIO } from '../serverIO'; // eslint-disable-line import/no-cycle
-import { fetchLoginInfo, logIn, signOut } from '../api/login';
+import { fetchLoginInfo, sendLogIn, sendSignOut } from '../api/login';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -80,7 +80,7 @@ export function getLoginInfo() {
     );
 }
 
-export function doLogIn(proposal, password, navigate) {
+export function logIn(proposal, password, navigate) {
   // eslint-disable-next-line sonarjs/cognitive-complexity
   return (dispatch) => {
     const previousUser = localStorage.getItem('currentUser');
@@ -90,7 +90,7 @@ export function doLogIn(proposal, password, navigate) {
       serverIO.connect();
     }
 
-    logIn(proposal, password, previousUser).then(
+    sendLogIn(proposal, password, previousUser).then(
       (res) => {
         if (res.code === 'ok') {
           dispatch(showErrorPanel(false));
@@ -131,12 +131,12 @@ export function forcedSignout() {
   };
 }
 
-export function doSignOut(navigate) {
+export function signOut(navigate) {
   return (dispatch) => {
     serverIO.disconnect();
     localStorage.setItem('currentUser', '');
 
-    return signOut().then(() => {
+    return sendSignOut().then(() => {
       dispatch({ type: 'SIGNOUT' });
       dispatch(getLoginInfo());
 

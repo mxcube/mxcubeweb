@@ -16,11 +16,7 @@ import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-li
 
 import { find, filter } from 'lodash';
 
-import {
-  sendGetAllhardwareObjects,
-  sendSetAttribute,
-  sendAbortCurrentAction,
-} from '../actions/beamline';
+import { sendSetAttribute, sendAbortCurrentAction } from '../actions/beamline';
 
 import { sendCommand } from '../actions/sampleChanger';
 
@@ -323,10 +319,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    getAllhardwareObjects: bindActionCreators(
-      sendGetAllhardwareObjects,
-      dispatch,
-    ),
     sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
     setAttribute: bindActionCreators(sendSetAttribute, dispatch),
     sendCommand: bindActionCreators(sendCommand, dispatch),

@@ -58,7 +58,7 @@ import {
 import { setEnergyScanResult } from './actions/taskResults';
 
 import { CLICK_CENTRING } from './constants';
-import { refreshSession } from './api/login';
+import { sendRefreshSession } from './api/login';
 
 class ServerIO {
   constructor() {
@@ -130,7 +130,7 @@ class ServerIO {
     this.initialized = true;
     this.dispatch = store.dispatch;
 
-    this.refreshInterval = setInterval(refreshSession, 9000);
+    this.refreshInterval = setInterval(sendRefreshSession, 9000);
 
     this.connect();
 

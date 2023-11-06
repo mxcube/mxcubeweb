@@ -27,7 +27,7 @@ class SelectProposal extends React.Component {
   }
 
   handleCancel() {
-    this.props.singOut();
+    this.props.signOut();
     this.props.hide();
   }
 
