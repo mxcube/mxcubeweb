@@ -3,6 +3,7 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { unselectShapes } from './sampleview'; // eslint-disable-line import/no-cycle
+import { fetchBeamInfo, fetchBeamlineSetup } from '../api/beamline';
 
 export function addUserMessage(records, target) {
   return {
@@ -89,22 +90,6 @@ export function getInitialState(userInControl) {
       },
     });
     const queue = fetch('mxcube/api/v0.1/queue/queue_state', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const beamInfo = fetch('mxcube/api/v0.1/beamline/beam/info', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const beamlineSetup = fetch('mxcube/api/v0.1/beamline/', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -217,19 +202,14 @@ export function getInitialState(userInControl) {
           state.queue = json;
         })
         .catch(notify),
-      beamInfo
-        .then(parse)
+      fetchBeamInfo()
         .then((json) => {
           state.beamInfo = json;
         })
         .catch(notify),
-      beamlineSetup
-        .then(parse)
+      fetchBeamlineSetup()
         .then((json) => {
           state.beamlineSetup = json;
-          return json;
-        })
-        .then((json) => {
           state.datapath = json.path;
           return json;
         })

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import MXNavbar from '../components/MXNavbar/MXNavbar';
-import { doSignOut } from '../actions/login';
+import { signOut } from '../actions/login';
 
 class MXNavbarContainer extends React.Component {
   render() {
@@ -9,7 +9,7 @@ class MXNavbarContainer extends React.Component {
       <MXNavbar
         user={this.props.user}
         selectedProposal={this.props.selectedProposal}
-        doSignOut={this.props.doSignOut}
+        signOut={this.props.signOut}
         loggedIn={this.props.loggedIn}
         location={this.props.location}
         setAutomatic={this.props.setAutomatic}
@@ -32,7 +32,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    doSignOut: (navigate) => dispatch(doSignOut(navigate)),
+    signOut: (navigate) => dispatch(signOut(navigate)),
   };
 }
 

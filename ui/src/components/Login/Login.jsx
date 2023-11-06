@@ -20,8 +20,8 @@ function LoginComponent(props) {
     router,
     loading,
     setLoading,
-    doLogIn,
-    doSignOut,
+    logIn,
+    signOut,
     showError,
     errorMessage,
   } = props;
@@ -34,7 +34,7 @@ function LoginComponent(props) {
 
   function handleSubmit(data) {
     setLoading(true);
-    doLogIn(data.username.toLowerCase(), data.password, router.navigate);
+    logIn(data.username.toLowerCase(), data.password, router.navigate);
   }
 
   return (
@@ -49,7 +49,7 @@ function LoginComponent(props) {
           sendSelectProposal={(selected) =>
             sendSelectProposal(selected, router.navigate)
           }
-          singOut={() => doSignOut(router.navigate)}
+          signOut={() => signOut(router.navigate)}
         />
       )}
       <Form

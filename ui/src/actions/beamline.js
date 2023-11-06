@@ -1,5 +1,6 @@
-/* eslint-disable promise/prefer-await-to-then */
+/* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
+import { sendPrepareBeamlineForNewSample } from '../api/beamline';
 // The different states a beamline attribute can assume.
 export const STATE = {
   IDLE: 'READY',
@@ -44,30 +45,6 @@ export function setMachInfo(info) {
 
 export function updateBeamlineHardwareObjectStateAction(data) {
   return { type: BL_UPDATE_HARDWARE_OBJECT_STATE, data };
-}
-
-export function sendGetAllhardwareObjects() {
-  const url = 'mxcube/api/v0.1/beamline/';
-
-  return (dispatch) => {
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json', // eslint-disable-line sonarjs/no-duplicate-string
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    })
-      .then((response) => response.json())
-      .then(
-        (data) => {
-          dispatch(getBeamlineAttrsAction(data));
-        },
-        () => {
-          throw new Error(`GET ${url} failed`);
-        },
-      );
-  };
 }
 
 export function setBeamlineAttribute(name, value) {
@@ -119,17 +96,8 @@ export function sendAbortCurrentAction(name) {
   };
 }
 
-export function sendPrepareForNewSample() {
-  return () => {
-    fetch('mxcube/api/v0.1/beamline/prepare_beamline', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-  };
+export function prepareBeamlineForNewSample() {
+  return () => sendPrepareBeamlineForNewSample();
 }
 
 export function sendDisplayImage(path) {

@@ -96,7 +96,7 @@ class SampleQueueContainer extends React.Component {
     } = this.props.queueActions;
     const { collapseItem, showConfirmCollectDialog, selectItem, showList } =
       this.props.queueGUIActions;
-    const { sendPrepareForNewSample } = this.props.beamlineActions;
+    const { prepareBeamlineForNewSample } = this.props.beamlineActions;
     const { loadSample, unloadSample } = this.props.sampleChangerActions;
 
     // go through the queue, check if sample has been collected or not
@@ -218,7 +218,7 @@ class SampleQueueContainer extends React.Component {
             showForm={showForm}
             queueStatus={queueStatus}
             showList={showList}
-            sendPrepareForNewSample={sendPrepareForNewSample}
+            prepareBeamlineForNewSample={prepareBeamlineForNewSample}
           />
           <div className="queue-messages">
             <div className="queue-messages-title">

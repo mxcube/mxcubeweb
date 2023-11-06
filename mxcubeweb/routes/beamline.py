@@ -182,13 +182,13 @@ def init_route(app, server, url_prefix):
 
         :param str name: Owner / Actuator of the process/action to abort
 
-        Replies with status code 200 on success and 520 on exceptions.
+        Replies with status code 200 on success and 500 on exceptions.
         """
         try:
             app.beamline.beamline_abort_action(name)
         except Exception:
             err = str(sys.exc_info()[1])
-            return make_response(err, 520)
+            return make_response(err, 500)
         else:
             logging.getLogger("user_level_log").error("%s, aborted" % name)
             return make_response("{}", 200)
@@ -203,7 +203,7 @@ def init_route(app, server, url_prefix):
 
         :param str name: action to run
 
-        Replies with status code 200 on success and 520 on exceptions.
+        Replies with status code 200 on success and 500 on exceptions.
         """
         try:
             params = request.get_json()["parameters"]
@@ -213,7 +213,7 @@ def init_route(app, server, url_prefix):
         try:
             app.beamline.beamline_run_action(name, params)
         except Exception as ex:
-            return make_response(str(ex), 520)
+            return make_response(str(ex), 500)
         else:
             return make_response("{}", 200)
 
