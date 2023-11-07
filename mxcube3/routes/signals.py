@@ -19,6 +19,20 @@ from mxcube3.core.util.networkutils import RateLimited
 from mxcubecore import HardwareRepository as HWR
 
 
+# def last_queue_node():
+#     node = HWR.beamline.queue_manager._current_queue_entries[-1].get_data_model()
+#
+#     # Reference collections are orphans, the node we want is the
+#     # characterisation not the reference collection itself
+#     if "refdc" in node.get_name():
+#         parent = node.get_parent()
+#         node = parent._children[0]
+#
+#     res = mxcube.queue.node_index(node)
+#     res["node"] = node
+#
+#     return res
+
 def last_queue_node():
     node = HWR.beamline.queue_manager._current_queue_entries[-1].get_data_model()
 
@@ -29,6 +43,11 @@ def last_queue_node():
         node = parent._children[0]
 
     res = mxcube.queue.node_index(node)
+
+    #为了characterisation功能改写，
+    if res["queue_id"] is None:
+        node = HWR.beamline.queue_manager._current_queue_entries[-2].get_data_model()
+        res = mxcube.queue.node_index(node)
     res["node"] = node
 
     return res
@@ -275,6 +294,9 @@ def update_task_result(entry):
 
 
 def queue_execution_entry_started(entry, message=None):
+    logging.getLogger("HWR").debug(
+        "get in queue_execution_entry_started()"
+    )  # 添加
     handle_auto_mount_next(entry)
 
     if not mxcube.queue.is_interleaved(entry.get_data_model()):
@@ -282,6 +304,9 @@ def queue_execution_entry_started(entry, message=None):
 
 
 def queue_execution_entry_finished(entry, message):
+    logging.getLogger("HWR").debug(
+        "get in queue_execution_entry_finished()"
+    )  # 添加
     handle_auto_mount_next(entry)
 
     if not mxcube.queue.is_interleaved(entry.get_data_model()):
