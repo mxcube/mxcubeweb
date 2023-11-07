@@ -20,7 +20,6 @@ export default class SampleControls extends React.Component {
 
     this.takeSnapShot = this.takeSnapShot.bind(this);
     this.doTakeSnapshot = this.doTakeSnapshot.bind(this);
-    this.setZoom = this.setZoom.bind(this);
     this.toggleFrontLight = this.toggleLight.bind(
       this,
       'diffractometer.frontlight',
@@ -36,16 +35,6 @@ export default class SampleControls extends React.Component {
 
   componentDidMount() {
     window.takeSnapshot = this.doTakeSnapshot;
-  }
-
-  setZoom(option) {
-    const zoom_motor_uiprop = find(this.props.uiproperties.components, {
-      role: 'zoom',
-    });
-
-    const zoom_motor = this.props.hardwareObjects[zoom_motor_uiprop.attribute];
-    const newZoom = zoom_motor.commands[option.target.value];
-    this.props.sendSetAttribute('diffractometer.zoom', newZoom);
   }
 
   toggleDrawGrid() {
@@ -231,7 +220,7 @@ export default class SampleControls extends React.Component {
             rootClose
             placement="bottom"
             overlay={
-              <span className="slider-overlay" style={{ marginTop: '8px' }}>
+              <div className={styles.overlay}>
                 <OneAxisTranslationControl
                   save={this.props.sendSetAttribute}
                   value={focus_motor.value}
@@ -244,7 +233,7 @@ export default class SampleControls extends React.Component {
                   state={focus_motor.state}
                   disabled={this.props.motorsDisabled}
                 />
-              </span>
+              </div>
             }
           >
             <Button
@@ -263,41 +252,36 @@ export default class SampleControls extends React.Component {
           rootClose
           placement="bottom"
           overlay={
-            <span className="slider-overlay" style={{ marginTop: '8px' }}>
-              {zoom_motor.limits[0]}
+            <div className={styles.overlay}>
               <input
-                className="bar"
+                className={styles.zoomSlider}
                 type="range"
-                id="zoom-control"
-                min={zoom_motor.limits[0] - 1}
+                min={zoom_motor.limits[0]}
                 max={zoom_motor.limits[1]}
-                step="1"
                 value={zoom_motor.commands.indexOf(zoom_motor.value)}
                 disabled={zoom_motor.state !== MOTOR_STATE.READY}
-                onMouseUp={this.setZoom}
+                onMouseUp={(e) => {
+                  this.props.sendSetAttribute(
+                    'diffractometer.zoom',
+                    zoom_motor.commands[Number.parseFloat(e.target.value)],
+                  );
+                }}
                 onChange={(e) => {
                   this.props.setBeamlineAttribute(
                     'diffractometer.zoom',
-                    zoom_motor.commands[Number.parseFloat(e.target.value) - 1],
+                    zoom_motor.commands[Number.parseFloat(e.target.value)],
                   );
                 }}
                 list="volsettings"
                 name="zoomSlider"
               />
-              {zoom_motor.limits[1]}
 
               <datalist id="volsettings">
-                {[
-                  ...Array.from({
-                    length: zoom_motor.limits[1] - zoom_motor.limits[0],
-                  }).keys(),
-                ].map((i) => (
-                  <option key={`volsettings-${i}`}>
-                    {zoom_motor.limits[0] + i}
-                  </option>
+                {zoom_motor.commands.map((cmd, index) => (
+                  <option key={cmd} value={index} />
                 ))}
               </datalist>
-            </span>
+            </div>
           }
         >
           <Button
@@ -318,7 +302,7 @@ export default class SampleControls extends React.Component {
             rootClose
             placement="bottom"
             overlay={
-              <span className="slider-overlay" style={{ marginTop: '8px' }}>
+              <div className={styles.overlay}>
                 <input
                   className="bar"
                   type="range"
@@ -344,7 +328,7 @@ export default class SampleControls extends React.Component {
                   }
                   name="backlightSlider"
                 />
-              </span>
+              </div>
             }
           >
             {({ ref, ...triggerHandlers }) => (
@@ -377,7 +361,7 @@ export default class SampleControls extends React.Component {
             rootClose
             placement="bottom"
             overlay={
-              <span className="slider-overlay" style={{ marginTop: '8px' }}>
+              <div className={styles.overlay}>
                 <input
                   className="bar"
                   type="range"
@@ -403,7 +387,7 @@ export default class SampleControls extends React.Component {
                   }
                   name="frontLightSlider"
                 />
-              </span>
+              </div>
             }
           >
             {({ ref, ...triggerHandlers }) => (
