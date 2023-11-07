@@ -44,10 +44,14 @@ class _BeamlineAdapter:
     def wf_parameters_needed(self, params):
         self.app.server.emit("workflowParametersDialog", params, namespace="/hwr")
 
-    def gphl_json_wf_parameters_needed(self, params):
+    def gphl_json_wf_parameters_needed(self, schema, ui_schema):
+        params = {}
+        params["schema"] = schema
+        params["ui_schema"] = ui_schema
         self.app.server.emit("gphlWorkflowParametersDialog", params, namespace="/hwr")
 
     def gphl_json_wf_update_ui_parameters(self, params):
+        # Contain only updated Values
         self.app.server.emit("gphlWorkflowParametersDialog", params, namespace="/hwr")
 
     def get_object(self, name):

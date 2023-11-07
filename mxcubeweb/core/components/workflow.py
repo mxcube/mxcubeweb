@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 import base64
 
 from mxcubeweb.core.components.component_base import ComponentBase
@@ -32,8 +33,9 @@ class Workflow(ComponentBase):
         return {"workflows": workflows}
 
     def submit_parameters(self, params):
-        if params["wfpath"] == "Gphl" or params["type"] == "GphlWorkflow":
+        if params.get("wf_type") == "GphlWorkflow":
             self.app.server.emit("GphlParameterReturn", params, namespace="/hwr")
+            logging.getLogger("queue_exec").info("Emit Signal GphlParameterReturn")
         else:
             HWR.beamline.workflow.set_values_map(params)
 
