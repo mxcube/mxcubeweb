@@ -63,11 +63,6 @@
   margin-bottom: 20px;
 }
 
-#zoom-control {
-  display: inline;
-  width: auto;
-}
-
 .camera-control {
   height: 42px;
   width: 33.33333333%;
@@ -170,15 +165,6 @@
 .btn-link:hover,
 .btn-link:focus {
   text-decoration: initial !important;
-}
-
-.slider-overlay {
-  position: absolute;
-  z-index: 1001;
-  background-color: rgba(0, 0, 0, 0.5);
-  color: rgb(255, 255, 255);
-  border-radius: 4px;
-  padding: 0.2em;
 }
 
 .sample-video-busy {
