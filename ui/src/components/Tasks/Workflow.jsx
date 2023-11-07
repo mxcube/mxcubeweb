@@ -147,8 +147,6 @@ const WorkflowFormConnect = connect((state) => {
     fname = `${prefix}_[RUN#]_[IMG#]`;
   }
 
-  // const { type } = state.taskForm.taskData;
-  // const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
   const limits = {};
 
   return {

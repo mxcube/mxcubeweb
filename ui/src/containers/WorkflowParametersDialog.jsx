@@ -12,9 +12,11 @@ import {
 import './WorkflowParametersDialog.css';
 
 function WorkflowParametersDialog(props) {
+  const { formData, show, handleHide, workflowSubmitParameters } = props;
+
   function submitData(values) {
-    props.workflowSubmitParameters(values.formData);
-    props.hide();
+    workflowSubmitParameters(values.formData);
+    handleHide();
   }
 
   let form = '';
@@ -25,26 +27,30 @@ function WorkflowParametersDialog(props) {
   // The errors will otherwise prevent the dialog from being closed
   // properly.
 
-  if (props.show && props.formData) {
+  if (show && formData) {
+    const schema = formData.schema || formData;
+    const uiSchema = formData.ui_schema || {};
+    const initialFormData = formData.initialValues || formData.schema;
+
     form = (
       <div>
         <Form
           validator={validator}
-          schema={props.formData}
-          formData={props.formData.initialValues}
+          schema={schema}
+          uiSchema={uiSchema}
+          formData={initialFormData}
           onSubmit={submitData}
           onError={console.log('errors')} // eslint-disable-line no-console
         />
       </div>
     );
 
-    formName = props.formData.dialogName;
+    formName = formData.dialogName;
   }
 
   return (
-    // eslint-disable-next-line react/jsx-handler-names
-    <Modal show={props.show} onHide={props.hide} backdrop="static">
-      <Modal.Header>
+    <Modal show={show} onHide={handleHide} backdrop="static">
+      <Modal.Header closeButton>
         <Modal.Title>{formName}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -64,8 +70,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    hide: bindActionCreators(
-      showWorkflowParametersDialog.bind(null, null, false),
+    handleHide: bindActionCreators(
+      () => showWorkflowParametersDialog(null, false),
       dispatch,
     ),
     submitWorkflowParameters: bindActionCreators(
