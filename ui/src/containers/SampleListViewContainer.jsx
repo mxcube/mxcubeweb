@@ -293,7 +293,7 @@ class SampleListViewContainer extends React.Component {
     // because they will be remove from sample List
     await this.props.setEnabledSample(manualSamples, false);
 
-    await this.props.getSamples();
+    this.props.getSamples();
   }
 
   /**
@@ -301,9 +301,9 @@ class SampleListViewContainer extends React.Component {
    *
    * @property {Object} loginData
    */
-  syncSamples() {
+  async syncSamples() {
     if (Object.keys(this.props.sampleList).length === 0) {
-      this.getSamplesFromSC();
+      await this.getSamplesFromSC();
       this.props.syncSamples();
     } else {
       this.props.syncSamples();
