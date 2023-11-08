@@ -16,9 +16,10 @@ import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-li
 
 import { find, filter } from 'lodash';
 
-import { sendSetAttribute, sendAbortCurrentAction } from '../actions/beamline';
+import { sendSetAttribute } from '../actions/beamline';
 
 import { sendCommand } from '../actions/sampleChanger';
+import { stopBeamlineAction } from '../actions/beamlineActions';
 
 class BeamlineSetupContainer extends React.Component {
   constructor(props) {
@@ -35,7 +36,7 @@ class BeamlineSetupContainer extends React.Component {
   }
 
   onCancelHandler(name) {
-    this.props.abortCurrentAction(name);
+    this.props.stopBeamlineAction(name);
   }
 
   setAttribute(name, value) {
@@ -322,7 +323,7 @@ function mapDispatchToProps(dispatch) {
     sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
     setAttribute: bindActionCreators(sendSetAttribute, dispatch),
     sendCommand: bindActionCreators(sendCommand, dispatch),
-    abortCurrentAction: bindActionCreators(sendAbortCurrentAction, dispatch),
+    stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
   };
 }
 

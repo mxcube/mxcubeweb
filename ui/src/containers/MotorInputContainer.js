@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
-import * as generalActions from '../actions/general'; // eslint-disable-line import/no-namespace
-import * as beamlineActions from '../actions/beamline'; // eslint-disable-line import/no-namespace
 import { QUEUE_RUNNING } from '../constants';
 
 import MotorInput from '../components/MotorInput/MotorInput';
+import { stopBeamlineAction } from '../actions/beamlineActions';
+import { sendSetAttribute } from '../actions/beamline';
+import { setStepSize } from '../actions/sampleview';
 
 class MotorInputContainer extends Component {
   render() {
@@ -18,8 +18,8 @@ class MotorInputContainer extends Component {
       result = (
         <div>
           <MotorInput
-            save={this.props.beamlineActions.sendSetAttribute}
-            saveStep={this.props.sampleViewActions.setStepSize}
+            save={this.props.sendSetAttribute}
+            saveStep={this.props.setStepSize}
             step={uiprop.step}
             value={motorhwo.value}
             motorName={uiprop.attribute}
@@ -27,7 +27,7 @@ class MotorInputContainer extends Component {
             suffix={uiprop.suffix}
             decimalPoints={uiprop.precision}
             state={motorhwo.state}
-            stop={this.props.beamlineActions.sendAbortCurrentAction}
+            stop={this.props.stopBeamlineAction}
             disabled={this.props.motorInputDisabled}
           />
         </div>
@@ -59,9 +59,9 @@ function mapStateToProps(state, ownProps) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
-    beamlineActions: bindActionCreators(beamlineActions, dispatch),
-    generalActions: bindActionCreators(generalActions, dispatch),
+    stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
+    sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
+    setStepSize: bindActionCreators(setStepSize, dispatch),
   };
 }
 
