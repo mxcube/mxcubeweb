@@ -320,8 +320,8 @@ export default class ContextMenu extends React.Component {
     }
 
     if (this.props.clickCentring) {
-      this.props.sampleActions.stopClickCentring();
-      this.props.sampleActions.sendAcceptCentring();
+      this.props.sampleViewActions.stopClickCentring();
+      this.props.sampleViewActions.sendAcceptCentring();
     }
 
     const type =
@@ -356,13 +356,13 @@ export default class ContextMenu extends React.Component {
       sid,
     );
     this.hideContextMenu();
-    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleViewActions.showContextMenu(false);
   }
 
   createCollectionOnCell() {
     const { cellCenter } = this.props.shape;
     this.createPoint(cellCenter[0], cellCenter[1]);
-    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleViewActions.showContextMenu(false);
   }
 
   showContextMenu(x, y) {
@@ -375,7 +375,7 @@ export default class ContextMenu extends React.Component {
   }
 
   createPoint(x, y, cb = null) {
-    this.props.sampleActions.sendAddShape(
+    this.props.sampleViewActions.sendAddShape(
       { screenCoord: [x, y], t: '2DP', state: 'SAVED' },
       cb,
     );
@@ -383,10 +383,10 @@ export default class ContextMenu extends React.Component {
 
   savePoint() {
     if (this.props.clickCentring) {
-      this.props.sampleActions.stopClickCentring();
+      this.props.sampleViewActions.stopClickCentring();
     }
 
-    this.props.sampleActions.sendAcceptCentring();
+    this.props.sampleViewActions.sendAcceptCentring();
     // associate the newly saved shape to an existing task with -1 shape.
     // Fixes issues when the task is added before a shape
     const { tasks } = this.props.sampleData;
@@ -405,52 +405,55 @@ export default class ContextMenu extends React.Component {
       });
     }
 
-    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleViewActions.showContextMenu(false);
   }
 
   goToPoint() {
-    this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendGoToPoint(this.props.shape.id);
+    this.props.sampleViewActions.showContextMenu(false);
+    this.props.sampleViewActions.sendGoToPoint(this.props.shape.id);
   }
 
   goToBeam() {
     const { x, y, imageRatio } = this.props;
-    this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendGoToBeam(x / imageRatio, y / imageRatio);
+    this.props.sampleViewActions.showContextMenu(false);
+    this.props.sampleViewActions.sendGoToBeam(x / imageRatio, y / imageRatio);
   }
 
   removeShape() {
     if (this.props.clickCentring) {
-      this.props.sampleActions.sendAbortCentring();
+      this.props.sampleViewActions.sendAbortCentring();
     }
 
-    // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
-    this.props.sampleActions.sendDeleteShape(this.props.shape.id).then(() => {
-      this.props.sampleActions.showContextMenu(false);
-    });
+    // eslint-disable-next-line promise/catch-or-return
+    this.props.sampleViewActions
+      .sendDeleteShape(this.props.shape.id)
+      // eslint-disable-next-line promise/prefer-await-to-then
+      .then(() => {
+        this.props.sampleViewActions.showContextMenu(false);
+      });
   }
 
   measureDistance() {
-    this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.measureDistance(true);
+    this.props.sampleViewActions.showContextMenu(false);
+    this.props.sampleViewActions.measureDistance(true);
   }
 
   toggleDrawGrid() {
-    this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.toggleDrawGrid();
+    this.props.sampleViewActions.showContextMenu(false);
+    this.props.sampleViewActions.toggleDrawGrid();
   }
 
   saveGrid() {
-    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleViewActions.showContextMenu(false);
 
     const gd = { ...this.props.shape.gridData };
-    this.props.sampleActions.sendAddShape({ t: 'G', ...gd });
-    this.props.sampleActions.toggleDrawGrid();
+    this.props.sampleViewActions.sendAddShape({ t: 'G', ...gd });
+    this.props.sampleViewActions.toggleDrawGrid();
   }
 
   createPointAndShowModal(name, extraParams = {}) {
     const { x, y, imageRatio } = this.props;
-    this.props.sampleActions.showContextMenu(false);
+    this.props.sampleViewActions.showContextMenu(false);
     this.createPoint(x / imageRatio, y / imageRatio, (shape) =>
       this.showModal(name, {}, shape, extraParams),
     );
@@ -468,10 +471,13 @@ export default class ContextMenu extends React.Component {
       lines.map((x) => sid.splice(sid.indexOf(x), 1));
     }
 
-    this.props.sampleActions.showContextMenu(false);
-    this.props.sampleActions.sendAddShape({ t: 'L', refs: shape.id }, (s) => {
-      this.showModal(modal, wf, s);
-    });
+    this.props.sampleViewActions.showContextMenu(false);
+    this.props.sampleViewActions.sendAddShape(
+      { t: 'L', refs: shape.id },
+      (s) => {
+        this.showModal(modal, wf, s);
+      },
+    );
   }
 
   hideContextMenu() {
