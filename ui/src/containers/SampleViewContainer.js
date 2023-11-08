@@ -35,11 +35,11 @@ import {
 } from '../actions/sampleChanger';
 
 import {
-  sendSetAttribute,
   setBeamlineAttribute,
   sendDisplayImage,
   executeCommand,
   sendLogFrontEndTraceBack,
+  setAttribute,
 } from '../actions/beamline';
 import { stopBeamlineAction } from '../actions/beamlineActions';
 
@@ -148,7 +148,7 @@ class SampleViewContainer extends Component {
                   sampleActions={this.props.sampleViewActions}
                   grids={grids}
                   selectedGrids={selectedGrids}
-                  sendSetAttribute={this.props.sendSetAttribute}
+                  setAttribute={this.props.setAttribute}
                   sendExecuteCommand={this.props.sendExecuteCommand}
                 />
               ) : null}
@@ -228,7 +228,7 @@ class SampleViewContainer extends Component {
                 </div>
               ) : null}
               <MotorControl
-                save={this.props.sendSetAttribute}
+                save={this.props.setAttribute}
                 saveStep={setStepSize}
                 uiproperties={uiproperties.sample_view}
                 hardwareObjects={this.props.hardwareObjects}
@@ -282,7 +282,7 @@ class SampleViewContainer extends Component {
                 sampleList={this.props.sampleList}
                 proposal={this.props.proposal}
                 busy={this.props.queueState === QUEUE_RUNNING}
-                sendSetAttribute={this.props.sendSetAttribute}
+                setAttribute={this.props.setAttribute}
                 setBeamlineAttribute={this.props.setBeamlineAttribute}
                 sendDisplayImage={this.props.sendDisplayImage}
               />
@@ -340,7 +340,7 @@ function mapDispatchToProps(dispatch) {
     updateTask: bindActionCreators(updateTask, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
     generalActions: bindActionCreators(generalActions, dispatch),
-    sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
+    setAttribute: bindActionCreators(setAttribute, dispatch),
     stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),

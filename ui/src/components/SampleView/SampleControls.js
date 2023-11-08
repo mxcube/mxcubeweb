@@ -108,7 +108,7 @@ export default class SampleControls extends React.Component {
     const newState = this.props.hardwareObjects[`${name}switch`].commands.find(
       (state) => state !== lighstate,
     );
-    this.props.sendSetAttribute(`${name}switch`, newState);
+    this.props.setAttribute(`${name}switch`, newState);
   }
 
   availableVideoSizes() {
@@ -222,7 +222,7 @@ export default class SampleControls extends React.Component {
             overlay={
               <div className={styles.overlay}>
                 <OneAxisTranslationControl
-                  save={this.props.sendSetAttribute}
+                  save={this.props.setAttribute}
                   value={focus_motor.value}
                   min={focus_motor.limits[0]}
                   max={focus_motor.limits[1]}
@@ -261,7 +261,7 @@ export default class SampleControls extends React.Component {
                 value={zoom_motor.commands.indexOf(zoom_motor.value)}
                 disabled={zoom_motor.state !== MOTOR_STATE.READY}
                 onMouseUp={(e) => {
-                  this.props.sendSetAttribute(
+                  this.props.setAttribute(
                     'diffractometer.zoom',
                     zoom_motor.commands[Number.parseFloat(e.target.value)],
                   );
@@ -315,7 +315,7 @@ export default class SampleControls extends React.Component {
                     MOTOR_STATE.READY
                   }
                   onMouseUp={(e) =>
-                    this.props.sendSetAttribute(
+                    this.props.setAttribute(
                       'diffractometer.backlight',
                       e.target.value,
                     )
@@ -374,7 +374,7 @@ export default class SampleControls extends React.Component {
                     MOTOR_STATE.READY
                   }
                   onMouseUp={(e) =>
-                    this.props.sendSetAttribute(
+                    this.props.setAttribute(
                       'diffractometer.frontlight',
                       e.target.value,
                     )

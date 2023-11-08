@@ -103,11 +103,11 @@ export default class SSXChip extends React.Component {
   handleSubmit(key, e) {
     switch (key) {
       case 'top_left': {
-        this.props.sendSetAttribute(
+        this.props.setAttribute(
           this.props.sampleMotorVerticalName,
           this.state.top_left_x,
         );
-        this.props.sendSetAttribute(
+        this.props.setAttribute(
           this.props.sampleMotorHorizontalName,
           this.state.top_left_y,
         );
@@ -115,11 +115,11 @@ export default class SSXChip extends React.Component {
         break;
       }
       case 'top_right': {
-        this.props.sendSetAttribute(
+        this.props.setAttribute(
           this.props.sampleMotorVerticalName,
           this.state.top_right_x,
         );
-        this.props.sendSetAttribute(
+        this.props.setAttribute(
           this.props.sampleMotorHorizontalName,
           this.state.top_right_y,
         );

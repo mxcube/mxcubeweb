@@ -1,6 +1,10 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
-import { sendPrepareBeamlineForNewSample } from '../api/beamline';
+import {
+  sendSetAttribute,
+  sendExecuteCommand,
+  sendPrepareBeamlineForNewSample,
+} from '../api/beamline';
 // The different states a beamline attribute can assume.
 export const STATE = {
   IDLE: 'READY',
@@ -51,35 +55,17 @@ export function setBeamlineAttribute(name, value) {
   return updateBeamlineHardwareObjectAction({ name, value });
 }
 
-export function sendSetAttribute(name, value) {
-  return (dispatch, getState) => {
+export function setAttribute(name, value) {
+  return (_, getState) => {
     const state = getState();
     const type = state.beamline.hardwareObjects[name].type.toLowerCase();
-    const url = `mxcube/api/v0.1/beamline/${type}/value/${name}`;
-
-    fetch(url, {
-      method: 'PUT',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ name, value }),
-    });
+    sendSetAttribute(name, type, value);
   };
 }
 
 export function executeCommand(obj, name, args) {
   return () => {
-    fetch(`mxcube/api/v0.1/beamline/${obj}/command/${name}`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ ...args }),
-    });
+    sendExecuteCommand(obj, name, args);
   };
 }
 
