@@ -4,10 +4,27 @@ import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import TodoTree from '../components/SampleQueue/TodoTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
-import * as queueActions from '../actions/queue'; // eslint-disable-line import/no-namespace
-import * as queueGUIActions from '../actions/queueGUI'; // eslint-disable-line import/no-namespace
-import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
-import * as sampleChangerActions from '../actions/sampleChanger'; // eslint-disable-line import/no-namespace
+import {
+  sendToggleCheckBox,
+  sendPauseQueue,
+  sendUnpauseQueue,
+  sendStopQueue,
+  changeTaskOrderAction,
+  deleteTask,
+  addTask,
+  moveTask,
+  setAutoMountSample,
+  setAutoAddDiffPlan,
+  sendRunSample,
+  sendSetCentringMethod,
+  setEnabledSample,
+} from '../actions/queue';
+import {
+  collapseItem,
+  selectItem,
+  showConfirmCollectDialog,
+  showList,
+} from '../actions/queueGUI';
 import { showTaskForm } from '../actions/taskForm';
 import { Nav } from 'react-bootstrap';
 import { showDialog } from '../actions/general';
@@ -15,45 +32,7 @@ import { showDialog } from '../actions/general';
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
 import { prepareBeamlineForNewSample } from '../actions/beamline';
-
-function mapStateToProps(state) {
-  return {
-    searchString: state.queueGUI.searchString,
-    current: state.queue.current,
-    visibleList: state.queueGUI.visibleList,
-    queueStatus: state.queue.queueStatus,
-    queue: state.queue.queue,
-    autoMountNext: state.queue.autoMountNext,
-    autoAddDiffPlan: state.queue.autoAddDiffPlan,
-    centringMethod: state.queue.centringMethod,
-    sampleList: state.sampleGrid.sampleList,
-    sampleOrder: state.sampleGrid.order,
-    checked: state.queue.checked,
-    rootPath: state.login.rootPath,
-    displayData: state.queueGUI.displayData,
-    loading: state.queueGUI.loading,
-    logRecords: state.logger.logRecords,
-    plotsData: state.beamline.plotsData,
-    plotsInfo: state.beamline.plotsInfo,
-    selectedShapes: state.sampleview.selectedShapes,
-    shapes: state.shapes,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    queueActions: bindActionCreators(queueActions, dispatch),
-    queueGUIActions: bindActionCreators(queueGUIActions, dispatch),
-    sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
-    sampleChangerActions: bindActionCreators(sampleChangerActions, dispatch),
-    showForm: bindActionCreators(showTaskForm, dispatch),
-    showDialog: bindActionCreators(showDialog, dispatch),
-    prepareBeamlineForNewSample: bindActionCreators(
-      prepareBeamlineForNewSample,
-      dispatch,
-    ),
-  };
-}
+import { loadSample, unloadSample } from '../actions/sampleChanger';
 
 class SampleQueueContainer extends React.Component {
   constructor(props) {
@@ -62,7 +41,7 @@ class SampleQueueContainer extends React.Component {
   }
 
   handleSelect(selectedKey) {
-    this.props.queueGUIActions.showList(selectedKey);
+    this.props.showList(selectedKey);
   }
 
   render() {
@@ -82,24 +61,6 @@ class SampleQueueContainer extends React.Component {
       autoAddDiffPlan,
       centringMethod,
     } = this.props;
-    const {
-      sendToggleCheckBox,
-      sendPauseQueue,
-      sendUnpauseQueue,
-      sendStopQueue,
-      changeTaskOrderAction,
-      deleteTask,
-      addTask,
-      moveTask,
-      setAutoMountSample,
-      setAutoAddDiffPlan,
-      sendRunSample,
-      sendSetCentringMethod,
-      setEnabledSample,
-    } = this.props.queueActions;
-    const { collapseItem, showConfirmCollectDialog, selectItem, showList } =
-      this.props.queueGUIActions;
-    const { loadSample, unloadSample } = this.props.sampleChangerActions;
 
     // go through the queue, check if sample has been collected or not
     // to make todo and history lists
@@ -133,24 +94,24 @@ class SampleQueueContainer extends React.Component {
           historyLength={history.length}
           queueLength={queue.length}
           queue={queue}
-          setEnabledSample={setEnabledSample}
+          setEnabledSample={this.props.setEnabledSample}
           todoLength={todo.length}
           queueStatus={queueStatus}
-          runQueue={showConfirmCollectDialog}
-          stopQueue={sendStopQueue}
-          pause={sendPauseQueue}
-          unpause={sendUnpauseQueue}
-          setAutoMountSample={setAutoMountSample}
+          runQueue={this.props.showConfirmCollectDialog}
+          stopQueue={this.props.sendStopQueue}
+          pause={this.props.sendPauseQueue}
+          unpause={this.props.sendUnpauseQueue}
+          setAutoMountSample={this.props.setAutoMountSample}
           autoMountNext={autoMountNext}
-          setAutoAddDiffPlan={setAutoAddDiffPlan}
+          setAutoAddDiffPlan={this.props.setAutoAddDiffPlan}
           autoAddDiffPlan={autoAddDiffPlan}
           mounted={current.sampleID}
-          runSample={sendRunSample}
-          sendSetCentringMethod={sendSetCentringMethod}
+          runSample={this.props.sendRunSample}
+          sendSetCentringMethod={this.props.sendSetCentringMethod}
           centringMethod={centringMethod}
           todoList={todo}
           sampleList={sampleList}
-          sendUnmountSample={unloadSample}
+          sendUnmountSample={this.props.unloadSample}
         />
         <div className="m-tree queue-body">
           <Nav
@@ -182,28 +143,28 @@ class SampleQueueContainer extends React.Component {
             </div>
           ) : null}
           <CurrentTree
-            changeOrder={changeTaskOrderAction}
+            changeOrder={this.props.changeTaskOrderAction}
             show={visibleList === 'current'}
             mounted={current.sampleID}
             queue={queue}
             sampleList={sampleList}
-            toggleCheckBox={sendToggleCheckBox}
+            toggleCheckBox={this.props.sendToggleCheckBox}
             checked={checked}
-            deleteTask={deleteTask}
-            pause={sendPauseQueue}
-            unpause={sendUnpauseQueue}
-            stop={sendStopQueue}
+            deleteTask={this.props.deleteTask}
+            pause={this.props.sendPauseQueue}
+            unpause={this.props.sendUnpauseQueue}
+            stop={this.props.sendStopQueue}
             showForm={showForm}
-            unmount={unloadSample}
+            unmount={this.props.unloadSample}
             queueStatus={queueStatus}
             rootPath={rootPath}
-            collapseItem={collapseItem}
-            selectItem={selectItem}
+            collapseItem={this.props.collapseItem}
+            selectItem={this.props.selectItem}
             displayData={displayData}
-            runSample={sendRunSample}
+            runSample={this.props.sendRunSample}
             todoList={todo}
-            moveTask={moveTask}
-            addTask={addTask}
+            moveTask={this.props.moveTask}
+            addTask={this.props.addTask}
             plotsData={this.props.plotsData}
             plotsInfo={this.props.plotsInfo}
             shapes={this.props.shapes}
@@ -214,12 +175,12 @@ class SampleQueueContainer extends React.Component {
             list={todo}
             queue={queue}
             sampleList={sampleList}
-            collapseItem={collapseItem}
+            collapseItem={this.props.collapseItem}
             displayData={displayData}
-            mount={loadSample}
+            mount={this.props.loadSample}
             showForm={showForm}
             queueStatus={queueStatus}
-            showList={showList}
+            showList={this.props.showList}
             prepareBeamlineForNewSample={this.props.prepareBeamlineForNewSample}
           />
           <div className="queue-messages">
@@ -239,6 +200,69 @@ class SampleQueueContainer extends React.Component {
       </div>
     );
   }
+}
+
+function mapStateToProps(state) {
+  return {
+    searchString: state.queueGUI.searchString,
+    current: state.queue.current,
+    visibleList: state.queueGUI.visibleList,
+    queueStatus: state.queue.queueStatus,
+    queue: state.queue.queue,
+    autoMountNext: state.queue.autoMountNext,
+    autoAddDiffPlan: state.queue.autoAddDiffPlan,
+    centringMethod: state.queue.centringMethod,
+    sampleList: state.sampleGrid.sampleList,
+    sampleOrder: state.sampleGrid.order,
+    checked: state.queue.checked,
+    rootPath: state.login.rootPath,
+    displayData: state.queueGUI.displayData,
+    loading: state.queueGUI.loading,
+    logRecords: state.logger.logRecords,
+    plotsData: state.beamline.plotsData,
+    plotsInfo: state.beamline.plotsInfo,
+    selectedShapes: state.sampleview.selectedShapes,
+    shapes: state.shapes,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    // Queue actions
+    sendToggleCheckBox: bindActionCreators(sendToggleCheckBox, dispatch),
+    sendPauseQueue: bindActionCreators(sendPauseQueue, dispatch),
+    sendUnpauseQueue: bindActionCreators(sendUnpauseQueue, dispatch),
+    sendStopQueue: bindActionCreators(sendStopQueue, dispatch),
+    changeTaskOrderAction: bindActionCreators(changeTaskOrderAction, dispatch),
+    deleteTask: bindActionCreators(deleteTask, dispatch),
+    addTask: bindActionCreators(addTask, dispatch),
+    moveTask: bindActionCreators(moveTask, dispatch),
+    setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
+    setAutoAddDiffPlan: bindActionCreators(setAutoAddDiffPlan, dispatch),
+    sendRunSample: bindActionCreators(sendRunSample, dispatch),
+    sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch),
+    setEnabledSample: bindActionCreators(setEnabledSample, dispatch),
+
+    // Queue GUI actions
+    collapseItem: bindActionCreators(collapseItem, dispatch),
+    showConfirmCollectDialog: bindActionCreators(
+      showConfirmCollectDialog,
+      dispatch,
+    ),
+    selectItem: bindActionCreators(selectItem, dispatch),
+    showList: bindActionCreators(showList, dispatch),
+
+    // Sample changer actions
+    loadSample: bindActionCreators(loadSample, dispatch),
+    unloadSample: bindActionCreators(unloadSample, dispatch),
+
+    showForm: bindActionCreators(showTaskForm, dispatch),
+    showDialog: bindActionCreators(showDialog, dispatch),
+    prepareBeamlineForNewSample: bindActionCreators(
+      prepareBeamlineForNewSample,
+      dispatch,
+    ),
+  };
 }
 
 export default connect(

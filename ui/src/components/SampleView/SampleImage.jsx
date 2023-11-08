@@ -212,13 +212,13 @@ export default class SampleImage extends React.Component {
   }
 
   setGridResultType(resultType) {
-    this.props.sampleActions.setGridResultType(resultType);
+    this.props.sampleViewActions.setGridResultType(resultType);
   }
 
   setImageRatio() {
     if (this.props.autoScale) {
       const { clientWidth } = document.querySelector('#outsideWrapper');
-      this.props.sampleActions.setImageRatio(clientWidth);
+      this.props.sampleViewActions.setImageRatio(clientWidth);
     }
   }
 
@@ -237,7 +237,7 @@ export default class SampleImage extends React.Component {
         gridData.cellHSpace,
         value,
       );
-      this.props.sampleActions.sendUpdateShapes([gd]);
+      this.props.sampleViewActions.sendUpdateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(
         null,
@@ -263,7 +263,7 @@ export default class SampleImage extends React.Component {
         value,
         gridData.cellVSpace,
       );
-      this.props.sampleActions.sendUpdateShapes([gd]);
+      this.props.sampleViewActions.sendUpdateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(
         value,
@@ -282,7 +282,7 @@ export default class SampleImage extends React.Component {
     }
 
     this.drawGridPlugin.setGridOverlay(value);
-    this.props.sampleActions.setOverlay(value);
+    this.props.sampleViewActions.setOverlay(value);
     this.drawGridPlugin.repaint(this.canvas);
     this.renderSampleView(this.props);
   }
@@ -338,11 +338,11 @@ export default class SampleImage extends React.Component {
 
       if (this._keyPressed === 'Escape') {
         if (this.props.clickCentring) {
-          this.props.sampleActions.sendAbortCentring();
+          this.props.sampleViewActions.sendAbortCentring();
         }
 
         if (this.props.drawGrid) {
-          this.props.sampleActions.toggleDrawGrid();
+          this.props.sampleViewActions.toggleDrawGrid();
         }
       }
     }
@@ -350,11 +350,11 @@ export default class SampleImage extends React.Component {
 
   removeShapes() {
     if (this.props.clickCentring) {
-      this.props.sampleActions.sendAbortCentring();
+      this.props.sampleViewActions.sendAbortCentring();
     }
 
     this.props.selectedShapes.forEach((shapeID) => {
-      this.props.sampleActions.sendDeleteShape(shapeID);
+      this.props.sampleViewActions.sendDeleteShape(shapeID);
     });
   }
 
@@ -363,8 +363,8 @@ export default class SampleImage extends React.Component {
   }
 
   goToBeam(e) {
-    const { sampleActions, imageRatio } = this.props;
-    const { sendGoToBeam } = sampleActions;
+    const { sampleViewActions, imageRatio } = this.props;
+    const { sendGoToBeam } = sampleViewActions;
 
     // Only move to beam if the click was done directly on the canvas.
     if (e.target.tagName === 'CANVAS' && e.shiftKey) {
@@ -396,8 +396,7 @@ export default class SampleImage extends React.Component {
   rightClick(e) {
     e.preventDefault();
 
-    const { sampleActions } = this.props;
-    const { showContextMenu } = sampleActions;
+    const { showContextMenu } = this.props.sampleViewActions;
 
     const group = this.canvas.getActiveObject();
     const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
@@ -547,7 +546,7 @@ export default class SampleImage extends React.Component {
       objectFound = option.target;
     }
     const {
-      sampleActions,
+      sampleViewActions,
       clickCentring,
       measureDistance,
       imageRatio,
@@ -557,16 +556,16 @@ export default class SampleImage extends React.Component {
     } = this.props;
 
     if (contextMenuVisible) {
-      sampleActions.showContextMenu(false);
+      sampleViewActions.showContextMenu(false);
     }
 
     if (clickCentring) {
-      sampleActions.sendCentringPoint(
+      sampleViewActions.sendCentringPoint(
         option.e.layerX / imageRatio,
         option.e.layerY / imageRatio,
       );
     } else if (measureDistance) {
-      sampleActions.addDistancePoint(
+      sampleViewActions.addDistancePoint(
         option.e.layerX / imageRatio,
         option.e.layerY / imageRatio,
       );
@@ -598,9 +597,7 @@ export default class SampleImage extends React.Component {
 
       const { resultDataPath } = shapeData;
       if (resultDataPath.length > 0) {
-        this.props.generalActions.sendDisplayImage(
-          `${resultDataPath}&img_num=${imgNum}`,
-        );
+        this.props.sendDisplayImage(`${resultDataPath}&img_num=${imgNum}`);
       }
     }
   }
@@ -609,8 +606,8 @@ export default class SampleImage extends React.Component {
   wheel(e) {
     e.preventDefault();
     e.stopPropagation();
-    const { sampleActions, motorSteps, hardwareObjects } = this.props;
-    const { sendMotorPosition, sendZoomPos } = sampleActions;
+    const { sampleViewActions, motorSteps, hardwareObjects } = this.props;
+    const { sendMotorPosition, sendZoomPos } = sampleViewActions;
     const keyPressed = this._keyPressed;
 
     const phi = hardwareObjects['diffractometer.phi'];
@@ -705,7 +702,7 @@ export default class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
-      this.props.sampleActions.sendUpdateShapes(updatedShapes);
+      this.props.sampleViewActions.sendUpdateShapes(updatedShapes);
     }
   }
 
@@ -724,7 +721,7 @@ export default class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
-      this.props.sampleActions.sendUpdateShapes(updatedShapes);
+      this.props.sampleViewActions.sendUpdateShapes(updatedShapes);
     }
   }
 
@@ -750,7 +747,7 @@ export default class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
-      this.props.sampleActions.sendUpdateShapes(updatedShapes);
+      this.props.sampleViewActions.sendUpdateShapes(updatedShapes);
     }
   }
 
@@ -775,7 +772,7 @@ export default class SampleImage extends React.Component {
     const gd = this.drawGridPlugin.saveGrid(
       this.drawGridPlugin.currentGridData(),
     );
-    this.props.sampleActions.sendAddShape({ t: 'G', ...gd });
+    this.props.sampleViewActions.sendAddShape({ t: 'G', ...gd });
     this.drawGridPlugin.reset();
   }
 
@@ -788,7 +785,7 @@ export default class SampleImage extends React.Component {
       grid.state = 'HIDDEN';
     }
 
-    this.props.sampleActions.sendUpdateShapes([grid]);
+    this.props.sampleViewActions.sendUpdateShapes([grid]);
   }
 
   centringMessage() {
@@ -977,10 +974,10 @@ export default class SampleImage extends React.Component {
               setVCellSpacing={this.setVCellSpacing}
               gridList={this.props.grids}
               currentGrid={this.drawGridPlugin.currentGridData()}
-              removeGrid={this.props.sampleActions.sendDeleteShape}
+              removeGrid={this.props.sampleViewActions.sendDeleteShape}
               saveGrid={this.saveGrid}
               toggleVisibility={this.toggleGridVisibility}
-              rotateTo={this.props.sampleActions.sendRotateToShape}
+              rotateTo={this.props.sampleViewActions.sendRotateToShape}
               selectGrid={this.selectShape}
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
               setGridResultType={this.setGridResultType}
@@ -988,7 +985,7 @@ export default class SampleImage extends React.Component {
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
             <SampleControls
-              generalActions={this.props.generalActions}
+              showErrorPanel={this.props.showErrorPanel}
               {...this.props}
               canvas={this.canvas}
               imageRatio={this.props.imageRatio}

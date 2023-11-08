@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import {
   sendSetAttribute,
@@ -71,19 +70,6 @@ export function executeCommand(obj, name, args) {
 
 export function prepareBeamlineForNewSample() {
   return () => sendPrepareBeamlineForNewSample();
-}
-
-export function sendDisplayImage(path) {
-  return () => {
-    fetch(`mxcube/api/v0.1/detector/display_image/?path=${path}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-  };
 }
 
 export function sendLogFrontEndTraceBack(errorInfo, state) {

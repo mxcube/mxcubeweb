@@ -124,12 +124,12 @@ class PlateManipulator extends React.Component {
         dropID: drop,
       });
     } else {
-      this.props.generalActions.showErrorPanel(
+      this.props.showErrorPanel(
         true,
         'There is no selected Well \n Please select a well first',
       );
       setTimeout(() => {
-        this.props.generalActions.showErrorPanel(false, '');
+        this.props.showErrorPanel(false, '');
       }, 2000);
     }
   }
