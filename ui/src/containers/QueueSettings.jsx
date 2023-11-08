@@ -10,7 +10,13 @@ import { AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../constants';
 import GroupFolderInput from './GroupFolderInput.jsx';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
-import * as queueActions from '../actions/queue'; // eslint-disable-line import/no-namespace
+import {
+  sendSetCentringMethod,
+  sendSetGroupFolder,
+  sendSetQueueSettings,
+  setAutoAddDiffPlan,
+  setAutoMountSample,
+} from '../actions/queue';
 
 class QueueSettings extends React.Component {
   constructor(props) {
@@ -28,11 +34,11 @@ class QueueSettings extends React.Component {
   setGroupFolderInput() {
     this.setState({ validationState: 'success' });
     /* eslint-enable react/no-set-state */
-    this.props.queueActions.sendSetGroupFolder(this.inputValue.value);
+    this.props.sendSetGroupFolder(this.inputValue.value);
   }
 
   setAutoAddDiffPlan(e) {
-    this.props.queueActions.setAutoAddDiffPlan(e.target.checked);
+    this.props.setAutoAddDiffPlan(e.target.checked);
   }
 
   inputOnChangeHandler() {
@@ -42,7 +48,7 @@ class QueueSettings extends React.Component {
 
   autoMountNextOnClick(e) {
     e.preventDefault();
-    this.props.queueActions.setAutoMountSample(e.target.checked);
+    this.props.setAutoMountSample(e.target.checked);
   }
 
   inputOnSelectHandler(e) {
@@ -52,9 +58,9 @@ class QueueSettings extends React.Component {
 
   autoLoopCentringOnClick(e) {
     if (e.target.checked) {
-      this.props.queueActions.sendSetCentringMethod(AUTO_LOOP_CENTRING);
+      this.props.sendSetCentringMethod(AUTO_LOOP_CENTRING);
     } else {
-      this.props.queueActions.sendSetCentringMethod(CLICK_CENTRING);
+      this.props.sendSetCentringMethod(CLICK_CENTRING);
     }
   }
 
@@ -101,7 +107,7 @@ class QueueSettings extends React.Component {
               type="checkbox"
               name="rememberParametersBetweenSamples"
               onChange={(e) => {
-                this.props.queueActions.sendSetQueueSettings(
+                this.props.sendSetQueueSettings(
                   'rememberParametersBetweenSamples',
                   e.target.checked,
                 );
@@ -132,7 +138,11 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    queueActions: bindActionCreators(queueActions, dispatch),
+    sendSetGroupFolder: bindActionCreators(sendSetGroupFolder, dispatch),
+    setAutoAddDiffPlan: bindActionCreators(setAutoAddDiffPlan, dispatch),
+    setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
+    sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch),
+    sendSetQueueSettings: bindActionCreators(sendSetQueueSettings, dispatch),
   };
 }
 

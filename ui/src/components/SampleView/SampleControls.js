@@ -40,16 +40,13 @@ export default class SampleControls extends React.Component {
   toggleDrawGrid() {
     // Cancel click centering before draw grid is started
     if (this.props.current.sampleID === '') {
-      this.props.generalActions.showErrorPanel(
-        true,
-        'There is no sample mounted',
-      );
+      this.props.showErrorPanel(true, 'There is no sample mounted');
     } else {
       if (this.props.clickCentring) {
-        this.props.sampleActions.sendAbortCentring();
+        this.props.sampleViewActions.sendAbortCentring();
       }
 
-      this.props.sampleActions.toggleDrawGrid();
+      this.props.sampleViewActions.toggleDrawGrid();
     }
   }
 
@@ -88,12 +85,12 @@ export default class SampleControls extends React.Component {
 
   toggleCentring() {
     const { sendStartClickCentring, sendAbortCentring } =
-      this.props.sampleActions;
+      this.props.sampleViewActions;
     const { clickCentring } = this.props;
 
     // If draw grid tool enabled, disable it before starting centering
     if (this.props.drawGrid) {
-      this.props.sampleActions.toggleDrawGrid();
+      this.props.sampleViewActions.toggleDrawGrid();
     }
 
     if (clickCentring) {
@@ -123,7 +120,7 @@ export default class SampleControls extends React.Component {
           key={`${size[0]} x ${size[1]}`}
           eventKey="1"
           onClick={() =>
-            this.props.sampleActions.setVideoSize(size[0], size[1])
+            this.props.sampleViewActions.setVideoSize(size[0], size[1])
           }
         >
           <span className={`fa ${sizeGClass}`} /> {`${size[0]} x ${size[1]}`}
@@ -141,7 +138,7 @@ export default class SampleControls extends React.Component {
         key="auto scale"
         onClick={() => {
           const { clientWidth } = document.querySelector('#outsideWrapper');
-          this.props.sampleActions.toggleAutoScale(clientWidth);
+          this.props.sampleViewActions.toggleAutoScale(clientWidth);
         }}
       >
         <span className={`fa ${autoScaleGClass}`} /> Auto Scale
@@ -151,7 +148,7 @@ export default class SampleControls extends React.Component {
         key="reset"
         onClick={() => {
           window.initJSMpeg();
-          this.props.sampleActions.setVideoSize(
+          this.props.sampleViewActions.setVideoSize(
             this.props.width,
             this.props.height,
           );

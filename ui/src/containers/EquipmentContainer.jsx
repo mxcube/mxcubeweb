@@ -17,7 +17,7 @@ import {
   selectDrop,
 } from '../actions/sampleChanger';
 
-import * as generalActions from '../actions/general'; // eslint-disable-line import/no-namespace
+import { showErrorPanel } from '../actions/general';
 
 import { syncWithCrims } from '../actions/sampleGrid';
 
@@ -64,7 +64,7 @@ class EquipmentContainer extends React.Component {
                       selectDrop={this.props.selectDrop}
                       crystalList={this.props.crystalList}
                       syncSamplesCrims={this.props.syncSamplesCrims}
-                      generalActions={this.props.generalActions}
+                      showErrorPanel={this.props.showErrorPanel}
                       global_state={this.props.global_state}
                       state={this.props.sampleChangerState}
                     />
@@ -167,7 +167,7 @@ function mapDispatchToProps(dispatch) {
     abort: () => dispatch(abort()),
     sendCommand: (cmd, args) => dispatch(sendCommand(cmd, args)),
     executeCommand: bindActionCreators(executeCommand, dispatch),
-    generalActions: bindActionCreators(generalActions, dispatch),
+    showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     selectWell: (row, col) => dispatch(selectWell(row, col)),
     setPlate: (address) => dispatch(setPlate(address)),
     selectDrop: (address) => dispatch(selectDrop(address)),

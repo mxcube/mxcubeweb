@@ -17,7 +17,7 @@ import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
-import * as generalActions from '../actions/general'; // eslint-disable-line import/no-namespace
+import { showErrorPanel, sendDisplayImage } from '../actions/general';
 import { updateTask } from '../actions/queue';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -36,7 +36,6 @@ import {
 
 import {
   setBeamlineAttribute,
-  sendDisplayImage,
   executeCommand,
   sendLogFrontEndTraceBack,
   setAttribute,
@@ -145,7 +144,7 @@ class SampleViewContainer extends Component {
                   groupFolder={this.props.groupFolder}
                   hardwareObjects={this.props.hardwareObjects}
                   uiproperties={uiproperties.sample_view}
-                  sampleActions={this.props.sampleViewActions}
+                  sampleViewActions={this.props.sampleViewActions}
                   grids={grids}
                   selectedGrids={selectedGrids}
                   setAttribute={this.props.setAttribute}
@@ -181,7 +180,7 @@ class SampleViewContainer extends Component {
                             selectDrop={this.props.selectDrop}
                             crystalList={this.props.crystalList}
                             syncSamplesCrims={this.props.syncSamplesCrims}
-                            generalActions={this.props.generalActions}
+                            showErrorPanel={this.props.showErrorPanel}
                             global_state={this.props.global_state}
                             state={this.props.sampleChangerState}
                             inPopover
@@ -247,7 +246,7 @@ class SampleViewContainer extends Component {
             <DefaultErrorBoundary>
               <ContextMenu
                 {...this.props.contextMenu}
-                sampleActions={this.props.sampleViewActions}
+                sampleViewActions={this.props.sampleViewActions}
                 updateTask={this.props.updateTask}
                 availableMethods={this.props.availableMethods}
                 showForm={this.props.showForm}
@@ -262,8 +261,8 @@ class SampleViewContainer extends Component {
                 taskForm={this.props.taskForm}
               />
               <SampleImage
-                generalActions={this.props.generalActions}
-                sampleActions={this.props.sampleViewActions}
+                showErrorPanel={this.props.showErrorPanel}
+                sampleViewActions={this.props.sampleViewActions}
                 {...this.props.sampleViewState}
                 uiproperties={uiproperties.sample_view}
                 hardwareObjects={this.props.hardwareObjects}
@@ -339,7 +338,7 @@ function mapDispatchToProps(dispatch) {
     sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
     updateTask: bindActionCreators(updateTask, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
-    generalActions: bindActionCreators(generalActions, dispatch),
+    showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
     stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
