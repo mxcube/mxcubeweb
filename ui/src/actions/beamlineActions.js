@@ -1,9 +1,8 @@
-/* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable promise/prefer-await-to-callbacks */
-/* eslint-disable sonarjs/no-duplicate-string */
-import fetch from 'isomorphic-fetch';
 import { RUNNING } from '../constants';
-import { checkStatus, parseJSON } from '../requests';
+import {
+  sendAbortBeamlineAction,
+  sendRunBeamlineAction,
+} from '../api/beamline';
 
 export function addUserMessage(data) {
   return {
@@ -38,9 +37,7 @@ export function setArgumentValue(cmdName, argIndex, value) {
   };
 }
 
-export function startAction(cmdName, parameters, showOutput = true) {
-  const url = `mxcube/api/v0.1/beamline/${cmdName}/run`;
-
+export function startBeamlineAction(cmdName, parameters, showOutput = true) {
   return (dispatch) => {
     dispatch(setActionState(cmdName, RUNNING));
 
@@ -48,41 +45,12 @@ export function startAction(cmdName, parameters, showOutput = true) {
       dispatch(showActionOutput(cmdName));
     }
 
-    fetch(url, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ parameters }),
-    })
-      .then(checkStatus)
-      .then(parseJSON)
-      .catch((error) => {
-        throw new Error(`GET ${url} failed ${error}`);
-      });
+    sendRunBeamlineAction(cmdName, parameters);
   };
 }
 
-export function stopAction(cmdName) {
-  const url = `mxcube/api/v0.1/beamline/${cmdName}/abort`;
-
-  return () => {
-    fetch(url, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    })
-      .then(checkStatus)
-      .then(parseJSON)
-      .catch((error) => {
-        throw new Error(`GET ${url} failed: ${error}`);
-      });
-  };
+export function stopBeamlineAction(cmdName) {
+  return () => sendAbortBeamlineAction(cmdName);
 }
 
 export function newPlot(plotInfo) {

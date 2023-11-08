@@ -36,12 +36,12 @@ import {
 
 import {
   sendSetAttribute,
-  sendAbortCurrentAction,
   setBeamlineAttribute,
   sendDisplayImage,
   executeCommand,
   sendLogFrontEndTraceBack,
 } from '../actions/beamline';
+import { stopBeamlineAction } from '../actions/beamlineActions';
 
 class SampleViewContainer extends Component {
   render() {
@@ -237,7 +237,7 @@ class SampleViewContainer extends Component {
                   this.props.queueState === QUEUE_RUNNING
                 }
                 steps={motorSteps}
-                stop={this.props.sendAbortCurrentAction}
+                stop={this.props.stopBeamlineAction}
                 sampleViewActions={this.props.sampleViewActions}
                 sampleViewState={this.props.sampleViewState}
               />
@@ -283,7 +283,6 @@ class SampleViewContainer extends Component {
                 proposal={this.props.proposal}
                 busy={this.props.queueState === QUEUE_RUNNING}
                 sendSetAttribute={this.props.sendSetAttribute}
-                sendAbortCurrentAction={this.props.sendAbortCurrentAction}
                 setBeamlineAttribute={this.props.setBeamlineAttribute}
                 sendDisplayImage={this.props.sendDisplayImage}
               />
@@ -342,10 +341,7 @@ function mapDispatchToProps(dispatch) {
     showForm: bindActionCreators(showTaskForm, dispatch),
     generalActions: bindActionCreators(generalActions, dispatch),
     sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
-    sendAbortCurrentAction: bindActionCreators(
-      sendAbortCurrentAction,
-      dispatch,
-    ),
+    stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),

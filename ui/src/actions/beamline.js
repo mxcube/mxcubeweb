@@ -83,19 +83,6 @@ export function executeCommand(obj, name, args) {
   };
 }
 
-export function sendAbortCurrentAction(name) {
-  return () => {
-    fetch(`mxcube/api/v0.1/beamline/${name}/abort`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    });
-  };
-}
-
 export function prepareBeamlineForNewSample() {
   return () => sendPrepareBeamlineForNewSample();
 }

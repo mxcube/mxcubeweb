@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import TodoTree from '../components/SampleQueue/TodoTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
-import * as beamlineActions from '../actions/beamline'; // eslint-disable-line import/no-namespace
 import * as queueActions from '../actions/queue'; // eslint-disable-line import/no-namespace
 import * as queueGUIActions from '../actions/queueGUI'; // eslint-disable-line import/no-namespace
 import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
@@ -15,6 +14,7 @@ import { showDialog } from '../actions/general';
 
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
+import { prepareBeamlineForNewSample } from '../actions/beamline';
 
 function mapStateToProps(state) {
   return {
@@ -48,7 +48,10 @@ function mapDispatchToProps(dispatch) {
     sampleChangerActions: bindActionCreators(sampleChangerActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
-    beamlineActions: bindActionCreators(beamlineActions, dispatch),
+    prepareBeamlineForNewSample: bindActionCreators(
+      prepareBeamlineForNewSample,
+      dispatch,
+    ),
   };
 }
 
@@ -96,7 +99,6 @@ class SampleQueueContainer extends React.Component {
     } = this.props.queueActions;
     const { collapseItem, showConfirmCollectDialog, selectItem, showList } =
       this.props.queueGUIActions;
-    const { prepareBeamlineForNewSample } = this.props.beamlineActions;
     const { loadSample, unloadSample } = this.props.sampleChangerActions;
 
     // go through the queue, check if sample has been collected or not
@@ -218,7 +220,7 @@ class SampleQueueContainer extends React.Component {
             showForm={showForm}
             queueStatus={queueStatus}
             showList={showList}
-            prepareBeamlineForNewSample={prepareBeamlineForNewSample}
+            prepareBeamlineForNewSample={this.props.prepareBeamlineForNewSample}
           />
           <div className="queue-messages">
             <div className="queue-messages-title">
