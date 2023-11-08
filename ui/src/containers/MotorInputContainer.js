@@ -5,7 +5,7 @@ import { QUEUE_RUNNING } from '../constants';
 
 import MotorInput from '../components/MotorInput/MotorInput';
 import { stopBeamlineAction } from '../actions/beamlineActions';
-import { sendSetAttribute } from '../actions/beamline';
+import { setAttribute } from '../actions/beamline';
 import { setStepSize } from '../actions/sampleview';
 
 class MotorInputContainer extends Component {
@@ -18,7 +18,7 @@ class MotorInputContainer extends Component {
       result = (
         <div>
           <MotorInput
-            save={this.props.sendSetAttribute}
+            save={this.props.setAttribute}
             saveStep={this.props.setStepSize}
             step={uiprop.step}
             value={motorhwo.value}
@@ -60,7 +60,7 @@ function mapStateToProps(state, ownProps) {
 function mapDispatchToProps(dispatch) {
   return {
     stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
-    sendSetAttribute: bindActionCreators(sendSetAttribute, dispatch),
+    setAttribute: bindActionCreators(setAttribute, dispatch),
     setStepSize: bindActionCreators(setStepSize, dispatch),
   };
 }

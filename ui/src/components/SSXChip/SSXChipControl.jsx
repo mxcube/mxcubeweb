@@ -70,7 +70,7 @@ export default class SSXChipControl extends React.Component {
             gridList={Object.values(this.props.grids)}
             sampleMotorVerticalName={sampleVerticalUiProp.attribute}
             sampleMotorHorizontalName={sampleHorizontalUiProp.attribute}
-            sendSetAttribute={this.props.sendSetAttribute}
+            setAttribute={this.props.setAttribute}
             sendExecuteCommand={this.props.sendExecuteCommand}
           />
         </Popover.Body>
