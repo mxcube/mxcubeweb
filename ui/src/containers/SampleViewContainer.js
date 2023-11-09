@@ -10,7 +10,7 @@ import {
   Button,
 } from 'react-bootstrap';
 import SampleImage from '../components/SampleView/SampleImage';
-import MotorControl from '../components/SampleView/MotorControl';
+import MotorControls from '../components/SampleView/MotorControls';
 import PhaseInput from '../components/SampleView/PhaseInput';
 import ApertureInput from '../components/SampleView/ApertureInput';
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
@@ -90,29 +90,6 @@ class SampleViewContainer extends Component {
     }
     const diffractometerHo = this.props.hardwareObjects.diffractometer;
 
-    const phaseControl = (
-      <div>
-        <p className="motor-name">Phase Control:</p>
-        <PhaseInput
-          phase={this.props.sampleViewState.currentPhase}
-          phaseList={this.props.sampleViewState.phaseList}
-          sendPhase={this.props.sampleViewActions.changeCurrentPhase}
-          state={diffractometerHo.state}
-        />
-      </div>
-    );
-
-    const apertureControl = (
-      <div>
-        <p className="motor-name">Beam size:</p>
-        <ApertureInput
-          aperture={this.props.sampleViewState.currentAperture}
-          apertureList={this.props.sampleViewState.apertureList}
-          sendAperture={this.props.sampleViewActions.changeAperture}
-        />
-      </div>
-    );
-
     return (
       <Container fluid>
         <Row
@@ -131,10 +108,29 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={1}>
             <DefaultErrorBoundary>
-              {process.env.REACT_APP_PHASECONTROL === 'true'
-                ? phaseControl
-                : null}
-              {apertureControl}
+              {process.env.REACT_APP_PHASECONTROL === 'true' && (
+                <div>
+                  <p className="motor-name">Phase Control:</p>
+                  <PhaseInput
+                    phase={this.props.sampleViewState.currentPhase}
+                    phaseList={this.props.sampleViewState.phaseList}
+                    changePhase={
+                      this.props.sampleViewActions.changeCurrentPhase
+                    }
+                    state={diffractometerHo.state}
+                  />
+                </div>
+              )}
+
+              <div>
+                <p className="motor-name">Beam size:</p>
+                <ApertureInput
+                  aperture={this.props.sampleViewState.currentAperture}
+                  apertureList={this.props.sampleViewState.apertureList}
+                  changeAperture={this.props.sampleViewActions.changeAperture}
+                />
+              </div>
+
               {this.props.mode === 'SSX-CHIP' ? (
                 <SSXChipControl
                   showForm={this.props.showForm}
@@ -226,7 +222,7 @@ class SampleViewContainer extends Component {
                   </Button>
                 </div>
               ) : null}
-              <MotorControl
+              <MotorControls
                 save={this.props.setAttribute}
                 saveStep={setStepSize}
                 uiproperties={uiproperties.sample_view}
