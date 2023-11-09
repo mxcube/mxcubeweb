@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Form } from 'react-bootstrap';
 import '../MotorInput/motor.css';
@@ -8,11 +7,11 @@ import cx from 'classnames';
 export default class ApertureInput extends React.Component {
   constructor(props) {
     super(props);
-    this.sendAperture = this.sendAperture.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  sendAperture(event) {
-    this.props.sendAperture(event.target.value);
+  handleChange(event) {
+    this.props.changeAperture(event.target.value);
   }
 
   render() {
@@ -27,12 +26,10 @@ export default class ApertureInput extends React.Component {
           className={inputCSS}
           style={{ float: 'none' }}
           value={this.props.aperture}
-          onChange={this.sendAperture}
+          onChange={this.handleChange}
         >
           {this.props.apertureList.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
+            <option key={option}>{option}</option>
           ))}
         </Form.Select>
       </div>
