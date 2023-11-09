@@ -1,4 +1,5 @@
 import React from 'react';
+import { Form } from 'react-bootstrap';
 import '../MotorInput/motor.css';
 import '../input.css';
 import cx from 'classnames';
@@ -6,12 +7,12 @@ import cx from 'classnames';
 export default class PhaseInput extends React.Component {
   constructor(props) {
     super(props);
-    this.sendPhase = this.sendPhase.bind(this);
+    this.handleChange = this.handleChange.bind(this);
   }
 
-  sendPhase(event) {
+  handleChange(event) {
     if (event.target.value !== 'Unknown') {
-      this.props.sendPhase(event.target.value);
+      this.props.changePhase(event.target.value);
     }
   }
 
@@ -23,17 +24,16 @@ export default class PhaseInput extends React.Component {
 
     return (
       <div className="motor-input-container">
-        <select
+        <Form.Select
           className={inputCSS}
-          onChange={this.sendPhase} // eslint-disable-line react/jsx-handler-names
+          style={{ float: 'none' }}
           value={this.props.phase}
+          onChange={this.handleChange}
         >
           {this.props.phaseList.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
+            <option key={option}>{option}</option>
           ))}
-        </select>
+        </Form.Select>
       </div>
     );
   }
