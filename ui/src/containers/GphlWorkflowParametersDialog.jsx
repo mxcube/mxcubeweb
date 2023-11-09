@@ -7,7 +7,7 @@ import { Modal } from 'react-bootstrap';
 import Form from '@rjsf/core';
 import {
   showGphlWorkflowParametersDialog,
-  gphlWorkflowSubmitParameters,
+  submitGphlWorkflowParameters,
 } from '../actions/gphlWorkflow';
 
 class GphlWorkflowParametersDialog extends React.Component {
@@ -23,7 +23,7 @@ class GphlWorkflowParametersDialog extends React.Component {
   }
 
   submitData(values) {
-    this.props.gphlWorkflowSubmitParameters(values.formData);
+    this.props.submitGphlWorkflowParameters(values.formData);
     this.props.hide();
   }
 
@@ -78,8 +78,8 @@ function mapDispatchToProps(dispatch) {
       showGphlWorkflowParametersDialog.bind(null, null, false),
       dispatch,
     ),
-    gphlWorkflowSubmitParameters: bindActionCreators(
-      gphlWorkflowSubmitParameters,
+    submitGphlWorkflowParameters: bindActionCreators(
+      submitGphlWorkflowParameters,
       dispatch,
     ),
   };

@@ -1,19 +1,11 @@
-import fetch from 'isomorphic-fetch';
+import { sendSubmitWorkflowParameters } from '../api/workflow';
 
 export function showWorkflowParametersDialog(formData, show = true) {
   return { type: 'SHOW_WORKFLOW_PARAMETERS_DIALOG', formData, show };
 }
 
-export function workflowSubmitParameters(data) {
+export function submitWorkflowParameters(data) {
   return () => {
-    fetch('mxcube/api/v0.1/workflow/', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
+    sendSubmitWorkflowParameters(data);
   };
 }

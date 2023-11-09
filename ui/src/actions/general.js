@@ -5,6 +5,10 @@ import fetch from 'isomorphic-fetch';
 import { unselectShapes } from './sampleview'; // eslint-disable-line import/no-cycle
 import { fetchBeamInfo, fetchBeamlineSetup } from '../api/beamline';
 import { fetchDiffractometerInfo } from '../api/diffractometer';
+import { fetchLogMessages } from '../api/log';
+import { fetchApplicationSettings, fetchUIProperties } from '../api/main';
+import { fetchAvailableWorkflows } from '../api/workflow';
+import { fetchAvailableGphlWorkflows } from '../api/gphlWorkflow';
 
 export function addUserMessage(records, target) {
   return {
@@ -82,14 +86,6 @@ export function getInitialState(userInControl) {
   return (dispatch) => {
     const state = {};
 
-    const uiproperties = fetch('mxcube/api/v0.1/uiproperties', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
     const queue = fetch('mxcube/api/v0.1/queue/queue_state', {
       method: 'GET',
       credentials: 'include',
@@ -149,42 +145,9 @@ export function getInitialState(userInControl) {
         'Content-type': 'application/json',
       },
     });
-    const workflow = fetch('mxcube/api/v0.1/workflow/', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const gphl_workflow = fetch('mxcube/api/v0.1/gphl_workflow/', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const log = fetch('mxcube/api/v0.1/log/', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const serverMode = fetch('mxcube/api/v0.1/application_settings', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
 
     const pchains = [
-      uiproperties
-        .then(parse)
+      fetchUIProperties()
         .then((json) => {
           state.uiproperties = json;
         })
@@ -265,26 +228,22 @@ export function getInitialState(userInControl) {
           state.remoteAccess = json.data;
         })
         .catch(notify),
-      workflow
-        .then(parse)
+      fetchAvailableWorkflows()
         .then((json) => {
           state.workflow = json;
         })
         .catch(notify),
-      gphl_workflow
-        .then(parse)
+      fetchAvailableGphlWorkflows()
         .then((json) => {
           state.gphl_workflow = json;
         })
         .catch(notify),
-      log
-        .then(parse)
+      fetchLogMessages()
         .then((json) => {
           state.logger = json;
         })
         .catch(notify),
-      serverMode
-        .then(parse)
+      fetchApplicationSettings()
         .then((json) => {
           state.general = json;
         })
