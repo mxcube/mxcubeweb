@@ -57,7 +57,7 @@ export default class MotorControl extends React.Component {
         <PhaseInput
           phase={this.props.sampleViewState.currentPhase}
           phaseList={this.props.sampleViewState.phaseList}
-          sendPhase={this.props.sampleViewActions.sendCurrentPhase}
+          sendPhase={this.props.sampleViewActions.changeCurrentPhase}
           state={diffractometerHo.state}
         />
       </div>

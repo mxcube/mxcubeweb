@@ -4,6 +4,7 @@
 import fetch from 'isomorphic-fetch';
 import { unselectShapes } from './sampleview'; // eslint-disable-line import/no-cycle
 import { fetchBeamInfo, fetchBeamlineSetup } from '../api/beamline';
+import { fetchDiffractometerInfo } from '../api/diffractometer';
 
 export function addUserMessage(records, target) {
   return {
@@ -98,14 +99,6 @@ export function getInitialState(userInControl) {
       },
     });
     const sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const diffractometerInfo = fetch('mxcube/api/v0.1/diffractometer/info', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -220,8 +213,7 @@ export function getInitialState(userInControl) {
           state.Camera = json;
         })
         .catch(notify),
-      diffractometerInfo
-        .then(parse)
+      fetchDiffractometerInfo()
         .then((json) => {
           Object.assign(state, json);
         })
