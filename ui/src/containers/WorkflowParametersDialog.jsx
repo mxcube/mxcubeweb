@@ -7,7 +7,7 @@ import Form from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import {
   showWorkflowParametersDialog,
-  workflowSubmitParameters,
+  submitWorkflowParameters,
 } from '../actions/workflow';
 
 import './WorkflowParametersDialog.css';
@@ -25,7 +25,7 @@ class WorkflowParametersDialog extends React.Component {
   }
 
   submitData(values) {
-    this.props.workflowSubmitParameters(values.formData);
+    this.props.submitWorkflowParameters(values.formData);
     this.props.hide();
   }
 
@@ -82,8 +82,8 @@ function mapDispatchToProps(dispatch) {
       showWorkflowParametersDialog.bind(null, null, false),
       dispatch,
     ),
-    workflowSubmitParameters: bindActionCreators(
-      workflowSubmitParameters,
+    submitWorkflowParameters: bindActionCreators(
+      submitWorkflowParameters,
       dispatch,
     ),
   };

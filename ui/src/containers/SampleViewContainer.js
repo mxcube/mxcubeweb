@@ -37,7 +37,7 @@ import {
 import {
   setBeamlineAttribute,
   executeCommand,
-  sendLogFrontEndTraceBack,
+  logFrontEndTraceBack,
   setAttribute,
 } from '../actions/beamline';
 import { stopBeamlineAction } from '../actions/beamlineActions';
@@ -344,10 +344,7 @@ function mapDispatchToProps(dispatch) {
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
-    sendLogFrontEndTraceBack: bindActionCreators(
-      sendLogFrontEndTraceBack,
-      dispatch,
-    ),
+    logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),
 
     loadSample: (address) => dispatch(loadSample(address)),
     refresh: () => dispatch(refresh()),
