@@ -1,9 +1,9 @@
-import fetch from 'isomorphic-fetch';
 import {
   sendSetAttribute,
   sendExecuteCommand,
   sendPrepareBeamlineForNewSample,
 } from '../api/beamline';
+import { sendLogFrontEndTraceBack } from '../api/log';
 // The different states a beamline attribute can assume.
 export const STATE = {
   IDLE: 'READY',
@@ -72,22 +72,8 @@ export function prepareBeamlineForNewSample() {
   return () => sendPrepareBeamlineForNewSample();
 }
 
-export function sendLogFrontEndTraceBack(errorInfo, state) {
-  const stateToLog = { ...state };
-  delete stateToLog.logger;
-
-  return () => {
-    fetch(`mxcube/api/v0.1/log/log_frontend_traceback`, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        stack: errorInfo.componentStack,
-        state: JSON.stringify(state),
-      }),
-    });
+export function logFrontEndTraceBack(stack) {
+  return (_, getState) => {
+    sendLogFrontEndTraceBack(stack, getState());
   };
 }

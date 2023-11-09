@@ -3,7 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { store } from '../store';
 
-import { sendLogFrontEndTraceBack } from '../actions/beamline';
+import { logFrontEndTraceBack } from '../actions/beamline';
 
 class DefaultErrorBoundary extends React.Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class DefaultErrorBoundary extends React.Component {
       errorInfo,
       store: store.getState(),
     });
-    this.props.sendLogFrontEndTraceBack(errorInfo, store.getState());
+    this.props.logFrontEndTraceBack(errorInfo.componentStack);
   }
 
   render() {
@@ -53,10 +53,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendLogFrontEndTraceBack: bindActionCreators(
-      sendLogFrontEndTraceBack,
-      dispatch,
-    ),
+    logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),
   };
 }
 
