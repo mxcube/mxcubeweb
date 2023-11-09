@@ -3,6 +3,11 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general'; // eslint-disable-line import/no-cycle
+import {
+  fetchMotorPositions,
+  sendUpdateAperture,
+  sendUpdateCurrentPhase,
+} from '../api/diffractometer';
 
 export function setMotorMoving(name, status) {
   return {
@@ -608,23 +613,10 @@ export function sendGoToPoint(id) {
   };
 }
 
-export function sendChangeAperture(pos) {
+export function changeAperture(size) {
   return (dispatch) => {
-    fetch('/mxcube/api/v0.1/diffractometer/aperture', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ diameter: pos }),
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to change Aperture'));
-        dispatch(setAperture(pos));
-      } else {
-        dispatch(setAperture(pos));
-      }
+    sendUpdateAperture(size).then(() => {
+      dispatch(setAperture(size));
     });
   };
 }
@@ -677,23 +669,9 @@ export function getMotorPosition(motor) {
 
 export function getMotorPositions() {
   return (dispatch) => {
-    fetch('/mxcube/api/v0.1/diffractometer/movables/state', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to get motor position');
-        }
-        return response.json();
-      })
-      .then((json) => {
-        dispatch(saveMotorPositions(json));
-      });
+    fetchMotorPositions().then((json) => {
+      dispatch(saveMotorPositions(json));
+    });
   };
 }
 
@@ -718,22 +696,10 @@ export function getPointsPosition() {
   };
 }
 
-export function sendCurrentPhase(phase) {
+export function changeCurrentPhase(phase) {
   return (dispatch) => {
-    fetch('/mxcube/api/v0.1/diffractometer/phase', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ phase }),
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to set phase');
-      } else {
-        dispatch(setCurrentPhase(phase));
-      }
+    sendUpdateCurrentPhase(phase).then(() => {
+      dispatch(setCurrentPhase(phase));
     });
   };
 }

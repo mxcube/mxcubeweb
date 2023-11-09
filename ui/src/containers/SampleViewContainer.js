@@ -96,7 +96,7 @@ class SampleViewContainer extends Component {
         <PhaseInput
           phase={this.props.sampleViewState.currentPhase}
           phaseList={this.props.sampleViewState.phaseList}
-          sendPhase={this.props.sampleViewActions.sendCurrentPhase}
+          sendPhase={this.props.sampleViewActions.changeCurrentPhase}
           state={diffractometerHo.state}
         />
       </div>
@@ -108,7 +108,7 @@ class SampleViewContainer extends Component {
         <ApertureInput
           aperture={this.props.sampleViewState.currentAperture}
           apertureList={this.props.sampleViewState.apertureList}
-          sendAperture={this.props.sampleViewActions.sendChangeAperture}
+          sendAperture={this.props.sampleViewActions.changeAperture}
         />
       </div>
     );
