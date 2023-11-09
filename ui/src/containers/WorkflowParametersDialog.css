@@ -1,3 +1,7 @@
 .rjsf #root {
   display: block;
 }
+
+.rjsf #root > .form-group {
+  margin-bottom: 15px !important;
+}
