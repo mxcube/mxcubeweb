@@ -13,7 +13,7 @@ import {
 } from 'react-bootstrap';
 
 import {
-  sendRunQueue,
+  startQueue,
   sendRunSample,
   setAutoMountSample,
   sendSetCentringMethod,
@@ -62,7 +62,7 @@ export class ConfirmCollectDialog extends React.Component {
   onOkClick() {
     const sample =
       this.props.queue.current.sampleID || this.props.queue.queue[0];
-    this.props.sendRunQueue(this.props.queue.autoMountNext, sample);
+    this.props.startQueue(this.props.queue.autoMountNext, sample);
     this.props.hide();
   }
 
@@ -419,7 +419,7 @@ function mapDispatchToProps(dispatch) {
       showConfirmCollectDialog.bind(null, false),
       dispatch,
     ),
-    sendRunQueue: bindActionCreators(sendRunQueue, dispatch),
+    startQueue: bindActionCreators(startQueue, dispatch),
     sendRunSample: bindActionCreators(sendRunSample, dispatch),
     setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
     sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch),

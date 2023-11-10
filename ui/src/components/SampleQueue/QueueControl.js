@@ -41,7 +41,7 @@ export default class QueueControl extends React.Component {
           {
             text: 'Run Queue',
             class: 'btn-success',
-            action: props.runQueue,
+            action: props.startQueue,
             key: 1,
           },
         ],
@@ -62,7 +62,7 @@ export default class QueueControl extends React.Component {
           {
             text: 'Pause',
             class: 'btn-warning',
-            action: this.props.pause,
+            action: this.props.pauseQueue,
             key: 2,
           },
         ],
@@ -70,7 +70,7 @@ export default class QueueControl extends React.Component {
           {
             text: 'Pause',
             class: 'btn-warning',
-            action: this.props.pause,
+            action: this.props.pauseQueue,
             key: 2,
           },
         ],
@@ -79,7 +79,7 @@ export default class QueueControl extends React.Component {
           {
             text: 'Resume',
             class: 'btn-success',
-            action: this.props.unpause,
+            action: this.props.resumeQueue,
             key: 2,
           },
         ],

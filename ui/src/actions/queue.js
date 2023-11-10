@@ -7,6 +7,13 @@ import { loadSample } from './sampleChanger'; // eslint-disable-line import/no-c
 import { sendAbortCentring, sendUpdateShapes } from './sampleview';
 import { selectSamplesAction, clearSampleGrid } from './sampleGrid'; // eslint-disable-line import/no-cycle
 import { TASK_UNCOLLECTED } from '../constants';
+import {
+  sendClearQueue,
+  sendPauseQueue,
+  sendResumeQueue,
+  sendStartQueue,
+  sendStopQueue,
+} from '../api/queue';
 
 export function queueLoading(loading) {
   return { type: 'QUEUE_LOADING', loading };
@@ -36,15 +43,14 @@ export function setQueue(queue) {
     const state = getState();
     dispatch(setQueueAction(queue));
 
-    // Check if sample is loaded by sample changer in that case set it as current sample
-    queue.sampleOrder.forEach((sid) => {
-      if (
-        state.sampleChanger.loadedSample.address === sid &&
-        state.queue.current.sampleID !== sid
-      ) {
-        dispatch(setCurrentSample(sid));
-      }
-    });
+    const { address: loadedSampleId } = state.sampleChanger.loadedSample;
+    if (
+      queue.sampleOrder.includes(loadedSampleId) &&
+      state.queue.current.sampleID !== loadedSampleId
+    ) {
+      // If queue contains sample loaded by sample changer, set it as the current sample (unless it already is)
+      dispatch(setCurrentSample(loadedSampleId));
+    }
   };
 }
 
@@ -114,8 +120,7 @@ export function addSamplesToQueue(sampleDataList) {
       .then((data) => {
         dispatch(setQueue(data));
       })
-      .catch(() => queueLoading(false))
-      .then(() => dispatch(queueLoading(false)));
+      .finally(() => dispatch(queueLoading(false)));
   };
 }
 
@@ -134,33 +139,22 @@ export function addSampleAndMount(sampleData) {
             dispatch(setQueue(data));
             dispatch(selectSamplesAction([sampleData.sampleID]));
           })
-          .catch(() => queueLoading(false))
-          .then(() => dispatch(queueLoading(false)));
+          .finally(() => dispatch(queueLoading(false)));
       }),
     );
   };
 }
 
-export function clearQueue() {
+export function clearQueueAction() {
   return { type: 'CLEAR_QUEUE' };
 }
 
-export function sendClearQueue(clearQueueOnly = false) {
+export function clearQueue(clearQueueOnly = false) {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/queue/clear', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to clear queue');
-      } else if (clearQueueOnly) {
-        dispatch(clearQueue());
-      } else {
-        dispatch(clearQueue());
+    sendClearQueue().then(() => {
+      dispatch(clearQueueAction());
+
+      if (!clearQueueOnly) {
         dispatch(clearSampleGrid());
       }
     });
@@ -281,72 +275,28 @@ export function toggleChecked(sampleID, index) {
   };
 }
 
-export function sendRunQueue(autoMountNext = true, sid = -1) {
+export function startQueue(autoMountNext = true, sid = -1) {
   return () => {
-    fetch('mxcube/api/v0.1/queue/start', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ autoMountNext, sid }),
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to start queue');
-      }
-    });
+    sendStartQueue(autoMountNext, sid);
   };
 }
 
-export function sendPauseQueue() {
+export function pauseQueue() {
   return () => {
-    fetch('mxcube/api/v0.1/queue/pause', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to pause queue');
-      }
-    });
+    sendPauseQueue();
   };
 }
 
-export function sendUnpauseQueue() {
+export function resumeQueue() {
   return () => {
-    fetch('mxcube/api/v0.1/queue/unpause', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to unpause queue');
-      }
-    });
+    sendResumeQueue();
   };
 }
 
-export function sendStopQueue() {
+export function stopQueue() {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/queue/stop', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
+    sendStopQueue().then(() => {
       dispatch(sendAbortCentring());
-      if (response.status >= 400) {
-        throw new Error('Server refused to stop queue');
-      }
     });
   };
 }
@@ -420,8 +370,7 @@ export function setEnabledSample(sampleIDList, value) {
           }
         }
       })
-      .catch(() => queueLoading(false))
-      .then(() => dispatch(queueLoading(false)));
+      .finally(() => dispatch(queueLoading(false)));
   };
 }
 
@@ -440,10 +389,7 @@ export function deleteTask(sampleID, taskIndex) {
             dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
           }
         })
-        .catch(() => queueLoading(false))
-        .then(() => {
-          dispatch(queueLoading(false));
-        });
+        .finally(() => dispatch(queueLoading(false)));
     }
   };
 }
@@ -472,10 +418,7 @@ export function deleteTaskList(sampleIDList) {
           dispatch(removeTaskListAction(taskList, queueIDList));
         }
       })
-      .catch(() => queueLoading(false))
-      .then(() => {
-        dispatch(queueLoading(false));
-      });
+      .finally(() => dispatch(queueLoading(false)));
   };
 }
 
@@ -525,8 +468,7 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
           dispatch(sendRunSample(sampleID, taskIndex));
         }
       })
-      .catch(() => queueLoading(false))
-      .then(() => dispatch(queueLoading(false)));
+      .finally(() => dispatch(queueLoading(false)));
   };
 }
 
@@ -614,8 +556,7 @@ export function addTask(sampleIDs, parameters, runNow) {
           dispatch(sendRunSample(sampleIDs[0], taskIndex));
         }
       })
-      .catch(() => queueLoading(false))
-      .then(() => dispatch(queueLoading(false)));
+      .finally(() => dispatch(queueLoading(false)));
   };
 }
 
@@ -682,8 +623,7 @@ export function deleteSamplesFromQueue(sampleIDList) {
           dispatch(removeSamplesFromQueueAction(sampleIDList));
         }
       })
-      .catch(() => queueLoading(false))
-      .then(() => dispatch(queueLoading(false)));
+      .finally(() => dispatch(queueLoading(false)));
   };
 }
 

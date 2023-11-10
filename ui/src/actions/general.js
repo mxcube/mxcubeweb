@@ -9,6 +9,7 @@ import { fetchLogMessages } from '../api/log';
 import { fetchApplicationSettings, fetchUIProperties } from '../api/main';
 import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchAvailableGphlWorkflows } from '../api/gphlWorkflow';
+import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 
 export function addUserMessage(records, target) {
   return {
@@ -86,14 +87,6 @@ export function getInitialState(userInControl) {
   return (dispatch) => {
     const state = {};
 
-    const queue = fetch('mxcube/api/v0.1/queue/queue_state', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
     const sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera', {
       method: 'GET',
       credentials: 'include',
@@ -103,14 +96,6 @@ export function getInitialState(userInControl) {
       },
     });
     const detectorInfo = fetch('mxcube/api/v0.1/detector/', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const taskParameters = fetch('mxcube/api/v0.1/queue/available_tasks', {
       method: 'GET',
       credentials: 'include',
       headers: {
@@ -152,8 +137,7 @@ export function getInitialState(userInControl) {
           state.uiproperties = json;
         })
         .catch(notify),
-      queue
-        .then(parse)
+      fetchQueueState()
         .then((json) => {
           state.queue = json;
         })
@@ -187,8 +171,7 @@ export function getInitialState(userInControl) {
           state.detector = json;
         })
         .catch(notify),
-      taskParameters
-        .then(parse)
+      fetchAvailableTasks()
         .then((json) => {
           state.taskParameters = json;
         })
