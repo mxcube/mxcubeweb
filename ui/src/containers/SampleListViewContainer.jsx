@@ -38,11 +38,11 @@ import {
 } from '../actions/sampleGrid';
 
 import {
-  sendClearQueue,
+  clearQueue,
   deleteSamplesFromQueue,
   setEnabledSample,
   addSamplesToQueue,
-  sendStopQueue,
+  stopQueue,
   deleteTask,
   deleteTaskList,
 } from '../actions/queue';
@@ -653,7 +653,7 @@ class SampleListViewContainer extends React.Component {
       button = (
         <Button
           variant="danger"
-          onClick={this.props.sendStopQueue}
+          onClick={this.props.stopQueue}
           style={{ marginLeft: '1em' }}
         >
           <b> Stop queue </b>
@@ -798,7 +798,7 @@ class SampleListViewContainer extends React.Component {
           title="Clear sample grid ?"
           message="This will remove all samples (and collections) from the grid,
                     are you sure you would like to continue ?"
-          onOk={this.props.sendClearQueue}
+          onOk={this.props.clearQueue}
           show={this.props.general.showConfirmClearQueueDialog}
           hide={this.props.confirmClearQueueHide}
         />
@@ -1016,9 +1016,9 @@ function mapDispatchToProps(dispatch) {
       dispatch(setEnabledSample(qidList, value)),
     deleteTask: (qid, taskIndex) => dispatch(deleteTask(qid, taskIndex)),
     deleteTaskList: (sampleIDList) => dispatch(deleteTaskList(sampleIDList)),
-    sendClearQueue: () => dispatch(sendClearQueue()),
+    clearQueue: () => dispatch(clearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
-    sendStopQueue: () => dispatch(sendStopQueue()),
+    stopQueue: () => dispatch(stopQueue()),
     confirmClearQueueShow: bindActionCreators(
       showConfirmClearQueueDialog,
       dispatch,

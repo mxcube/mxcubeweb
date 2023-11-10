@@ -31,7 +31,7 @@ import {
   addTaskResultAction,
   updateTaskLimsData,
   addTaskAction,
-  sendStopQueue,
+  stopQueue,
   setCurrentSample,
   addDiffractionPlanAction,
   setSampleAttribute,
@@ -284,7 +284,7 @@ class ServerIO {
               'Sample changer in operation',
               record.message,
               true,
-              () => this.dispatch(sendStopQueue()),
+              () => this.dispatch(stopQueue()),
             ),
           );
 
@@ -299,7 +299,7 @@ class ServerIO {
               `Loading sample ${record.location}`,
               record.message,
               true,
-              () => this.dispatch(sendStopQueue()),
+              () => this.dispatch(stopQueue()),
             ),
           );
 
@@ -314,7 +314,7 @@ class ServerIO {
               `Unloading sample ${record.location}`,
               record.message,
               true,
-              () => this.dispatch(sendStopQueue()),
+              () => this.dispatch(stopQueue()),
             ),
           );
 
@@ -324,7 +324,7 @@ class ServerIO {
         case 'loadReady': {
           this.dispatch(
             setLoading(false, 'SC Ready', record.message, true, () =>
-              this.dispatch(sendStopQueue()),
+              this.dispatch(stopQueue()),
             ),
           );
 
@@ -334,7 +334,7 @@ class ServerIO {
         case 'inSafeArea': {
           this.dispatch(
             setLoading(false, 'SC Safe', record.message, true, () =>
-              this.dispatch(sendStopQueue()),
+              this.dispatch(stopQueue()),
             ),
           );
 

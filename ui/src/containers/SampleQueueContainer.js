@@ -6,9 +6,9 @@ import TodoTree from '../components/SampleQueue/TodoTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
 import {
   sendToggleCheckBox,
-  sendPauseQueue,
-  sendUnpauseQueue,
-  sendStopQueue,
+  pauseQueue,
+  resumeQueue,
+  stopQueue,
   changeTaskOrderAction,
   deleteTask,
   addTask,
@@ -97,10 +97,10 @@ class SampleQueueContainer extends React.Component {
           setEnabledSample={this.props.setEnabledSample}
           todoLength={todo.length}
           queueStatus={queueStatus}
-          runQueue={this.props.showConfirmCollectDialog}
-          stopQueue={this.props.sendStopQueue}
-          pause={this.props.sendPauseQueue}
-          unpause={this.props.sendUnpauseQueue}
+          startQueue={this.props.showConfirmCollectDialog}
+          stopQueue={this.props.stopQueue}
+          pauseQueue={this.props.pauseQueue}
+          resumeQueue={this.props.resumeQueue}
           setAutoMountSample={this.props.setAutoMountSample}
           autoMountNext={autoMountNext}
           setAutoAddDiffPlan={this.props.setAutoAddDiffPlan}
@@ -151,9 +151,6 @@ class SampleQueueContainer extends React.Component {
             toggleCheckBox={this.props.sendToggleCheckBox}
             checked={checked}
             deleteTask={this.props.deleteTask}
-            pause={this.props.sendPauseQueue}
-            unpause={this.props.sendUnpauseQueue}
-            stop={this.props.sendStopQueue}
             showForm={showForm}
             unmount={this.props.unloadSample}
             queueStatus={queueStatus}
@@ -230,9 +227,9 @@ function mapDispatchToProps(dispatch) {
   return {
     // Queue actions
     sendToggleCheckBox: bindActionCreators(sendToggleCheckBox, dispatch),
-    sendPauseQueue: bindActionCreators(sendPauseQueue, dispatch),
-    sendUnpauseQueue: bindActionCreators(sendUnpauseQueue, dispatch),
-    sendStopQueue: bindActionCreators(sendStopQueue, dispatch),
+    pauseQueue: bindActionCreators(pauseQueue, dispatch),
+    resumeQueue: bindActionCreators(resumeQueue, dispatch),
+    stopQueue: bindActionCreators(stopQueue, dispatch),
     changeTaskOrderAction: bindActionCreators(changeTaskOrderAction, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
