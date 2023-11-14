@@ -17,6 +17,7 @@ import ObserverDialog from './RemoteAccess/ObserverDialog';
 import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
+import GphlWorkflowParametersDialog from '../containers/GphlWorkflowParametersDialog';
 
 import diagonalNoise from '../img/diagonal-noise.png';
 import {
@@ -107,6 +108,7 @@ class Main extends React.Component {
         <PassControlDialog />
         <ConfirmCollectDialog />
         <WorkflowParametersDialog />
+        <GphlWorkflowParametersDialog />
         <LimsResultDialog
           show={this.props.general.dialogType === 'LIMS_RESULT_DIALOG'}
           taskData={this.props.general.dialogData}

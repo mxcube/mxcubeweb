@@ -40,7 +40,10 @@ import {
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
 import { setLoading, showConnectionLostDialog } from './actions/general';
 
-import { showWorkflowParametersDialog } from './actions/workflow';
+import {
+  showWorkflowParametersDialog,
+  showGphlWorkflowParametersDialog,
+} from './actions/workflow';
 
 import { incChatMessageCount, getRaState } from './actions/remoteAccess'; // eslint-disable-line import/no-cycle
 
@@ -427,7 +430,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('gphlWorkflowParametersDialog', (data) => {
-      this.dispatch(showWorkflowParametersDialog(data));
+      this.dispatch(showGphlWorkflowParametersDialog(data));
     });
 
     this.hwrSocket.on('take_xtal_snapshot', (cb) => {

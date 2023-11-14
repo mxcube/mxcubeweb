@@ -15,7 +15,14 @@ function workflowReducer(state = INITIAL_STATE, action = {}) {
       return {
         ...state,
         formData: action.formData,
-        showParametersDialog: action.show,
+        showDialog: action.show,
+      };
+    }
+    case 'SHOW_GPHL_WORKFLOW_PARAMETERS_DIALOG': {
+      return {
+        ...state,
+        gphlParameters: action.formData,
+        showGphlDialog: action.show,
       };
     }
     case 'SET_INITIAL_STATE': {
