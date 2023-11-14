@@ -5,17 +5,19 @@ import { Modal } from 'react-bootstrap';
 import Form from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import {
-  showWorkflowParametersDialog,
+  showGphlWorkflowParametersDialog,
   submitWorkflowParameters,
 } from '../actions/workflow';
 
 import './WorkflowParametersDialog.css';
 
-function WorkflowParametersDialog(props) {
-  const { formData, show, handleHide, workflowSubmitParameters } = props;
+// This class will be customize to be able to display more
+// specific GPHL workflow form
+function GphlWorkflowParametersDialog(props) {
+  const { formData, show, handleHide, submitWorkflowParameters } = props;
 
   function submitData(values) {
-    workflowSubmitParameters(values.formData);
+    submitWorkflowParameters(values.formData);
     handleHide();
   }
 
@@ -28,12 +30,17 @@ function WorkflowParametersDialog(props) {
   // properly.
 
   if (show && formData) {
+    const schema = formData.schema || formData;
+    const uiSchema = formData.ui_schema || {};
+    const initialFormData = formData.initialValues || formData.schema;
+
     form = (
       <div>
         <Form
           validator={validator}
-          schema={formData}
-          formData={formData.initialFormData}
+          schema={schema}
+          uiSchema={uiSchema}
+          formData={initialFormData}
           onSubmit={submitData}
           onError={console.log('errors')} // eslint-disable-line no-console
         />
@@ -58,15 +65,15 @@ function WorkflowParametersDialog(props) {
 
 function mapStateToProps(state) {
   return {
-    show: state.workflow.showDialog,
-    formData: state.workflow.formData,
+    show: state.workflow.showGphlDialog,
+    formData: state.workflow.gphlParameters,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     handleHide: bindActionCreators(
-      () => showWorkflowParametersDialog(null, false),
+      () => showGphlWorkflowParametersDialog(null, false),
       dispatch,
     ),
     submitWorkflowParameters: bindActionCreators(
@@ -79,4 +86,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(WorkflowParametersDialog);
+)(GphlWorkflowParametersDialog);
