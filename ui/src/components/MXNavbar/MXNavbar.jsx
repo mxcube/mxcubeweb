@@ -19,8 +19,7 @@ class MXNavbar extends React.Component {
   }
 
   handleSignOutClick() {
-    this.props.signOut();
-    this.props.router.navigate('/login', { replace: true });
+    this.props.signOut(this.props.router.navigate);
   }
 
   render() {
@@ -28,6 +27,11 @@ class MXNavbar extends React.Component {
     const numObservers = this.props.remoteAccess.observers.length;
 
     document.title = `MxCuBE-Web Proposal: ${this.props.selectedProposal}`;
+
+    const username =
+      this.props.loginType === 'User'
+        ? `(${this.props.user.username})`
+        : `(${this.props.selectedProposal})`;
 
     return (
       <Navbar
@@ -77,6 +81,17 @@ class MXNavbar extends React.Component {
                   Remote
                 </Nav.Item>
               </LinkContainer>
+              {this.props.loginType === 'User' && (
+                <Button
+                  as={Nav.Link}
+                  className="nav-link pe-0"
+                  variant="Light"
+                  onClick={this.props.handleShowProposalForm}
+                >
+                  <span className="me-1 fas fa-lg fa-bars" />
+                  Select proposal {`(${this.props.selectedProposal})`}
+                </Button>
+              )}
               <Button
                 as={Nav.Link}
                 className="nav-link pe-0"
@@ -84,7 +99,7 @@ class MXNavbar extends React.Component {
                 onClick={this.handleSignOutClick}
               >
                 <span className="me-1 fas fa-lg fa-sign-out-alt" />
-                Sign out {`(${this.props.selectedProposal})`}
+                Sign out {username}
               </Button>
             </Nav>
           </Navbar.Collapse>

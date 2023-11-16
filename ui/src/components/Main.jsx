@@ -18,7 +18,7 @@ import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import GphlWorkflowParametersDialog from '../containers/GphlWorkflowParametersDialog';
-
+import SelectProposalContainer from '../containers/SelectProposalContainer';
 import diagonalNoise from '../img/diagonal-noise.png';
 import {
   sendChatMessage,
@@ -99,6 +99,7 @@ class Main extends React.Component {
             }}
           />
         ) : null}
+        <SelectProposalContainer />
         <TaskContainer />
         <PleaseWaitDialog />
         <ErrorNotificationPanel />

@@ -23,12 +23,10 @@ class SelectProposal extends React.Component {
 
   sendProposal() {
     this.props.sendSelectProposal(this.state.pNumber);
-    this.props.hide();
   }
 
   handleCancel() {
-    this.props.signOut();
-    this.props.hide();
+    this.props.handleHide();
   }
 
   render() {
@@ -76,7 +74,7 @@ class SelectProposal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-secondary" onClick={this.handleCancel}>
-            Sign Out
+            Cancel
           </Button>
           <Button
             variant="primary"

@@ -82,9 +82,12 @@ function notify(error) {
   console.error('REQUEST FAILED', error); // eslint-disable-line no-console
 }
 
-export function getInitialState(userInControl) {
-  return (dispatch) => {
+export function getInitialState() {
+  return (dispatch, getState) => {
     const state = {};
+    const { login } = getState();
+
+    dispatch(applicationFetched(false));
 
     const sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera', {
       method: 'GET',
@@ -232,7 +235,7 @@ export function getInitialState(userInControl) {
     });
 
     /* don't unselect shapes when in observer mode */
-    if (userInControl) {
+    if (login.user.userInControl) {
       prom = prom.then(() => {
         dispatch(unselectShapes({ shapes: state.shapes }));
       });

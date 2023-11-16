@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import MXNavbar from '../components/MXNavbar/MXNavbar';
-import { signOut } from '../actions/login';
+import { signOut, showProposalsForm } from '../actions/login';
 
 class MXNavbarContainer extends React.Component {
   render() {
@@ -9,6 +9,8 @@ class MXNavbarContainer extends React.Component {
       <MXNavbar
         user={this.props.user}
         selectedProposal={this.props.selectedProposal}
+        handleShowProposalForm={this.props.showProposalsForm}
+        loginType={this.props.loginType}
         signOut={this.props.signOut}
         loggedIn={this.props.loggedIn}
         location={this.props.location}
@@ -23,6 +25,7 @@ class MXNavbarContainer extends React.Component {
 function mapStateToProps(state) {
   return {
     user: state.login.user,
+    loginType: state.login.loginType,
     loggedIn: state.login.loggedIn,
     selectedProposal: state.login.selectedProposal,
     mode: state.general.mode,
@@ -33,6 +36,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     signOut: (navigate) => dispatch(signOut(navigate)),
+    showProposalsForm: () => dispatch(showProposalsForm()),
   };
 }
 

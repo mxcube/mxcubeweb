@@ -127,7 +127,12 @@ class ServerIO {
     }
   }
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   listen(store) {
+    if (this.initialized) {
+      return;
+    }
+
     this.initialized = true;
     this.dispatch = store.dispatch;
 
