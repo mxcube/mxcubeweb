@@ -1,16 +1,13 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { connect, useSelector } from 'react-redux';
 import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
+  createBrowserRouter,
+  RouterProvider,
   useLocation,
   Outlet,
   Navigate,
 } from 'react-router-dom';
-import { serverIO } from '../serverIO';
-import { store } from '../store';
-import { getLoginInfo, startSession } from '../actions/login';
+
 import LoginContainer from '../containers/LoginContainer';
 import SampleViewContainer from '../containers/SampleViewContainer';
 import SampleListViewContainer from '../containers/SampleListViewContainer';
@@ -21,23 +18,28 @@ import HelpContainer from '../containers/HelpContainer';
 import Main from './Main';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 
-async function requireAuth() {
-  await store.dispatch(getLoginInfo());
-  const { login } = store.getState();
+import { store } from '../store';
+import { serverIO } from '../serverIO';
 
-  if (login.loggedIn) {
-    await store.dispatch(startSession(login.user.inControl));
+import { getLoginInfo } from '../actions/login';
+import { getInitialState, applicationFetched } from '../actions/general';
+
+export async function requireAuth() {
+  try {
+    store.dispatch(applicationFetched(false));
+    await store.dispatch(getLoginInfo());
+  } catch {
+    store.dispatch(applicationFetched(true));
+    return;
   }
 
-  if (login.loggedIn && !serverIO.initialized) {
-    serverIO.listen(store);
-  }
+  await store.dispatch(getInitialState());
+  serverIO.listen(store);
 }
 
 function PrivateOutlet() {
   const loggedIn = useSelector((state) => state.login.loggedIn);
   const location = useLocation();
-  requireAuth();
   return loggedIn ? (
     <Outlet />
   ) : (
@@ -45,41 +47,76 @@ function PrivateOutlet() {
   );
 }
 
+const router = createBrowserRouter([
+  {
+    path: '/login',
+    element: <LoginContainer />,
+  },
+  {
+    path: '/',
+    element: <PrivateOutlet />,
+    loader: () => {
+      requireAuth();
+      return true;
+    },
+    children: [
+      {
+        path: '',
+        element: <Main />,
+        children: [
+          {
+            index: true,
+            element: <SampleViewContainer />,
+          },
+          {
+            path: 'samplegrid',
+            element: <SampleListViewContainer />,
+          },
+          {
+            path: 'datacollection',
+            element: <SampleViewContainer />,
+          },
+          {
+            path: 'equipment',
+            element: <EquipmentContainer />,
+          },
+          {
+            path: 'logging',
+            element: <LoggerContainer />,
+          },
+          {
+            path: 'remoteaccess',
+            element: <RemoteAccessContainer />,
+          },
+          {
+            path: 'help',
+            element: <HelpContainer />,
+          },
+        ],
+      },
+    ],
+  },
+]);
+
 function App(props) {
-  const { loggedIn } = props;
+  const { applicationFetched } = props;
 
   useEffect(() => {
     requireAuth();
   }, []);
 
-  if (loggedIn === null) {
+  if (!applicationFetched) {
     // Fetching login info
     return <LoadingScreen />;
   }
 
-  return (
-    <Router>
-      <Routes>
-        <Route path="/login" element={<LoginContainer />} />
-        <Route path="/" element={<PrivateOutlet />}>
-          <Route path="" element={<Main />}>
-            <Route index element={<SampleViewContainer />} />
-            <Route path="samplegrid" element={<SampleListViewContainer />} />
-            <Route path="datacollection" element={<SampleViewContainer />} />
-            <Route path="equipment" element={<EquipmentContainer />} />
-            <Route path="logging" element={<LoggerContainer />} />
-            <Route path="remoteaccess" element={<RemoteAccessContainer />} />
-            <Route path="help" element={<HelpContainer />} />
-          </Route>
-        </Route>
-      </Routes>
-    </Router>
-  );
+  return <RouterProvider router={router} />;
 }
 
 function mapStateToProps(state) {
   return {
     loggedIn: state.login.loggedIn,
+    applicationFetched: state.general.applicationFetched,
   };
 }
 

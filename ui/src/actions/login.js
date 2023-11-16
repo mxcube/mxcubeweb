@@ -1,5 +1,5 @@
 /* eslint-disable promise/catch-or-return */
-/* eslint-disable promise/no-nesting */
+
 /* eslint-disable promise/prefer-await-to-then */
 
 import fetch from 'isomorphic-fetch';
@@ -67,50 +67,39 @@ export function startSession(userInControl) {
 }
 
 export function getLoginInfo() {
-  return (dispatch) =>
-    fetchLoginInfo().then(
-      (loginInfo) => {
-        dispatch(setLoginInfo(loginInfo));
-        return loginInfo;
-      },
-      () => {
-        dispatch(showErrorPanel(true));
-        dispatch(setLoading(false));
-      },
-    );
+  return async (dispatch) => {
+    try {
+      const loginInfo = await fetchLoginInfo();
+      dispatch(setLoginInfo(loginInfo));
+    } catch (error) {
+      dispatch(
+        setLoginInfo({
+          beamlineName: '',
+          synchrotronName: '',
+          loginType: '',
+          user: '',
+          proposalList: [],
+          selectedProposal: '',
+          selectedProposalID: '',
+          loggedIn: false,
+          rootPath: '',
+        }),
+      );
+      dispatch(setLoading(false));
+      throw error;
+    }
+  };
 }
 
 export function logIn(proposal, password, navigate) {
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   return (dispatch) => {
-    const previousUser = localStorage.getItem('currentUser');
-    if (serverIO.hwrSocket !== null && serverIO.hwrSocket.connected) {
-      console.log(serverIO.hwrSocket.connected); // eslint-disable-line no-console
-    } else {
-      serverIO.connect();
-    }
-
-    sendLogIn(proposal, password, previousUser).then(
+    sendLogIn(proposal, password).then(
       (res) => {
-        if (res.code === 'ok') {
+        if (res.msg === '') {
           dispatch(showErrorPanel(false));
-          dispatch(getLoginInfo())
-            .then((response) => response)
-            .then((resp) => {
-              if (resp.loginType === 'User') {
-                if (resp.user.inControl) {
-                  dispatch(showProposalsForm());
-                } else {
-                  navigate('/');
-                }
-              } else {
-                dispatch(selectProposal(proposal));
-                navigate('/');
-              }
-            });
+          navigate('/');
         } else {
-          const { msg } = res;
-          dispatch(showErrorPanel(true, msg));
+          dispatch(showErrorPanel(true, res.msg));
           dispatch(setLoading(false));
         }
       },
@@ -125,8 +114,6 @@ export function logIn(proposal, password, navigate) {
 export function forcedSignout() {
   return (dispatch) => {
     serverIO.disconnect();
-    localStorage.setItem('currentUser', '');
-
     dispatch({ type: 'SIGNOUT' });
   };
 }
@@ -134,14 +121,11 @@ export function forcedSignout() {
 export function signOut(navigate) {
   return (dispatch) => {
     serverIO.disconnect();
-    localStorage.setItem('currentUser', '');
-
     return sendSignOut().then(() => {
       dispatch({ type: 'SIGNOUT' });
-      dispatch(getLoginInfo());
 
       if (navigate) {
-        navigate('/login');
+        navigate('/');
       }
     });
   };

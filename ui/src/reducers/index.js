@@ -40,10 +40,6 @@ const mxcubeReducer = combineReducers({
 });
 
 const rootReducer = (state, action) => {
-  if (action.type === 'SIGNOUT') {
-    state = undefined; // eslint-disable-line no-param-reassign
-  }
-
   return mxcubeReducer(state, action);
 };
 

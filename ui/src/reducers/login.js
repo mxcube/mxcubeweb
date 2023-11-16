@@ -12,10 +12,6 @@ const INITIAL_STATE = {
 function loginReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_LOGIN_INFO': {
-      if (action.loginInfo.user.username !== '') {
-        localStorage.setItem('currentUser', action.loginInfo.user.username);
-      }
-
       return {
         ...state,
         beamlineName: action.loginInfo.beamlineName,
@@ -48,6 +44,7 @@ function loginReducer(state = INITIAL_STATE, action = {}) {
         ...state,
         selectedProposal: action.proposal,
         selectedProposalID: propId,
+        showProposalsForm: false,
       };
     }
     case 'HIDE_PROPOSALS_FORM': {

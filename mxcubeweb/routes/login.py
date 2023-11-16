@@ -5,17 +5,13 @@ from flask import (
     request,
     jsonify,
     make_response,
-    redirect,
-    session,
 )
 from mxcubeweb.core.util import networkutils
 from flask_login import current_user
 
 
 def deny_access(msg):
-    resp = jsonify({"msg": msg})
-    resp.code = 409
-    return resp
+    return make_response(jsonify({"msg": msg}), 200)
 
 
 def init_route(app, server, url_prefix):
@@ -45,7 +41,7 @@ def init_route(app, server, url_prefix):
         password = params.get("password", "")
 
         try:
-            res = jsonify(app.usermanager.login(login_id, password))
+            app.usermanager.login(login_id, password)
         except Exception as ex:
             msg = "[LOGIN] User %s could not login (%s)" % (
                 login_id,
@@ -54,8 +50,8 @@ def init_route(app, server, url_prefix):
             logging.getLogger("MX3.HWR").exception("")
             logging.getLogger("MX3.HWR").info(msg)
             res = deny_access("Could not authenticate")
-
-        session.permanent = True
+        else:
+            res = make_response(jsonify({"msg": ""}), 200)
 
         return res
 
@@ -66,8 +62,7 @@ def init_route(app, server, url_prefix):
         Signout from MXCuBE Web and reset the session
         """
         app.usermanager.signout()
-
-        return redirect("/login", code=302)
+        return make_response(jsonify(""), 200)
 
     @bp.route("/login_info", methods=["GET"])
     def login_info():
@@ -88,16 +83,14 @@ def init_route(app, server, url_prefix):
 
         Status code set to:
         200: On success
-        409: Error, could not log in
+        401: Error, could not log in
         """
-        user, res = app.usermanager.login_info()
 
-        # Redirect the user to login page if for some reason logged out
-        # i.e. server restart
-        if not user:
-            response = redirect("/login", code=302)
-        else:
+        try:
+            res = app.usermanager.login_info()
             response = jsonify(res)
+        except Exception:
+            response = make_response(jsonify(""), 401)
 
         return response
 
@@ -112,6 +105,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/refresh_session", methods=["GET"])
     @server.restrict
     def refresh_session():
+        print("HERE TOOO")
         # Since default value of `SESSION_REFRESH_EACH_REQUEST` config setting is `True`
         # there is no need to do anything to refresh the session.
         logging.getLogger("MX3.HWR").debug("Session refresh")

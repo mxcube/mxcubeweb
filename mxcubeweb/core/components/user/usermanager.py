@@ -181,8 +181,6 @@ class BaseUserManager(ComponentBase):
             msg = "User %s signed in" % user.username
             logging.getLogger("MX3.HWR").info(msg)
 
-            return login_res["status"]
-
     # Abstract method to be implemented by concrete implementation
     def _signout(self):
         pass
@@ -212,6 +210,7 @@ class BaseUserManager(ComponentBase):
 
         self.app.server.user_datastore.deactivate_user(user)
         flask_security.logout_user()
+
         self.emit_observers_changed()
 
     def is_authenticated(self):
@@ -227,22 +226,6 @@ class BaseUserManager(ComponentBase):
             self.app.server.emit("forceSignout", room=socketio_sid, namespace="/hwr")
 
     def login_info(self):
-        res = {
-            "synchrotronName": HWR.beamline.session.synchrotron_name,
-            "beamlineName": HWR.beamline.session.beamline_name,
-            "loggedIn": False,
-            "loginType": HWR.beamline.lims.loginType.title(),
-            "proposalList": [],
-            "user": {
-                "username": "",
-                "email": "",
-                "isstaff": False,
-                "nickname": "",
-                "inControl": False,
-                "ip": "",
-            },
-        }
-
         if not current_user.is_anonymous:
             login_info = convert_to_dict(json.loads(current_user.limsdata))
 
@@ -275,8 +258,10 @@ class BaseUserManager(ComponentBase):
             )
 
             res["selectedProposalID"] = HWR.beamline.session.proposal_id
+        else:
+            raise Exception("Not logged in")
 
-        return current_user, res
+        return res
 
     def update_user(self, user):
         self.app.server.user_datastore.put(user)
