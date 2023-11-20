@@ -56,6 +56,11 @@ import {
   updateSCContents,
 } from './actions/sampleChanger';
 
+import {
+  setHarvesterState,
+  updateHarvesterContents,
+} from './actions/harvester';
+
 import { setEnergyScanResult } from './actions/taskResults';
 
 import { CLICK_CENTRING } from './constants';
@@ -486,6 +491,14 @@ class ServerIO {
     this.hwrSocket.on('plot_end', (data) => {
       this.dispatch(plotData(data.id, data.data, true));
       this.dispatch(plotEnd(data));
+    });
+
+    this.hwrSocket.on('harvester_state', (state) => {
+      this.dispatch(setHarvesterState(state));
+    });
+
+    this.hwrSocket.on('harvester_contents_update', () => {
+      this.dispatch(updateHarvesterContents());
     });
   }
 }
