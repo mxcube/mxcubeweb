@@ -39,9 +39,13 @@ _objects:
   - sample_changer: sc.xml
   - sample_changer_maintenance: sc_maint.xml
 
+
   # The 2 lines up have to be used for the flex HCD and the two line below for the plate manip
   # - sample_changer: plate_manipulator.xml
   # - sample_changer_maintenance: plate_manipulator_maint.xml
+
+  - harvester: harvester.xml
+  - harvester_maintenance: harvester_maintenance.xml
 
   - diffractometer: minidiff.xml
   - lims: lims.xml

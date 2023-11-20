@@ -1,3 +1,4 @@
 <object class = "SampleChangerMockup">
  <!-- SC3 commands and channels -->
+    <harvester>True</harvester>
 </object>
