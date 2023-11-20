@@ -157,6 +157,9 @@ class Server:
         from mxcubeweb.routes.workflow import (
             init_route as init_workflow_route,
         )
+        from mxcubeweb.routes.harvester import (
+            init_route as init_harvester_route
+        )
 
         url_root_prefix = "/mxcube/api/v0.1"
 
@@ -203,6 +206,12 @@ class Server:
         Server._register_route(
             init_workflow_route, mxcube, f"{url_root_prefix}/workflow"
         )
+
+        Server._register_route(
+            init_harvester_route, mxcube, f"{url_root_prefix}/harvester"
+        )
+
+        Server.security = flask_security.Security(Server.flask, Server.user_datastore)
 
     @staticmethod
     def emit(*args, **kwargs):
