@@ -17,6 +17,16 @@ import {
   selectDrop,
 } from '../actions/sampleChanger';
 
+import {
+  abort as haAbort,
+  sendCommand as haSendCommand,
+  refresh as haRefresh,
+  harvestCrystal,
+  harvestAndLoadCrystal,
+  calibratePin as haCalibratePin,
+  validateCalibration as haValidateCalibration,
+} from '../actions/harvester';
+
 import { showErrorPanel } from '../actions/general';
 
 import { syncWithCrims } from '../actions/sampleGrid';
@@ -28,6 +38,9 @@ import SampleChangerMaintenance from '../components/Equipment/SampleChangerMaint
 
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import PlateManipulatorMaintenance from '../components/Equipment/PlateManipulatorMaintenance';
+
+import Harvester from '../components/Equipment/Harvester';
+import HarvesterMaintenance from '../components/Equipment/HarvesterMaintenance';
 
 import GenericEquipment from '../components/Equipment/GenericEquipment';
 import GenericEquipmentControl from '../components/Equipment/GenericEquipmentControl';
@@ -107,6 +120,38 @@ class EquipmentContainer extends React.Component {
                 </Row>
               )}
             </GenericEquipment>
+            {!this.props.contents.use_harvester ? (
+              <GenericEquipment
+                state={this.props.harvesterState}
+                name={this.props.haContents && this.props.haContents.name}
+                CollapseOpen
+              >
+                <Row className="row">
+                  <Col sm={9}>
+                    <Harvester
+                      state={this.props.haState}
+                      harvestCrystal={this.props.harvestCrystal}
+                      harvestAndLoadCrystal={this.props.harvestAndLoadCrystal}
+                      abort={this.props.haAbort}
+                      contents={this.props.haContents}
+                      refresh={this.props.haRefresh}
+                    />
+                  </Col>
+                  <Col sm={3}>
+                    <HarvesterMaintenance
+                      contents={this.props.haContents}
+                      commands={this.props.haCommands}
+                      global_state={this.props.haGlobal_state}
+                      commands_state={this.props.commands_state}
+                      message={this.props.haMessage}
+                      send_command={this.props.haSendCommand}
+                      calibratePin={this.props.haCalibratePin}
+                      validateCalibration={this.props.haValidateCalibration}
+                    />
+                  </Col>
+                </Row>
+              </GenericEquipment>
+            ) : null}
             <Row>
               <Col sm={12}>
                 {Object.entries(this.props.beamline.hardwareObjects).map(
@@ -154,6 +199,13 @@ function mapStateToProps(state) {
     global_state: state.sampleChangerMaintenance.global_state,
     message: state.sampleChangerMaintenance.message,
     beamline: state.beamline,
+
+    haContents: state.harvester.contents,
+    haState: state.harvester.state,
+    haCommands: state.harvesterMaintenance.commands,
+    haCommands_state: state.harvesterMaintenance.commands_state,
+    haGlobal_state: state.harvesterMaintenance.global_state,
+    haMessage: state.harvesterMaintenance.message,
   };
 }
 
@@ -172,6 +224,16 @@ function mapDispatchToProps(dispatch) {
     setPlate: (address) => dispatch(setPlate(address)),
     selectDrop: (address) => dispatch(selectDrop(address)),
     syncSamplesCrims: () => dispatch(syncWithCrims()),
+
+    harvestCrystal: (address) => dispatch(harvestCrystal(address)),
+    harvestAndLoadCrystal: (address) =>
+      dispatch(harvestAndLoadCrystal(address)),
+    haCalibratePin: () => dispatch(haCalibratePin()),
+    haValidateCalibration: (validated) =>
+      dispatch(haValidateCalibration(validated)),
+    haRefresh: () => dispatch(haRefresh()),
+    haAbort: () => dispatch(haAbort()),
+    haSendCommand: (cmd, args) => dispatch(haSendCommand(cmd, args)),
   };
 }
 
