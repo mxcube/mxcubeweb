@@ -1,0 +1,5 @@
+<!-- <object class="Harvester"> -->
+<object class="HarvesterMockup">
+  <username>harvester</username>
+  <exporter_address>wid30harvest:9001</exporter_address>
+</object>
