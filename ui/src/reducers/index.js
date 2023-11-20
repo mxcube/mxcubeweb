@@ -6,6 +6,8 @@ import queueGUI from './queueGUI';
 import sampleGrid from './sampleGrid';
 import sampleChanger from './sampleChanger';
 import sampleChangerMaintenance from './sampleChangerMaintenance';
+import harvester from './harvester';
+import harvesterMaintenance from './harvesterMaintenance';
 import taskForm from './taskForm';
 import sampleview from './sampleview';
 import general from './general';
@@ -25,6 +27,8 @@ const mxcubeReducer = combineReducers({
   sampleGrid,
   sampleChanger,
   sampleChangerMaintenance,
+  harvester,
+  harvesterMaintenance,
   taskForm,
   sampleview,
   logger,
