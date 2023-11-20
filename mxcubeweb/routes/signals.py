@@ -18,6 +18,7 @@ from mxcubeweb.core.components.queue import (
     COLLECTED,
     WARNING,
 )
+from mxcubecore.HardwareObjects.Harvester import HarvesterState
 
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore import queue_entry as qe
@@ -105,6 +106,16 @@ def diffractometer_phase_changed(*args):
         "Diffractometer phase changed to %s" % args
     )
     server.emit("diff_phase_changed", data, namespace="/hwr")
+
+
+def harvester_state_changed(*args):
+    new_state = args[0]
+    state_str = HarvesterState.STATE_DESC.get(new_state, "Unknown").upper()
+    server.emit("harvester_state", state_str, namespace="/hwr")
+
+
+def harvester_contents_update():
+    server.emit("harvester_contents_update")
 
 
 def sc_state_changed(*args):
