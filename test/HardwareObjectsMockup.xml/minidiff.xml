@@ -24,6 +24,12 @@
   <object role="aperture" href="/aperture"/>
   <object role="capillary" href="/capillary"/>
 
+  <HacentringReferencePosition>
+    <phiz delta="0.01">0.013</phiz>
+    <focus delta="0.1">-0.05</focus>
+    <phiy delta="0.01">0.031</phiy>
+  </HacentringReferencePosition>
+
   <zoomcentre>{"x":340,"y":250}</zoomcentre>
   <omega_reference>{"motor_name": "phiz", "position":-0.2224, "camera_axis":"x"}</omega_reference>
 
