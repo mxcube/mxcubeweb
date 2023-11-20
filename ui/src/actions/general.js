@@ -8,7 +8,6 @@ import { fetchDiffractometerInfo } from '../api/diffractometer';
 import { fetchLogMessages } from '../api/log';
 import { fetchApplicationSettings, fetchUIProperties } from '../api/main';
 import { fetchAvailableWorkflows } from '../api/workflow';
-import { fetchAvailableGphlWorkflows } from '../api/gphlWorkflow';
 import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 
 export function addUserMessage(records, target) {
@@ -214,11 +213,6 @@ export function getInitialState(userInControl) {
       fetchAvailableWorkflows()
         .then((json) => {
           state.workflow = json;
-        })
-        .catch(notify),
-      fetchAvailableGphlWorkflows()
-        .then((json) => {
-          state.gphl_workflow = json;
         })
         .catch(notify),
       fetchLogMessages()
