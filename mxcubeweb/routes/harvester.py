@@ -27,7 +27,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/contents", methods=["GET"])
     @server.restrict
     def get_harvester_contents_view():
-        return jsonify(app.get_harvester_contents())
+        return jsonify(app.harvester.get_harvester_contents())
 
     @bp.route("/harvest", methods=["POST"])
     @server.require_control
@@ -43,8 +43,9 @@ def init_route(app, server, url_prefix):
                 409,
                 {"Content-Type": "application/json", "message": str(ex)},
             )
-
-        return resp
+            return resp
+        
+        return jsonify(app.harvester.get_harvester_contents())
 
     @bp.route("/harvest_and_mount", methods=["POST"])
     @server.require_control
@@ -53,15 +54,16 @@ def init_route(app, server, url_prefix):
         resp = Response(status=200)
 
         try:
-            resp = jsonify(app.harvester.harverst_and_mount_sample(request.get_json()))
+            resp = jsonify(app.harvester.harvest_and_mount_sample(request.get_json()))
         except Exception as ex:
             resp = (
                 "Cannot Harvest or Mount Sample",
                 409,
                 {"Content-Type": "application/json", "message": str(ex)},
             )
-
-        return resp
+            return resp
+        
+        return jsonify(app.harvester.get_harvester_contents())
 
 
     @bp.route("/calibrate", methods=["GET"])
@@ -69,7 +71,6 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def calibrate():
         ret = app.harvester.calibrate_pin()
-        # ret = harvester.send_data_collection_info_to_crims()
         if ret:
             return jsonify(app.harvester.get_harvester_contents())
 
@@ -94,8 +95,8 @@ def init_route(app, server, url_prefix):
             ret = HWR.beamline.harvester_maintenance.send_command(cmdparts, args)
             if cmdparts == 'setTemeratureMode':
                 value = True if args.lower() in ['true', 'True', '1'] else False
-                ret2 = HWR.beamline.sample_changer.set_room_temperature_mode(value)
-                ret3 = HWR.beamline.diffractometer.set_room_temperature_mode(value)
+                HWR.beamline.sample_changer.set_room_temperature_mode(value)
+                HWR.beamline.diffractometer.set_room_temperature_mode(value)
         except Exception as ex:
             msg = str(ex)
             msg = msg.replace("\n", " - ")
