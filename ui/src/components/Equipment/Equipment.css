@@ -143,14 +143,15 @@
   opacity: 1;
 }
 
-.grid-container {
+.ha-grid-container {
   display: grid;
   grid-template-rows: repeat(auto-fit, auto);
   /* grid-template-columns: minmax(100px, max-content) repeat(auto-fill, 100px) 20%; */
-  grid-template-columns: repeat(auto-fit, 240px);
+  grid-template-columns: repeat(auto-fit, 14%);
+  overflow: hidden;
 }
 
-.grid-item {
+.ha-grid-item {
   background-color: #f5eeeeb7 !important;
   border: 1px solid #cec7c76c;
   /* padding: 20px; */
@@ -168,4 +169,5 @@
   /* text-transform: capitalize; */
   color: gray;
   margin-bottom: 10px;
+  /* white-space: nowrap; */
 }

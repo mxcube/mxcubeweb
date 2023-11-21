@@ -299,6 +299,10 @@ button[disabled] {
   top: -5px;
   opacity: 25%;
 }
+
+.copy-link-ha {
+  margin-top: -14px;
+}
 .copy-link:hover {
   opacity: 100%;
 }

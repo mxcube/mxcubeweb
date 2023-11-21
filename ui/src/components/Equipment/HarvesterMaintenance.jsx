@@ -15,9 +15,10 @@ export class HarvesterActionButton extends React.Component {
 
     return (
       <Button
-        bsStyle="default"
         disabled={disabled}
         onClick={() => this.props.send_command(this.props.cmd, this.props.args)}
+        size='sm'
+        className='me-2'
       >
         {this.props.label}
       </Button>
@@ -42,7 +43,7 @@ export class HarvesterAction extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      input_value: null,
+      input_value: '',
     };
     this.inputRef = React.createRef();
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -60,7 +61,6 @@ export class HarvesterAction extends React.Component {
       ref: 'input',
       onSubmit: this.submit,
       onCancel: this.cancel,
-      onSave: this.save,
       precision: 0.5,
       step: 'any',
     };
@@ -68,18 +68,17 @@ export class HarvesterAction extends React.Component {
     let input = (
       <span>
         <Form
-          inline
           onSubmit={(e) => {
             e.preventDefault();
             this.props.send_command(this.props.cmd, this.state.input_value);
           }}
         >
-          <Form.Group bsSize="small">
+          <Form.Group size="sm">
             <Form.Label>{this.props.label}</Form.Label>
             <br />
             <InputGroup>
               <Form.Control
-                bsSize="sm"
+                size="sm"
                 required
                 value={this.state.input_value}
                 style={{
@@ -96,10 +95,8 @@ export class HarvesterAction extends React.Component {
                 }}
               />
               <Button
-                bsStyle="default"
-                // disabled={disabled}
                 type="submit"
-                bsSize="small"
+                size="sm"
               >
                 {this.props.btn_label}
               </Button>
@@ -140,6 +137,7 @@ export default class HarvesterMaintenance extends React.Component {
         args={cmdinfo[3]}
         enabled={this.props.commands_state[cmdinfo[0]]}
         send_command={this.props.send_command}
+        key={cmdinfo[1]}
       />
     );
   }
@@ -226,7 +224,7 @@ export default class HarvesterMaintenance extends React.Component {
         </Card>
         <div>
           <Card className="mb-2">
-            <Card.Header> Calibration Procedure </Card.Header>
+            <Card.Header> Procedure </Card.Header>
             <Card.Body>
               {!calibration_state ? (
                 <Button
@@ -255,6 +253,15 @@ export default class HarvesterMaintenance extends React.Component {
                   </Button>
                 </>
               )}
+              <Button
+                className='ms-2'
+                disabled
+                variant="outline-secondary"
+                onClick={() => this.props.calibratePin()}
+                title="Send latest Data collection Groupd and to Crims"
+              >
+                Send Data to Crims
+              </Button>
             </Card.Body>
           </Card>
         </div>
