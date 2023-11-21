@@ -63,6 +63,8 @@ class SampleChanger(ComponentBase):
                 "sampleID": s.get_address(),
                 "location": s.get_address(),
                 "sampleName": "Sample-%s" % s.get_address(),
+                "crystalUUID": s.get_id() or s.get_address(),
+                "proteinAcronym": s.proteinAcronym if hasattr(s, 'proteinAcronym') else '',
                 "code": sample_dm,
                 "loadable": True,
                 "state": state,
@@ -134,6 +136,13 @@ class SampleChanger(ComponentBase):
             root_name = HWR.beamline.sample_changer.get_address()
 
             contents = {"name": root_name}
+
+            try:
+                use_harvester =  HWR.beamline.sample_changer.mount_from_harvester()
+            except Exception:
+                use_harvester = False
+            if use_harvester:
+                contents["use_harvester"] = True
 
             for element in HWR.beamline.sample_changer.get_components():
                 if element.is_present():
@@ -440,6 +449,9 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 "sampleID": data_model.loc_str,
             }
 
+            if sample_mount_device.mount_from_harvester():
+                mxcube.harvester.queue_harvest_sample(data_model, sample)
+
             try:
                 res = mxcube.sample_changer.mount_sample_clean_up(sample)
             except RuntimeError:
@@ -448,7 +460,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 "Sample loading res: %s" % str(res)
             )
 
-            # We need to investigte if the comment below is still valid
+            # We need to investigate if the comment below is still valid
             if not res == False:  # noqa: E712
                 # WARNING: explicit test of False return value.
                 # This is to preserve backward compatibility (load_sample was
@@ -458,7 +470,11 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 raise queue_entry.QueueSkippEntryException(
                     "Sample changer could not load sample", ""
                 )
-
+    
+    # Harvest Next sample after loading
+    if sample_mount_device.mount_from_harvester() and HWR.beamline.harvester.get_room_temperature_mode() == False:
+        mxcube.harvester.queue_harvest_sample(data_model, sample)
+    
     robot_action_dict["endTime"] = time.strftime("%Y-%m-%d %H:%M:%S")
     if sample_mount_device.has_loaded_sample():
         robot_action_dict["status"] = "SUCCESS"
@@ -476,67 +492,80 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
         signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
         dm = HWR.beamline.diffractometer
+        
+        if sample_mount_device.mount_from_harvester():
+            try:
+                logging.getLogger("user_level_log").info("Start Auto Harvesting Centring")
+                harvester_device = HWR.beamline.harvester
 
-        use_custom_centring_routine = HWR.beamline.diffractometer.get_property(
-            "use_custom_centring_script", False
-        )
+                computed_offset = harvester_device.get_offsets_for_sample_centering()
+                dm.start_custom_centring(computed_offset)
 
-        if not use_custom_centring_routine:
-            if dm is not None:
-                try:
-                    dm.connect("centringAccepted", centring_done_cb)
-                    centring_method = queue_entry.CENTRING_METHOD
-
-                    if centring_method == queue_entry.CENTRING_METHOD.MANUAL:
-                        msg = (
-                            "Manual centring used, waiting for"
-                            + " user to center sample"
-                        )
-                        log.warning(msg)
-                        dm.start_centring_method(dm.MANUAL3CLICK_MODE)
-                    elif centring_method in [
-                        queue_entry.CENTRING_METHOD.LOOP,
-                        queue_entry.CENTRING_METHOD.FULLY_AUTOMATIC,
-                    ]:
-                        if not dm.current_centring_procedure:
-                            dm.start_centring_method(dm.C3D_MODE)
-
-                        # NBNB  BUG . self and app are not avialble here
-                        if mxcube.AUTO_MOUNT_SAMPLE:
-                            msg = "Going to save centring automatically, please wait"
-                        else:
-                            msg = (
-                                "Centring in progress. Please save"
-                                + " the suggested centring or re-center"
-                            )
-
-                        log.warning(msg)
-                    else:
-                        dm.start_centring_method(dm.MANUAL3CLICK_MODE)
-
-                    logging.getLogger("user_level_log").info("Centring ...")
-                    centring_result = async_result.get()
-                    if centring_result["valid"]:
-                        logging.getLogger("user_level_log").info("Centring done !")
-                    else:
-                        if (
-                            centring_method
-                            == queue_entry.CENTRING_METHOD.FULLY_AUTOMATIC
-                        ):
-                            raise queue_entry.QueueSkippEntryException(
-                                "Could not center sample, skipping",
-                                "",
-                            )
-                        else:
-                            raise RuntimeError("Could not center sample")
-                except Exception:
-                    import traceback
-
-                    log.info("centring did not pass %s" % traceback.format_exc())
-                finally:
-                    dm.disconnect("centringAccepted", centring_done_cb)
+            except Exception as ex:
+                print(str(ex))
+                raise queue_entry.QueueSkippEntryException("Could not center sample, skipping", "")
+        
         else:
-            dm.disconnect("centringAccepted", centring_done_cb)
+            use_custom_centring_routine = dm.get_property(
+                "use_custom_centring_script", False
+            )
+
+            if not use_custom_centring_routine:
+                if dm is not None:
+                    try:
+                        dm.connect("centringAccepted", centring_done_cb)
+                        centring_method = queue_entry.CENTRING_METHOD
+
+                        if centring_method == queue_entry.CENTRING_METHOD.MANUAL:
+                            msg = (
+                                "Manual centring used, waiting for"
+                                + " user to center sample"
+                            )
+                            log.warning(msg)
+                            dm.start_centring_method(dm.MANUAL3CLICK_MODE)
+                        elif centring_method in [
+                            queue_entry.CENTRING_METHOD.LOOP,
+                            queue_entry.CENTRING_METHOD.FULLY_AUTOMATIC,
+                        ]:
+                            if not dm.current_centring_procedure:
+                                dm.start_centring_method(dm.C3D_MODE)
+
+                            # NBNB  BUG . self and app are not avialble here
+                            if mxcube.AUTO_MOUNT_SAMPLE:
+                                msg = "Going to save centring automatically, please wait"
+                            else:
+                                msg = (
+                                    "Centring in progress. Please save"
+                                    + " the suggested centring or re-center"
+                                )
+
+                            log.warning(msg)
+                        else:
+                            dm.start_centring_method(dm.MANUAL3CLICK_MODE)
+
+                        logging.getLogger("user_level_log").info("Centring ...")
+                        centring_result = async_result.get()
+                        if centring_result["valid"]:
+                            logging.getLogger("user_level_log").info("Centring done !")
+                        else:
+                            if (
+                                centring_method
+                                == queue_entry.CENTRING_METHOD.FULLY_AUTOMATIC
+                            ):
+                                raise queue_entry.QueueSkippEntryException(
+                                    "Could not center sample, skipping",
+                                    "",
+                                )
+                            else:
+                                raise RuntimeError("Could not center sample")
+                    except Exception:
+                        import traceback
+
+                        log.info("centring did not pass %s" % traceback.format_exc())
+                    finally:
+                        dm.disconnect("centringAccepted", centring_done_cb)
+            else:
+                dm.disconnect("centringAccepted", centring_done_cb)
 
 
 def patch_queue_entry_mount_sample():
