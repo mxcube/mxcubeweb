@@ -341,6 +341,7 @@ class SampleChanger(ComponentBase):
                 pre_sample['location'] = pre_sample_tuple[0]
                 self.unmount_sample_clean_up(pre_sample)
                 sc.change_ifcloseLid_inBeginning_state(True)
+                time.sleep(0.2)# 下样品和dry之间稍微间隔0.2s
             sc_maint._do_dry_gripper()
 
         self.mount_sample_clean_up(sample)

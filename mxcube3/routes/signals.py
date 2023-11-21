@@ -363,6 +363,10 @@ def queue_execution_failed(entry):
 
 
 def collect_oscillation_started(*args):
+    logging.getLogger("HWR").debug(
+        "get in collect_oscillation_started() in signals.py"
+    )  # 添加
+
     node = last_queue_node()
 
     if not mxcube.queue.is_interleaved(node["node"]):
@@ -495,6 +499,9 @@ def collect_ended(owner, success, message):
 
 
 def collect_started(*args, **kwargs):
+    logging.getLogger("HWR").debug(
+        "get in collect_started() in signals.py"
+    )  # 添加
     node = last_queue_node()
 
     if not mxcube.queue.is_interleaved(node["node"]):
