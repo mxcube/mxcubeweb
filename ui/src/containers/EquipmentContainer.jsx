@@ -120,9 +120,9 @@ class EquipmentContainer extends React.Component {
                 </Row>
               )}
             </GenericEquipment>
-            {!this.props.contents.use_harvester ? (
+            {this.props.contents.use_harvester ? (
               <GenericEquipment
-                state={this.props.harvesterState}
+                state={this.props.haState}
                 name={this.props.haContents && this.props.haContents.name}
                 CollapseOpen
               >
