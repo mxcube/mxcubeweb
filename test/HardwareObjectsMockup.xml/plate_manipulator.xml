@@ -45,10 +45,7 @@
 
   <useUpdateTimer>False</useUpdateTimer>
 
-  <!-- <crimsWsRoot>https://lolita.embl-hamburg.de</crimsWsRoot> -->
-  <!-- <crimsWsRoot>https://htxlab.embl.fr/agility/plates/CD027680/insitu/xml</crimsWsRoot> -->
-  <crimsWsRoot>https://htxlab.embl.fr/pins/api/plates/</crimsWsRoot>
-  <!-- <PlateBarcode>CD031660</PlateBarcode> -->
+  <crimsWsRoot>https://htxlab.embl.org/pins/api/plates/</crimsWsRoot>
   <PlateBarcode>CD032401</PlateBarcode>
   <harvesterKey></harvesterKey>
 </object>
