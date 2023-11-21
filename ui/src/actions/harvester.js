@@ -58,7 +58,9 @@ export function harvestCrystal(xtalUUID, successCb = null) {
       } else if (successCb) {
         successCb();
       }
-      // dispatch(setContents(contents));
+      response.json().then((contents) => {
+        dispatch(setContents(contents));
+      });
     });
   };
 }
@@ -80,6 +82,9 @@ export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
       } else if (successCb) {
         successCb();
       }
+      response.json().then((contents) => {
+        dispatch(setContents(contents));
+      });
     });
   };
 }
@@ -100,7 +105,6 @@ export function calibratePin(successCb = null) {
       } else if (successCb) {
         successCb();
       }
-      // dispatch(setContents(contents));
       response.json().then((contents) => {
         dispatch(setContents(contents));
       });
