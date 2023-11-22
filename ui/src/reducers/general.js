@@ -52,6 +52,9 @@ function generalReducer(state = INITIAL_STATE, action = {}) {
         ...state,
         mode: action.data.general.mode,
         serverVersion: action.data.general.version,
+        enable2DPoints: action.data.general.enable_2d_points,
+        meshResultFormat: action.data.general.mesh_result_format,
+        useNativeMesh: action.data.general.use_native_mesh,
       };
     }
     case 'APPLICATION_FETCHED': {

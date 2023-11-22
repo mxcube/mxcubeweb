@@ -41,8 +41,26 @@ import {
   setAttribute,
 } from '../actions/beamline';
 import { stopBeamlineAction } from '../actions/beamlineActions';
+import { find } from 'lodash';
 
 class SampleViewContainer extends Component {
+  constructor(props) {
+    super(props);
+    this.getControlAvailability = this.getControlAvailability.bind(this);
+  }
+
+  getControlAvailability(name) {
+    const avilable = find(
+      this.props.uiproperties.sample_view_video_controls.components,
+      {
+        id: name,
+        show: true,
+      },
+    ) || { show: false };
+
+    return avilable.show;
+  }
+
   render() {
     const { uiproperties } = this.props;
 
@@ -108,19 +126,15 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={1}>
             <DefaultErrorBoundary>
-              {process.env.REACT_APP_PHASECONTROL === 'true' && (
-                <div>
-                  <p className="motor-name">Phase Control:</p>
-                  <PhaseInput
-                    phase={this.props.sampleViewState.currentPhase}
-                    phaseList={this.props.sampleViewState.phaseList}
-                    changePhase={
-                      this.props.sampleViewActions.changeCurrentPhase
-                    }
-                    state={diffractometerHo.state}
-                  />
-                </div>
-              )}
+              <div>
+                <p className="motor-name">Phase Control:</p>
+                <PhaseInput
+                  phase={this.props.sampleViewState.currentPhase}
+                  phaseList={this.props.sampleViewState.phaseList}
+                  changePhase={this.props.sampleViewActions.changeCurrentPhase}
+                  state={diffractometerHo.state}
+                />
+              </div>
 
               <div>
                 <p className="motor-name">Beam size:</p>
@@ -242,6 +256,7 @@ class SampleViewContainer extends Component {
             <DefaultErrorBoundary>
               <ContextMenu
                 {...this.props.contextMenu}
+                getControlAvailability={this.getControlAvailability}
                 sampleViewActions={this.props.sampleViewActions}
                 updateTask={this.props.updateTask}
                 availableMethods={this.props.availableMethods}
@@ -255,12 +270,15 @@ class SampleViewContainer extends Component {
                 groupFolder={this.props.groupFolder}
                 clickCentring={this.props.sampleViewState.clickCentring}
                 taskForm={this.props.taskForm}
+                enable2DPoints={this.props.enable2DPoints}
+                enableNativeMesh={this.props.enableNativeMesh}
               />
               <SampleImage
+                getControlAvailability={this.getControlAvailability}
                 showErrorPanel={this.props.showErrorPanel}
                 sampleViewActions={this.props.sampleViewActions}
                 {...this.props.sampleViewState}
-                uiproperties={uiproperties.sample_view}
+                uiproperties={uiproperties}
                 hardwareObjects={this.props.hardwareObjects}
                 steps={motorSteps}
                 imageRatio={imageRatio * sourceScale}
@@ -280,6 +298,7 @@ class SampleViewContainer extends Component {
                 setAttribute={this.props.setAttribute}
                 setBeamlineAttribute={this.props.setBeamlineAttribute}
                 sendDisplayImage={this.props.sendDisplayImage}
+                meshResultFormat={this.props.meshResultFormat}
               />
             </DefaultErrorBoundary>
           </Col>
@@ -315,6 +334,9 @@ function mapStateToProps(state) {
     uiproperties: state.uiproperties,
     taskForm: state.taskForm,
     mode: state.general.mode,
+    enable2DPoints: state.general.enable2DPoints,
+    meshResultFormat: state.general.meshResultFormat,
+    enableNativeMesh: state.general.useNativeMesh,
 
     sampleChangerContents: state.sampleChanger.contents,
     sampleChangerState: state.sampleChanger.state,

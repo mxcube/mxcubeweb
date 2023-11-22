@@ -164,13 +164,19 @@ export default class SampleControls extends React.Component {
   render() {
     const { hardwareObjects } = this.props;
 
-    const foucs_motor_uiprop = find(this.props.uiproperties.components, {
-      role: 'focus',
-    });
+    const foucs_motor_uiprop = find(
+      this.props.uiproperties.sample_view.components,
+      {
+        role: 'focus',
+      },
+    );
 
-    const zoom_motor_uiprop = find(this.props.uiproperties.components, {
-      role: 'zoom',
-    });
+    const zoom_motor_uiprop = find(
+      this.props.uiproperties.sample_view.components,
+      {
+        role: 'zoom',
+      },
+    );
 
     const focus_motor =
       this.props.hardwareObjects[foucs_motor_uiprop.attribute];
@@ -178,40 +184,46 @@ export default class SampleControls extends React.Component {
 
     return (
       <div className={styles.controls}>
-        <Button
-          as="a"
-          className={styles.controlBtn}
-          href="#"
-          target="_blank"
-          download
-          title="Take snapshot"
-          data-toggle="tooltip"
-          onClick={this.takeSnapShot}
-        >
-          <i className={`${styles.controlIcon} fas fa-camera`} />
-          <span className={styles.controlLabel}>Snapshot</span>
-        </Button>
-        <Button
-          className={styles.controlBtn}
-          active={this.props.drawGrid}
-          title="Draw grid"
-          data-toggle="tooltip"
-          onClick={this.toggleDrawGrid}
-        >
-          <i className={`${styles.controlIcon} fas fa-th`} />
-          <span className={styles.controlLabel}>Draw grid</span>
-        </Button>
-        <Button
-          className={styles.controlBtn}
-          active={this.props.clickCentring}
-          title="Start 3-click centring"
-          data-toggle="tooltip"
-          onClick={this.toggleCentring}
-        >
-          <i className={`${styles.controlIcon} fas fa-circle-notch`} />
-          <span className={styles.controlLabel}>3-click centring</span>
-        </Button>
-        {process.env.REACT_APP_FOCUSCONTROLONCANVAS ? (
+        {this.props.getControlAvailability('snapshot') && (
+          <Button
+            as="a"
+            className={styles.controlBtn}
+            href="#"
+            target="_blank"
+            download
+            title="Take snapshot"
+            data-toggle="tooltip"
+            onClick={this.takeSnapShot}
+          >
+            <i className={`${styles.controlIcon} fas fa-camera`} />
+            <span className={styles.controlLabel}>Snapshot</span>
+          </Button>
+        )}
+        {this.props.getControlAvailability('draw_grid') && (
+          <Button
+            className={styles.controlBtn}
+            active={this.props.drawGrid}
+            title="Draw grid"
+            data-toggle="tooltip"
+            onClick={this.toggleDrawGrid}
+          >
+            <i className={`${styles.controlIcon} fas fa-th`} />
+            <span className={styles.controlLabel}>Draw grid</span>
+          </Button>
+        )}
+        {this.props.getControlAvailability('3_click_centring') && (
+          <Button
+            className={styles.controlBtn}
+            active={this.props.clickCentring}
+            title="Start 3-click centring"
+            data-toggle="tooltip"
+            onClick={this.toggleCentring}
+          >
+            <i className={`${styles.controlIcon} fas fa-circle-notch`} />
+            <span className={styles.controlLabel}>3-click centring</span>
+          </Button>
+        )}
+        {this.props.getControlAvailability('focus') && (
           <OverlayTrigger
             trigger="click"
             rootClose
@@ -243,184 +255,203 @@ export default class SampleControls extends React.Component {
               <span className={styles.controlLabel}>Focus</span>
             </Button>
           </OverlayTrigger>
-        ) : null}
-        <OverlayTrigger
-          trigger="click"
-          rootClose
-          placement="bottom"
-          overlay={
-            <div className={styles.overlay}>
-              <input
-                className={styles.zoomSlider}
-                type="range"
-                min={zoom_motor.limits[0]}
-                max={zoom_motor.limits[1]}
-                value={zoom_motor.commands.indexOf(zoom_motor.value)}
-                disabled={zoom_motor.state !== MOTOR_STATE.READY}
-                onMouseUp={(e) => {
-                  this.props.setAttribute(
-                    'diffractometer.zoom',
-                    zoom_motor.commands[Number.parseFloat(e.target.value)],
-                  );
-                }}
-                onChange={(e) => {
-                  this.props.setBeamlineAttribute(
-                    'diffractometer.zoom',
-                    zoom_motor.commands[Number.parseFloat(e.target.value)],
-                  );
-                }}
-                list="volsettings"
-                name="zoomSlider"
-              />
+        )}
+        {this.props.getControlAvailability('zoom') && (
+          <OverlayTrigger
+            trigger="click"
+            rootClose
+            placement="bottom"
+            overlay={
+              <div className={styles.overlay}>
+                <input
+                  className={styles.zoomSlider}
+                  type="range"
+                  min={zoom_motor.limits[0]}
+                  max={zoom_motor.limits[1]}
+                  value={zoom_motor.commands.indexOf(zoom_motor.value)}
+                  disabled={zoom_motor.state !== MOTOR_STATE.READY}
+                  onMouseUp={(e) => {
+                    this.props.setAttribute(
+                      'diffractometer.zoom',
+                      zoom_motor.commands[Number.parseFloat(e.target.value)],
+                    );
+                  }}
+                  onChange={(e) => {
+                    this.props.setBeamlineAttribute(
+                      'diffractometer.zoom',
+                      zoom_motor.commands[Number.parseFloat(e.target.value)],
+                    );
+                  }}
+                  list="volsettings"
+                  name="zoomSlider"
+                />
 
-              <datalist id="volsettings">
-                {zoom_motor.commands.map((cmd, index) => (
-                  <option key={cmd} value={index} />
-                ))}
-              </datalist>
-            </div>
-          }
-        >
-          <Button
-            className={styles.controlBtn}
-            name="zoomOut"
-            title="Zoom in/out"
-            data-toggle="tooltip"
-          >
-            <i className={`${styles.controlIcon} fas fa-search`} />
-            <span className={styles.controlLabel}>
-              Zoom ({zoom_motor.value}){' '}
-            </span>
-          </Button>
-        </OverlayTrigger>
-        <div className={styles.controlWrapper}>
-          <OverlayTrigger
-            trigger="click"
-            rootClose
-            placement="bottom"
-            overlay={
-              <div className={styles.overlay}>
-                <input
-                  className="bar"
-                  type="range"
-                  step="0.1"
-                  min={hardwareObjects['diffractometer.backlight'].limits[0]}
-                  max={hardwareObjects['diffractometer.backlight'].limits[1]}
-                  value={hardwareObjects['diffractometer.backlight'].value}
-                  disabled={
-                    hardwareObjects['diffractometer.backlight'].state !==
-                    MOTOR_STATE.READY
-                  }
-                  onMouseUp={(e) =>
-                    this.props.setAttribute(
-                      'diffractometer.backlight',
-                      e.target.value,
-                    )
-                  }
-                  onChange={(e) =>
-                    this.props.setBeamlineAttribute(
-                      'diffractometer.backlight',
-                      e.target.value,
-                    )
-                  }
-                  name="backlightSlider"
-                />
+                <datalist id="volsettings">
+                  {zoom_motor.commands.map((cmd, index) => (
+                    <option key={cmd} value={index} />
+                  ))}
+                </datalist>
               </div>
             }
           >
-            {({ ref, ...triggerHandlers }) => (
-              <>
-                <Button
-                  ref={ref}
-                  className={styles.controlBtnWithOverlay}
-                  active={
-                    hardwareObjects['diffractometer.backlightswitch'].value ===
-                    hardwareObjects['diffractometer.backlightswitch']
-                      .commands[0]
-                  }
-                  title="Backlight On/Off"
-                  data-toggle="tooltip"
-                  onClick={this.toggleBackLight}
-                >
-                  <i className={`${styles.controlIcon} fas fa-lightbulb`} />
-                  <span className={styles.controlLabel}>Backlight</span>
-                </Button>
-                <Button className={styles.overlayTrigger} {...triggerHandlers}>
-                  <i className="fas fa-sort-down" />
-                </Button>
-              </>
-            )}
+            <Button
+              className={styles.controlBtn}
+              name="zoomOut"
+              title="Zoom in/out"
+              data-toggle="tooltip"
+            >
+              <i className={`${styles.controlIcon} fas fa-search`} />
+              <span className={styles.controlLabel}>
+                Zoom ({zoom_motor.value}){' '}
+              </span>
+            </Button>
           </OverlayTrigger>
-        </div>
-        <div className={styles.controlWrapper}>
-          <OverlayTrigger
-            trigger="click"
-            rootClose
-            placement="bottom"
-            overlay={
-              <div className={styles.overlay}>
-                <input
-                  className="bar"
-                  type="range"
-                  step="0.1"
-                  min={hardwareObjects['diffractometer.frontlight'].limits[0]}
-                  max={hardwareObjects['diffractometer.frontlight'].limits[1]}
-                  value={hardwareObjects['diffractometer.frontlight'].value}
-                  disabled={
-                    hardwareObjects['diffractometer.frontlight'].state !==
-                    MOTOR_STATE.READY
-                  }
-                  onMouseUp={(e) =>
-                    this.props.setAttribute(
-                      'diffractometer.frontlight',
-                      e.target.value,
-                    )
-                  }
-                  onChange={(e) =>
-                    this.props.setBeamlineAttribute(
-                      'diffractometer.frontlight',
-                      e.target.value,
-                    )
-                  }
-                  name="frontLightSlider"
-                />
-              </div>
-            }
-          >
-            {({ ref, ...triggerHandlers }) => (
-              <>
-                <Button
-                  ref={ref}
-                  className={styles.controlBtnWithOverlay}
-                  active={
-                    hardwareObjects['diffractometer.frontlightswitch'].value ===
-                    hardwareObjects['diffractometer.frontlightswitch']
-                      .commands[0]
-                  }
-                  title="Front On/Off"
-                  data-toggle="tooltip"
-                  onClick={this.toggleFrontLight}
-                >
-                  <i className={`${styles.controlIcon} fas fa-lightbulb`} />
-                  <span className={styles.controlLabel}>Frontlight</span>
-                </Button>
-                <Button className={styles.overlayTrigger} {...triggerHandlers}>
-                  <i className="fas fa-sort-down" />
-                </Button>
-              </>
-            )}
-          </OverlayTrigger>
-        </div>
-        <Dropdown drop="down-centered">
-          <Dropdown.Toggle className={styles.controlDropDown} variant="content">
-            <i className={`${styles.controlIcon} fas fa-video`} />
-            <i className={`${styles.dropDownIcon} fas fa-sort-down`} />
-            <span className={styles.controlLabel}>Video size</span>
-          </Dropdown.Toggle>
-          <Dropdown.Menu className={styles.dropDownMenu}>
-            {this.availableVideoSizes()}
-          </Dropdown.Menu>
-        </Dropdown>
+        )}
+        {this.props.getControlAvailability('backlight') && (
+          <div className={styles.controlWrapper}>
+            <OverlayTrigger
+              trigger="click"
+              rootClose
+              placement="bottom"
+              overlay={
+                <div className={styles.overlay}>
+                  <input
+                    className="bar"
+                    type="range"
+                    step="0.1"
+                    min={hardwareObjects['diffractometer.backlight'].limits[0]}
+                    max={hardwareObjects['diffractometer.backlight'].limits[1]}
+                    value={hardwareObjects['diffractometer.backlight'].value}
+                    disabled={
+                      hardwareObjects['diffractometer.backlight'].state !==
+                      MOTOR_STATE.READY
+                    }
+                    onMouseUp={(e) =>
+                      this.props.setAttribute(
+                        'diffractometer.backlight',
+                        e.target.value,
+                      )
+                    }
+                    onChange={(e) =>
+                      this.props.setBeamlineAttribute(
+                        'diffractometer.backlight',
+                        e.target.value,
+                      )
+                    }
+                    name="backlightSlider"
+                  />
+                </div>
+              }
+            >
+              {({ ref, ...triggerHandlers }) => (
+                <>
+                  <Button
+                    ref={ref}
+                    className={styles.controlBtnWithOverlay}
+                    active={
+                      hardwareObjects['diffractometer.backlightswitch']
+                        .value ===
+                      hardwareObjects['diffractometer.backlightswitch']
+                        .commands[0]
+                    }
+                    title="Backlight On/Off"
+                    data-toggle="tooltip"
+                    onClick={this.toggleBackLight}
+                  >
+                    <i className={`${styles.controlIcon} fas fa-lightbulb`} />
+                    <span className={styles.controlLabel}>Backlight</span>
+                  </Button>
+                  <Button
+                    className={styles.overlayTrigger}
+                    {...triggerHandlers}
+                  >
+                    <i className="fas fa-sort-down" />
+                  </Button>
+                </>
+              )}
+            </OverlayTrigger>
+          </div>
+        )}
+        {this.props.getControlAvailability('frontlight') && (
+          <div className={styles.controlWrapper}>
+            <OverlayTrigger
+              trigger="click"
+              rootClose
+              placement="bottom"
+              overlay={
+                <div className={styles.overlay}>
+                  <input
+                    className="bar"
+                    type="range"
+                    step="0.1"
+                    min={hardwareObjects['diffractometer.frontlight'].limits[0]}
+                    max={hardwareObjects['diffractometer.frontlight'].limits[1]}
+                    value={hardwareObjects['diffractometer.frontlight'].value}
+                    disabled={
+                      hardwareObjects['diffractometer.frontlight'].state !==
+                      MOTOR_STATE.READY
+                    }
+                    onMouseUp={(e) =>
+                      this.props.setAttribute(
+                        'diffractometer.frontlight',
+                        e.target.value,
+                      )
+                    }
+                    onChange={(e) =>
+                      this.props.setBeamlineAttribute(
+                        'diffractometer.frontlight',
+                        e.target.value,
+                      )
+                    }
+                    name="frontLightSlider"
+                  />
+                </div>
+              }
+            >
+              {({ ref, ...triggerHandlers }) => (
+                <>
+                  <Button
+                    ref={ref}
+                    className={styles.controlBtnWithOverlay}
+                    active={
+                      hardwareObjects['diffractometer.frontlightswitch']
+                        .value ===
+                      hardwareObjects['diffractometer.frontlightswitch']
+                        .commands[0]
+                    }
+                    title="Front On/Off"
+                    data-toggle="tooltip"
+                    onClick={this.toggleFrontLight}
+                  >
+                    <i className={`${styles.controlIcon} fas fa-lightbulb`} />
+                    <span className={styles.controlLabel}>Frontlight</span>
+                  </Button>
+                  <Button
+                    className={styles.overlayTrigger}
+                    {...triggerHandlers}
+                  >
+                    <i className="fas fa-sort-down" />
+                  </Button>
+                </>
+              )}
+            </OverlayTrigger>
+          </div>
+        )}
+        {this.props.getControlAvailability('video_size') && (
+          <Dropdown drop="down-centered">
+            <Dropdown.Toggle
+              className={styles.controlDropDown}
+              variant="content"
+            >
+              <i className={`${styles.controlIcon} fas fa-video`} />
+              <i className={`${styles.dropDownIcon} fas fa-sort-down`} />
+              <span className={styles.controlLabel}>Video size</span>
+            </Dropdown.Toggle>
+            <Dropdown.Menu className={styles.dropDownMenu}>
+              {this.availableVideoSizes()}
+            </Dropdown.Menu>
+          </Dropdown>
+        )}
       </div>
     );
   }
