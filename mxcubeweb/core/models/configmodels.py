@@ -48,13 +48,37 @@ class UIComponentModel(BaseModel):
     object_type: Optional[str]
 
 
+class _UICameraConfigModel(BaseModel):
+    label: str
+    url: str
+    description: Optional[str]
+    width: Optional[int]
+    height: Optional[int]
+
+
+class _UISampleViewVideoControlsModel(BaseModel):
+    id: str
+    show: bool
+
+
 class UIPropertiesModel(BaseModel):
     id: str
     components: List[UIComponentModel]
 
 
+class UICameraConfigModel(UIPropertiesModel):
+    components: List[_UICameraConfigModel]
+
+
+class UISampleViewVideoControlsModel(UIPropertiesModel):
+    components: List[_UISampleViewVideoControlsModel]
+
+
 class UIPropertiesListModel(BaseModel):
-    __root__: Dict[str, UIPropertiesModel]
+    sample_view: UIPropertiesModel
+    beamline_setup: UIPropertiesModel
+    camera_setup: UICameraConfigModel
+    sample_view_video_controls: UISampleViewVideoControlsModel
 
 
 class UserManagerUserConfigModel(BaseModel):

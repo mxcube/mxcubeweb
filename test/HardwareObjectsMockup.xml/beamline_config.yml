@@ -1,7 +1,7 @@
 # The class to initialise, and init parameters
 _initialise_class:
-    class: mxcubecore.HardwareObjects.Beamline.Beamline
-    # Further key-value pairs here will be passed to the class init
+  class: mxcubecore.HardwareObjects.Beamline.Beamline
+  # Further key-value pairs here will be passed to the class init
 #    mode: devel
 
 # objects
@@ -13,59 +13,59 @@ _initialise_class:
 # would need those added (e.g. the centring methods)
 #
 _objects:
-    # The !!o0map and the lines starting with '- ' give you an *orderd* dictionary
-    # And thus a reproducible loading order
-    !!omap
-    # The values are the file paths to the configuration file for the
-    # object, relative to the configuration file path(s)
-    #
-    # NB - the order is *NOT* arbitrary, as signal connnections are set
-    # on one object that require the other to be already loaded.
-    #
-    # Hardware:
-    - session: session.xml
-    - data_publisher: data_publisher.xml
-    - machine_info: machine_info.xml
-    - detector: detector.xml
-    - beam: beam.xml
-    - transmission: transmission.xml
-    - flux: flux.xml
-    - cryo: cryo.xml
-    - energy: energy.xml
-    - resolution: resolution.xml
-    - safety_shutter: safety_shutter.xml
-    - fast_shutter: fast_shutter.xml
-    - hutch_interlock: hutchtrigger.xml
-    - sample_changer: sc.xml
-    - sample_changer_maintenance: sc_maint.xml
+  # The !!o0map and the lines starting with '- ' give you an *orderd* dictionary
+  # And thus a reproducible loading order
+  !!omap
+  # The values are the file paths to the configuration file for the
+  # object, relative to the configuration file path(s)
+  #
+  # NB - the order is *NOT* arbitrary, as signal connnections are set
+  # on one object that require the other to be already loaded.
+  #
+  # Hardware:
+  - session: session.xml
+  - data_publisher: data_publisher.xml
+  - machine_info: machine_info.xml
+  - detector: detector.xml
+  - beam: beam.xml
+  - transmission: transmission.xml
+  - flux: flux.xml
+  - cryo: cryo.xml
+  - energy: energy.xml
+  - resolution: resolution.xml
+  - safety_shutter: safety_shutter.xml
+  - fast_shutter: fast_shutter.xml
+  - hutch_interlock: hutchtrigger.xml
+  - sample_changer: sc.xml
+  - sample_changer_maintenance: sc_maint.xml
 
-    # The 2 lines up have to be used for the flex HCD and the two line below for the plate manip
-    # - sample_changer: plate_manipulator.xml
-    # - sample_changer_maintenance: plate_manipulator_maint.xml
+  # The 2 lines up have to be used for the flex HCD and the two line below for the plate manip
+  # - sample_changer: plate_manipulator.xml
+  # - sample_changer_maintenance: plate_manipulator_maint.xml
 
-    - diffractometer: minidiff.xml
-    - lims: lims.xml
-    - sample_view: sample_view.xml
-    - queue_manager: queue.xml
-    - queue_model: queue_model.xml
+  - diffractometer: minidiff.xml
+  - lims: lims.xml
+  - sample_view: sample_view.xml
+  - queue_manager: queue.xml
+  - queue_model: queue_model.xml
 
-    # Procedures:
-    - beamline_actions: beamline_actions.xml
-    - workflow: ednaparams.xml
-    - collect: mxcollect.xml
-    - xrf_spectrum: xrf.xml
-    - energy_scan: energyscan.xml
-    - gphl_connection: gphl/gphl-setup.yml
-    - gphl_workflow: gphl/gphl-workflow.yml
-    - xray_centring: xray_centring2.yml
-#    - centring: centring.xml
-    - xml_rpc_server: xml_rpc_server.xml
-    # Analysis:
-    - offline_processing: auto_processing.xml
-    - online_processing: parallel_processing.xml
-    - characterisation: characterisation.xml
+  # Procedures:
+  - beamline_actions: beamline_actions.xml
+  - workflow: ednaparams.xml
+  - collect: mxcollect.xml
+  - xrf_spectrum: xrf.xml
+  - energy_scan: energyscan.xml
+  - gphl_connection: gphl/gphl-setup.yml
+  - gphl_workflow: gphl/gphl-workflow.yml
+  - xray_centring: xray_centring2.yml
+  #    - centring: centring.xml
+  - xml_rpc_server: xml_rpc_server.xml
+  # Analysis:
+  - offline_processing: auto_processing.xml
+  - online_processing: parallel_processing.xml
+  - characterisation: characterisation.xml
 
-    # - beam_realign: # Skipped - optional
+  # - beam_realign: # Skipped - optional
 
 # Non-object attributes:
 advanced_methods:
@@ -78,76 +78,81 @@ run_processing_parallel: true
 run_number: 1
 click_centring_num_clicks: 3
 
+mesh_result_format: PNG
+use_native_mesh: true
+enable_2d_points: true
+
 default_acquisition_parameters:
-    default:
-        # Default values, also used for standard acquisition.
-        # Values not given in other dictionaries are taken from here
-        exp_time: 0.02        # exposure time
-        osc_start: 0.0  # Only used if no current angle can be found
-        osc_range: 0.1
-        num_passes: 1
-        first_image: 1
-        overlap: 0
-        num_images: 1
-        detector_mode: 1 # Remove as not in practice used ?
-        inverse_beam: false
-        take_dark_current: true
-        skip_existing_images: true
-        take_snapshots: true
-        # NB 'compression' not added as apparently never used
+  default:
+    # Default values, also used for standard acquisition.
+    # Values not given in other dictionaries are taken from here
+    exp_time: 0.02 # exposure time
+    osc_start: 0.0 # Only used if no current angle can be found
+    osc_range: 0.1
+    num_passes: 1
+    first_image: 1
+    overlap: 0
+    num_images: 1
+    detector_mode: 1 # Remove as not in practice used ?
+    inverse_beam: false
+    take_dark_current: true
+    skip_existing_images: true
+    take_snapshots: true
+    # NB 'compression' not added as apparently never used
 
-    helical:
-        # Defaults for helical scan. Missing values are taken from default
-        number_of_images: 100
+  helical:
+    # Defaults for helical scan. Missing values are taken from default
+    number_of_images: 100
 
-    characterisation:
-        # Defaults for chareacterisation. Missing values are taken from default
-        exp_time: 0.05       # exposure time
-        osc_range: 1
-        overlap: -89
-        num_images: 4
-        shutterless: false
+  characterisation:
+    # Defaults for chareacterisation. Missing values are taken from default
+    exp_time: 0.05 # exposure time
+    osc_range: 1
+    overlap: -89
+    num_images: 4
+    shutterless: false
 
-    mesh:
-        # Defaults for 'advanced' acquisition. Missing values are taken from default
-        exp_time: 10       # exposure time
-        range: 10
-        num_images: 100
-        cell_counting: zig-zag
-        cell_spacing: vertical, horizontal
-        mesh_center: top-left
+  mesh:
+    # Defaults for 'advanced' acquisition. Missing values are taken from default
+    exp_time: 10 # exposure time
+    range: 10
+    num_images: 100
+    cell_counting: zig-zag
+    cell_spacing: vertical, horizontal
+    mesh_center: top-left
 
-    gphlworkflow: {}
-        # Apparenttly this must be here, but we use all values same as default
+  gphlworkflow:
+    {}
+    # Apparenttly this must be here, but we use all values same as default
 
 acquisition_limit_values:
-    exposure_time:
-        - 0.02
-        - 1000
-    osc_range:
-        - -10000
-        - 10000
-    number_of_images:
-        - 1
-        - 99999
-    kappa:
-        - -5.0
-        - 240.0
+  exposure_time:
+    - 0.02
+    - 1000
+  osc_range:
+    - -10000
+    - 10000
+  number_of_images:
+    - 1
+    - 99999
+  kappa:
+    - -5.0
+    - 240.0
 
 available_methods:
-    datacollection: True
-    characterisation: True
-    helical: True
-    xrf_spectrum: True
-    energy_scan: True
-    mesh: True
-    ssx_chip_collection: True
-    gphlworkflow: True
-    test_collection: True
+  datacollection: True
+  characterisation: True
+  helical: True
+  xrf_spectrum: True
+  energy_scan: True
+  mesh: True
+  ssx_chip_collection: True
+  gphlworkflow: True
+  test_collection: True
 
 undulators:
-    - type: PPU35C_GAP
-      device_uri: //orion:10000/id/id/30
+  - type: PPU35C_GAP
+    device_uri: //orion:10000/id/id/30
 
-    - type: PPU35D_GAP
-      device_uri: //orion:10000/id/id/30
+  - type: PPU35D_GAP
+    device_uri: //orion:10000/id/id/30

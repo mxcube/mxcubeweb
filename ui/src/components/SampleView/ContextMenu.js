@@ -43,7 +43,7 @@ export default class ContextMenu extends React.Component {
     };
     let twoDPoints = [];
 
-    if (process.env.REACT_APP_USE2DCENTEREDPOINTS) {
+    if (this.props.enable2DPoints) {
       twoDPoints = [
         { text: 'divider', key: 4 },
         {
@@ -266,7 +266,11 @@ export default class ContextMenu extends React.Component {
           action: () => this.measureDistance(),
           key: 2,
         },
-        { text: 'Draw Grid', action: () => this.toggleDrawGrid(), key: 3 },
+        this.props.getControlAvailability('draw_grid') && {
+          text: 'Draw Grid',
+          action: () => this.toggleDrawGrid(),
+          key: 3,
+        },
         ...twoDPoints,
         { text: 'divider', key: 7 },
         ...genericTasks.none,
@@ -274,7 +278,7 @@ export default class ContextMenu extends React.Component {
       ],
     };
 
-    if (process.env.REACT_APP_USE_NATIVE_MESH) {
+    if (this.props.enableNativeMesh) {
       options.GridGroupSaved.unshift({
         text: 'Mesh Scan',
         action: () => this.showModal('Mesh'),

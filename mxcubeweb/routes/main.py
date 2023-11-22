@@ -15,6 +15,9 @@ from mxcubeweb.core.models.configmodels import (
 )
 
 
+from mxcubecore import HardwareRepository as HWR
+
+
 def init_route(app, server, url_prefix):
     bp = Blueprint("main", __name__, url_prefix=url_prefix)
 
@@ -49,6 +52,9 @@ def init_route(app, server, url_prefix):
             {
                 "mode": app.CONFIG.app.mode,
                 "version": __version__.__version__,
+                "mesh_result_format": HWR.beamline.mesh_result_format,
+                "use_native_mesh": HWR.beamline.use_native_mesh,
+                "enable_2d_points": HWR.beamline.enable_2d_points,
             }
         )
 
