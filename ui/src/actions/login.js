@@ -14,6 +14,20 @@ export function setLoginInfo(loginInfo) {
   };
 }
 
+export function resetLoginInfo() {
+  return setLoginInfo({
+    beamlineName: '',
+    synchrotronName: '',
+    loginType: '',
+    user: '',
+    proposalList: [],
+    selectedProposal: '',
+    selectedProposalID: '',
+    loggedIn: false,
+    rootPath: '',
+  });
+}
+
 export function showProposalsForm() {
   return {
     type: 'SHOW_PROPOSALS_FORM',
@@ -72,19 +86,7 @@ export function getLoginInfo() {
       const loginInfo = await fetchLoginInfo();
       dispatch(setLoginInfo(loginInfo));
     } catch (error) {
-      dispatch(
-        setLoginInfo({
-          beamlineName: '',
-          synchrotronName: '',
-          loginType: '',
-          user: '',
-          proposalList: [],
-          selectedProposal: '',
-          selectedProposalID: '',
-          loggedIn: false,
-          rootPath: '',
-        }),
-      );
+      dispatch(resetLoginInfo());
       dispatch(setLoading(false));
       throw error;
     }
@@ -123,7 +125,7 @@ export function signOut(navigate) {
     serverIO.disconnect();
     return sendSignOut().then(() => {
       dispatch({ type: 'SIGNOUT' });
-
+      dispatch(resetLoginInfo());
       if (navigate) {
         navigate('/');
       }
