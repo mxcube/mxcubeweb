@@ -10,10 +10,6 @@ from mxcubeweb.core.util import networkutils
 from flask_login import current_user
 
 
-def deny_access(msg):
-    return make_response(jsonify({"msg": msg}), 200)
-
-
 def init_route(app, server, url_prefix):
     bp = Blueprint("login", __name__, url_prefix=url_prefix)
 
@@ -49,7 +45,7 @@ def init_route(app, server, url_prefix):
             )
             logging.getLogger("MX3.HWR").exception("")
             logging.getLogger("MX3.HWR").info(msg)
-            res = deny_access("Could not authenticate")
+            res = make_response(jsonify({"msg": "Could not authenticate"}), 200)
         else:
             res = make_response(jsonify({"msg": ""}), 200)
 
