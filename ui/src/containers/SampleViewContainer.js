@@ -56,9 +56,9 @@ class SampleViewContainer extends Component {
         id: name,
         show: true,
       },
-    ) || { show: false };
+    );
 
-    return available.show;
+    return available?.show || false;
   }
 
   render() {
