@@ -77,8 +77,6 @@ def client(make_client):
 def test_authn_signin_good_credentials(client):
     resp = client.post(URL_SIGNIN, json=CREDENTIALS_0)
     assert resp.status_code == 200
-    assert resp.json["code"] == "ok"
-    assert resp.json["msg"] == "Successful login"
 
 
 def test_authn_signin_wrong_credentials(client):
@@ -90,11 +88,9 @@ def test_authn_signin_wrong_credentials(client):
 
 def test_authn_signout(client):
     resp = client.post(URL_SIGNIN, json=CREDENTIALS_0)
-    assert resp.json["code"] == "ok"
 
     resp = client.get(URL_SIGNOUT)
-    assert resp.status_code == 302
-    assert resp.headers["Location"] == "/login"
+    assert resp.status_code == 200
 
 
 def test_authn_info(client, login_type):
@@ -104,8 +100,7 @@ def test_authn_info(client, login_type):
     and true after successful authentication.
     """
     resp = client.get(URL_INFO)
-    assert resp.status_code == 200
-    assert resp.json["loggedIn"] == False
+    assert resp.status_code == 401
 
     client.post(URL_SIGNIN, json=CREDENTIALS_0)
 
@@ -127,13 +122,14 @@ def test_authn_same_proposal(make_client):
 
     client_0 = make_client()
     resp = client_0.post(URL_SIGNIN, json=CREDENTIALS_0)
-    assert resp.json["code"] == "ok"
+
+    assert resp.status_code == 200
     resp = client_0.get(URL_INFO)
     assert resp.json["user"]["inControl"] == True
 
     client_1 = make_client()
     resp = client_1.post(URL_SIGNIN, json=CREDENTIALS_0)
-    assert resp.json["code"] == "ok"
+    assert resp.status_code == 200
     resp = client_1.get(URL_INFO)
     assert resp.json["user"]["inControl"] == False
 
@@ -146,12 +142,11 @@ def test_authn_different_proposals(make_client):
     If a user signs in for a different proposal than an already signed in user,
     this user should not be allowed to sign in.
     """
-
     client_0 = make_client()
     resp = client_0.post(URL_SIGNIN, json=CREDENTIALS_0)
-    assert resp.json["code"] == "ok"
+    assert resp.status_code == 200
     resp = client_0.get(URL_INFO)
-    assert resp.json["user"]["inControl"] == True
+    assert resp.status_code == 200
 
     client_1 = make_client()
     resp = client_1.post(URL_SIGNIN, json=CREDENTIALS_1)
@@ -181,6 +176,7 @@ def test_authn_session_timeout(client):
 
     # Check that the session still has not expired
     resp = client.get(URL_INFO)
+    assert resp.status_code == 200
     assert resp.json["loggedIn"] == True, "Session did not refresh"
 
     # Let the session expire completely
@@ -188,12 +184,9 @@ def test_authn_session_timeout(client):
 
     # Check that the session has expired
     resp = client.get(URL_INFO)
-    assert resp.json["loggedIn"] == False, "Session did not expire"
+    assert resp.status_code == 401, "Session did not expire"
 
     # Check that it is possible to sign in again
     client.post(URL_SIGNIN, json=CREDENTIALS_0)
     resp = client.get(URL_INFO)
     assert resp.json["loggedIn"] == True, "We can not login again"
-
-
-# EOF
