@@ -50,7 +50,7 @@ class SampleViewContainer extends Component {
   }
 
   getControlAvailability(name) {
-    const avilable = find(
+    const available = find(
       this.props.uiproperties.sample_view_video_controls.components,
       {
         id: name,
@@ -58,7 +58,7 @@ class SampleViewContainer extends Component {
       },
     ) || { show: false };
 
-    return avilable.show;
+    return available.show;
   }
 
   render() {
