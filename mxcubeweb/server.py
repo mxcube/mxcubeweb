@@ -26,7 +26,6 @@ from mxcubeweb.core.models.usermodels import User, Role, Message
 class Server:
     init_event = gevent.event.Event()
     flask = None
-    flask_session = None
     security = None
     api = None
     user_datastore = None
