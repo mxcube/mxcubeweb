@@ -11,12 +11,7 @@ export function sendSignOut() {
 }
 
 export function fetchLoginInfo() {
-  return endpoint
-    .get('/login_info') // eslint-disable-next-line promise/prefer-await-to-callbacks
-    .unauthorized((err) => {
-      throw err;
-    })
-    .json();
+  return endpoint.get('/login_info').json();
 }
 
 export function sendFeedback(sender, content) {
