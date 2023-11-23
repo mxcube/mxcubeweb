@@ -15,13 +15,17 @@ class AppSettingsModel(BaseModel):
         "PNG", description="Format of mesh result for display"
     )
     use_native_mesh: bool = Field(
-        True, description=" Use the native mesh feature available, true by default"
+        True,
+        description=(
+            "Usage of native mesh feature, true by default. The native mesh feature can"
+            "be dis-activated to not clash with i.e workflow mesh,"
+        ),
     )
 
     enable_2d_points: bool = Field(
         True,
         description=(
-            " bool Enable features to work with points in the plane, called2D-points,"
+            " Enable features to work with points in the plane, called2D-points,"
             " (none centred positions)"
         ),
     )
