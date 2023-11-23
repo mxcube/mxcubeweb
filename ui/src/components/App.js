@@ -103,6 +103,9 @@ function App(props) {
 
   useEffect(() => {
     requireAuth();
+    return () => {
+      serverIO.disconnect();
+    };
   }, []);
 
   if (!applicationFetched) {
