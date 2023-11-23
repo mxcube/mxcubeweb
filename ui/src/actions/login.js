@@ -3,7 +3,7 @@
 /* eslint-disable promise/prefer-await-to-then */
 
 import fetch from 'isomorphic-fetch';
-import { showErrorPanel, setLoading, getInitialState } from './general';
+import { showErrorPanel, setLoading } from './general';
 import { serverIO } from '../serverIO'; // eslint-disable-line import/no-cycle
 import { fetchLoginInfo, sendLogIn, sendSignOut } from '../api/login';
 
@@ -70,13 +70,6 @@ export function sendSelectProposal(number, navigate) {
         dispatch(selectProposal(number));
       }
     });
-  };
-}
-
-export function startSession(userInControl) {
-  return (dispatch) => {
-    dispatch(getInitialState(userInControl));
-    dispatch(setLoading(false));
   };
 }
 
