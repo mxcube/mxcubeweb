@@ -20,26 +20,23 @@ import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 
 import { store } from '../store';
 import { serverIO } from '../serverIO';
-
-import { getLoginInfo } from '../actions/login';
-import { getInitialState, applicationFetched } from '../actions/general';
+import { applicationFetched } from '../actions/general';
+import { getInitialState } from '../actions/login';
 
 export async function requireAuth() {
   try {
     store.dispatch(applicationFetched(false));
-    await store.dispatch(getLoginInfo());
+    await store.dispatch(getInitialState());
+    serverIO.listen();
   } catch {
     store.dispatch(applicationFetched(true));
-    return;
   }
-
-  await store.dispatch(getInitialState());
-  serverIO.listen(store);
 }
 
 function PrivateOutlet() {
   const loggedIn = useSelector((state) => state.login.loggedIn);
   const location = useLocation();
+
   return loggedIn ? (
     <Outlet />
   ) : (
@@ -55,10 +52,6 @@ const router = createBrowserRouter([
   {
     path: '/',
     element: <PrivateOutlet />,
-    loader: () => {
-      requireAuth();
-      return true;
-    },
     children: [
       {
         path: '',

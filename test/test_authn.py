@@ -100,7 +100,8 @@ def test_authn_info(client, login_type):
     and true after successful authentication.
     """
     resp = client.get(URL_INFO)
-    assert resp.status_code == 401
+    assert resp.status_code == 200
+    assert resp.json["loggedIn"] == False
 
     client.post(URL_SIGNIN, json=CREDENTIALS_0)
 
@@ -184,7 +185,8 @@ def test_authn_session_timeout(client):
 
     # Check that the session has expired
     resp = client.get(URL_INFO)
-    assert resp.status_code == 401, "Session did not expire"
+    assert resp.status_code == 200
+    assert resp.json["loggedIn"] == False, "Session did not expire"
 
     # Check that it is possible to sign in again
     client.post(URL_SIGNIN, json=CREDENTIALS_0)

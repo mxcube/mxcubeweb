@@ -3,6 +3,7 @@ import { Container, Navbar, Nav, Button } from 'react-bootstrap';
 import { LinkContainer } from 'react-router-bootstrap';
 import withRouter from '../WithRouter';
 import './MXNavbar.css';
+import { serverIO } from '../../serverIO';
 
 class MXNavbar extends React.Component {
   constructor(props) {
@@ -20,6 +21,7 @@ class MXNavbar extends React.Component {
 
   handleSignOutClick() {
     this.props.signOut(this.props.router.navigate);
+    serverIO.disconnect();
   }
 
   render() {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -10,30 +10,34 @@ import {
 import { setLoading } from '../actions/general';
 import SelectProposal from '../components/Login/SelectProposal';
 import withRouter from '../components/WithRouter';
+import { serverIO } from '../serverIO';
 
-class SelectProposalContainer extends Component {
-  render() {
-    const show =
-      (this.props.login.loginType === 'User' &&
-        this.props.login.selectedProposalID === null) ||
-      this.props.login.showProposalsForm;
-
-    return (
-      <SelectProposal
-        show={show}
-        handleHide={
-          this.props.login.selectedProposalID === null
-            ? () => this.props.signOut(this.props.router.navigate)
-            : this.props.hideProposalsForm
-        }
-        data={this.props.login}
-        selectProposal={this.props.selectProposal}
-        sendSelectProposal={(selected) =>
-          this.props.sendSelectProposal(selected, this.props.router.navigate)
-        }
-      />
-    );
+function SelectProposalContainer(props) {
+  function handleLogout() {
+    props.signOut(props.router.navigate);
+    serverIO.disconnect();
   }
+
+  const show =
+    (props.login.loginType === 'User' &&
+      props.login.selectedProposalID === null) ||
+    props.login.showProposalsForm;
+
+  return (
+    <SelectProposal
+      show={show}
+      handleHide={
+        props.login.selectedProposalID === null
+          ? () => handleLogout()
+          : props.hideProposalsForm
+      }
+      data={props.login}
+      selectProposal={props.selectProposal}
+      sendSelectProposal={(selected) =>
+        props.sendSelectProposal(selected, props.router.navigate)
+      }
+    />
+  );
 }
 
 function mapStateToProps(state) {
