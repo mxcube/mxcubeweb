@@ -5,6 +5,7 @@ import Collapsible from 'react-collapsible';
 import { BsChevronUp, BsChevronDown } from 'react-icons/bs';
 import EquipmentState from './EquipmentState';
 import Form from '@rjsf/core';
+import validator from '@rjsf/validator-ajv8';
 import './GenericEquipmentControl.css';
 
 export default class GenericEquipmentControl extends React.Component {
@@ -22,6 +23,7 @@ export default class GenericEquipmentControl extends React.Component {
       return (
         <div>
           <Form
+            validator={validator}
             onSubmit={(formData, e) =>
               this.handleRunCommand(key, formData.formData, e)
             }
