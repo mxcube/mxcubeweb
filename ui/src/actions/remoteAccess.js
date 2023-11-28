@@ -1,7 +1,7 @@
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable promise/prefer-await-to-then */
 /* eslint-disable sonarjs/no-duplicate-string */
-import { getLoginInfo } from './login'; // eslint-disable-line import/no-cycle
+import { getLoginInfo } from './login';
 
 export function showObserverDialog(show = true) {
   return { type: 'SHOW_OBSERVER_DIALOG', show };

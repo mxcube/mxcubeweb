@@ -2,7 +2,7 @@
 /* eslint-disable promise/prefer-await-to-then */
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
-import { showErrorPanel } from './general'; // eslint-disable-line import/no-cycle
+import { showErrorPanel } from './general';
 import {
   fetchMotorPositions,
   sendUpdateAperture,
@@ -425,16 +425,20 @@ export function sendDeleteShape(id) {
 }
 
 export function unselectShapes(shapes) {
-  return (dispatch) => {
-    const _shapes = [];
-    if (shapes.shapes !== undefined) {
-      const keys = Object.keys(shapes.shapes);
-      keys.forEach((k) => {
-        const aux = shapes.shapes[k];
-        aux.selected = false;
-        _shapes.push(aux);
-      });
-      dispatch(sendUpdateShapes(_shapes));
+  return (dispatch, getState) => {
+    const login = getState();
+
+    if (login.user.userInControl) {
+      const _shapes = [];
+      if (shapes.shapes !== undefined) {
+        const keys = Object.keys(shapes.shapes);
+        keys.forEach((k) => {
+          const aux = shapes.shapes[k];
+          aux.selected = false;
+          _shapes.push(aux);
+        });
+        dispatch(sendUpdateShapes(_shapes));
+      }
     }
   };
 }

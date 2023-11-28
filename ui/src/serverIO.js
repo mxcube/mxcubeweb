@@ -45,7 +45,7 @@ import {
   showGphlWorkflowParametersDialog,
 } from './actions/workflow';
 
-import { incChatMessageCount, getRaState } from './actions/remoteAccess'; // eslint-disable-line import/no-cycle
+import { incChatMessageCount, getRaState } from './actions/remoteAccess';
 
 import { forcedSignout, getLoginInfo } from './actions/login';
 
@@ -60,6 +60,7 @@ import { setEnergyScanResult } from './actions/taskResults';
 
 import { CLICK_CENTRING } from './constants';
 import { sendRefreshSession } from './api/login';
+import { store } from './store';
 
 class ServerIO {
   constructor() {
@@ -128,7 +129,7 @@ class ServerIO {
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  listen(store) {
+  listen() {
     if (this.initialized) {
       return;
     }
@@ -428,6 +429,7 @@ class ServerIO {
 
     this.hwrSocket.on('forceSignout', () => {
       this.dispatch(forcedSignout());
+      serverIO.disconnect();
     });
 
     this.hwrSocket.on('workflowParametersDialog', (data) => {

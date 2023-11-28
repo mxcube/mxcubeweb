@@ -1,14 +1,19 @@
-import React, { Component } from 'react';
+import React from 'react';
+import { useLocation, Navigate } from 'react-router-dom';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { logIn } from '../actions/login';
 import { setLoading } from '../actions/general';
 import Login from '../components/Login/Login';
 
-class LoginContainer extends Component {
-  render() {
-    return <Login {...this.props} />;
-  }
+function LoginContainer(props) {
+  const location = useLocation();
+
+  return props.data.loggedIn === false ? (
+    <Login {...props} />
+  ) : (
+    <Navigate to="/" state={{ from: location }} replace />
+  );
 }
 
 function mapStateToProps(state) {
