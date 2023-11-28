@@ -68,7 +68,7 @@ def init_route(app, server, url_prefix):
         {'synchrotron_name': synchrotron_name,
         'beamline_name': beamline_name,
         'loginType': loginType,
-        'loginRes': {'status':{ 'code': 'ok', 'msg': msg },
+        'loggedIn': True,
         'Proposal': proposal, 'session': todays_session,
         'local_contact': local_contact,
         'person': someone,
@@ -76,7 +76,7 @@ def init_route(app, server, url_prefix):
 
         Status code set to:
         200: On success
-        401: Error, could not log in
+        200: Error, could not log in, {"loggedIn": False}
         """
 
         try:
