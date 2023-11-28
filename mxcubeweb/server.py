@@ -12,6 +12,7 @@ from flask import Flask, request
 from flask_socketio import SocketIO
 
 import flask_security
+import flask_login
 
 from spectree import SpecTree
 
@@ -105,7 +106,7 @@ class Server:
                 f.write(str(os.getpid()) + " ")
 
             # Make the valid_login_only decorator available on server object
-            Server.restrict = staticmethod(networkutils.login_required)
+            Server.restrict = staticmethod(networkutils.auth_required)
             Server.require_control = staticmethod(networkutils.require_control)
             Server.ws_restrict = staticmethod(networkutils.ws_valid_login_only)
             Server.route = staticmethod(Server.flask.route)
@@ -123,6 +124,10 @@ class Server:
 
     @staticmethod
     def register_routes(mxcube):
+        Server.security = flask_security.Security(
+            Server.flask, Server.user_datastore, register_blueprint=False
+        )
+
         from mxcubeweb.routes.beamline import (
             init_route as init_beamline_route,
         )
@@ -200,8 +205,6 @@ class Server:
         Server._register_route(
             init_workflow_route, mxcube, f"{url_root_prefix}/workflow"
         )
-
-        Server.security = flask_security.Security(Server.flask, Server.user_datastore)
 
     @staticmethod
     def emit(*args, **kwargs):

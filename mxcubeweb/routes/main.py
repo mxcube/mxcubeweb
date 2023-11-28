@@ -58,6 +58,10 @@ def init_route(app, server, url_prefix):
             }
         )
 
+    @server.flask.login_manager.unauthorized_handler
+    def unauth_handler():
+        return jsonify(""), 401
+
     @server.flask.before_request
     def before_request():
         # logging.getLogger("MX3.HWR").debug('Remote Addr: %s', request.remote_addr)

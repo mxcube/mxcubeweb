@@ -83,7 +83,7 @@ def init_route(app, server, url_prefix):
             res = app.usermanager.login_info()
             response = jsonify(res)
         except Exception:
-            response = make_response(jsonify(""), 401)
+            response = make_response(jsonify({"loggedIn": False}), 200)
 
         return response
 

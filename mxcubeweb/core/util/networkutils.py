@@ -11,9 +11,14 @@ from email.utils import make_msgid
 
 import flask
 import flask_socketio
+import flask_security
 
 from flask_login import current_user, login_required
 from mxcubecore import HardwareRepository as HWR
+
+
+def auth_required(fun):
+    return flask_security.auth_required("session", within=-1, grace=None)(fun)
 
 
 def RateLimited(maxPerSecond):
