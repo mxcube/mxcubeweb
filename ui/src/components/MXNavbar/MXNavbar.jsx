@@ -20,8 +20,9 @@ class MXNavbar extends React.Component {
   }
 
   handleSignOutClick() {
-    this.props.signOut(this.props.router.navigate);
+    this.props.signOut();
     serverIO.disconnect();
+    this.props.router.navigate('/');
   }
 
   render() {

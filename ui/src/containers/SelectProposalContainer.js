@@ -14,8 +14,9 @@ import { serverIO } from '../serverIO';
 
 function SelectProposalContainer(props) {
   function handleLogout() {
-    props.signOut(props.router.navigate);
+    props.signOut();
     serverIO.disconnect();
+    props.router.navigate('/');
   }
 
   const show =
