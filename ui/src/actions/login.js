@@ -85,37 +85,26 @@ export function sendSelectProposal(number, navigate) {
 
 export function getLoginInfo() {
   return async (dispatch) => {
-    try {
-      const loginInfo = await fetchLoginInfo();
-      if (!loginInfo.loggedIn) {
-        throw new Error('Not authenticated');
-      }
-      dispatch(setLoginInfo(loginInfo));
-    } catch (error) {
+    const loginInfo = await fetchLoginInfo();
+    if (!loginInfo.loggedIn) {
       dispatch(resetLoginInfo());
-      dispatch(setLoading(false));
-      throw error;
+      throw new Error('Not authenticated');
     }
+    dispatch(setLoginInfo(loginInfo));
   };
 }
 
-export function logIn(proposal, password, navigate) {
+export function logIn(proposal, password) {
   return (dispatch) => {
-    return sendLogIn(proposal, password).then(
-      (res) => {
-        if (res.msg === '') {
-          dispatch(showErrorPanel(false));
-          dispatch(getInitialState(navigate));
-        } else {
-          dispatch(showErrorPanel(true, res.msg));
-          dispatch(setLoading(false));
-        }
-      },
-      () => {
-        dispatch(showErrorPanel(true));
+    return sendLogIn(proposal, password).then((res) => {
+      if (res.msg === '') {
+        dispatch(showErrorPanel(false));
+        dispatch(getInitialState());
+      } else {
+        dispatch(showErrorPanel(true, res.msg));
         dispatch(setLoading(false));
-      },
-    );
+      }
+    });
   };
 }
 
@@ -125,14 +114,11 @@ export function forcedSignout() {
   };
 }
 
-export function signOut(navigate) {
+export function signOut() {
   return (dispatch) => {
     return sendSignOut().then(() => {
       dispatch({ type: 'SIGNOUT' });
       dispatch(resetLoginInfo());
-      if (navigate) {
-        navigate('/');
-      }
     });
   };
 }
