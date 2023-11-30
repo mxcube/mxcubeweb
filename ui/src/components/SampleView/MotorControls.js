@@ -29,7 +29,7 @@ export default class MotorControls extends React.Component {
     });
 
     const sample_horizontal_uiprop = find(this.props.uiproperties.components, {
-      role: 'sample_vertical',
+      role: 'sample_horizontal',
     });
 
     const sample_vertical =
