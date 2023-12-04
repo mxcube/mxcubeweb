@@ -15,7 +15,7 @@ MXCuBE-Web is the latest generation of the data acquisition software MXCuBE (Mac
 - [Global Phasing Ltd.](http://www.globalphasing.com/)
 - [ALBA](https://www.cells.es/en)
 - [DESY](https://www.desy.de)
-- [LNLS](https://www.lnls.cnpem.br/)
+- [LNLS](https://lnls.cnpem.br/)
 - [Elettra](https://www.elettra.trieste.it/)
 - [NSRRC](https://www.nsrrc.org.tw/english/index.aspx)
 - [ANSTO](https://www.ansto.gov.au/facilities/australian-synchrotron)
