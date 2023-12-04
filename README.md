@@ -42,6 +42,7 @@ The client is implemented in ECMAScript6 and HTML5. React, Boostrap and FabricJS
 ## Information for developers
 
 - [Contributing guidelines](https://github.com/mxcube/mxcubeweb/blob/master/CONTRIBUTING.md)
+- [Developer documentation](https://mxcubeweb.readthedocs.io/)
 
 ## Information for users
 
