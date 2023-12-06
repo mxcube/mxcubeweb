@@ -1,5 +1,12 @@
 import React from 'react';
-import { Button, InputGroup, ButtonGroup, Card, Form } from 'react-bootstrap';
+import {
+  Row,
+  Button,
+  InputGroup,
+  ButtonGroup,
+  Card,
+  Form,
+} from 'react-bootstrap';
 
 import InOutSwitchBtn from '../InOutSwitch/InOutSwitchBtn';
 
@@ -17,8 +24,8 @@ export class HarvesterActionButton extends React.Component {
       <Button
         disabled={disabled}
         onClick={() => this.props.send_command(this.props.cmd, this.props.args)}
-        size='sm'
-        className='me-2'
+        size="sm"
+        className="me-2"
       >
         {this.props.label}
       </Button>
@@ -94,10 +101,7 @@ export class HarvesterAction extends React.Component {
                   this.inputRef = ref;
                 }}
               />
-              <Button
-                type="submit"
-                size="sm"
-              >
+              <Button type="submit" size="sm">
                 {this.props.btn_label}
               </Button>
             </InputGroup>
@@ -215,9 +219,9 @@ export default class HarvesterMaintenance extends React.Component {
               offText="Set to Cryo Temperature"
               openFn={true}
               closeFn={false}
-              state={this.props.contents.room_temperature ? 'OUT' : 'IN'}
-              status={this.props.contents.room_temperature ? 'Room' : 'Cryo'}
-              id="setTemeratureMode"
+              state={this.props.contents.room_temperature_mode ? 'OUT' : 'IN'}
+              status={this.props.contents.room_temperature_mode ? 'Room' : 'Cryo'}
+              id="set_room_temperature_mode"
               onSave={(id, value) => this.props.send_command(id, value)}
             />
           </Card.Body>
@@ -226,42 +230,50 @@ export default class HarvesterMaintenance extends React.Component {
           <Card className="mb-2">
             <Card.Header> Procedure </Card.Header>
             <Card.Body>
-              {!calibration_state ? (
+              <Row>
+                {!calibration_state ? (
+                  <Button
+                    className="mt-1"
+                    variant="outline-secondary"
+                    onClick={() => this.props.calibratePin()}
+                  >
+                    Calibrate
+                  </Button>
+                ) : (
+                  <>
+                    <h5>
+                      Please align the tip of the pin with the center of the
+                      beam
+                    </h5>
+                    <Button
+                      className="mt-1"
+                      onClick={() => this.props.validateCalibration(true)}
+                      variant="outline-success"
+                      style={{ marginRight: '2em' }}
+                    >
+                      Validate Calibration
+                    </Button>
+                    <Button
+                      className="mt-1"
+                      onClick={() => this.props.validateCalibration(false)}
+                      variant="outline-danger"
+                    >
+                      Cancel Calibration
+                    </Button>
+                  </>
+                )}
+              </Row>
+              <Row>
                 <Button
+                  className="mt-1"
+                  disabled
                   variant="outline-secondary"
                   onClick={() => this.props.calibratePin()}
+                  title="Send latest Data collection Groupd and to Crims"
                 >
-                  Calibrate
+                  Send Data to Crims
                 </Button>
-              ) : (
-                <>
-                  <h5>
-                    Please align the tip of the pin with the center of the beam
-                  </h5>
-                  <Button
-                    onClick={() => this.props.validateCalibration(true)}
-                    variant="outline-success"
-                    style={{ marginRight: '2em' }}
-                  >
-                    Validate Calibration
-                  </Button>
-                  <Button
-                    onClick={() => this.props.validateCalibration(false)}
-                    variant="outline-danger"
-                  >
-                    Cancel Calibration
-                  </Button>
-                </>
-              )}
-              <Button
-                className='ms-2'
-                disabled
-                variant="outline-secondary"
-                onClick={() => this.props.calibratePin()}
-                title="Send latest Data collection Groupd and to Crims"
-              >
-                Send Data to Crims
-              </Button>
+              </Row>
             </Card.Body>
           </Card>
         </div>
