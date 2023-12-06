@@ -1,3 +1,7 @@
+/* eslint-disable promise/catch-or-return */
+/* eslint-disable promise/no-nesting */
+/* eslint-disable promise/prefer-await-to-then */
+/* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 
@@ -21,7 +25,7 @@ export function setHarvesterCommandResponse(response) {
 }
 
 export function refresh() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/harvester/contents', {
       method: 'GET',
       headers: {
@@ -42,7 +46,7 @@ export function refresh() {
 }
 
 export function harvestCrystal(xtalUUID, successCb = null) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/harvester/harvest', {
       method: 'POST',
       credentials: 'include',
@@ -66,7 +70,7 @@ export function harvestCrystal(xtalUUID, successCb = null) {
 }
 
 export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/harvester/harvest_and_mount', {
       method: 'POST',
       credentials: 'include',
@@ -90,7 +94,7 @@ export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
 }
 
 export function calibratePin(successCb = null) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/harvester/calibrate', {
       method: 'GET',
       credentials: 'include',
@@ -113,7 +117,7 @@ export function calibratePin(successCb = null) {
 }
 
 export function validateCalibration(validated, successCb = null) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/harvester/validate_calibration', {
       method: 'POST',
       credentials: 'include',
@@ -137,7 +141,7 @@ export function validateCalibration(validated, successCb = null) {
 }
 
 export function abort() {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch('mxcube/api/v0.1/harvester/send_command/abort', {
       method: 'GET',
       headers: {
@@ -154,7 +158,7 @@ export function abort() {
 }
 
 export function sendCommand(cmdparts, args) {
-  return function (dispatch) {
+  return (dispatch) => {
     fetch(`mxcube/api/v0.1/harvester/send_command/${cmdparts}/${args}`, {
       method: 'GET',
       headers: {

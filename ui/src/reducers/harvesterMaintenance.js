@@ -5,7 +5,7 @@ const INITIAL_STATE = {
   message: '',
 };
 
-export default (state = INITIAL_STATE, action) => {
+function harvesterMaintenanceReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_INITIAL_STATE': {
       return {
@@ -28,4 +28,6 @@ export default (state = INITIAL_STATE, action) => {
       return state;
     }
   }
-};
+}
+
+export default harvesterMaintenanceReducer;
