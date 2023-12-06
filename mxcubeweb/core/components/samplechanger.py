@@ -145,7 +145,7 @@ class SampleChanger(ComponentBase):
                 ] = HWR.beamline.sample_changer.get_room_temperature_mode()
 
             try:
-                use_harvester = HWR.beamline.sample_changer.mount_from_harvester()
+                use_harvester = HWR.beamline.sample_changer._mount_from_harvester()
             except Exception:
                 use_harvester = False
             if use_harvester:
@@ -227,7 +227,7 @@ class SampleChanger(ComponentBase):
                     res
                     and self.app.CENTRING_METHOD == queue_entry.CENTRING_METHOD.LOOP
                     and not HWR.beamline.diffractometer.in_plate_mode()
-                    and not sc.mount_from_harvester()
+                    and not sc._mount_from_harvester()
                 ):
                     HWR.beamline.diffractometer.reject_centring()
                     msg = "Starting autoloop centring ..."
@@ -461,7 +461,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 "sampleID": data_model.loc_str,
             }
 
-            if sample_mount_device.mount_from_harvester():
+            if sample_mount_device._mount_from_harvester():
                 mxcube.harvester.queue_harvest_sample(data_model, sample)
 
             try:
@@ -485,7 +485,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
 
     # Harvest Next sample after loading
     if (
-        sample_mount_device.mount_from_harvester()
+        sample_mount_device._mount_from_harvester()
         and HWR.beamline.harvester.get_room_temperature_mode() is False
     ):
         mxcube.harvester.queue_harvest_sample_next(data_model, sample)
@@ -508,7 +508,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
         logging.getLogger("user_level_log").info("Sample loaded")
         dm = HWR.beamline.diffractometer
 
-        if sample_mount_device.mount_from_harvester():
+        if sample_mount_device._mount_from_harvester():
             try:
                 logging.getLogger("user_level_log").info(
                     "Start Auto Harvesting Centring"

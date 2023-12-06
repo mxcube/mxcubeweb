@@ -214,7 +214,7 @@ export default class HarvesterMaintenance extends React.Component {
             <Card.Header> Procedure </Card.Header>
             <Card.Body>
               <Row>
-                {calibrationState ? (
+                {!calibrationState ? (
                   <Col sm={6}>
                     <Button
                       className="mt-1"
