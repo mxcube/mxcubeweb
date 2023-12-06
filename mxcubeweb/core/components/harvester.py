@@ -21,11 +21,12 @@ class Harvester(ComponentBase):
         from mxcubeweb.routes import signals
 
         """Initialize hwobj signals."""
-        HWR.beamline.harvester.connect("stateChanged", signals.harvester_state_changed)
+        if  HWR.beamline.harvester:
+            HWR.beamline.harvester.connect("stateChanged", signals.harvester_state_changed)
 
-        HWR.beamline.harvester.connect(
+            HWR.beamline.harvester.connect(
             "contentsUpdated", signals.harvester_contents_update
-        )
+            )
 
     
     def get_initial_state(self):
@@ -63,14 +64,14 @@ class Harvester(ComponentBase):
         if HWR.beamline.harvester:
             root_name = HWR.beamline.harvester.__TYPE__
             crystal_list = self.get_crystal_list()
-            room_temperature = HWR.beamline.harvester.get_room_temperature_mode()
+            room_temperature_mode = HWR.beamline.harvester.get_room_temperature_mode()
             number_of_pins = HWR.beamline.harvester.get_number_of_available_pin()
             contents = {
                 "name": root_name,
                 "harverster_crystal_list": crystal_list,
                 "number_of_pins": number_of_pins,
                 "calibration_state": self.get_calibrate_state(),
-                "room_temperature": room_temperature
+                "room_temperature_mode": room_temperature_mode
             }
         else:
             contents = {"name": "OFFLINE"}
@@ -197,8 +198,8 @@ class Harvester(ComponentBase):
         harvester_device._wait_sample_transfer_ready(None)
         print("waiting 40 seconds before mount")
         # For some reason the Harvester return READY too soon
-        # approximately 40 SEcond sooner
-        sleep(40)
+        # approximately 40 Second sooner
+        gevent.sleep(40)
         sample_mount_device = HWR.beamline.sample_changer
         mount_current_sample = sample_mount_device.single_load()
 
@@ -212,9 +213,9 @@ class Harvester(ComponentBase):
                 sample_drift_z = float(-harvester_device.get_last_sample_drift_offset_z())
                 
                 motor_pos_dict = {
-                    "kappa": float(harvester_device.centring_calibration_hobj.kappa_ref_value), # 95.35,
-                    "kappa_phi": float(harvester_device.centring_calibration_hobj.phi_ref_value), #351,
-                    "phi": float(harvester_device.centring_calibration_hobj.omega_ref_value),  #315,
+                    "kappa": float(md["HacentringReferencePosition"].get_property("kappa_ref")),
+                    "kappa_phi": float(md["HacentringReferencePosition"].get_property("phi_ref")),
+                    "phi": float(md["HacentringReferencePosition"].get_property("omega_ref")),
                     "phiy": md.phiyMotor.get_value() +   sample_drift_x,
                 }
 
