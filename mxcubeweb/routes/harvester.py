@@ -3,7 +3,8 @@ from flask import Blueprint, Response, jsonify, request
 from mxcubecore import HardwareRepository as HWR
 
 
-def init_route(app, server, url_prefix):
+# Disabling C901 function is too complex (19)
+def init_route(app, server, url_prefix):  # noqa: C901
     bp = Blueprint("harvester", __name__, url_prefix=url_prefix)
 
     @bp.route("/crystal_list", methods=["GET"])
@@ -11,7 +12,6 @@ def init_route(app, server, url_prefix):
     def get_crystal_list():
         app.harvester.get_crystal_list()
         return jsonify(app.harvester.get_harvester_contents())
-
 
     @bp.route("/harvester_state", methods=["GET"])
     @server.restrict
@@ -44,7 +44,7 @@ def init_route(app, server, url_prefix):
                 {"Content-Type": "application/json", "message": str(ex)},
             )
             return resp
-        
+
         return jsonify(app.harvester.get_harvester_contents())
 
     @bp.route("/harvest_and_mount", methods=["POST"])
@@ -62,9 +62,8 @@ def init_route(app, server, url_prefix):
                 {"Content-Type": "application/json", "message": str(ex)},
             )
             return resp
-        
-        return jsonify(app.harvester.get_harvester_contents())
 
+        return jsonify(app.harvester.get_harvester_contents())
 
     @bp.route("/calibrate", methods=["GET"])
     @server.require_control
@@ -74,7 +73,6 @@ def init_route(app, server, url_prefix):
         if ret:
             return jsonify(app.harvester.get_harvester_contents())
 
-
     @bp.route("/validate_calibration", methods=["POST"])
     @server.restrict
     def validate_calibration():
@@ -83,9 +81,8 @@ def init_route(app, server, url_prefix):
             app.harvester.validate_calibration()
         else:
             app.harvester.cancel_calibration()
-        
-        return jsonify(app.harvester.get_harvester_contents())
 
+        return jsonify(app.harvester.get_harvester_contents())
 
     @bp.route("/send_command/<cmdparts>/<args>", methods=["GET"])
     @server.require_control
@@ -93,8 +90,8 @@ def init_route(app, server, url_prefix):
     def send_ha_command(cmdparts, args=None):
         try:
             ret = HWR.beamline.harvester_maintenance.send_command(cmdparts, args)
-            if cmdparts == 'set_room_temperature_mode':
-                value = True if args.lower() in ['true', 'True', '1'] else False
+            if cmdparts == "set_room_temperature_mode":
+                value = True if args.lower() in ["true", "True", "1"] else False
                 HWR.beamline.sample_changer.set_room_temperature_mode(value)
                 HWR.beamline.diffractometer.set_room_temperature_mode(value)
         except Exception as ex:
@@ -106,6 +103,8 @@ def init_route(app, server, url_prefix):
                 {"Content-Type": "application/json", "message": msg},
             )
         else:
-            return jsonify(response=ret, contents=app.harvester.get_harvester_contents())
+            return jsonify(
+                response=ret, contents=app.harvester.get_harvester_contents()
+            )
 
     return bp

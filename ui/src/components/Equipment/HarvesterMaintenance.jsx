@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   Row,
+  Col,
   Button,
   InputGroup,
   ButtonGroup,
@@ -10,7 +11,7 @@ import {
 
 import InOutSwitchBtn from '../InOutSwitch/InOutSwitchBtn';
 
-export class HarvesterActionButton extends React.Component {
+class HarvesterActionButton extends React.Component {
   render() {
     let disabled;
 
@@ -33,7 +34,7 @@ export class HarvesterActionButton extends React.Component {
   }
 }
 
-export class HarvesterActionGroup extends React.Component {
+class HarvesterActionGroup extends React.Component {
   render() {
     return (
       <Card className="mb-2">
@@ -46,7 +47,7 @@ export class HarvesterActionGroup extends React.Component {
   }
 }
 
-export class HarvesterAction extends React.Component {
+class HarvesterAction extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -57,22 +58,15 @@ export class HarvesterAction extends React.Component {
   }
 
   handleInputChange(e) {
-    if (this.props.inputType == 'number') {
+    if (this.props.inputType === 'number') {
       this.setState({ input_value: Number(e.target.value) });
-    } else this.setState({ input_value: e.target.value });
+    } else {
+      this.setState({ input_value: e.target.value });
+    }
   }
 
   actionComponent() {
-    const props = {
-      value: 8,
-      ref: 'input',
-      onSubmit: this.submit,
-      onCancel: this.cancel,
-      precision: 0.5,
-      step: 'any',
-    };
-
-    let input = (
+    return (
       <span>
         <Form
           onSubmit={(e) => {
@@ -109,20 +103,9 @@ export class HarvesterAction extends React.Component {
         </Form>
       </span>
     );
-
-    input = React.cloneElement(input, props);
-
-    return input;
   }
 
   render() {
-    let plateBarcode = '';
-    if (this.props.global_state.plate_info) {
-      plateBarcode = `[ ${this.props.global_state.plate_info.plate_barcode
-        .toString()
-        .split(',')
-        .join(',   ')}]`;
-    }
     return (
       <HarvesterActionGroup
         name={`${this.props.header_msg} : ${this.props.value}`}
@@ -161,7 +144,7 @@ export default class HarvesterMaintenance extends React.Component {
     let msg = '';
 
     if (
-      Object.keys(this.props.commands).length !== 0 &&
+      Object.keys(this.props.commands).length > 0 &&
       this.props.commands.cmds !==
         'Harvester maintenance controller not defined'
     ) {
@@ -181,9 +164,9 @@ export default class HarvesterMaintenance extends React.Component {
       plateBarcode = this.props.global_state.plate_barecode.toString();
     }
 
-    let calibration_state = false;
+    let calibrationState = false;
     if (this.props.contents) {
-      calibration_state = this.props.contents.calibration_state;
+      calibrationState = this.props.contents.calibration_state;
     }
 
     return (
@@ -197,19 +180,17 @@ export default class HarvesterMaintenance extends React.Component {
             </Card.Body>
           </Card>
         ) : null}
-        {
-          <HarvesterAction
-            btn_label="Set"
-            label="Plate Barcode"
-            cmd="loadPlateWithBarcode"
-            args={this.props.currentPlateBarcode}
-            send_command={this.props.send_command}
-            global_state={this.props.global_state}
-            header_msg="Actual Plate Barcode is"
-            value={plateBarcode}
-            inputType="text"
-          />
-        }
+        <HarvesterAction
+          btn_label="Set"
+          label="Plate Barcode"
+          cmd="loadPlateWithBarcode"
+          args={this.props.currentPlateBarcode}
+          send_command={this.props.send_command}
+          global_state={this.props.global_state}
+          header_msg="Actual Plate Barcode is"
+          value={plateBarcode}
+          inputType="text"
+        />
         <Card className="mb-2">
           <Card.Header>Temperature Mode</Card.Header>
           <Card.Body>
@@ -217,10 +198,12 @@ export default class HarvesterMaintenance extends React.Component {
               labelText="Temperature :"
               onText="Set to Room Temperature"
               offText="Set to Cryo Temperature"
-              openFn={true}
+              openFn
               closeFn={false}
               state={this.props.contents.room_temperature_mode ? 'OUT' : 'IN'}
-              status={this.props.contents.room_temperature_mode ? 'Room' : 'Cryo'}
+              status={
+                this.props.contents.room_temperature_mode ? 'Room' : 'Cryo'
+              }
               id="set_room_temperature_mode"
               onSave={(id, value) => this.props.send_command(id, value)}
             />
@@ -231,48 +214,59 @@ export default class HarvesterMaintenance extends React.Component {
             <Card.Header> Procedure </Card.Header>
             <Card.Body>
               <Row>
-                {!calibration_state ? (
-                  <Button
-                    className="mt-1"
-                    variant="outline-secondary"
-                    onClick={() => this.props.calibratePin()}
-                  >
-                    Calibrate
-                  </Button>
+                {calibrationState ? (
+                  <Col sm={6}>
+                    <Button
+                      className="mt-1"
+                      variant="outline-secondary"
+                      onClick={() => this.props.calibratePin()}
+                    >
+                      Calibrate
+                    </Button>
+                  </Col>
                 ) : (
                   <>
-                    <h5>
-                      Please align the tip of the pin with the center of the
-                      beam
-                    </h5>
-                    <Button
-                      className="mt-1"
-                      onClick={() => this.props.validateCalibration(true)}
-                      variant="outline-success"
-                      style={{ marginRight: '2em' }}
-                    >
-                      Validate Calibration
-                    </Button>
-                    <Button
-                      className="mt-1"
-                      onClick={() => this.props.validateCalibration(false)}
-                      variant="outline-danger"
-                    >
-                      Cancel Calibration
-                    </Button>
+                    <Col sm={12}>
+                      <h5>
+                        Please align the tip of the pin with the center of the
+                        beam
+                      </h5>
+                    </Col>
+                    <Col sm={6}>
+                      <Button
+                        className="mt-1 text-nowrap"
+                        onClick={() => this.props.validateCalibration(true)}
+                        variant="outline-success"
+                        style={{ marginRight: '2em' }}
+                      >
+                        Validate Calibration
+                      </Button>
+                    </Col>
+                    <Col sm={6}>
+                      <Button
+                        className="mt-1"
+                        onClick={() => this.props.validateCalibration(false)}
+                        variant="outline-warning"
+                      >
+                        Cancel Calibration
+                      </Button>
+                    </Col>
                   </>
                 )}
               </Row>
-              <Row>
-                <Button
-                  className="mt-1"
-                  disabled
-                  variant="outline-secondary"
-                  onClick={() => this.props.calibratePin()}
-                  title="Send latest Data collection Groupd and to Crims"
-                >
-                  Send Data to Crims
-                </Button>
+              <hr />
+              <Row className="mt-2">
+                <Col sm={6}>
+                  <Button
+                    className="mt-1"
+                    disabled
+                    variant="outline-secondary"
+                    onClick={() => this.props.calibratePin()}
+                    title="Send latest Data collection Groupd and to Crims"
+                  >
+                    Send Data to Crims
+                  </Button>
+                </Col>
               </Row>
             </Card.Body>
           </Card>

@@ -53,9 +53,7 @@ export class PlateManipulatorAction extends React.Component {
   }
 
   actionComponent() {
-    const props = { value: 8, vref: 'input' };
-
-    let input = (
+    return (
       <span>
         <Form
           onSubmit={(e) => {
@@ -96,10 +94,6 @@ export class PlateManipulatorAction extends React.Component {
         </Form>
       </span>
     );
-
-    input = React.cloneElement(input, props);
-
-    return input;
   }
 
   render() {
