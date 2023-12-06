@@ -1,168 +1,146 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { Modal } from 'react-bootstrap';
 import './ImageViewer.css';
-// import PinchZoomPan from "react-responsive-pinch-zoom-pan";
 
-// Component for gallery image
-class GalleryImage extends React.Component {
-  render() {
-    return (
-      <img
-        className={`image_galery_view ${this.props.className}`}
-        src={this.props.src}
-        alt={this.props.alt}
-      />
-    );
-  }
+function GalleryImage(props) {
+  return (
+    <img
+      className={`image_galery_view ${props.className}`}
+      src={props.src}
+      alt={props.alt}
+    />
+  );
 }
 
-// Component for gallery modal
-class GalleryModal extends React.Component {
-  render() {
-    if (this.props.isOpen === false) {
-      return null;
+function GalleryModal(props) {
+  const { isOpen, drawTarget } = props;
+  const canvasRef = useRef(null);
+  const imageRef = useRef(null);
+
+  useEffect(() => {
+    if (isOpen && drawTarget) {
+      _drawTarget();
     }
+  });
 
-    return (
-      <div
-        // isOpen={this.props.isOpen}
-        className="modal-overlay"
-        // name={this.props.name}
-      >
-        <div className="viewer-modal-body">
-          <a
-            className="viewer-modal-close"
-            href="#"
-            onClick={this.props.onClick}
-          >
-            <span className="fa fa-times"></span>
-          </a>
-          {/* <svg width="100%" height="100%"> */}
-          {/* <rect width="100%" height="100%" fill="green" /> */}
-          {/* <image xlinkHref={this.props.src} alt="cry" /> */}
-          {/* <PinchZoomPan maxScale={1000}> */}
-          <svg width="573" height="480" viewBox="0 0 100% 100%">
-            <image className="image_modale_view" xlinkHref={this.props.src} />
-            <rect
-              className="image_modale_vie"
-              x={573 - this.props.imgTargetX - 222}
-              y={480 - this.props.imgTargetY - 186}
-              width="40"
-              height="20"
-              fill="red"
+  function _drawTarget() {
+    const context = canvasRef.getContext('2d');
+
+    canvasRef.style.position = 'absolute';
+    canvasRef.style.left = `${imageRef.offsetLeft}px`;
+    canvasRef.style.top = `${imageRef.offsetTop}px`;
+
+    context.strokeStyle = 'white';
+    context.lineWidth = 2;
+
+    context.beginPath();
+
+    context.moveTo(props.imgTargetX - 20, props.imgTargetY - 20);
+    context.lineTo(props.imgTargetX + 20, props.imgTargetY + 20);
+
+    context.moveTo(props.imgTargetX + 20, props.imgTargetY - 20);
+    context.lineTo(props.imgTargetX - 20, props.imgTargetY + 20);
+
+    context.stroke();
+  }
+
+  if (!isOpen) {
+    return null;
+  }
+
+  return (
+    <Modal show={isOpen} onHide={props.handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>{props.imageName}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <TransformWrapper>
+          <TransformComponent>
+            <img
+              ref={imageRef}
+              alt=""
+              width="100%"
+              height="100%"
+              className="image_modale_view"
+              src={props.src}
             />
-            {/* <line x1="0" y1="80" x2="100" y2="20" stroke="black" /> */}
-          </svg>
-          {/* <img className='image_modal_view'src={this.props.src} /> */}
-          {/* </PinchZoomPan> */}
-
-          {/* <svg width="573" height="480" viewBox="0 0 100% 100%">
-            <image className='image_modal_view' xlinkHref={this.props.src} />
-            <rect width="20" height="20" fill="green" x={473 - this.props.imgTargetX} y={380 - this.props.imgTargetY} />
-          </svg> */}
-          {/* <img className='image_modal_view'src={this.props.src} /> */}
-          <span className="label label-info">
-            {this.props.imgTargetX}
-            <br />
-            {this.props.imgTargetY}
-          </span>
-          {/* </svg> */}
-        </div>
-      </div>
-    );
-  }
+            {props.drawTarget ? (
+              <canvas ref={canvasRef} aria-label="target_xy" />
+            ) : null}
+          </TransformComponent>
+        </TransformWrapper>
+      </Modal.Body>
+    </Modal>
+  );
 }
 
-// Component for gallery
-export default class ImageViewer extends React.Component {
-  constructor(props) {
-    super(props);
+export default function ImageViewer(props) {
+  const [showModal, setShowModal] = useState('');
+  const [url, setUrl] = useState('');
 
-    this.state = {
-      showModal: false,
-      isOpen: false,
-      url: '',
-    };
-
-    this.openModal = this.openModal.bind(this);
-
-    this.closeModal = this.closeModal.bind(this);
+  function openModal(url) {
+    setShowModal(true);
+    setUrl(url);
   }
 
-  render() {
-    return this.props.galleryView ? (
-      <div
-        refs="gallery-container"
-        className="container-fluid gallery-container"
-      >
-        <div className="row">
-          {this.props.imgUrls.map((url, index) => {
-            return (
-              <div className="col-sm-6 col-md-3 col-xl-2">
-                <div className="gallery-card">
-                  <GalleryImage
-                    className="gallery-thumbnail"
-                    src={url}
-                    alt={this.props.imgAlt}
-                  />
-                  <span
-                    className="card-icon-open fa fa-expand"
-                    value={url}
-                    onClick={(e) => this.openModal(url, e)}
-                  ></span>
-                </div>
+  function closeModal() {
+    setShowModal(false);
+    setUrl('');
+  }
+
+  return props.galleryView ? (
+    <div className="container-fluid gallery-container">
+      <div className="row">
+        {props.imgUrls.map((imgUrl) => {
+          return (
+            <div key={imgUrl} className="col-sm-6 col-md-3 col-xl-2">
+              <div className="gallery-card">
+                <GalleryImage
+                  className="gallery-thumbnail"
+                  src={imgUrl}
+                  alt={props.imgAlt}
+                />
+                <span
+                  className="viewer-icon-open fa fa-expand"
+                  onClick={() => openModal(imgUrl)}
+                />
               </div>
-            );
-          })}
-        </div>
-        <GalleryModal
-          isOpen={this.state.showModal}
-          onClick={this.closeModal}
-          src={this.state.url}
+            </div>
+          );
+        })}
+      </div>
+      <GalleryModal
+        isOpen={showModal}
+        handleClose={closeModal}
+        src={url}
+        imgTargetX={props.imgTargetX}
+        imgTargetY={props.imgTargetY}
+        imageName={props.imageName}
+      />
+    </div>
+  ) : (
+    <div>
+      <div className="gallery-card">
+        <GalleryImage
+          className="gallery-thumbnail img-responsive"
+          src={props.imgUrl}
+          alt={props.imgAlt}
+        />
+        <span
+          className="viewer-icon-open fa fa-expand"
+          // value={props.imgUrl}
+          onClick={() => openModal(props.imgUrl)}
         />
       </div>
-    ) : (
-      <div>
-        <div className="gallery-card">
-          <GalleryImage
-            className="gallery-thumbnail img-responsive"
-            src={this.props.imgUrl}
-            alt={this.props.imgAlt}
-          />
-          <span
-            className="card-icon-open fa fa-expand"
-            value={this.props.imgUrl}
-            onClick={(e) => this.openModal(this.props.imgUrl, e)}
-          ></span>
-        </div>
-        <GalleryModal
-          isOpen={this.state.showModal}
-          onClick={this.closeModal}
-          src={this.state.url}
-          imgTargetX={this.props.imgTargetX}
-          imgTargetY={this.props.imgTargetY}
-        />
-      </div>
-    );
-  }
-
-  // Function for opening modal dialog
-  openModal(url, e) {
-    this.setState({
-      showModal: true,
-      url: url,
-    });
-  }
-
-  // Function for closing modal dialog
-  closeModal() {
-    this.setState({
-      showModal: false,
-      url: '',
-    });
-  }
+      <GalleryModal
+        isOpen={showModal}
+        handleClose={closeModal}
+        src={url}
+        imgTargetX={props.imgTargetX}
+        imgTargetY={props.imgTargetY}
+        imageName={props.imageName}
+      />
+    </div>
+  );
 }
-
-// // Let's render the whole thing
-// ReactDOM.render(
-//   <Gallery imgUrls={imgUrls} />
-// , galleryContainer);

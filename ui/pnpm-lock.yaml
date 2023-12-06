@@ -134,6 +134,9 @@ dependencies:
   react-sticky:
     specifier: ^6.0.3
     version: 6.0.3(react-dom@17.0.2)(react@17.0.2)
+  react-zoom-pan-pinch:
+    specifier: 3.3.0
+    version: 3.3.0(react-dom@17.0.2)(react@17.0.2)
   redux:
     specifier: 4.1.2
     version: 4.1.2
@@ -13622,6 +13625,17 @@ packages:
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
+      react: 17.0.2
+      react-dom: 17.0.2(react@17.0.2)
+    dev: false
+
+  /react-zoom-pan-pinch@3.3.0(react-dom@17.0.2)(react@17.0.2):
+    resolution: {integrity: sha512-vy1h8aenDzXye+HRqANZaSA8IPHoqOiuDPFBkswoyPUH8uMfsmbeH6gFI4r4BhEJa0xIlcA+FbvhidRWKGUrOg==}
+    engines: {node: '>=8', npm: '>=5'}
+    peerDependencies:
+      react: '*'
+      react-dom: '*'
+    dependencies:
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
     dev: false

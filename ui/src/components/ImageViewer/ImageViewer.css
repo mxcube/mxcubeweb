@@ -1,18 +1,3 @@
-/* html, */
-/* body {
-  min-height: 100%;
-  height: 100%;
-} */
-
-/* html {
-  font-size: 16px;
-} */
-
-/* body {
-  position: relative;
-  font-size: 100%;
-} */
-
 .gallery-container {
   padding-top: 0.9375rem;
 }
@@ -34,7 +19,7 @@
   font-size: 6rem;
 }
 
-.card-icon-open {
+.viewer-icon-open {
   display: block;
   position: absolute;
   top: 50%;
@@ -47,61 +32,14 @@
   transition: all 0.25s ease-in-out;
 }
 
-.card-icon-open:focus,
-.card-icon-open:focus:hover {
+.viewer-icon-open:focus,
+.viewer-icon-open:focus:hover {
   color: #111;
 }
 
-.gallery-thumbnail:focus ~ .card-icon-open,
-.gallery-thumbnail:hover ~ .card-icon-open,
-.gallery-thumbnail ~ .card-icon-open:focus,
-.gallery-thumbnail ~ .card-icon-open:hover {
+.gallery-thumbnail:focus ~ .viewer-icon-open,
+.gallery-thumbnail:hover ~ .viewer-icon-open,
+.gallery-thumbnail ~ .viewer-icon-open:focus,
+.gallery-thumbnail ~ .viewer-icon-open:hover {
   opacity: 1;
-}
-
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 10;
-  width: 100%;
-  height: 100%;
-  background: rgba(21, 21, 21, 0.75);
-}
-
-.viewer-modal-body {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  z-index: 11;
-  padding: 0;
-  overflow: auto;
-  max-width: 100%;
-  max-height: 100%;
-  border-radius: 4px;
-  transform: translate(-50%, -50%);
-}
-
-.viewer-modal-close {
-  z-index: 99999;
-  position: absolute;
-  top: 0;
-  right: 8px;
-  font-size: 1.5rem;
-  color: #111;
-  transition: all 0.25s ease-in-out;
-}
-
-.modal-close:focus,
-.modal-close:focus:hover {
-  color: #111;
-}
-
-.image_galery_view {
-  transform: scale(-1, -1);
-}
-
-.image_modale_view {
-  /* transform: translateX(573px) rotate(160deg); */
-  /* transform: scale(0.5) translate(-100%, -100%); */
 }
