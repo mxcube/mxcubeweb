@@ -39,8 +39,7 @@ _objects:
   - sample_changer: sc.xml
   - sample_changer_maintenance: sc_maint.xml
 
-
-  # The 2 lines up have to be used for the flex HCD and the two line below for the plate manip
+  # The 2 lines up have to be used SC and the two line below for the plate manipulator
   # - sample_changer: plate_manipulator.xml
   # - sample_changer_maintenance: plate_manipulator_maint.xml
 
