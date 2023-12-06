@@ -24,9 +24,9 @@ class GalleryModal extends React.Component {
 
     return (
       <div
-        isOpen={this.props.isOpen}
+        // isOpen={this.props.isOpen}
         className="modal-overlay"
-        name={this.props.name}
+        // name={this.props.name}
       >
         <div className="viewer-modal-body">
           <a

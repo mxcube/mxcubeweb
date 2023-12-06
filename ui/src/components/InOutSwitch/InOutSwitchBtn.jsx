@@ -88,9 +88,7 @@ export default class InOutSwitchBtn extends React.Component {
             </Popover>
           }
         >
-          <Button
-            variant="outline-secondary"
-          >
+          <Button variant="outline-secondary">
             {this.props.labelText}{' '}
             {this.props.state ? (
               <Badge className="" bg={msgBgStyle}>
