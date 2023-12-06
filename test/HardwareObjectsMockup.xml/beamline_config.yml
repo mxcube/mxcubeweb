@@ -13,39 +13,39 @@ _initialise_class:
 # would need those added (e.g. the centring methods)
 #
 _objects:
-    # The !!o0map and the lines starting with '- ' give you an *orderd* dictionary
-    # And thus a reproducible loading order
-    !!omap
-    # The values are the file paths to the configuration file for the
-    # object, relative to the configuration file path(s)
-    #
-    # NB - the order is *NOT* arbitrary, as signal connnections are set
-    # on one object that require the other to be already loaded.
-    #
-    # Hardware:
-    - session: session.xml
-    - data_publisher: data_publisher.xml
-    - machine_info: machine_info.xml
-    - detector: detector.xml
-    - beam: beam.xml
-    - transmission: transmission.xml
-    - flux: flux.xml
-    - cryo: cryo.xml
-    - energy: energy.xml
-    - resolution: resolution.xml
-    - safety_shutter: safety_shutter.xml
-    - fast_shutter: fast_shutter.xml
-    - hutch_interlock: hutchtrigger.xml
+  # The !!o0map and the lines starting with '- ' give you an *orderd* dictionary
+  # And thus a reproducible loading order
+  !!omap
+  # The values are the file paths to the configuration file for the
+  # object, relative to the configuration file path(s)
+  #
+  # NB - the order is *NOT* arbitrary, as signal connnections are set
+  # on one object that require the other to be already loaded.
+  #
+  # Hardware:
+  - session: session.xml
+  - data_publisher: data_publisher.xml
+  - machine_info: machine_info.xml
+  - detector: detector.xml
+  - beam: beam.xml
+  - transmission: transmission.xml
+  - flux: flux.xml
+  - cryo: cryo.xml
+  - energy: energy.xml
+  - resolution: resolution.xml
+  - safety_shutter: safety_shutter.xml
+  - fast_shutter: fast_shutter.xml
+  - hutch_interlock: hutchtrigger.xml
 
-    - harvester: harvester.xml
-    - harvester_maintenance: harvester_maintenance.xml
+  - sample_changer: sc.xml
+  - sample_changer_maintenance: sc_maint.xml
 
-    - sample_changer: sc.xml
-    - sample_changer_maintenance: sc_maint.xml
-
-  # The 2 lines up have to be used for the flex HCD and the two line below for the plate manip
+  # The 2 lines up have to be used SC and the two line below for the plate manipulator
   # - sample_changer: plate_manipulator.xml
   # - sample_changer_maintenance: plate_manipulator_maint.xml
+
+  - harvester: harvester.xml
+  - harvester_maintenance: harvester_maintenance.xml
 
   - diffractometer: minidiff.xml
   - lims: lims.xml
