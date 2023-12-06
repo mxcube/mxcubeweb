@@ -120,7 +120,7 @@ class EquipmentContainer extends React.Component {
                 </Row>
               )}
             </GenericEquipment>
-            {this.props.contents.use_harvester ? (
+            {!this.props.contents.use_harvester ? (
               <GenericEquipment
                 state={this.props.haState}
                 name={this.props.haContents && this.props.haContents.name}
@@ -134,7 +134,7 @@ class EquipmentContainer extends React.Component {
                       harvestAndLoadCrystal={this.props.harvestAndLoadCrystal}
                       abort={this.props.haAbort}
                       contents={this.props.haContents}
-                      refresh={this.props.haRefresh}
+                      handleRefresh={this.props.haRefresh}
                     />
                   </Col>
                   <Col sm={3}>

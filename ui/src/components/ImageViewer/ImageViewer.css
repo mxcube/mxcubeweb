@@ -5,7 +5,6 @@
 .gallery-card {
   position: relative;
   overflow: hidden;
-  /* margin-bottom: 1.875rem; */
 }
 
 .gallery-card img[alt] {

@@ -385,7 +385,6 @@ class PlateManipulator extends React.Component {
                     if (plate.type === 'square') {
                       cell = (
                         <div
-                          role="button"
                           onContextMenu={(e) =>
                             this.showContextMenu(e, `wls${row}${col}`)
                           }
@@ -444,7 +443,8 @@ class PlateManipulator extends React.Component {
                           >
                             <li className="dropdown-header">
                               <b>
-                                Well `{row}{col}` ':'
+                                Well `{row}
+                                {col}` ':'
                                 {loadedDrop}
                               </b>
                             </li>
@@ -493,9 +493,7 @@ class PlateManipulator extends React.Component {
                   if (this.props.contents.children !== null) {
                     if (plate.type === 'square') {
                       cell = (
-                        <div // eslint-disable-line jsx-a11y/prefer-tag-over-role
-                          role="button"
-                          // tabIndex={0}
+                        <div
                           onContextMenu={(e) =>
                             this.showContextMenu(e, `wlw${row}${col}`)
                           }

@@ -10,17 +10,17 @@ import {
 export default class InOutSwitchBtn extends React.Component {
   constructor(props) {
     super(props);
-    this.setIn = this.setIn.bind(this);
-    this.setOut = this.setOut.bind(this);
+    this.handleSetIn = this.handleSetIn.bind(this);
+    this.handleSetOut = this.handleSetOut.bind(this);
   }
 
-  setIn() {
+  handleSetIn() {
     if (this.props.onSave !== undefined) {
       this.props.onSave(this.props.id, this.props.closeFn);
     }
   }
 
-  setOut() {
+  handleSetOut() {
     if (this.props.onSave !== undefined) {
       this.props.onSave(this.props.id, this.props.openFn);
     }
@@ -41,7 +41,7 @@ export default class InOutSwitchBtn extends React.Component {
       if (this.props.state === 'IN' || this.props.state === 'close') {
         msgBgStyle = 'danger';
         btn = (
-          <Button variant="success" onClick={this.setOut}>
+          <Button variant="success" onClick={this.handleSetOut}>
             {this.props.onText}
           </Button>
         );
@@ -52,7 +52,7 @@ export default class InOutSwitchBtn extends React.Component {
       ) {
         msgBgStyle = 'success';
         btn = (
-          <Button variant="danger" onClick={this.setIn}>
+          <Button variant="danger" onClick={this.handleSetIn}>
             {this.props.offText}
           </Button>
         );
@@ -65,7 +65,6 @@ export default class InOutSwitchBtn extends React.Component {
               as="span"
               animation="border"
               size="sm"
-              role="status"
               aria-hidden="true"
             />
           </Button>

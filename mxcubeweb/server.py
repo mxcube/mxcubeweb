@@ -157,9 +157,7 @@ class Server:
         from mxcubeweb.routes.workflow import (
             init_route as init_workflow_route,
         )
-        from mxcubeweb.routes.harvester import (
-            init_route as init_harvester_route
-        )
+        from mxcubeweb.routes.harvester import init_route as init_harvester_route
 
         url_root_prefix = "/mxcube/api/v0.1"
 

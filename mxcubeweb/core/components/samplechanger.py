@@ -64,7 +64,9 @@ class SampleChanger(ComponentBase):
                 "location": s.get_address(),
                 "sampleName": s.get_name() or "Sample-%s" % s.get_address(),
                 "crystalUUID": s.get_id() or s.get_address(),
-                "proteinAcronym": s.proteinAcronym if hasattr(s, 'proteinAcronym') else '',
+                "proteinAcronym": s.proteinAcronym
+                if hasattr(s, "proteinAcronym")
+                else "",
                 "code": sample_dm,
                 "loadable": True,
                 "state": state,
@@ -98,7 +100,7 @@ class SampleChanger(ComponentBase):
         if current_sample:
             self.set_current_sample(current_sample["sampleID"])
 
-    def get_sc_contents(self):
+    def get_sc_contents(self):  # noqa: C901
         def _getElementStatus(e):
             if e.is_leaf():
                 if e.is_loaded():
@@ -138,10 +140,12 @@ class SampleChanger(ComponentBase):
             contents = {"name": root_name}
 
             if hasattr(HWR.beamline.sample_changer, "get_room_temperature_mode"):
-                contents["room_temperature_mode"] = HWR.beamline.sample_changer.get_room_temperature_mode()
+                contents[
+                    "room_temperature_mode"
+                ] = HWR.beamline.sample_changer.get_room_temperature_mode()
 
             try:
-                use_harvester =  HWR.beamline.sample_changer.mount_from_harvester()
+                use_harvester = HWR.beamline.sample_changer.mount_from_harvester()
             except Exception:
                 use_harvester = False
             if use_harvester:
@@ -234,8 +238,6 @@ class SampleChanger(ComponentBase):
                     msg = "Starting autoloop Focusin ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     sc.move_to_crystal_position(None)
-
-
 
             else:
                 msg = "Mounting sample: %s" % sample["sampleName"]
@@ -480,11 +482,14 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 raise queue_entry.QueueSkippEntryException(
                     "Sample changer could not load sample", ""
                 )
-    
+
     # Harvest Next sample after loading
-    if sample_mount_device.mount_from_harvester() and HWR.beamline.harvester.get_room_temperature_mode() == False:
+    if (
+        sample_mount_device.mount_from_harvester()
+        and HWR.beamline.harvester.get_room_temperature_mode() is False
+    ):
         mxcube.harvester.queue_harvest_sample_next(data_model, sample)
-    
+
     robot_action_dict["endTime"] = time.strftime("%Y-%m-%d %H:%M:%S")
     if sample_mount_device.has_loaded_sample():
         robot_action_dict["status"] = "SUCCESS"
@@ -502,10 +507,12 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
         signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
         dm = HWR.beamline.diffractometer
-        
+
         if sample_mount_device.mount_from_harvester():
             try:
-                logging.getLogger("user_level_log").info("Start Auto Harvesting Centring")
+                logging.getLogger("user_level_log").info(
+                    "Start Auto Harvesting Centring"
+                )
                 harvester_device = HWR.beamline.harvester
 
                 computed_offset = harvester_device.get_offsets_for_sample_centering()
@@ -513,8 +520,10 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
 
             except Exception as ex:
                 print(str(ex))
-                raise queue_entry.QueueSkippEntryException("Could not center sample, skipping", "")
-        
+                raise queue_entry.QueueSkippEntryException(
+                    "Could not center sample, skipping", ""
+                )
+
         else:
             use_custom_centring_routine = dm.get_property(
                 "use_custom_centring_script", False
@@ -542,7 +551,9 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
 
                             # NBNB  BUG . self and app are not avialble here
                             if mxcube.AUTO_MOUNT_SAMPLE:
-                                msg = "Going to save centring automatically, please wait"
+                                msg = (
+                                    "Going to save centring automatically, please wait"
+                                )
                             else:
                                 msg = (
                                     "Centring in progress. Please save"
