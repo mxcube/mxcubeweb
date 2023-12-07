@@ -5,7 +5,7 @@ import { reduxForm, formValueSelector } from 'redux-form';
 import { DraggableModal } from '../DraggableModal';
 import { Modal, Button, Form, Row, ButtonToolbar } from 'react-bootstrap';
 import validate from './validate';
-import { StaticField, InputField, toFixed } from './fields';
+import { StaticField, InputField } from './fields';
 
 class XRFScan extends React.Component {
   constructor(props) {
@@ -156,9 +156,6 @@ export default connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: toFixed(state, 'resolution'),
-      energy: toFixed(state, 'energy'),
-      transmission: toFixed(state, 'transmission'),
     },
   };
 })(XRFScanForm);
