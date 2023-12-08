@@ -8,6 +8,8 @@ Contents:
     :glob:
     :titlesonly:
 
-    *
+    index.md
+    config/index
     dev/index
     rest-api/index
+    *
