@@ -146,7 +146,7 @@ class MXCUBECore:
 
         for ho_name in hwobject_list:
             # Go through all hardware objects exposed by mxcubecore
-            # hardware repository set id to username if its deinfed
+            # hardware repository set id to username if its defined
             # use the name otherwise (file name without extension)
             ho = MXCUBECore.hwr.get_hardware_object(ho_name)
 
@@ -453,7 +453,7 @@ class MXCUBEApplication:
             if section:
                 for component in section.components:
                     # Check that the component, if it's a UIComponentModel, corresponds
-                    # to a HardwareObjecs that is available and that it can be
+                    # to a HardwareObjects that is available and that it can be
                     # adapted.
                     if isinstance(component, UIComponentModel):
                         try:
@@ -472,7 +472,7 @@ class MXCUBEApplication:
                             )
                             msg += f"{component.attribute} accessible via get_role "
                             msg += "check ui.yaml configuration file. "
-                            msg += "(attribute will NOT be avilable in UI)"
+                            msg += "(attribute will NOT be available in UI)"
                             logging.getLogger("HWR").warning(msg)
                             adapter_cls_name = ""
                             value_type = ""

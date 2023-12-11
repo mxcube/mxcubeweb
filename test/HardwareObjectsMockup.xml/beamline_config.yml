@@ -13,13 +13,13 @@ _initialise_class:
 # would need those added (e.g. the centring methods)
 #
 _objects:
-  # The !!o0map and the lines starting with '- ' give you an *orderd* dictionary
+  # The !!omap and the lines starting with '- ' give you an *ordered* dictionary
   # And thus a reproducible loading order
   !!omap
   # The values are the file paths to the configuration file for the
   # object, relative to the configuration file path(s)
   #
-  # NB - the order is *NOT* arbitrary, as signal connnections are set
+  # NB - the order is *NOT* arbitrary, as signal connections are set
   # on one object that require the other to be already loaded.
   #
   # Hardware:

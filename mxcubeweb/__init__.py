@@ -117,8 +117,8 @@ def build_server_and_config(test=False, argv=None):
     try:
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
-        # without continuously editing teh main config files.
-        # Note that the machinery was all there in the core alrady. rhfogh.
+        # without continuously editing the main config files.
+        # Note that the machinery was all there in the core already. rhfogh.
         HWR.init_hardware_repository(cmdline_options.hwr_directory)
         config_path = HWR.get_hardware_repository().find_in_repository("mxcube-web")
 
