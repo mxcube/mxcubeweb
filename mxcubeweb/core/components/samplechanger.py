@@ -11,7 +11,7 @@ from mxcubeweb.core.components.queue import COLLECTED, UNCOLLECTED
 
 
 # TO CONSIDER:
-# This should maybe be made into a adapter instead of a component
+# This should maybe be made into an adapter instead of a component
 class SampleChanger(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)

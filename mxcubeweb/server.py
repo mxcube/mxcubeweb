@@ -35,7 +35,7 @@ class Server:
 
     def __init__(self):
         raise NotImplementedError(
-            "Server is to be used as a pure static class, dont instanciate"
+            "Server is to be used as a pure static class, don't instantiate."
         )
 
     @staticmethod
@@ -47,7 +47,7 @@ class Server:
     @staticmethod
     def kill_processes():
         # Killing the processes causes pytest to fail because
-        # of non zero exit code, so we dont kill the processes
+        # of non-zero exit code, so we don't kill the processes
         # when running the tests
         if not Server.flask.testing:
             with open("/tmp/mxcube.pid", "r") as f:

@@ -3,10 +3,10 @@ import logging
 
 BEAMLINE_ADAPTER = None
 
-# Singleton like interface is needed to keep the same referance to the
+# Singleton like interface is needed to keep the same reference to the
 # adapter object and its corresponding hardware objects, so that the signal
-# system wont cleanup signal handlers. (PyDispatcher removes signal handlers
-# when a object is garbage collected)
+# system won't clean up signal handlers. (PyDispatcher removes signal handlers
+# when an object is garbage collected)
 
 
 def BeamlineAdapter(*args):

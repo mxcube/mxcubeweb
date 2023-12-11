@@ -15,11 +15,11 @@ class FlaskConfigModel(BaseModel):
     SECURITY_TRACKABLE: bool = Field(True, description="")
     USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
     PERMANENT_SESSION_LIFETIME: datetime.timedelta
-    CERT_KEY: str = Field("", description="Full path to signed certficate key file")
+    CERT_KEY: str = Field("", description="Full path to signed certificate key file")
     CERT_PEM: str = Field("", description="Full path to signed certificate pem file")
 
     # SIGNED for signed certificate on file
-    # ADHOC for flask to generate a certifcate,
+    # ADHOC for flask to generate a certificate,
     # NONE for no SSL
     CERT: str = Field(
         "NONE",
@@ -35,7 +35,7 @@ class UIComponentModel(BaseModel):
     precision: Optional[int]
     suffix: Optional[str]
     description: Optional[str]
-    # Set internaly not to be set through configuration
+    # Set internally not to be set through configuration
     value_type: Optional[str]
     object_type: Optional[str]
     format: Optional[str]
@@ -100,7 +100,7 @@ class ModeEnum(str, Enum):
 class MXCUBEAppConfigModel(BaseModel):
     VIDEO_FORMAT: str = Field("MPEG1", description="Video format MPEG1 or MJPEG")
 
-    # URL from which the client retreives the video stream (often different from
+    # URL from which the client retrieves the video stream (often different from
     # local host when running behind proxy)
     VIDEO_STREAM_URL: str = Field(
         "",
@@ -108,7 +108,7 @@ class MXCUBEAppConfigModel(BaseModel):
     )
 
     # Port from which the video_stream process (https://github.com/mxcube/video-streamer)
-    # sreams video. The process runs in seperate process (on localhost)
+    # streams video. The process runs in separate process (on localhost)
     VIDEO_STREAM_PORT: int = Field(8000, description="Video stream PORT")
     USE_EXTERNAL_STREAMER: bool = Field(
         False,
