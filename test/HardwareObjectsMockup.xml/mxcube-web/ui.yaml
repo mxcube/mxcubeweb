@@ -12,7 +12,7 @@ sample_view:
       role: kappa
       step: 0.1
       precision: 1
-      suffix: "°"
+      suffix: °
     - label: Kappa Phi
       attribute: diffractometer.kappa_phi
       role: kappa_phi
