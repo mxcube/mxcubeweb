@@ -86,25 +86,22 @@ export function sendSelectProposal(number, navigate) {
 export function getLoginInfo() {
   return async (dispatch) => {
     const loginInfo = await fetchLoginInfo();
-    if (!loginInfo.loggedIn) {
-      dispatch(resetLoginInfo());
-      throw new Error('Not authenticated');
-    }
     dispatch(setLoginInfo(loginInfo));
   };
 }
 
 export function logIn(proposal, password) {
-  return (dispatch) => {
-    return sendLogIn(proposal, password).then((res) => {
-      if (res.msg === '') {
-        dispatch(showErrorPanel(false));
-        dispatch(getInitialState());
-      } else {
-        dispatch(showErrorPanel(true, res.msg));
-        dispatch(setLoading(false));
-      }
-    });
+  return async (dispatch) => {
+    const res = await sendLogIn(proposal, password);
+
+    if (res.msg !== '') {
+      dispatch(showErrorPanel(true, res.msg));
+      dispatch(setLoading(false));
+      return;
+    }
+
+    dispatch(showErrorPanel(false));
+    await dispatch(getLoginInfo());
   };
 }
 
@@ -119,15 +116,14 @@ export function signOut() {
     return sendSignOut().then(() => {
       dispatch({ type: 'SIGNOUT' });
       dispatch(resetLoginInfo());
+      dispatch(applicationFetched(false));
     });
   };
 }
 
 export function getInitialState(navigate) {
-  return async (dispatch) => {
+  return (dispatch) => {
     const state = {};
-
-    await dispatch(getLoginInfo());
 
     const sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera', {
       method: 'GET',
@@ -270,11 +266,8 @@ export function getInitialState(navigate) {
         .catch(notify),
     ];
 
-    const prom = Promise.all(pchains).then(() => {
+    Promise.all(pchains).then(() => {
       dispatch(setInitialState(state));
-    });
-
-    prom.then(() => {
       dispatch(applicationFetched(true));
     });
   };

@@ -33,6 +33,8 @@ import styles from './Main.module.css';
 
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
+import { store } from '../store';
+import { getInitialState } from '../actions/login';
 
 class Main extends React.Component {
   constructor(props) {
@@ -43,6 +45,10 @@ class Main extends React.Component {
   }
 
   componentDidMount() {
+    if (!this.props.applicationFetched) {
+      store.dispatch(getInitialState());
+    }
+
     // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
     getAllChatMessages().then((json) => {
       json.messages.forEach((entry) => {

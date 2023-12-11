@@ -18,20 +18,9 @@ import HelpContainer from '../containers/HelpContainer';
 import Main from './Main';
 import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
 
-import { store } from '../store';
 import { serverIO } from '../serverIO';
-import { applicationFetched } from '../actions/general';
-import { getInitialState } from '../actions/login';
-
-export async function requireAuth() {
-  try {
-    store.dispatch(applicationFetched(false));
-    await store.dispatch(getInitialState());
-    serverIO.listen();
-  } catch {
-    store.dispatch(applicationFetched(true));
-  }
-}
+import { getLoginInfo } from '../actions/login';
+import { bindActionCreators } from 'redux';
 
 function PrivateOutlet() {
   const loggedIn = useSelector((state) => state.login.loggedIn);
@@ -92,16 +81,18 @@ const router = createBrowserRouter([
 ]);
 
 function App(props) {
-  const { applicationFetched } = props;
+  const { loggedIn, getLoginInfo } = props;
 
   useEffect(() => {
-    requireAuth();
+    getLoginInfo();
+    serverIO.listen();
+
     return () => {
       serverIO.disconnect();
     };
-  }, []);
+  }, [getLoginInfo]);
 
-  if (!applicationFetched) {
+  if (loggedIn === null) {
     // Fetching login info
     return <LoadingScreen />;
   }
@@ -109,11 +100,7 @@ function App(props) {
   return <RouterProvider router={router} />;
 }
 
-function mapStateToProps(state) {
-  return {
-    loggedIn: state.login.loggedIn,
-    applicationFetched: state.general.applicationFetched,
-  };
-}
-
-export default connect(mapStateToProps)(App);
+export default connect(
+  (state) => ({ loggedIn: state.login.loggedIn }),
+  (dispatch) => ({ getLoginInfo: bindActionCreators(getLoginInfo, dispatch) }),
+)(App);
