@@ -111,8 +111,7 @@ class Server:
             Server.ws_restrict = staticmethod(networkutils.ws_valid_login_only)
             Server.route = staticmethod(Server.flask.route)
 
-    def _register_route(init_blueprint_fn, app, url_prefix, tag=None):
-        tag = url_prefix if tag is None else tag
+    def _register_route(init_blueprint_fn, app, url_prefix):
         bp = init_blueprint_fn(app, Server, url_prefix)
 
         Server.flask.register_blueprint(bp)
