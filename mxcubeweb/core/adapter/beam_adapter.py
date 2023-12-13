@@ -21,7 +21,6 @@ class BeamAdapter(ActuatorAdapterBase):
         :return: Tuple, (list of apertures, current aperture)
         :rtype: tuple
         """
-        aperture_list, current_aperture = [], None
         beam_ho = self._ho
 
         aperture_list = beam_ho.get_available_size()["values"]
