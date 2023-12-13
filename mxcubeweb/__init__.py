@@ -127,7 +127,7 @@ def build_server_and_config(test=False, argv=None):
         if test:
             cfg.flask.USER_DB_PATH = "/tmp/mxcube-test-user.db"
 
-        server.init(cmdline_options, cfg, mxcube)
+        server.init(cmdline_options, cfg)
         mxcube.init(
             server,
             cmdline_options.allow_remote,
