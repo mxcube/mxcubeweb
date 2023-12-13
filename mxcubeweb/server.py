@@ -62,7 +62,7 @@ class Server:
                 os.kill(int(pid), signal.SIGKILL)
 
     @staticmethod
-    def init(cmdline_options, cfg, mxcube):
+    def init(cmdline_options, cfg):
         template_dir = os.path.join(os.path.dirname(__file__), "templates")
 
         Server.flask = Flask(
