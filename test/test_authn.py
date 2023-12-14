@@ -92,7 +92,7 @@ def test_authn_signout(client):
 
     resp = client.get(URL_SIGNOUT)
     assert resp.status_code == 200
-    assert resp.json["msg"] == ""
+    assert resp.json == ""
 
 
 def test_authn_info(client, login_type):
