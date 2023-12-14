@@ -77,6 +77,7 @@ def client(make_client):
 def test_authn_signin_good_credentials(client):
     resp = client.post(URL_SIGNIN, json=CREDENTIALS_0)
     assert resp.status_code == 200
+    assert resp.json["msg"] == ""
 
 
 def test_authn_signin_wrong_credentials(client):
