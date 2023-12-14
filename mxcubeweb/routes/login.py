@@ -43,8 +43,7 @@ def init_route(app, server, url_prefix):
             res = make_response(jsonify({"msg": "Could not authenticate"}), 200)
         else:
             res = make_response(jsonify({"msg": ""}), 200)
-
-        session.permanent = True
+            session.permanent = True
 
         return res
 
