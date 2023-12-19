@@ -92,6 +92,7 @@ export function getLoginInfo() {
 
 export function logIn(proposal, password) {
   return async (dispatch) => {
+    dispatch(setLoading(true));
     const res = await sendLogIn(proposal, password);
 
     if (res.msg !== '') {
@@ -269,6 +270,7 @@ export function getInitialState(navigate) {
     Promise.all(pchains).then(() => {
       dispatch(setInitialState(state));
       dispatch(applicationFetched(true));
+      dispatch(setLoading(false));
     });
   };
 }

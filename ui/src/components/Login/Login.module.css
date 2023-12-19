@@ -40,3 +40,8 @@
   margin-bottom: 0;
   padding: 0.5rem 0;
 }
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+}
