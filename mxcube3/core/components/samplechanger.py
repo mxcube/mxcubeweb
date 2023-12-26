@@ -205,7 +205,7 @@ class SampleChanger(ComponentBase):
         sc = HWR.beamline.sample_changer
         sc_maint = HWR.beamline.sample_changer_maintenance
         print("进入samplechanger.py的mount_sample_clean_up函数,sc.count:", sc.count)
-        if sc.count >= 30:
+        if sc.count >= 20:
             sc.count = 0
             # 如果计数到16但是没有发现上颗样品，说明被umount掉了，此时不执行unmount函数
             if sc.get_loaded_sample == None:
@@ -217,8 +217,8 @@ class SampleChanger(ComponentBase):
                 pre_sample['sampleID'] = pre_sample_tuple[0]
                 pre_sample['location'] = pre_sample_tuple[0]
                 self.unmount_sample_clean_up(pre_sample)    #umount会初始化，所以会清除closelid状态
-                sc.change_ifcloseLid_inBeginning_state(True)
-            sc_maint._do_dry_gripper()
+                sc.change_ifcloseLid_inBeginning_state(True) #umount现在不会初始化 just in case
+            # sc_maint._do_dry_gripper() # move this function inside the unmount_sample_clean_up
 
 
         res = None
@@ -318,8 +318,11 @@ class SampleChanger(ComponentBase):
         else:
             HWR.beamline.queue_model.mounted_sample = ""
             HWR.beamline.sample_view.clear_all()
-            #添加下样品后初始化
-            HWR.beamline.sample_changer_maintenance._do_home()
+            # #添加下样品后初始化
+            # HWR.beamline.sample_changer_maintenance._do_home()
+            #20231226
+            sc_maint = HWR.beamline.sample_changer_maintenance
+            sc_maint._do_dry_gripper()
 
     def mount_sample(self, sample):
         sc = HWR.beamline.sample_changer

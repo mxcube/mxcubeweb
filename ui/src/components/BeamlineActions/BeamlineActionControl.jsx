@@ -16,7 +16,7 @@ export default class BeamlineActionControl extends React.Component {
 
     return (
       <ButtonToolbar>
-        { this.props.arguments.length === 0 ?
+        { this.props.argurments.length === 0 ?
           <Button
             size="sm"
             className='me-1'
