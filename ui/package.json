@@ -39,7 +39,7 @@
     "jsmpeg": "^1.0.0",
     "liform-react": "^0.9.0",
     "lodash": "^4.17.21",
-    "plotly.js": "^1.52.3",
+    "plotly.js": "^2.25.2",
     "popper.js": "^1.16.1",
     "rc-input-number": "8.0.3",
     "react": "^17.0.2",
