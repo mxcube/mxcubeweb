@@ -161,6 +161,17 @@ export function getInitialState(navigate) {
         },
       },
     );
+    const harvesterInitialState = fetch(
+      'mxcube/api/v0.1/harvester/get_harvester_initial_state',
+      {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          Accept: 'application/json',
+          'Content-type': 'application/json',
+        },
+      },
+    );
     const remoteAccess = fetch('mxcube/api/v0.1/ra/', {
       method: 'GET',
       credentials: 'include',
@@ -241,6 +252,25 @@ export function getInitialState(navigate) {
         })
         .then((json) => {
           state.sampleChangerGlobalState = json.global_state;
+          return json;
+        })
+        .catch(notify),
+      harvesterInitialState
+        .then(parse)
+        .then((json) => {
+          state.harvesterState = { state: json.state };
+          return json;
+        })
+        .then((json) => {
+          state.harvesterContents = json.contents;
+          return json;
+        })
+        .then((json) => {
+          state.harvesterCommands = json.cmds;
+          return json;
+        })
+        .then((json) => {
+          state.harvesterGlobalState = json.global_state;
           return json;
         })
         .catch(notify),
