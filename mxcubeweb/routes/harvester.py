@@ -92,6 +92,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
             ret = HWR.beamline.harvester_maintenance.send_command(cmdparts, args)
             if cmdparts == "set_room_temperature_mode":
                 value = True if args.lower() in ["true", "True", "1"] else False
+                # Temporary set MD and SC Temperature mode at the same time
                 HWR.beamline.sample_changer.set_room_temperature_mode(value)
                 HWR.beamline.diffractometer.set_room_temperature_mode(value)
         except Exception as ex:

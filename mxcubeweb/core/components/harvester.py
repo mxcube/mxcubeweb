@@ -27,7 +27,7 @@ class Harvester(ComponentBase):
             )
 
             HWR.beamline.harvester.connect(
-                "contentsUpdated", signals.harvester_contents_update
+                "harvester_contents_update", signals.harvester_contents_update
             )
 
     def get_initial_state(self):
@@ -64,6 +64,11 @@ class Harvester(ComponentBase):
         return initial_state
 
     def get_harvester_contents(self):
+        """Get the Harvester contents info
+
+        Return (Dict): Dict content, object name etc..
+        crystal_list and number of available pins"
+        """
         if HWR.beamline.harvester:
             root_name = HWR.beamline.harvester.__TYPE__
             crystal_list = self.get_crystal_list()
@@ -73,7 +78,7 @@ class Harvester(ComponentBase):
                 "name": root_name,
                 "harvester_crystal_list": crystal_list,
                 "number_of_pins": number_of_pins,
-                "calibration_state": self.get_calibrate_state(),
+                "calibration_state": self.get_calibration_state(),
                 "room_temperature_mode": room_temperature_mode,
             }
         else:
@@ -82,6 +87,11 @@ class Harvester(ComponentBase):
         return contents
 
     def get_crystal_list(self):
+        """Get the Harvester Sample List info
+
+        Return (List):  list of dict content
+        state , name etc.. of the current processing plan"
+        """
         crystal_list = []
 
         try:
@@ -163,7 +173,11 @@ class Harvester(ComponentBase):
         except Exception:
             return "OFFLINE", "OFFLINE", "OFFLINE"
 
-    def send_data_collection_info_to_crims(self):
+    def send_data_collection_info_to_crims(self) -> bool:
+        """Send Data collected to CRIMS
+
+        Return (bool): Whether the
+        """
         dataCollectionGroupId = ""
         crystal_uuid = ""
         harvester_device = HWR.beamline.harvester
@@ -197,12 +211,17 @@ class Harvester(ComponentBase):
             logging.getLogger("user_level_log").exception(msg)
             return False
 
-    def get_calibrate_state(self):
+    def get_calibration_state(self) -> bool:
         return HWR.beamline.harvester.calibrate_state
 
-    def calibrate_pin(self):
+    def calibrate_pin(self) -> bool:
         """
-        Pin Calibration Procedure here
+            Pin Calibration Procedure
+            In other for the Centring procedure to work on a Harvested Pin
+            a Calibration Procedure need to be execute
+
+        Return (bool): whether the calibration procedure goes to end (True)
+        or had and exception (False)
         """
         harvester_device = HWR.beamline.harvester
 
@@ -213,7 +232,7 @@ class Harvester(ComponentBase):
         # approximately 40 Second sooner
         gevent.sleep(40)
         sample_mount_device = HWR.beamline.sample_changer
-        mount_current_sample = sample_mount_device.single_load()
+        mount_current_sample = sample_mount_device.load_a_pin_for_calibration()
 
         if mount_current_sample:
             try:
@@ -254,6 +273,9 @@ class Harvester(ComponentBase):
                 logging.getLogger("user_level_log").info(
                     "Pin Calibration Step 1 Succeed"
                 )
+                logging.getLogger("user_level_log").info(
+                    "User Need to Perform an  3 click centring"
+                )
                 return True
             except Exception:
                 logging.getLogger("user_level_log").exception("Pin Calibration Failed")
@@ -265,15 +287,18 @@ class Harvester(ComponentBase):
             )
             return False
 
-    def cancel_calibration(self):
+    def cancel_calibration(self) -> None:
         harvester_device = HWR.beamline.harvester
         harvester_device.set_calibrate_state(False)
-        logging.getLogger("user_level_log").error("Pin Calibration Canceled")
+        logging.getLogger("user_level_log").warning("Pin Calibration Canceled")
 
-    def validate_calibration(self):
+    def validate_calibration(self) -> bool:
         """
-        finish Calibration Procedure
+        finish Calibration Procedure step 2
         after user ran a 3 click centring
+        Return (bool): whether the step 2 of calibration procedure
+        goes to end (True)
+        or had and exception (False)
         """
         try:
             harvester_device = HWR.beamline.harvester
@@ -288,25 +313,30 @@ class Harvester(ComponentBase):
             }
 
             saved_position = md.saved_motor_position
-
+            # find offset position based on old and new motor position
             new_motor_offset = {
                 "focus": motor_pos_dict["focus"] - saved_position["focus"],
                 "phiy": motor_pos_dict["phiy"] - saved_position["phiy"],
                 "phiz": motor_pos_dict["phiz"] - saved_position["phiz"],
-                "centring_focus": motor_pos_dict["centring_focus"]
-                - saved_position["centring_focus"],
-                "centring_vertical": motor_pos_dict["centring_vertical"]
-                - saved_position["centring_vertical"],
+                "centring_focus": (
+                    motor_pos_dict["centring_focus"] - saved_position["centring_focus"]
+                ),
+                "centring_vertical": (
+                    motor_pos_dict["centring_vertical"]
+                    - saved_position["centring_vertical"]
+                ),
             }
 
             calibrated_motor_offset = {
                 "focus": new_motor_offset["focus"] + new_motor_offset["centring_focus"],
                 "phiy": new_motor_offset["phiy"],
-                "phiz": new_motor_offset["phiz"]
-                + new_motor_offset["centring_vertical"],
+                "phiz": (
+                    new_motor_offset["phiz"] + new_motor_offset["centring_vertical"]
+                ),
             }
 
             print(calibrated_motor_offset)
+            # we store the motor offset in the Harvester, to be used for sample centering
             harvester_device.store_calibrated_pin(
                 calibrated_motor_offset["focus"],
                 calibrated_motor_offset["phiy"],
@@ -318,10 +348,11 @@ class Harvester(ComponentBase):
             logging.getLogger("user_level_log").exception(
                 f"Pin Calibration / validation Failed {str(ex)}"
             )
+            return False
 
         return True
 
-    def get_sample_info(self, location):
+    def get_sample_info(self, location: str) -> dict[str]:
         samples_list = HWR.beamline.sample_changer.get_sample_list()
         sample_data = {}
         for s in samples_list:
@@ -336,10 +367,9 @@ class Harvester(ComponentBase):
 
         return sample_data
 
-    def harvest_and_mount_sample(self, xtal_uuid):
+    def harvest_and_mount_sample(self, xtal_uuid: str) -> dict[str, bool, int]:
         try:
             harvester_device = HWR.beamline.harvester
-
             self.harvest_crystal(xtal_uuid)
             harvester_device._wait_sample_transfer_ready(None)
 
@@ -351,130 +381,29 @@ class Harvester(ComponentBase):
         self.init_signals()
         return self.get_harvester_contents()
 
-    def harvest_sample_before_mount(self, sample_uuid, wait_before_load=False):
+    def harvest_sample_before_mount(
+        self, sample_uuid: str, wait_before_load: bool = False
+    ) -> bool:
+        """
+        Return (bool): whether the sample has been harvest then mount -> (True)
+        or had and exception -> (False)
+        """
         harvester_device = HWR.beamline.harvester
-        res = None
 
-        if harvester_device and sample_uuid:
-            if harvester_device.get_status() == "Ready":
-                try:
-                    if (
-                        harvester_device.check_crystal_state(sample_uuid)
-                        == "pending_not_current"
-                    ):
-                        print(harvester_device.get_samples_state())
-                        logging.getLogger("user_level_log").info(
-                            "Harvester:Trashing pending Sample"
-                        )
-                        harvester_device.trash_sample()
-                        harvester_device._wait_ready(None)
-
-                    # currently_harvested_sample = harvester_device.get_current_crystal()
-                    if (
-                        harvester_device.current_crystal_state(sample_uuid)
-                        == "ready_to_execute"
-                        or harvester_device.current_crystal_state(sample_uuid)
-                        == "needs_repositionning"
-                    ):
-                        # import pdb; pdb.set_trace()
-                        logging.getLogger("user_level_log").info("Harvesting started")
-                        harvester_device.harvest_crystal(sample_uuid)
-                        if wait_before_load:
-                            harvester_device._wait_sample_transfer_ready(None)
-                        res = True
-                    elif (
-                        harvester_device.check_crystal_state(sample_uuid)
-                        == "pending_and_current"
-                    ):
-                        logging.getLogger("user_level_log").info(
-                            "Putting Harvester in Tansfer Mode"
-                        )
-                        harvester_device.transfer_sample()
-                        if wait_before_load:
-                            harvester_device._wait_sample_transfer_ready(None)
-                        res = True
-                    else:
-                        # logging.getLogger("user_level_log").info("ERROR: Sample Could not be Harvested (Harvester Ready, ) ")
-                        msg = harvester_device.get_status()
-                        logging.getLogger("user_level_log").exception(
-                            "ERROR: Sample Could not be Harvested"
-                        )
-                        logging.getLogger("user_level_log").exception(msg)
-
-                        res = False
-
-                    return res
-                except RuntimeError:
-                    return False
-
-            elif harvester_device._ready_to_transfer():
-                try:
-                    if (
-                        harvester_device.current_crystal_state(sample_uuid)
-                        == "waiting_for_transfer"
-                    ):
-                        logging.getLogger("user_level_log").info(
-                            "Sample Already Harvested, continue"
-                        )
-                        res = True
-                    else:
-                        harvester_device.abort()
-                        harvester_device._wait_ready(None)
-                        logging.getLogger("user_level_log").info("Trash current Sample")
-                        harvester_device.trash_sample()
-                        harvester_device._wait_ready(None)
-                        if (
-                            harvester_device.current_crystal_state(sample_uuid)
-                            == "ready_to_execute"
-                            or harvester_device.current_crystal_state(sample_uuid)
-                            == "needs_repositionning"
-                        ):
-                            logging.getLogger("user_level_log").info(
-                                "Harvesting started"
-                            )
-                            harvester_device.harvest_crystal(sample_uuid)
-                            if wait_before_load:
-                                harvester_device._wait_sample_transfer_ready(None)
-                            res = True
-                        else:
-                            msg = harvester_device.get_status()
-                            logging.getLogger("user_level_log").info(
-                                "Warning: Sample Could not be Harvested Try Again"
-                            )
-                            return self.harvest_sample_before_mount(sample_uuid)
-
-                    return res
-                except RuntimeError:
-                    return False
-            elif (
-                "Harvesting" in harvester_device.get_status()
-                or harvester_device.get_status() == "Finishing Harvesting"
-            ):
-                logging.getLogger("user_level_log").info(
-                    "Warning: Harvesting In Progress Try Again"
-                )
-                harvester_device._wait_sample_transfer_ready(None)
-                return self.harvest_sample_before_mount(sample_uuid)
-            else:
-                msg = harvester_device.get_status()
-                logging.getLogger("user_level_log").exception(
-                    "ERROR: Sample Could not be Harvested"
-                )
-                logging.getLogger("user_level_log").exception(msg)
-                # Try an abort and move to next sample
-                harvester_device.abort()
-                harvester_device._wait_ready(None)
-                return False
+        if harvester_device:
+            return harvester_device.harvest_sample_before_mount(
+                sample_uuid, wait_before_load
+            )
         else:
             msg = harvester_device.get_status()
             logging.getLogger("user_level_log").exception(
-                "ERROR: No sample uuid or Harvester Device FOund"
+                "ERROR: No Harvester Device Found"
             )
             logging.getLogger("user_level_log").exception(msg)
             # Try an abort and move to next sample
             return False
 
-    def current_queue_index(self, current_sample):
+    def current_queue_index(self, current_sample: str) -> int | None:
         current_queue_dict = self.app.queue.queue_to_dict()
         current_queue_list = list(current_queue_dict)
         res = None
@@ -485,7 +414,7 @@ class Harvester(ComponentBase):
 
         return res
 
-    def get_next_sample(self, current_sample):
+    def get_next_sample(self, current_sample: str) -> str | None:
         current_queue_dict = self.app.queue.queue_to_dict()
         current_queue_list = list(current_queue_dict)
         res = None
@@ -496,7 +425,10 @@ class Harvester(ComponentBase):
 
         return res
 
-    def queue_harvest_sample(self, data_model, sample):
+    def queue_harvest_sample(self, data_model, sample: str) -> None:
+        """
+        While queue execution send harvest request
+        """
         current_queue = self.app.queue.queue_to_dict()
         harvester_device = HWR.beamline.harvester
         wait_before_load = (
@@ -544,7 +476,7 @@ class Harvester(ComponentBase):
                 "There is no more Pins in the Harvester, Stopping queue", ""
             )
 
-    def queue_harvest_sample_next(self, data_model, sample):
+    def queue_harvest_next_sample(self, data_model, sample: str):
         next_sample = self.get_next_sample(data_model.loc_str)
         harvester_device = HWR.beamline.harvester
         current_queue = self.app.queue.queue_to_dict()
@@ -564,8 +496,9 @@ class Harvester(ComponentBase):
                 "Warning: Could not harvest next sample"
             )
 
-    def harvest_crystal(self, xtal_uuid):
+    def harvest_crystal(self, xtal_uuid: str) -> str:
         try:
-            return HWR.beamline.harvester.harvest_crystal(xtal_uuid)
+            HWR.beamline.harvester.harvest_crystal(xtal_uuid)
+            return "Crystal Harvested properly"
         except Exception:
             return "Could not Harvest Crystal"
