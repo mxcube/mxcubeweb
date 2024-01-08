@@ -64,9 +64,9 @@ class SampleChanger(ComponentBase):
                 "location": s.get_address(),
                 "sampleName": s.get_name() or "Sample-%s" % s.get_address(),
                 "crystalUUID": s.get_id() or s.get_address(),
-                "proteinAcronym": s.proteinAcronym
-                if hasattr(s, "proteinAcronym")
-                else "",
+                "proteinAcronym": (
+                    s.proteinAcronym if hasattr(s, "proteinAcronym") else ""
+                ),
                 "code": sample_dm,
                 "loadable": True,
                 "state": state,
@@ -140,12 +140,12 @@ class SampleChanger(ComponentBase):
             contents = {"name": root_name}
 
             if hasattr(HWR.beamline.sample_changer, "get_room_temperature_mode"):
-                contents[
-                    "room_temperature_mode"
-                ] = HWR.beamline.sample_changer.get_room_temperature_mode()
+                contents["room_temperature_mode"] = (
+                    HWR.beamline.sample_changer.get_room_temperature_mode()
+                )
 
             try:
-                use_harvester = HWR.beamline.sample_changer._mount_from_harvester()
+                use_harvester = HWR.beamline.sample_changer.mount_from_harvester()
             except Exception:
                 use_harvester = False
             if use_harvester:
@@ -227,7 +227,7 @@ class SampleChanger(ComponentBase):
                     res
                     and self.app.CENTRING_METHOD == queue_entry.CENTRING_METHOD.LOOP
                     and not HWR.beamline.diffractometer.in_plate_mode()
-                    and not sc._mount_from_harvester()
+                    and not sc.mount_from_harvester()
                 ):
                     HWR.beamline.diffractometer.reject_centring()
                     msg = "Starting autoloop centring ..."
@@ -441,7 +441,6 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
 
     # devices that can move sample on beam
     # (sample changer, plate holder)
-    # PlateManipulator is being consider as Sample changer
     sample_mount_device = HWR.beamline.sample_changer
 
     if (
@@ -461,7 +460,9 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 "sampleID": data_model.loc_str,
             }
 
-            if sample_mount_device._mount_from_harvester():
+            # in this case the sample changer takes the sample from an Harvester
+            # We Harvest the sample and make it ready to load
+            if sample_mount_device.mount_from_harvester():
                 mxcube.harvester.queue_harvest_sample(data_model, sample)
 
             try:
@@ -483,12 +484,12 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                     "Sample changer could not load sample", ""
                 )
 
-    # Harvest Next sample after loading
+    # Harvest Next sample while loading current
     if (
-        sample_mount_device._mount_from_harvester()
+        sample_mount_device.mount_from_harvester()
         and HWR.beamline.harvester.get_room_temperature_mode() is False
     ):
-        mxcube.harvester.queue_harvest_sample_next(data_model, sample)
+        mxcube.harvester.queue_harvest_next_sample(data_model, sample)
 
     robot_action_dict["endTime"] = time.strftime("%Y-%m-%d %H:%M:%S")
     if sample_mount_device.has_loaded_sample():
@@ -508,7 +509,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
         logging.getLogger("user_level_log").info("Sample loaded")
         dm = HWR.beamline.diffractometer
 
-        if sample_mount_device._mount_from_harvester():
+        if sample_mount_device.mount_from_harvester():
             try:
                 logging.getLogger("user_level_log").info(
                     "Start Auto Harvesting Centring"
@@ -516,7 +517,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 harvester_device = HWR.beamline.harvester
 
                 computed_offset = harvester_device.get_offsets_for_sample_centering()
-                dm.start_custom_centring(computed_offset)
+                dm.start_harvester_centring(computed_offset)
 
             except Exception as ex:
                 print(str(ex))
