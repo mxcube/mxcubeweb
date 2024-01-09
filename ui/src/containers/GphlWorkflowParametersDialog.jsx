@@ -1,53 +1,140 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Modal } from 'react-bootstrap';
-import Form from '@rjsf/core';
-import validator from '@rjsf/validator-ajv8';
+import { Modal, Row, Col, Form as Form, Button, Stack } from 'react-bootstrap';
+
 import {
   showGphlWorkflowParametersDialog,
-  submitWorkflowParameters,
+  updateGphlWorkflowParameters,
 } from '../actions/workflow';
+
+import { useForm } from 'react-hook-form';
 
 import './WorkflowParametersDialog.css';
 
-// This class will be customize to be able to display more
-// specific GPHL workflow form
 function GphlWorkflowParametersDialog(props) {
-  const { formData, show, handleHide, submitWorkflowParameters } = props;
+  const { formData, show, handleHide, updateGphlWorkflowParameters } = props;
 
-  function submitData(values) {
-    submitWorkflowParameters(values.formData);
+  const [formDataDict, setFormDataDict] = useState();
+
+  useEffect(() => {
+    if (show) {
+      _setDataDict()
+    }
+  });
+
+  function _setDataDict() {
+    const dict = {}
+    Object.entries(formData.schema.properties).forEach(
+      ([key, value]) => {
+        dict[key] = value.default;
+      }
+    )
+    setFormDataDict(dict);
+  }
+
+  function handleSubmit() {
+    const signal  = formData.ui_schema['ui:options'].return_signal;
+    const parameter = {'signal': signal, 'instruction': 'PARAMETERS_READY', 'data': formDataDict}
+    updateGphlWorkflowParameters(parameter);
     handleHide();
   }
 
-  let form = '';
+  function handleChange(e) {
+    setFormDataDict({...formDataDict, [e.target.name] : e.target.value});
+    // const signal  = formData.ui_schema['ui:options'].return_signal;
+    // const parameter = {'signal': signal, 'instruction': e.target.name, 'data': formDataDict}
+    // updateGphlWorkflowParameters(parameter);
+  }
+
+  function handleAbort() {
+    const signal  = formData.ui_schema['ui:options'].return_signal;
+    const parameter = {'signal': signal, 'instruction': 'PARAMETERS_CANCELLED', 'data': formDataDict}
+    updateGphlWorkflowParameters(parameter);
+    handleHide();
+  }
+
+  let schema = null;
+  let uiSchema = null;
   let formName = '';
+  let renderFormRow = '';
 
-  // The Liform generates some errors when schema is empty or null so
-  // we only create it when show is true and we have a schema to use.
-  // The errors will otherwise prevent the dialog from being closed
-  // properly.
+  if(show) {
+    schema = formData.schema;
+    uiSchema = formData.ui_schema;
+    formName = schema["title"];
 
-  if (show && formData) {
-    const schema = formData.schema || formData;
-    const uiSchema = formData.ui_schema || {};
-    const initialFormData = formData.initialValues || formData.schema;
-
-    form = (
-      <div>
-        <Form
-          validator={validator}
-          schema={schema}
-          uiSchema={uiSchema}
-          formData={initialFormData}
-          onSubmit={submitData}
-          onError={console.log('errors')} // eslint-disable-line no-console
-        />
-      </div>
-    );
-
-    formName = formData.dialogName;
+    renderFormRow = (
+      <Form className='m-3' onSubmit={handleSubmit}>
+        { uiSchema?
+          uiSchema["ui:order"].map((rowKey) => (
+            <Row className='mb-5'>
+              <div className="title_box" id="bill_to">
+                <div className="p-2" id="title">{uiSchema[rowKey]["ui:title"]}</div>
+                <Row>
+                  {uiSchema[rowKey]["ui:order"] ?
+                    uiSchema[rowKey]["ui:order"].map((ColKey) => (
+                    <Col sm>
+                      {uiSchema[rowKey][ColKey]["ui:order"].map((fieldKey) => (
+                        <Row className='mb-3'>
+                          <Form.Group as={Col}  className='me-2'>
+                            <Form.Label>{schema.properties[fieldKey]["title"]}</Form.Label>
+                            {schema.properties[fieldKey]["type"] === "boolean"?
+                              <Form.Check
+                                type='checkbox'
+                                name={fieldKey}
+                                label={fieldKey}
+                                onChange={(e) => handleChange(e)}
+                                defaultChecked={schema.properties[fieldKey]["default"]}
+                              />
+                            :
+                            schema.properties[fieldKey]["enum"] ?
+                            <Form.Select
+                              name={fieldKey}
+                              value={schema.properties[fieldKey]["default"]}
+                              onChange={(e) => handleChange(e)}
+                            >
+                              {schema.properties[fieldKey]["enum"].map((val) =>(
+                                <option value={val} >
+                                  {val}
+                                </option>
+                              ))}
+                            </Form.Select>
+                            :
+                            <Form.Control
+                              name={fieldKey}
+                              onChange={(e) => handleChange(e)}
+                              className='me-2'
+                              type={schema.properties[fieldKey]["type"]}
+                              // min={schema.properties[fieldKey]["minimum"]}
+                              // max={schema.properties[fieldKey]["maximum"]}
+                              defaultValue={schema.properties[fieldKey]["default"]}
+                              readOnly={schema.properties[fieldKey]["readOnly"]}
+                              disabled={schema.properties[fieldKey]["readOnly"]}
+                            />
+                          }
+                          </Form.Group>
+                        </Row>
+                      ))}
+                    </Col>
+                  )):
+                    <pre className="p-2">
+                      {schema.properties[rowKey]["default"]}
+                    </pre>
+                  }
+                </Row>
+              </div>
+            </Row>
+          ))
+        :
+        null
+      }
+        <Stack direction="horizontal" gap={3}>
+          <div className="p-2 ms-auto"><Button variant="success" type="submit">Continue </Button></div>
+          <div className="p-2"><Button variant='outline-secondary' onClick={handleAbort}> Abort </Button></div>
+        </Stack>
+      </Form>
+    )
   }
 
   return (
@@ -56,7 +143,9 @@ function GphlWorkflowParametersDialog(props) {
         <Modal.Title>{formName}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div id="form-holder">{form}</div>
+        <div className='m-3' id="form-holder">
+          {renderFormRow}
+        </div>
       </Modal.Body>
       <Modal.Footer />
     </Modal>
@@ -76,8 +165,8 @@ function mapDispatchToProps(dispatch) {
       () => showGphlWorkflowParametersDialog(null, false),
       dispatch,
     ),
-    submitWorkflowParameters: bindActionCreators(
-      submitWorkflowParameters,
+    updateGphlWorkflowParameters: bindActionCreators(
+      updateGphlWorkflowParameters,
       dispatch,
     ),
   };

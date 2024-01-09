@@ -5,3 +5,17 @@
 .rjsf #root > .form-group {
   margin-bottom: 15px !important;
 }
+
+.title_box {
+  border: #3c5a86 1.5px dotted;
+}
+
+.title_box #title {
+  position: relative;
+  color: #01012e;
+  font-size: large;
+  top: -0.7em;
+  margin-left: 1em;
+  display: inline;
+  background-color: white;
+}
