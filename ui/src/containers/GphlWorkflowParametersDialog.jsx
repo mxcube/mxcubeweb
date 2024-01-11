@@ -2,13 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal, Row, Col, Form as Form, Button, Stack } from 'react-bootstrap';
+import RcInputNumber from 'rc-input-number';
 
 import {
   showGphlWorkflowParametersDialog,
   updateGphlWorkflowParameters,
 } from '../actions/workflow';
-
-import { useForm } from 'react-hook-form';
 
 import './WorkflowParametersDialog.css';
 
@@ -16,10 +15,12 @@ function GphlWorkflowParametersDialog(props) {
   const { formData, show, handleHide, updateGphlWorkflowParameters } = props;
 
   const [formDataDict, setFormDataDict] = useState();
+  const [errors, setErrors] = useState();
+  const [validated, setValidated] = useState(false);
 
   useEffect(() => {
     if (show) {
-      _setDataDict()
+      _setDataDict();
     }
   });
 
@@ -33,17 +34,39 @@ function GphlWorkflowParametersDialog(props) {
     setFormDataDict(dict);
   }
 
-  function handleSubmit() {
-    const signal  = formData.ui_schema['ui:options'].return_signal;
-    const parameter = {'signal': signal, 'instruction': 'PARAMETERS_READY', 'data': formDataDict}
-    updateGphlWorkflowParameters(parameter);
-    handleHide();
+  function handleSubmit(e) {
+    const form = e.currentTarget;
+    if (form.checkValidity() === false) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    else {
+      const signal  = formData.ui_schema['ui:options'].return_signal;
+      const parameter = {'signal': signal, 'instruction': 'PARAMETERS_READY', 'data': formDataDict}
+      updateGphlWorkflowParameters(parameter);
+      handleHide();
+    }
+    setValidated(true);
   }
 
-  function handleChange(e) {
-    setFormDataDict({...formDataDict, [e.target.name] : e.target.value});
+  function handleChange(e) { 
+    const error = {};
+    const key = e.target.name;
+    const val = e.target.value;
+    const form = e.currentTarget;
+
+    if (form.checkValidity() === false) {
+      error[key] = e.target.validationMessage;
+      setValidated(true);
+    } else {
+      setValidated(false);
+    }
+
+    setFormDataDict({...formDataDict, [key] : val});
+    
+    setErrors({...errors, [key] : error[key]});
     // const signal  = formData.ui_schema['ui:options'].return_signal;
-    // const parameter = {'signal': signal, 'instruction': e.target.name, 'data': formDataDict}
+    // const parameter = {'signal': signal, 'instruction': key, 'data': formDataDict}
     // updateGphlWorkflowParameters(parameter);
   }
 
@@ -65,7 +88,7 @@ function GphlWorkflowParametersDialog(props) {
     formName = schema["title"];
 
     renderFormRow = (
-      <Form className='m-3' onSubmit={handleSubmit}>
+      <Form noValidate validated={validated} className='m-3' onSubmit={handleSubmit}>
         { uiSchema?
           uiSchema["ui:order"].map((rowKey) => (
             <Row className='mb-5'>
@@ -77,13 +100,13 @@ function GphlWorkflowParametersDialog(props) {
                     <Col sm>
                       {uiSchema[rowKey][ColKey]["ui:order"].map((fieldKey) => (
                         <Row className='mb-3'>
-                          <Form.Group as={Col}  className='me-2'>
+                          <Form.Group as={Col} sm  className=''>
                             <Form.Label>{schema.properties[fieldKey]["title"]}</Form.Label>
                             {schema.properties[fieldKey]["type"] === "boolean"?
                               <Form.Check
                                 type='checkbox'
                                 name={fieldKey}
-                                label={fieldKey}
+                                label={fieldKey.replaceAll('_', ' ')}
                                 onChange={(e) => handleChange(e)}
                                 defaultChecked={schema.properties[fieldKey]["default"]}
                               />
@@ -91,7 +114,7 @@ function GphlWorkflowParametersDialog(props) {
                             schema.properties[fieldKey]["enum"] ?
                             <Form.Select
                               name={fieldKey}
-                              value={schema.properties[fieldKey]["default"]}
+                              defaultValue={schema.properties[fieldKey]["default"]}
                               onChange={(e) => handleChange(e)}
                             >
                               {schema.properties[fieldKey]["enum"].map((val) =>(
@@ -106,13 +129,18 @@ function GphlWorkflowParametersDialog(props) {
                               onChange={(e) => handleChange(e)}
                               className='me-2'
                               type={schema.properties[fieldKey]["type"]}
-                              // min={schema.properties[fieldKey]["minimum"]}
-                              // max={schema.properties[fieldKey]["maximum"]}
+                              step="any"
+                              required
+                              min={schema.properties[fieldKey]["minimum"] || 'any'}
+                              max={schema.properties[fieldKey]["maximum"] || 'any'}
                               defaultValue={schema.properties[fieldKey]["default"]}
                               readOnly={schema.properties[fieldKey]["readOnly"]}
                               disabled={schema.properties[fieldKey]["readOnly"]}
                             />
-                          }
+                            }
+                            <Form.Control.Feedback type="invalid">
+                              {errors? errors[fieldKey] : null}
+                            </Form.Control.Feedback>
                           </Form.Group>
                         </Row>
                       ))}
@@ -130,7 +158,7 @@ function GphlWorkflowParametersDialog(props) {
         null
       }
         <Stack direction="horizontal" gap={3}>
-          <div className="p-2 ms-auto"><Button variant="success" type="submit">Continue </Button></div>
+          <div className="p-2 ms-auto"><Button variant="success" disabled={validated} type="submit">Continue </Button></div>
           <div className="p-2"><Button variant='outline-secondary' onClick={handleAbort}> Abort </Button></div>
         </Stack>
       </Form>
