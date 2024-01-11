@@ -19,6 +19,13 @@ def init_route(app, server, url_prefix):
         app.workflow.submit_parameters(data)
         return Response(status=200)
 
+    @bp.route("/gphl", methods=["POST"])
+    @server.restrict
+    def submit_gphl_parameters():
+        data = request.get_json()
+        app.workflow.update_gphl_parameters(data)
+        return Response(status=200)
+
     @bp.route("/mesh_result/<gid>/<t>", methods=["GET"])
     # @server.restrict
     def get_grid_data(gid, t, rand):
