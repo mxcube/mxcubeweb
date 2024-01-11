@@ -1,6 +1,6 @@
 import {
   sendSubmitWorkflowParameters,
-  sendUpdatedGphlWorkflowParameters
+  sendUpdatedGphlWorkflowParameters,
 } from '../api/workflow';
 
 export function showWorkflowParametersDialog(formData, show = true) {
