@@ -1,32 +1,53 @@
-## How to contribute to mxcubecore
+# How to contribute to mxcubeweb
 
-Before submiting the code to the repository please read these contributing guidlines.
-The aim of these guidelines is to help the developers community to maintain the code stable and reusable.
+Before submitting code to the repository, please read these contribution guidelines.
+The aim of these guidelines is to help the developer community to maintain the code stable and reusable.
 
-### Reporting bugs
 
-Before submitting a new bug check if the bug is not already reported in the [issues](https://github.com/mxcube/mxcubeweb/issues/).
-If the corresponding issue do not exist then:
+## Reporting bugs
+
+Before submitting a new bug report,
+check if the bug has already been reported
+in the [issues](https://github.com/mxcube/mxcubeweb/issues/).
+If it has not been reported yet, then:
 
 - Open a new issue with a short description in the title.
-- In the description describe the bug:
+
+- In the description, describe the bug:
+
   - Conditions when the bug appears.
+
   - How it can be reproduced.
-  - Possible cause of the bug and source code where it occures.
-  - If possible add error log and screenshot.
+
+  - Possible cause of the bug and source code where it occurs.
+
+  - If possible, add an error log and a screenshot.
+
 - Assign a label to the issue (see available labels).
 
-### Submiting code to the repository
 
-Pull requests (PR's) are used to submitt new code to the repository, it helps developers to review and dicuss the proposed change. To avoid any conflicts in the code base it is important to keep your local git repository syncronised with the latest code in the upstream repository. If the repository is checked out directly then use `git pull --rebase` to obtain the latest code, if a fork is used then add the offical mxcubecore repository to the list of remotes.
+## Submitting code to the repository
 
-- If necessary add link to the offical mxcubecore repository:
+Pull requests (PRs) are used to submit new code to the repository;
+they help developers review and discuss the proposed changes.
+To avoid any conflicts in the code base,
+it is important to keep your local git repository synchronised
+with the latest code in the upstream repository.
+If the repository is checked out directly,
+then use `git pull --rebase` to obtain the latest code;
+if a fork is used, then add the official mxcubeweb repository to the list of remotes.
+
+- If necessary, add a link to the official mxcubeweb repository:
 
   ```bash
-  git remote add upstream git@github.com:mxcube/mxcubecore.git
+  git remote add upstream git@github.com:mxcube/mxcubeweb.git
   ```
 
-A branching model based on the popular [gitlfow model](https://nvie.com/posts/a-successful-git-branching-model/) is used inorder to be able to provide versioned releases and at the same time continue seperate development. The stable releases are kept on the [**master**](https://github.com/mxcube/mxcubeweb/tree/master) branch and the development takes place on [**develop**](https://github.com/mxcube/mxcubeweb/tree/develop).
+A branching model based on the popular [git-flow model](https://nvie.com/posts/a-successful-git-branching-model/) is used
+in order to be able to provide versioned releases and,
+at the same time, continue separate development.
+The stable releases are kept on the [**master**](https://github.com/mxcube/mxcubeweb/tree/master) branch and,
+the development takes place on [**develop**](https://github.com/mxcube/mxcubeweb/tree/develop).
 
 This means that all pull requests should be made against the [**develop**](https://github.com/mxcube/mxcubeweb/tree/develop) branch. The work on the **develop** branch is performed by simply creating a branch for the work to be done and then making a PR according to the description below.
 
@@ -49,7 +70,8 @@ We **recommend to always rebase your local changes instead of merging them**, gi
 git config --global pull.rebase true
 ```
 
-#### Preparing a new commit
+
+### Preparing a new commit
 
 - First, make sure that you are working with the latest changes from develop
 
@@ -58,9 +80,9 @@ git checkout develop`
 git pull --rebase develop
 ```
 
-- Create a new branch, its recommended to use a meaningfull name. for instance [initials]-[fix/feature]-[some name] i.e mo-feature-gizmo1
+- Create a new branch. It is recommended to use a meaningful name, for instance `[initials]-[fix/feature]-[some name]`, i.e. `mo-feature-gizmo1`
   `git checkout -b mo-feature-gizmo1`
-- If the pull request is associated with an issue then reference the issue in the name. For example:
+- If the pull request is associated with an issue, then reference the issue in the name. For example:
   `git checkout -b issue_100`
 - Edit necessary files, delete existing or add a new file.
 - Add files to the staging area:
@@ -68,19 +90,21 @@ git pull --rebase develop
 - Save your new commit to the local repository:
   `git commit`
 - Commit command will open a text editor:
-  - In the first line write a short commit summary (max 50 characters. It will appear as a title of PR.
+  - In the first line, write a short commit summary (maximum 50 characters). It will appear as the title of the pull request.
   - Add an empty line.
   - Write a longer description.
 - Upload the content of the new branch to the remote repository:
   `git push origin NEW_BRACH_NAME`
-- Go to the github webpage and create a new PR.
+- Go to the GitHub webpage and create a new PR.
 
-#### Creating a new pull request via github webpage
 
-- Keep the pull requests small preferbly contaning a single feature
-- Give enough information about the changes in the pull request summary so that the reviewers easily understands whats been done
-- Highlight technically complex/complicated sections of the code and supply additional comments to code that might need extra explication/motivation by making inline comments
-- If needed assign a developer who shall review the PR.
+### Creating a new pull request via GitHub webpage
+
+- Keep the pull requests small, preferably containing a single feature or change.
+- Give enough information about the changes in the pull request summary so that the reviewers easily understand what's been done.
+- Highlight technically complex/complicated sections of the code and supply additional comments to code that might need extra explication/motivation by making inline comments.
+- If needed, assign a developer who should review the PR.
+
 
 ### Accepting a pull request
 
@@ -89,11 +113,13 @@ git pull --rebase develop
 - The changes made in the PR are assumed to be tested by the author
 - All the assigned reviewers of a PR have to review the PR before it can be merged.
 - A PR that has no reviewer assigned can be reviewed by anyone.
-- The author of the PR is free to merge the PR once its been reviewed and all pending comments/discussions are solved
+- The author of the PR is free to merge the PR once it has been reviewed
+  and all pending comments and discussions are solved.
 
-### Versioning
 
-Versioning is partly automated by GitHub actions and [Poetry](https://python-poetry.org/)) and based on the gitflow braching model:
+## Versioning
+
+Versioning is partly automated by GitHub actions and [Poetry](https://python-poetry.org/) and is based on the git-flow branching model:
 
 - Each new feature is implemented in a `feature branch`, branching from the `develop branch`.
 
@@ -112,59 +138,71 @@ Versioning is partly automated by GitHub actions and [Poetry](https://python-poe
   necessary changes and applied to the `main branch` and the corresponding commits are
   also cherry-picked to the development branch.
 
-The exact routine is described more preceisly in [MEP01](https://github.com/mxcube/mxcubecore/blob/develop/doc/MEPS/MEP-01/mep01.md).
+The exact routine is described more precisely in [MEP01](https://github.com/mxcube/mxcubecore/blob/develop/doc/MEPS/MEP-01/mep01.md).
 
-### Coding convention and style guidelines
 
-#### Units
+## Coding convention and style guidelines
 
-Functions returning a value representing a physical quantity should in general be assoicated with
+### Units
+
+Functions returning a value representing a physical quantity should in general be associated with
 a unit. It has been agreed that the following units should, where applicable, be used across the
-code base
+code base:
 
-- mm (millimeter) for translative motors and sizes
+- mm (millimetre) for translative motors and sizes
 - degrees for rotative motors
 - percent (%) for ratios like attenuation
 - keV for energy
 - K (Kelvin) for temperature
 - Å (Ångström) for resolution
-- Pixels are to be used for beam location (center)
-- Datetime YYYY-MM-DD HH:MM:SS(.ff) ,possibly with hundreds of seconds (ff), and with 24 hour clock.
+- Pixels are to be used for beam location (centre)
+- Date time `YYYY-MM-DD HH:MM:SS(.ff)`, possibly with hundreds of seconds (ff), and with 24-hour clock.
 
-#### Type hints
+
+### Type hints
 
 We strongly encourage the usage of type hints
 
-#### Naming convention
 
-##### Language and spelling
+### Naming convention
 
-- UK english should be used for the spelling in documentation and code. Relevant examples for the mxcubecore code base are for instance the words _centring_ and _characterisation_ that are the prefered spelling instead of _centering_ and _characterization_.
+#### Language and spelling
 
-##### Functions
+- UK English should be used for the spelling in documentation and code.
+  Relevant examples for the mxcubeweb code base are for instance
+  the words _centring_ and _characterisation_ that are the preferred spelling
+  to _centering_ and _characterization_.
+
+
+#### Functions
 
 - functions names should be recognisable as actions and should generally contain a verb
 
-##### Variables and parameters:
+
+#### Variables and parameters:
 
 - names of objects and values are singular
 - names of collections are plural or contain an internal 'list' (or 'tuple', 'tpl')
-- names of maps are plural or contain 'map', 'dict', 'data', or an internel '2', like 'name2state'
-- variables should distinguish between objects (e.g. 'motor') and their names or string representations (e.g. 'motor_name'))
-- Booleans can be indcated by participles (e.g. 'enabled', 'tunable') or an 'is\_' prefix. We should use positive rather than negative expressions (e.g. 'enabled' rather than 'disabled')
+- names of maps are plural or contain 'map', 'dict', 'data', or an internal '2', like 'name2state'
+- variables should distinguish between objects (e.g. 'motor') and their names or string representations (e.g. 'motor_name')
+- Booleans can be indicated by participles (e.g. 'enabled', 'tunable') or an 'is\_' prefix. We should use positive rather than negative expressions (e.g. 'enabled' rather than 'disabled')
 
-#### Properties v. functions
 
-- You should prefer functions ('get*', 'set*', 'update\_') when attributes are mutable and changing the value requires moving hardware or is slow or has side effects, or where you (might) need additional parameters like swithces or timeout values.
-  - For Boolean states prefer e.g. set_enabled (True/False) rather than separate enable()/disable() functions.
+### Properties v. functions
+
+- You should prefer functions ('get*', 'set*', 'update\_') when attributes are mutable and changing the value requires moving hardware or is slow or has side effects, or where you (might) need additional parameters like switches or timeout values.
+  - For boolean states, prefer e.g. `set_enabled` (`True` or `False`) rather than separate `enable()` and `disable()` functions.
 - You should prefer properties for simple properties or states of objects (e.g. 'name', 'user_name', 'tolerance'). Contained HardwareObjects also use properties
 
-#### Style guidlines
 
-It is very important to write a clean and readable code. Therefore we follow the [PEP8 guidlines](https://www.python.org/dev/peps/pep-0008/). Minimal required guidlines are:
+### Style guidelines
+
+It is very important to write a clean and readable code.
+Therefore, we follow the [PEP8 guidelines](https://peps.python.org/pep-0008/).
+Minimal required guidelines are:
 
 - Maximum 88 characters per line.
-- Use 4 spaces (not a tab) per identation level.
+- Use 4 spaces (not a tab) per indentation level.
 - Do not use wild (star) imports.
 - Used naming styles:
   - lower_case_with_underscores (snake style) for variables, methods.
@@ -173,9 +211,9 @@ It is very important to write a clean and readable code. Therefore we follow the
 - When catching exceptions, mention specific exceptions whenever possible instead of using a bare except.
 - Add [google style](https://www.sphinx-doc.org/en/master/usage/extensions/example_google.html?highlight=google%20style) doc strings to describe methods and classes. Types should be omitted in doc strings if the method is type hinted.
 
-An example how to describe a class:
+An example of how to describe a class:
 
-```bash
+```python
 class ExampleClass(object):
   """The summary line for a class docstring should fit on one line.
 
@@ -224,9 +262,9 @@ class ExampleClass(object):
 
 ```
 
-An example how to describe a function:
+An example of how to describe a function:
 
-```bash
+```python
 def function_with_types_in_docstring(param1, param2):
   """Example function with types documented in the docstring.
 
@@ -245,7 +283,6 @@ def function_with_types_in_docstring(param1, param2):
       https://www.python.org/dev/peps/pep-0484/
 
   """
-
 ```
 
 You can use [autopep8](https://pypi.org/project/autopep8/) and [black](https://pypi.org/project/autopep8/) to format your code:
@@ -255,19 +292,21 @@ autopep8 -a -r -j 0 -i --max-line-length 88 ./
 black --safe ./
 ```
 
-### Continuous integration (CI)
 
-GitHub Action are used for continues integration
+## Continuous integration (CI)
 
-### Additional notes
+*GitHub Actions* workflows are used for continuous integration.
+
+
+## Additional notes
 
 Issue and Pull request Labels
 
-- bug: indicates a bug in the code. Issue has a highest priority.
-- abstract: Abstract class involved. Issue has a hight priority.
-- question: general question.
-- not used code: suggestion to remove a code block or a file from the repository.
-- wip: work in progress
-- enchancement: code improvement.
+- `bug`: bug in the code. The issue has the highest priority.
+- `abstract`: abstract class involved. The issue has a high priority.
+- `question`: general question.
+- `not used code`: suggestion to remove a code block or a file from the repository.
+- `wip`: work in progress.
+- `enhancement`: code improvement.
 
 Milestones
