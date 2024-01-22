@@ -24,5 +24,10 @@ build:
     - "mamba run --name mxcubeweb poetry install --only=docs,main"
     - "(mamba run --name mxcubeweb redis-server &) && mamba run --name mxcubeweb python -m sphinx -T -E -b html -d _build/doctrees -c docs docs/source ${READTHEDOCS_OUTPUT}/html && mamba run --name mxcubeweb redis-cli shutdown"
 
+# `conda.environment` is probably not used, since we use custom commands only,
+# but it seems to be required (wrongly) by ReadTheDocs config file validation.
+# https://github.com/readthedocs/readthedocs.org/pull/10979#issuecomment-1896036953
+conda:
+  environment: "conda-environment-dev.yml"
 
 ...  # EOF
