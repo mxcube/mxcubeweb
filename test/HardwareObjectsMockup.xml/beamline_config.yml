@@ -123,7 +123,7 @@ default_acquisition_parameters:
 
   gphlworkflow:
     {}
-    # Apparenttly this must be here, but we use all values same as default
+    # Apparently this must be here, but we use all values same as default
 
 acquisition_limit_values:
   exposure_time:

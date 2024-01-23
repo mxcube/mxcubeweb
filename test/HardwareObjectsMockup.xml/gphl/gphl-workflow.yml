@@ -39,7 +39,7 @@ settings:
     default_beam_energy_tag: Main
 
     # NB Temporary developer option. Defaults to 1
-    allow_duplicate_orientations: 0
+    # allow_duplicate_orientations: 0
 
     # TEST ONLY developer option. Use preset SPOT.XDS file and skip characterisation.
     # Only works for GPhL test samples with SPOT.XDS  file
@@ -88,7 +88,7 @@ settings:
         interleave_order: gs
 
         # For testing only:
-        automation_mode: TEST
+        # automation_mode: TEST
 
     # Default parameters for fully automated strategies
     # Multiple acquisitions in order - characterisation then main
@@ -97,7 +97,7 @@ settings:
     # the code will use list[0] for the first acquisition and list[-1] for the main one
     auto_acq_parameters:
       # For characterisation acquisition
-      - exposure_time: 0.02
+      - exposure_time: 0.04
         image_width: 0.1
         resolution: 1.7
         strategy: Char_4_by_10_multitrigger
@@ -111,7 +111,7 @@ settings:
 #          - 222C
 #          - 222I
 #        space_group: I222
-      - exposure_time: 0.02
+      - exposure_time: 0.04
         image_width: 1.0
         resolution: 1.5
         snapshot_count: 2
