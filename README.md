@@ -1,19 +1,19 @@
 [![Build and test](https://github.com/mxcube/mxcubeweb/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/mxcube/mxcubeweb/actions/workflows/build_and_test.yml)
 ![PyPI](https://img.shields.io/pypi/v/mxcubeweb)
 
-<p align="center"><img src="http://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
+<p align="center"><img src="https://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
 
 
 # MXCuBE-Web
 
-MXCuBE-Web is the latest generation of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](http://www.esrf.eu), and has since then been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
+MXCuBE-Web is the latest generation of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](https://www.esrf.eu), and has since then been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
 
 - [ESRF](https://www.esrf.fr/)
-- [Soleil](http://www.synchrotron-soleil.fr/)
+- [Soleil](https://www.synchrotron-soleil.fr/)
 - [MAX IV](https://www.maxiv.lu.se/)
-- [HZB](http://www.helmholtz-berlin.de/)
-- [EMBL](http://www.embl.org/)
-- [Global Phasing Ltd.](http://www.globalphasing.com/)
+- [HZB](https://www.helmholtz-berlin.de/)
+- [EMBL](https://www.embl.org/)
+- [Global Phasing Ltd.](https://www.globalphasing.com/)
 - [ALBA](https://www.cells.es/)
 - [DESY](https://www.desy.de/)
 - [LNLS](https://lnls.cnpem.br/)
@@ -30,7 +30,7 @@ It is strongly recommended to use HTTPS, SSL/TLS encrypted HTTP.
 The traffic passes through the conventional HTTP/HTTPS ports,
 minimizing the need for special firewall or proxy settings to get the application to work.
 
-<img align="center" src="http://mxcube3.esrf.fr/img/client-server.png" width=300>
+<img align="center" src="https://mxcube3.esrf.fr/img/client-server.png" width=300>
 
 The underlying beamline control layer
 is implemented using the library [`mxcubecore`](https://github.com/mxcube/mxcubecore)
@@ -43,7 +43,7 @@ both the MXCuBE-Web and the [MXCuBE-Qt](https://github.com/mxcube/mxcubeqt) appl
 | ![datacollection-view](https://user-images.githubusercontent.com/4331447/42496925-d983bf3e-8427-11e8-890e-898dda649101.png) | ![samplegrid-view](https://user-images.githubusercontent.com/4331447/42496937-e8547b34-8427-11e8-9447-645e6d7f1dc5.png) |
 
 Latest information about the MXCuBE project can be found on the
-[MXCuBE project webpage](http://mxcube.github.io/mxcube/).
+[MXCuBE project webpage](https://mxcube.github.io/mxcube/).
 
 
 ## Technologies in use
