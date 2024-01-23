@@ -8,8 +8,8 @@ maintainers = [
     "MXCuBE collaboration <mxcube@esrf.fr>",
 ]
 readme = "README.md"
-homepage = "http://github.com/mxcube/mxcubeweb"
-repository = "http://github.com/mxcube/mxcubeweb"
+homepage = "https://github.com/mxcube/mxcubeweb"
+repository = "https://github.com/mxcube/mxcubeweb"
 documentation = "https://mxcubeweb.readthedocs.io/"
 keywords = ["mxcube", "mxcube3", "mxcubeweb"]
 classifiers = [
