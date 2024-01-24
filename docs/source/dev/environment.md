@@ -66,7 +66,7 @@ conda activate mxcubeweb
 ```
 
 
-### 5. Install the remaining dependencies
+### 5. Install the back-end dependencies
 
 ```
 poetry install
@@ -74,7 +74,7 @@ poetry install
 
 
 (front-end)=
-### 6. Install front-end dependencies and build the UI
+### 6. Install the front-end dependencies and build the UI
 
 ```
 pnpm --prefix ui install
@@ -123,30 +123,23 @@ Follow the instructions in [](#front-end) to build a client.
 Please read the [contributing guidelines](project:/dev/contributing.md)
 before getting started with the development.
 
-The additional tools for development are in the `conda-environment-dev.yml` file,
-the environment created above needs to be updated with this:
-
-```
-# Make sure the environment created above is activated
-conda activate mxcubeweb
-
-# To install the additional dependencies, run:
-conda env update --file conda-environment-dev.yml
-```
-
 It is recommended to install `mxcubeweb` and `mxcubecore` as "editable"
 to be able to add breakpoints and debug the application more easily.
-This can be done with `pip`.
+By default, when running `poetry install`,
+Poetry installs the main project (here `mxcubeweb`) as editable,
+but not the dependencies (which includes `mxcubecore`).
 
-```
-# In the project root of mxcubeweb (please note that the dot `.` is important):
+Installing `mxcubecore` as editable can be done with pip.
+
+```shell
+# Make sure the conda environment is active
+conda activate mxcubeweb
+# In the project root of mxcubecore (note that the dot `.` is important):
 python -m pip install --editable .
-
-# In the project root of mxcubecore:
-python -m pip install --editable .
 ```
 
-The above makes it possible to add break points directly in the "checked out code".
+The "editable" installations make it possible to
+add break points directly in the "checked out code".
 
 Before running any test, make sure that the local *Redis* server is running.
 For example, with the `mxcubeweb` *conda* environment activated in a terminal,
