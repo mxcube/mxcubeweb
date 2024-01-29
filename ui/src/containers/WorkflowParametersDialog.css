@@ -19,3 +19,39 @@
   display: inline;
   background-color: white;
 }
+
+.indexing_table{
+  width: 100%;
+}
+
+.indexing_table > thead,
+.indexing_table > tbody,
+.indexing_table > tr, 
+.indexing_table > td,
+.indexing_table > th { display: block; }
+
+.indexing_table > tr:after {
+  content: ' ';
+  display: block;
+  visibility: hidden;
+  clear: both;
+}
+
+.indexing_table > tbody {
+  height: 200px;
+  overflow-y: auto;
+}
+
+.indexing_table > tbody td, 
+.indexing_table > thead th {
+  width: 110px;
+}
+
+
+.indexing_table_special_td_th {
+  border: none!important;
+}
+
+.indexing_table_row_selected{
+  background: aquamarine!important;
+}

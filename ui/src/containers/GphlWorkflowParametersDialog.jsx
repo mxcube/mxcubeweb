@@ -1,35 +1,97 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import { Modal, Row, Col, Form, Button, Stack } from 'react-bootstrap';
+import { Modal, Row, Col, Form, Table, Button, Stack } from 'react-bootstrap';
 
 import {
   showGphlWorkflowParametersDialog,
   updateGphlWorkflowParameters,
 } from '../actions/workflow';
 
+const uiOptions = 'ui:options'
+
 import './WorkflowParametersDialog.css';
+
+function renderIndexingTable(table, selected, onSelectRow) {
+  return (
+    <Table id="indexing_table" bordered responsive striped className='indexing_table'>
+      <thead>
+        <tr>
+          <th />
+          {table.header.map((thContent) => (
+            <th key={thContent} className='indexing_table_special_td_th'><pre>{thContent}</pre></th>
+          ))}
+          <th className='indexing_table_special_td_th' />
+        </tr>
+      </thead>
+      <tbody className='indexing_table_body'>
+        {table.content.map((tdContents) => (
+          tdContents.map((tdContent, index) => (
+              <tr
+                key={tdContent}
+                className={`${selected.includes(index)? 'indexing_table_row_selected' : 'none'} trclass`}
+                onClick={() => onSelectRow(index)}
+              >
+                <td>{index + 1}</td>
+                <td className='indexing_table_special_td_th'><pre>{tdContent}</pre></td>
+                <td className='indexing_table_special_td_th'/>
+              </tr>
+            ))
+        ))}
+      </tbody>
+    </Table>
+  )
+}
 
 function GphlWorkflowParametersDialog(props) {
   const { formData, show, handleHide, updateGphlWorkflowParameters } = props;
-
-  const [formDataDict, setFormDataDict] = useState();
+  const [formDataDict, setFormDataDict] = useState({});
   const [errors, setErrors] = useState();
   const [validated, setValidated] = useState(false);
+  const [selected, setSelected] = useState([]);
+
+  const _setDataDict = useCallback(() => {
+    const dataDict = {};
+    Object.entries(formData.schema.properties).forEach(([key, value]) => {
+      dataDict[key] = value.default || '';
+    });
+    if(formData.ui_schema.indexing_solution) {
+      setSelected(formData.ui_schema.indexing_solution[uiOptions].select_cell);
+    }
+    return dataDict;
+  }, [formData]);
+
+  const handleAbort = useCallback(e => {
+    // const signal = formData.ui_schema[uiOptions].return_signal;
+    const parameter = {
+      signal: 'GphlParameterReturn',
+      instruction: 'PARAMETERS_CANCELLED',
+      data: {},
+    };
+    updateGphlWorkflowParameters(parameter);
+    handleHide();
+    if(e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+  }, [updateGphlWorkflowParameters, handleHide]);
 
   useEffect(() => {
+    let initialDataDict = {}
     if (show) {
-      _setDataDict();
+      initialDataDict = _setDataDict();
+      setFormDataDict(initialDataDict);
     }
-  });
+  }, [show, _setDataDict, handleAbort]);
 
-  function _setDataDict() {
-    const dict = {};
-    Object.entries(formData.schema.properties).forEach(([key, value]) => {
-      dict[key] = value.default;
-    });
-    setFormDataDict(dict);
-  }
+
+  // useEffect(() => {
+  //   return () => {
+  //     if (!show) {
+  //     handleAbort();
+  //     }
+  //   };
+  // }, [show,handleAbort]);
 
   function handleSubmit(e) {
     const form = e.currentTarget;
@@ -37,7 +99,7 @@ function GphlWorkflowParametersDialog(props) {
       e.preventDefault();
       e.stopPropagation();
     } else {
-      const signal = formData.ui_schema['ui:options'].return_signal;
+      const signal = formData.ui_schema[uiOptions].return_signal;
       const parameter = {
         signal,
         instruction: 'PARAMETERS_READY',
@@ -70,16 +132,16 @@ function GphlWorkflowParametersDialog(props) {
     // updateGphlWorkflowParameters(parameter);
   }
 
-  function handleAbort() {
-    const signal = formData.ui_schema['ui:options'].return_signal;
-    const parameter = {
-      signal,
-      instruction: 'PARAMETERS_CANCELLED',
-      data: formDataDict,
-    };
-    updateGphlWorkflowParameters(parameter);
-    handleHide();
-  }
+  const onSelectRow = useCallback(index => {
+    const newSelected = [...selected];
+    if (selected.includes(index)) {
+      newSelected.splice(newSelected.indexOf(index), 1);
+    } else {
+      newSelected.push(index);
+    }
+    setSelected(newSelected);
+  }, [selected]);
+
 
   let formName = '';
   let renderFormRow = '';
@@ -94,7 +156,7 @@ function GphlWorkflowParametersDialog(props) {
         noValidate
         validated={validated}
         className="m-3"
-        onSubmit={handleSubmit}
+        onSubmit={(e) => handleSubmit(e)}
       >
         {ui_schema
           ? // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -113,14 +175,15 @@ function GphlWorkflowParametersDialog(props) {
                               <Row key={fieldKey} className="mb-3">
                                 <Form.Group as={Col} sm className="">
                                   <Form.Label>
-                                    {schema.properties[fieldKey].title}
+                                    {schema.properties[fieldKey].type !== 'boolean'?
+                                    schema.properties[fieldKey].title : null}
                                   </Form.Label>
                                   {schema.properties[fieldKey].type ===
                                   'boolean' ? (
                                     <Form.Check
                                       type="checkbox"
                                       name={fieldKey}
-                                      label={fieldKey.replaceAll('_', ' ')}
+                                      label={schema.properties[fieldKey].title}
                                       onChange={(e) => handleChange(e)}
                                       defaultChecked={
                                         schema.properties[fieldKey].default
@@ -174,11 +237,18 @@ function GphlWorkflowParametersDialog(props) {
                                   </Form.Control.Feedback>
                                 </Form.Group>
                               </Row>
-                            ),
-                          )}
+                            ))}
                         </Col>
                       ))
                     ) : (
+                      ui_schema[rowKey]["ui:widget"]?
+                      ui_schema[rowKey]["ui:widget"].includes("table") ?
+                      (
+                        renderIndexingTable(ui_schema[rowKey][uiOptions], selected, onSelectRow)
+                      )
+                      :
+                          null
+                      :
                       <pre className="p-2">
                         {schema.properties[rowKey].default}
                       </pre>
@@ -195,7 +265,7 @@ function GphlWorkflowParametersDialog(props) {
             </Button>
           </div>
           <div className="p-2">
-            <Button variant="outline-secondary" onClick={handleAbort}>
+            <Button variant="outline-secondary" onClick={(e) => handleAbort(e)}>
               {' '}
               Abort{' '}
             </Button>
@@ -206,7 +276,7 @@ function GphlWorkflowParametersDialog(props) {
   }
 
   return (
-    <Modal show={show} onHide={handleHide} backdrop="static">
+    <Modal show={show} onHide={handleAbort} backdrop="static">
       <Modal.Header closeButton>
         <Modal.Title>{formName}</Modal.Title>
       </Modal.Header>
