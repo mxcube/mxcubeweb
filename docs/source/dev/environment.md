@@ -58,6 +58,13 @@ conda env create -f conda-environment.yml
 conda env create -f conda-environment.yml --name another_name
 ```
 
+To choose a specific Python version when creating the conda environment,
+for example Python 3.9, one can use a command such as the following:
+
+```none
+conda env create -f conda-environment.yml python=3.9
+```
+
 
 ### 4. Activate the environment
 
