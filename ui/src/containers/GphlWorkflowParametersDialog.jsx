@@ -8,43 +8,69 @@ import {
   updateGphlWorkflowParameters,
 } from '../actions/workflow';
 
-const uiOptions = 'ui:options'
+const uiOptions = 'ui:options';
 
 import './WorkflowParametersDialog.css';
 
 function renderIndexingTable(table, selected, onSelectRow) {
   return (
-    <Table id="indexing_table" bordered responsive striped className='indexing_table'>
+    <Table
+      id="indexing_table"
+      bordered
+      striped
+      responsive
+      className="indexing_table"
+    >
       <thead>
         <tr>
           <th />
           {table.header.map((thContent) => (
-            <th key={thContent} className='indexing_table_special_td_th'><pre>{thContent}</pre></th>
+            <th key={thContent} className="indexing_table_special_td_th">
+              <pre>{thContent}</pre>
+            </th>
           ))}
-          <th className='indexing_table_special_td_th' />
+          <th className="indexing_table_special_td_th" />
         </tr>
       </thead>
-      <tbody className='indexing_table_body'>
-        {table.content.map((tdContents) => (
+      <tbody className="indexing_table_body">
+        {table.content.map((tdContents) =>
           tdContents.map((tdContent, index) => (
-              <tr
-                key={tdContent}
-                className={`${selected.includes(index)? 'indexing_table_row_selected' : 'none'} trclass`}
-                onClick={() => onSelectRow(index)}
-              >
-                <td>{index + 1}</td>
-                <td className='indexing_table_special_td_th'><pre>{tdContent}</pre></td>
-                <td className='indexing_table_special_td_th'/>
-              </tr>
-            ))
-        ))}
+            <tr
+              key={tdContent}
+              className={`${
+                selected.includes(index)
+                  ? 'indexing_table_row_selected'
+                  : 'none'
+              }
+                  ${
+                    table.highlights[index]
+                      ? 'indexing_table_row_variant'
+                      : 'none'
+                  } trclass`}
+              onClick={() => onSelectRow(index, tdContent)}
+            >
+              <td>{index + 1}</td>
+              <td className="indexing_table_special_td_th">
+                <pre>{tdContent}</pre>
+              </td>
+              <td className="indexing_table_special_td_th" />
+            </tr>
+          )),
+        )}
       </tbody>
     </Table>
-  )
+  );
 }
 
 function GphlWorkflowParametersDialog(props) {
-  const { formData, show, handleHide, updateGphlWorkflowParameters } = props;
+  const {
+    formData,
+    show,
+    updatedFormData,
+    handleHide,
+    updateGphlWorkflowParameters,
+  } = props;
+
   const [formDataDict, setFormDataDict] = useState({});
   const [errors, setErrors] = useState();
   const [validated, setValidated] = useState(false);
@@ -53,45 +79,41 @@ function GphlWorkflowParametersDialog(props) {
   const _setDataDict = useCallback(() => {
     const dataDict = {};
     Object.entries(formData.schema.properties).forEach(([key, value]) => {
-      dataDict[key] = value.default || '';
+      dataDict[key] = value.default;
     });
-    if(formData.ui_schema.indexing_solution) {
-      setSelected(formData.ui_schema.indexing_solution[uiOptions].select_cell);
+    if (formData.ui_schema.indexing_solution) {
+      setSelected([
+        formData.ui_schema.indexing_solution[uiOptions].select_cell[0],
+      ]);
     }
     return dataDict;
   }, [formData]);
 
-  const handleAbort = useCallback(e => {
-    // const signal = formData.ui_schema[uiOptions].return_signal;
-    const parameter = {
-      signal: 'GphlParameterReturn',
-      instruction: 'PARAMETERS_CANCELLED',
-      data: {},
-    };
-    updateGphlWorkflowParameters(parameter);
-    handleHide();
-    if(e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
-  }, [updateGphlWorkflowParameters, handleHide]);
+  const handleAbort = useCallback(
+    (e) => {
+      // const signal = formData.ui_schema[uiOptions].return_signal;
+      const parameter = {
+        signal: 'GphlParameterReturn',
+        instruction: 'PARAMETERS_CANCELLED',
+        data: {},
+      };
+      updateGphlWorkflowParameters(parameter);
+      handleHide();
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    },
+    [updateGphlWorkflowParameters, handleHide],
+  );
 
   useEffect(() => {
-    let initialDataDict = {}
+    let initialDataDict = {};
     if (show) {
       initialDataDict = _setDataDict();
       setFormDataDict(initialDataDict);
     }
   }, [show, _setDataDict, handleAbort]);
-
-
-  // useEffect(() => {
-  //   return () => {
-  //     if (!show) {
-  //     handleAbort();
-  //     }
-  //   };
-  // }, [show,handleAbort]);
 
   function handleSubmit(e) {
     const form = e.currentTarget;
@@ -111,10 +133,16 @@ function GphlWorkflowParametersDialog(props) {
     setValidated(true);
   }
 
-  function handleChange(e) {
+  async function handleChange(e) {
     const error = {};
     const key = e.target.name;
-    const val = e.target.value;
+    const val =
+      e.target.type === 'number'
+        ? Number(e.target.value)
+        : e.target.type === 'checkbox'
+        ? e.target.checked
+        : e.target.value;
+
     const form = e.currentTarget;
 
     if (form.checkValidity() === false) {
@@ -122,26 +150,50 @@ function GphlWorkflowParametersDialog(props) {
       setValidated(true);
     } else {
       setValidated(false);
+      setFormDataDict({ ...formDataDict, [key]: val });
+      const signal = formData.ui_schema['ui:options'].return_signal;
+      const parameter = { signal, instruction: key, data: formDataDict };
+      await updateGphlWorkflowParameters(parameter);
+      handleFormDataUpdated();
     }
-
-    setFormDataDict({ ...formDataDict, [key]: val });
 
     setErrors({ ...errors, [key]: error[key] });
-    // const signal  = formData.ui_schema['ui:options'].return_signal;
-    // const parameter = {'signal': signal, 'instruction': key, 'data': formDataDict}
-    // updateGphlWorkflowParameters(parameter);
   }
 
-  const onSelectRow = useCallback(index => {
-    const newSelected = [...selected];
-    if (selected.includes(index)) {
-      newSelected.splice(newSelected.indexOf(index), 1);
-    } else {
-      newSelected.push(index);
+  function handleFormDataUpdated() {
+    if (updatedFormData !== undefined) {
+      Object.entries(updatedFormData).forEach(([key, val]) => {
+        setFormDataDict({ ...formDataDict, [key]: val.value });
+        // `key` may include a underscore (_), so we can't use `querySelector`
+        // eslint-disable-next-line unicorn/prefer-query-selector
+        if (document.getElementById(key) !== null) {
+          // eslint-disable-next-line unicorn/prefer-query-selector
+          document.getElementById(key).value = val.value;
+        }
+      });
     }
-    setSelected(newSelected);
-  }, [selected]);
+  }
 
+  const handleIndexingTableChange = useCallback(
+    (value) => {
+      setFormDataDict({ ...formDataDict, indexing_solution: value });
+    },
+    [setFormDataDict, formDataDict],
+  );
+
+  const onSelectRow = useCallback(
+    (index, value) => {
+      let newSelected = [...selected];
+      if (selected.includes(index)) {
+        newSelected.splice(newSelected.indexOf(index), 1);
+      } else {
+        newSelected = [index];
+      }
+      setSelected(newSelected);
+      handleIndexingTableChange(value);
+    },
+    [selected, handleIndexingTableChange],
+  );
 
   let formName = '';
   let renderFormRow = '';
@@ -164,7 +216,11 @@ function GphlWorkflowParametersDialog(props) {
               <Row key={rowKey} className="mb-5">
                 <div className="title_box" id="bill_to">
                   <div className="p-2" id="title">
-                    {ui_schema[rowKey]['ui:title']}
+                    {ui_schema[rowKey]['ui:title'] ?
+                    ui_schema[rowKey]['ui:title']:
+                    Object.hasOwn(schema.properties, 'indexing_solution')
+                      ? schema.properties.indexing_solution.title
+                      : null}
                   </div>
                   <Row>
                     {ui_schema[rowKey]['ui:order'] ? (
@@ -175,26 +231,26 @@ function GphlWorkflowParametersDialog(props) {
                               <Row key={fieldKey} className="mb-3">
                                 <Form.Group as={Col} sm className="">
                                   <Form.Label>
-                                    {schema.properties[fieldKey].type !== 'boolean'?
-                                    schema.properties[fieldKey].title : null}
+                                    {schema.properties[fieldKey].type !==
+                                    'boolean'
+                                      ? schema.properties[fieldKey].title
+                                      : null}
                                   </Form.Label>
                                   {schema.properties[fieldKey].type ===
                                   'boolean' ? (
                                     <Form.Check
                                       type="checkbox"
                                       name={fieldKey}
+                                      id={fieldKey}
                                       label={schema.properties[fieldKey].title}
                                       onChange={(e) => handleChange(e)}
-                                      defaultChecked={
-                                        schema.properties[fieldKey].default
-                                      }
+                                      defaultChecked={schema.properties[fieldKey].default}
                                     />
                                   ) : schema.properties[fieldKey].enum ? (
                                     <Form.Select
                                       name={fieldKey}
-                                      defaultValue={
-                                        schema.properties[fieldKey].default
-                                      }
+                                      id={fieldKey}
+                                      defaultValue={schema.properties[fieldKey].default}
                                       onChange={(e) => handleChange(e)}
                                     >
                                       {schema.properties[fieldKey].enum.map(
@@ -208,6 +264,7 @@ function GphlWorkflowParametersDialog(props) {
                                   ) : (
                                     <Form.Control
                                       name={fieldKey}
+                                      id={fieldKey}
                                       onChange={(e) => handleChange(e)}
                                       className="me-2"
                                       type={schema.properties[fieldKey].type}
@@ -221,9 +278,7 @@ function GphlWorkflowParametersDialog(props) {
                                         schema.properties[fieldKey].maximum ||
                                         'any'
                                       }
-                                      defaultValue={
-                                        schema.properties[fieldKey].default
-                                      }
+                                      defaultValue={schema.properties[fieldKey].default}
                                       readOnly={
                                         schema.properties[fieldKey].readOnly
                                       }
@@ -237,18 +292,19 @@ function GphlWorkflowParametersDialog(props) {
                                   </Form.Control.Feedback>
                                 </Form.Group>
                               </Row>
-                            ))}
+                            ),
+                          )}
                         </Col>
                       ))
+                    ) : ui_schema[rowKey]['ui:widget'] ? (
+                      ui_schema[rowKey]['ui:widget'].includes('table') ? (
+                        renderIndexingTable(
+                          ui_schema[rowKey][uiOptions],
+                          selected,
+                          onSelectRow,
+                        )
+                      ) : null
                     ) : (
-                      ui_schema[rowKey]["ui:widget"]?
-                      ui_schema[rowKey]["ui:widget"].includes("table") ?
-                      (
-                        renderIndexingTable(ui_schema[rowKey][uiOptions], selected, onSelectRow)
-                      )
-                      :
-                          null
-                      :
                       <pre className="p-2">
                         {schema.properties[rowKey].default}
                       </pre>
@@ -294,6 +350,7 @@ function mapStateToProps(state) {
   return {
     show: state.workflow.showGphlDialog,
     formData: state.workflow.gphlParameters,
+    updatedFormData: state.workflow.gphlUpdatedParameters,
   };
 }
 
