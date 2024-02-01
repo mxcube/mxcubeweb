@@ -426,9 +426,9 @@ export function sendDeleteShape(id) {
 
 export function unselectShapes(shapes) {
   return (dispatch, getState) => {
-    const login = getState();
+    const state = getState();
 
-    if (login.user.userInControl) {
+    if (state.login.user.inControl) {
       const _shapes = [];
       if (shapes.shapes !== undefined) {
         const keys = Object.keys(shapes.shapes);
