@@ -36,9 +36,6 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    - name: Install LDAP dependencies
-      run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
-
     - name: Set up Conda environment
       uses: mamba-org/setup-micromamba@v1
       with:

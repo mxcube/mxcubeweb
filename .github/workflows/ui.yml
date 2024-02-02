@@ -14,9 +14,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install LDAP dependencies
-        run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
-
       - name: Set up Conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
@@ -24,14 +21,6 @@ jobs:
           environment-file: conda-environment.yml
           cache-environment: true
           post-cleanup: "all"
-
-      - name: Install MXCuBE
-        run: pip install -e .
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.x
 
       - name: Cache UI dependencies
         uses: actions/cache@v3
@@ -43,10 +32,10 @@ jobs:
           restore-keys: ${{ runner.os }}-
 
       - name: Install UI dependencies
-        run: pnpm --prefix ui install
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
 
       - name: Run Prettier
-        run: pnpm --prefix ui prettier
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui prettier"
 
   lint:
     name: Lint
@@ -59,9 +48,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install LDAP dependencies
-        run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
-
       - name: Set up Conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
@@ -69,14 +55,6 @@ jobs:
           environment-file: conda-environment.yml
           cache-environment: true
           post-cleanup: "all"
-
-      - name: Install MXCuBE
-        run: pip install -e .
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.x
 
       - name: Cache UI dependencies
         uses: actions/cache@v3
@@ -88,10 +66,11 @@ jobs:
           restore-keys: ${{ runner.os }}-
 
       - name: Install UI dependencies
-        run: pnpm --prefix ui install
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
 
       - name: Run ESLint
-        run: pnpm --prefix ui eslint --max-warnings=0 # fail on warnings
+        # fail on warnings
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui eslint --max-warnings=0"
 
   e2e:
     name: Test
@@ -120,9 +99,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
-      - name: Install LDAP dependencies
-        run: sudo apt-get -y install libsasl2-dev libldap2-dev libssl-dev
-
       - name: Set up Conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
@@ -132,12 +108,7 @@ jobs:
           post-cleanup: "all"
 
       - name: Install MXCuBE
-        run: pip install -e .
-
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.x
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only main"
 
       - name: Cache UI dependencies
         uses: actions/cache@v3
@@ -149,20 +120,20 @@ jobs:
           restore-keys: ${{ runner.os }}-
 
       - name: Install UI dependencies
-        run: pnpm --prefix ui install
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
 
       - name: Build UI
-        run: pnpm --prefix ui build
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui build"
         env:
           DISABLE_ESLINT_PLUGIN: true
 
       - name: Start MXCuBE-Web server
         run: |
-          mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/ui/build/ -L debug &
-          pnpm --prefix ui exec wait-on http://127.0.0.1:8081
+          ${MAMBA_EXE} run --name mxcubeweb mxcubeweb-server -r ./test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/ui/build/ -L debug &
+          ${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui exec wait-on http://127.0.0.1:8081
 
       - name: Run Cypress
-        run: pnpm --prefix ui e2e
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui e2e"
 
       - uses: actions/upload-artifact@v3
         if: failure()
