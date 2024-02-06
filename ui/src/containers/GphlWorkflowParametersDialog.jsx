@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal, Row, Col, Form, Table, Button, Stack } from 'react-bootstrap';
+import './WorkflowParametersDialog.css';
 
 import {
   showGphlWorkflowParametersDialog,
@@ -9,8 +10,6 @@ import {
 } from '../actions/workflow';
 
 const uiOptions = 'ui:options';
-
-import './WorkflowParametersDialog.css';
 
 function renderIndexingTable(table, selected, onSelectRow) {
   return (
@@ -23,13 +22,13 @@ function renderIndexingTable(table, selected, onSelectRow) {
     >
       <thead>
         <tr>
-          <th />
+          <th> </th>
           {table.header.map((thContent) => (
             <th key={thContent} className="indexing_table_special_td_th">
               <pre>{thContent}</pre>
             </th>
           ))}
-          <th className="indexing_table_special_td_th" />
+          <th className="indexing_table_special_td_th"> </th>
         </tr>
       </thead>
       <tbody className="indexing_table_body">
@@ -82,9 +81,11 @@ function GphlWorkflowParametersDialog(props) {
       dataDict[key] = value.default;
     });
     if (formData.ui_schema.indexing_solution) {
-      setSelected([
-        formData.ui_schema.indexing_solution[uiOptions].select_cell[0],
-      ]);
+      const initIndex =
+        formData.ui_schema.indexing_solution[uiOptions].select_cell[0];
+      setSelected([initIndex]);
+      dataDict.indexing_solution =
+        formData.ui_schema.indexing_solution[uiOptions].content[0][initIndex];
     }
     return dataDict;
   }, [formData]);
@@ -113,11 +114,12 @@ function GphlWorkflowParametersDialog(props) {
       initialDataDict = _setDataDict();
       setFormDataDict(initialDataDict);
     }
-  }, [show, _setDataDict, handleAbort]);
+  }, [show, _setDataDict]);
 
   function handleSubmit(e) {
     const form = e.currentTarget;
     if (form.checkValidity() === false) {
+      setValidated(true);
       e.preventDefault();
       e.stopPropagation();
     } else {
@@ -130,7 +132,6 @@ function GphlWorkflowParametersDialog(props) {
       updateGphlWorkflowParameters(parameter);
       handleHide();
     }
-    setValidated(true);
   }
 
   async function handleChange(e) {
@@ -216,11 +217,9 @@ function GphlWorkflowParametersDialog(props) {
               <Row key={rowKey} className="mb-5">
                 <div className="title_box" id="bill_to">
                   <div className="p-2" id="title">
-                    {ui_schema[rowKey]['ui:title'] ?
-                    ui_schema[rowKey]['ui:title']:
-                    Object.hasOwn(schema.properties, 'indexing_solution')
-                      ? schema.properties.indexing_solution.title
-                      : null}
+                    {ui_schema[rowKey]['ui:title'] ||
+                      schema.properties.indexing_solution?.title ||
+                      null}
                   </div>
                   <Row>
                     {ui_schema[rowKey]['ui:order'] ? (
@@ -244,13 +243,17 @@ function GphlWorkflowParametersDialog(props) {
                                       id={fieldKey}
                                       label={schema.properties[fieldKey].title}
                                       onChange={(e) => handleChange(e)}
-                                      defaultChecked={schema.properties[fieldKey].default}
+                                      defaultChecked={
+                                        schema.properties[fieldKey].default
+                                      }
                                     />
                                   ) : schema.properties[fieldKey].enum ? (
                                     <Form.Select
                                       name={fieldKey}
                                       id={fieldKey}
-                                      defaultValue={schema.properties[fieldKey].default}
+                                      defaultValue={
+                                        schema.properties[fieldKey].default
+                                      }
                                       onChange={(e) => handleChange(e)}
                                     >
                                       {schema.properties[fieldKey].enum.map(
@@ -278,7 +281,9 @@ function GphlWorkflowParametersDialog(props) {
                                         schema.properties[fieldKey].maximum ||
                                         'any'
                                       }
-                                      defaultValue={schema.properties[fieldKey].default}
+                                      defaultValue={
+                                        schema.properties[fieldKey].default
+                                      }
                                       readOnly={
                                         schema.properties[fieldKey].readOnly
                                       }
