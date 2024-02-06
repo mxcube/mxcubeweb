@@ -247,7 +247,7 @@ def init_route(app, server, url_prefix):
             app.beamline.prepare_beamline_for_sample()
         except Exception:
             msg = "Cannot prepare the Beamline for a new sample"
-            logging.getLogger("HWR").error(msg)
+            logging.getLogger("HWR").exception(msg)
             return Response(status=200)
         return Response(status=200)
 
