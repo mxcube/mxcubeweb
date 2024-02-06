@@ -56,21 +56,6 @@ class Beamline(ComponentBase):
             logging.getLogger("MX3.HWR").exception(msg)
 
         try:
-            safety_shutter = HWR.beamline.safety_shutter
-            if safety_shutter is not None:
-                safety_shutter.connect(
-                    safety_shutter,
-                    "shutterStateChanged",
-                    signals.safety_shutter_state_changed,
-                )
-            else:
-                logging.getLogger("MX3.HWR").error("safety_shutter is not defined")
-        except Exception as ex:
-            logging.getLogger("MX3.HWR").error(
-                "error loading safety_shutter hwo: %s" % str(ex)
-            )
-
-        try:
             HWR.beamline.xrf_spectrum.connect(
                 HWR.beamline.xrf_spectrum,
                 "xrf_task_progress",
