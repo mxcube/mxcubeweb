@@ -10,6 +10,12 @@
   border: #3c5a86 1.5px dotted;
 }
 
+/* .gphl_row_box > .crystal_data,
+.gphl_row_box > .parameters{ */
+.gphl_row_box > .indexing_solution {
+  border: #e74444 1.5px dotted !important;
+}
+
 .title_box #title {
   position: relative;
   color: #01012e;

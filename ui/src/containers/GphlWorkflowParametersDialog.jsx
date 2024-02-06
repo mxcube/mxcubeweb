@@ -11,7 +11,7 @@ import {
 
 const uiOptions = 'ui:options';
 
-function renderIndexingTable(table, selected, onSelectRow) {
+function renderIndexingTable(indexingTable, selected, onSelectRow) {
   return (
     <Table
       id="indexing_table"
@@ -23,7 +23,7 @@ function renderIndexingTable(table, selected, onSelectRow) {
       <thead>
         <tr>
           <th> </th>
-          {table.header.map((thContent) => (
+          {indexingTable.header.map((thContent) => (
             <th key={thContent} className="indexing_table_special_td_th">
               <pre>{thContent}</pre>
             </th>
@@ -32,19 +32,17 @@ function renderIndexingTable(table, selected, onSelectRow) {
         </tr>
       </thead>
       <tbody className="indexing_table_body">
-        {table.content.map((tdContents) =>
+        {indexingTable.content.map((tdContents) =>
           tdContents.map((tdContent, index) => (
             <tr
               key={tdContent}
               className={`${
-                selected.includes(index)
-                  ? 'indexing_table_row_selected'
-                  : 'none'
+                selected.includes(index) ? 'indexing_table_row_selected' : ''
               }
                   ${
-                    table.highlights[index]
+                    indexingTable.highlights[index]
                       ? 'indexing_table_row_variant'
-                      : 'none'
+                      : ''
                   } trclass`}
               onClick={() => onSelectRow(index, tdContent)}
             >
@@ -73,6 +71,7 @@ function GphlWorkflowParametersDialog(props) {
   const [formDataDict, setFormDataDict] = useState({});
   const [errors, setErrors] = useState();
   const [validated, setValidated] = useState(false);
+  const [validatedIndexingTable, setValidatedIndexingTable] = useState(false);
   const [selected, setSelected] = useState([]);
 
   const _setDataDict = useCallback(() => {
@@ -118,7 +117,10 @@ function GphlWorkflowParametersDialog(props) {
 
   function handleSubmit(e) {
     const form = e.currentTarget;
-    if (form.checkValidity() === false) {
+    if (
+      form.checkValidity() === false ||
+      formDataDict?.indexing_solution === ''
+    ) {
       setValidated(true);
       e.preventDefault();
       e.stopPropagation();
@@ -152,7 +154,7 @@ function GphlWorkflowParametersDialog(props) {
     } else {
       setValidated(false);
       setFormDataDict({ ...formDataDict, [key]: val });
-      const signal = formData.ui_schema['ui:options'].return_signal;
+      const signal = formData.ui_schema[uiOptions].return_signal;
       const parameter = { signal, instruction: key, data: formDataDict };
       await updateGphlWorkflowParameters(parameter);
       handleFormDataUpdated();
@@ -164,12 +166,14 @@ function GphlWorkflowParametersDialog(props) {
   function handleFormDataUpdated() {
     if (updatedFormData !== undefined) {
       Object.entries(updatedFormData).forEach(([key, val]) => {
-        setFormDataDict({ ...formDataDict, [key]: val.value });
-        // `key` may include a underscore (_), so we can't use `querySelector`
-        // eslint-disable-next-line unicorn/prefer-query-selector
-        if (document.getElementById(key) !== null) {
+        if (val.value) {
+          setFormDataDict({ ...formDataDict, [key]: val.value });
+          // `key` may include a underscore (_), so we can't use `querySelector`
           // eslint-disable-next-line unicorn/prefer-query-selector
-          document.getElementById(key).value = val.value;
+          if (document.getElementById(key) !== null) {
+            // eslint-disable-next-line unicorn/prefer-query-selector
+            document.getElementById(key).value = val.value;
+          }
         }
       });
     }
@@ -185,13 +189,17 @@ function GphlWorkflowParametersDialog(props) {
   const onSelectRow = useCallback(
     (index, value) => {
       let newSelected = [...selected];
+      let updatedValue = value;
       if (selected.includes(index)) {
         newSelected.splice(newSelected.indexOf(index), 1);
+        updatedValue = '';
+        setValidatedIndexingTable(true);
       } else {
         newSelected = [index];
+        setValidatedIndexingTable(false);
       }
       setSelected(newSelected);
-      handleIndexingTableChange(value);
+      handleIndexingTableChange(updatedValue);
     },
     [selected, handleIndexingTableChange],
   );
@@ -214,8 +222,13 @@ function GphlWorkflowParametersDialog(props) {
         {ui_schema
           ? // eslint-disable-next-line sonarjs/cognitive-complexity
             ui_schema['ui:order'].map((rowKey) => (
-              <Row key={rowKey} className="mb-5">
-                <div className="title_box" id="bill_to">
+              <Row key={rowKey} className="mb-5 gphl_row_box">
+                <div
+                  className={`${
+                    validatedIndexingTable ? rowKey : ''
+                  } title_box`}
+                  id="bill_to"
+                >
                   <div className="p-2" id="title">
                     {ui_schema[rowKey]['ui:title'] ||
                       schema.properties.indexing_solution?.title ||
