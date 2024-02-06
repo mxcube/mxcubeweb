@@ -686,15 +686,6 @@ def beamline_action_failed(name):
         logging.getLogger("user_level_log").error("Action %s failed !", name)
 
 
-def safety_shutter_state_changed(values):
-    ho = BeamlineAdapter(HWR.beamline).get_object_by_role("safety_shutter")
-    data = ho.dict()
-    try:
-        server.emit("hardware_object_changed", data, namespace="/hwr")
-    except Exception:
-        logging.getLogger("HWR").error("error sending message: %s" + str(data))
-
-
 def mach_info_changed(values):
     try:
         server.emit("mach_info_changed", values, namespace="/hwr")
