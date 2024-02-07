@@ -59,6 +59,18 @@ function renderIndexingTable(indexingTable, selected, onSelectRow) {
   );
 }
 
+function removeExtraDecimal(value, type) {
+  const valueString = value.toString();
+  if (
+    valueString.slice(valueString.indexOf('.') + 1, valueString.length).length >
+      4 &&
+    type === 'number'
+  ) {
+    return Number(value.toFixed(4));
+  }
+  return value;
+}
+
 function GphlWorkflowParametersDialog(props) {
   const {
     formData,
@@ -77,7 +89,7 @@ function GphlWorkflowParametersDialog(props) {
   const _setDataDict = useCallback(() => {
     const dataDict = {};
     Object.entries(formData.schema.properties).forEach(([key, value]) => {
-      dataDict[key] = value.default;
+      dataDict[key] = removeExtraDecimal(value.default, value.type);
     });
     if (formData.ui_schema.indexing_solution) {
       const initIndex =
@@ -167,12 +179,13 @@ function GphlWorkflowParametersDialog(props) {
     if (updatedFormData !== undefined) {
       Object.entries(updatedFormData).forEach(([key, val]) => {
         if (val.value) {
-          setFormDataDict({ ...formDataDict, [key]: val.value });
+          const newValue = removeExtraDecimal(val.value, typeof val.value);
+          setFormDataDict({ ...formDataDict, [key]: newValue });
           // `key` may include a underscore (_), so we can't use `querySelector`
           // eslint-disable-next-line unicorn/prefer-query-selector
           if (document.getElementById(key) !== null) {
             // eslint-disable-next-line unicorn/prefer-query-selector
-            document.getElementById(key).value = val.value;
+            document.getElementById(key).value = newValue;
           }
         }
       });
@@ -294,9 +307,7 @@ function GphlWorkflowParametersDialog(props) {
                                         schema.properties[fieldKey].maximum ||
                                         'any'
                                       }
-                                      defaultValue={
-                                        schema.properties[fieldKey].default
-                                      }
+                                      defaultValue={formDataDict[fieldKey]}
                                       readOnly={
                                         schema.properties[fieldKey].readOnly
                                       }
