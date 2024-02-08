@@ -1,5 +1,6 @@
  &SIMCAL_CRYSTAL_LIST
  ! Taken from PDB 5G0F
+ ! NB intensities increased by a factor of 100 for better XDS performance
  SG_NAME = "I23",
  CELL_DIM        = 100.7400 100.7400 100.7400
  CELL_ANG_DEG    = 90.000 90.000 90.000
