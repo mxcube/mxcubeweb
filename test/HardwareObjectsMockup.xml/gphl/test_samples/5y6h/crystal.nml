@@ -1,6 +1,6 @@
  &SIMCAL_CRYSTAL_LIST
  ! Taken from PDB 5Y6H
- SG_NAME = "R3",
+ SG_NAME = "H3",
  CELL_DIM        = 91.960 91.960 32.530
  CELL_ANG_DEG    = 90.000 90.000 120.000
  CELL_DIM_SD     =  0.092        0.092     0.033

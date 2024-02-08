@@ -1,7 +1,7 @@
  &SIMCAL_CRYSTAL_LIST
  ! Taken from simcal input at
  ! https://wwi/members/dev/kwiki/index.cgi?ClemensAutoProcSimcalExamples
- SG_NAME = "R32",
+ SG_NAME = "H32",
  CELL_DIM        = 133.8562 133.8562 127.4557
  CELL_ANG_DEG    = 90.000 90.000 120.000
  CELL_DIM_SD     =  0.133856        0.133856     0.127456
