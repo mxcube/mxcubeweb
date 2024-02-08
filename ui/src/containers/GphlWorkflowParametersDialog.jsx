@@ -60,13 +60,15 @@ function renderIndexingTable(indexingTable, selected, onSelectRow) {
 }
 
 function removeExtraDecimal(value, type) {
-  const valueString = value.toString();
-  if (
-    valueString.slice(valueString.indexOf('.') + 1, valueString.length).length >
-      4 &&
-    type === 'number'
-  ) {
-    return Number(value.toFixed(4));
+  if (value !== undefined) {
+    const valueString = value.toString();
+    if (
+      valueString.slice(valueString.indexOf('.') + 1, valueString.length)
+        .length > 4 &&
+      type === 'number'
+    ) {
+      return Number(value.toFixed(4));
+    }
   }
   return value;
 }
