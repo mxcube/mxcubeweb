@@ -4,8 +4,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  startAction,
-  stopAction,
+  startBeamlineAction,
+  stopBeamlineAction,
   showActionOutput,
   hideActionOutput,
   setArgumentValue,
@@ -147,8 +147,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    startAction: bindActionCreators(startAction, dispatch),
-    stopAction: bindActionCreators(stopAction, dispatch),
+    startAction: bindActionCreators(startBeamlineAction, dispatch),
+    stopAction: bindActionCreators(stopBeamlineAction, dispatch),
     showOutput: bindActionCreators(showActionOutput, dispatch),
     hideOutput: bindActionCreators(hideActionOutput, dispatch),
     setArgumentValue: bindActionCreators(setArgumentValue, dispatch),
