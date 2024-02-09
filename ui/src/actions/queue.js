@@ -46,7 +46,7 @@ export function setQueue(queue) {
     const { address: loadedSampleId } = state.sampleChanger.loadedSample;
     if (
       queue.sampleOrder.includes(loadedSampleId) &&
-      state.queue.current.sampleID !== loadedSampleId
+      state.queue.currentSampleID !== loadedSampleId
     ) {
       // If queue contains sample loaded by sample changer, set it as the current sample (unless it already is)
       dispatch(setCurrentSample(loadedSampleId));

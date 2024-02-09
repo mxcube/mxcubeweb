@@ -309,8 +309,8 @@ class SampleGridTableContainer extends React.Component {
   currentSample(sampleID) {
     let current = false;
 
-    if (this.props.queue.current.sampleID) {
-      current = this.props.queue.current.sampleID === sampleID;
+    if (this.props.queue.currentSampleID) {
+      current = this.props.queue.currentSampleID === sampleID;
     } else if (this.props.sampleChanger.loadedSample.address) {
       current = this.props.sampleChanger.loadedSample.address === sampleID;
     }
