@@ -28,17 +28,6 @@ function taskFormReducer(state = INITIAL_STATE, action = {}) {
         origin: action.origin,
       };
     }
-    case 'UPDATE_TASK': {
-      return {
-        ...state,
-        defaultParameters: {
-          ...state.defaultParameters,
-          [action.taskData.type.toLowerCase()]: {
-            ...action.taskData.parameters,
-          },
-        },
-      };
-    }
     case 'HIDE_FORM': {
       return { ...state, showForm: '' };
     }
