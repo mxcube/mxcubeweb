@@ -51,7 +51,7 @@ const validate = (values, props) => {
   let resMin = 0;
   let resMax = 0;
 
-  if (energies.length > 2) {
+  if (!props.beamline.hardwareObjects.energy.readonly) {
     resMin = everpolate.linear(currEnergy, energies, limitsMin);
     resMax = everpolate.linear(currEnergy, energies, limitsMax);
   } else {
@@ -104,7 +104,7 @@ const validate = (values, props) => {
   }
 
   if (
-    energies.length >= 2 &&
+    !props.beamline.hardwareObjects.energy.readonly &&
     !(
       currEnergy > props.beamline.hardwareObjects.energy.limits[0] &&
       currEnergy < props.beamline.hardwareObjects.energy.limits[1]
