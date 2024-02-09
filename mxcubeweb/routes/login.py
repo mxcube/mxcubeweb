@@ -43,7 +43,6 @@ def init_route(app, server, url_prefix):
             res = make_response(jsonify({"msg": "Could not authenticate"}), 200)
         else:
             res = make_response(jsonify({"msg": ""}), 200)
-            session.permanent = True
 
         return res
 
@@ -81,6 +80,7 @@ def init_route(app, server, url_prefix):
         try:
             res = app.usermanager.login_info()
             response = jsonify(res)
+            session.permanent = True
         except Exception:
             response = make_response(jsonify({"loggedIn": False}), 200)
 
