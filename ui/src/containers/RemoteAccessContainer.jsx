@@ -14,7 +14,7 @@ import {
 
 export class RemoteAccessContainer extends React.Component {
   getRAOptions() {
-    let content = (
+    return (
       <Col sm={4}>
         <Card className="mb-3">
           <Card.Header>RA Options</Card.Header>
@@ -37,12 +37,6 @@ export class RemoteAccessContainer extends React.Component {
         </Card>
       </Col>
     );
-
-    if (!this.props.login.user.isstaff) {
-      content = null;
-    }
-
-    return content;
   }
 
   render() {
