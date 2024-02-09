@@ -1,15 +1,14 @@
 import { sendGetAttribute } from '../../api/beamline';
 
-async function get_resolution_limits_for_energy(energy) {
-  const result = await sendGetAttribute(
+function get_resolution_limits_for_energy(energy) {
+  return sendGetAttribute(
+    'energy',
     'energy',
     'get_resolution_limits_for_energy',
     {
       energy,
     },
   );
-
-  return result.return;
 }
 
 async function asyncValidate(values, _d, props) {

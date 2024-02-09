@@ -1,11 +1,8 @@
-# import json
 import sys
 import logging
-
-# import types
-
 import typing
 import spectree
+from werkzeug.exceptions import UnsupportedMediaType
 
 from flask import Blueprint, Response, jsonify, request, make_response
 
@@ -14,30 +11,27 @@ from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubecore import HardwareRepository as HWR
 
 
-def create_get_route(app, server, bp, adapter, attr, name):
+def create_get_route(app, server, bp, adapter, attr):
     atype = adapter.adapter_type.lower()
-    func = getattr(adapter, attr)
-    get_type_hint = typing.get_type_hints(func)
+    model = adapter._model_from_typehint(getattr(adapter, attr, None))
 
-    if "return" in get_type_hint:
-        route_url = (
-            f"{atype}/{name}/<string:name>" if name else f"{atype}/<string:name>"
+    @server.restrict
+    @server.validate(json=model["args"])
+    def get_func(name):
+        try:
+            args = request.get_json()
+        except UnsupportedMediaType:
+            args = {}
+        result = model["return"](
+            **{"return": getattr(app.mxcubecore.get_adapter(name), attr)(**args)}
         )
-        endpoint = f"{atype}_get_{name}" if name else f"{atype}_get"
 
-        @bp.route(route_url, endpoint=endpoint, methods=["GET"])
-        @server.restrict
-        @server.validate(resp=spectree.Response(HTTP_200=get_type_hint["return"]))
-        def get_func(name):
-            """
-            Retrieves value of attribute < name >
-            Replies with status code 200 on success and 409 on exceptions.
-            """
-            return jsonify(
-                getattr(app.mxcubecore.get_adapter(name.lower()), attr)().dict()
-            )
+        return make_response(getattr(result, "return").json(), 200)
 
-        get_func.__name__ = f"{atype}_get_value"
+    route_url = f"{atype}/<string:name>/{attr}"
+    endpoint = f"{atype}_{attr}"
+    get_func.__name__ = endpoint
+    bp.add_url_rule(route_url, view_func=get_func, endpoint=endpoint, methods=["POST"])
 
 
 def create_set_route(app, server, bp, adapter, attr, name):
@@ -93,7 +87,6 @@ def add_adapter_routes(app, server, bp):
 
     for _id, a in app.mxcubecore.adapter_dict.items():
         adapter = a["adapter"]
-
         # Only add the route once for each type (class) of adapter
         if adapter.adapter_type not in adapter_type_list:
             adapter_type_list.append(adapter.adapter_type)
@@ -102,41 +95,13 @@ def add_adapter_routes(app, server, bp):
             # set the value of the underlyaing hardware object and
             # data() to return a representation of the object, so we are
             # mapping these by default
-            set_type_hint = typing.get_type_hints(adapter._set_value)
-            data_type_hint = typing.get_type_hints(adapter.data)
-
-            if "value" in set_type_hint:
-                create_set_route(app, server, bp, adapter, "_set_value", "value")
-
-            if "return" in data_type_hint:
-                create_get_route(app, server, bp, adapter, "data", None)
-
-            # For consitency add GET route for value even if its currently unused
-            if isinstance(adapter, ActuatorAdapterBase):
-                get_type_hint = typing.get_type_hints(adapter._get_value)
-
-                if "return" in get_type_hint:
-                    create_get_route(
-                        app,
-                        server,
-                        bp,
-                        adapter,
-                        "_get_value",
-                        "value",
-                    )
+            create_set_route(app, server, bp, adapter, "_set_value", "value")
+            create_get_route(app, server, bp, adapter, "data")
 
             # Map all other functions starting with prefix get_ or set_ and
-            # flagged with the @export
             for attr in dir(adapter):
                 if attr.startswith("get"):
-                    create_get_route(
-                        app,
-                        server,
-                        bp,
-                        adapter,
-                        attr,
-                        attr.replace("get_", ""),
-                    )
+                    create_get_route(app, server, bp, adapter, attr)
 
                 if attr.startswith("set"):
                     create_set_route(
@@ -163,15 +128,6 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def beamline_get_all_attributes():
         return jsonify(app.beamline.beamline_get_all_attributes())
-
-    # @bp.route("/<string:obj>/command/<string:name>", methods=["POST"])
-    # @server.restrict
-    # def execute_command(obj, name):
-    #     params = request.get_json()
-    #     adapter = app.mxcubecore.get_adapter(obj.lower())
-    #     adapter._ho.pydantic_model[name].validate(**params["args"])
-    #     adapter.execute_command(name, params["args"])
-    #     return make_response("{}", 200)
 
     @bp.route("/<name>/abort", methods=["GET"])
     @server.require_control
