@@ -154,11 +154,11 @@ class EnergyScan extends React.Component {
 }
 
 const EnergyScanForm = reduxForm({
-  form: 'workflow',
+  form: 'energyscan',
   validate,
 })(EnergyScan);
 
-const selector = formValueSelector('workflow');
+const selector = formValueSelector('energyscan');
 
 export default connect((state) => {
   const subdir = selector(state, 'subdir');

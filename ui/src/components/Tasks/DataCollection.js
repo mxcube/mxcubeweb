@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
+import asyncValidate from './asyncValidate';
 import validate from './validate';
 import warn from './warning';
 
@@ -341,6 +342,7 @@ class DataCollection extends React.Component {
 const DataCollectionForm = reduxForm({
   form: 'datacollection',
   validate,
+  asyncValidate,
   warn,
 })(DataCollection);
 

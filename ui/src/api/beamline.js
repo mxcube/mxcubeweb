@@ -22,6 +22,10 @@ export function sendSetAttribute(name, type, value) {
   return endpoint.put({ name, value }, `/${type}/value/${name}`).res();
 }
 
+export function sendGetAttribute(type, name, args) {
+  return endpoint.post(args, `/${type}/${name}`).json();
+}
+
 export function sendRunBeamlineAction(name, parameters) {
   return endpoint.post({ parameters }, `/${name}/run`).res();
 }
