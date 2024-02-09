@@ -156,10 +156,14 @@ class TaskContainer extends React.Component {
           <Interleaved
             show
             addTask={this.addTask}
+            pointID={this.props.pointID}
             taskData={this.props.taskData}
             hide={this.props.hideTaskParametersForm}
             apertureList={this.props.apertureList}
             rootPath={this.props.path}
+            attributes={this.props.attributes}
+            defaultParameters={this.props.defaultParameters}
+            taskResult={this.props.taskResult}
           />
         );
       }

@@ -110,10 +110,12 @@ class Interleaved extends React.Component {
       ...params,
       type: 'Interleaved',
       label: 'Interleaved',
+      helical: false,
+      mesh: false,
       shape: this.props.shapeId,
       suffix: this.props.suffix,
       taskIndexList: this.props.taskIndexList,
-      swNumImages: this.props.sub_wedge_size,
+      swNumImages: this.props.subWedgeSize,
       wedges: this.props.wedges,
     };
 
@@ -183,12 +185,16 @@ class Interleaved extends React.Component {
               <Col xs={6}>
                 <StaticField
                   label="Wedge size"
+                  col1="4"
+                  col2="4"
                   data={<span> {wedgeSize} &deg; </span>}
                 />
               </Col>
               <Col xs={6}>
                 <StaticField
                   label="No of images per wedge"
+                  col1="6"
+                  col2="4"
                   data={<span> {wedgeNumImages} </span>}
                 />
               </Col>
@@ -205,6 +211,8 @@ class Interleaved extends React.Component {
               <Col xs={6} style={{ marginTop: '10px' }}>
                 <StaticField
                   label="Sub wedge size"
+                  col1="6"
+                  col2="4"
                   data={
                     <span> {this.props.subWedgeObject.swSizes[0]} &deg;</span>
                   }
@@ -289,33 +297,33 @@ class Interleaved extends React.Component {
 }
 
 const InterleavedForm = reduxForm({
-  form: 'workflow',
-  asyncValidate,
-  validate,
+  form: 'interleaved',
 })(Interleaved);
 
-const selector = formValueSelector('workflow');
+const selector = formValueSelector('interleaved');
 
 export default connect((state) => {
   const fileSuffix = state.taskForm.fileSuffix === 'h5' ? '_master.h5' : 'cbf';
   const shapeId = state.taskForm.pointID;
-  const subWedgeSize = selector(state, 'sub_wedge_size');
+  const subWedgeSize = selector(state, 'subWedgeSize');
   const { wedges } = state.taskForm.taskData.parameters;
 
   const { type } = state.taskForm.taskData;
   const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
+    subWedgeSize,
     acqParametersLimits: limits,
     wedges,
     taskIndexList: state.taskForm.taskData.parameters.taskIndexList,
     subWedgeObject: getSubWedges(subWedgeSize || 10, wedges),
     shapeId,
     suffix: fileSuffix,
-    subWedgeSize,
+    beamline: state.beamline,
     initialValues: {
       subWedgeSize:
-        state.taskForm.defaultParameters.datacollection.sub_wedge_size,
+        state.taskForm.defaultParameters.datacollection.acq_parameters
+          .sub_wedge_size,
     },
   };
 })(InterleavedForm);
