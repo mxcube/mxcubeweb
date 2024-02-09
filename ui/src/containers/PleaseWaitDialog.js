@@ -27,8 +27,10 @@ export class PleaseWaitDialog extends React.Component {
   render() {
     return (
       <Modal
+        keyboard={false}
         animation={false}
         show={this.props.loading}
+        enforceFocus={false}
         onHide={this.hide}
         data-default-styles
       >
