@@ -232,6 +232,7 @@ export default class WorkflowTaskItem extends Component {
               </b>
               {state === TASK_UNCOLLECTED ? (
                 <i
+                  key="delete_task"
                   className="fa fa-times"
                   onClick={this.deleteTask}
                   style={delTaskCSS}
@@ -267,6 +268,16 @@ export default class WorkflowTaskItem extends Component {
                         className="fa fa-clipboard"
                         aria-hidden="true"
                       />
+                    </Button>
+                    <Button
+                      variant="outline-secondary"
+                      style={{ width: '3em' }}
+                      title="Open parameters dialog"
+                      onClick={() =>
+                        this.props.showWorkflowParametersDialog(null, true)
+                      }
+                    >
+                      <i aria-hidden="true" className="fa fa-sliders-h" />
                     </Button>
                   </div>
                   {this.getResult(state)}

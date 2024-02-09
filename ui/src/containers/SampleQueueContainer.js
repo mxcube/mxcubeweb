@@ -28,6 +28,7 @@ import {
 import { showTaskForm } from '../actions/taskForm';
 import { Nav } from 'react-bootstrap';
 import { showDialog } from '../actions/general';
+import { showWorkflowParametersDialog } from '../actions/workflow';
 
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
@@ -166,6 +167,9 @@ class SampleQueueContainer extends React.Component {
             plotsInfo={this.props.plotsInfo}
             shapes={this.props.shapes}
             showDialog={this.props.showDialog}
+            showWorkflowParametersDialog={
+              this.props.showWorkflowParametersDialog
+            }
           />
           <TodoTree
             show={visibleList === 'todo'}
@@ -239,6 +243,12 @@ function mapDispatchToProps(dispatch) {
     sendRunSample: bindActionCreators(sendRunSample, dispatch),
     sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch),
     setEnabledSample: bindActionCreators(setEnabledSample, dispatch),
+
+    // Workflow action
+    showWorkflowParametersDialog: bindActionCreators(
+      showWorkflowParametersDialog,
+      dispatch,
+    ),
 
     // Queue GUI actions
     collapseItem: bindActionCreators(collapseItem, dispatch),

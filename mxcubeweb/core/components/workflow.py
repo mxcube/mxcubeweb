@@ -33,6 +33,7 @@ class Workflow(ComponentBase):
 
     def submit_parameters(self, params):
         HWR.beamline.workflow.set_values_map(params)
+        self.app.server.emit("workflowParametersDialog", {}, namespace="/hwr")
 
     def update_gphl_parameters(self, params):
         HWR.beamline.emit(params["signal"], params["instruction"], params["data"])

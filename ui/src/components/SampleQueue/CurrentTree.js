@@ -180,6 +180,9 @@ export default class CurrentTree extends React.Component {
                     shapes={this.props.shapes}
                     showDialog={this.props.showDialog}
                     showContextMenu={this.showContextMenu}
+                    showWorkflowParametersDialog={
+                      this.props.showWorkflowParametersDialog
+                    }
                   />
                 );
 
