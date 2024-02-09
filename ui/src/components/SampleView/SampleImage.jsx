@@ -595,9 +595,7 @@ export default class SampleImage extends React.Component {
 
       const { resultDataPath } = shapeData;
       if (resultDataPath !== undefined) {
-        this.props.generalActions.sendDisplayImage(
-          `${resultDataPath}&img_num=${imgNum}`,
-        );
+        this.props.sendDisplayImage(`${resultDataPath}&img_num=${imgNum}`);
       }
     }
   }
