@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
-import validate from './validate';
+import asyncValidate from './asyncValidate';
 import warn from './warning';
 import JSForm from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
@@ -327,7 +327,7 @@ class GenericTaskForm extends React.Component {
 
 const GenericTaskFormForm = reduxForm({
   form: 'GenericTaskForm',
-  validate,
+  asyncValidate,
   warn,
 })(GenericTaskForm);
 

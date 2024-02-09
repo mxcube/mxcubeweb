@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
+import asyncValidate from './asyncValidate';
 import validate from './validate';
 import warn from './warning';
 
@@ -233,6 +234,7 @@ class Mesh extends React.Component {
 
 const MeshForm = reduxForm({
   form: 'mesh',
+  asyncValidate,
   validate,
   warn,
 })(Mesh);

@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import { reduxForm, formValueSelector } from 'redux-form';
 import { Modal, Button, Form, Row, ButtonToolbar } from 'react-bootstrap';
 import { DraggableModal } from '../DraggableModal';
+import asyncValidate from './asyncValidate';
 import validate from './validate';
 import warn from './warning';
 
@@ -221,6 +222,7 @@ class Helical extends React.Component {
 
 const HelicalForm = reduxForm({
   form: 'helical',
+  asyncValidate,
   validate,
   warn,
 })(Helical);

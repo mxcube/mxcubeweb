@@ -1,27 +1,15 @@
-const everpolate = require('everpolate');
-
 const INVALID_CHAR_MSG =
   'Invalid character in path, only alphanumerical characters and -, _, : allowed';
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
-const validate = (values, props) => {
+function validate(values, props) {
   const errors = {};
   if (!props.beamline.hardwareObjects) {
     // for some reason redux-form is loaded before the initial status
     return errors;
   }
   const currEnergy = Number.parseFloat(values.energy);
-  const currRes = Number.parseFloat(values.resolution);
   const currTransmission = Number.parseFloat(values.transmission);
-  const energies = props.beamline.hardwareObjects.resolution.limits.map(
-    (value) => value[0],
-  );
-  const limitsMin = props.beamline.hardwareObjects.resolution.limits.map(
-    (value) => value[1],
-  );
-  const limitsMax = props.beamline.hardwareObjects.resolution.limits.map(
-    (value) => value[2],
-  );
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
 
@@ -46,17 +34,6 @@ const validate = (values, props) => {
     !/^[-{}/\w]+$/u.test(props.experimentName)
   ) {
     errors.experimentName = INVALID_CHAR_MSG;
-  }
-
-  let resMin = 0;
-  let resMax = 0;
-
-  if (!props.beamline.hardwareObjects.energy.readonly) {
-    resMin = everpolate.linear(currEnergy, energies, limitsMin);
-    resMax = everpolate.linear(currEnergy, energies, limitsMax);
-  } else {
-    resMin = props.beamline.hardwareObjects.resolution.limits[0];
-    resMax = props.beamline.hardwareObjects.resolution.limits[1];
   }
 
   if (
@@ -99,10 +76,6 @@ const validate = (values, props) => {
     }
   }
 
-  if (!(currRes >= resMin && currRes <= resMax)) {
-    errors.resolution = 'Entered Resolution outside working range';
-  }
-
   if (
     !props.beamline.hardwareObjects.energy.readonly &&
     !(
@@ -138,6 +111,6 @@ const validate = (values, props) => {
   }
 
   return errors;
-};
+}
 
 export default validate;

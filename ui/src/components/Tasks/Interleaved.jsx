@@ -12,6 +12,7 @@ import {
   ButtonToolbar,
   Table,
 } from 'react-bootstrap';
+import asyncValidate from './asyncValidate';
 import validate from './validate';
 import { FieldsHeader, StaticField, InputField } from './fields';
 
@@ -289,6 +290,7 @@ class Interleaved extends React.Component {
 
 const InterleavedForm = reduxForm({
   form: 'workflow',
+  asyncValidate,
   validate,
 })(Interleaved);
 
