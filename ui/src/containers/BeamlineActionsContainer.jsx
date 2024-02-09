@@ -4,8 +4,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import {
-  startBeamlineAction,
-  stopBeamlineAction,
+  startAction,
+  stopAction,
   showActionOutput,
   hideActionOutput,
   setArgumentValue,
@@ -44,7 +44,7 @@ class BeamlineActionsContainer extends React.Component {
     });
 
     this.plotIdByAction[this.props.currentAction.name] = null;
-    this.props.startBeamlineAction(cmdName, parameters, showOutput);
+    this.props.startAction(cmdName, parameters, showOutput);
   }
 
   hideOutput() {
@@ -102,9 +102,9 @@ class BeamlineActionsContainer extends React.Component {
                     handleStartAction={
                       cmd.argument_type === 'List'
                         ? this.startAction
-                        : () => this.props.startBeamlineAction(cmdName, {})
+                        : () => this.props.startAction(cmdName, {})
                     }
-                    handleStopAction={this.props.stopBeamlineAction}
+                    handleStopAction={this.props.stopAction}
                     handleShowOutput={this.props.showOutput}
                     state={cmdState}
                     disabled={disabled}
@@ -128,8 +128,9 @@ class BeamlineActionsContainer extends React.Component {
           isActionRunning={currentActionRunning}
           actionMessages={this.props.currentAction.messages}
           handleSetActionArgument={this.props.setArgumentValue}
-          handleStopAction={this.props.stopBeamlineAction}
-          handleStartAction={this.props.startBeamlineAction}
+          handleStopAction={this.props.stopAction}
+          handleStartAction={this.startAction}
+          handleStartAnnotatedAction={this.props.startAction}
           handleOnPlotDisplay={this.newPlotDisplayed}
           plotId={this.plotIdByAction[currentActionName]}
         />
@@ -146,8 +147,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    startBeamlineAction: bindActionCreators(startBeamlineAction, dispatch),
-    stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
+    startAction: bindActionCreators(startAction, dispatch),
+    stopAction: bindActionCreators(stopAction, dispatch),
     showOutput: bindActionCreators(showActionOutput, dispatch),
     hideOutput: bindActionCreators(hideActionOutput, dispatch),
     setArgumentValue: bindActionCreators(setArgumentValue, dispatch),

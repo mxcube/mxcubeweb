@@ -5,7 +5,7 @@ import { DraggableModal } from '../DraggableModal';
 import AnnotatedBeamlineActionForm from './AnnotatedBeamlineActionForm';
 import BeamlineActionForm from './BeamlineActionForm';
 
-export default function AnnotatedBeamlineActionDialog(props) {
+export default function BeamlineActionDialog(props) {
   const {
     isDialogVisble,
     handleOnHide,
@@ -19,6 +19,7 @@ export default function AnnotatedBeamlineActionDialog(props) {
     actionMessages,
     handleStopAction,
     handleStartAction,
+    handleStartAnnotatedAction,
     handleOnPlotDisplay,
     handleSetActionArgument,
     plotId,
@@ -51,7 +52,7 @@ export default function AnnotatedBeamlineActionDialog(props) {
             actionSchema={actionSchema}
             isActionRunning={isActionRunning}
             handleStopAction={handleStopAction}
-            handleStartAction={handleStartAction}
+            handleStartAction={handleStartAnnotatedAction}
           />
         )}
         <Row className="py-2">
