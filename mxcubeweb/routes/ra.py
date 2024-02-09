@@ -66,11 +66,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
         if app.usermanager.is_operator():
             return make_response("", 200)
 
-        # Not inhouse user so not allowed to take control by force,
-        # return error code
-        if not current_user.isstaff:
-            return make_response("", 409)
-
         toggle_operator(current_user.username, "You were given control")
 
         return make_response("", 200)
