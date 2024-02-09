@@ -645,12 +645,19 @@ export default class SampleImage extends React.Component {
       }
     } else if (keyPressed === 'z' && zoom.state === MOTOR_STATE.READY) {
       // in this case zooming
-      if (e.deltaY > 0 && zoom.value < 10) {
+      const index = zoom.commands.indexOf(zoom.value)
+      if (e.deltaY > 0 && index < zoom.commands.length) {
         // zoom in
-        sendZoomPos(zoom.value + 1);
-      } else if (e.deltaY < 0 && zoom.value > 1) {
+        this.props.setAttribute(
+          'diffractometer.zoom',
+          zoom.commands[index + 1],
+        );
+      } else if (e.deltaY < 0 && index > 0) {
         // zoom out
-        sendZoomPos(zoom.value - 1);
+        this.props.setAttribute(
+          'diffractometer.zoom',
+          zoom.commands[index - 1],
+        );
       }
     }
   }
