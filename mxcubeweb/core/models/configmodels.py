@@ -38,6 +38,7 @@ class UIComponentModel(BaseModel):
     # Set internaly not to be set through configuration
     value_type: Optional[str]
     object_type: Optional[str]
+    format: Optional[str]
 
 
 class _UICameraConfigModel(BaseModel):
