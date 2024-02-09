@@ -98,6 +98,7 @@ default_acquisition_parameters:
     take_dark_current: true
     skip_existing_images: true
     take_snapshots: true
+    sub_wedge_size: 10
     # NB 'compression' not added as apparently never used
 
   helical:
