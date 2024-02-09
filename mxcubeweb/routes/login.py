@@ -99,7 +99,7 @@ def init_route(app, server, url_prefix):
     def refresh_session():
         # Since default value of `SESSION_REFRESH_EACH_REQUEST` config setting is `True`
         # there is no need to do anything to refresh the session.
-        logging.getLogger("MX3.HWR").debug("Session refresh")
+        # logging.getLogger("MX3.HWR").debug("Session refresh")
         app.usermanager.update_active_users()
         return make_response("", 200)
 
