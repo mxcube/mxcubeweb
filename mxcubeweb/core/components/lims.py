@@ -258,9 +258,13 @@ class Lims(ComponentBase):
             session["proposal_list"] = [proposal]
             login_res["proposalList"] = [proposal]
 
-        logging.getLogger("MX3.HWR").info(
-            "[LIMS] Logged in, proposal data: %s" % login_res
-        )
+            logging.getLogger("MX3.HWR").info(
+                "[LIMS] Logged in, valid proposal: %s%s"
+                % (
+                    login_res["Proposal"]["code"],
+                    login_res["Proposal"]["number"],
+                )
+            )
 
         return login_res
 
