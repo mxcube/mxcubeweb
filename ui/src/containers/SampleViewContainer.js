@@ -78,7 +78,7 @@ class SampleViewContainer extends Component {
 
     const { sourceScale, imageRatio, motorSteps } = this.props.sampleViewState;
     const { setStepSize } = this.props.sampleViewActions;
-    const { sampleID } = this.props.current;
+    const { currentSampleID } = this.props;
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
 
@@ -156,8 +156,8 @@ class SampleViewContainer extends Component {
               {this.props.mode === 'SSX-CHIP' ? (
                 <SSXChipControl
                   showForm={this.props.showForm}
-                  sampleID={sampleID}
-                  sampleData={this.props.sampleList[sampleID]}
+                  currentSampleID={currentSampleID}
+                  sampleData={this.props.sampleList[currentSampleID]}
                   defaultParameters={this.props.defaultParameters}
                   groupFolder={this.props.groupFolder}
                   hardwareObjects={this.props.hardwareObjects}
@@ -269,8 +269,8 @@ class SampleViewContainer extends Component {
                 updateTask={this.props.updateTask}
                 availableMethods={this.props.availableMethods}
                 showForm={this.props.showForm}
-                sampleID={sampleID}
-                sampleData={this.props.sampleList[sampleID]}
+                sampleID={currentSampleID}
+                sampleData={this.props.sampleList[currentSampleID]}
                 defaultParameters={this.props.defaultParameters}
                 imageRatio={imageRatio * sourceScale}
                 workflows={this.props.workflows}
@@ -299,7 +299,7 @@ class SampleViewContainer extends Component {
                 selectedGrids={selectedGrids}
                 cellCounting={this.props.cellCounting}
                 cellSpacing={this.props.cellSpacing}
-                current={this.props.current}
+                currentSampleID={this.props.currentSampleID}
                 sampleList={this.props.sampleList}
                 proposal={this.props.proposal}
                 busy={this.props.queueState === QUEUE_RUNNING}
@@ -324,7 +324,7 @@ class SampleViewContainer extends Component {
 function mapStateToProps(state) {
   return {
     sampleList: state.sampleGrid.sampleList,
-    current: state.queue.current,
+    currentSampleID: state.queue.currentSampleID,
     groupFolder: state.queue.groupFolder,
     queueState: state.queue.queueStatus,
     sampleViewState: state.sampleview,

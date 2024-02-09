@@ -4,7 +4,7 @@ import { clearAllLastUsedParameters } from '../components/Tasks/fields';
 
 const INITIAL_STATE = {
   queue: [],
-  current: { sampleID: null, running: false },
+  currentSampleID: null,
   queueStatus: QUEUE_STOPPED,
   autoMountNext: false,
   autoAddDiffplan: false,
@@ -24,7 +24,7 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
       return {
         ...state,
         queue: INITIAL_STATE.queue,
-        current: INITIAL_STATE.current,
+        currentSampleID: INITIAL_STATE.current,
       };
     }
     case 'ADD_SAMPLES_TO_QUEUE': {
@@ -51,25 +51,18 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
 
       return {
         ...state,
-        current: {
-          ...state.current,
-          sampleID: action.sampleID,
-          running: false,
-        },
+        currentSampleID: action.sampleID,
       };
     }
     case 'CLEAR_CURRENT_SAMPLE': {
       const queue = state.queue.filter(
-        (value) => value !== state.current.sampleID,
+        (value) => value !== state.currentSampleID,
       );
       return {
         ...state,
         queue,
-        current: { sampleID: null, collapsed: false, running: false },
+        currentSampleID: null,
       };
-    }
-    case 'RUN_SAMPLE': {
-      return { ...state, current: { ...state.current, running: true } };
     }
     case 'CHANGE_SAMPLE_ORDER': {
       return {
@@ -124,10 +117,8 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
         centringMethod: action.data.queue.centringMethod,
         rememberParametersBetweenSamples:
           action.data.queue.rememberParametersBetweenSamples,
-        current: {
-          sampleID: action.data.queue.current,
-          running: action.data.queue.queueStatus,
-        },
+        currentSampleID: action.data.queue.current,
+        queueStatus: action.data.queue.queueStatus,
       };
     }
     default: {

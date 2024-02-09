@@ -518,7 +518,7 @@ class SampleListViewContainer extends React.Component {
     for (const sampleID of sampleIDList) {
       if (this.inQueue(sampleID)) {
         // Do not remove currently mounted sample
-        if (this.props.queue.current.sampleID !== sampleID) {
+        if (this.props.queue.currentSampleID !== sampleID) {
           samplesToRemove.push(sampleID);
         }
       } else {

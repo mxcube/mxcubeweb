@@ -61,7 +61,7 @@ export class ConfirmCollectDialog extends React.Component {
 
   onOkClick() {
     const sample =
-      this.props.queue.current.sampleID || this.props.queue.queue[0];
+      this.props.queue.currentSampleID || this.props.queue.queue[0];
     this.props.startQueue(this.props.queue.autoMountNext, sample);
     this.props.hide();
   }
@@ -142,7 +142,7 @@ export class ConfirmCollectDialog extends React.Component {
     // sample to be colleted when autoMountNtext is false
     if (!this.props.queue.autoMountNext) {
       const sampleID =
-        this.props.queue.current.sampleID || this.props.queue.queue[0];
+        this.props.queue.currentSampleID || this.props.queue.queue[0];
 
       if (sampleID) {
         queue = [sampleID];
@@ -169,7 +169,7 @@ export class ConfirmCollectDialog extends React.Component {
 
     if (
       !this.props.queue.autoMountNext &&
-      (this.props.queue.current.sampleID || this.props.queue.queue[0])
+      (this.props.queue.currentSampleID || this.props.queue.queue[0])
     ) {
       numSamples = 1;
     }

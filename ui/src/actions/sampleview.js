@@ -452,7 +452,7 @@ export function sendStartClickCentring() {
     const { shapes } = getState();
     dispatch(unselectShapes(shapes));
 
-    if (queue.current.sampleID) {
+    if (queue.currentSampleID) {
       fetch('/mxcube/api/v0.1/sampleview/centring/start3click', {
         method: 'PUT',
         credentials: 'include',
