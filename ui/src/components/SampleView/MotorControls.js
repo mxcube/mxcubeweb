@@ -16,6 +16,10 @@ export default class MotorControls extends React.Component {
   renderMotorInputs(from, to) {
     return this.props.uiproperties.components
       .slice(from, to)
+      .filter(
+        ({ attribute }) =>
+          this.props.hardwareObjects[attribute].type === 'MOTOR',
+      )
       .map(({ attribute, role }) => (
         <Col key={attribute} sm={12}>
           <MotorInputContainer component="sample_view" role={role} />
@@ -37,8 +41,10 @@ export default class MotorControls extends React.Component {
     const sample_horizontal =
       this.props.hardwareObjects[sample_horizontal_uiprop.attribute];
 
+    const numel = this.props.uiproperties.components.length;
+
     if (!sample_vertical || !sample_horizontal) {
-      return <Row className="row">{this.renderMotorInputs(0, 8)}</Row>;
+      return <Row className="row">{this.renderMotorInputs(0, numel)}</Row>;
     }
 
     const { save } = this.props;
@@ -97,7 +103,7 @@ export default class MotorControls extends React.Component {
 
             {this.state.showAll && (
               <div style={{ marginTop: '0.5rem' }}>
-                {this.renderMotorInputs(3, 8)}
+                {this.renderMotorInputs(3, numel)}
               </div>
             )}
           </div>
