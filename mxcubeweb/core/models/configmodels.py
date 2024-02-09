@@ -34,12 +34,7 @@ class UIComponentModel(BaseModel):
     step: Optional[float]
     precision: Optional[int]
     suffix: Optional[str]
-    format: Optional[str]
-    url: Optional[str]
     description: Optional[str]
-    width: Optional[int]
-    height: Optional[int]
-
     # Set internaly not to be set through configuration
     value_type: Optional[str]
     object_type: Optional[str]
@@ -48,6 +43,7 @@ class UIComponentModel(BaseModel):
 class _UICameraConfigModel(BaseModel):
     label: str
     url: str
+    format: Optional[str]
     description: Optional[str]
     width: Optional[int]
     height: Optional[int]
@@ -74,8 +70,8 @@ class UISampleViewVideoControlsModel(UIPropertiesModel):
 class UIPropertiesListModel(BaseModel):
     sample_view: UIPropertiesModel
     beamline_setup: UIPropertiesModel
-    camera_setup: UICameraConfigModel
-    sample_view_video_controls: UISampleViewVideoControlsModel
+    camera_setup: Optional[UICameraConfigModel]
+    sample_view_video_controls: Optional[UISampleViewVideoControlsModel]
 
 
 class UserManagerUserConfigModel(BaseModel):
@@ -112,7 +108,7 @@ class MXCUBEAppConfigModel(BaseModel):
 
     # Port from which the video_stream process (https://github.com/mxcube/video-streamer)
     # sreams video. The process runs in seperate process (on localhost)
-    VIDEO_STREAM_PORT: str = Field("", description="Video stream PORT")
+    VIDEO_STREAM_PORT: int = Field(8000, description="Video stream PORT")
     USE_EXTERNAL_STREAMER: bool = Field(
         False,
         description=(
