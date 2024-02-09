@@ -25,7 +25,7 @@ export default class ApertureInput extends React.Component {
         <Form.Select
           className={inputCSS}
           style={{ float: 'none' }}
-          value={this.props.aperture}
+          value={this.props.apertureList[this.props.aperture]}
           onChange={this.handleChange}
         >
           {this.props.apertureList.map((option) => (
