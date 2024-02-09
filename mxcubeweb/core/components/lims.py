@@ -332,8 +332,12 @@ class Lims(ComponentBase):
                 "sessionId"
             )
 
-            HWR.beamline.session.proposal_id = proposal_info.get("Session")[0].get(
+            HWR.beamline.session.proposal_id = todays_session.get("session").get(
                 "proposalId"
+            )
+
+            HWR.beamline.session.set_session_start_date(
+                todays_session.get("session").get("startDate")
             )
 
             session["proposal"] = proposal_info
