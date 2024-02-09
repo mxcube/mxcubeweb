@@ -55,15 +55,11 @@ class Beamline(ComponentBase):
             msg = "error connecting to beamline actions hardware object signals"
             logging.getLogger("MX3.HWR").exception(msg)
 
-        try:
+        if HWR.beamline.xrf_spectrum:
             HWR.beamline.xrf_spectrum.connect(
                 HWR.beamline.xrf_spectrum,
                 "xrf_task_progress",
                 signals.xrf_task_progress,
-            )
-        except Exception as ex:
-            logging.getLogger("MX3.HWR").error(
-                "error loading plotting hwo: %s" % str(ex)
             )
 
     def diffractometer_init_signals(self):
