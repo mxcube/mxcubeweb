@@ -569,7 +569,7 @@ export default class SampleImage extends React.Component {
       );
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
-    } else if (option.e.metaKey || option.e.ctrlKey) {
+    } else if (option.target && !(option.e.shiftKey || option.e.ctrlKey)) {
       const cellSizeX = beamSize.x * pixelsPerMm[0] * imageRatio;
       const cellSizeY = beamSize.y * pixelsPerMm[1] * imageRatio;
 
@@ -594,8 +594,10 @@ export default class SampleImage extends React.Component {
       );
 
       const { resultDataPath } = shapeData;
-      if (resultDataPath.length > 0) {
-        this.props.sendDisplayImage(`${resultDataPath}&img_num=${imgNum}`);
+      if (resultDataPath !== undefined) {
+        this.props.generalActions.sendDisplayImage(
+          `${resultDataPath}&img_num=${imgNum}`,
+        );
       }
     }
   }
