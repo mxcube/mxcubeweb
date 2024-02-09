@@ -99,7 +99,7 @@ function Workflow(props) {
           <ButtonToolbar className="float-end">
             <Button
               variant="success"
-              disabled={props.invalid}
+              disabled={props.origin === 'samplelist' || props.invalid}
               onClick={props.handleSubmit((params) => addToQueue(true, params))}
             >
               Run Now
@@ -151,6 +151,7 @@ const WorkflowFormConnect = connect((state) => {
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
+    origin: state.taskForm.origin,
     filename: fname,
     wfname: state.taskForm.taskData.parameters.wfname,
     wfpath: state.taskForm.taskData.parameters.wfpath,

@@ -281,7 +281,7 @@ class SampleListViewContainer extends React.Component {
           formName,
           selected,
           parameters,
-          [],
+          -1,
           'samplelist',
         );
       }
