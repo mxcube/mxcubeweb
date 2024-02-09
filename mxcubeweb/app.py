@@ -450,39 +450,40 @@ class MXCUBEApplication:
         # (either via config or via mxcubecore.beamline)
 
         for _id, section in MXCUBEApplication.CONFIG.app.ui_properties:
-            for component in section.components:
-                # Check that the component, if it's a UIComponentModel, corresponds
-                # to a HardwareObjecs that is available and that it can be
-                # adapted.
-                if isinstance(component, UIComponentModel):
-                    try:
-                        mxcore = MXCUBEApplication.mxcubecore
-                        adapter = mxcore.get_adapter(component.attribute)
-                        adapter_cls_name = type(adapter).__name__
-                        value_type = adapter.adapter_type
-                    except AttributeError:
-                        msg = (
-                            f"{component.attribute} not accessible via Beamline"
-                            " object. "
-                        )
-                        msg += (
-                            f"Verify that beamline.{component.attribute} is valid"
-                            " and/or "
-                        )
-                        msg += f"{component.attribute} accessible via get_role "
-                        msg += "check ui.yaml configuration file. "
-                        msg += "(attribute will NOT be avilable in UI)"
-                        logging.getLogger("HWR").warning(msg)
-                        adapter_cls_name = ""
-                        value_type = ""
-                    else:
-                        adapter_cls_name = adapter_cls_name.replace("Adapter", "")
+            if section:
+                for component in section.components:
+                    # Check that the component, if it's a UIComponentModel, corresponds
+                    # to a HardwareObjecs that is available and that it can be
+                    # adapted.
+                    if isinstance(component, UIComponentModel):
+                        try:
+                            mxcore = MXCUBEApplication.mxcubecore
+                            adapter = mxcore.get_adapter(component.attribute)
+                            adapter_cls_name = type(adapter).__name__
+                            value_type = adapter.adapter_type
+                        except AttributeError:
+                            msg = (
+                                f"{component.attribute} not accessible via Beamline"
+                                " object. "
+                            )
+                            msg += (
+                                f"Verify that beamline.{component.attribute} is valid"
+                                " and/or "
+                            )
+                            msg += f"{component.attribute} accessible via get_role "
+                            msg += "check ui.yaml configuration file. "
+                            msg += "(attribute will NOT be avilable in UI)"
+                            logging.getLogger("HWR").warning(msg)
+                            adapter_cls_name = ""
+                            value_type = ""
+                        else:
+                            adapter_cls_name = adapter_cls_name.replace("Adapter", "")
 
-                    if not component.object_type:
-                        component.object_type = adapter_cls_name
+                        if not component.object_type:
+                            component.object_type = adapter_cls_name
 
-                    if not component.value_type:
-                        component.value_type = value_type
+                        if not component.value_type:
+                            component.value_type = value_type
 
         return {
             key: value.dict()
@@ -490,6 +491,7 @@ class MXCUBEApplication:
                 key,
                 value,
             ) in MXCUBEApplication.CONFIG.app.ui_properties
+            if value
         }
 
     @staticmethod
