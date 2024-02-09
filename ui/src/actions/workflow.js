@@ -3,7 +3,7 @@ import {
   sendUpdatedGphlWorkflowParameters,
 } from '../api/workflow';
 
-export function showWorkflowParametersDialog(formData, show = true) {
+export function showWorkflowParametersDialog(formData = null, show = true) {
   return { type: 'SHOW_WORKFLOW_PARAMETERS_DIALOG', formData, show };
 }
 

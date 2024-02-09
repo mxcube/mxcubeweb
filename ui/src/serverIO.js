@@ -428,7 +428,11 @@ class ServerIO {
     });
 
     this.hwrSocket.on('workflowParametersDialog', (data) => {
-      this.dispatch(showWorkflowParametersDialog(data));
+      if (data) {
+        this.dispatch(showWorkflowParametersDialog(data, true));
+      } else {
+        this.dispatch(showWorkflowParametersDialog(null, false));
+      }
     });
 
     this.hwrSocket.on('gphlWorkflowParametersDialog', (data) => {
