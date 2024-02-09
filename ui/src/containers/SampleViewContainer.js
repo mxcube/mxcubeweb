@@ -117,7 +117,7 @@ class SampleViewContainer extends Component {
             paddingBottom: '0em',
           }}
         >
-          <Col sm={12}>
+          <Col sm={10}>
             <DefaultErrorBoundary>
               <BeamlineSetupContainer />
             </DefaultErrorBoundary>
@@ -252,7 +252,7 @@ class SampleViewContainer extends Component {
               />
             </DefaultErrorBoundary>
           </Col>
-          <Col sm={7}>
+          <Col sm={6}>
             <DefaultErrorBoundary>
               <ContextMenu
                 {...this.props.contextMenu}
@@ -302,7 +302,7 @@ class SampleViewContainer extends Component {
               />
             </DefaultErrorBoundary>
           </Col>
-          <Col sm={4} style={{ display: 'flex' }}>
+          <Col sm={5} style={{ display: 'flex' }}>
             <DefaultErrorBoundary>
               <SampleQueueContainer />
             </DefaultErrorBoundary>
