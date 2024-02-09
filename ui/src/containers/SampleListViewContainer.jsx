@@ -308,6 +308,7 @@ class SampleListViewContainer extends React.Component {
     } else {
       this.props.syncSamples();
     }
+    this.sampleGridFilterByKey("limsSamples", true);
   }
 
   /**
@@ -445,6 +446,10 @@ class SampleListViewContainer extends React.Component {
         behavior: 'smooth',
       });
     }
+  }
+
+  sampleGridFilterByKey(key, value) {
+    this.props.filter({[key] : value});
   }
 
   /**
