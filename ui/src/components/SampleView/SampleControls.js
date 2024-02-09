@@ -266,8 +266,8 @@ export default class SampleControls extends React.Component {
                 <input
                   className={styles.zoomSlider}
                   type="range"
-                  min={zoom_motor.limits[0]}
-                  max={zoom_motor.limits[1]}
+                  min={0}
+                  max={zoom_motor.commands.length - 1}
                   value={zoom_motor.commands.indexOf(zoom_motor.value)}
                   disabled={zoom_motor.state !== MOTOR_STATE.READY}
                   onMouseUp={(e) => {
