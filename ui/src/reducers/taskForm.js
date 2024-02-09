@@ -25,6 +25,7 @@ function taskFormReducer(state = INITIAL_STATE, action = {}) {
         sampleIds: action.sampleIDs,
         taskData: { ...action.taskData },
         pointID: action.pointID,
+        origin: action.origin,
       };
     }
     case 'UPDATE_TASK': {
