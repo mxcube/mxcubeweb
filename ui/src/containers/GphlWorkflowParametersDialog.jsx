@@ -7,6 +7,7 @@ import './WorkflowParametersDialog.css';
 import {
   showGphlWorkflowParametersDialog,
   updateGphlWorkflowParameters,
+  updateGphlWorkflowParametersDialog,
 } from '../actions/workflow';
 
 const uiOptions = 'ui:options';
@@ -80,15 +81,17 @@ function GphlWorkflowParametersDialog(props) {
     updatedFormData,
     handleHide,
     updateGphlWorkflowParameters,
+    resetUpdatedGphlWParameters,
+    fetchUpdated,
   } = props;
 
-  const [formDataDict, setFormDataDict] = useState({});
+  const [formState, setFormState] = useState({});
   const [errors, setErrors] = useState();
   const [validated, setValidated] = useState(false);
   const [validatedIndexingTable, setValidatedIndexingTable] = useState(false);
   const [selected, setSelected] = useState([]);
 
-  const _setDataDict = useCallback(() => {
+  const _initFormState = useCallback(() => {
     const dataDict = {};
     Object.entries(formData.schema.properties).forEach(([key, value]) => {
       dataDict[key] = removeExtraDecimal(value.default, value.type);
@@ -103,38 +106,55 @@ function GphlWorkflowParametersDialog(props) {
     return dataDict;
   }, [formData]);
 
-  const handleAbort = useCallback(
-    (e) => {
-      // const signal = formData.ui_schema[uiOptions].return_signal;
-      const parameter = {
-        signal: 'GphlParameterReturn',
-        instruction: 'PARAMETERS_CANCELLED',
-        data: {},
-      };
-      updateGphlWorkflowParameters(parameter);
-      handleHide();
-      if (e) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    },
-    [updateGphlWorkflowParameters, handleHide],
-  );
+  const handleAbort = useCallback(() => {
+    // const signal = formData.ui_schema[uiOptions].return_signal;
+    const parameter = {
+      signal: 'GphlParameterReturn',
+      instruction: 'PARAMETERS_CANCELLED',
+      data: {},
+    };
+    updateGphlWorkflowParameters(parameter);
+    handleHide();
+  }, [updateGphlWorkflowParameters, handleHide]);
+
+  const handleFormDataUpdated = useCallback(() => {
+    if (updatedFormData) {
+      const updatedDict = { ...formState };
+      Object.entries(updatedFormData).forEach(([key, val]) => {
+        if (val.value) {
+          const newValue = removeExtraDecimal(val.value, typeof val.value);
+          updatedDict[key] = newValue;
+          // `key` may include a underscore (_), so we can't use `querySelector`
+          // eslint-disable-next-line unicorn/prefer-query-selector
+          if (document.getElementById(key) !== null) {
+            // eslint-disable-next-line unicorn/prefer-query-selector
+            document.getElementById(key).value = newValue;
+          }
+        }
+      });
+      setFormState(updatedDict);
+    }
+  }, [formState, setFormState, updatedFormData]);
 
   useEffect(() => {
-    let initialDataDict = {};
     if (show) {
-      initialDataDict = _setDataDict();
-      setFormDataDict(initialDataDict);
+      const initialDataDict = _initFormState();
+      setFormState(initialDataDict);
+    } else {
+      handleAbort();
     }
-  }, [show, _setDataDict]);
+  }, [show, _initFormState, handleAbort]);
+
+  useEffect(() => {
+    if (fetchUpdated) {
+      handleFormDataUpdated();
+      resetUpdatedGphlWParameters();
+    }
+  }, [fetchUpdated, handleFormDataUpdated, resetUpdatedGphlWParameters]);
 
   function handleSubmit(e) {
     const form = e.currentTarget;
-    if (
-      form.checkValidity() === false ||
-      formDataDict?.indexing_solution === ''
-    ) {
+    if (form.checkValidity() === false || formState?.indexing_solution === '') {
       setValidated(true);
       e.preventDefault();
       e.stopPropagation();
@@ -143,7 +163,7 @@ function GphlWorkflowParametersDialog(props) {
       const parameter = {
         signal,
         instruction: 'PARAMETERS_READY',
-        data: formDataDict,
+        data: formState,
       };
       updateGphlWorkflowParameters(parameter);
       handleHide();
@@ -167,38 +187,31 @@ function GphlWorkflowParametersDialog(props) {
       setValidated(true);
     } else {
       setValidated(false);
-      setFormDataDict({ ...formDataDict, [key]: val });
+      const newFormState = { ...formState };
+      newFormState[key] = removeExtraDecimal(val, typeof val);
       const signal = formData.ui_schema[uiOptions].return_signal;
-      const parameter = { signal, instruction: key, data: formDataDict };
+      const parameter = { signal, instruction: key, data: newFormState };
       await updateGphlWorkflowParameters(parameter);
-      handleFormDataUpdated();
+      setFormState(newFormState);
     }
 
     setErrors({ ...errors, [key]: error[key] });
   }
 
-  function handleFormDataUpdated() {
-    if (updatedFormData !== undefined) {
-      Object.entries(updatedFormData).forEach(([key, val]) => {
-        if (val.value) {
-          const newValue = removeExtraDecimal(val.value, typeof val.value);
-          setFormDataDict({ ...formDataDict, [key]: newValue });
-          // `key` may include a underscore (_), so we can't use `querySelector`
-          // eslint-disable-next-line unicorn/prefer-query-selector
-          if (document.getElementById(key) !== null) {
-            // eslint-disable-next-line unicorn/prefer-query-selector
-            document.getElementById(key).value = newValue;
-          }
-        }
-      });
-    }
-  }
-
   const handleIndexingTableChange = useCallback(
-    (value) => {
-      setFormDataDict({ ...formDataDict, indexing_solution: value });
+    async (value) => {
+      const newFormState = { ...formState };
+      newFormState.indexing_solution = value;
+      setFormState(newFormState);
+      const signal = formData.ui_schema[uiOptions].return_signal;
+      const parameter = {
+        signal,
+        instruction: 'indexing_solution',
+        data: newFormState,
+      };
+      await updateGphlWorkflowParameters(parameter);
     },
-    [setFormDataDict, formDataDict],
+    [setFormState, formData, updateGphlWorkflowParameters, formState],
   );
 
   const onSelectRow = useCallback(
@@ -212,6 +225,7 @@ function GphlWorkflowParametersDialog(props) {
       } else {
         newSelected = [index];
         setValidatedIndexingTable(false);
+        setValidated(false);
       }
       setSelected(newSelected);
       handleIndexingTableChange(updatedValue);
@@ -271,9 +285,7 @@ function GphlWorkflowParametersDialog(props) {
                                       id={fieldKey}
                                       label={schema.properties[fieldKey].title}
                                       onChange={(e) => handleChange(e)}
-                                      defaultChecked={
-                                        schema.properties[fieldKey].default
-                                      }
+                                      defaultChecked={formState[fieldKey]}
                                     />
                                   ) : schema.properties[fieldKey].enum ? (
                                     <Form.Select
@@ -309,7 +321,7 @@ function GphlWorkflowParametersDialog(props) {
                                         schema.properties[fieldKey].maximum ||
                                         'any'
                                       }
-                                      defaultValue={formDataDict[fieldKey]}
+                                      defaultValue={formState[fieldKey]}
                                       readOnly={
                                         schema.properties[fieldKey].readOnly
                                       }
@@ -352,7 +364,7 @@ function GphlWorkflowParametersDialog(props) {
             </Button>
           </div>
           <div className="p-2">
-            <Button variant="outline-secondary" onClick={(e) => handleAbort(e)}>
+            <Button variant="outline-secondary" onClick={handleAbort}>
               {' '}
               Abort{' '}
             </Button>
@@ -382,6 +394,7 @@ function mapStateToProps(state) {
     show: state.workflow.showGphlDialog,
     formData: state.workflow.gphlParameters,
     updatedFormData: state.workflow.gphlUpdatedParameters,
+    fetchUpdated: state.workflow.fetchUpdated,
   };
 }
 
@@ -393,6 +406,10 @@ function mapDispatchToProps(dispatch) {
     ),
     updateGphlWorkflowParameters: bindActionCreators(
       updateGphlWorkflowParameters,
+      dispatch,
+    ),
+    resetUpdatedGphlWParameters: bindActionCreators(
+      () => updateGphlWorkflowParametersDialog(null, false),
       dispatch,
     ),
   };
