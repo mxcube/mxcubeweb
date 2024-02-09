@@ -28,6 +28,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         try:
             res = jsonify(app.lims.synch_with_lims())
         except Exception as ex:
+            logging.getLogger("MX3.HWR").exception()
             res = (
                 "Could not synchronize with LIMS",
                 409,

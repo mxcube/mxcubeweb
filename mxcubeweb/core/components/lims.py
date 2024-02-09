@@ -409,7 +409,10 @@ class Lims(ComponentBase):
             sample_info["defaultSubDir"] = self.get_default_subdir(sample_info)
 
             if not VALID_SAMPLE_NAME_REGEXP.match(sample_info["sampleName"]):
-                raise AttributeError("sample name contains an incorrect character")
+                raise AttributeError(
+                    "sample name for sample %s contains an incorrect character"
+                    % sample_info
+                )
 
             try:
                 basket = int(sample_info["containerSampleChangerLocation"])
