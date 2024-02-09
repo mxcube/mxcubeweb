@@ -1,5 +1,6 @@
 from mxcubeweb.core.adapter.actuator_adapter import ActuatorAdapter
 from mxcubeweb.core.adapter.wavelength_adapter import WavelengthAdapter
+from mxcubecore import HardwareRepository as HWR
 
 
 class EnergyAdapter(ActuatorAdapter):
@@ -15,4 +16,9 @@ class EnergyAdapter(ActuatorAdapter):
         """
         super(EnergyAdapter, self).__init__(*args)
         self._add_adapter("wavelength", self._ho, WavelengthAdapter)
-        self._type = "MOTOR"
+        self._type = "ENERGY"
+
+    def get_resolution_limits_for_energy(self, energy: float) -> tuple:
+        return HWR.beamline.resolution.get_limits_for_wavelength(
+            self._ho.calculate_wavelength(energy)
+        )
