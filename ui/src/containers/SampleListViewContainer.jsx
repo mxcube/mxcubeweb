@@ -277,7 +277,13 @@ class SampleListViewContainer extends React.Component {
       if (formName === 'AddSample') {
         this.props.showTaskParametersForm('AddSample');
       } else {
-        this.props.showTaskParametersForm(formName, selected, parameters);
+        this.props.showTaskParametersForm(
+          formName,
+          selected,
+          parameters,
+          [],
+          'samplelist',
+        );
       }
     }
   }
