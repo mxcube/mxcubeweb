@@ -199,6 +199,11 @@ class SampleChanger(ComponentBase):
 
         sc = HWR.beamline.sample_changer
 
+        try:
+            mount_from_harvester = sc.mount_from_harvester()
+        except Exception:
+            mount_from_harvester = False
+
         res = None
 
         try:
@@ -227,7 +232,7 @@ class SampleChanger(ComponentBase):
                     res
                     and self.app.CENTRING_METHOD == queue_entry.CENTRING_METHOD.LOOP
                     and not HWR.beamline.diffractometer.in_plate_mode()
-                    and not sc.mount_from_harvester()
+                    and not mount_from_harvester
                 ):
                     HWR.beamline.diffractometer.reject_centring()
                     msg = "Starting autoloop centring ..."
@@ -443,6 +448,11 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
     # (sample changer, plate holder)
     sample_mount_device = HWR.beamline.sample_changer
 
+    try:
+        mount_from_harvester = sample_mount_device.mount_from_harvester()
+    except Exception:
+        mount_from_harvester = False
+
     if (
         sample_mount_device.get_loaded_sample()
         and sample_mount_device.get_loaded_sample().get_address() == data_model.loc_str
@@ -462,7 +472,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
 
             # in this case the sample changer takes the sample from an Harvester
             # We Harvest the sample and make it ready to load
-            if sample_mount_device.mount_from_harvester():
+            if mount_from_harvester:
                 mxcube.harvester.queue_harvest_sample(data_model, sample)
 
             try:
@@ -486,7 +496,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
 
     # Harvest Next sample while loading current
     if (
-        sample_mount_device.mount_from_harvester()
+        mount_from_harvester
         and HWR.beamline.harvester.get_room_temperature_mode() is False
     ):
         mxcube.harvester.queue_harvest_next_sample(data_model, sample)
@@ -509,7 +519,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
         logging.getLogger("user_level_log").info("Sample loaded")
         dm = HWR.beamline.diffractometer
 
-        if sample_mount_device.mount_from_harvester():
+        if mount_from_harvester:
             try:
                 logging.getLogger("user_level_log").info(
                     "Start Auto Harvesting Centring"
