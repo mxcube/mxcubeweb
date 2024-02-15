@@ -52,11 +52,16 @@
 
 .indexing_table > tbody td,
 .indexing_table > thead th {
-  width: 90px;
+  width: 5%;
+  padding: 2px !important;
 }
 
 .indexing_table_special_td_th {
   border: none !important;
+}
+
+.indexing_table > * > {
+  padding: 0px !important;
 }
 
 .indexing_table_row_selected {

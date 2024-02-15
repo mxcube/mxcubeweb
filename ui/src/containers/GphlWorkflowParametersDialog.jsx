@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-query-selector */
 import React, { useState, useEffect, useCallback } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -85,6 +86,7 @@ function GphlWorkflowParametersDialog(props) {
     fetchUpdated,
   } = props;
 
+  const [schema, setSchema] = useState(null);
   const [formState, setFormState] = useState({});
   const [errors, setErrors] = useState();
   const [validated, setValidated] = useState(false);
@@ -93,7 +95,9 @@ function GphlWorkflowParametersDialog(props) {
 
   const _initFormState = useCallback(() => {
     const dataDict = {};
-    Object.entries(formData.schema.properties).forEach(([key, value]) => {
+    const newSchema = { ...formData.schema };
+    setSchema(newSchema);
+    Object.entries(newSchema.properties).forEach(([key, value]) => {
       dataDict[key] = removeExtraDecimal(value.default, value.type);
     });
     if (formData.ui_schema.indexing_solution) {
@@ -120,30 +124,29 @@ function GphlWorkflowParametersDialog(props) {
   const handleFormDataUpdated = useCallback(() => {
     if (updatedFormData) {
       const updatedDict = { ...formState };
+      const newSchema = { ...formData.schema };
       Object.entries(updatedFormData).forEach(([key, val]) => {
         if (val.value) {
           const newValue = removeExtraDecimal(val.value, typeof val.value);
           updatedDict[key] = newValue;
+          newSchema.properties[key] = { ...newSchema.properties[key], ...val };
           // `key` may include a underscore (_), so we can't use `querySelector`
-          // eslint-disable-next-line unicorn/prefer-query-selector
-          if (document.getElementById(key) !== null) {
-            // eslint-disable-next-line unicorn/prefer-query-selector
+          if (document.getElementById(key)) {
             document.getElementById(key).value = newValue;
           }
         }
       });
+      setSchema(newSchema);
       setFormState(updatedDict);
     }
-  }, [formState, setFormState, updatedFormData]);
+  }, [formState, formData, updatedFormData]);
 
   useEffect(() => {
     if (show) {
       const initialDataDict = _initFormState();
       setFormState(initialDataDict);
-    } else {
-      handleAbort();
     }
-  }, [show, _initFormState, handleAbort]);
+  }, [show, _initFormState]);
 
   useEffect(() => {
     if (fetchUpdated) {
@@ -166,6 +169,7 @@ function GphlWorkflowParametersDialog(props) {
         data: formState,
       };
       updateGphlWorkflowParameters(parameter);
+      setSchema(null);
       handleHide();
     }
   }
@@ -236,8 +240,8 @@ function GphlWorkflowParametersDialog(props) {
   let formName = '';
   let renderFormRow = '';
 
-  if (show) {
-    const { schema, ui_schema } = formData;
+  if (show && schema) {
+    const { ui_schema } = formData;
 
     formName = schema.title;
 
@@ -285,15 +289,13 @@ function GphlWorkflowParametersDialog(props) {
                                       id={fieldKey}
                                       label={schema.properties[fieldKey].title}
                                       onChange={(e) => handleChange(e)}
-                                      defaultChecked={formState[fieldKey]}
+                                      checked={formState[fieldKey]}
                                     />
                                   ) : schema.properties[fieldKey].enum ? (
                                     <Form.Select
                                       name={fieldKey}
                                       id={fieldKey}
-                                      defaultValue={
-                                        schema.properties[fieldKey].default
-                                      }
+                                      value={formState[fieldKey]}
                                       onChange={(e) => handleChange(e)}
                                     >
                                       {schema.properties[fieldKey].enum.map(
