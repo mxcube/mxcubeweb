@@ -53,21 +53,28 @@
 .indexing_table > tbody td,
 .indexing_table > thead th {
   width: 5%;
-  padding: 2px !important;
 }
 
 .indexing_table_special_td_th {
   border: none !important;
 }
 
-.indexing_table > * > {
-  padding: 0px !important;
-}
-
 .indexing_table_row_selected {
   border: 2px dashed #4099ec !important;
 }
 
-.indexing_table_row_variant {
+.HIGHLIGHT {
   background: #43e99ca1 !important;
+}
+
+.WARNING {
+  background-color: #ffa60056 !important;
+}
+
+.ERROR {
+  background-color: #ff000056 !important;
+}
+
+.CHANGED {
+  background-color: #ffff0063 !important;
 }

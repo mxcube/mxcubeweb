@@ -15,18 +15,15 @@ const uiOptions = 'ui:options';
 
 function renderIndexingTable(indexingTable, selected, onSelectRow) {
   return (
-    <Table
-      id="indexing_table"
-      bordered
-      striped
-      responsive
-      className="indexing_table"
-    >
+    <Table id="indexing_table" bordered responsive className="indexing_table">
       <thead>
         <tr>
           <th> </th>
           {indexingTable.header.map((thContent) => (
-            <th key={thContent} className="indexing_table_special_td_th">
+            <th
+              key={thContent}
+              className="indexing_table_special_td_th text-center"
+            >
               <pre>{thContent}</pre>
             </th>
           ))}
@@ -42,15 +39,15 @@ function renderIndexingTable(indexingTable, selected, onSelectRow) {
                 selected.includes(index) ? 'indexing_table_row_selected' : ''
               }
                   ${
-                    indexingTable.highlights[index]
-                      ? 'indexing_table_row_variant'
+                    indexingTable.highlights[index + 1]
+                      ? indexingTable.highlights[index + 1][0]
                       : ''
                   } trclass`}
               onClick={() => onSelectRow(index, tdContent)}
             >
-              <td>{index + 1}</td>
-              <td className="indexing_table_special_td_th">
-                <pre>{tdContent}</pre>
+              <td className="text-center">{index + 1}</td>
+              <td className="indexing_table_special_td_th text-center">
+                <pre className="align-items-center">{tdContent}</pre>
               </td>
               <td className="indexing_table_special_td_th" />
             </tr>
@@ -126,15 +123,15 @@ function GphlWorkflowParametersDialog(props) {
       const updatedDict = { ...formState };
       const newSchema = { ...formData.schema };
       Object.entries(updatedFormData).forEach(([key, val]) => {
-        if (val.value) {
+        if (val.value !== undefined) {
           const newValue = removeExtraDecimal(val.value, typeof val.value);
           updatedDict[key] = newValue;
-          newSchema.properties[key] = { ...newSchema.properties[key], ...val };
           // `key` may include a underscore (_), so we can't use `querySelector`
           if (document.getElementById(key)) {
             document.getElementById(key).value = newValue;
           }
         }
+        newSchema.properties[key] = { ...newSchema.properties[key], ...val };
       });
       setSchema(newSchema);
       setFormState(updatedDict);
@@ -240,7 +237,7 @@ function GphlWorkflowParametersDialog(props) {
   let formName = '';
   let renderFormRow = '';
 
-  if (show && schema) {
+  if (show && schema !== null) {
     const { ui_schema } = formData;
 
     formName = schema.title;
@@ -297,6 +294,11 @@ function GphlWorkflowParametersDialog(props) {
                                       id={fieldKey}
                                       value={formState[fieldKey]}
                                       onChange={(e) => handleChange(e)}
+                                      className={`${
+                                        schema.properties[fieldKey].highlight ||
+                                        ''
+                                      }
+                                        me-2`}
                                     >
                                       {schema.properties[fieldKey].enum.map(
                                         (val) => (
@@ -311,7 +313,11 @@ function GphlWorkflowParametersDialog(props) {
                                       name={fieldKey}
                                       id={fieldKey}
                                       onChange={(e) => handleChange(e)}
-                                      className="me-2"
+                                      className={`${
+                                        schema.properties[fieldKey].highlight ||
+                                        ''
+                                      }
+                                        me-2`}
                                       type={schema.properties[fieldKey].type}
                                       required
                                       step="any"
