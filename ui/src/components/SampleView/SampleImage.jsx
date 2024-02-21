@@ -123,13 +123,6 @@ export default class SampleImage extends React.Component {
       this.initJSMpeg();
     }
 
-    if (
-      this.props.width !== prevProps.width ||
-      this.props.videoHash !== prevProps.videoHash
-    ) {
-      this.initJSMpeg();
-    }
-
     this.renderSampleView(this.props);
   }
 
@@ -831,7 +824,7 @@ export default class SampleImage extends React.Component {
   }
 
   initJSMpeg() {
-    if (this.player === null && this.props.videoFormat === 'MPEG1') {
+    if (this.props.videoFormat === 'MPEG1') {
       const canvas = document.querySelector('#sample-img');
 
       let source =
@@ -839,11 +832,15 @@ export default class SampleImage extends React.Component {
 
       source = `${source}/${this.props.videoHash}`;
 
+      if (this.player) {
+        this.player.stop();
+      }
+
       if (canvas) {
         this.player = new jsmpeg.JSMpeg.Player(source, {
           canvas,
           decodeFirstFrame: false,
-          preserveDrawingBuffer: true,
+          preserveDrawingBuffer: false,
           protocols: [],
         });
         this.player.play();
