@@ -92,7 +92,7 @@ sample_view_video_controls:
     - id: frontlight
       show: true
     - id: video_size
-      show: false
+      show: true
 
 beamline_setup:
   id: beamline_setup
