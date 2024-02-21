@@ -128,26 +128,11 @@ export default class SampleControls extends React.Component {
       );
     });
 
-    const autoScaleGClass = this.props.autoScale
-      ? ' fa-check-square-o'
-      : 'fa-square-o';
-
     items.push(
-      <Dropdown.Item
-        eventKey="3"
-        key="auto scale"
-        onClick={() => {
-          const { clientWidth } = document.querySelector('#outsideWrapper');
-          this.props.sampleViewActions.toggleAutoScale(clientWidth);
-        }}
-      >
-        <span className={`fa ${autoScaleGClass}`} /> Auto Scale
-      </Dropdown.Item>,
       <Dropdown.Item
         eventKey="3"
         key="reset"
         onClick={() => {
-          window.initJSMpeg();
           this.props.sampleViewActions.setVideoSize(
             this.props.width,
             this.props.height,
