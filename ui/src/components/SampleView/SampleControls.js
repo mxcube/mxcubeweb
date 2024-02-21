@@ -112,8 +112,8 @@ export default class SampleControls extends React.Component {
     const items = this.props.videoSizes.map((size) => {
       const sizeGClass =
         this.props.width === String(size[0])
-          ? 'fa-dot-circle-o'
-          : 'fa-circle-o';
+          ? 'fas fa-circle'
+          : 'far fa-circle';
 
       return (
         <Dropdown.Item
@@ -123,7 +123,7 @@ export default class SampleControls extends React.Component {
             this.props.sampleViewActions.setVideoSize(size[0], size[1])
           }
         >
-          <span className={`fa ${sizeGClass}`} /> {`${size[0]} x ${size[1]}`}
+          <span className={`${sizeGClass}`} /> {`${size[0]} x ${size[1]}`}
         </Dropdown.Item>
       );
     });
@@ -139,7 +139,7 @@ export default class SampleControls extends React.Component {
           );
         }}
       >
-        <span className="fas fa-redo" /> Reset
+        <span className="far fa-redo" /> Reset
       </Dropdown.Item>,
     );
 
