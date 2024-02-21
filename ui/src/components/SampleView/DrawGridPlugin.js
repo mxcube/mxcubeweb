@@ -362,12 +362,12 @@ export default class DrawGridPlugin {
     const width = cellTW * gridData.numCols;
 
     let color = gridData.selected
-      ? 'rgba(255, 255, 255, 1)'
-      : 'rgba(255, 255, 255, 0.5)';
+      ? 'rgba(136, 255, 91, 1)'
+      : 'rgba(228, 255, 9, 0.5)';
     color = gridData.result.length > 0 ? 'rgba(255, 255, 255, 1)' : color;
     const lineColor = gridData.selected
-      ? 'rgba(255, 255, 255, 0.5)'
-      : 'rgba(255, 255, 255, 0)';
+      ? 'rgba(136, 255, 91, 0.5)'
+      : 'rgba(228, 255, 9, 0)';
     const outlineStrokeArray = gridData.selected ? [] : [5, 5];
     const innerStrokeArray = gridData.selected ? [5, 5] : [0, 0];
 
