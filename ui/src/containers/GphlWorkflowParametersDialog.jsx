@@ -3,7 +3,9 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Modal, Row, Col, Form, Table, Button, Stack } from 'react-bootstrap';
-import './WorkflowParametersDialog.css';
+// import './WorkflowParametersDialog.css';
+
+import styles from './WorkflowParametersDialog.module.css';
 
 import {
   showGphlWorkflowParametersDialog,
@@ -15,41 +17,36 @@ const uiOptions = 'ui:options';
 
 function renderIndexingTable(indexingTable, selected, onSelectRow) {
   return (
-    <Table id="indexing_table" bordered responsive className="indexing_table">
+    <Table bordered responsive className={styles.indexingTableC}>
       <thead>
         <tr>
-          <th> </th>
+          <th className="text-center"> </th>
           {indexingTable.header.map((thContent) => (
-            <th
-              key={thContent}
-              className="indexing_table_special_td_th text-center"
-            >
+            <th key={thContent} className={`${styles.specialTdTh} text-center`}>
               <pre>{thContent}</pre>
             </th>
           ))}
-          <th className="indexing_table_special_td_th"> </th>
+          <th className={styles.specialTdTh}> </th>
         </tr>
       </thead>
-      <tbody className="indexing_table_body">
+      <tbody>
         {indexingTable.content.map((tdContents) =>
           tdContents.map((tdContent, index) => (
             <tr
               key={tdContent}
-              className={`${
-                selected.includes(index) ? 'indexing_table_row_selected' : ''
+              data-selected={selected.includes(index) || undefined}
+              data-highlight={
+                indexingTable.highlights[index + 1]
+                  ? indexingTable.highlights[index + 1][0]
+                  : undefined
               }
-                  ${
-                    indexingTable.highlights[index + 1]
-                      ? indexingTable.highlights[index + 1][0]
-                      : ''
-                  } trclass`}
               onClick={() => onSelectRow(index, tdContent)}
             >
               <td className="text-center">{index + 1}</td>
-              <td className="indexing_table_special_td_th text-center">
+              <td className={`${styles.specialTdTh} text-center`}>
                 <pre className="align-items-center">{tdContent}</pre>
               </td>
-              <td className="indexing_table_special_td_th" />
+              <td className={styles.specialTdTh} />
             </tr>
           )),
         )}
@@ -252,14 +249,13 @@ function GphlWorkflowParametersDialog(props) {
         {ui_schema
           ? // eslint-disable-next-line sonarjs/cognitive-complexity
             ui_schema['ui:order'].map((rowKey) => (
-              <Row key={rowKey} className="mb-5 gphl_row_box">
+              <Row key={rowKey} className={`${styles.gphlFormRowBox}`}>
                 <div
-                  className={`${
-                    validatedIndexingTable ? rowKey : ''
-                  } title_box`}
-                  id="bill_to"
+                  className={`${validatedIndexingTable ? styles[rowKey] : ''} ${
+                    styles.boxTitle
+                  } mb-5`}
                 >
-                  <div className="p-2" id="title">
+                  <div className={`${styles.title} p-2`}>
                     {ui_schema[rowKey]['ui:title'] ||
                       schema.properties.indexing_solution?.title ||
                       null}
@@ -271,7 +267,7 @@ function GphlWorkflowParametersDialog(props) {
                           {ui_schema[rowKey][ColKey]['ui:order'].map(
                             (fieldKey) => (
                               <Row key={fieldKey} className="mb-3">
-                                <Form.Group as={Col} sm className="">
+                                <Form.Group as={Col} sm>
                                   <Form.Label>
                                     {schema.properties[fieldKey].type !==
                                     'boolean'
@@ -287,6 +283,10 @@ function GphlWorkflowParametersDialog(props) {
                                       label={schema.properties[fieldKey].title}
                                       onChange={(e) => handleChange(e)}
                                       checked={formState[fieldKey]}
+                                      data-highlight={
+                                        schema.properties[fieldKey].highlight ||
+                                        undefined
+                                      }
                                     />
                                   ) : schema.properties[fieldKey].enum ? (
                                     <Form.Select
@@ -294,11 +294,10 @@ function GphlWorkflowParametersDialog(props) {
                                       id={fieldKey}
                                       value={formState[fieldKey]}
                                       onChange={(e) => handleChange(e)}
-                                      className={`${
+                                      data-highlight={
                                         schema.properties[fieldKey].highlight ||
-                                        ''
+                                        undefined
                                       }
-                                        me-2`}
                                     >
                                       {schema.properties[fieldKey].enum.map(
                                         (val) => (
@@ -313,11 +312,10 @@ function GphlWorkflowParametersDialog(props) {
                                       name={fieldKey}
                                       id={fieldKey}
                                       onChange={(e) => handleChange(e)}
-                                      className={`${
+                                      data-highlight={
                                         schema.properties[fieldKey].highlight ||
-                                        ''
+                                        undefined
                                       }
-                                        me-2`}
                                       type={schema.properties[fieldKey].type}
                                       required
                                       step="any"
@@ -366,12 +364,12 @@ function GphlWorkflowParametersDialog(props) {
             ))
           : null}
         <Stack direction="horizontal" gap={3}>
-          <div className="p-2 ms-auto">
+          <div className="ms-auto">
             <Button variant="success" disabled={validated} type="submit">
               Continue{' '}
             </Button>
           </div>
-          <div className="p-2">
+          <div>
             <Button variant="outline-secondary" onClick={handleAbort}>
               {' '}
               Abort{' '}

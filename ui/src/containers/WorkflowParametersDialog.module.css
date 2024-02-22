@@ -1,0 +1,73 @@
+.rjsfFormContainer :global(.rjsf #root) {
+  display: block;
+}
+
+.rjsfFormContainer :global(.rjsf #root > .form-group) {
+  margin-bottom: 15px !important;
+}
+
+.boxTitle {
+  border: #3c5a86 1.5px dotted;
+}
+
+/* .gphlFormRowBox > .crystal_data,
+.gphlFormRowBox > .parameters{ */
+.gphlFormRowBox > .indexing_solution {
+  border: #e74444 2.5px dotted !important;
+}
+
+.boxTitle > .title {
+  position: relative;
+  color: #01012e;
+  font-size: large;
+  top: -0.7em;
+  margin-left: 1em;
+  display: inline;
+  background-color: white;
+}
+
+.indexingTableC {
+  width: 100%;
+}
+
+.indexingTableC > tbody tr[data-selected] {
+  border: 2px dashed #208ff7 !important;
+}
+
+.indexingTableC > thead,
+.indexingTableC > tbody,
+.indexingTableC > tr,
+.indexingTableC > td,
+.indexingTableC > th {
+  display: block;
+}
+
+.indexingTableC > tbody {
+  height: 200px;
+  overflow-y: auto;
+}
+
+.indexingTableC > tbody td,
+.indexingTableC > thead th {
+  width: 5%;
+}
+
+.specialTdTh {
+  border: none !important;
+}
+
+[data-highlight='HIGHLIGHT'] {
+  background: #15e684a1 !important;
+}
+
+[data-highlight='WARNING'] {
+  background-color: #ffa60056 !important;
+}
+
+[data-highlight='ERROR'] {
+  background-color: #ff000056 !important;
+}
+
+[data-highlight='CHANGED'] {
+  background-color: #ffff0063 !important;
+}
