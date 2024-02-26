@@ -34,6 +34,9 @@ class Workflow(ComponentBase):
     def submit_parameters(self, params):
         HWR.beamline.workflow.set_values_map(params)
 
+    def update_gphl_parameters(self, params):
+        HWR.beamline.emit(params["signal"], params["instruction"], params["data"])
+
     def get_mesh_result(self, gid, _type="heatmap"):
         base64data = HWR.beamline.sample_view.get_grid_data(gid)
         base64data = base64data if base64data else ""

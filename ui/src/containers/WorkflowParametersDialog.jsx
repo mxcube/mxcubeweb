@@ -9,7 +9,7 @@ import {
   submitWorkflowParameters,
 } from '../actions/workflow';
 
-import './WorkflowParametersDialog.css';
+import styles from './WorkflowParametersDialog.module.css';
 
 function WorkflowParametersDialog(props) {
   const { formData, show, handleHide, workflowSubmitParameters } = props;
@@ -29,7 +29,7 @@ function WorkflowParametersDialog(props) {
 
   if (show && formData) {
     form = (
-      <div>
+      <div className={styles.rjsfFormContainer}>
         <Form
           validator={validator}
           schema={formData}

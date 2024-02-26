@@ -25,6 +25,13 @@ function workflowReducer(state = INITIAL_STATE, action = {}) {
         showGphlDialog: action.show,
       };
     }
+    case 'UPDATE_GPHL_WORKFLOW_PARAMETERS_DIALOG': {
+      return {
+        ...state,
+        gphlUpdatedParameters: action.data,
+        fetchUpdated: action.update,
+      };
+    }
     case 'SET_INITIAL_STATE': {
       const wf = action.data.workflow ? action.data.workflow.workflows : {};
       return { ...state, workflows: wf };

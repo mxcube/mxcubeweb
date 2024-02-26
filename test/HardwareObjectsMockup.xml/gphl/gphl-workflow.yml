@@ -44,7 +44,7 @@ settings:
     # TEST ONLY developer option. Use preset SPOT.XDS file and skip characterisation.
     # Only works for GPhL test samples with SPOT.XDS  file
     # NB to get sensible results you should use the default values for resolution and
-    # wavelength, and the default Eiger 16M detector
+    # wavelength, and the default Eiger 9M detector
     # Otherwise the UI may still work, but the indexing solutions will be weird
 #    use_preset_spotdir: True
 
@@ -65,9 +65,6 @@ settings:
         #            )
         #         mode "scan" is not allowed as default
         recentring_mode: sweep
-        # GPHL or MINIKAPPA. Preference for GPHL transcal or MiniKappaCorrection
-        # recentring where both are available Default is GPHL
-        recentring_calc_preference: GPHL
         # Parameters to control proposed total dose budget
         # The proposed budget is calculated so that radiation damage is predicted
         # to reduce the intensity at the highest expected redolution to this percentaged-->
@@ -77,6 +74,8 @@ settings:
         # The formula used is dose_budget =
         #     2 * resolution**2 * log(100. / decay_limit) / relative_sensitivity
         decay_limit: 25
+        # exposure time (s). NB automticaly reset to be within limits for detector
+        exposure_time: 0.01
         # Default use known cell parameters as forced starting point for processing
         use_cell_for_processing: true
         # Maximum dose budget to propose when converting from resolution, in MGy
@@ -88,7 +87,10 @@ settings:
         interleave_order: gs
 
         # For testing only:
-        automation_mode: TEST
+        # value TEST_FROM_FILE mode reads input from environment variable GPHL_TEST_INPUT
+        # (which may override this value)
+        # Any other true value reads from auto_acq_parameters below
+#        automation_mode: TEST_FROM_FILE
 
     # Default parameters for fully automated strategies
     # Multiple acquisitions in order - characterisation then main
@@ -99,7 +101,7 @@ settings:
       # For characterisation acquisition
       - exposure_time: 0.02
         image_width: 0.1
-        resolution: 1.7
+#        resolution: 1.928
         strategy: Char_4_by_10_multitrigger
 #        init_spot_dir: /directory/containing/SPOT.XDS/file/after/characterisation
         # strategy_options: # Not currently used
@@ -118,18 +120,17 @@ settings:
         wedge_width: 15.0
         strategy: full
         repetition_count: 1
-        strategy_options:
-        # Program options passed directly to stratcal - not needed normally
-        # Override default settings
-        # angular_tolerance, maximum_chi, and clip_kappa are defined in
-        # settings (above) and strategy_type and variant by program
-          angular_tolerance: 1.0
-          maximum_chi: 44.0
-#          option_name: 999.999
+#        strategy_options:
+#            # Program options passed directly to stratcal - not needed normally
+             # Override default settings
+             # angular_tolerance, maximum_chi, and clip_kappa are defined in
+             # settings (above) and strategy_type and variant by program
+#            maximum_chi: 48.0
+#            angular_tolerance: 1.0
+#            option_name: 999.999
 
     # Java invocation properties - syntax is e.g. '-Dfile.encoding=UTF-8'
     invocation_properties:
-        file.encoding: UTF-8
 
         # File name prefix for workflow log files
         co.gphl.wf.persistName: wf
@@ -153,8 +154,8 @@ settings:
 
         # Parameters to individual applications
         # Switch devMod to True to activate development parameters
-        # NB needed as of 20210802 to pass stratcal parameters strategy_type and variant
-        co.gphl.wf.devMode: true
+        # NB needed as of 20231116 no longer in active use
+#        co.gphl.wf.devMode: true
         # For stratcal configuration switches edit run_stratcal_wrap.py script instead-->
 
 #            Dummy sample properties.
@@ -211,7 +212,7 @@ workflows:
                       full: 2-4 sweeps, ca. 600-1000 degrees, best possible data.
                       quick:  1-2 sweeps, 360-400 degrees, quick and cusp-free
                       minimal: 1 sweep of 180+ degrees, 1-2 centrings.
-                  application: co.gphl.wf.workflows.WFSimpleCharToProcessing
+                  wf_selection: mxexpt
                   variants:
                       - full
                       - minimal
@@ -228,7 +229,7 @@ workflows:
 
                -  title: Phasing (SAD)
                   strategy_type: phasing
-                  application: co.gphl.wf.workflows.WFSimpleCharToProcessing
+                  wf_selection: mxexpt
                   variants:
                       - full
                       - quick
@@ -251,7 +252,7 @@ workflows:
 
                -  title: Two-wavelength MAD
                   strategy_type: phasing
-                  application: co.gphl.wf.workflows.WFSimpleCharToProcessing
+                  wf_selection: mxexpt
                   variants:
                       - quick
                       - full
@@ -262,7 +263,7 @@ workflows:
                   # 'g' (Goniostat position); 's' (Scan number);
                   # 'b' (Beam wavelength); 'd' (Detector position)-->
                   # NB position interleaving in NOT done for the moment.
-                  # So teh default ('gs') is a no-op
+                  # So the default ('gs') is a no-op
                   interleave_order: gsb
                   documentation: |
                       Two wavelength MAD data acquisition, full strategy.
@@ -282,7 +283,7 @@ workflows:
 
                -  title: Three-wavelength MAD
                   strategy_type: phasing
-                  application: co.gphl.wf.workflows.WFSimpleCharToProcessing
+                  wf_selection: mxexpt
                   variants:
                       - quick
                       - full
@@ -333,7 +334,7 @@ workflows:
 
                -  title: Diffractometer calibration
                   strategy_type: diffractcal
-                  application: co.gphl.wf.workflows.WFDiffractCal
+                  wf_selection: diffractcal
                   variants:
                       - full
                       - short
@@ -369,7 +370,7 @@ workflows:
           strategies:
               -   title: Translational Calibration
                   strategy_type: transcal
-                  application: co.gphl.wf.workflows.WFTransCal
+                  wf_selection: transcal
                   variants:
                       - full
                   documentation: |

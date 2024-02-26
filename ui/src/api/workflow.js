@@ -9,3 +9,7 @@ export function fetchAvailableWorkflows() {
 export function sendSubmitWorkflowParameters(data) {
   return endpoint.post(data, '/').res();
 }
+
+export function sendUpdatedGphlWorkflowParameters(data) {
+  return endpoint.post(data, '/gphl').res();
+}
