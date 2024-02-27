@@ -1,4 +1,4 @@
-# Development environment
+# Installing a development environment
 
 MXCuBE-Web is the latest generation of the data acquisition software MXCuBE.
 It is developed as a web application and runs in any recent browser.
@@ -12,7 +12,6 @@ minimizing the need for special firewall or proxy settings to get the applicatio
 
 ![Client-server infrastructure](assets/client-server.png)
 
-
 ## `HardwareRepository` and `mxcubecore`
 
 The underlying beamline control layer
@@ -21,12 +20,10 @@ previously known as [`HardwareRepository`](https://github.com/mxcube/HardwareRep
 The `mxcubecore` library is compatible with
 both the MXCuBE-WEB and the [MXCuBE-Qt](https://github.com/mxcube/mxcubeqt) applications.
 
-
 ## Install with conda
 
 We recommend using conda to create an isolated environment.
 Conda can be downloaded [here](https://docs.conda.io/en/latest/miniconda.html#linux-installers).
-
 
 ### 1. Create a `mxcube` folder that will contain both `mxcubeweb` and `mxcubecore`
 
@@ -41,7 +38,6 @@ cd mxcube
 git clone https://github.com/mxcube/mxcubeweb.git
 git clone https://github.com/mxcube/mxcubecore.git
 ```
-
 
 ### 3. Create the `mxcubeweb` conda environment
 
@@ -65,13 +61,11 @@ for example Python 3.9, one can use a command such as the following:
 conda env create -f conda-environment.yml python=3.9
 ```
 
-
 ### 4. Activate the environment
 
 ```
 conda activate mxcubeweb
 ```
-
 
 ### 5. Install the back-end dependencies
 
@@ -79,15 +73,14 @@ conda activate mxcubeweb
 poetry install
 ```
 
-
 (front-end)=
+
 ### 6. Install the front-end dependencies and build the UI
 
 ```
 pnpm --prefix ui install
 pnpm --prefix ui build
 ```
-
 
 ### 7. Running the application (server)
 
@@ -107,7 +100,6 @@ mxcubeweb-server -r $(pwd)/mxcubeweb/test/HardwareObjectsMockup.xml/ --static-fo
 _Running the above should give something similar to_
 ![mxcube-backend](assets/mxcube-backend.gif)
 
-
 ### 8. Running the MXCuBE-WEB front-end
 
 All that is needed to run the application is to start the server
@@ -123,7 +115,6 @@ you can use `test` as a password for example:_
 The client is not built if nothing appears,
 or you get a "404 page not found" error when browsing <http://localhost:8081>.
 Follow the instructions in [](#front-end) to build a client.
-
 
 ### 9. Installing MXCUBE-WEB for development
 
@@ -148,10 +139,9 @@ python -m pip install --editable .
 The "editable" installations make it possible to
 add break points directly in the "checked out code".
 
-Before running any test, make sure that the local *Redis* server is running.
-For example, with the `mxcubeweb` *conda* environment activated in a terminal,
+Before running any test, make sure that the local _Redis_ server is running.
+For example, with the `mxcubeweb` _conda_ environment activated in a terminal,
 run the `redis-server` command.
-
 
 #### 9.1. Running tests
 
@@ -166,7 +156,6 @@ pytest
 _The output should look something like the following:_
 
 ![pytest](assets/pytest.png)
-
 
 #### 9.2. Running the front-end development server
 
@@ -188,7 +177,6 @@ npm run start
 
 The above will automatically open a browser with the URL: <http://localhost:3000>
 
-
 #### 9.3. Running the end to end (e2e) tests
 
 ```
@@ -198,7 +186,6 @@ npm run --prefix ./ui e2e
 
 _This should give a result looking something like:_
 ![cypress](assets/cypress.png)
-
 
 #### 9.4. Ready to develop
 

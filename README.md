@@ -3,7 +3,6 @@
 
 <p align="center"><img src="https://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
 
-
 # MXCuBE-Web
 
 MXCuBE-Web is the latest generation of the data acquisition software MXCuBE (Macromolecular Xtallography Customized Beamline Environment). The project started in 2005 at [ESRF](https://www.esrf.eu), and has since then been adopted by other institutes in Europe. In 2010, a collaboration agreement has been signed for the development of MXCuBE with the following partners:
@@ -45,7 +44,6 @@ both the MXCuBE-Web and the [MXCuBE-Qt](https://github.com/mxcube/mxcubeqt) appl
 Latest information about the MXCuBE project can be found on the
 [MXCuBE project webpage](https://mxcube.github.io/mxcube/).
 
-
 ## Technologies in use
 
 The backend is built on the Python [Flask](https://flask.palletsprojects.com/) web framework,
@@ -56,12 +54,11 @@ The backend exposes a REST API to the client.
 The client is implemented in ECMAScript6 and HTML5.
 React, Boostrap, and FabricJS are the main libraries used for the UI development.
 
-
 ## Information for developers
 
 - [Contributing guidelines](https://github.com/mxcube/mxcubeweb/blob/master/CONTRIBUTING.md)
 - [Developer documentation](https://mxcubeweb.readthedocs.io/)
-
+- [Development install instructions](https://mxcubeweb.readthedocs.io/en/latest/dev/environment.html#install-with-conda)
 
 ## Information for users
 
