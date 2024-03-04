@@ -16,7 +16,9 @@ export default class BeamFocusInput extends React.Component {
   }
 
   handleChange(event) {
-    this.props.changeAperture(event.target.value);
+    console.log(this.props);
+    console.log('handl ap', event);
+    this.props.changeAperture(event.value);
   }
 
   itemColor(status) {
@@ -159,7 +161,7 @@ export default class BeamFocusInput extends React.Component {
           label="Beam Size"
           options={optionList}
           styles={colourStyles}
-          onChange={this.changeAperture}
+          onChange={this.handleChange}
         />
         <select
           className={inputCSS}
