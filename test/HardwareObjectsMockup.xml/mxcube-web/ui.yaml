@@ -74,6 +74,16 @@ sample_view:
       precision: 3
       suffix: mm
 
+sample_view_beam_controls:
+  id: sample_view_beam_controls
+  components:
+    - id: phase
+      show: true
+    - id: aperture
+      show: true
+    - id: beam_focus
+      show: false
+
 sample_view_video_controls:
   id: sample_view_video_controls
   components:

@@ -75,6 +75,7 @@ class UISampleViewVideoControlsModel(UIPropertiesModel):
 
 class UIPropertiesListModel(BaseModel):
     sample_view: UIPropertiesModel
+    sample_view_beam_controls: UISampleViewVideoControlsModel
     beamline_setup: UIPropertiesModel
     camera_setup: UICameraConfigModel
     sample_view_video_controls: UISampleViewVideoControlsModel

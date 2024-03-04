@@ -64,7 +64,19 @@ class SampleViewContainer extends Component {
 
   render() {
     const { uiproperties } = this.props;
+    console.log('uiproperties', uiproperties.sample_view_beam_controls);
 
+    const beamFocus = uiproperties.sample_view_beam_controls.components.find(
+      (item) => item.id == 'beam_focus',
+    );
+    const aperture = uiproperties.sample_view_beam_controls.components.find(
+      (item) => item.id == 'aperture',
+    );
+    const phase = uiproperties.sample_view_beam_controls.components.find(
+      (item) => item.id == 'phase',
+    );
+
+    console.log(beamFocus, aperture, phase);
     if (!('sample_view' in uiproperties)) {
       return null;
     }
@@ -127,32 +139,39 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={1}>
             <DefaultErrorBoundary>
-              <div>
-                <p className="motor-name">Phase Control:</p>
-                <PhaseInput
-                  phase={this.props.sampleViewState.currentPhase}
-                  phaseList={this.props.sampleViewState.phaseList}
-                  changePhase={this.props.sampleViewActions.changeCurrentPhase}
-                  state={diffractometerHo.state}
-                />
-              </div>
+              {phase.show ? (
+                <div>
+                  <p className="motor-name">Phase Control:</p>
+                  <PhaseInput
+                    phase={this.props.sampleViewState.currentPhase}
+                    phaseList={this.props.sampleViewState.phaseList}
+                    changePhase={
+                      this.props.sampleViewActions.changeCurrentPhase
+                    }
+                    state={diffractometerHo.state}
+                  />
+                </div>
+              ) : null}
 
-              <div>
-                <p className="motor-name">Beam size:</p>
-                <ApertureInput
-                  aperture={this.props.sampleViewState.currentAperture}
-                  apertureList={this.props.sampleViewState.apertureList}
-                  changeAperture={this.props.sampleViewActions.changeAperture}
-                />
-              </div>
-              <div>
+              {aperture.show ? (
+                <div>
+                  <p className="motor-name">Beam size:</p>
+                  <ApertureInput
+                    aperture={this.props.sampleViewState.currentAperture}
+                    apertureList={this.props.sampleViewState.apertureList}
+                    changeAperture={this.props.sampleViewActions.changeAperture}
+                  />
+                </div>
+              ) : null}
+
+              {beamFocus.show ? (
                 <BeamFocusInput
                   beamFocusInputList={['Undefined', '100x100', '50x50', '20x5']}
                   beamFocus={this.props.beamFocus}
                   aperture={this.props.sampleViewState.currentAperture}
                   changeBeamFocus={this.props.sampleViewActions.changeBeamFocus}
                 />
-              </div>
+              ) : null}
 
               {this.props.mode === 'SSX-CHIP' ? (
                 <SSXChipControl
