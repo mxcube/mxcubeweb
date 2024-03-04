@@ -169,6 +169,7 @@ class SampleViewContainer extends Component {
                   beamFocusInputList={['Undefined', '100x100', '50x50', '20x5']}
                   beamFocus={this.props.beamFocus}
                   aperture={this.props.sampleViewState.currentAperture}
+                  changeAperture={this.props.sampleViewActions.changeAperture}
                   changeBeamFocus={this.props.sampleViewActions.changeBeamFocus}
                 />
               ) : null}
