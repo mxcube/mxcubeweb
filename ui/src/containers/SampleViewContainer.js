@@ -16,6 +16,7 @@ import ApertureInput from '../components/SampleView/ApertureInput';
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import ContextMenu from '../components/SampleView/ContextMenu';
+import BeamFocusInput from '../components/SampleView/BeamFocusInput';
 import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
 import { showErrorPanel, sendDisplayImage } from '../actions/general';
 import { updateTask } from '../actions/queue';
@@ -142,6 +143,14 @@ class SampleViewContainer extends Component {
                   aperture={this.props.sampleViewState.currentAperture}
                   apertureList={this.props.sampleViewState.apertureList}
                   changeAperture={this.props.sampleViewActions.changeAperture}
+                />
+              </div>
+              <div>
+                <BeamFocusInput
+                  beamFocusInputList={['Undefined', '100x100', '50x50', '20x5']}
+                  beamFocus={this.props.beamFocus}
+                  aperture={this.props.sampleViewState.currentAperture}
+                  changeBeamFocus={this.props.sampleViewActions.changeBeamFocus}
                 />
               </div>
 
@@ -348,6 +357,7 @@ function mapStateToProps(state) {
     selectedCol: state.sampleChanger.selectedCol,
     selectedDrop: state.sampleChanger.selectedDrop,
     crystalList: state.sampleGrid.crystalList,
+    beamFocus: state.beamline.beamFocus,
   };
 }
 

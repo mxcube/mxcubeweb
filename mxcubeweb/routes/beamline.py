@@ -251,4 +251,49 @@ def init_route(app, server, url_prefix):
             return Response(status=200)
         return Response(status=200)
 
+    @bp.route("/beamfocus", methods=["PUT"])
+    @server.require_control
+    @server.restrict
+    def set_beam_focus():
+        """
+        Move the aperture motor.
+            :request Content-type: application/json, new position {'diameter': 50}.
+                Note: level specified as integer (not 'Diameter 50')
+            :statuscode: 200: no error
+            :statuscode: 409: error
+        """
+        params = request.data
+        params = json.loads(params)
+
+        size_x = params["size_x"]
+        size_y = params["size_y"]
+
+        beam_info = HWR.beamline.beam
+        beam_info.set_beam_size(size_x, size_y)
+        return Response(status=200)
+
+    @bp.route("/beamfocus", methods=["GET"])
+    # @server.restrict
+    def get_beam_focus():
+        """
+        Returns  beam focus motors (position and state)
+        """
+
+        beam_info = HWR.beamline.beam
+        print(beam_info)
+        beam_info_values = app.beamline.get_beam_info()
+        print(beam_info_values)
+        motors_moving_state = beam_info.get_motors_states()
+
+        data = {
+            "mot01": {"value": beam_info_values["size_x"], "state": motors_moving_state["mot01"]},
+            "mot02": {"value": beam_info_values["size_y"], "state": motors_moving_state["mot02"]},
+        }
+        print(data)
+        resp = jsonify(data)
+        resp.status_code = 200
+
+        return resp
+
+
     return bp

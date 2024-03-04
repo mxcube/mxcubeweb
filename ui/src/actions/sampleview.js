@@ -707,3 +707,24 @@ export function changeCurrentPhase(phase) {
     });
   };
 }
+
+export function changeBeamFocus(size) {
+  return () => {
+    const sizeSplit = size.split('x');
+    const sizeX = sizeSplit[0];
+    const sizeY = sizeSplit[1];
+    fetch('/mxcube/api/v0.1/beamfocus', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ mot01: sizeX, mot02: sizeY }),
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Server refused to change beam focus');
+      }
+    });
+  };
+}

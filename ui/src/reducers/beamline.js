@@ -140,6 +140,16 @@ export const INITIAL_STATE = {
   plotsData: {},
   availableMethods: {},
   energyScanElements: [],
+  beamFocus: {
+    mot01: {
+      value: '0',
+      state: 'UNKNOWN',
+    },
+    mot02: {
+      value: '0',
+      state: 'UNKNOWN',
+    },
+  },
 };
 
 // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -283,6 +293,16 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
         beamlineActionsList: [...action.data.beamlineSetup.actionsList],
         availableMethods: action.data.beamlineSetup.availableMethods,
         energyScanElements: action.data.beamlineSetup.energyScanElements,
+        beamFocus: {
+          mot01: {
+            value: action.data.beamInfo.size_x,
+            state: action.data.beamInfo.state_x,
+          },
+          mot02: {
+            value: action.data.beamInfo.size_y,
+            state: action.data.beamInfo.state_y,
+          },
+        },
       };
     }
     case 'BL_MACH_INFO': {
@@ -422,6 +442,21 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
       plotInfo.end = true;
       plotsInfo[action.id] = plotInfo;
       return { ...state, plotsInfo };
+    }
+    case 'SET_BEAM_INFO': {
+      return {
+        ...state,
+        beamFocus: {
+          mot01: {
+            value: action.info.size_x,
+            state: action.info.state_x,
+          },
+          mot02: {
+            value: action.info.size_y,
+            state: action.info.state_y,
+          },
+        },
+      };
     }
     default: {
       return state;
