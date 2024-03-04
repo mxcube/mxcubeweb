@@ -1,4 +1,4 @@
-# import json
+import json
 import sys
 import logging
 
@@ -264,9 +264,8 @@ def init_route(app, server, url_prefix):
         """
         params = request.data
         params = json.loads(params)
-
-        size_x = params["size_x"]
-        size_y = params["size_y"]
+        size_x = params["mot01"]
+        size_y = params["mot02"]
 
         beam_info = HWR.beamline.beam
         beam_info.set_beam_size(size_x, size_y)
@@ -280,9 +279,7 @@ def init_route(app, server, url_prefix):
         """
 
         beam_info = HWR.beamline.beam
-        print(beam_info)
         beam_info_values = app.beamline.get_beam_info()
-        print(beam_info_values)
         motors_moving_state = beam_info.get_motors_states()
 
         data = {
