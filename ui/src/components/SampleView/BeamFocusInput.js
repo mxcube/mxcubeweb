@@ -67,13 +67,12 @@ export default class BeamFocusInput extends React.Component {
       },
     };
     // STATES: (NOTINITIALIZED, UNUSABLE, READY, MOVESTARTED, MOVING, ONLIMIT) = (0,1,2,3,4,5)
-    const stateMot01 = this.props.beamFocus.mot01.state;
-    const stateMot02 = this.props.beamFocus.mot02.state;
-    let stateClass = '';
+    const mot01 = this.props.beamFocus.mot01.value;
+    const mot02 = this.props.beamFocus.mot02.value;
+    const stateClass = 'input-bg-ready';
 
-    if (stateMot01 && stateMot02) {
-      selectedBeamFocus = `${stateMot01 * 1000}x${stateMot02 * 1000}`;
-    }
+    selectedBeamFocus = `${mot01 * 1000}x${mot02 * 1000}`;
+    
     const currentApertureListStatus = apertureListStatus[selectedBeamFocus];
     let color = '#9BCE7B';
     if (currentApertureListStatus !== undefined) {
@@ -129,18 +128,6 @@ export default class BeamFocusInput extends React.Component {
         fontSize: '12px',
       }),
     };
-
-    if (
-      (stateMot01 !== 2 && stateMot01 !== 4) ||
-      (stateMot02 !== 2 && stateMot02 !== 4)
-    ) {
-      stateClass = 'input-bg-fault';
-    } else {
-      stateClass =
-        stateMot01 === 4 || stateMot02 === 4
-          ? 'input-bg-moving'
-          : 'input-bg-ready';
-    }
 
     const inputCSS = cx(`form-control input-sm ${stateClass}`);
     let curBeamFocus = '';
