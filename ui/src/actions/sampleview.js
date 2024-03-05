@@ -713,7 +713,7 @@ export function changeBeamFocus(size) {
     const sizeSplit = size.split('x');
     const sizeX = sizeSplit[0];
     const sizeY = sizeSplit[1];
-    fetch('/mxcube/api/v0.1/beamfocus', {
+    fetch('/mxcube/api/v0.1/beamline/beamfocus', {
       method: 'PUT',
       credentials: 'include',
       headers: {
