@@ -16,8 +16,6 @@ export default class BeamFocusInput extends React.Component {
   }
 
   handleChange(event) {
-    console.log(this.props);
-    console.log('handl ap', event);
     this.props.changeAperture(event.value);
   }
 
@@ -34,7 +32,6 @@ export default class BeamFocusInput extends React.Component {
   }
 
   render() {
-    console.log('REDNER FOXUS', this.props);
     let selectedBeamFocus = 'undefined';
     const apertureListStatus = {
       undefined: {
@@ -72,7 +69,7 @@ export default class BeamFocusInput extends React.Component {
     const stateClass = 'input-bg-ready';
 
     selectedBeamFocus = `${mot01 * 1000}x${mot02 * 1000}`;
-    
+
     const currentApertureListStatus = apertureListStatus[selectedBeamFocus];
     let color = '#9BCE7B';
     if (currentApertureListStatus !== undefined) {

@@ -64,7 +64,6 @@ class SampleViewContainer extends Component {
 
   render() {
     const { uiproperties } = this.props;
-    console.log('uiproperties', uiproperties.sample_view_beam_controls);
 
     const beamFocus = uiproperties.sample_view_beam_controls.components.find(
       (item) => item.id == 'beam_focus',
@@ -76,7 +75,6 @@ class SampleViewContainer extends Component {
       (item) => item.id == 'phase',
     );
 
-    console.log(beamFocus, aperture, phase);
     if (!('sample_view' in uiproperties)) {
       return null;
     }
