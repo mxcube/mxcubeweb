@@ -7,7 +7,6 @@ import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
 import BeamlineCamera from '../components/BeamlineCamera/BeamlineCamera';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
-import SampleChangerSwitch from '../components/SampleChangerSwitch/SampleChangerSwitch';
 import DeviceState from '../components/DeviceState/DeviceState';
 import LabeledValue from '../components/LabeledValue/LabeledValue';
 import MachInfo from '../components/MachInfo/MachInfo';
@@ -93,7 +92,7 @@ class BeamlineSetupContainer extends React.Component {
           if (uiprop !== undefined && uiprop.value_type === 'NSTATE') {
             if (uiprop.label === 'Beamstop') {
               acts.push(
-                <Nav.Item key={key} className="ms-3">
+                <Nav.Item key={key}>
                   <InOutSwitch
                     onText={
                       this.props.beamline.hardwareObjects[key].commands[0]
@@ -280,17 +279,21 @@ class BeamlineSetupContainer extends React.Component {
               />
             </Nav.Item>
           </Nav>
-          <Nav className="me-3">
+          <Nav className="">
             <Nav.Item>
-              <SampleChangerSwitch
+              <InOutSwitch
+                onText="Power On"
+                offText="Power Off"
+                onValue="PowerOn"
+                offValue="PowerOff"
                 labelText="Sample Changer"
-                data={this.props.sampleChanger.state}
+                data={{ value: this.props.sampleChanger.state }}
                 onSave={this.props.sendCommand}
               />
             </Nav.Item>
           </Nav>
           <Nav className="me-3">{this.createActuatorComponent()}</Nav>
-          <Nav className="">
+          <Nav className="me-3">
             <Nav.Item>
               <span className="blstatus-item">
                 {this.props.beamline.hardwareObjects.machine_info && (

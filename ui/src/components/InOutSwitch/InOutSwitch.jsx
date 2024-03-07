@@ -1,89 +1,41 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Badge, Button, OverlayTrigger, Popover } from 'react-bootstrap';
-import './style.css';
+import styles from './inOutStyle.module.css';
 
 export default class InOutSwitch extends React.Component {
   constructor(props) {
     super(props);
-    this.setOff = this.setOff.bind(this);
-    this.setOn = this.setOn.bind(this);
-    this.onLinkRightClick = this.onLinkRightClick.bind(this);
-    this.onOptionsRightClick = this.onOptionsRightClick.bind(this);
-
-    this.showLabelOvelay = this.showLabelOvelay.bind(this);
-    this.showValueOvelay = this.showValueOvelay.bind(this);
-
-    this.state = {
-      showLabelOvelay: false,
-      showValueOvelay: false,
-    };
+    this.handleSetOff = this.handleSetOff.bind(this);
+    this.handleSetOn = this.handleSetOn.bind(this);
   }
 
-  showLabelOvelay(value) {
-    this.setState({
-      showLabelOvelay: value,
-    });
-  }
-
-  showValueOvelay(value) {
-    this.setState({
-      showValueOvelay: value,
-    });
-  }
-
-  /**
-   * Set Ovelay visibility to False
-   *
-   * @param {MouseEvent} e
-   */
-  onKeyDown(e) {
-    // eslint-disable-next-line sonarjs/no-small-switch
-    switch (e.key) {
-      case 'Escape': {
-        this.showValueOvelay(false);
-        this.showLabelOvelay(false);
-
-        break;
+  handleSetOff() {
+    if (this.props.onSave !== undefined) {
+      if (this.props.offValue === undefined) {
+        this.props.onSave(this.props.pkey, this.props.offText);
+      } else if (this.props.pkey === undefined) {
+        this.props.onSave(this.props.offValue);
+      } else {
+        this.props.onSave(this.props.pkey, this.props.offValue);
       }
-      // No default
     }
   }
 
-  onLinkRightClick(e) {
-    // this.overlay.handleToggle();
-    this.showValueOvelay(!this.state.showValueOvelay);
-    e.preventDefault();
-  }
-
-  onOptionsRightClick(e) {
-    // this.optionsOverlay.handleToggle();
-    this.showLabelOvelay(!this.state.showLabelOvelay);
-    e.preventDefault();
-  }
-
-  setOff() {
+  handleSetOn() {
     if (this.props.onSave !== undefined) {
-      this.props.onSave(this.props.pkey, this.props.offText);
+      if (this.props.onValue === undefined) {
+        this.props.onSave(this.props.pkey, this.props.onText);
+      } else if (this.props.pkey === undefined) {
+        this.props.onSave(this.props.onValue);
+      } else {
+        this.props.onSave(this.props.pkey, this.props.onValue);
+      }
     }
-
-    // this.overlay.hide();
-    this.showValueOvelay(false);
-  }
-
-  setOn() {
-    if (this.props.onSave !== undefined) {
-      this.props.onSave(this.props.pkey, this.props.onText);
-    }
-
-    // this.overlay.hide();
-    this.showValueOvelay(false);
   }
 
   renderLabel() {
-    const { showLabelOvelay } = this.state;
     let optionsLabel = (
-      <Badge bg="secondary" style={{ display: 'block', marginBottom: '3px' }}>
+      <Badge className={styles.inOutLabel} bg="secondary">
         {this.props.labelText}
       </Badge>
     );
@@ -91,20 +43,13 @@ export default class InOutSwitch extends React.Component {
     if (this.props.optionsOverlay) {
       optionsLabel = (
         <OverlayTrigger
-          show={showLabelOvelay}
           rootClose
           trigger="click"
           placement="bottom"
           overlay={this.props.optionsOverlay}
         >
-          <div
-            onClick={() => this.showLabelOvelay(!showLabelOvelay)}
-            onContextMenu={this.onOptionsRightClick}
-          >
-            <Badge
-              bg="secondary"
-              style={{ display: 'block', marginBottom: '3px' }}
-            >
+          <div>
+            <Badge bg="secondary" className={styles.inOutLabel}>
               {this.props.labelText}
               <i className="fas fa-cog ms-2" />
             </Badge>
@@ -113,17 +58,15 @@ export default class InOutSwitch extends React.Component {
       );
     }
 
+    if (this.props.btnLabel) {
+      return null;
+    }
+
     return optionsLabel;
   }
 
   render() {
-    const { showValueOvelay } = this.state;
     let msgBgStyle = 'warning';
-    if (this.props.data.value === this.props.onText) {
-      msgBgStyle = 'success';
-    } else if (this.props.data.value === this.props.offText) {
-      msgBgStyle = 'danger';
-    }
 
     let btn = (
       <Button variant="outline-secondary" size="sm" disabled>
@@ -131,35 +74,58 @@ export default class InOutSwitch extends React.Component {
       </Button>
     );
 
-    if (this.props.data.value === this.props.onText) {
-      btn = (
-        <Button variant="outline-secondary" size="sm" onClick={this.setOff}>
-          Set: {this.props.offText}
-        </Button>
-      );
-    } else {
-      btn = (
-        <Button variant="outline-secondary" size="sm" onClick={this.setOn}>
-          Set: {this.props.onText}
-        </Button>
-      );
+    switch (this.props.data.value) {
+      case this.props.onText:
+      case 'READY': {
+        msgBgStyle = 'success';
+        btn = (
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={this.handleSetOff}
+          >
+            Set: {this.props.offText}
+          </Button>
+        );
+        break;
+      }
+      case this.props.offText:
+      case 'CLOSED': {
+        msgBgStyle = 'danger';
+        btn = (
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={this.handleSetOn}
+          >
+            Set: {this.props.onText}
+          </Button>
+        );
+        break;
+      }
+      case 'DISABLED': {
+        msgBgStyle = 'warning';
+        btn = (
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={this.handleSetOn}
+          >
+            Set: {this.props.offText}
+          </Button>
+        );
+        break;
+      }
+      // No default
     }
 
-    const msgLabelStyle = {
-      display: 'block',
-      fontSize: '100%',
-      borderRadius: '0px',
-      color: '#000',
-    };
-
     return (
-      <div className="inout-switch">
+      <div className={styles.inOutSwitch}>
         {this.renderLabel()}
         <OverlayTrigger
-          show={showValueOvelay}
           rootClose
           trigger="click"
-          placement="bottom"
+          placement={this.props.overlayPlacement || 'bottom'}
           overlay={
             <Popover
               style={{ padding: '0.5em' }}
@@ -169,14 +135,20 @@ export default class InOutSwitch extends React.Component {
             </Popover>
           }
         >
-          <div
-            onClick={() => this.showValueOvelay(!showValueOvelay)}
-            onContextMenu={this.onLinkRightClick}
-          >
-            <Badge bg={msgBgStyle} style={msgLabelStyle}>
-              {this.props.data.value}
-            </Badge>
-          </div>
+          {!this.props.btnLabel ? (
+            <div title={this.props.data.value}>
+              <Badge bg={msgBgStyle} className={styles.msgLabelStyle}>
+                {this.props.data.value}
+              </Badge>
+            </div>
+          ) : (
+            <Button variant="outline-secondary" className={styles.SwitchBtn}>
+              {this.props.labelText}{' '}
+              <Badge className={styles.SwitchBdg} bg={msgBgStyle} style={{}}>
+                {this.props.data.value}
+              </Badge>
+            </Button>
+          )}
         </OverlayTrigger>
       </div>
     );
@@ -186,6 +158,8 @@ export default class InOutSwitch extends React.Component {
 InOutSwitch.defaultProps = {
   onText: 'Open',
   offText: 'Close',
+  onValue: undefined,
+  offValue: undefined,
   labelText: '',
   pkey: undefined,
   onSave: undefined,

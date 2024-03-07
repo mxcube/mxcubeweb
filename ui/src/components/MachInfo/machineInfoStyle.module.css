@@ -21,6 +21,22 @@
   color: black;
 }
 
-.machine-info {
+.machineInfo {
   width: 7em;
+}
+
+.machineLabel {
+  border-radius: 0%;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.msgLabelStyle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  border-radius: 0%;
+  display: block;
+  font-size: 100%;
+  color: black;
 }
