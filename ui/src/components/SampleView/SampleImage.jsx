@@ -40,7 +40,6 @@ export default class SampleImage extends React.Component {
     this.setGridOverlayOpacity = this.setGridOverlayOpacity.bind(this);
     this.getGridOverlayOpacity = this.getGridOverlayOpacity.bind(this);
     this.saveGrid = this.saveGrid.bind(this);
-    this.getGridCellCenter = this.getGridCellCenter.bind(this);
     this.configureGrid = this.configureGrid.bind(this);
     this.updateGridResults = this.updateGridResults.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
@@ -292,20 +291,6 @@ export default class SampleImage extends React.Component {
     return overlay;
   }
 
-  getGridCellCenter(gridGroup, clickPoint) {
-    const cell = this.drawGridPlugin.getClickedCell(gridGroup, clickPoint);
-    let cellCenter = [];
-
-    if (cell) {
-      cellCenter = [
-        (cell.aCoords.tl.x + cell.width / 2) / this.props.imageRatio,
-        (cell.aCoords.tl.y + cell.height / 2) / this.props.imageRatio,
-      ];
-    }
-
-    return cellCenter;
-  }
-
   selectedGrid() {
     let grid = null;
 
@@ -447,10 +432,15 @@ export default class SampleImage extends React.Component {
         } else if (pointList.length > 2) {
           ctxMenuObj = { type: 'GROUP', id: pointList };
         } else if (gridList.length === 1) {
-          const gridData = this.props.grids[gridList[0]];
-          const cellCenter = this.getGridCellCenter(
+          let gridData = this.props.grids[gridList[0]];
+          gridData = this.drawGridPlugin.setPixelsPerMM(
+            this.props.pixelsPerMm,
+            gridData,
+          );
+          const cellCenter = this.drawGridPlugin.getClickedCell(
+            gridData,
             group.getObjects()[0],
-            clickPoint,
+            e,
           );
           ctxMenuObj = {
             type: 'GridGroupSaved',
@@ -542,8 +532,6 @@ export default class SampleImage extends React.Component {
       measureDistance,
       imageRatio,
       contextMenuVisible,
-      beamSize,
-      pixelsPerMm,
     } = this.props;
 
     if (contextMenuVisible) {
@@ -563,21 +551,17 @@ export default class SampleImage extends React.Component {
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
     } else if (option.target && !(option.e.shiftKey || option.e.ctrlKey)) {
-      const cellSizeX = beamSize.x * pixelsPerMm[0] * imageRatio;
-      const cellSizeY = beamSize.y * pixelsPerMm[1] * imageRatio;
-
-      const cellIdxX = Number.parseInt(
-        Math.floor((option.pointer.x - option.target.oCoords.tl.x) / cellSizeX),
-        10,
-      );
-      const cellIdxY = Number.parseInt(
-        Math.floor(
-          (option.pointer.y - option.target.oCoords.tl.y - 20) / cellSizeY,
-        ),
-        10,
+      const shapeData = this.drawGridPlugin.setPixelsPerMM(
+        this.props.pixelsPerMm,
+        this.props.shapes[objectFound.id],
       );
 
-      const shapeData = this.props.shapes[objectFound.id];
+      const [cellIdxX, cellIdxY] = this.drawGridPlugin.getClickedCellIndex(
+        shapeData,
+        option.target,
+        option.pointer,
+      );
+
       const imgNum = this.drawGridPlugin.countCells(
         shapeData.cellCountFun,
         cellIdxY,
