@@ -1,0 +1,36 @@
+.inOutSwitch {
+  width: fit-content;
+}
+
+.SwitchBtn {
+  max-width: 15em;
+}
+
+.inOutLabel {
+  border-radius: 0%;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.SwitchBdg {
+  max-width: 12em;
+  vertical-align: bottom;
+}
+
+.SwitchBtn,
+.SwitchBdg,
+.inOutLabel,
+.msgLabelStyle {
+  overflow-x: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.msgLabelStyle {
+  display: block;
+  font-size: 100%;
+  border-radius: 0px;
+  color: white;
+
+  width: 7em;
+}

@@ -5,4 +5,7 @@
 .inout-switch .badge {
   overflow: hidden;
   text-overflow: ellipsis;
+
+  border-radius: 0%;
+  display: block;
 }

@@ -1,6 +1,8 @@
 import React from 'react';
 import { Badge } from 'react-bootstrap';
 
+import styles from './deviceState.module.css';
+
 export default class DeviceState extends React.Component {
   render() {
     let msgBgStyle = 'warning';
@@ -9,19 +11,16 @@ export default class DeviceState extends React.Component {
       msgBgStyle = 'info';
     }
 
-    const msgLabelStyle = {
-      display: 'block',
-      fontSize: '100%',
-      borderRadius: '0px',
-      color: '#000',
-    };
-
     return (
-      <div>
-        <Badge bg="secondary" style={{ display: 'block', marginBottom: '3px' }}>
+      <div className={styles.deviceState}>
+        <Badge
+          className={styles.labelStyle}
+          bg="secondary"
+          style={{ display: 'block', marginBottom: '3px' }}
+        >
           {this.props.labelText}
         </Badge>
-        <Badge bg={msgBgStyle} style={msgLabelStyle}>
+        <Badge bg={msgBgStyle} className={styles.msgLabelStyle}>
           {this.props.data}
         </Badge>
       </div>
