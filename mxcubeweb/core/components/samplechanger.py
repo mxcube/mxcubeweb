@@ -37,6 +37,10 @@ class SampleChanger(ComponentBase):
                 "globalStateChanged", signals.sc_maintenance_update
             )
 
+            HWR.beamline.sample_changer_maintenance.connect(
+                "gripperChanged", self._gripper_changed
+            )
+
     def get_sample_list(self):
         samples_list = HWR.beamline.sample_changer.get_sample_list()
         samples = {}
@@ -384,6 +388,16 @@ class SampleChanger(ComponentBase):
         except Exception:
             logging.getLogger("MX3.HWR").exception("Could not get crystal List")
             return {"xtal_list": xtal_list}
+
+    def _gripper_changed(self):
+        from mxcubeweb.routes import signals
+
+        self.app.queue.queue_clear()
+        self.app.server.emit(
+            "queue", {"Signal": "update", "message": "all"}, namespace="/hwr"
+        )
+
+        # self.app.sample_changer.get_sample_list()
 
 
 # Disabling C901 function is too complex (19)

@@ -42,10 +42,9 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
   // eslint-disable-next-line sonarjs/max-switch-cases
   switch (action.type) {
     case 'SET_QUEUE': {
-      const sampleList = { ...state.sampleList };
       return {
         ...state,
-        sampleList: Object.assign(sampleList, action.sampleList),
+        sampleList: { ...action.sampleList },
       };
     }
     // Set the list of samples (sampleList), clearing any existing list

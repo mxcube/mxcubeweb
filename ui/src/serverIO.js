@@ -265,17 +265,17 @@ class ServerIO {
       this.dispatch(addDiffractionPlanAction(record.tasks));
     });
 
-    this.hwrSocket.on('queue', (record, callback) => {
-      if (callback) {
-        callback();
-      }
-
+    this.hwrSocket.on('queue', (record) => {
       if (record.Signal === 'DisableSample') {
         this.dispatch(setSampleAttribute([record.sampleID], 'checked', false));
       } else if (record.Signal === 'update') {
-        const state = store.getState();
-        if (!state.login.user.inControl) {
+        if (record.message === 'all') {
           this.dispatch(fetchQueue());
+        } else if (record.message === 'observers') {
+          const state = store.getState();
+          if (!state.login.user.inControl) {
+            this.dispatch(fetchQueue());
+          }
         }
       } else {
         this.dispatch(setStatus(record.Signal));

@@ -200,7 +200,7 @@ def set_current_sample(sample_id):
 
 
 def sc_contents_update():
-    server.emit("sc_contents_update")
+    server.emit("sc_contents_update", {}, namespace="/hwr")
 
 
 def sc_maintenance_update(*args):
@@ -655,6 +655,7 @@ def beam_changed(*args, **kwargs):
 
 def beamline_action_start(name):
     msg = {"name": name, "state": RUNNING}
+
     try:
         server.emit("beamline_action", msg, namespace="/hwr")
     except Exception:
