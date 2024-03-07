@@ -168,6 +168,7 @@ export default class MotorInput extends React.Component {
                         suffix={suffix}
                         inputSize="5"
                         immediate
+                        precision={this.props.decimalPoints}
                         onSave={this.props.saveStep}
                         style={{
                           display: 'inline-block',
@@ -197,6 +198,7 @@ export default class MotorInput extends React.Component {
               inputSize="5"
               inplace
               immediate
+              precision={this.props.decimalPoints}
               onSave={this.props.saveStep}
               style={{ display: 'flex', alignItems: 'center' }}
             />
