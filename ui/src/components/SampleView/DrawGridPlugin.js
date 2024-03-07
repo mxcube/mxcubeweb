@@ -593,19 +593,31 @@ export default class DrawGridPlugin {
     }
   }
 
-  getClickedCell(shapeGroup, clickPoint) {
-    let cell = null;
+  getClickedCellIndex(gd, shapeGroup, e) {
+    const cellSizeX = this.getCellWidth(gd);
+    const cellSizeY = this.getCellHeight(gd);
 
-    shapeGroup.forEachObject((obj) => {
-      if (
-        obj.get('type') === 'ellipse' &&
-        obj.containsPoint(clickPoint, null, true)
-      ) {
-        cell = obj;
-      }
-    });
+    const cellIdxX = Number.parseInt(
+      Math.floor((e.offsetX - shapeGroup.oCoords.tl.x) / cellSizeX),
+      10,
+    );
+    const cellIdxY = Number.parseInt(
+      Math.floor((e.offsetY - shapeGroup.oCoords.tl.y - 20) / cellSizeY),
+      10,
+    );
 
-    return cell;
+    return [cellIdxX, cellIdxY];
+  }
+
+  getClickedCell(gd, shapeGroup, e) {
+    const cellSizeX = this.getCellWidth(gd) / this.scale;
+    const cellSizeY = this.getCellHeight(gd) / this.scale;
+    const cellIdx = this.getClickedCellIndex(gd, shapeGroup, e);
+
+    return [
+      gd.screenCoord[0] + cellSizeX / 2 + cellIdx[0] * cellSizeX,
+      gd.screenCoord[1] + cellSizeY / 2 + cellIdx[1] * cellSizeY,
+    ];
   }
 
   /**
