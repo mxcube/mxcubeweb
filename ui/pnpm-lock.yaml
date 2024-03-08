@@ -128,9 +128,6 @@ dependencies:
   react-router-dom:
     specifier: ^6.19.0
     version: 6.19.0(react-dom@17.0.2)(react@17.0.2)
-  react-select:
-    specifier: 5.8.0
-    version: 5.8.0(react-dom@17.0.2)(react@17.0.2)
   react-slick:
     specifier: ^0.29.0
     version: 0.29.0(react-dom@17.0.2)(react@17.0.2)
@@ -13668,27 +13665,6 @@ packages:
       - webpack-hot-middleware
       - webpack-plugin-serve
     dev: true
-
-  /react-select@5.8.0(react-dom@17.0.2)(react@17.0.2):
-    resolution: {integrity: sha512-TfjLDo58XrhP6VG5M/Mi56Us0Yt8X7xD6cDybC7yoRMUNm7BGO7qk8J0TLQOua/prb8vUOtsfnXZwfm30HGsAA==}
-    peerDependencies:
-      react: ^16.8.0 || ^17.0.0 || ^18.0.0
-      react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0
-    dependencies:
-      '@babel/runtime': 7.22.3
-      '@emotion/cache': 11.11.0
-      '@emotion/react': 11.11.4(react@17.0.2)
-      '@floating-ui/dom': 1.6.3
-      '@types/react-transition-group': 4.4.6
-      memoize-one: 6.0.0
-      prop-types: 15.8.1
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
-      react-transition-group: 4.4.5(react-dom@17.0.2)(react@17.0.2)
-      use-isomorphic-layout-effect: 1.1.2(react@17.0.2)
-    transitivePeerDependencies:
-      - '@types/react'
-    dev: false
 
   /react-slick@0.29.0(react-dom@17.0.2)(react@17.0.2):
     resolution: {integrity: sha512-TGdOKE+ZkJHHeC4aaoH85m8RnFyWqdqRfAGkhd6dirmATXMZWAxOpTLmw2Ll/jPTQ3eEG7ercFr/sbzdeYCJXA==}
