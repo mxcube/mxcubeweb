@@ -493,6 +493,11 @@ export default connect((state) => {
   const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
   const { parameters } = state.taskForm.taskData;
 
+  // Set number of images to 1 for 2D points
+  if (position.includes('2D')) {
+    parameters.num_images = 1;
+  }
+
   if (Number.parseFloat(parameters.osc_range) === 0) {
     parameters.osc_range =
       state.taskForm.defaultParameters[
