@@ -118,6 +118,21 @@ function BeamlineSetupContainer(props) {
                 </Nav.Item>,
               );
             }
+          } else if (
+            uiprop !== undefined &&
+            uiprop.value_type !== 'NSTATE' &&
+            uiprop.value_type !== 'MOTOR' &&
+            uiprop.value_type !== 'ACTUATOR' &&
+            uiprop.value_type !== 'ENERGY'
+          ) {
+            acts.push(
+              <Nav.Item key={key} className="ms-3">
+                <DeviceState
+                  labelText={uiprop.label}
+                  data={beamline.hardwareObjects[key].state}
+                />
+              </Nav.Item>,
+            );
           }
         }
       }
@@ -244,22 +259,6 @@ function BeamlineSetupContainer(props) {
           </Nav.Item>
         </Nav>
         <Nav className="me-3">{renderActuatorComponent()}</Nav>
-        <Nav className="me-3">
-          <Nav.Item>
-            <DeviceState
-              labelText="Detector"
-              data={beamline.hardwareObjects.detector.state}
-            />
-          </Nav.Item>
-        </Nav>
-        <Nav className="me-3">
-          <Nav.Item>
-            <DeviceState
-              labelText="Diffractometer"
-              data={beamline.hardwareObjects.diffractometer.state}
-            />
-          </Nav.Item>
-        </Nav>
         <Nav className="me-3">
           <Nav.Item>
             <span className="blstatus-item">
