@@ -407,8 +407,6 @@ export default class SampleImage extends React.Component {
           .filter((shape) => this.props.twoDPoints[shape.id] !== undefined)
           .map((shape) => shape.id);
 
-        const pointList = [...threeDpointList, ...twoDPointList];
-
         const gridList = shapes
           .filter((shape) => this.props.grids[shape.id] !== undefined)
           .map((shape) => shape.id);
@@ -417,20 +415,25 @@ export default class SampleImage extends React.Component {
           .filter((shape) => this.props.lines[shape.id] !== undefined)
           .map((shape) => shape.id);
 
-        if (pointList.length === 2) {
+        if (threeDpointList.length === 2) {
           ctxMenuObj = { type: 'HELICAL', id: this.props.selectedShapes };
         } else if (
-          pointList.length === 1 &&
-          this.props.points[pointList[0]].state === 'SAVED'
+          threeDpointList.length === 1 &&
+          this.props.points[threeDpointList[0]].state === 'SAVED'
         ) {
-          ctxMenuObj = { type: 'SAVED', id: pointList[0] };
+          ctxMenuObj = { type: 'SAVED', id: threeDpointList[0] };
         } else if (
-          pointList.length === 1 &&
-          this.props.points[pointList[0]].state === 'TMP'
+          twoDPointList.length === 1 &&
+          this.props.twoDPoints[twoDPointList[0]].state === 'SAVED'
         ) {
-          ctxMenuObj = { type: 'TMP', id: pointList[0] };
-        } else if (pointList.length > 2) {
-          ctxMenuObj = { type: 'GROUP', id: pointList };
+          ctxMenuObj = { type: 'SAVED', id: twoDPointList[0] };
+        } else if (
+          threeDpointList.length === 1 &&
+          this.props.points[threeDpointList[0]].state === 'TMP'
+        ) {
+          ctxMenuObj = { type: 'TMP', id: threeDpointList[0] };
+        } else if (threeDpointList.length > 2) {
+          ctxMenuObj = { type: 'GROUP', id: threeDpointList };
         } else if (gridList.length === 1) {
           let gridData = this.props.grids[gridList[0]];
           gridData = this.drawGridPlugin.setPixelsPerMM(
