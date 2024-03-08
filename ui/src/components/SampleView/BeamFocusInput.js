@@ -1,8 +1,12 @@
 import React from 'react';
+import { Form } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+
 import '../MotorInput/motor.css';
 import '../input.css';
+import './SampleView.css';
 import cx from 'classnames';
-import Select from 'react-select';
 
 export default class BeamFocusInput extends React.Component {
   constructor(props) {
@@ -24,7 +28,7 @@ export default class BeamFocusInput extends React.Component {
     if (status === 'disable') {
       col = 'red';
     } else if (status === 'warning') {
-      col = 'orange';
+      col = '#fc9003'; // darker orange
     } else {
       col = 'black';
     }
@@ -68,9 +72,9 @@ export default class BeamFocusInput extends React.Component {
     const mot02 = this.props.beamFocus.mot02.value;
     const stateClass = 'input-bg-ready';
 
-    selectedBeamFocus = `${mot01 * 1000}x${mot02 * 1000}`;
-
+    selectedBeamFocus = `${mot01 * 10_000}x${mot02 * 10_000}`;
     const currentApertureListStatus = apertureListStatus[selectedBeamFocus];
+
     let color = '#9BCE7B';
     if (currentApertureListStatus !== undefined) {
       const status = currentApertureListStatus[this.props.aperture];
@@ -80,7 +84,6 @@ export default class BeamFocusInput extends React.Component {
     }
 
     let optionList = [];
-
     if (currentApertureListStatus !== undefined) {
       const ks = Object.keys(currentApertureListStatus);
 
@@ -134,20 +137,43 @@ export default class BeamFocusInput extends React.Component {
     if (_v1 && _v2) {
       curBeamFocus = `${_v1 * 1000}x${_v2 * 1000}`;
     }
+
+    const currentOption = optionList.find(
+      (item) => item.value == this.props.aperture,
+    );
+    const currentColor = currentOption.fontColor;
+
     return (
-      <div className="motor-input-container">
+      <div>
         <p className="motor-name">Beam Focus:</p>
-        <Select
-          value={{
-            label: this.props.aperture.toString(),
-            value: this.props.aperture,
-          }}
-          label="Beam Size"
-          options={optionList}
-          styles={colourStyles}
-          onChange={this.handleChange}
-        />
-        <select
+        <Dropdown
+          className="w-100"
+          as={ButtonGroup}
+          size="sm"
+          style={{ float: 'none' }}
+        >
+          <Dropdown.Toggle
+            className="input-bg-ready"
+            style={{ color: currentColor, width: '100%', textAlign: 'left' }}
+          >
+            {currentOption.label}
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            {optionList.map((option) => (
+              <Dropdown.Item
+                key={option.id}
+                value={option.label}
+                className="float-left"
+                disabled={option.isDisabled}
+                style={{ color: option.fontColor }}
+                onClick={() => this.handleChange(option)}
+              >
+                {option.label}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+        <Form.Select
           className={inputCSS}
           value={curBeamFocus}
           onChange={(event) => this.changeBeamFocus(event)}
@@ -162,7 +188,7 @@ export default class BeamFocusInput extends React.Component {
               {option}
             </option>
           ))}
-        </select>
+        </Form.Select>
       </div>
     );
   }
