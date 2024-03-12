@@ -23,22 +23,12 @@ export default function InOutSwitch(props) {
     overlayPlacement,
   } = props;
 
-  function handleSetOff() {
+  function handleSwitch(value) {
     if (onSave !== undefined) {
       if (pkey === undefined) {
-        onSave(offValue);
+        onSave(value);
       } else {
-        onSave(pkey, offValue);
-      }
-    }
-  }
-
-  function handleSetOn() {
-    if (onSave !== undefined) {
-      if (pkey === undefined) {
-        onSave(openValue);
-      } else {
-        onSave(pkey, openValue);
+        onSave(pkey, value);
       }
     }
   }
@@ -84,21 +74,29 @@ export default function InOutSwitch(props) {
   );
 
   switch (value) {
-    case openText:
+    case openValue:
     case 'READY': {
       msgBgStyle = 'success';
       btn = (
-        <Button variant="outline-secondary" size="sm" onClick={handleSetOff}>
+        <Button
+          variant="outline-secondary"
+          size="sm"
+          onClick={() => handleSwitch(offValue)}
+        >
           Set: {offText}
         </Button>
       );
       break;
     }
-    case offText:
+    case offValue:
     case 'CLOSED': {
       msgBgStyle = 'danger';
       btn = (
-        <Button variant="outline-secondary" size="sm" onClick={handleSetOn}>
+        <Button
+          variant="outline-secondary"
+          size="sm"
+          onClick={() => handleSwitch(openValue)}
+        >
           Set: {openText}
         </Button>
       );
@@ -108,7 +106,11 @@ export default function InOutSwitch(props) {
     case 'UNUSABLE': {
       msgBgStyle = 'warning';
       btn = (
-        <Button variant="outline-secondary" size="sm" onClick={handleSetOn}>
+        <Button
+          variant="outline-secondary"
+          size="sm"
+          onClick={() => handleSwitch(offValue)}
+        >
           Set: {offText}
         </Button>
       );
