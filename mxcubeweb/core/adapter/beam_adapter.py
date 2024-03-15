@@ -51,11 +51,15 @@ class BeamAdapter(ActuatorAdapterBase):
             )
 
         aperture_list, current_aperture = self._get_aperture()
+        definer_list = beam_ho.get_available_definer()["values"]
+        current_definer = beam_ho._beam_definer.get_value().value
 
         beam_info_dict.update(
             {
                 "apertureList": aperture_list,
+                "definerList": definer_list,
                 "currentAperture": current_aperture,
+                "currentDefiner": current_definer,
             }
         )
 
