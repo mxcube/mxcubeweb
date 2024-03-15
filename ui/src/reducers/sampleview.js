@@ -129,7 +129,8 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
         beamPosition: action.info.position,
         beamShape: action.info.shape,
         beamSize: { x: action.info.size_x, y: action.info.size_y },
-        currentAperture: action.info.size_x * 1000,
+        currentAperture: action.info.currentAperture,
+        currentDefiner: action.info.currentDefiner,
       };
     }
     case 'SET_CURRENT_PHASE': {
@@ -201,7 +202,9 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
         videoHash: action.data.Camera.videoHash,
         videoURL: action.data.Camera.videoURL,
         apertureList: action.data.beamInfo.apertureList,
-        currentAperture: action.data.beamInfo.size_x * 1000,
+        definerList: action.data.beamInfo.definerList,
+        currentAperture: action.data.beamInfo.currentAperture,
+        currentDefiner: action.data.beamInfo.currentDefiner,
         beamPosition: action.data.beamInfo.position,
         beamShape: action.data.beamInfo.shape,
         beamSize: {

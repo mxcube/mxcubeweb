@@ -16,7 +16,7 @@ import ApertureInput from '../components/SampleView/ApertureInput';
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import ContextMenu from '../components/SampleView/ContextMenu';
-import BeamFocusInput from '../components/SampleView/BeamFocusInput';
+import BeamDefinerInput from '../components/SampleView/BeamDefinerInput';
 import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
 import { showErrorPanel, sendDisplayImage } from '../actions/general';
 import { updateTask } from '../actions/queue';
@@ -163,13 +163,15 @@ class SampleViewContainer extends Component {
               ) : null}
 
               {beamFocus.show ? (
-                <BeamFocusInput
-                  beamFocusInputList={['Undefined', '100x100', '50x50', '20x5']}
-                  beamFocus={this.props.beamFocus}
+                <BeamDefinerInput
+                  beamDefinerInputList={this.props.sampleViewState.definerList}
+                  currentDefiner={this.props.sampleViewState.currentDefiner}
                   aperture={this.props.sampleViewState.currentAperture}
                   apertureList={this.props.sampleViewState.apertureList}
                   changeAperture={this.props.sampleViewActions.changeAperture}
-                  changeBeamFocus={this.props.sampleViewActions.changeBeamFocus}
+                  changeBeamDefiner={
+                    this.props.sampleViewActions.changeBeamDefiner
+                  }
                 />
               ) : null}
 
