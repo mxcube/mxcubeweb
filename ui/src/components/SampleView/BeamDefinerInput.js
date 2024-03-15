@@ -71,6 +71,7 @@ export default class BeamDefinerInput extends React.Component {
 
     const currentApertureListStatus =
       apertureListStatus[this.props.currentDefiner];
+
     let optionList = [];
     if (currentApertureListStatus !== undefined) {
       const ks = Object.keys(currentApertureListStatus);
@@ -90,7 +91,7 @@ export default class BeamDefinerInput extends React.Component {
     const inputCSS = cx(`form-control input-sm ${stateClass}`);
 
     const currentOption = optionList.find(
-      (item) => item.value == this.props.aperture,
+      (item) => item.value === this.props.aperture.toString(),
     );
     const currentColor = currentOption ? currentOption.fontColor : 'black';
 
