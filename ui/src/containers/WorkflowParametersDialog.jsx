@@ -12,10 +12,10 @@ import {
 import styles from './WorkflowParametersDialog.module.css';
 
 function WorkflowParametersDialog(props) {
-  const { formData, show, handleHide, workflowSubmitParameters } = props;
+  const { formData, show, handleHide, submitWorkflowParameters } = props;
 
   function submitData(values) {
-    workflowSubmitParameters(values.formData);
+    submitWorkflowParameters(values.formData);
     handleHide();
   }
 
