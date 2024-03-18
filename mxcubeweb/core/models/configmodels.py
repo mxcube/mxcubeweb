@@ -9,8 +9,6 @@ class FlaskConfigModel(BaseModel):
         b"o`\xb5\xa5\xc2\x8c\xb2\x8c-?\xe0,/i#c",
         description="Flask secret key",
     )
-    SESSION_TYPE: str = Field("redis", description="Flask session type")
-    SESSION_KEY_PREFIX: str = Field("mxcube:session:", description="Session prefix")
     DEBUG: bool = Field(False, description="")
     ALLOWED_CORS_ORIGINS: List[str] = Field(["*"], description="")
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
