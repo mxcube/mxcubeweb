@@ -112,7 +112,7 @@ def build_server_and_config(test=False, argv=None):
         db.ping()
     except redis.RedisError:
         print("No Redis server is running, exiting")
-        return (None, None)
+        return None, None
 
     try:
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
@@ -143,7 +143,7 @@ def build_server_and_config(test=False, argv=None):
         traceback.print_exc()
         raise
 
-    return (server, cfg)
+    return server, cfg
 
 
 def main():

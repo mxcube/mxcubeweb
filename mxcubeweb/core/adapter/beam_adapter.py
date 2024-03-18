@@ -11,8 +11,7 @@ class BeamAdapter(ActuatorAdapterBase):
         super(BeamAdapter, self).__init__(ho, *args)
 
     def limits(self):
-        """ """
-        return (-1, -1)
+        return -1, -1
 
     def _get_aperture(self) -> tuple:
         """
