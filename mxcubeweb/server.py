@@ -12,7 +12,6 @@ from flask import Flask, request
 from flask_socketio import SocketIO
 
 import flask_security
-import flask_login
 
 from spectree import SpecTree
 
