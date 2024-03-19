@@ -362,6 +362,8 @@ class SampleView(ComponentBase):
 
     def update_shapes(self, shapes):
         logging.getLogger("HWR.MX3").info("get into update_shapes method in sampleview")
+        logging.getLogger("HWR.MX3").debug("shape from react, width: %f , height: %f. " %(shapes[0]['width'], shapes[0]['height']))
+
         updated_shapes = []
 
         for s in shapes:
@@ -393,21 +395,15 @@ class SampleView(ComponentBase):
                 # Shape does not have any refs, create a new Centered position
                 if not refs:
                     try:
+                        # x,y 的坐标是正方形左上的点，坐标是对的
                         x, y = shape_data["screen_coord"]
 
-                        # 测试使起始点从左上变为右上
-                        # 没用
-                        # y = (
-                        #         y
-                        #         + (shape_data["num_rows"] /2.0)
-                        #         * shape_data["cell_height"]/2
-                        #     )
-
-
+                        logging.getLogger("HWR.MX3").info("step into mpos = HWR.beamline.diffractometer.get_centred_point_from_coord()")
                         mpos = HWR.beamline.diffractometer.get_centred_point_from_coord(
                             x, y, return_by_names=True
                         )
                         pos.append(mpos)
+
 
                         # We also store the center of the grid
                         if t == "G":
@@ -422,6 +418,8 @@ class SampleView(ComponentBase):
                                 + (shape_data["num_rows"] /2.0)
                                 * shape_data["cell_height"]
                             )
+                            logging.getLogger("HWR.MX3").info(
+                                "step into center_positions = HWR.beamline.diffractometer.get_centred_point_from_coord()")
                             center_positions = HWR.beamline.diffractometer.get_centred_point_from_coord(
                                 x_c, y_c, return_by_names=True
                             )
@@ -579,7 +577,7 @@ class SampleView(ComponentBase):
 
     def move_to_beam(self, x, y):
         msg = "Moving point x: %s, y: %s to beam" % (x, y)
-        logging.getLogger("user_level_log").info(msg)
+        logging.getLogger("HWR.MX3").info(msg)
 
         if getattr(HWR.beamline.diffractometer, "move_to_beam") is None:
             # v > 2.2, or perhaps start_move_to_beam?

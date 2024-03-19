@@ -1169,9 +1169,9 @@ class Queue(ComponentBase):
         :param DataCollectionQueueEntry: The queue entry of the model
         :param dict task_data: Dictionary with new parameters
         """
-        # logging.getLogger("HWR").debug(
-        #     "get in set_dc_params()"
-        # )#添加
+        logging.getLogger("HWR").debug(
+            "get in set_dc_params() in queue.py"
+        )#添加
         acq = model.acquisitions[0]
         params = task_data["parameters"]
         acq.acquisition_parameters.set_from_dict(params)
@@ -1235,6 +1235,8 @@ class Queue(ComponentBase):
 
         elif params.get("mesh", False):
             grid = HWR.beamline.sample_view.get_shape(params["shape"])
+
+            # 添加，在此处获得mesh_range
             acq.acquisition_parameters.mesh_range = (grid.width, grid.height)
             # mesh_center = HWR.beamline["default_mesh_values"].get_property(
             #     "mesh_center", "top-left"
@@ -1673,8 +1675,15 @@ class Queue(ComponentBase):
             "get in add_data_collection()"
         )#添加
         sample_model, sample_entry = self.get_entry(node_id)
+
+
         dc_model, dc_entry = self._create_dc(task)
+        # print("debug, mesh_range in dc_model obj before set_de_params:")
+        # print(dc_model.acquisitions[0].acquisition_parameters.mesh_range)
         self.set_dc_params(dc_model, dc_entry, task, sample_model)
+        # print("debug, mesh_range in dc_model obj after set_de_params:")
+        # print(dc_model.acquisitions[0].acquisition_parameters.mesh_range)
+
 
         group_model = qmo.TaskGroup()
         group_model.set_origin(ORIGIN_MX3)
