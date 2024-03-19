@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   format:
-    name: Format
+    name: JS-Format
     runs-on: ubuntu-latest
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
@@ -38,7 +38,7 @@ jobs:
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui prettier"
 
   lint:
-    name: Lint
+    name: JS-Lint
     runs-on: ubuntu-latest
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
@@ -73,7 +73,7 @@ jobs:
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui eslint --max-warnings=0"
 
   e2e:
-    name: Test
+    name: E2E-Test
     runs-on: ubuntu-latest
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered

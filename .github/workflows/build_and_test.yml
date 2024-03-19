@@ -1,4 +1,4 @@
-name: Lint and test
+name: Python build and test
 
 on: [push, pull_request]
 
@@ -8,7 +8,7 @@ jobs:
     strategy:
       max-parallel: 5
       matrix:
-         python-version: ["3.10"] #, "3.9", "3.10"]
+        python-version: ["3.10"] #, "3.9", "3.10"]
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
@@ -30,25 +30,25 @@ jobs:
           - 6379:6379
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v3
-      with:
-        python-version: ${{ matrix.python-version }}
+      - uses: actions/checkout@v3
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ matrix.python-version }}
 
-    - name: Set up Conda environment
-      uses: mamba-org/setup-micromamba@v1
-      with:
-        micromamba-version: "latest"
-        environment-file: conda-environment.yml
-        cache-environment: true
-        post-cleanup: "all"
+      - name: Set up Conda environment
+        uses: mamba-org/setup-micromamba@v1
+        with:
+          micromamba-version: "latest"
+          environment-file: conda-environment.yml
+          cache-environment: true
+          post-cleanup: "all"
 
-    - name: Install MXCuBE
-      run: "${MAMBA_EXE} run --name mxcubeweb poetry install"
+      - name: Install MXCuBE
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry install"
 
-    - name: Linting & Code Quality
-      run: "${MAMBA_EXE} run --name mxcubeweb poetry run pre-commit run --all-files"
+      - name: Linting & Code Quality
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry run pre-commit run --all-files"
 
-    - name: Test with pytest
-      run: "${MAMBA_EXE} run --name mxcubeweb poetry run pytest"
+      - name: Test with pytest
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry run pytest"
