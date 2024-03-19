@@ -10,7 +10,7 @@ maintainers = [
 readme = "README.md"
 homepage = "https://github.com/mxcube/mxcubeweb"
 repository = "https://github.com/mxcube/mxcubeweb"
-documentation = "https://mxcubeweb.readthedocs.io/"
+documentation = "https://github.com/mxcube/mxcubeweb"
 keywords = ["mxcube", "mxcube3", "mxcubeweb"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
