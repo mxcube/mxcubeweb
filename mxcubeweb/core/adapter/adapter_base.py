@@ -20,7 +20,7 @@ class AdapterBase:
     ATTRIBUTES = []
     METHODS = []
 
-    def __init__(self, ho, role, app, **kwargs):
+    def __init__(self, ho, role, app):
         """
         Args:
             (object): Hardware object to mediate for.
@@ -335,13 +335,14 @@ class AdapterBase:
 
 
 class ActuatorAdapterBase(AdapterBase):
-    def __init__(self, ho, *args, **kwargs):
+    def __init__(self, ho, *args):
         """
         Args:
             (object): Hardware object to mediate for.
             (str): The name of the object.
         """
-        super(ActuatorAdapterBase, self).__init__(ho, *args, **kwargs)
+        super(ActuatorAdapterBase, self).__init__(ho, *args)
+
         self._unique = False
 
         try:

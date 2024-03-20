@@ -2,12 +2,12 @@ from mxcubeweb.core.adapter.adapter_base import AdapterBase
 
 
 class DetectorAdapter(AdapterBase):
-    def __init__(self, ho, *args, **kwargs):
+    def __init__(self, ho, *args):
         """
         Args:
             (object): Hardware object.
         """
-        super(DetectorAdapter, self).__init__(ho, *args, **kwargs)
+        super(DetectorAdapter, self).__init__(ho, *args)
         ho.connect("stateChanged", self._state_change)
 
     def _state_change(self, *args, **kwargs):

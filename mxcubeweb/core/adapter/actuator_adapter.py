@@ -14,12 +14,12 @@ class ActuatorAdapter(ActuatorAdapterBase):
     information on longer running processes.
     """
 
-    def __init__(self, ho, *args, **kwargs):
+    def __init__(self, ho, *args):
         """
         Args:
             (object): Hardware object.
         """
-        super(ActuatorAdapter, self).__init__(ho, *args, **kwargs)
+        super(ActuatorAdapter, self).__init__(ho, *args)
         self._event_rate = 4
 
         @RateLimited(self._event_rate)

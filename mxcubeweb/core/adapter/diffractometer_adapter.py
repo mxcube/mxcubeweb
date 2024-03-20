@@ -5,12 +5,12 @@ class DiffractometerAdapter(AdapterBase):
     ATTRIBUTES = ["head_configuration"]
     METHODS = ["set_chip_layout"]
 
-    def __init__(self, ho, *args, **kwargs):
+    def __init__(self, ho, *args):
         """
         Args:
             (object): Hardware object.
         """
-        super(DiffractometerAdapter, self).__init__(ho, *args, **kwargs)
+        super(DiffractometerAdapter, self).__init__(ho, *args)
         ho.connect("stateChanged", self._state_change)
         ho.connect("valueChanged", self._state_change)
         ho.connect("phaseChanged", self._diffractometer_phase_changed)

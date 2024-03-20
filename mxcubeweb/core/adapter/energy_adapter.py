@@ -8,11 +8,11 @@ class EnergyAdapter(ActuatorAdapter):
     information on longer running processes.
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args):
         """
         Args:
             (object): Hardware object.
         """
-        super(EnergyAdapter, self).__init__(*args, **kwargs)
+        super(EnergyAdapter, self).__init__(*args)
         self._add_adapter("wavelength", self._ho, WavelengthAdapter)
         self._type = "MOTOR"
