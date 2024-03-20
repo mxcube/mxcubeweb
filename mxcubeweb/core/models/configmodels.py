@@ -116,7 +116,9 @@ class MXCUBEAppConfigModel(BaseModel):
             "True to use video stream produced by external software, false otherwise"
         ),
     )
-    mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
+    mode: ModeEnum = Field(
+        ModeEnum.OSC, description="MXCuBE mode OSC, SSX-CHIP or SSX-INJECTOR"
+    )
     usermanager: UserManagerConfigModel
     ui_properties: Dict[str, UIPropertiesModel] = {}
 
