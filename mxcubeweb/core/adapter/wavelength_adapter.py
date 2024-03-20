@@ -13,12 +13,12 @@ class WavelengthAdapter(ActuatorAdapterBase):
     information on longer running processes.
     """
 
-    def __init__(self, ho, *args, **kwargs):
+    def __init__(self, ho, *args):
         """
         Args:
             (object): Hardware object.
         """
-        super(WavelengthAdapter, self).__init__(ho, *args, **kwargs)
+        super(WavelengthAdapter, self).__init__(ho, *args)
         self._type = "MOTOR"
 
         try:

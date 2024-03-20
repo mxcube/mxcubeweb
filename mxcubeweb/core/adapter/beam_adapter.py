@@ -7,8 +7,8 @@ from mxcubeweb.core.models.adaptermodels import (
 
 
 class BeamAdapter(ActuatorAdapterBase):
-    def __init__(self, ho, *args, **kwargs):
-        super(BeamAdapter, self).__init__(ho, *args, **kwargs)
+    def __init__(self, ho, *args):
+        super(BeamAdapter, self).__init__(ho, *args)
 
     def limits(self):
         """ """

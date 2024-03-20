@@ -8,12 +8,12 @@ from mxcubeweb.core.models.adaptermodels import (
 
 
 class MotorAdapter(ActuatorAdapterBase):
-    def __init__(self, ho, *args, **kwargs):
+    def __init__(self, ho, *args):
         """
         Args:
             (object): Hardware object.
         """
-        super(MotorAdapter, self).__init__(ho, *args, **kwargs)
+        super(MotorAdapter, self).__init__(ho, *args)
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
 

@@ -122,7 +122,6 @@ class MXCUBEAppConfigModel(BaseModel):
     mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
     usermanager: UserManagerConfigModel
     ui_properties: Dict[str, UIPropertiesModel] = {}
-    adapter_properties: List = []
 
 
 class AppConfigModel(BaseModel):

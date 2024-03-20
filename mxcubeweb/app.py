@@ -142,7 +142,6 @@ class MXCUBECore:
 
     @staticmethod
     def adapt_hardware_objects(app):
-        adapter_config = app.CONFIG.app.adapter_properties
         hwobject_list = [item for item in MXCUBECore.hwr.hardware_objects]
 
         for ho_name in hwobject_list:
@@ -162,7 +161,7 @@ class MXCUBECore:
 
             if adapter_cls:
                 try:
-                    adapter_instance = adapter_cls(ho, _id, app, **dict(adapter_config))
+                    adapter_instance = adapter_cls(ho, _id, app)
                     logging.getLogger("MX3.HWR").info("Added adapter for %s" % _id)
                 except Exception:
                     logging.getLogger("MX3.HWR").exception(

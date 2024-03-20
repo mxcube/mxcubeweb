@@ -6,12 +6,12 @@ from mxcubeweb.core.util.networkutils import RateLimited
 
 
 class MachineInfoAdapter(ActuatorAdapterBase):
-    def __init__(self, ho, *args, **kwargs):
+    def __init__(self, ho, *args):
         """
         Args:
             (object): Hardware object.
         """
-        super(MachineInfoAdapter, self).__init__(ho, *args, **kwargs)
+        super(MachineInfoAdapter, self).__init__(ho, *args)
         ho.connect("valueChanged", self._value_change)
         self._unique = True
 
