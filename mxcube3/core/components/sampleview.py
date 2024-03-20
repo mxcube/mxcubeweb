@@ -399,25 +399,43 @@ class SampleView(ComponentBase):
                         x, y = shape_data["screen_coord"]
 
                         logging.getLogger("HWR.MX3").info("step into mpos = HWR.beamline.diffractometer.get_centred_point_from_coord()")
+                        # shape_data[cell_width] and shape[cell_height]一直是100
+                        logging.getLogger("HWR.MX3").debug(
+                            "shape_data[cell_width] and shape[cell_height] in update_shapes of sampleview.py: %s, %s " %(shape_data["cell_width"], shape_data["cell_height"]))
                         mpos = HWR.beamline.diffractometer.get_centred_point_from_coord(
                             x, y, return_by_names=True
                         )
+
+
                         pos.append(mpos)
 
 
-                        # We also store the center of the grid
+                        # # We also store the center of the grid
+                        # if t == "G":
+                        #     # coords for the center of the grid
+                        #     x_c = (
+                        #         x
+                        #         + (shape_data["num_cols"] /2.0)
+                        #         * shape_data["cell_width"]
+                        #     )
+                        #     y_c = (
+                        #         y
+                        #         + (shape_data["num_rows"] /2.0)
+                        #         * shape_data["cell_height"]
+                        #     )
+
+                        #  修改上面原始代码，使传递的第二个坐标为右下点
                         if t == "G":
                             # coords for the center of the grid
                             x_c = (
                                 x
-                                + (shape_data["num_cols"] /2.0)
-                                * shape_data["cell_width"]
+                                + shape_data["width"]
                             )
                             y_c = (
                                 y
-                                + (shape_data["num_rows"] /2.0)
-                                * shape_data["cell_height"]
+                                + shape_data["height"]
                             )
+
                             logging.getLogger("HWR.MX3").info(
                                 "step into center_positions = HWR.beamline.diffractometer.get_centred_point_from_coord()")
                             center_positions = HWR.beamline.diffractometer.get_centred_point_from_coord(
