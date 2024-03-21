@@ -36,8 +36,8 @@ function renderIndexingTable(indexingTable, selected, onSelectRow) {
               key={tdContent}
               data-selected={selected.includes(index) || undefined}
               data-highlight={
-                indexingTable.highlights[index + 1]
-                  ? indexingTable.highlights[index + 1][0]
+                indexingTable.highlights[index]
+                  ? indexingTable.highlights[index][0]
                   : undefined
               }
               onClick={() => onSelectRow(index, tdContent)}
