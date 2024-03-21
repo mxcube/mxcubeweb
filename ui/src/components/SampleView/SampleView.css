@@ -193,7 +193,7 @@
   font-weight: bold;
 }
 
-.dropdown-toggle::after {
+.dropdown-toggle-beamdefiner::after {
   position: absolute;
   top: 12px;
   right: 15px;

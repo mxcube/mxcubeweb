@@ -105,7 +105,7 @@ export default class BeamDefinerInput extends React.Component {
           style={{ float: 'none' }}
         >
           <Dropdown.Toggle
-            className="input-bg-ready"
+            className="input-bg-ready dropdown-toggle-beamdefiner"
             style={{ color: currentColor, width: '100%', textAlign: 'left' }}
           >
             {currentOption.label}
