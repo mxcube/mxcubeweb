@@ -1,0 +1,5 @@
+<object class="MotorMockup">
+  <username>beam_size_hor</username>
+  <default_value>50</default_value>
+  <motor_name>beam_size_hor</motor_name>
+</object>
