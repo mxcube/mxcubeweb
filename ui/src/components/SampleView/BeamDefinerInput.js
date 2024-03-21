@@ -36,64 +36,39 @@ export default class BeamDefinerInput extends React.Component {
   }
 
   render() {
-    const apertureListStatus = {
-      UNKNOWN: {
-        100: 'default',
-        50: 'normal',
-        20: 'normal',
-        10: 'normal',
-        5: 'normal',
-      },
-      '100x100': {
-        100: 'default',
-        50: 'normal',
-        20: 'normal',
-        10: 'warning',
-        5: 'warning',
-      },
-      '50x50': {
-        100: 'disable',
-        50: 'default',
-        20: 'normal',
-        10: 'warning',
-        5: 'warning',
-      },
-      '20x5': {
-        100: 'disable',
-        50: 'disable',
-        20: 'normal',
-        10: 'default',
-        5: 'normal',
-      },
-    };
-
-    const stateClass = 'input-bg-ready';
-
-    const currentApertureListStatus =
-      apertureListStatus[this.props.currentDefiner];
+    const apertureListStatus = this.props.customStyling;
 
     let optionList = [];
-    if (currentApertureListStatus !== undefined) {
-      const ks = Object.keys(currentApertureListStatus);
-
-      optionList = ks.map((size, index) => ({
-        label: size === '5' || size === '10' ? `${size} (only mesh)` : size,
-        value: size,
-        fontColor: this.itemColor(currentApertureListStatus[ks[index]]),
-        id: index,
-        isDisabled: currentApertureListStatus[ks[index]] === 'disable',
-        isWarning: currentApertureListStatus[ks[index]] === 'warning',
-      }));
-    } else {
-      optionList = [{ label: 'na', value: 'na', fontColor: 'black' }];
-    }
-
+    const stateClass = 'input-bg-ready';
     const inputCSS = cx(`form-control input-sm ${stateClass}`);
 
+    // The folling logic handles custom styling if supplied by the hwobj
+    if (apertureListStatus !== null) {
+      const currentApertureListStatus =
+        apertureListStatus[this.props.currentDefiner];
+
+      if (currentApertureListStatus !== undefined) {
+        const ks = Object.keys(currentApertureListStatus);
+
+        optionList = ks.map((size, index) => ({
+          label: size === '5' || size === '10' ? `${size} (only mesh)` : size,
+          value: size,
+          fontColor: this.itemColor(currentApertureListStatus[ks[index]]),
+          id: index,
+          isDisabled: currentApertureListStatus[ks[index]] === 'disable',
+          isWarning: currentApertureListStatus[ks[index]] === 'warning',
+        }));
+      }
+    } else {
+      optionList = this.props.apertureList.map((ap) => ({
+        label: ap,
+        value: ap.toString(),
+        fontColor: 'black',
+      }));
+    }
     const currentOption = optionList.find(
       (item) => item.value === this.props.aperture.toString(),
     );
-    const currentColor = currentOption ? currentOption.fontColor : 'black';
 
     return (
       <div>
@@ -106,7 +81,11 @@ export default class BeamDefinerInput extends React.Component {
         >
           <Dropdown.Toggle
             className="input-bg-ready dropdown-toggle-beamdefiner"
-            style={{ color: currentColor, width: '100%', textAlign: 'left' }}
+            style={{
+              color: currentOption.fontColor,
+              width: '100%',
+              textAlign: 'left',
+            }}
           >
             {currentOption.label}
           </Dropdown.Toggle>
@@ -115,7 +94,6 @@ export default class BeamDefinerInput extends React.Component {
               <Dropdown.Item
                 key={option}
                 value={option.label}
-                // value={option}
                 className="float-left"
                 disabled={option.isDisabled}
                 style={{ color: option.fontColor }}

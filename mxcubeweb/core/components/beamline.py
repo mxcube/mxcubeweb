@@ -118,8 +118,9 @@ class Beamline(ComponentBase):
 
         definer_list = beam.get_available_definer()["values"]
         current_definer = beam._beam_definer.get_value().value
+        custom_styling = beam._beam_definer.get_custom_styling()
 
-        return definer_list, current_definer
+        return definer_list, current_definer, custom_styling
 
     def get_viewport_info(self):
         """
@@ -306,7 +307,7 @@ class Beamline(ComponentBase):
             )
 
         aperture_list, current_aperture = self.get_aperture()
-        definer_list, current_definer = self.get_definer()
+        definer_list, current_definer, current_styling = self.get_definer()
 
 
         beam_info_dict.update(
@@ -315,6 +316,7 @@ class Beamline(ComponentBase):
                 "currentAperture": current_aperture,
                 "definerList": definer_list,
                 "currentDefiner": current_definer,
+                "customStyling": current_styling,
             }
         )
 

@@ -166,6 +166,7 @@ class SampleViewContainer extends Component {
                 <BeamDefinerInput
                   beamDefinerInputList={this.props.sampleViewState.definerList}
                   currentDefiner={this.props.sampleViewState.currentDefiner}
+                  customStyling={this.props.sampleViewState.customStyling}
                   aperture={this.props.sampleViewState.currentAperture}
                   apertureList={this.props.sampleViewState.apertureList}
                   changeAperture={this.props.sampleViewActions.changeAperture}

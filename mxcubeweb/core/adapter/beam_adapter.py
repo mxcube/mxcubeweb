@@ -53,6 +53,7 @@ class BeamAdapter(ActuatorAdapterBase):
         aperture_list, current_aperture = self._get_aperture()
         definer_list = beam_ho.get_available_definer()["values"]
         current_definer = beam_ho._beam_definer.get_value().value
+        custom_styling = beam_ho._beam_definer.get_custom_styling()
 
         beam_info_dict.update(
             {
@@ -60,6 +61,7 @@ class BeamAdapter(ActuatorAdapterBase):
                 "definerList": definer_list,
                 "currentAperture": current_aperture,
                 "currentDefiner": current_definer,
+                "customStyling": custom_styling,
             }
         )
 

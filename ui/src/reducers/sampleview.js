@@ -203,6 +203,7 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
         videoURL: action.data.Camera.videoURL,
         apertureList: action.data.beamInfo.apertureList,
         definerList: action.data.beamInfo.definerList,
+        customStyling: action.data.beamInfo.customStyling,
         currentAperture: action.data.beamInfo.currentAperture,
         currentDefiner: action.data.beamInfo.currentDefiner,
         beamPosition: action.data.beamInfo.position,
