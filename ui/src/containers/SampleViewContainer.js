@@ -137,7 +137,7 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={1}>
             <DefaultErrorBoundary>
-              {phase.show ? (
+              {phase.show && (
                 <div>
                   <p className="motor-name">Phase Control:</p>
                   <PhaseInput
@@ -149,9 +149,9 @@ class SampleViewContainer extends Component {
                     state={diffractometerHo.state}
                   />
                 </div>
-              ) : null}
+              )}
 
-              {aperture.show ? (
+              {aperture.show && (
                 <div>
                   <p className="motor-name">Beam size:</p>
                   <ApertureInput
@@ -160,9 +160,9 @@ class SampleViewContainer extends Component {
                     changeAperture={this.props.sampleViewActions.changeAperture}
                   />
                 </div>
-              ) : null}
+              )}
 
-              {beamFocus.show ? (
+              {beamFocus.show && (
                 <BeamDefinerInput
                   beamDefinerInputList={this.props.sampleViewState.definerList}
                   currentDefiner={this.props.sampleViewState.currentDefiner}
@@ -174,9 +174,9 @@ class SampleViewContainer extends Component {
                     this.props.sampleViewActions.changeBeamDefiner
                   }
                 />
-              ) : null}
+              )}
 
-              {this.props.mode === 'SSX-CHIP' ? (
+              {this.props.mode === 'SSX-CHIP' && (
                 <SSXChipControl
                   showForm={this.props.showForm}
                   sampleID={sampleID}
@@ -191,7 +191,7 @@ class SampleViewContainer extends Component {
                   setAttribute={this.props.setAttribute}
                   sendExecuteCommand={this.props.sendExecuteCommand}
                 />
-              ) : null}
+              )}
               {this.props.sampleChangerContents.name === 'PlateManipulator' ? (
                 <div className="mb-4">
                   <OverlayTrigger
