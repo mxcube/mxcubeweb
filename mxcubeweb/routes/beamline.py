@@ -270,26 +270,4 @@ def init_route(app, server, url_prefix):
         beam_info.set_beam_definer(value)
         return Response(status=200)
 
-    @bp.route("/beamfocus", methods=["GET"])
-    # @server.restrict
-    def get_beam_focus():
-        """
-        Returns  beam focus motors (position and state)
-        """
-
-        beam_info = HWR.beamline.beam
-        beam_info_values = app.beamline.get_beam_info()
-        motors_moving_state = beam_info.get_motors_states()
-
-        data = {
-            "mot01": {"value": beam_info_values["size_x"], "state": motors_moving_state["mot01"]},
-            "mot02": {"value": beam_info_values["size_y"], "state": motors_moving_state["mot02"]},
-        }
-        print(data)
-        resp = jsonify(data)
-        resp.status_code = 200
-
-        return resp
-
-
     return bp
