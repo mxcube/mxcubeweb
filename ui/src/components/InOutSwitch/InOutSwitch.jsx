@@ -136,7 +136,7 @@ export default function InOutSwitch(props) {
         trigger="click"
         placement={overlayPlacement || 'bottom'}
         overlay={
-          <Popover style={{ padding: '0.5em' }} id={`${labelText} popover`}>
+          <Popover style={{ padding: '0.5em' }} id={`${labelText}_popover`}>
             {btn}
           </Popover>
         }
