@@ -1,0 +1,8 @@
+.closeBtn {
+  cursor: pointer;
+}
+
+:global(.react-draggable) {
+  position: absolute;
+  z-index: 9999;
+}
