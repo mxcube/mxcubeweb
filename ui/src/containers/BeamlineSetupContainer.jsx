@@ -125,30 +125,6 @@ function BeamlineSetupContainer(props) {
     return acts;
   }
 
-  function renderCameraComponent() {
-    const acts = [];
-
-    if ('camera_setup' in uiproperties) {
-      for (const [
-        key,
-        camera,
-      ] of uiproperties.camera_setup.components.entries()) {
-        acts.push(
-          <Nav.Item key={key} className="ms-3">
-            <BeamlineCamera
-              labelText={camera.label}
-              format={camera.attribute}
-              url={camera.url}
-              width={camera.width}
-              height={camera.height}
-            />
-          </Nav.Item>,
-        );
-      }
-    }
-    return acts;
-  }
-
   function renderTableRow(uiprop_list) {
     const components = [];
 
@@ -214,11 +190,10 @@ function BeamlineSetupContainer(props) {
     <Navbar className="beamline-status" id="bmstatus" expand="lg">
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="d-flex  me-auto my-2 my-lg-0">
-          <Nav.Item className=" d-flex justify-content-start">
-            <span className="blstatus-item" style={{ marginRight: '1em' }}>
-              <BeamlineActions actionsList={beamline.beamlineActionsList} />
-            </span>
+        <Nav className="d-flex  me-auto">
+          <Nav.Item className="justify-content-start">
+            <BeamlineCamera cameraSetup={uiproperties.camera_setup} />
+            <BeamlineActions actionsList={beamline.beamlineActionsList} />
           </Nav.Item>
         </Nav>
         <Nav className="me-auto my-2 my-lg-0">
@@ -255,7 +230,7 @@ function BeamlineSetupContainer(props) {
             </Table>
           </Nav.Item>
         </Nav>
-        <Nav className="me-3">{renderCameraComponent()}</Nav>
+        {/* <Nav className="me-3">{renderCameraComponent()}</Nav> */}
         <Nav className="">
           <Nav.Item>
             <InOutSwitch
