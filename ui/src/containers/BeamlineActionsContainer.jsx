@@ -72,6 +72,8 @@ class BeamlineActionsContainer extends React.Component {
           <Dropdown.Toggle
             variant="outline-secondary"
             id="beamline-actions-dropdown"
+            size="sm"
+            style={{ width: '150px' }}
           >
             Beamline Actions
           </Dropdown.Toggle>
