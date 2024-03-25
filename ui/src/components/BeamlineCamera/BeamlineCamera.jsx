@@ -121,7 +121,19 @@ export default function BeamlineCamera(props) {
         >
           Beamline Cameras
         </Dropdown.Toggle>
-        <Dropdown.Menu>{renderCamera()}</Dropdown.Menu>
+        <Dropdown.Menu>{
+          cameraSetup.components.entries().map(([key, camera]) => (
+            <>
+              <Dropdown.Item
+                key={key}
+                onClick={() => handleShowVideoModal(key, true)}
+              >
+                {camera.label} <i className="fas fa-video" />
+              </Dropdown.Item>
+              <Dropdown.Divider />
+            </>
+          );
+        }</Dropdown.Menu>
       </Dropdown>
       {renderVideo()}
     </>
