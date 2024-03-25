@@ -1,8 +1,16 @@
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable promise/no-nesting */
 /* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable sonarjs/no-duplicate-string */
-import fetch from 'isomorphic-fetch';
+import {
+  sendRefresh,
+  sendHarvestCrystal,
+  sendHarvestAndLoadCrystal,
+  sendCalibratePin,
+  sendValidateCalibration,
+  sendAbort,
+  sendCommand as sendCmd,
+} from '../api/harvester';
+
 import { showErrorPanel } from './general';
 
 export function setContents(contents) {
@@ -26,18 +34,10 @@ export function setHarvesterCommandResponse(response) {
 
 export function refresh() {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/harvester/contents', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
+    sendRefresh().then((response) => {
       if (response.status >= 400) {
         throw new Error('Error refreshing Harvester contents');
       }
-
       response.json().then((contents) => {
         dispatch(setContents(contents));
       });
@@ -47,15 +47,7 @@ export function refresh() {
 
 export function harvestCrystal(xtalUUID, successCb = null) {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/harvester/harvest', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(xtalUUID),
-    }).then((response) => {
+    sendHarvestCrystal(xtalUUID).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error('Server refused to Harveste Crystal');
@@ -71,15 +63,7 @@ export function harvestCrystal(xtalUUID, successCb = null) {
 
 export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/harvester/harvest_and_mount', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(xtalUUID),
-    }).then((response) => {
+    sendHarvestAndLoadCrystal(xtalUUID).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error('Server refused to Harveste or Load Crystal');
@@ -95,14 +79,7 @@ export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
 
 export function calibratePin(successCb = null) {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/harvester/calibrate', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
+    sendCalibratePin().then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error('Calibration Procedure Failed');
@@ -118,15 +95,7 @@ export function calibratePin(successCb = null) {
 
 export function validateCalibration(validated, successCb = null) {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/harvester/validate_calibration', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify(validated),
-    }).then((response) => {
+    sendValidateCalibration(validated).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error('Calibration Procedure Failed');
@@ -142,14 +111,7 @@ export function validateCalibration(validated, successCb = null) {
 
 export function abort() {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/harvester/send_command/abort', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
+    sendAbort().then((response) => {
       if (response.status < 400) {
         dispatch(showErrorPanel(true, 'action aborted'));
       }
@@ -159,14 +121,7 @@ export function abort() {
 
 export function sendCommand(cmdparts, args) {
   return (dispatch) => {
-    fetch(`mxcube/api/v0.1/harvester/send_command/${cmdparts}/${args}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
+    sendCmd(cmdparts, args).then((response) => {
       if (response.status >= 400) {
         dispatch(showErrorPanel(true, response.headers.get('message')));
         throw new Error(`Error while  sending command @ ${cmdparts}`);
