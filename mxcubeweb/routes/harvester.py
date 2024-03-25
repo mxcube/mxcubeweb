@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, Response, jsonify, request
 
 from mxcubecore import HardwareRepository as HWR
@@ -33,10 +34,9 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def harvest_crystal():
-        resp = Response(status=200)
-
         try:
-            resp = jsonify(app.harvester.harvest_crystal(request.get_json()))
+            data = json.loads(request.data)
+            app.harvester.harvest_crystal(data)
         except Exception as ex:
             resp = (
                 "Cannot Harvest Crystal",
@@ -51,10 +51,9 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def harvest_and_mount_sample():
-        resp = Response(status=200)
-
         try:
-            resp = jsonify(app.harvester.harvest_and_mount_sample(request.get_json()))
+            data = json.loads(request.data)
+            app.harvester.harvest_and_mount_sample(data)
         except Exception as ex:
             resp = (
                 "Cannot Harvest or Mount Sample",
@@ -76,7 +75,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/validate_calibration", methods=["POST"])
     @server.restrict
     def validate_calibration():
-        validated = request.get_json()
+        validated = json.loads(request.data)
         if validated:
             app.harvester.validate_calibration()
         else:
