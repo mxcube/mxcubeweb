@@ -8,6 +8,8 @@ import { FcRefresh, FcUpload, FcCollect } from 'react-icons/fc';
 
 import ImageViewer from '../ImageViewer/ImageViewer.jsx';
 
+import styles from './equipment.module.css';
+
 const sampleStateBackground = (key) => {
   switch (key) {
     case 'ready_to_execute': {
@@ -96,13 +98,13 @@ export default function Harvester(props) {
           >
             <FcRefresh /> Refresh
           </Button>
-          <div className="ha-grid-container">
+          <div className={styles.ha_grid_container}>
             {crystalUUID
               ? crystalUUID.map((item) => (
                   <React.Fragment key={item.crystal_uuid}>
                     <div
                       key={item.crystal_uuid}
-                      className="ha-grid-item"
+                      className={styles.ha_grid_item}
                       onContextMenu={(e) =>
                         showContextMenu(e, item.crystal_uuid)
                       }
@@ -121,13 +123,13 @@ export default function Harvester(props) {
                         imgTargetY={item.img_target_y}
                         drawTarget={false}
                       />
-                      <div className="crystal-uuid-caption">
+                      <div className={styles.crystal_uuid_caption}>
                         <div className="mt-1">
                           <Badge bg={sampleStateBackground(item.state)}>
                             {item.state ? item.state.replaceAll('_', ' ') : ''}
                           </Badge>
                         </div>
-                        <div className="crystal-uuid-caption">
+                        <div className={styles.crystal_uuid_caption}>
                           <span className="me-1">{item.crystal_uuid}</span>
                           <CopyToClipboard
                             className="copy-link copy-link-ha"
