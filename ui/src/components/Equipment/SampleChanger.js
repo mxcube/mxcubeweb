@@ -1,313 +1,270 @@
-/* eslint-disable react/jsx-handler-names */
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Dropdown, Form, Button, DropdownButton } from 'react-bootstrap';
 
 import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 
-import './Equipment.css';
+import styles from './equipment.module.css';
 
-export class SampleChangerTree extends React.Component {
-  render() {
-    let titleBackground;
+// function SampleChangerTree(props) {
+//   let titleBackground;
 
-    switch (this.props.state) {
-      case 'READY': {
-        titleBackground = 'success';
+//   switch (props.state) {
+//     case 'READY': {
+//       titleBackground = 'success';
 
-        break;
-      }
-      case 'MOVING': {
-        titleBackground = 'warning';
+//       break;
+//     }
+//     case 'MOVING': {
+//       titleBackground = 'warning';
 
-        break;
-      }
-      case 'DISABLED': {
-        titleBackground = 'default';
+//       break;
+//     }
+//     case 'DISABLED': {
+//       titleBackground = 'default';
 
-        break;
-      }
-      default: {
-        titleBackground = 'danger';
-      }
+//       break;
+//     }
+//     default: {
+//       titleBackground = 'danger';
+//     }
+//   }
+
+//   return (
+//     <Card className="mb-3" style={{ marginTop: '0.5em' }} bg={titleBackground}>
+//       <Card.Header>{props.title}</Card.Header>
+//       {props.children}
+//     </Card>
+//   );
+// }
+
+function getUniqueId() {
+  if (renderSampleChangerTreeNode._uid_count === undefined) {
+    renderSampleChangerTreeNode._uid_count = 0;
+  }
+  return `SCTreeNodeID${renderSampleChangerTreeNode._uid_count++}`;
+}
+
+function treeNodeCbxClick(e) {
+  const treeNodeIcon = document.querySelector(`#${e.target.id}icon`);
+  if (treeNodeIcon) {
+    if (e.target.checked) {
+      treeNodeIcon.className = 'fa fa-minus';
+    } else {
+      treeNodeIcon.className = 'fa fa-plus';
     }
-
-    return (
-      <Card
-        className="mb-3"
-        style={{ marginTop: '0.5em' }}
-        bg={titleBackground}
-      >
-        <Card.Header>{this.props.title}</Card.Header>
-        {this.props.children}
-      </Card>
-    );
   }
 }
 
-export class SampleChangerTreeNode extends React.Component {
-  constructor(props) {
-    super(props);
+function showContextMenu(event, id) {
+  contextMenu.show({
+    id,
+    event,
+  });
+}
 
-    this.selectClicked = this.selectClicked.bind(this);
-    this.scanClicked = this.selectClicked.bind(this);
-    this.refreshClicked = this.refreshClicked.bind(this);
+function renderSampleChangerTreeNode(props) {
+  function selectClicked() {
+    props.select(props.label);
   }
 
-  getUniqueId() {
-    if (SampleChangerTreeNode._uid_count === undefined) {
-      SampleChangerTreeNode._uid_count = 0;
-    }
-    return `SCTreeNodeID${SampleChangerTreeNode._uid_count++}`;
+  function scanClicked() {
+    props.scan(props.label);
   }
 
-  selectClicked() {
-    this.props.select(this.props.label);
-  }
+  const inputId = getUniqueId();
 
-  scanClicked() {
-    this.props.scan(this.props.label);
-  }
+  return (
+    <div>
+      <li className={styles.treeLi}>
+        <input // eslint-disable-line jsx-a11y/control-has-associated-label
+          type="checkbox"
+          className={styles.treeNode}
+          id={inputId}
+          onClick={treeNodeCbxClick}
+        />
+        <Form.Label
+          onContextMenu={(e) => showContextMenu(e, `${props.label}`)}
+          htmlFor={inputId}
+          className={styles.treeNodeLabel}
+        >
+          <i id={`${inputId}icon`} className="fa fa-plus" />
+          &nbsp;
+          {props.label}
+        </Form.Label>
+        <ul className={styles.treeUl}>{props.children}</ul>
+      </li>
 
-  refreshClicked() {
-    this.props.refresh();
-  }
+      <Menu id={`${props.label}`}>
+        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
+        <li role="heading" aria-level="2" className="dropdown-header">
+          <b>Container {props.label}</b>
+        </li>
+        <Separator />
+        <Item onClick={scanClicked}>Scan</Item>
+        <Item onClick={selectClicked}>Move to this container</Item>
+      </Menu>
+    </div>
+  );
+}
 
-  treeNodeCbxClick(e) {
-    const treeNodeIcon = document.querySelector(`#${e.target.id}icon`);
-    if (treeNodeIcon) {
-      if (e.target.checked) {
-        treeNodeIcon.className = 'fa fa-minus';
-      } else {
-        treeNodeIcon.className = 'fa fa-plus';
-      }
-    }
-  }
+function SampleChangerTreeItem(props) {
+  const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
-  showContextMenu(event, id) {
-    contextMenu.show({
-      id,
-      event,
+  // function itemClicked() {
+  //   setState({ allow_control: !state.allow_control });
+  // }
+
+  function loadSample() {
+    toggleDropdown();
+    props.load({
+      sampleID: props.label,
+      location: props.label,
     });
   }
 
-  render() {
-    const inputId = this.getUniqueId();
+  function unloadSample() {
+    toggleDropdown();
+    props.unload(props.label);
+  }
 
-    return (
-      <div>
-        <li className="treeLi">
-          <input // eslint-disable-line jsx-a11y/control-has-associated-label
-            type="checkbox"
-            className="treeNode"
-            id={inputId}
-            onClick={this.treeNodeCbxClick}
-          />
-          <Form.Label
-            onContextMenu={(e) =>
-              this.showContextMenu(e, `${this.props.label}`)
-            }
-            htmlFor={inputId}
-            className="treeNodeLabel"
+  function toggleDropdown() {
+    setDropdownIsOpen(!dropdownIsOpen);
+  }
+
+  const ls =
+    props.status === 'Loaded' ? { display: 'inline' } : { display: 'none' };
+
+  return (
+    <div>
+      <li className={styles.treeLi}>
+        <div className={styles.sampleLabel}>
+          <DropdownButton
+            style={{ fontStyle: 'italic', padding: '0.2em 0.2em' }}
+            title={`${props.label} ${props.dm}`}
+            variant="link"
+            onToggle={toggleDropdown}
+            open={dropdownIsOpen}
           >
-            <i id={`${inputId}icon`} className="fa fa-plus" />
-            &nbsp;
-            {this.props.label}
-          </Form.Label>
-          <ul className="treeUl">{this.props.children}</ul>
-        </li>
-
-        <Menu id={`${this.props.label}`}>
-          {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
-          <li role="heading" aria-level="2" className="dropdown-header">
-            <b>Container {this.props.label}</b>
-          </li>
-          <Separator />
-          <Item onClick={this.scanClicked}>Scan</Item>
-          <Item onClick={this.selectClicked}>Move to this container</Item>
-        </Menu>
-      </div>
-    );
-  }
-}
-
-export class SampleChangerTreeItem extends React.Component {
-  constructor(props) {
-    super(props);
-    this.itemClicked = this.itemClicked.bind(this);
-    this.state = { allow_control: false, dropdownIsOpen: false };
-    this.loadSample = this.loadSample.bind(this);
-    this.unloadSample = this.unloadSample.bind(this);
-    this.toggleDropdown = this.toggleDropdown.bind(this);
-  }
-
-  itemClicked() {
-    this.setState({ allow_control: !this.state.allow_control });
-    /* eslint-enable react/no-set-state */
-  }
-
-  loadSample() {
-    this.toggleDropdown();
-    this.props.load({
-      sampleID: this.props.label,
-      location: this.props.label,
-    });
-  }
-
-  unloadSample() {
-    this.toggleDropdown();
-    this.props.unload(this.props.label);
-  }
-
-  toggleDropdown() {
-    this.setState({ dropdownIsOpen: !this.state.dropdownIsOpen });
-  }
-
-  render() {
-    const ls =
-      this.props.status === 'Loaded'
-        ? { display: 'inline' }
-        : { display: 'none' };
-
-    return (
-      <div>
-        <li className="treeLi">
-          <div className="sampleLabel">
-            <DropdownButton
-              style={{ fontStyle: 'italic', padding: '0.2em 0.2em' }}
-              title={`${this.props.label} ${this.props.dm}`}
-              variant="link"
-              onToggle={this.toggleDropdown}
-              open={this.state.dropdownIsOpen}
-            >
-              <Dropdown.Header aria-level="2" className="dropdown-header">
-                <b>Position : {this.props.label}</b>
-              </Dropdown.Header>
-              <Dropdown.Divider />
-              <Dropdown.Item onClick={this.loadSample}>Mount</Dropdown.Item>
-              <Dropdown.Item onClick={this.unloadSample}>
-                Umount to this position
+            <Dropdown.Header aria-level="2" className="dropdown-header">
+              <b>Position : {props.label}</b>
+            </Dropdown.Header>
+            <Dropdown.Divider />
+            <Dropdown.Item onClick={loadSample}>Mount</Dropdown.Item>
+            {props.loadedSample === props.label ? (
+              <Dropdown.Item onClick={unloadSample}>
+                Umount this position
               </Dropdown.Item>
-            </DropdownButton>
-            <span style={ls}>
-              &nbsp;
-              <i className="fas fa-arrow-left" /> <b>(Mounted)</b>
-            </span>
-          </div>
-        </li>
-      </div>
-    );
-  }
+            ) : null}
+          </DropdownButton>
+          <span style={ls}>
+            &nbsp;
+            <i className="fas fa-arrow-left" /> <b>(Mounted)</b>
+          </span>
+        </div>
+      </li>
+    </div>
+  );
 }
 
-export default class SampleChanger extends React.Component {
-  constructor(props) {
-    super(props);
-    this.buildTree = this.buildTree.bind(this);
-    this.scan = this.scan.bind(this);
-    this.unload = this.unload.bind(this);
-    this.abort = this.abort.bind(this);
+export default function SampleChanger(props) {
+  function scan() {
+    props.scan('');
   }
 
-  scan() {
-    this.props.scan('');
+  function unload() {
+    props.unload('');
   }
 
-  unload() {
-    this.props.unload('');
+  function abort() {
+    props.abort();
+  }
+  function handleRefresh() {
+    props.refresh();
   }
 
-  abort() {
-    this.props.abort();
-  }
-
-  buildTree(node, root) {
+  function renderTree(node, root) {
     if (node.children) {
       const childNodes = [];
       for (const c of node.children) {
-        childNodes.push(this.buildTree(c));
+        childNodes.push(renderTree(c));
       }
-
-      return (
-        <SampleChangerTreeNode
-          label={node.name}
-          selected={node.selected}
-          root
-          dm={node.id}
-          select={this.props.select}
-          status={node.status}
-          scan={this.props.scan}
-          refresh={this.props.refresh}
-          key={node.name}
-        >
-          {childNodes}
-        </SampleChangerTreeNode>
-      );
+      const treeNodeProps = {
+        label: node.name,
+        selected: node.selected,
+        root,
+        dm: node.id,
+        select: props.select,
+        status: node.status,
+        scan: props.scan,
+        refresh: props.refresh,
+        key: node.name,
+        children: childNodes,
+      };
+      return renderSampleChangerTreeNode(treeNodeProps);
     }
 
     return (
       <SampleChangerTreeItem
         label={node.name}
         dm={node.id}
-        load={this.props.load}
+        load={props.load}
         status={node.status}
-        unload={this.props.unload}
+        unload={props.unload}
         key={node.name}
+        loadedSample={props.loadedSample?.address}
       />
     );
   }
 
   // display some buttons depending on available features
-  render() {
-    const nodes = this.buildTree(this.props.contents, true);
-    let current = '';
-    let abortButton = '';
+  const nodes = renderTree(props.contents, true);
+  let current = '';
+  let abortButton = '';
 
-    if (this.props.loadedSample.address) {
-      current = (
-        <div style={{ marginTop: '1em' }}>
-          Currently loaded: {this.props.loadedSample.address}
-          <span style={{ marginRight: '1em' }} />({' '}
-          {this.props.loadedSample.barcode} )
-          <span style={{ marginRight: '1em' }} />
-          <Button variant="outline-secondary" onClick={this.unload}>
-            <i className="fas fa-download" /> Unload
-          </Button>
-        </div>
-      );
-    } else {
-      current = <div style={{ marginTop: '1em', marginBottom: '1em' }} />;
-    }
-
-    if (this.props.state === 'MOVING') {
-      abortButton = (
-        <Button variant="danger" className="abortButton" onClick={this.abort}>
-          <i className="fas fa-stop" /> Abort
+  if (props.loadedSample.address) {
+    current = (
+      <div style={{ marginTop: '1em' }}>
+        Currently loaded: {props.loadedSample.address}
+        <span style={{ marginRight: '1em' }} />( {props.loadedSample.barcode} )
+        <span style={{ marginRight: '1em' }} />
+        <Button variant="outline-secondary" onClick={unload}>
+          <i className="fas fa-download" /> Unload
         </Button>
-      );
-    } else {
-      abortButton = '';
-    }
-
-    return (
-      <Card className="mb-3">
-        <Card.Header>Content</Card.Header>
-        <Card.Body>
-          <Button variant="outline-secondary" onClick={this.props.refresh}>
-            <i className="fas fa-sync" /> Refresh
-          </Button>
-          <Button
-            style={{ marginLeft: '1em' }}
-            variant="outline-secondary"
-            onClick={this.scan}
-          >
-            <i className="fas fa-qrcode" /> Scan all containers
-          </Button>
-          <span style={{ marginLeft: '1em' }}>{abortButton}</span>
-          {current}
-          <div style={{ marginBottom: '1em' }} />
-          <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>{nodes}</div>
-        </Card.Body>
-      </Card>
+      </div>
     );
+  } else {
+    current = <div style={{ marginTop: '1em', marginBottom: '1em' }} />;
   }
+
+  if (props.state === 'MOVING') {
+    abortButton = (
+      <Button variant="danger" className={styles.abortButton} onClick={abort}>
+        <i className="fas fa-stop" /> Abort
+      </Button>
+    );
+  } else {
+    abortButton = '';
+  }
+
+  return (
+    <Card className="mb-3">
+      <Card.Header>Content</Card.Header>
+      <Card.Body>
+        <Button variant="outline-secondary" onClick={() => handleRefresh()}>
+          <i className="fas fa-sync" /> Refresh
+        </Button>
+        <Button
+          style={{ marginLeft: '1em' }}
+          variant="outline-secondary"
+          onClick={scan}
+        >
+          <i className="fas fa-qrcode" /> Scan all containers
+        </Button>
+        <span style={{ marginLeft: '1em' }}>{abortButton}</span>
+        {current}
+        <div style={{ marginBottom: '1em' }} />
+        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>{nodes}</div>
+      </Card.Body>
+    </Card>
+  );
 }

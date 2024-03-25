@@ -64,9 +64,9 @@ class EquipmentContainer extends React.Component {
                       loadedSample={this.props.loadedSample}
                       select={this.props.select}
                       load={this.props.loadSample}
-                      send_command={this.props.sendCommand}
+                      sendCommand={this.props.sendCommand}
                       refresh={this.props.refresh}
-                      inplace
+                      inContainer
                       plates={this.props.plateGrid}
                       plateIndex={this.props.plateIndex}
                       selectedRow={this.props.selectedRow}
@@ -88,7 +88,7 @@ class EquipmentContainer extends React.Component {
                       global_state={this.props.global_state}
                       commands_state={this.props.commands_state}
                       message={this.props.message}
-                      send_command={this.props.sendCommand}
+                      sendCommand={this.props.sendCommand}
                       contents={this.props.contents}
                     />
                   </Col>
@@ -114,13 +114,13 @@ class EquipmentContainer extends React.Component {
                       global_state={this.props.global_state}
                       commands_state={this.props.commands_state}
                       message={this.props.message}
-                      send_command={this.props.sendCommand}
+                      sendCommand={this.props.sendCommand}
                     />
                   </Col>
                 </Row>
               )}
             </GenericEquipment>
-            {this.props.contents.use_harvester ? (
+            {!this.props.contents.use_harvester ? (
               <GenericEquipment
                 state={this.props.haState}
                 name={this.props.haContents && this.props.haContents.name}
@@ -144,7 +144,7 @@ class EquipmentContainer extends React.Component {
                       global_state={this.props.haGlobal_state}
                       commands_state={this.props.commands_state}
                       message={this.props.haMessage}
-                      send_command={this.props.haSendCommand}
+                      sendCommand={this.props.haSendCommand}
                       calibratePin={this.props.haCalibratePin}
                       validateCalibration={this.props.haValidateCalibration}
                     />
