@@ -230,7 +230,6 @@ function BeamlineSetupContainer(props) {
             </Table>
           </Nav.Item>
         </Nav>
-        {/* <Nav className="me-3">{renderCameraComponent()}</Nav> */}
         <Nav className="">
           <Nav.Item>
             <InOutSwitch

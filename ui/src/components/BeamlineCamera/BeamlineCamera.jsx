@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Button, Dropdown, Card } from 'react-bootstrap';
+import { Button, Dropdown, Card, Stack } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
 import { MdClose } from 'react-icons/md';
 
-import styles from './styles.module.css';
+import styles from './beamlineCamera.module.css';
 import pip from './picture_in_picture.svg';
 
 function handleImageClick(url, width, height) {
@@ -25,46 +25,79 @@ export default function BeamlineCamera(props) {
     setShowVideoModal({ ...showVideoModal, [key]: value });
   }
 
-  const renderVideo = (key, labelText, format, url, width, height) => (
-    <Draggable key={key}>
-      <Card>
-        <Card.Header>
-          <Card.Title>
-            {labelText}
-            <Button
-              variant="outline-secondary"
-              onClick={() => handleImageClick(url, width, height)}
-              size="sm"
-              style={{ position: 'absolute', left: '88%', top: '7px' }}
-            >
-              <img src={pip} alt="PIP Icon" />
-            </Button>
-            <MdClose
-              color="red"
-              onClick={() => handleShowVideoModal(key, false)}
-              size="1.5em"
-              style={{ position: 'absolute', left: '95%', top: '10px' }}
-              className={styles.closeBtn}
-            />
-          </Card.Title>
-        </Card.Header>
-        <Card.Body>
-          {format !== 'mp4' ? (
-            <img src={url} alt={labelText} width={width} height={height} />
-          ) : (
-            <video src={url} alt={labelText} width={width} height={height} />
-          )}
-        </Card.Body>
-      </Card>
-    </Draggable>
-  );
-
-  function renderCameraComponent() {
-    const acts = [];
-    const elements = [];
+  function renderVideo() {
+    const DraggableElements = [];
     if (cameraSetup) {
       for (const [key, camera] of cameraSetup.components.entries()) {
-        acts.push(
+        DraggableElements.push(
+          showVideoModal[key] ? (
+            <div className="draggableHandle">
+              <Draggable
+                key={key}
+                defaultPosition={{ x: 200, y: 100 + 50 * key }}
+              >
+                <Card className={styles.draggableHandle}>
+                  <Card.Header>
+                    <Stack direction="horizontal" gap={3}>
+                      <div className={styles.headerTitle}>{camera.label}</div>
+                      <div className="p-2 ms-auto">
+                        <Button
+                          variant="outline-secondary"
+                          onClick={() =>
+                            handleImageClick(
+                              camera.url,
+                              camera.width,
+                              camera.height,
+                            )
+                          }
+                          size="sm"
+                        >
+                          <img src={pip} alt="PIP Icon" />
+                        </Button>
+                      </div>
+                      <div className="vr" />
+                      <div>
+                        <MdClose
+                          color="red"
+                          onClick={() => handleShowVideoModal(key, false)}
+                          size="1.5em"
+                          className={styles.closeBtn}
+                        />
+                      </div>
+                    </Stack>
+                  </Card.Header>
+                  <Card.Body>
+                    {camera.format !== 'mp4' ? (
+                      <img
+                        src={camera.url}
+                        alt={camera.label}
+                        width={camera.width}
+                        height={camera.height}
+                      />
+                    ) : (
+                      <video
+                        src={camera.url}
+                        alt={camera.label}
+                        width={camera.width}
+                        height={camera.height}
+                      />
+                    )}
+                  </Card.Body>
+                </Card>
+              </Draggable>
+            </div>
+          ) : null,
+        );
+      }
+    }
+    return DraggableElements;
+  }
+
+  function renderCamera() {
+    const dropdownItem = [];
+    if (cameraSetup) {
+      for (const [key, camera] of cameraSetup.components.entries()) {
+        dropdownItem.push(
           <Dropdown.Item
             key={key}
             onClick={() => handleShowVideoModal(key, true)}
@@ -73,21 +106,9 @@ export default function BeamlineCamera(props) {
           </Dropdown.Item>,
           <Dropdown.Divider />,
         );
-        elements.push(
-          showVideoModal[key]
-            ? renderVideo(
-                key,
-                camera.label,
-                camera.attribute,
-                camera.url,
-                camera.width,
-                camera.height,
-              )
-            : null,
-        );
       }
     }
-    return [acts, elements];
+    return dropdownItem;
   }
 
   return [
@@ -106,8 +127,8 @@ export default function BeamlineCamera(props) {
       >
         Beamline Cameras
       </Dropdown.Toggle>
-      <Dropdown.Menu>{renderCameraComponent()[0]}</Dropdown.Menu>
+      <Dropdown.Menu>{renderCamera()}</Dropdown.Menu>
     </Dropdown>,
-    renderCameraComponent()[1],
+    renderVideo(),
   ];
 }

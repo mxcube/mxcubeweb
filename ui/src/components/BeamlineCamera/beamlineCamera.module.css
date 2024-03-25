@@ -1,0 +1,12 @@
+.closeBtn {
+  cursor: pointer;
+}
+
+.draggableHandle:global(.react-draggable) {
+  position: absolute;
+  z-index: 9999;
+}
+
+.headerTitle {
+  font-weight: bold;
+}
