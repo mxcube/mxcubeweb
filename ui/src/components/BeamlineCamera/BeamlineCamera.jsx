@@ -21,17 +21,20 @@ export default function BeamlineCamera(props) {
 
   const [showVideoModal, setShowVideoModal] = useState({});
 
-  function handleShowVideoModal(key, value) {
+  function handleShowVideoCard(key, value) {
     setShowVideoModal({ ...showVideoModal, [key]: value });
   }
 
   function renderVideo() {
     const DraggableElements = [];
-    for (const [key, camera] of cameraSetup.components.entries()) {
+    cameraSetup.components.forEach((camera, vIndex) => {
       DraggableElements.push(
-        showVideoModal[key] ? (
-          <div key={`draggable-video_${key}`} className="draggableHandle">
-            <Draggable defaultPosition={{ x: 200, y: 100 + 50 * key }}>
+        showVideoModal[vIndex] ? (
+          <div
+            key={`draggable-video_${camera.label}`}
+            className="draggableHandle"
+          >
+            <Draggable defaultPosition={{ x: 200, y: 100 + 50 * vIndex }}>
               <Card className={styles.draggableHandle}>
                 <Card.Header>
                   <Stack direction="horizontal" gap={3}>
@@ -55,7 +58,7 @@ export default function BeamlineCamera(props) {
                     <div>
                       <MdClose
                         color="red"
-                        onClick={() => handleShowVideoModal(key, false)}
+                        onClick={() => handleShowVideoCard(vIndex, false)}
                         size="1.5em"
                         className={styles.closeBtn}
                       />
@@ -84,27 +87,15 @@ export default function BeamlineCamera(props) {
           </div>
         ) : null,
       );
-    }
+    });
     return DraggableElements;
   }
 
-  function renderCamera() {
-    const dropdownItem = [];
-    for (const [key, camera] of cameraSetup.components.entries()) {
-      dropdownItem.push(
-        <Dropdown.Item
-          key={key}
-          onClick={() => handleShowVideoModal(key, true)}
-        >
-          {camera.label} <i className="fas fa-video" />
-        </Dropdown.Item>,
-        <Dropdown.Divider />,
-      );
-    }
-    return dropdownItem;
+  if (cameraSetup?.components.length < 0) {
+    return null;
   }
 
-  return cameraSetup?.components.length > 0 ? (
+  return (
     <>
       <Dropdown
         title="Beamline Cameras"
@@ -121,21 +112,19 @@ export default function BeamlineCamera(props) {
         >
           Beamline Cameras
         </Dropdown.Toggle>
-        <Dropdown.Menu>{
-          cameraSetup.components.entries().map(([key, camera]) => (
-            <>
-              <Dropdown.Item
-                key={key}
-                onClick={() => handleShowVideoModal(key, true)}
-              >
-                {camera.label} <i className="fas fa-video" />
-              </Dropdown.Item>
-              <Dropdown.Divider />
-            </>
-          );
-        }</Dropdown.Menu>
+        <Dropdown.Menu>
+          {cameraSetup.components.map((camera, cIndex) => [
+            <Dropdown.Item
+              key={`ddVideo_${camera.label}`}
+              onClick={() => handleShowVideoCard(cIndex, true)}
+            >
+              {camera.label} <i className="fas fa-video" />
+            </Dropdown.Item>,
+            cameraSetup.components.length > cIndex + 1 && <Dropdown.Divider />,
+          ])}
+        </Dropdown.Menu>
       </Dropdown>
       {renderVideo()}
     </>
-  ) : null;
+  );
 }
