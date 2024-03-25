@@ -61,6 +61,32 @@ class SampleViewContainer extends Component {
     return available?.show || false;
   }
 
+  // PlateManipulator: Check whether a drop contain crystal --?
+  hasCrystals() {
+    let crystalList = [];
+
+    if (this.props.loadedSample.address) {
+      const loadedSample = this.props.loadedSample.address;
+      const loadedRow = loadedSample.charAt(0);
+      let loadedCol = loadedSample.charAt(1);
+      let loadedDrop = Number(loadedSample.charAt(3), 10);
+      if (loadedDrop === ':') {
+        loadedDrop = loadedSample.charAt(4);
+        loadedCol = Number(loadedSample.slice(1, 2), 10);
+      }
+      if (this.props.crystalList.xtal_list) {
+        crystalList = this.props.crystalList.xtal_list.filter(
+          (item) =>
+            item.row === loadedRow &&
+            item.column === Number(loadedCol) &&
+            item.shelf === loadedDrop,
+        );
+      }
+    }
+
+    return crystalList.length > 0;
+  }
+
   render() {
     const { uiproperties, hardwareObjects } = this.props;
 
@@ -186,7 +212,7 @@ class SampleViewContainer extends Component {
                             loadedSample={this.props.loadedSample}
                             select={this.props.select}
                             load={this.props.loadSample}
-                            send_command={this.props.send_command}
+                            sendCommand={this.props.sendCommand}
                             refresh={this.props.refresh}
                             plates={this.props.plateGrid}
                             plateIndex={this.props.plateIndex}
@@ -231,14 +257,14 @@ class SampleViewContainer extends Component {
                     variant="outline-secondary"
                     size="sm"
                     title={
-                      this.props.hasCrystal
+                      this.hasCrystals()
                         ? 'Move to Crystal position'
                         : 'No Crystal Found / Crims not Sync'
                     }
                     onClick={() =>
-                      this.props.send_command('moveToCrystalPosition')
+                      this.props.sendCommand('moveToCrystalPosition')
                     }
-                    disabled={!this.props.hasCrystal}
+                    disabled={!this.hasCrystals()}
                   >
                     <i className="fas fa-gem" /> Move to Crystal
                   </Button>
