@@ -39,6 +39,25 @@ function BeamlineSetupContainer(props) {
     setAttribute(name, value);
   }
 
+  function handleSendCommand(targetState) {
+    switch (targetState) {
+      case 'READY': {
+        sendCommand('PowerOn');
+        break;
+      }
+      case 'DISABLED': {
+        sendCommand('PowerOff');
+        break;
+      }
+      default: {
+        // eslint-disable-next-line no-console
+        console.error(
+          `unexpected sample changer target state '${targetState}'`,
+        );
+      }
+    }
+  }
+
   function renderBeamstopAlignmentOverlay() {
     const { hardwareObjects } = beamline;
     const motorInputList = [];
@@ -261,11 +280,11 @@ function BeamlineSetupContainer(props) {
             <InOutSwitch
               openText="Power On"
               offText="Power Off"
-              openValue="PowerOn"
-              offValue="PowerOff"
+              openValue="READY"
+              offValue="DISABLED"
               labelText="Sample Changer"
               value={sampleChanger.state}
-              onSave={sendCommand}
+              onSave={handleSendCommand}
             />
           </Nav.Item>
         </Nav>
