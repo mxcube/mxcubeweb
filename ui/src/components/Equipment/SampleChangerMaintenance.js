@@ -1,105 +1,64 @@
 import React from 'react';
-import { Button, ButtonGroup, Card } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
 
-import './Equipment.css';
+import { ActionGroup, ActionButton } from './ActionGroup';
 
-export class SampleChangerActionButton extends React.Component {
-  render() {
-    let disabled;
+import styles from './equipment.module.css';
 
-    if (this.props.enabled === true) {
-      disabled = false;
-    } else {
-      disabled = true;
-    }
-
+export default function SampleChangerMaintenance(props) {
+  function renderActionButton(cmdinfo) {
     return (
-      <Button
-        key={this.props.label}
-        variant="outline-secondary"
-        disabled={disabled}
-        onClick={() => this.props.send_command(this.props.cmd, this.props.args)}
-      >
-        {this.props.label}
-      </Button>
-    );
-  }
-}
-
-export class SampleChangerActionGroup extends React.Component {
-  render() {
-    return (
-      <Card className="mb-3">
-        <Card.Header>{this.props.name}</Card.Header>
-        <Card.Body>
-          <ButtonGroup>{this.props.buttons}</ButtonGroup>
-        </Card.Body>
-      </Card>
-    );
-  }
-}
-
-export default class SampleChangerMaintenance extends React.Component {
-  buildActionButton(cmdinfo) {
-    return (
-      <SampleChangerActionButton
+      <ActionButton
         label={cmdinfo[1]}
         cmd={cmdinfo[0]}
         args={cmdinfo[3]}
-        enabled={this.props.commands_state[cmdinfo[0]]}
-        send_command={this.props.send_command}
+        enabled={props.commands_state[cmdinfo[0]]}
+        sendCommand={props.sendCommand}
         key={cmdinfo[1]}
+        variant="outline-secondary"
       />
     );
   }
 
-  buildActionGroup(grpinfo) {
+  function renderActionGroup(grpinfo) {
     const butgrp = [];
 
     for (const cmdinfo of grpinfo[1]) {
-      butgrp.push(this.buildActionButton(cmdinfo));
+      butgrp.push(renderActionButton(cmdinfo));
     }
 
-    return (
-      <SampleChangerActionGroup
-        name={grpinfo[0]}
-        buttons={butgrp}
-        key={grpinfo[0]}
-      />
-    );
+    return <ActionGroup name={grpinfo[0]} buttons={butgrp} key={grpinfo[0]} />;
   }
 
-  render() {
-    const groups = [];
-    let msg = '';
+  const groups = [];
+  let msg = '';
 
-    if (
-      Object.keys(this.props.commands).length > 0 &&
-      this.props.commands.cmds !== 'SC maintenance controller not defined'
-    ) {
-      for (const cmdgrp of this.props.commands.cmds) {
-        groups.push(this.buildActionGroup(cmdgrp));
-      }
-    } else {
-      return <div />;
+  if (
+    Object.keys(props.commands).length > 0 &&
+    props.commands.cmds !== 'SC maintenance controller not defined'
+  ) {
+    for (const cmdgrp of props.commands.cmds) {
+      groups.push(renderActionGroup(cmdgrp));
     }
-
-    if (this.props.message !== '') {
-      msg = this.props.message;
-    }
-
-    return (
-      <div>
-        {groups}
-        {msg ? (
-          <Card className="mb-2">
-            <Card.Header>Status message</Card.Header>
-            <Card.Body>
-              <span className="scMessage">{msg}</span>
-            </Card.Body>
-          </Card>
-        ) : null}
-      </div>
-    );
+  } else {
+    return <div />;
   }
+
+  if (props.message !== '') {
+    msg = props.message;
+  }
+
+  return (
+    <div>
+      {groups}
+      {msg ? (
+        <Card className="mb-2">
+          <Card.Header>Status message</Card.Header>
+          <Card.Body>
+            <span className={styles.scMessage}>{msg}</span>
+          </Card.Body>
+        </Card>
+      ) : null}
+    </div>
+  );
 }

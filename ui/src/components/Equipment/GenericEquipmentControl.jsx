@@ -6,15 +6,16 @@ import { BsChevronUp, BsChevronDown } from 'react-icons/bs';
 import EquipmentState from './EquipmentState';
 import Form from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
-import './GenericEquipmentControl.css';
 
-export default class GenericEquipmentControl extends React.Component {
-  handleRunCommand(cmd, formData) {
-    this.props.executeCommand(this.props.equipment.name, cmd, formData);
+import styles from './genericEquipmentControl.module.css';
+
+export default function GenericEquipmentControl(props) {
+  function handleRunCommand(cmd, formData) {
+    props.executeCommand(props.equipment.name, cmd, formData);
   }
 
-  renderParameters(key) {
-    const a = this.props.equipment.commands;
+  function renderParameters(key) {
+    const a = props.equipment.commands;
     const attr = a[key];
 
     if (attr.signature.length > 0) {
@@ -24,10 +25,8 @@ export default class GenericEquipmentControl extends React.Component {
         <div>
           <Form
             validator={validator}
-            onSubmit={(formData, e) =>
-              this.handleRunCommand(key, formData.formData, e)
-            }
-            disabled={this.props.equipment.state !== 'READY'}
+            onSubmit={(formData, e) => handleRunCommand(key, formData.formData)}
+            disabled={props.equipment.state !== 'READY'}
             schema={schema}
           >
             <Button className="mt-3" variant="outline-secondary" type="submit">
@@ -45,7 +44,7 @@ export default class GenericEquipmentControl extends React.Component {
           className="mt-3"
           variant="outline-secondary"
           type="submit"
-          onClick={(e) => this.handleRunCommand(key, {}, e)}
+          onClick={(e) => handleRunCommand(key, {})}
         >
           <b>Run {key}</b>
         </Button>
@@ -53,25 +52,25 @@ export default class GenericEquipmentControl extends React.Component {
     );
   }
 
-  renderInfo(key) {
+  function renderInfo(key) {
     return (
       <div>
         <h3>Last result</h3>
-        <pre>{this.props.equipment.msg}</pre>
+        <pre>{props.equipment.msg}</pre>
       </div>
     );
   }
 
-  getCollapsibleHeaderOpen(cssClass) {
+  function renderCollapsibleHeaderOpen(cssClass) {
     return <BsChevronUp className={cssClass} size="1em" />;
   }
 
-  getCollapsibleHeaderClose(cssClass) {
+  function renderCollapsibleHeaderClose(cssClass) {
     return <BsChevronDown className={cssClass} size="1em" />;
   }
 
-  getCommands() {
-    const a = this.props.equipment.commands;
+  function renderCommands() {
+    const a = props.equipment.commands;
     return Object.entries(a).map(([key, cmdObj]) => {
       let result = null;
 
@@ -82,9 +81,11 @@ export default class GenericEquipmentControl extends React.Component {
               <b>{key}</b>
             </Popover.Header>
             <Popover.Body>
-              <Row className="generic-equipment-collapsible-child-content">
-                <Col className="col-xs-4">{this.renderParameters(key)}</Col>
-                <Col className="col-xs-8">{this.renderInfo(key)}</Col>
+              <Row
+                className={styles.generic_equipment_collapsible_child_content}
+              >
+                <Col className="col-xs-4">{renderParameters(key)}</Col>
+                <Col className="col-xs-8">{renderInfo(key)}</Col>
               </Row>
             </Popover.Body>
           </Popover>
@@ -114,11 +115,11 @@ export default class GenericEquipmentControl extends React.Component {
     });
   }
 
-  getEquipmentState() {
+  function renderEquipmentState() {
     return (
       <EquipmentState
-        state={this.props.equipment.state}
-        equipmentName={this.props.equipment.name}
+        state={props.equipment.state}
+        equipmentName={props.equipment.name}
         style={{
           margin: '0px 0px 0px 0px',
           width: 'inherit',
@@ -129,32 +130,30 @@ export default class GenericEquipmentControl extends React.Component {
     );
   }
 
-  render() {
-    return (
-      <Row className="mb-3">
-        <Col sm={12} className="generic-equipment-container">
-          <Collapsible
-            trigger={
-              <div>
-                {' '}
-                {this.getEquipmentState()}{' '}
-                {this.getCollapsibleHeaderClose('generic-equipment-arrow-p')}
-              </div>
-            }
-            triggerWhenOpen={
-              <div>
-                {' '}
-                {this.getEquipmentState()}{' '}
-                {this.getCollapsibleHeaderOpen('generic-equipment-arrow-p')}
-              </div>
-            }
-          >
-            <div className="generic-equipment-container-collapsible">
-              {this.getCommands()}
+  return (
+    <Row className="mb-3">
+      <Col sm={12} className={styles.generic_equipment_container}>
+        <Collapsible
+          trigger={
+            <div>
+              {' '}
+              {renderEquipmentState()}{' '}
+              {renderCollapsibleHeaderClose(styles.generic_equipment_arrow_p)}
             </div>
-          </Collapsible>
-        </Col>
-      </Row>
-    );
-  }
+          }
+          triggerWhenOpen={
+            <div>
+              {' '}
+              {renderEquipmentState()}{' '}
+              {renderCollapsibleHeaderOpen(styles.generic_equipment_arrow_p)}
+            </div>
+          }
+        >
+          <div className={styles.generic_equipment_container_collapsible}>
+            {renderCommands()}
+          </div>
+        </Collapsible>
+      </Col>
+    </Row>
+  );
 }
