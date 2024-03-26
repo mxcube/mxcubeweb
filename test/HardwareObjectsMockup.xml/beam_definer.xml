@@ -1,0 +1,8 @@
+<object class="BeamDefinerMockup">
+    <username>beamDefiner</username>
+    <object hwrid="/beam_size_ver" role="beam_size_ver" />
+    <object hwrid="/beam_size_hor" role="beam_size_hor" />
+    <values>{"50x50": "50x50", "100x100": "100x100", "20x5": "20x5"}</values>
+    <styling>{"50x50":{100: "disable", 50: "default", 20: "normal", 10: "warning", 5: "warning"},
+        "100x100": {100: 'default',50: 'normal',20: 'normal',10: 'warning', 5: 'warning'},'20x5': {100: 'disable',50: 'disable',20: 'normal',10: 'default',5: 'normal'}, "UNKNOWN": {100: 'default',50: 'normal',20: 'normal',10: 'normal',5: 'normal'}}</styling>
+</object>

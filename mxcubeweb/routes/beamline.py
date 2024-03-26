@@ -1,4 +1,4 @@
-# import json
+import json
 import sys
 import logging
 
@@ -249,6 +249,25 @@ def init_route(app, server, url_prefix):
             msg = "Cannot prepare the Beamline for a new sample"
             logging.getLogger("HWR").error(msg)
             return Response(status=200)
+        return Response(status=200)
+
+    @bp.route("/beamdefiner", methods=["PUT"])
+    @server.require_control
+    @server.restrict
+    def set_beam_definer():
+        """
+        Sets the beam definer to new option.
+            :request Content-type: application/json, new position {'diameter': 50}.
+                Note: level specified as integer (not 'Diameter 50')
+            :statuscode: 200: no error
+            :statuscode: 409: error
+        """
+        params = request.data
+        params = json.loads(params)
+        value = params["value"]
+
+        beam_info = HWR.beamline.beam
+        beam_info.set_beam_definer(value)
         return Response(status=200)
 
     return bp

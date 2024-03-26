@@ -91,6 +91,27 @@ class Beamline(ComponentBase):
 
         return aperture_list, current_aperture
 
+    def get_definer(self):
+        """
+        Returns list of definers and the one currently used.
+
+        :return: Tuple, (list of definers, current definer)
+        :rtype: tuple
+        """
+        definer_list, current_definer = [], None
+        beam = HWR.beamline.beam
+
+        if HWR.beamline.beam._beam_definer is not None:
+            definer_list = beam.get_available_definer()["values"]
+            current_definer = beam._beam_definer.get_value().value
+            custom_styling = beam._beam_definer.get_custom_styling()
+        else:
+            definer_list = []
+            current_definer = None
+            custom_styling = None
+
+        return definer_list, current_definer, custom_styling
+
     def get_viewport_info(self):
         """
         Get information about current "view port" video dimension, beam position,
@@ -276,14 +297,17 @@ class Beamline(ComponentBase):
             )
 
         aperture_list, current_aperture = self.get_aperture()
+        definer_list, current_definer, custom_styling = self.get_definer()
 
         beam_info_dict.update(
             {
                 "apertureList": aperture_list,
                 "currentAperture": current_aperture,
+                "definerList": definer_list,
+                "currentDefiner": current_definer,
+                "customStyling": custom_styling,
             }
         )
-
         return beam_info_dict
 
     def prepare_beamline_for_sample(self):
