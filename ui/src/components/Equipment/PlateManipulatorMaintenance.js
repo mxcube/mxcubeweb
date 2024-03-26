@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Button, ButtonGroup, InputGroup, Form } from 'react-bootstrap';
-import './Equipment.css';
+import styles from './equipment.module.css';
 
 export class PlateManipulatorActionButton extends React.Component {
   render() {
@@ -15,7 +15,7 @@ export class PlateManipulatorActionButton extends React.Component {
       <Button
         variant="outline-secondary"
         disabled={disabled}
-        onClick={() => this.props.send_command(this.props.cmd, this.props.args)}
+        onClick={() => this.props.sendCommand(this.props.cmd, this.props.args)}
       >
         {this.props.label}
       </Button>
@@ -53,9 +53,7 @@ export class PlateManipulatorAction extends React.Component {
   }
 
   actionComponent() {
-    const props = { value: 8, vref: 'input' };
-
-    let input = (
+    return (
       <span>
         <Form
           onSubmit={(e) => {
@@ -88,7 +86,7 @@ export class PlateManipulatorAction extends React.Component {
                 cmd={this.props.cmd}
                 args={this.state.input_value}
                 enabled
-                send_command={this.props.send_command}
+                sendCommand={this.props.sendCommand}
                 key={this.props.btn_label}
               />
             </InputGroup>
@@ -96,10 +94,6 @@ export class PlateManipulatorAction extends React.Component {
         </Form>
       </span>
     );
-
-    input = React.cloneElement(input, props);
-
-    return input;
   }
 
   render() {
@@ -124,7 +118,7 @@ export default class PlateManipulatorMaintenance extends React.Component {
         cmd={cmdinfo[0]}
         args={cmdinfo[3]}
         enabled={this.props.commands_state[cmdinfo[0]]}
-        send_command={this.props.send_command}
+        sendCommand={this.props.sendCommand}
         key={cmdinfo[1]}
       />
     );
@@ -186,7 +180,7 @@ export default class PlateManipulatorMaintenance extends React.Component {
           <Card className="mb-2">
             <Card.Header>Status message</Card.Header>
             <Card.Body>
-              <span className="scMessage">{msg}</span>
+              <span className={styles.Message}>{msg}</span>
             </Card.Body>
           </Card>
         ) : null}
@@ -195,7 +189,7 @@ export default class PlateManipulatorMaintenance extends React.Component {
           label="Desire Scan Speed"
           cmd="getOmegaMotorDynamicScanLimits"
           args={this.props.desireScanSpeed}
-          send_command={this.props.send_command}
+          sendCommand={this.props.sendCommand}
           global_state={this.props.global_state}
           header_msg="Omega Motor Dynamic ScanLimits Interval is"
           value={scan_limits}
@@ -208,7 +202,7 @@ export default class PlateManipulatorMaintenance extends React.Component {
           label="Plate Barcode"
           cmd="setPlateBarcode"
           args={this.props.desireScanSpeed}
-          send_command={this.props.send_command}
+          sendCommand={this.props.sendCommand}
           global_state={this.props.global_state}
           header_msg="Actual Plate Barcode is"
           value={plateBarcode}

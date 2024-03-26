@@ -1,0 +1,38 @@
+.generic_equipment_container .rjsf #root__title {
+  display: none;
+}
+
+#equipment-popover {
+  min-width: 60em;
+}
+
+.generic_equipment_container_collapsible {
+  border: 1px solid #d6d2d2;
+  border-top: none;
+  padding: 10px;
+  position: relative;
+  border-bottom-left-radius: 0%;
+}
+
+.command-panel {
+  border: 0px;
+}
+
+.generic_equipment_arrow_p {
+  position: relative;
+  bottom: 35px;
+  float: right;
+  margin-bottom: -20px;
+  margin-right: 20px;
+}
+
+.collapsible-arrow-c {
+  float: right;
+  margin-right: 10px;
+  margin-left: auto;
+  margin-top: 4px;
+}
+
+.generic_equipment_collapsible_child_content {
+  margin-bottom: 0.5rem;
+}

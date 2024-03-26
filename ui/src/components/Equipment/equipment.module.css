@@ -65,35 +65,35 @@
 }
 
 /* Plate Manipulator*/
-.plate-div {
-  height: '50vh';
+.plate_div {
+  height: '55vh';
   margin: 20px;
   display: flex;
 }
 
-.plate-grid {
+.plate_grid {
   margin-right: 50px;
   display: flex;
 }
 
-.has-crystal-info {
+.has_crystal_info {
   border-right: 10px solid #81c784;
   padding-right: 5px;
   margin-right: 12px;
 }
 
-.is-loaded-info {
+.is_loaded_info {
   border-right: 10px solid #e57373;
   padding-right: 5px;
   margin-right: 12px;
 }
 
-.empty-well-info {
+.empty_well_info {
   border-right: 10px solid #e0e0e0;
   padding-right: 5px;
 }
 
-.plate-info {
+.plate_info {
   position: relative;
   bottom: 20%;
 }
@@ -102,11 +102,11 @@
   cursor: crosshair;
 }
 
-.context-menu-provider {
+.context_menu_provider {
   z-index: 1070;
 }
 
-.plate-tooltip {
+.plateTooltip {
   visibility: hidden;
   white-space: nowrap;
   border: 1px solid #96aebe8e;
@@ -123,7 +123,7 @@
   transition: opacity 0.3s;
 }
 
-.plate-tooltip::after {
+.plateTooltip::after {
   content: '';
   position: absolute;
   bottom: 100%;
@@ -133,12 +133,36 @@
   border-color: transparent transparent #0122388e transparent;
 }
 
-.plate-desc:focus {
+.plateDesc:focus {
   background: #57a80b !important;
 }
 
-.plate-desc:hover .plate-tooltip {
+.plateDesc:hover .plateTooltip {
   background: white;
   visibility: visible;
   opacity: 1;
+}
+
+.ha_grid_container {
+  display: grid;
+  grid-template-rows: repeat(auto-fit, auto);
+  /* grid-template-columns: minmax(100px, max-content) repeat(auto-fill, 100px) 20%; */
+  grid-template-columns: repeat(auto-fit, 14%);
+  overflow: hidden;
+}
+
+.ha_grid_item {
+  background-color: #f5eeeeb7 !important;
+  border: 1px solid #cec7c76c;
+  font-size: 15px;
+  text-align: center;
+  margin-right: 15px;
+  margin-bottom: 16px;
+}
+
+.crystal_uuid_caption {
+  /* text-transform: capitalize; */
+  color: gray;
+  margin-bottom: 10px;
+  /* white-space: nowrap; */
 }

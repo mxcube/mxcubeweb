@@ -61,6 +61,7 @@
     "react-router-dom": "^6.19.0",
     "react-slick": "^0.29.0",
     "react-sticky": "^6.0.3",
+    "react-zoom-pan-pinch": "3.3.0",
     "redux": "4.1.2",
     "redux-form": "^8.3.8",
     "redux-logger": "^3.0.6",

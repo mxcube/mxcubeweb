@@ -11,6 +11,7 @@ import styles from './inOutStyle.module.css';
 export default function InOutSwitch(props) {
   const {
     value,
+    state,
     onSave,
     pkey,
     offText,
@@ -151,7 +152,7 @@ export default function InOutSwitch(props) {
           <Button variant="outline-secondary" className={styles.switchBtn}>
             {labelText}{' '}
             <Badge className={styles.switchBdg} bg={msgBgStyle}>
-              {value}
+              {state}
             </Badge>
           </Button>
         )}
