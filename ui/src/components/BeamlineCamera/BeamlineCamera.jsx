@@ -91,7 +91,7 @@ export default function BeamlineCamera(props) {
     return DraggableElements;
   }
 
-  if (cameraSetup?.components.length < 0) {
+  if (cameraSetup === undefined || cameraSetup?.components.length < 0) {
     return null;
   }
 
