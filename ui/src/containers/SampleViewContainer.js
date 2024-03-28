@@ -125,7 +125,7 @@ class SampleViewContainer extends Component {
             paddingBottom: '0em',
           }}
         >
-          <Col sm={10}>
+          <Col sm={12}>
             <DefaultErrorBoundary>
               <BeamlineSetupContainer />
             </DefaultErrorBoundary>
