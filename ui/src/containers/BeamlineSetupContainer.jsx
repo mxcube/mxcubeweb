@@ -88,7 +88,7 @@ function BeamlineSetupContainer(props) {
           if (uiprop !== undefined && uiprop.value_type === 'NSTATE') {
             if (uiprop.label === 'Beamstop') {
               acts.push(
-                <Nav.Item key={key}>
+                <Nav.Item key={key} className="ms-3">
                   <InOutSwitch
                     openText={beamline.hardwareObjects[key].commands[0]}
                     offText={beamline.hardwareObjects[key].commands[1]}
@@ -257,10 +257,8 @@ function BeamlineSetupContainer(props) {
               onSave={sendCommand}
             />
           </Nav.Item>
-        </Nav>
-        <Nav className="me-3">{renderActuatorComponent()}</Nav>
-        <Nav className="me-3">
-          <Nav.Item>
+          {renderActuatorComponent()}
+          <Nav.Item className="ms-3">
             <span className="blstatus-item">
               {beamline.hardwareObjects.machine_info && (
                 <MachInfo info={beamline.hardwareObjects.machine_info.value} />
