@@ -4,7 +4,6 @@ Developer documentation
 
 .. toctree::
     :caption: Contents:
-    :glob:
     :maxdepth: 2
     :titlesonly:
 
@@ -16,3 +15,4 @@ Developer documentation
     login.rst
     sample-changer-changes-and-maintenance.md
     tutorial.md
+    deployment.md
