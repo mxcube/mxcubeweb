@@ -37,6 +37,13 @@
   padding: 4px;
 }
 
+.collapsible-arrow-c {
+  float: right;
+  margin-right: 10px;
+  margin-left: auto;
+  margin-top: 4px;
+}
+
 .samples-grid-table-context-menu-icon {
   position: relative;
   bottom: 2px;
