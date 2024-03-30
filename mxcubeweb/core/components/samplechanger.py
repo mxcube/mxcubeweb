@@ -140,9 +140,9 @@ class SampleChanger(ComponentBase):
             contents = {"name": root_name}
 
             if hasattr(HWR.beamline.sample_changer, "get_room_temperature_mode"):
-                contents["room_temperature_mode"] = (
-                    HWR.beamline.sample_changer.get_room_temperature_mode()
-                )
+                contents[
+                    "room_temperature_mode"
+                ] = HWR.beamline.sample_changer.get_room_temperature_mode()
 
             try:
                 use_harvester = HWR.beamline.sample_changer.mount_from_harvester()
