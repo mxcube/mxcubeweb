@@ -89,6 +89,7 @@ export default function InOutSwitch(props) {
       break;
     }
     case offValue:
+    case 'DISABLED':
     case 'CLOSED': {
       msgBgStyle = 'danger';
       btn = (
@@ -102,7 +103,6 @@ export default function InOutSwitch(props) {
       );
       break;
     }
-    case 'DISABLED':
     case 'UNUSABLE': {
       msgBgStyle = 'warning';
       btn = (
