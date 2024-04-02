@@ -369,7 +369,7 @@ export default class DrawGridPlugin {
     let color = gridData.selected
       ? 'rgba(136, 255, 91, 1)'
       : 'rgba(228, 255, 9, 0.5)';
-    color = gridData.result.length > 0 ? 'rgba(255, 255, 255, 1)' : color;
+    color = gridData.result.length > 0 ? 'rgba(228, 255, 9, 1)' : color;
     const lineColor = gridData.selected
       ? 'rgba(136, 255, 91, 0.5)'
       : 'rgba(228, 255, 9, 0)';
