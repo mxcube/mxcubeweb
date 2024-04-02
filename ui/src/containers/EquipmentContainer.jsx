@@ -53,7 +53,7 @@ class EquipmentContainer extends React.Component {
           <Col sm={12}>
             <GenericEquipment
               state={this.props.sampleChangerState}
-              name={this.props.contents && this.props.contents.name}
+              name={this.props.contents?.name}
               CollapseOpen
             >
               {this.props.contents.name === 'PlateManipulator' ? (
@@ -120,10 +120,10 @@ class EquipmentContainer extends React.Component {
                 </Row>
               )}
             </GenericEquipment>
-            {!this.props.contents.use_harvester ? (
+            {this.props.contents.use_harvester ? (
               <GenericEquipment
                 state={this.props.haState}
-                name={this.props.haContents && this.props.haContents.name}
+                name={this.props.haContents?.name}
                 CollapseOpen
               >
                 <Row className="row">
