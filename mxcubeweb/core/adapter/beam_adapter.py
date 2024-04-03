@@ -51,11 +51,22 @@ class BeamAdapter(ActuatorAdapterBase):
             )
 
         aperture_list, current_aperture = self._get_aperture()
+        if hasattr(beam_ho, "_beam_definer") and beam_ho._beam_definer is not None:
+            definer_list = beam_ho.get_available_definer()["values"]
+            current_definer = beam_ho._beam_definer.get_value().value
+            custom_styling = beam_ho._beam_definer.get_custom_styling()
+        else:
+            definer_list = None
+            current_definer = None
+            custom_styling = None
 
         beam_info_dict.update(
             {
                 "apertureList": aperture_list,
+                "definerList": definer_list,
                 "currentAperture": current_aperture,
+                "currentDefiner": current_definer,
+                "customStyling": custom_styling,
             }
         )
 

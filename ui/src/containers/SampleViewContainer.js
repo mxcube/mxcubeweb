@@ -16,6 +16,7 @@ import ApertureInput from '../components/SampleView/ApertureInput';
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import ContextMenu from '../components/SampleView/ContextMenu';
+import BeamDefinerInput from '../components/SampleView/BeamDefinerInput';
 import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
 import { showErrorPanel, sendDisplayImage } from '../actions/general';
 import { updateTask } from '../actions/queue';
@@ -63,6 +64,16 @@ class SampleViewContainer extends Component {
 
   render() {
     const { uiproperties } = this.props;
+
+    const beamFocus = uiproperties.sample_view_beam_controls.components.find(
+      (item) => item.id === 'beam_focus',
+    );
+    const aperture = uiproperties.sample_view_beam_controls.components.find(
+      (item) => item.id === 'aperture',
+    );
+    const phase = uiproperties.sample_view_beam_controls.components.find(
+      (item) => item.id === 'phase',
+    );
 
     if (!('sample_view' in uiproperties)) {
       return null;
@@ -126,26 +137,46 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={1}>
             <DefaultErrorBoundary>
-              <div>
-                <p className="motor-name">Phase Control:</p>
-                <PhaseInput
-                  phase={this.props.sampleViewState.currentPhase}
-                  phaseList={this.props.sampleViewState.phaseList}
-                  changePhase={this.props.sampleViewActions.changeCurrentPhase}
-                  state={diffractometerHo.state}
-                />
-              </div>
+              {phase.show && (
+                <div>
+                  <p className="motor-name">Phase Control:</p>
+                  <PhaseInput
+                    phase={this.props.sampleViewState.currentPhase}
+                    phaseList={this.props.sampleViewState.phaseList}
+                    changePhase={
+                      this.props.sampleViewActions.changeCurrentPhase
+                    }
+                    state={diffractometerHo.state}
+                  />
+                </div>
+              )}
 
-              <div>
-                <p className="motor-name">Beam size:</p>
-                <ApertureInput
+              {aperture.show && (
+                <div>
+                  <p className="motor-name">Beam size:</p>
+                  <ApertureInput
+                    aperture={this.props.sampleViewState.currentAperture}
+                    apertureList={this.props.sampleViewState.apertureList}
+                    changeAperture={this.props.sampleViewActions.changeAperture}
+                  />
+                </div>
+              )}
+
+              {beamFocus.show && (
+                <BeamDefinerInput
+                  beamDefinerInputList={this.props.sampleViewState.definerList}
+                  currentDefiner={this.props.sampleViewState.currentDefiner}
+                  customStyling={this.props.sampleViewState.customStyling}
                   aperture={this.props.sampleViewState.currentAperture}
                   apertureList={this.props.sampleViewState.apertureList}
                   changeAperture={this.props.sampleViewActions.changeAperture}
+                  changeBeamDefiner={
+                    this.props.sampleViewActions.changeBeamDefiner
+                  }
                 />
-              </div>
+              )}
 
-              {this.props.mode === 'SSX-CHIP' ? (
+              {this.props.mode === 'SSX-CHIP' && (
                 <SSXChipControl
                   showForm={this.props.showForm}
                   sampleID={sampleID}
@@ -160,7 +191,7 @@ class SampleViewContainer extends Component {
                   setAttribute={this.props.setAttribute}
                   sendExecuteCommand={this.props.sendExecuteCommand}
                 />
-              ) : null}
+              )}
               {this.props.sampleChangerContents.name === 'PlateManipulator' ? (
                 <div className="mb-4">
                   <OverlayTrigger
@@ -348,6 +379,7 @@ function mapStateToProps(state) {
     selectedCol: state.sampleChanger.selectedCol,
     selectedDrop: state.sampleChanger.selectedDrop,
     crystalList: state.sampleGrid.crystalList,
+    beamFocus: state.beamline.beamFocus,
   };
 }
 

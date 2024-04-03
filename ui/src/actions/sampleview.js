@@ -707,3 +707,21 @@ export function changeCurrentPhase(phase) {
     });
   };
 }
+
+export function changeBeamDefiner(option) {
+  return () => {
+    fetch('/mxcube/api/v0.1/beamline/beamdefiner', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ value: option }),
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error('Server refused to change beam definer');
+      }
+    });
+  };
+}

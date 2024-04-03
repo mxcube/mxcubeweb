@@ -637,6 +637,7 @@ def beam_changed(*args, **kwargs):
         "size_y": 0,
     }
     _beam = beam_info.get_value()
+
     beam_info_dict.update(
         {
             "position": beam_info.get_beam_position_on_screen(),
@@ -645,6 +646,26 @@ def beam_changed(*args, **kwargs):
             "shape": _beam[2].value,
         }
     )
+
+    aperture_list = beam_info.get_available_size()["values"]
+    current_aperture = beam_info.get_value()[-1]
+
+    beam_info_dict.update(
+        {
+            "apertureList": aperture_list,
+            "currentAperture": current_aperture,
+        }
+    )
+    if beam_info._beam_definer is not None:
+        definer_list = beam_info.get_available_definer()["values"]
+        current_definer = beam_info._beam_definer.get_value().value
+
+        beam_info_dict.update(
+            {
+                "definerList": definer_list,
+                "currentDefiner": current_definer,
+            }
+        )
     try:
         server.emit("beam_changed", {"data": beam_info_dict}, namespace="/hwr")
     except Exception:
