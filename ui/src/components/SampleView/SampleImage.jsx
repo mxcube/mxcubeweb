@@ -585,7 +585,7 @@ export default class SampleImage extends React.Component {
     e.preventDefault();
     e.stopPropagation();
     const { sampleViewActions, motorSteps, hardwareObjects } = this.props;
-    const { sendMotorPosition, sendZoomPos } = sampleViewActions;
+    const { sendMotorPosition } = sampleViewActions;
     const keyPressed = this._keyPressed;
 
     const phi = hardwareObjects['diffractometer.phi'];
@@ -623,7 +623,7 @@ export default class SampleImage extends React.Component {
       }
     } else if (keyPressed === 'z' && zoom.state === MOTOR_STATE.READY) {
       // in this case zooming
-      const index = zoom.commands.indexOf(zoom.value)
+      const index = zoom.commands.indexOf(zoom.value);
       if (e.deltaY > 0 && index < zoom.commands.length) {
         // zoom in
         this.props.setAttribute(
