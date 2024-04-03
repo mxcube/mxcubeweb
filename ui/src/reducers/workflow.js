@@ -1,9 +1,7 @@
 import {
   saveToLastUsedParameters,
-  getLastUsedParameters
+  getLastUsedParameters,
 } from '../components/Tasks/fields';
-
-
 
 const INITIAL_STATE = {
   workflows: [],
@@ -21,11 +19,11 @@ function workflowReducer(state = INITIAL_STATE, action = {}) {
       return { ...state, current: action.current };
     }
     case 'SHOW_WORKFLOW_PARAMETERS_DIALOG': {
-      if (action.formData !== null){
-        saveToLastUsedParameters("workflow", action.formData)
+      if (action.formData !== null) {
+        saveToLastUsedParameters('workflow', action.formData);
       }
 
-      const formData = action.formData || getLastUsedParameters("workflow")
+      const formData = action.formData || getLastUsedParameters('workflow');
 
       return {
         ...state,

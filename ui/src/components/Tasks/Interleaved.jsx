@@ -12,8 +12,6 @@ import {
   ButtonToolbar,
   Table,
 } from 'react-bootstrap';
-import asyncValidate from './asyncValidate';
-import validate from './validate';
 import { FieldsHeader, StaticField, InputField } from './fields';
 
 const wedgeColorTable = {
