@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 import gevent
+from typing import Optional
 
 from mxcubecore import queue_entry
 from mxcubecore import HardwareRepository as HWR
@@ -176,7 +177,7 @@ class Harvester(ComponentBase):
     def send_data_collection_info_to_crims(self) -> bool:
         """Send Data collected to CRIMS
 
-        Return (bool): Whether the
+        Return (bool): Whether the request failed (false) or not (true)
         """
         dataCollectionGroupId = ""
         crystal_uuid = ""
@@ -403,7 +404,7 @@ class Harvester(ComponentBase):
             # Try an abort and move to next sample
             return False
 
-    def current_queue_index(self, current_sample: str) -> int | None:
+    def current_queue_index(self, current_sample: str) -> Optional[int]:
         current_queue_dict = self.app.queue.queue_to_dict()
         current_queue_list = list(current_queue_dict)
         res = None
@@ -414,7 +415,7 @@ class Harvester(ComponentBase):
 
         return res
 
-    def get_next_sample(self, current_sample: str) -> str | None:
+    def get_next_sample(self, current_sample: str) -> Optional[str]:
         current_queue_dict = self.app.queue.queue_to_dict()
         current_queue_list = list(current_queue_dict)
         res = None

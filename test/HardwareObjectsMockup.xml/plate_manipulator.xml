@@ -46,6 +46,7 @@
   <useUpdateTimer>False</useUpdateTimer>
 
   <crimsWsRoot>https://htxlab.embl.org/pins/api/plates/</crimsWsRoot>
+  <crimsUserAgent>Mozilla/5.0 (Windows NT 6.1; Win64; x64)</crimsUserAgent>
   <PlateBarcode>CD032401</PlateBarcode>
   <harvesterKey></harvesterKey>
 </object>
