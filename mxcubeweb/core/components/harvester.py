@@ -124,8 +124,8 @@ class Harvester(ComponentBase):
                     "img_target_y": img_target_y,
                 }
                 crystal_list.append(lst)
-        except Exception as ex:
-            print("Could not get Crystal List : %s" % str(ex))
+        except Exception:
+            logging.getLogger("user_level_log").info("Could not get Crystal List")
             # TEMP return a fake list for test
             crystal_list = [
                 {
@@ -172,6 +172,7 @@ class Harvester(ComponentBase):
         try:
             return HWR.beamline.harvester_maintenance.get_global_state()
         except Exception:
+            logging.getLogger("user_level_log").exception("Could not get global state")
             return "OFFLINE", "OFFLINE", "OFFLINE"
 
     def send_data_collection_info_to_crims(self) -> bool:
@@ -188,6 +189,7 @@ class Harvester(ComponentBase):
             proposal = HWR.beamline.session.get_proposal()
 
             crims_url = harvester_device.crims_upload_url
+            crims_key = harvester_device.crims_upload_key
 
             queue_entries = HWR.beamline.queue_model.get_all_dc_queue_entries()
             dc_id = ""
@@ -205,10 +207,11 @@ class Harvester(ComponentBase):
                     dc_id,
                     proposal,
                     rest_token,
+                    crims_key,
                 )
             return True
-        except Exception as ex:
-            msg = "get all queue entries failed, reason:  %s" % str(ex)
+        except Exception:
+            msg = "Could not send data collection to crims"
             logging.getLogger("user_level_log").exception(msg)
             return False
 
@@ -336,7 +339,6 @@ class Harvester(ComponentBase):
                 ),
             }
 
-            print(calibrated_motor_offset)
             # we store the motor offset in the Harvester, to be used for sample centering
             harvester_device.store_calibrated_pin(
                 calibrated_motor_offset["focus"],
@@ -345,9 +347,9 @@ class Harvester(ComponentBase):
             )
 
             harvester_device.set_calibrate_state(False)
-        except Exception as ex:
+        except Exception:
             logging.getLogger("user_level_log").exception(
-                f"Pin Calibration / validation Failed {str(ex)}"
+                "Pin Calibration / validation Failed"
             )
             return False
 
@@ -377,6 +379,7 @@ class Harvester(ComponentBase):
             sample = self.get_sample_info(xtal_uuid)
             self.app.sample_changer.mount_sample(sample)
         except Exception:
+            logging.getLogger("user_level_log").exception("Could not Harvest Crystal")
             return "Could not Harvest Crystal"
 
         self.init_signals()
@@ -397,10 +400,10 @@ class Harvester(ComponentBase):
             )
         else:
             msg = harvester_device.get_status()
-            logging.getLogger("user_level_log").exception(
+            logging.getLogger("user_level_log").error(
                 "ERROR: No Harvester Device Found"
             )
-            logging.getLogger("user_level_log").exception(msg)
+            logging.getLogger("user_level_log").error(msg)
             # Try an abort and move to next sample
             return False
 
@@ -437,27 +440,33 @@ class Harvester(ComponentBase):
         )
         if harvester_device.get_number_of_available_pin() > 0:
             gevent.sleep(2)
-            sample_UUID = current_queue[sample["sampleID"]]["code"]
+            sample_uuid = current_queue[sample["sampleID"]]["code"]
             if self.current_queue_index(data_model.loc_str) == 1:
                 logging.getLogger("user_level_log").info("Harvesting First Sample")
-                if sample_UUID in ["undefined", "", None]:
+                if sample_uuid in ["undefined", "", None]:
                     sample_info = self.get_sample_info(sample["location"])
-                    sample_UUID = sample_info["crystalUUID"]
+                    sample_uuid = sample_info["crystalUUID"]
                 harvest_res = self.harvest_sample_before_mount(
-                    sample_UUID, wait_before_load
+                    sample_uuid, wait_before_load
                 )
                 if harvest_res is False:
                     # if sample could not be Harvest, but no exception is raised, let's skip the sample
+                    logging.getLogger("user_level_log").error(
+                        "There is no more Pins in the Harvester, Stopping queue"
+                    )
                     raise queue_entry.QueueSkippEntryException(
                         "Harvester could not Harvest sample", ""
                     )
             else:
                 logging.getLogger("user_level_log").info("checking last Harvesting")
                 harvest_res = self.harvest_sample_before_mount(
-                    sample_UUID, wait_before_load
+                    sample_uuid, wait_before_load
                 )
                 if harvest_res is False:
                     # if sample could not be Harvest, but no exception is raised, let's skip the sample
+                    logging.getLogger("user_level_log").error(
+                        "There is no more Pins in the Harvester, Stopping queue"
+                    )
                     raise queue_entry.QueueSkippEntryException(
                         "Harvester could not Harvest sample", ""
                     )
@@ -473,6 +482,9 @@ class Harvester(ComponentBase):
             )
         else:
             # raise Not enough pins available in the pin provider
+            logging.getLogger("user_level_log").error(
+                "There is no more Pins in the Harvester, Stopping queue"
+            )
             raise queue_entry.QueueSkippEntryException(
                 "There is no more Pins in the Harvester, Stopping queue", ""
             )
@@ -486,12 +498,12 @@ class Harvester(ComponentBase):
             and harvester_device.get_number_of_available_pin() > 0
         ):
             logging.getLogger("user_level_log").info("Harvesting Next Sample")
-            sample_UUID = current_queue[next_sample]["code"]
-            if sample_UUID in ["undefined", "", None]:
+            sample_uuid = current_queue[next_sample]["code"]
+            if sample_uuid in ["undefined", "", None]:
                 sample_info = self.get_sample_info(sample["location"])
-                sample_UUID = sample_info["crystalUUID"]
+                sample_uuid = sample_info["crystalUUID"]
             harvester_device._wait_ready(None)
-            self.harvest_sample_before_mount(sample_UUID, False)
+            self.harvest_sample_before_mount(sample_uuid, False)
         else:
             logging.getLogger("user_level_log").warning(
                 "Warning: Could not harvest next sample"
@@ -502,4 +514,7 @@ class Harvester(ComponentBase):
             HWR.beamline.harvester.harvest_crystal(xtal_uuid)
             return "Crystal Harvested properly"
         except Exception:
+            logging.getLogger("user_level_log").warning(
+                "Warning: Could not harvest next sample"
+            )
             return "Could not Harvest Crystal"

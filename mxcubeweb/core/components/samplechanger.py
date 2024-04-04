@@ -529,8 +529,10 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 computed_offset = harvester_device.get_offsets_for_sample_centering()
                 dm.start_harvester_centring(computed_offset)
 
-            except Exception as ex:
-                print(str(ex))
+            except Exception:
+                logging.getLogger("user_level_log").exception(
+                    "Could not center sample, skipping"
+                )
                 raise queue_entry.QueueSkippEntryException(
                     "Could not center sample, skipping", ""
                 )
