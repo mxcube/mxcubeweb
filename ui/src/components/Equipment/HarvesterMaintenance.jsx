@@ -41,7 +41,6 @@ export default function HarvesterMaintenance(props) {
   }
 
   const groups = [];
-  let msg = '';
 
   if (
     Object.keys(commands).length > 0 &&
@@ -54,14 +53,7 @@ export default function HarvesterMaintenance(props) {
     return <div />;
   }
 
-  if (message !== '') {
-    msg = message;
-  }
-
-  let plateBarcode = '';
-  if (global_state.plate_barecode) {
-    plateBarcode = global_state.plate_barecode.toString();
-  }
+  const plateBarcode = global_state.plate_barecode?.toString();
 
   let calibrationState = false;
   if (contents) {
@@ -71,11 +63,11 @@ export default function HarvesterMaintenance(props) {
   return (
     <div>
       {groups}
-      {msg ? (
+      {message ? (
         <Card>
           <Card.Header>Status message</Card.Header>
           <Card.Body>
-            <span className="scMessage">{msg}</span>
+            <span className="scMessage">{message}</span>
           </Card.Body>
         </Card>
       ) : null}
