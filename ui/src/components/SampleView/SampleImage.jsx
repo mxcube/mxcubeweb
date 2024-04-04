@@ -435,10 +435,9 @@ export default class SampleImage extends React.Component {
         } else if (threeDpointList.length > 2) {
           ctxMenuObj = { type: 'GROUP', id: threeDpointList };
         } else if (gridList.length === 1) {
-          let gridData = this.props.grids[gridList[0]];
-          gridData = this.drawGridPlugin.setPixelsPerMM(
+          const gridData = this.drawGridPlugin.setPixelsPerMM(
             this.props.pixelsPerMm,
-            gridData,
+            this.props.grids[gridList[0]],
           );
           const cellCenter = this.drawGridPlugin.getClickedCell(
             gridData,
