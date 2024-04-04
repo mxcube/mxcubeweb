@@ -5,38 +5,6 @@ import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 
 import styles from './equipment.module.css';
 
-// function SampleChangerTree(props) {
-//   let titleBackground;
-
-//   switch (props.state) {
-//     case 'READY': {
-//       titleBackground = 'success';
-
-//       break;
-//     }
-//     case 'MOVING': {
-//       titleBackground = 'warning';
-
-//       break;
-//     }
-//     case 'DISABLED': {
-//       titleBackground = 'default';
-
-//       break;
-//     }
-//     default: {
-//       titleBackground = 'danger';
-//     }
-//   }
-
-//   return (
-//     <Card className="mb-3" style={{ marginTop: '0.5em' }} bg={titleBackground}>
-//       <Card.Header>{props.title}</Card.Header>
-//       {props.children}
-//     </Card>
-//   );
-// }
-
 function getUniqueId() {
   if (renderSampleChangerTreeNode._uid_count === undefined) {
     renderSampleChangerTreeNode._uid_count = 0;
@@ -109,10 +77,6 @@ function renderSampleChangerTreeNode(props) {
 
 function SampleChangerTreeItem(props) {
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
-
-  // function itemClicked() {
-  //   setState({ allow_control: !state.allow_control });
-  // }
 
   function loadSample() {
     toggleDropdown();
