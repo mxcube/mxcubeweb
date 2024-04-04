@@ -123,7 +123,7 @@ export default class SampleControls extends React.Component {
             this.props.sampleViewActions.setVideoSize(size[0], size[1])
           }
         >
-          <span className={`${sizeGClass}`} /> {`${size[0]} x ${size[1]}`}
+          <span className={sizeGClass} /> {`${size[0]} x ${size[1]}`}
         </Dropdown.Item>
       );
     });
