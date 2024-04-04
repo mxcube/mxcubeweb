@@ -591,9 +591,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                             else:
                                 raise RuntimeError("Could not center sample")
                     except Exception:
-                        import traceback
-
-                        log.info("centring did not pass %s" % traceback.format_exc())
+                        log.exception("centring did not pass")
                     finally:
                         dm.disconnect("centringAccepted", centring_done_cb)
             else:
