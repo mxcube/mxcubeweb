@@ -131,16 +131,15 @@ class ServerIO {
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   listen() {
+    this.refreshInterval = setInterval(sendRefreshSession, 9000);
+    this.connect();
+
     if (this.initialized) {
       return;
     }
 
     this.initialized = true;
     this.dispatch = store.dispatch;
-
-    this.refreshInterval = setInterval(sendRefreshSession, 9000);
-
-    this.connect();
 
     this.loggingSocket.on('log_record', (record) => {
       if (record.severity !== 'DEBUG') {

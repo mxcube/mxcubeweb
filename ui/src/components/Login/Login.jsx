@@ -7,7 +7,6 @@ import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
 import withRouter from '../WithRouter';
 import styles from './Login.module.css';
-import { serverIO } from '../../serverIO';
 
 function LoginComponent(props) {
   const { router, loading, logIn, showError, errorMessage } = props;
@@ -20,7 +19,6 @@ function LoginComponent(props) {
 
   async function handleSubmit(data) {
     await logIn(data.username.toLowerCase(), data.password, router.navigate);
-    serverIO.listen();
   }
 
   return (

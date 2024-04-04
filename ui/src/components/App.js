@@ -85,12 +85,18 @@ function App(props) {
 
   useEffect(() => {
     getLoginInfo();
-    serverIO.listen();
 
-    return () => {
-      serverIO.disconnect();
-    };
-  }, [getLoginInfo]);
+    if (loggedIn) {
+      serverIO.listen();
+
+      return () => {
+        serverIO.disconnect();
+      };
+    }
+
+    // no clean-up required, until we connect to serverIO
+    return undefined;
+  }, [loggedIn, getLoginInfo]);
 
   if (loggedIn === null) {
     // Fetching login info
