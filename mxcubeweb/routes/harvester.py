@@ -1,5 +1,6 @@
 import json
-from flask import Blueprint, Response, jsonify, request
+import logging
+from flask import Blueprint, jsonify, request
 
 from mxcubecore import HardwareRepository as HWR
 
@@ -38,6 +39,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
             data = json.loads(request.data)
             app.harvester.harvest_crystal(data)
         except Exception as ex:
+            logging.getLogger("user_level_log").exception("Cannot Harvest Crystal")
             resp = (
                 "Cannot Harvest Crystal",
                 409,
@@ -88,13 +90,18 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def send_ha_command(cmdparts, args=None):
         try:
-            ret = HWR.beamline.harvester_maintenance.send_command(cmdparts, args)
             if cmdparts == "set_room_temperature_mode":
-                value = True if args.lower() in ["true", "True", "1"] else False
+                value = True if args in ["true", "True", "TRUE", "1"] else False
+                HWR.beamline.harvester_maintenance.send_command(cmdparts, value)
                 # Temporary set MD and SC Temperature mode at the same time
                 HWR.beamline.sample_changer.set_room_temperature_mode(value)
                 HWR.beamline.diffractometer.set_room_temperature_mode(value)
+            else:
+                HWR.beamline.harvester_maintenance.send_command(cmdparts, args)
         except Exception as ex:
+            logging.getLogger("user_level_log").exception(
+                f"Cannot execute command{cmdparts}"
+            )
             msg = str(ex)
             msg = msg.replace("\n", " - ")
             return (
@@ -104,7 +111,8 @@ def init_route(app, server, url_prefix):  # noqa: C901
             )
         else:
             return jsonify(
-                response=ret, contents=app.harvester.get_harvester_contents()
+                response=f"executed command {cmdparts}",
+                contents=app.harvester.get_harvester_contents(),
             )
 
     return bp
