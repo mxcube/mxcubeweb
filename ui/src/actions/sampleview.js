@@ -174,7 +174,7 @@ export function setVideoSize(width, height) {
       })
         .then((response) => {
           if (response.status >= 400) {
-            throw new Error('Server refused set video size');
+            throw new Error('Server refused to set video size');
           }
           return response.json();
         })
