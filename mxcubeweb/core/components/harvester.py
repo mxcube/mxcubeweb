@@ -125,46 +125,7 @@ class Harvester(ComponentBase):
                 }
                 crystal_list.append(lst)
         except Exception:
-            logging.getLogger("user_level_log").info("Could not get Crystal List")
-            # TEMP return a fake list for test
-            crystal_list = [
-                {
-                    "crystal_uuid": "c9ca5e0d-35fd-4ff9-9ad2-4de9fd47fd83",
-                    "name": "TEST1",
-                    "state": "ready_to_execute",
-                    "acronym": "cryoprotectant",
-                    "img_url": "https://htxlab.embl.org//rawimages/2021//CD032401/6/FORMULATRIX_CD032401_6_08-09-2021_05_02_01_00_99_Vis.jpg",
-                    "img_target_x": 26.868617890692,
-                    "img_target_y": 50.122652377553,
-                },
-                {
-                    "crystal_uuid": "94730c39-bf66-416f-ab97-f755e45f6a3a",
-                    "name": "TEST12",
-                    "state": "needs_repositionning",
-                    "acronym": "cryoprotectant",
-                    "img_url": "https://htxlab.embl.org//rawimages/2021//CD032401/6/FORMULATRIX_CD032401_6_08-09-2021_06_04_01_00_99_Vis.jpg",
-                    "img_target_x": 54.466230936819,
-                    "img_target_y": 58.026175213675,
-                },
-                {
-                    "crystal_uuid": "5d5dfc88-009d-4486-8526-33bf58c4d5d9",
-                    "name": "TEST13",
-                    "state": "failed",
-                    "acronym": "cryoprotectant",
-                    "img_url": "https://htxlab.embl.org//rawimages/2021//CD032401/6/FORMULATRIX_CD032401_6_08-09-2021_06_02_01_00_99_Vis.jpg",
-                    "img_target_x": 32.710943173566,
-                    "img_target_y": 51.110576923077,
-                },
-                {
-                    "crystal_uuid": "46aca4a4-0c00-4685-b1e1-53071bdcb66d",
-                    "name": "TEST4",
-                    "state": "harvested",
-                    "acronym": "cryoprotectant",
-                    "img_url": "https://htxlab.embl.org//rawimages/2021//CD032401/6/FORMULATRIX_CD032401_6_08-09-2021_06_04_01_00_99_Vis.jpg",
-                    "img_target_x": 38.632400075415,
-                    "img_target_y": 41.762286324786,
-                },
-            ]
+            logging.getLogger("user_level_log").exception("Could not get Crystal List")
 
         return crystal_list
 
