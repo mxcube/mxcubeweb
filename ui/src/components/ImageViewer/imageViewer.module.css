@@ -1,0 +1,40 @@
+.gallery_contain {
+  padding-top: 0.9375rem;
+}
+
+.gallery_card {
+  position: relative;
+  overflow: hidden;
+}
+
+.gallery_card img[alt] {
+  color: rgb(212, 9, 9);
+}
+
+.gallery_thumbnail {
+  max-width: 100%;
+  height: auto;
+  border-radius: 4px;
+  font-size: 6rem;
+}
+
+.viewer_icon_open {
+  display: block;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  font-size: 1.5rem;
+  cursor: pointer;
+  opacity: 0;
+  color: #ffffff;
+  transform: translate(-50%, -50%);
+  transition: all 0.25s ease-in-out;
+}
+
+.gallery_thumbnail:focus ~ .viewer_icon_open,
+.gallery_thumbnail:hover ~ .viewer_icon_open,
+.gallery_thumbnail ~ .viewer_icon_open:focus,
+.gallery_thumbnail ~ .viewer_icon_open:hover {
+  opacity: 1;
+  color: #111;
+}
