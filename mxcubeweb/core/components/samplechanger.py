@@ -395,6 +395,7 @@ class SampleChanger(ComponentBase):
             "queue", {"Signal": "update", "message": "all"}, namespace="/hwr"
         )
 
+
 # Disabling C901 function is too complex (19)
 def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noqa: C901
     from mxcubeweb.routes import signals
