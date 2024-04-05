@@ -390,15 +390,10 @@ class SampleChanger(ComponentBase):
             return {"xtal_list": xtal_list}
 
     def _gripper_changed(self):
-        from mxcubeweb.routes import signals
-
         self.app.queue.queue_clear()
         self.app.server.emit(
             "queue", {"Signal": "update", "message": "all"}, namespace="/hwr"
         )
-
-        # self.app.sample_changer.get_sample_list()
-
 
 # Disabling C901 function is too complex (19)
 def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noqa: C901
