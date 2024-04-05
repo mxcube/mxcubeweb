@@ -1,12 +1,12 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { Modal } from 'react-bootstrap';
-import './ImageViewer.css';
+import styles from './imageViewer.module.css';
 
 function GalleryImage(props) {
   return (
     <img
-      className={`image_galery_view ${props.className}`}
+      className={`${styles.image_galery_view} ${props.className}`}
       src={props.src}
       alt={props.alt}
     />
@@ -62,7 +62,7 @@ function GalleryModal(props) {
               alt=""
               width="100%"
               height="100%"
-              className="image_modale_view"
+              className={styles.image_modale_view}
               src={props.src}
             />
             {props.drawTarget ? (
@@ -95,14 +95,14 @@ export default function ImageViewer(props) {
         {props.imgUrls.map((imgUrl) => {
           return (
             <div key={imgUrl} className="col-sm-6 col-md-3 col-xl-2">
-              <div className="gallery-card">
+              <div className={styles.gallery_card}>
                 <GalleryImage
-                  className="gallery-thumbnail"
+                  className={styles.gallery_thumbnail}
                   src={imgUrl}
                   alt={props.imgAlt}
                 />
                 <span
-                  className="viewer-icon-open fa fa-expand"
+                  className={`${styles.viewer_icon_open} fa fa-expand`}
                   onClick={() => openModal(imgUrl)}
                 />
               </div>
@@ -121,15 +121,14 @@ export default function ImageViewer(props) {
     </div>
   ) : (
     <div>
-      <div className="gallery-card">
+      <div className={styles.gallery_card}>
         <GalleryImage
-          className="gallery-thumbnail img-responsive"
+          className={`${styles.gallery_thumbnail} img-responsive`}
           src={props.imgUrl}
           alt={props.imgAlt}
         />
         <span
-          className="viewer-icon-open fa fa-expand"
-          // value={props.imgUrl}
+          className={`${styles.viewer_icon_open} fa fa-expand`}
           onClick={() => openModal(props.imgUrl)}
         />
       </div>
