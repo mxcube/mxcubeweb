@@ -198,7 +198,10 @@ function BeamlineSetupContainer(props) {
   const uiprops = uiproperties.beamline_setup.components;
   const uiprop_list = filter(
     uiprops,
-    (o) => o.value_type === 'MOTOR' || o.value_type === 'ACTUATOR',
+    (o) =>
+      o.value_type === 'MOTOR' ||
+      o.value_type === 'ACTUATOR' ||
+      o.value_type === 'ENERGY',
   );
 
   return (
