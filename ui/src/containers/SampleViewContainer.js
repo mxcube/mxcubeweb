@@ -62,11 +62,19 @@ class SampleViewContainer extends Component {
   }
 
   render() {
-    const { uiproperties } = this.props;
+    const { uiproperties, hardwareObjects } = this.props;
 
     if (!('sample_view' in uiproperties)) {
       return null;
     }
+
+    const motorUiProperties = uiproperties.sample_view.components.filter(
+      ({ value_type }) => value_type === 'MOTOR',
+    );
+
+    const motorhardwareObjects = Object.values(hardwareObjects).filter(
+      ({ type }) => type === 'MOTOR',
+    );
 
     const { sourceScale, imageRatio, motorSteps } = this.props.sampleViewState;
     const { setStepSize } = this.props.sampleViewActions;
@@ -239,8 +247,8 @@ class SampleViewContainer extends Component {
               <MotorControls
                 save={this.props.setAttribute}
                 saveStep={setStepSize}
-                uiproperties={uiproperties.sample_view}
-                hardwareObjects={this.props.hardwareObjects}
+                uiproperties={motorUiProperties}
+                hardwareObjects={motorhardwareObjects}
                 motorsDisabled={
                   this.props.motorInputDisable ||
                   this.props.queueState === QUEUE_RUNNING

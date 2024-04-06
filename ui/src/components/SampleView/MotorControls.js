@@ -14,12 +14,8 @@ export default class MotorControls extends React.Component {
   }
 
   renderMotorInputs(from, to) {
-    return this.props.uiproperties.components
+    return this.props.uiproperties
       .slice(from, to)
-      .filter(
-        ({ attribute }) =>
-          this.props.hardwareObjects[attribute].type === 'MOTOR',
-      )
       .map(({ attribute, role }) => (
         <Col key={attribute} sm={12}>
           <MotorInputContainer component="sample_view" role={role} />
@@ -28,20 +24,23 @@ export default class MotorControls extends React.Component {
   }
 
   render() {
-    const sample_vertical_uiprop = find(this.props.uiproperties.components, {
+    const sample_vertical_uiprop = find(this.props.uiproperties, {
       role: 'sample_vertical',
     });
 
-    const sample_horizontal_uiprop = find(this.props.uiproperties.components, {
+    const sample_horizontal_uiprop = find(this.props.uiproperties, {
       role: 'sample_horizontal',
     });
 
-    const sample_vertical =
-      this.props.hardwareObjects[sample_vertical_uiprop.attribute];
-    const sample_horizontal =
-      this.props.hardwareObjects[sample_horizontal_uiprop.attribute];
+    const sample_vertical = find(this.props.hardwareObjects, {
+      name: sample_vertical_uiprop.attribute,
+    });
 
-    const numel = this.props.uiproperties.components.length;
+    const sample_horizontal = find(this.props.hardwareObjects, {
+      name: sample_horizontal_uiprop.attribute,
+    });
+
+    const numel = this.props.uiproperties.length;
 
     if (!sample_vertical || !sample_horizontal) {
       return <Row className="row">{this.renderMotorInputs(0, numel)}</Row>;
