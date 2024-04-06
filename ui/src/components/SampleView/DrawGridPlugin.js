@@ -594,16 +594,17 @@ export default class DrawGridPlugin {
   }
 
   getClickedCellIndex(gd, shapeGroup, e) {
+    // To be investigated closer, actual position of mesh appears
+    // shifted by OFFSET pixels.
+    const OFFSET = 20;
+
     const cellSizeX = this.getCellWidth(gd);
     const cellSizeY = this.getCellHeight(gd);
-
-    const cellIdxX = Number.parseInt(
-      Math.floor((e.offsetX - shapeGroup.oCoords.tl.x) / cellSizeX),
-      10,
+    const cellIdxX = Math.floor(
+      (e.offsetX - shapeGroup.oCoords.tl.x) / cellSizeX,
     );
-    const cellIdxY = Number.parseInt(
-      Math.floor((e.offsetY - shapeGroup.oCoords.tl.y - 20) / cellSizeY),
-      10,
+    const cellIdxY = Math.floor(
+      (e.offsetY - shapeGroup.oCoords.tl.y - OFFSET) / cellSizeY,
     );
 
     return [cellIdxX, cellIdxY];
