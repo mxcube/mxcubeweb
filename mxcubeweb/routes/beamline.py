@@ -26,7 +26,7 @@ def create_get_route(app, server, bp, adapter, attr):
             **{"return": getattr(app.mxcubecore.get_adapter(name), attr)(**args)}
         )
 
-        return make_response(getattr(result, "return").json(), 200)
+        return make_response(result.json(), 200)
 
     route_url = f"{atype}/<string:name>/{attr}"
     endpoint = f"{atype}_{attr}"
