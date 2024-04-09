@@ -687,15 +687,6 @@ def beamline_action_failed(name):
         logging.getLogger("user_level_log").error("Action %s failed !", name)
 
 
-def mach_info_changed(values):
-    try:
-        server.emit("mach_info_changed", values, namespace="/hwr")
-    except Exception:
-        logging.getLogger("HWR").error(
-            "error sending mach_info_changed signal: &s" % values
-        )
-
-
 def new_plot(plot_info):
     try:
         server.emit("new_plot", plot_info, namespace="/hwr")

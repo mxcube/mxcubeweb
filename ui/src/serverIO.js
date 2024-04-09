@@ -17,7 +17,6 @@ import {
   updateBeamlineHardwareObjectAction,
   updateBeamlineHardwareObjectValueAction,
   updateBeamlineHardwareObjectAttributeAction,
-  setMachInfo,
 } from './actions/beamline';
 import {
   setActionState,
@@ -185,10 +184,6 @@ class ServerIO {
 
     this.hwrSocket.on('beam_changed', (record) => {
       this.dispatch(setBeamInfo(record.data));
-    });
-
-    this.hwrSocket.on('mach_info_changed', (info) => {
-      this.dispatch(setMachInfo(info));
     });
 
     this.hwrSocket.on('hardware_object_changed', (data) => {

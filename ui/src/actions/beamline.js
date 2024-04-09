@@ -22,7 +22,6 @@ export const BL_UPDATE_HARDWARE_OBJECT_STATE =
   'BL_UPDATE_HARDWARE_OBJECT_STATE';
 export const BL_ATTR_MOV_SET_STATE = 'BL_ATTR_MOV_SET_STATE';
 export const BL_ATTR_ACT_SET_STATE = 'BL_ATTR_ACT_SET_STATE';
-export const BL_MACH_INFO = 'BL_MACH_INFO';
 export const BL_ATTR_MOV_SET = 'BL_ATTR_MOV_SET';
 export const BL_ATTR_ACT_SET = 'BL_ATTR_ACT_SET';
 
@@ -40,10 +39,6 @@ export function updateBeamlineHardwareObjectValueAction(data) {
 
 export function getBeamlineAttrsAction(data) {
   return { type: BL_ATTR_GET_ALL, data };
-}
-
-export function setMachInfo(info) {
-  return { type: BL_MACH_INFO, info };
 }
 
 export function updateBeamlineHardwareObjectStateAction(data) {
