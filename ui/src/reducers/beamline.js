@@ -285,12 +285,6 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
         energyScanElements: action.data.beamlineSetup.energyScanElements,
       };
     }
-    case 'BL_MACH_INFO': {
-      return {
-        ...state,
-        machinfo: { ...state.machinfo, ...action.info },
-      };
-    }
     case 'ACTION_SET_STATE': {
       const beamlineActionsList = JSON.parse(
         JSON.stringify(state.beamlineActionsList),
