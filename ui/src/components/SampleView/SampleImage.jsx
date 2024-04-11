@@ -725,8 +725,10 @@ export default class SampleImage extends React.Component {
     Object.values(this.props.shapes).forEach((s) => {
       if (s.selected) {
         const shapeData = this.props.shapes[s.id];
-        shapeData.selected = false;
-        updatedShapes.push(shapeData);
+        if (shapeData) {
+          shapeData.selected = false;
+          updatedShapes.push(shapeData);
+        }
       }
     });
 
