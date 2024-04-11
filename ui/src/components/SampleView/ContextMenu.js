@@ -346,9 +346,9 @@ export default class ContextMenu extends React.Component {
         parameters: {
           ...params,
           ...extraParams,
-          prefix: sampleData.defaultPrefix,
+          prefix: sampleData?.defaultPrefix,
           name,
-          subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
+          subdir: `${this.props.groupFolder}${sampleData?.defaultSubDir}`,
           cell_count: shape.gridData
             ? shape.gridData.numCols * shape.gridData.numRows
             : 'none',
@@ -394,7 +394,7 @@ export default class ContextMenu extends React.Component {
     // associate the newly saved shape to an existing task with -1 shape.
     // Fixes issues when the task is added before a shape
     const { tasks } = this.props.sampleData;
-    if (tasks.length > 0) {
+    if (tasks?.length > 0) {
       tasks.forEach((task) => {
         const { parameters } = task;
         if (parameters.shape === -1) {
