@@ -66,7 +66,7 @@ class EquipmentContainer extends React.Component {
                       load={this.props.loadSample}
                       sendCommand={this.props.sendCommand}
                       refresh={this.props.refresh}
-                      inContainer
+                      inPopover={false}
                       plates={this.props.plateGrid}
                       plateIndex={this.props.plateIndex}
                       selectedRow={this.props.selectedRow}
