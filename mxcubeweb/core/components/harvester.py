@@ -64,6 +64,14 @@ class Harvester(ComponentBase):
 
         return initial_state
 
+    def mount_from_harvester(self):
+        sc = HWR.beamline.sample_changer
+
+        try:
+            return sc.mount_from_harvester()
+        except AttributeError:
+            return False
+
     def get_harvester_contents(self):
         """Get the Harvester contents info
 
@@ -82,6 +90,11 @@ class Harvester(ComponentBase):
                 "calibration_state": self.get_calibration_state(),
                 "room_temperature_mode": room_temperature_mode,
             }
+
+            use_harvester = self.mount_from_harvester()
+            if use_harvester:
+                contents["use_harvester"] = True
+
         else:
             contents = {"name": "OFFLINE"}
 
@@ -260,7 +273,7 @@ class Harvester(ComponentBase):
     def validate_calibration(self) -> bool:
         """
         finish Calibration Procedure step 2
-        after user ran a 3 click centring
+        after user ran a 3 click centering
         Return (bool): whether the step 2 of calibration procedure
         goes to end (True)
         or had and exception (False)

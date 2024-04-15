@@ -144,13 +144,6 @@ class SampleChanger(ComponentBase):
                     "room_temperature_mode"
                 ] = HWR.beamline.sample_changer.get_room_temperature_mode()
 
-            try:
-                use_harvester = HWR.beamline.sample_changer.mount_from_harvester()
-            except Exception:
-                use_harvester = False
-            if use_harvester:
-                contents["use_harvester"] = True
-
             for element in HWR.beamline.sample_changer.get_components():
                 if element.is_present():
                     _addElement(contents, element)
@@ -201,7 +194,7 @@ class SampleChanger(ComponentBase):
 
         try:
             mount_from_harvester = sc.mount_from_harvester()
-        except Exception:
+        except AttributeError:
             mount_from_harvester = False
 
         res = None
@@ -448,10 +441,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
     # (sample changer, plate holder)
     sample_mount_device = HWR.beamline.sample_changer
 
-    try:
-        mount_from_harvester = sample_mount_device.mount_from_harvester()
-    except Exception:
-        mount_from_harvester = False
+    mount_from_harvester = mxcube.harvester.mount_from_harvester()
 
     if (
         sample_mount_device.get_loaded_sample()
@@ -495,10 +485,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 )
 
     # Harvest Next sample while loading current
-    if (
-        mount_from_harvester
-        and HWR.beamline.harvester.get_room_temperature_mode() is False
-    ):
+    if mount_from_harvester and not HWR.beamline.harvester.get_room_temperature_mode():
         mxcube.harvester.queue_harvest_next_sample(data_model, sample)
 
     robot_action_dict["endTime"] = time.strftime("%Y-%m-%d %H:%M:%S")
