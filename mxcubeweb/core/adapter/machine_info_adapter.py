@@ -6,16 +6,18 @@ from mxcubeweb.core.util.networkutils import RateLimited
 
 
 class MachineInfoAdapter(ActuatorAdapterBase):
+    """Adapter for MachineInfo like objects"""
+
     def __init__(self, ho, *args):
         """
         Args:
             (object): Hardware object.
         """
-        super(MachineInfoAdapter, self).__init__(ho, *args)
+        super().__init__(ho, *args)
         ho.connect("valueChanged", self._value_change)
         self._unique = True
 
-    def _set_value(self, value):
+    def _set_value(self, value=None):
         pass
 
     @RateLimited(0.1)
@@ -23,39 +25,19 @@ class MachineInfoAdapter(ActuatorAdapterBase):
         self.value_change(self.get_value(), **kwargs)
 
     def _get_value(self) -> HOMachineInfoModel:
-        return HOMachineInfoModel(
-            **{
-                "value": {
-                    "current": self.get_current(),
-                    "message": self.get_message(),
-                    "fillmode": self.get_fill_mode(),
-                }
-            }
-        )
+        return HOMachineInfoModel(**{"value": self.get_attributes()})
 
-    def get_message(self):
+    def get_attributes(self):
+        """Read the information from the HO. Format the output."""
+        value_dict = {"current": "-1 mA"}
         try:
-            message = self._ho.get_message()
+            value_dict.update(self._ho.get_value())
+            curr = value_dict.get("current")
+            if isinstance(curr, float):
+                value_dict.update({"current": f"{curr:3.2f} mA"})
         except (TypeError, AttributeError):
-            message = ""
-
-        return message
-
-    def get_current(self):
-        try:
-            current = "{:.1f} mA".format(round(float(self._ho.get_current()), 1))
-        except (TypeError, AttributeError):
-            current = "-1"
-
-        return current
-
-    def get_fill_mode(self):
-        try:
-            fmode = self._ho.get_fill_mode()
-        except (TypeError, AttributeError):
-            fmode = ""
-
-        return fmode
+            pass
+        return value_dict
 
     def limits(self):
         """
