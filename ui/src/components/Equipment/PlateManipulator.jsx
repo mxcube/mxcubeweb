@@ -5,6 +5,7 @@ import {
   Button,
   ButtonToolbar,
   OverlayTrigger,
+  Popover,
   Tooltip,
 } from 'react-bootstrap';
 import { contextMenu, Menu, Item, Separator } from 'react-contexify';
@@ -34,7 +35,7 @@ export default function PlateManipulator(props) {
     inPopover,
     load,
     sendCommand,
-    inContainer,
+    syncSamplesCrims,
   } = props;
 
   function showContextMenu(event, id) {
@@ -80,6 +81,32 @@ export default function PlateManipulator(props) {
     refresh();
   }
 
+  // PlateManipulator: Check whether a drop contain crystal --?
+  function hasCrystals() {
+    let _crystalLists = [];
+
+    if (loadedSample.address) {
+      const _loadedSample = loadedSample.address;
+      const loadedRow = _loadedSample.charAt(0);
+      let loadedCol = _loadedSample.charAt(1);
+      let loadedDrop = Number(_loadedSample.charAt(3), 10);
+      if (loadedDrop === ':') {
+        loadedDrop = _loadedSample.charAt(4);
+        loadedCol = Number(_loadedSample.slice(1, 2), 10);
+      }
+      if (crystalList.xtal_list) {
+        _crystalLists = crystalList.xtal_list.filter(
+          (item) =>
+            item.row === loadedRow &&
+            item.column === Number(loadedCol) &&
+            item.shelf === loadedDrop,
+        );
+      }
+    }
+
+    return _crystalLists.length > 0;
+  }
+
   function getCrystalAddress(row, col) {
     let crystal = null;
     if (crystalList) {
@@ -118,10 +145,6 @@ export default function PlateManipulator(props) {
       col: colIdx,
       dropID: 1,
     });
-  }
-
-  function syncSamplesCrims() {
-    syncSamplesCrims();
   }
 
   function loadSample(drop) {
@@ -168,6 +191,7 @@ export default function PlateManipulator(props) {
     selectedCol,
     selectedDrop,
   );
+
   const renderWellPlateInner = (comp, x, y, x1, y1, d) =>
     plate.numOfdrops.map((drop) => (
       <Button
@@ -232,6 +256,7 @@ export default function PlateManipulator(props) {
   } else {
     dropPosy = 70;
   }
+
   const renderWellPlate = () => (
     <div
       className={styles.plate}
@@ -443,9 +468,8 @@ export default function PlateManipulator(props) {
                         >
                           <li className="dropdown-header">
                             <b>
-                              Well `{row}
-                              {col}` ':'
-                              {loadedDrop}
+                              Well {row}
+                              {col} :{loadedDrop}
                             </b>
                           </li>
                           <Separator />
@@ -586,14 +610,15 @@ export default function PlateManipulator(props) {
   if (state === 'MOVING') {
     cssDisable = { cursor: 'wait', pointerEvents: 'none', opacity: '0.5' };
   }
-  return (
+
+  const renderPlate = () => (
     <Row
       className="mt-4"
       title={state === 'MOVING' ? 'Plate Moving, can not send commande' : ''}
     >
       <Col className="ms-3">
         <ButtonToolbar className="ms-4">
-          {inContainer ? (
+          {!inPopover ? (
             <div className="me-4">
               <b>{cplate_label}</b>
             </div>
@@ -645,5 +670,61 @@ export default function PlateManipulator(props) {
         </div>
       </div>
     </Row>
+  );
+
+  if (!inPopover) {
+    return renderPlate();
+  }
+  return (
+    <div className="mb-4">
+      <OverlayTrigger
+        trigger="click"
+        rootClose
+        placement="auto-end"
+        overlay={
+          <Popover id="platePopover" style={{ maxWidth: '800px' }}>
+            <Popover.Header>
+              {global_state.plate_info.plate_label}
+            </Popover.Header>
+            <Popover.Body style={{ padding: '0px' }}>
+              {renderPlate()}
+            </Popover.Body>
+          </Popover>
+        }
+      >
+        <Button
+          variant="outline-secondary"
+          style={{
+            marginTop: '1em',
+            minWidth: '155px',
+            width: 'fit-conent',
+            whiteSpace: 'nowrap',
+          }}
+          size="sm"
+        >
+          <i className="fa fa-th" /> Plate Navigation
+          <i className="fa fa-caret-right" />
+        </Button>
+      </OverlayTrigger>
+      <Button
+        style={{
+          marginTop: '1em',
+          minWidth: '155px',
+          width: 'fit-conent',
+          whiteSpace: 'nowrap',
+        }}
+        variant="outline-secondary"
+        size="sm"
+        title={
+          hasCrystals()
+            ? 'Move to Crystal position'
+            : 'No Crystal Found / Crims not Sync'
+        }
+        onClick={() => sendCommand('moveToCrystalPosition')}
+        disabled={!hasCrystals()}
+      >
+        <i className="fas fa-gem" /> Move to Crystal
+      </Button>
+    </div>
   );
 }

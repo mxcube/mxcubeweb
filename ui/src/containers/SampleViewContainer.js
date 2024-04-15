@@ -5,9 +5,6 @@ import {
   Row,
   Col,
   Container,
-  OverlayTrigger,
-  Popover,
-  Button,
 } from 'react-bootstrap';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControls from '../components/SampleView/MotorControls';
@@ -59,32 +56,6 @@ class SampleViewContainer extends Component {
     );
 
     return available?.show || false;
-  }
-
-  // PlateManipulator: Check whether a drop contain crystal --?
-  hasCrystals() {
-    let crystalList = [];
-
-    if (this.props.loadedSample.address) {
-      const loadedSample = this.props.loadedSample.address;
-      const loadedRow = loadedSample.charAt(0);
-      let loadedCol = loadedSample.charAt(1);
-      let loadedDrop = Number(loadedSample.charAt(3), 10);
-      if (loadedDrop === ':') {
-        loadedDrop = loadedSample.charAt(4);
-        loadedCol = Number(loadedSample.slice(1, 2), 10);
-      }
-      if (this.props.crystalList.xtal_list) {
-        crystalList = this.props.crystalList.xtal_list.filter(
-          (item) =>
-            item.row === loadedRow &&
-            item.column === Number(loadedCol) &&
-            item.shelf === loadedDrop,
-        );
-      }
-    }
-
-    return crystalList.length > 0;
   }
 
   render() {
@@ -196,79 +167,28 @@ class SampleViewContainer extends Component {
                 />
               ) : null}
               {this.props.sampleChangerContents.name === 'PlateManipulator' ? (
-                <div className="mb-4">
-                  <OverlayTrigger
-                    trigger="click"
-                    rootClose
-                    placement="auto-end"
-                    overlay={
-                      <Popover id="platePopover" style={{ maxWidth: '800px' }}>
-                        <Popover.Header>
-                          {this.props.global_state.plate_info.plate_label}
-                        </Popover.Header>
-                        <Popover.Body style={{ padding: '0px' }}>
-                          <PlateManipulator
-                            contents={this.props.sampleChangerContents}
-                            loadedSample={this.props.loadedSample}
-                            select={this.props.select}
-                            load={this.props.loadSample}
-                            sendCommand={this.props.sendCommand}
-                            refresh={this.props.refresh}
-                            plates={this.props.plateGrid}
-                            plateIndex={this.props.plateIndex}
-                            selectedRow={this.props.selectedRow}
-                            selectedCol={this.props.selectedCol}
-                            selectedDrop={this.props.selectedDrop}
-                            setPlate={this.props.setPlate}
-                            selectWell={this.props.selectWell}
-                            selectDrop={this.props.selectDrop}
-                            crystalList={this.props.crystalList}
-                            syncSamplesCrims={this.props.syncSamplesCrims}
-                            showErrorPanel={this.props.showErrorPanel}
-                            global_state={this.props.global_state}
-                            state={this.props.sampleChangerState}
-                            inPopover
-                          />
-                        </Popover.Body>
-                      </Popover>
-                    }
-                  >
-                    <Button
-                      variant="outline-secondary"
-                      style={{
-                        marginTop: '1em',
-                        minWidth: '155px',
-                        width: 'fit-conent',
-                        whiteSpace: 'nowrap',
-                      }}
-                      size="sm"
-                    >
-                      <i className="fa fa-th" /> Plate Navigation
-                      <i className="fa fa-caret-right" />
-                    </Button>
-                  </OverlayTrigger>
-                  <Button
-                    style={{
-                      marginTop: '1em',
-                      minWidth: '155px',
-                      width: 'fit-conent',
-                      whiteSpace: 'nowrap',
-                    }}
-                    variant="outline-secondary"
-                    size="sm"
-                    title={
-                      this.hasCrystals()
-                        ? 'Move to Crystal position'
-                        : 'No Crystal Found / Crims not Sync'
-                    }
-                    onClick={() =>
-                      this.props.sendCommand('moveToCrystalPosition')
-                    }
-                    disabled={!this.hasCrystals()}
-                  >
-                    <i className="fas fa-gem" /> Move to Crystal
-                  </Button>
-                </div>
+                <PlateManipulator
+                  contents={this.props.sampleChangerContents}
+                  loadedSample={this.props.loadedSample}
+                  select={this.props.select}
+                  load={this.props.loadSample}
+                  sendCommand={this.props.sendCommand}
+                  refresh={this.props.refresh}
+                  plates={this.props.plateGrid}
+                  plateIndex={this.props.plateIndex}
+                  selectedRow={this.props.selectedRow}
+                  selectedCol={this.props.selectedCol}
+                  selectedDrop={this.props.selectedDrop}
+                  setPlate={this.props.setPlate}
+                  selectWell={this.props.selectWell}
+                  selectDrop={this.props.selectDrop}
+                  crystalList={this.props.crystalList}
+                  syncSamplesCrims={this.props.syncSamplesCrims}
+                  showErrorPanel={this.props.showErrorPanel}
+                  global_state={this.props.global_state}
+                  state={this.props.sampleChangerState}
+                  inPopover
+                />
               ) : null}
               <MotorControls
                 save={this.props.setAttribute}
