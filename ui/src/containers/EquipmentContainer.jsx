@@ -25,6 +25,7 @@ import {
   harvestAndLoadCrystal,
   calibratePin as haCalibratePin,
   validateCalibration as haValidateCalibration,
+  sendDataCollectionToCrims,
 } from '../actions/harvester';
 
 import { showErrorPanel } from '../actions/general';
@@ -146,6 +147,7 @@ class EquipmentContainer extends React.Component {
                       message={this.props.haMessage}
                       sendCommand={this.props.haSendCommand}
                       calibratePin={this.props.haCalibratePin}
+                      sendDCToCrims={this.props.sendDataCollectionToCrims}
                       validateCalibration={this.props.haValidateCalibration}
                     />
                   </Col>
@@ -229,6 +231,7 @@ function mapDispatchToProps(dispatch) {
     harvestAndLoadCrystal: (address) =>
       dispatch(harvestAndLoadCrystal(address)),
     haCalibratePin: () => dispatch(haCalibratePin()),
+    sendDataCollectionToCrims: () => dispatch(sendDataCollectionToCrims()),
     haValidateCalibration: (validated) =>
       dispatch(haValidateCalibration(validated)),
     haRefresh: () => dispatch(haRefresh()),

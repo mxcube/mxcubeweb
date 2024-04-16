@@ -8,6 +8,7 @@ import {
   sendCalibratePin,
   sendValidateCalibration,
   sendAbort,
+  sendDataCollectionToCrims as sendDCToCrims,
   sendCommand as sendCmd,
 } from '../api/harvester';
 
@@ -69,6 +70,23 @@ export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
         throw new Error('Server refused to Harveste or Load Crystal');
       } else if (successCb) {
         successCb();
+      }
+      response.json().then((contents) => {
+        dispatch(setContents(contents));
+      });
+    });
+  };
+}
+
+export function sendDataCollectionToCrims() {
+  return (dispatch) => {
+    sendDCToCrims().then((response) => {
+      if (response.status >= 400) {
+        dispatch(showErrorPanel(true, response.headers.get('message')));
+        throw new Error('Server refused to Harveste or Load Crystal');
+      } else {
+        // temporary use ErrorPanel to display success message
+        dispatch(showErrorPanel(true, 'Succesfully Send DC to Crims'));
       }
       response.json().then((contents) => {
         dispatch(setContents(contents));

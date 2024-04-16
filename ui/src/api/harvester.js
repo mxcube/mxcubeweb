@@ -18,6 +18,10 @@ export function sendCalibratePin() {
   return endpoint.get('/calibrate').res();
 }
 
+export function sendDataCollectionToCrims() {
+  return endpoint.get('/send_data_collection_info_to_crims').res();
+}
+
 export function sendValidateCalibration(validated) {
   return endpoint
     .post(JSON.stringify(validated), '/validate_calibration')

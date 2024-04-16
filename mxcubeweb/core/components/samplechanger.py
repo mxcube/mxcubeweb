@@ -549,7 +549,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                             if not dm.current_centring_procedure:
                                 dm.start_centring_method(dm.C3D_MODE)
 
-                            # NBNB  BUG . self and app are not avialble here
+                            # NBNB  BUG . self and app are not available here
                             if mxcube.AUTO_MOUNT_SAMPLE:
                                 msg = (
                                     "Going to save centring automatically, please wait"

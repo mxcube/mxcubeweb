@@ -83,11 +83,12 @@ class Harvester(ComponentBase):
             crystal_list = self.get_crystal_list()
             room_temperature_mode = HWR.beamline.harvester.get_room_temperature_mode()
             number_of_pins = HWR.beamline.harvester.get_number_of_available_pin()
+            calibration_state = HWR.beamline.harvester.calibration_state
             contents = {
                 "name": root_name,
                 "harvester_crystal_list": crystal_list,
                 "number_of_pins": number_of_pins,
-                "calibration_state": self.get_calibration_state(),
+                "calibration_state": calibration_state,
                 "room_temperature_mode": room_temperature_mode,
             }
 
@@ -189,9 +190,6 @@ class Harvester(ComponentBase):
             logging.getLogger("user_level_log").exception(msg)
             return False
 
-    def get_calibration_state(self) -> bool:
-        return HWR.beamline.harvester.calibrate_state
-
     def calibrate_pin(self) -> bool:
         """
             Pin Calibration Procedure
@@ -246,7 +244,7 @@ class Harvester(ComponentBase):
                 md.centringVertical.set_value_relative(sample_drift_y, None)
 
                 md.save_current_motor_position()
-                harvester_device.set_calibrate_state(True)
+                harvester_device.calibration_state(True)
 
                 logging.getLogger("user_level_log").info(
                     "Pin Calibration Step 1 Succeed"
@@ -267,7 +265,7 @@ class Harvester(ComponentBase):
 
     def cancel_calibration(self) -> None:
         harvester_device = HWR.beamline.harvester
-        harvester_device.set_calibrate_state(False)
+        harvester_device.calibration_state(False)
         logging.getLogger("user_level_log").warning("Pin Calibration Canceled")
 
     def validate_calibration(self) -> bool:
@@ -320,7 +318,7 @@ class Harvester(ComponentBase):
                 calibrated_motor_offset["phiz"],
             )
 
-            harvester_device.set_calibrate_state(False)
+            harvester_device.calibration_state(False)
         except Exception:
             logging.getLogger("user_level_log").exception(
                 "Pin Calibration / validation Failed"
@@ -489,6 +487,6 @@ class Harvester(ComponentBase):
             return "Crystal Harvested properly"
         except Exception:
             logging.getLogger("user_level_log").warning(
-                "Warning: Could not harvest next sample"
+                f"Warning: Could not harvest sample: {xtal_uuid}"
             )
             return "Could not Harvest Crystal"
