@@ -1,11 +1,7 @@
 import React, { Component } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import {
-  Row,
-  Col,
-  Container,
-} from 'react-bootstrap';
+import { Row, Col, Container } from 'react-bootstrap';
 import SampleImage from '../components/SampleView/SampleImage';
 import MotorControls from '../components/SampleView/MotorControls';
 import PhaseInput from '../components/SampleView/PhaseInput';

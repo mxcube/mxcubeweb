@@ -14,6 +14,7 @@ export default function HarvesterMaintenance(props) {
     calibratePin,
     validateCalibration,
     sendCommand,
+    sendDCToCrims,
     commands,
   } = props;
 
@@ -154,10 +155,9 @@ export default function HarvesterMaintenance(props) {
               <Col sm={6}>
                 <Button
                   className="mt-1"
-                  disabled
                   variant="outline-secondary"
-                  onClick={() => calibratePin()}
-                  title="Send latest Data collection Groupd and to Crims"
+                  onClick={() => sendDCToCrims()}
+                  title="TEST : Send latest Data collection Group and to Crims"
                 >
                   Send Data to Crims
                 </Button>
