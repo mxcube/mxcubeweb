@@ -384,6 +384,8 @@ def init_route(app, server, url_prefix):
         :statuscode: 200: no error
         :statuscode: 409: error
         """
+        print("get in click() method in samplecentring routes")
+
         pos = json.loads(request.data).get("clickPos", None)
         print("==== centring click at %s %s" % (pos["x"], pos["y"]))
         data = app.sample_view.centring_handle_click(pos["x"], pos["y"])
