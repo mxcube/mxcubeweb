@@ -36,8 +36,8 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def harvest_crystal():
         try:
-            data = json.loads(request.data)
-            app.harvester.harvest_crystal(data)
+            crystal_uuid = json.loads(request.data)
+            HWR.beamline.harvester.harvest_crystal(crystal_uuid)
         except Exception as ex:
             logging.getLogger("user_level_log").exception("Cannot Harvest Crystal")
             resp = (
@@ -54,23 +54,29 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def harvest_and_mount_sample():
         try:
-            data = json.loads(request.data)
-            app.harvester.harvest_and_mount_sample(data)
+            crystal_uuid = json.loads(request.data)
+            sample = app.harvester.get_sample_info(crystal_uuid)
+            HWR.beamline.sample_changer.harvest_and_mount_sample(
+                crystal_uuid, sample["sampleID"]
+            )
         except Exception as ex:
+            logging.getLogger("user_level_log").exception(
+                "Cannot Harvest or mount Crystal"
+            )
             resp = (
                 "Cannot Harvest or Mount Sample",
                 409,
                 {"Content-Type": "application/json", "message": str(ex)},
             )
             return resp
-
+        app.harvester.init_signals()
         return jsonify(app.harvester.get_harvester_contents())
 
     @bp.route("/calibrate", methods=["GET"])
     @server.require_control
     @server.restrict
     def calibrate():
-        ret = app.harvester.calibrate_pin()
+        ret = HWR.beamline.harvester_maintenance.calibrate_pin()
         if ret:
             return jsonify(app.harvester.get_harvester_contents())
 
@@ -87,9 +93,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def validate_calibration():
         validated = json.loads(request.data)
         if validated:
-            app.harvester.validate_calibration()
+            HWR.beamline.harvester_maintenance.validate_calibration()
         else:
-            app.harvester.cancel_calibration()
+            HWR.beamline.harvester.set_calibration_state(False)
+            logging.getLogger("user_level_log").warning("Pin Calibration Canceled")
 
         return jsonify(app.harvester.get_harvester_contents())
 

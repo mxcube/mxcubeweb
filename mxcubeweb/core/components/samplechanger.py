@@ -192,10 +192,7 @@ class SampleChanger(ComponentBase):
 
         sc = HWR.beamline.sample_changer
 
-        try:
-            mount_from_harvester = sc.mount_from_harvester()
-        except AttributeError:
-            mount_from_harvester = False
+        mount_from_harvester = self.app.harvester.mount_from_harvester()
 
         res = None
 
@@ -233,7 +230,7 @@ class SampleChanger(ComponentBase):
                     C3D_MODE = HWR.beamline.diffractometer.C3D_MODE
                     HWR.beamline.diffractometer.start_centring_method(C3D_MODE)
                 elif HWR.beamline.diffractometer.in_plate_mode():
-                    msg = "Starting autoloop Focusin ..."
+                    msg = "Starting autoloop Focusing ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     sc.move_to_crystal_position(None)
 
@@ -463,7 +460,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
             # in this case the sample changer takes the sample from an Harvester
             # We Harvest the sample and make it ready to load
             if mount_from_harvester:
-                mxcube.harvester.queue_harvest_sample(data_model, sample)
+                mxcube.harvester.queue_harvest_sample(data_model)
 
             try:
                 res = mxcube.sample_changer.mount_sample_clean_up(sample)
@@ -486,7 +483,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
 
     # Harvest Next sample while loading current
     if mount_from_harvester and not HWR.beamline.harvester.get_room_temperature_mode():
-        mxcube.harvester.queue_harvest_next_sample(data_model, sample)
+        mxcube.harvester.queue_harvest_next_sample(data_model)
 
     robot_action_dict["endTime"] = time.strftime("%Y-%m-%d %H:%M:%S")
     if sample_mount_device.has_loaded_sample():
@@ -511,9 +508,10 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 logging.getLogger("user_level_log").info(
                     "Start Auto Harvesting Centring"
                 )
-                harvester_device = HWR.beamline.harvester
 
-                computed_offset = harvester_device.get_offsets_for_sample_centering()
+                computed_offset = (
+                    HWR.beamline.harvester.get_offsets_for_sample_centering()
+                )
                 dm.start_harvester_centring(computed_offset)
 
             except Exception:
