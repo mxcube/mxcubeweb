@@ -3,6 +3,8 @@ import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { getLastUsedParameters } from '../Tasks/fields';
 
+import { showErrorPanel } from '../../actions/general';
+
 // eslint-disable-next-line react/no-unsafe
 export default class ContextMenu extends React.Component {
   constructor(props) {
@@ -339,26 +341,31 @@ export default class ContextMenu extends React.Component {
 
     params = getLastUsedParameters(type, params);
 
-    this.props.showForm(
-      modalName,
-      [sampleID],
-      {
-        parameters: {
-          ...params,
-          ...extraParams,
-          prefix: sampleData?.defaultPrefix,
-          name,
-          subdir: `${this.props.groupFolder}${sampleData?.defaultSubDir}`,
-          cell_count: shape.gridData
-            ? shape.gridData.numCols * shape.gridData.numRows
-            : 'none',
-          numRows: shape.gridData ? shape.gridData.numRows : 0,
-          numCols: shape.gridData ? shape.gridData.numCols : 0,
+    if (sampleData) {
+      this.props.showForm(
+        modalName,
+        [sampleID],
+        {
+          parameters: {
+            ...params,
+            ...extraParams,
+            prefix: sampleData.defaultPrefix,
+            name,
+            subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
+            cell_count: shape.gridData
+              ? shape.gridData.numCols * shape.gridData.numRows
+              : 'none',
+            numRows: shape.gridData ? shape.gridData.numRows : 0,
+            numCols: shape.gridData ? shape.gridData.numCols : 0,
+          },
+          type,
         },
-        type,
-      },
-      sid,
-    );
+        sid,
+      );
+    } else {
+      console.log("sampleData undefined")
+      this.props.showErrorPanel(true, 'There is no sample mounted, cannot collect data.')
+    }
     this.hideContextMenu();
     this.props.sampleViewActions.showContextMenu(false);
   }
