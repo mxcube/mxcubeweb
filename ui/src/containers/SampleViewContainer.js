@@ -280,6 +280,7 @@ class SampleViewContainer extends Component {
                 taskForm={this.props.taskForm}
                 enable2DPoints={this.props.enable2DPoints}
                 enableNativeMesh={this.props.enableNativeMesh}
+                showErrorPanel={this.props.showErrorPanel}
               />
               <SampleImage
                 getControlAvailability={this.getControlAvailability}
