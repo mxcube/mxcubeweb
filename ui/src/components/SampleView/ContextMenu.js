@@ -3,8 +3,6 @@ import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { getLastUsedParameters } from '../Tasks/fields';
 
-import { showErrorPanel } from '../../actions/general';
-
 // eslint-disable-next-line react/no-unsafe
 export default class ContextMenu extends React.Component {
   constructor(props) {
