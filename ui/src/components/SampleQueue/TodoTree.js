@@ -42,7 +42,7 @@ export default class TodoTree extends React.Component {
     return (
       <ListGroup variant="flush">
         <ListGroup.Item
-          className="mt-2 d-flex list-head"
+          className="d-flex list-head"
           style={{ borderBottom: 'none' }}
         >
           <div className="me-auto">
@@ -57,7 +57,7 @@ export default class TodoTree extends React.Component {
           <div>
             <Button
               disabled={this.props.queueStatus === QUEUE_RUNNING}
-              className="me-2 btn-primary"
+              className="btn-primary"
               size="sm"
               onClick={this.showAddSampleForm}
             >
