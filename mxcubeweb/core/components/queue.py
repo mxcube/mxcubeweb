@@ -67,7 +67,7 @@ class Queue(ComponentBase):
         return prefix_path_dict
 
     def get_run_number(self, pt):
-        # Path templates of files not yet written to to disk, we are only
+        # Path templates of files not yet written to disk, we are only
         # interested in the prefix path
 
         pt.run_number = HWR.beamline.queue_model.get_next_run_number(pt)
