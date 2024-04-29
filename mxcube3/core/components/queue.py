@@ -2269,7 +2269,35 @@ class Queue(ComponentBase):
         else:
             logging.getLogger("MX3.HWR").info("[QUEUE] Queue started")
 
+    # def queue_stop(self):
+    #     from mxcube3.routes import signals
+    #
+    #     if HWR.beamline.queue_manager._root_task is not None:
+    #         HWR.beamline.queue_manager.stop()
+    #     else:
+    #         qe = HWR.beamline.queue_manager.get_current_entry()
+    #         # check if a node/task is executing and stop that one
+    #         if qe:
+    #             try:
+    #                 qe.stop()
+    #             except Exception:
+    #                 logging.getLogger("MX3.HWR").exception(
+    #                     "[QUEUE] Could not stop queue"
+    #                 )
+    #             HWR.beamline.queue_manager.set_pause(False)
+    #             # the next two is to avoid repeating the task
+    #             # TODO: if you now run the queue it will be enabled and run
+    #             qe.get_data_model().set_executed(True)
+    #             qe.get_data_model().set_enabled(False)
+    #             qe._execution_failed = True
+    #
+    #             HWR.beamline.queue_manager._is_stopped = True
+    #             signals.queue_execution_stopped()
+
     def queue_stop(self):
+        """
+        改写，因为机械手报错时，queue stop不掉
+        """
         from mxcube3.routes import signals
 
         if HWR.beamline.queue_manager._root_task is not None:
@@ -2284,15 +2312,16 @@ class Queue(ComponentBase):
                     logging.getLogger("MX3.HWR").exception(
                         "[QUEUE] Could not stop queue"
                     )
-                HWR.beamline.queue_manager.set_pause(False)
-                # the next two is to avoid repeating the task
-                # TODO: if you now run the queue it will be enabled and run
-                qe.get_data_model().set_executed(True)
-                qe.get_data_model().set_enabled(False)
-                qe._execution_failed = True
 
-                HWR.beamline.queue_manager._is_stopped = True
-                signals.queue_execution_stopped()
+            HWR.beamline.queue_manager.set_pause(False)
+            # the next two is to avoid repeating the task
+            # TODO: if you now run the queue it will be enabled and run
+            # qe.get_data_model().set_executed(False)
+            # qe.get_data_model().set_enabled(False)
+            # qe._execution_failed = True
+
+            HWR.beamline.queue_manager._is_stopped = True
+            signals.queue_execution_stopped()
 
     def queue_pause(self):
         """
