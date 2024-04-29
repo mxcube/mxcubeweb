@@ -39,7 +39,7 @@ pydantic = "^1.10.2"
 PyDispatcher = "^2.0.6"
 pytz = "^2022.6"
 tzlocal = "^4.2"
-mxcubecore = ">=1.54.0"
+mxcubecore = ">=1.102.0"
 mxcube-video-streamer = ">=1.0.0"
 bcrypt = "^4.0.1"
 
