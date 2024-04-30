@@ -4,7 +4,7 @@
   "private": true,
   "engines": {
     "node": "18.x || 20.x",
-    "pnpm": "8.x"
+    "pnpm": "9.x"
   },
   "scripts": {
     "start": "GENERATE_SOURCEMAP=false react-scripts start",

@@ -8,4 +8,4 @@ dependencies:
   - poetry
   - nodejs
   - redis-server
-  - pnpm
+  - pnpm =9.*

@@ -53,7 +53,7 @@ init_conda() {
 
 
 install_node() {
-  command npm install --global pnpm@8
+  command npm install --global pnpm@9
   command pnpm --prefix ui install
 }
 
