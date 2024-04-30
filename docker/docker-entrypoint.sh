@@ -9,7 +9,7 @@ vncserver :1 -geometry 1680x1050 -depth 24 &
 
 cd /opt/mxcubeweb
 
-npm install --global pnpm@8
+npm install --global pnpm@9
 pnpm --prefix ui install
 pnpm --prefix ui start &
 
