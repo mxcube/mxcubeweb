@@ -2312,14 +2312,14 @@ class Queue(ComponentBase):
                     logging.getLogger("MX3.HWR").exception(
                         "[QUEUE] Could not stop queue"
                     )
-
-            HWR.beamline.queue_manager.set_pause(False)
-            # the next two is to avoid repeating the task
-            # TODO: if you now run the queue it will be enabled and run
-            # qe.get_data_model().set_executed(False)
-            # qe.get_data_model().set_enabled(False)
-            # qe._execution_failed = True
-
+                HWR.beamline.queue_manager.set_pause(False)
+                # the next two is to avoid repeating the task
+                # TODO: if you now run the queue it will be enabled and run
+                qe.get_data_model().set_executed(False)
+                qe.get_data_model().set_enabled(False)
+                qe._execution_failed = True
+            else:
+                HWR.beamline.queue_manager.set_pause(False)
             HWR.beamline.queue_manager._is_stopped = True
             signals.queue_execution_stopped()
 
