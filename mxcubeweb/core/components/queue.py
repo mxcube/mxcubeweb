@@ -1094,6 +1094,15 @@ class Queue(ComponentBase):
         params = task_data["parameters"]
         acq.acquisition_parameters.set_from_dict(params)
 
+        processing_params = model.processing_parameters
+        processing_params.space_group = params.get("space_group", "")
+        processing_params.cell_a = params.get("cellA", "")
+        processing_params.cell_alpha = params.get("cellAlpha", "")
+        processing_params.cell_b = params.get("cellB", "")
+        processing_params.cell_beta = params.get("cellBeta", "")
+        processing_params.cell_c = params.get("cellC", "")
+        processing_params.cell_gamma = params.get("cellGamma", "")
+
         ftype = HWR.beamline.detector.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
 
@@ -1616,6 +1625,15 @@ class Queue(ComponentBase):
 
         acq = model.acquisitions[0]
         params = task["parameters"]
+
+        processing_params = model.processing_parameters
+        processing_params.space_group = params.get("space_group", "")
+        processing_params.cell_a = params.get("cellA", "")
+        processing_params.cell_alpha = params.get("cellAlpha", "")
+        processing_params.cell_b = params.get("cellB", "")
+        processing_params.cell_beta = params.get("cellBeta", "")
+        processing_params.cell_c = params.get("cellC", "")
+        processing_params.cell_gamma = params.get("cellGamma", "")
 
         ftype = HWR.beamline.detector.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
