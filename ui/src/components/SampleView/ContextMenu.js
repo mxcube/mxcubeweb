@@ -340,6 +340,14 @@ export default class ContextMenu extends React.Component {
     params = getLastUsedParameters(type, params);
 
     if (sampleData) {
+      const [cell_count, numRows, numCols] = shape.gridData
+        ? [
+            shape.gridData.numCols * shape.gridData.numRows,
+            shape.gridData.numRows,
+            shape.gridData.numCols,
+          ]
+        : ['none', 0, 0];
+
       this.props.showForm(
         modalName,
         [sampleID],
@@ -350,11 +358,9 @@ export default class ContextMenu extends React.Component {
             prefix: sampleData.defaultPrefix,
             name,
             subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
-            cell_count: shape.gridData
-              ? shape.gridData.numCols * shape.gridData.numRows
-              : 'none',
-            numRows: shape.gridData ? shape.gridData.numRows : 0,
-            numCols: shape.gridData ? shape.gridData.numCols : 0,
+            cell_count,
+            numRows,
+            numCols,
           },
           type,
         },
