@@ -361,8 +361,10 @@ export default class ContextMenu extends React.Component {
         sid,
       );
     } else {
-      console.log("sampleData undefined")
-      this.props.showErrorPanel(true, 'There is no sample mounted, cannot collect data.')
+      this.props.showErrorPanel(
+        true,
+        'There is no sample mounted, cannot collect data.',
+      );
     }
     this.hideContextMenu();
     this.props.sampleViewActions.showContextMenu(false);
