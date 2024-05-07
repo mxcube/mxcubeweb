@@ -399,9 +399,10 @@ class SampleView(ComponentBase):
                         x, y = shape_data["screen_coord"]
 
                         logging.getLogger("HWR.MX3").info("step into mpos = HWR.beamline.diffractometer.get_centred_point_from_coord()")
-                        # shape_data[cell_width] and shape[cell_height]一直是100
+                        # shape_data[cell_width] and shape[cell_height]之前一直是100,现在是50
                         logging.getLogger("HWR.MX3").debug(
                             "shape_data[cell_width] and shape[cell_height] in update_shapes of sampleview.py: %s, %s " %(shape_data["cell_width"], shape_data["cell_height"]))
+                        # mpos 是md2各电机对应给定x，y，坐标的参数
                         mpos = HWR.beamline.diffractometer.get_centred_point_from_coord(
                             x, y, return_by_names=True
                         )
