@@ -85,9 +85,11 @@ export function toFixed(state, hoName, parameterName = null) {
     }
   }
 
-  return value
-    ? Number.parseFloat(value).toFixed(precision)
-    : ho.value.toFixed(precision);
+  return Number(
+    value
+      ? Number.parseFloat(value).toFixed(precision)
+      : ho.value.toFixed(precision),
+  );
 }
 
 function validation(error, warning) {
