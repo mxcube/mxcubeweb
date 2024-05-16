@@ -211,7 +211,6 @@ class GenericTaskForm extends React.Component {
       <div>
         <div className="row">
           {properties.map((prop) => {
-            const { uiSchema } = prop.content.props;
             const className = 'col-6 json-schema-form-group-div';
             return (
               <div key={prop.content.key} className={className}>
