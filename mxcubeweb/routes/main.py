@@ -50,6 +50,7 @@ def init_route(app, server, url_prefix):
                 "mesh_result_format": _blc.mesh_result_format,
                 "use_native_mesh": _blc.use_native_mesh,
                 "enable_2d_points": _blc.enable_2d_points,
+                "enable_phase_control": _blc.enable_phase_control,
             }
         )
 

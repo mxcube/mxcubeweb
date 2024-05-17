@@ -115,13 +115,14 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={2} xxl={1} className={styles.controllers}>
             <DefaultErrorBoundary>
-              <div className={motorInputStyles.container}>
-                <label className={motorInputStyles.label} htmlFor="PhaseInput">
-                  Phase Control
-                </label>
-                <PhaseInput />
-              </div>
-
+              {this.props.enablePhaseControl && (
+                <div className={motorInputStyles.container}>
+                  <label className={motorInputStyles.label} htmlFor="PhaseInput">
+                    Phase Control
+                  </label>
+                  <PhaseInput />
+                </div>
+              )}
               <div className={motorInputStyles.container}>
                 <label
                   className={motorInputStyles.label}
@@ -236,6 +237,7 @@ function mapStateToProps(state) {
     uiproperties: state.uiproperties,
     mode: state.general.mode,
     meshResultFormat: state.general.meshResultFormat,
+    enablePhaseControl: state.general.enablePhaseControl,
     sampleChangerContents: state.sampleChanger.contents,
     sampleChangerState: state.sampleChanger.state,
     global_state: state.sampleChangerMaintenance.global_state,

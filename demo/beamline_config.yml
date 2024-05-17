@@ -82,6 +82,7 @@ configuration:
   mesh_result_format: PNG
   use_native_mesh: true
   enable_2d_points: true
+  enable_phase_control: true
 
   default_acquisition_parameters:
     default:

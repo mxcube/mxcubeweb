@@ -25,12 +25,18 @@ class AppSettingsModel(BaseModel):
             "be dis-activated to not clash with i.e workflow mesh,"
         ),
     )
-
     enable_2d_points: bool = Field(
         True,
         description=(
             " Enable features to work with points in the plane, called2D-points,"
             " (none centred positions)"
+        ),
+    )
+    enable_phase_control: bool = Field(
+        True,
+        description=(
+            "Allow to hide or show the PhaseControl object in the frontend,"
+            " True by default"
         ),
     )
 
