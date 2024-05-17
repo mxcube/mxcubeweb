@@ -19,6 +19,7 @@ export default function InOutSwitch(props) {
     openValue,
     offValue,
     optionsOverlay,
+    invertBgColor,
     labelText,
     isBtnLabel,
     overlayPlacement,
@@ -77,7 +78,7 @@ export default function InOutSwitch(props) {
   switch (value) {
     case openValue:
     case 'READY': {
-      msgBgStyle = 'success';
+      msgBgStyle = invertBgColor ? 'danger' : 'success';
       btn = (
         <Button
           variant="outline-secondary"
@@ -92,7 +93,7 @@ export default function InOutSwitch(props) {
     case offValue:
     case 'DISABLED':
     case 'CLOSED': {
-      msgBgStyle = 'danger';
+      msgBgStyle = invertBgColor ? 'success' : 'danger';
       btn = (
         <Button
           variant="outline-secondary"
