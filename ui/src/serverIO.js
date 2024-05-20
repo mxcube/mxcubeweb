@@ -304,8 +304,7 @@ class ServerIO {
     this.hwrSocket.on('sample_centring', (data) => {
       if (data.method === CLICK_CENTRING) {
         dispatch(startClickCentringAction());
-        const msg =
-          '3-Click Centring: <br /> Select centered position or center';
+        const msg = `${data.method_name} Centring: <br /> Select centered position or center`;
         dispatch(videoMessageOverlay(true, msg));
       } else {
         const msg = 'Auto loop centring: <br /> Save position or re-center';

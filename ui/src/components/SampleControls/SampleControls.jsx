@@ -9,13 +9,15 @@ import VideoSizeControl from './VideoSizeControl';
 import ZoomControl from './ZoomControl';
 
 function SampleControls(props) {
-  const { canvas } = props;
+  const { canvas, manualCentringName } = props;
 
   return (
     <div className={styles.controls}>
       {useShowControl('snapshot') && <SnapshotControl canvas={canvas} />}
       {useShowControl('draw_grid') && <GridControl />}
-      {useShowControl('3_click_centring') && <CentringControl />}
+      {useShowControl('3_click_centring') && (
+        <CentringControl manualCentringName={manualCentringName} />
+      )}
       {useShowControl('focus') && <FocusControl />}
       {useShowControl('zoom') && <ZoomControl />}
       {useShowControl('backlight') && (

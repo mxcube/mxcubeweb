@@ -251,7 +251,9 @@ def init_route(app, server, url_prefix):  # noqa: C901
         try:
             data = app.sample_view.start_manual_centring()
         except Exception:
-            logging.getLogger("MX3.HWR").exception("Could not start 3 click centring")
+            logging.getLogger("MX3.HWR").exception(
+                "Could not start %s centring" % HWR.beamline.diffractometer.MANUAL3CLICK_MODE.lower()
+            )
             resp = (
                 "Could not move motor",
                 409,

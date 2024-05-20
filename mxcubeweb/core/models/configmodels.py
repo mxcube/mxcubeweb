@@ -83,6 +83,7 @@ class _UICameraConfigModel(BaseModel):
 class _UISampleViewVideoControlsModel(BaseModel):
     id: str
     show: bool
+    label: str | None
 
 
 class _UISampleViewVideoGridSettingsModel(BaseModel):
