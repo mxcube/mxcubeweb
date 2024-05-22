@@ -2102,7 +2102,9 @@ class Queue(ComponentBase):
                 HWR.beamline.queue_manager.execute(entry)
             except Exception:
                 HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
-
+        logging.getLogger("HWR").debug(
+            "get out execute_entry_with_id()"
+        )#添加
     def init_signals(self, queue):
         """
         Initialize queue hwobj related signals.
@@ -2254,6 +2256,7 @@ class Queue(ComponentBase):
         try:
             # If auto mount sample is false, just run the sample
             # supplied in the call
+            # get_auto_mount_sample 对应UI界面勾选的automount选项
             if not self.get_auto_mount_sample():
                 if sid:
                     self.execute_entry_with_id(sid)
@@ -2265,6 +2268,7 @@ class Queue(ComponentBase):
                 HWR.beamline.queue_manager.execute()
 
         except Exception as ex:
+            logging.getLogger("MX3.HWR").debug("[QUEUE] exception happened during Queue starting, e: ",ex)
             signals.queue_execution_failed(ex)
         else:
             logging.getLogger("MX3.HWR").info("[QUEUE] Queue started")
