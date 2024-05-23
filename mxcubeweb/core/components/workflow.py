@@ -15,7 +15,7 @@ class Workflow(ComponentBase):
         beamline = HWR.beamline
 
         try:
-            for wf in beamline.workflow.get_available_workflows():
+            for wf in beamline.config.workflow.get_available_workflows():
                 # Rename name and path to wfname and wfpath in order to avoid name
                 # clashes
                 wf["wfname"] = wf.pop("name")
@@ -27,18 +27,18 @@ class Workflow(ComponentBase):
 
         if getattr(beamline, "gphl_workflow", None):
             # Add Global Phasing workflows if available
-            workflows.update(beamline.gphl_workflow.get_available_workflows())
+            workflows.update(beamline.config.gphl_workflow.get_available_workflows())
 
         return {"workflows": workflows}
 
     def submit_parameters(self, params):
-        HWR.beamline.workflow.set_values_map(params)
+        HWR.beamline.config.workflow.set_values_map(params)
 
     def update_gphl_parameters(self, params):
         HWR.beamline.emit(params["signal"], params["instruction"], params["data"])
 
     def get_mesh_result(self, gid, _type="heatmap"):
-        base64data = HWR.beamline.sample_view.get_grid_data(gid)
+        base64data = HWR.beamline.config.sample_view.get_grid_data(gid)
         base64data = base64data if base64data else ""
 
         data = base64.b64decode(base64data)

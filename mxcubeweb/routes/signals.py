@@ -29,7 +29,7 @@ from mxcubecore import HardwareRepository as HWR
 
 
 def last_queue_node():
-    node = HWR.beamline.queue_manager._current_queue_entries[-1].get_data_model()
+    node = HWR.beamline.config.queue_manager._current_queue_entries[-1].get_data_model()
 
     # Reference collections are orphans, the node we want is the
     # characterisation not the reference collection itself
@@ -179,10 +179,10 @@ def loaded_sample_changed(sample):
     try:
         sampleID = address
 
-        if HWR.beamline.sample_changer.has_loaded_sample():
+        if HWR.beamline.config.sample_changer.has_loaded_sample():
             mxcube.sample_changer.set_current_sample(sampleID)
         else:
-            sample = HWR.beamline.sample_changer.get_loaded_sample()
+            sample = HWR.beamline.config.sample_changer.get_loaded_sample()
 
             if sample:
                 address = sample.get_address()
@@ -253,7 +253,7 @@ def get_task_state(entry):
     lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
 
     try:
-        limsres = HWR.beamline.lims.lims_rest.get_dc(lims_id)
+        limsres = HWR.beamline.config.lims.lims_rest.get_dc(lims_id)
     except Exception:
         limsres = {}
 
@@ -634,7 +634,7 @@ def motor_position_callback(movable):
 
 
 def beam_changed(*args, **kwargs):
-    beam_info = HWR.beamline.beam
+    beam_info = HWR.beamline.config.beam
 
     if beam_info is None:
         logging.getLogger("HWR").error("beamInfo is not defined")
