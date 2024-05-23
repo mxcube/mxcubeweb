@@ -19,6 +19,6 @@ class EnergyAdapter(ActuatorAdapter):
         self._type = "ENERGY"
 
     def get_resolution_limits_for_energy(self, energy: float) -> tuple:
-        return HWR.beamline.resolution.get_limits_for_wavelength(
+        return HWR.beamline.config.resolution.get_limits_for_wavelength(
             self._ho.calculate_wavelength(energy)
         )
