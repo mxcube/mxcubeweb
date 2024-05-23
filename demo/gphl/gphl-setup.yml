@@ -1,93 +1,93 @@
 ---
 
-_initialise_class:
-  class: mxcubecore.HardwareObjects.Gphl.GphlWorkflowConnection.GphlWorkflowConnection
+class: mxcubecore.HardwareObjects.Gphl.GphlWorkflowConnection.GphlWorkflowConnection
 
-directory_locations:
-  # Directory locations. Can also be used with ${} syntax in this file
-  GPHL_INSTALLATION: /alt/rhfogh/Software/GPhL/gphl_release
-  # GPHL_INSTALLATION:
-  #   /alt/rhfogh/Software/GPhL/nightly_20230823/Files_workflow_TRUNK_alpha-bdg
-  # GPHL_INSTALLATION:
-  #   /alt/rhfogh/Software/GPhL/nightly_20230602/Files_workflow_BETA_beta-academic
+configuration:
+  directory_locations:
+    # Directory locations. Can also be used with ${} syntax in this file
+    GPHL_INSTALLATION: /alt/rhfogh/Software/GPhL/gphl_release
+    # GPHL_INSTALLATION:
+    #   /alt/rhfogh/Software/GPhL/nightly_20230823/Files_workflow_TRUNK_alpha-bdg
+    # GPHL_INSTALLATION:
+    #   /alt/rhfogh/Software/GPhL/nightly_20230602/Files_workflow_BETA_beta-academic
 
 
-# If set, run workflow through ssh with selected options
-# and quote parameters as appropriate
-# NB The Host option is mandatory
-# ConfigFile is the ssh configuration file, passed to ssh with the -F option
-# ssh_options:
-#   Host: lonsdale
-#   IdentityFile: /home/rhfogh/.ssh/wf_test_id
-#   User: rhfogh
-#   StrictHostKeyChecking: no
-#   ConfigFile: /path/to/ssh/config/file
+  # If set, run workflow through ssh with selected options
+  # and quote parameters as appropriate
+  # NB The Host option is mandatory
+  # ConfigFile is the ssh configuration file, passed to ssh with the -F option
+  # ssh_options:
+  #   Host: lonsdale
+  #   IdentityFile: /home/rhfogh/.ssh/wf_test_id
+  #   User: rhfogh
+  #   StrictHostKeyChecking: no
+  #   ConfigFile: /path/to/ssh/config/file
 
-# Directory used for GPhL workflow persistence data and workflow logs:
-# Used to set the wdir workflow option
-# If relative designates a subdirectory under Session.get_process_directory()
-# If absolute, taken as it stands
-gphl_subdir: GPHL
-# root name of persistence layer file; suffix'.xml. is added
-gphl_persistname: persistence
+  # Directory used for GPhL workflow persistence data and workflow logs:
+  # Used to set the wdir workflow option
+  # If relative designates a subdirectory under Session.get_process_directory()
+  # If absolute, taken as it stands
+  gphl_subdir: GPHL
+  # root name of persistence layer file; suffix'.xml. is added
+  gphl_persistname: persistence
 
-# Hosts and ports for py4j java-python gateway, all OPTIONAL
-# If not set will use py4j default values, which are as given below
-# NB python_host is set automatically to localhost or socket.gethostname()
-# NB java_host is not needed as all communication is effectively one-way
-# connection_parameters:
-#   python_port: 25334
-#   java_port: 25333
+  # Hosts and ports for py4j java-python gateway, all OPTIONAL
+  # If not set will use py4j default values, which are as given below
+  # NB python_host is set automatically to localhost or socket.gethostname()
+  # NB java_host is not needed as all communication is effectively one-way
+  # connection_parameters:
+  #   python_port: 25334
+  #   java_port: 25333
 
-# NB Non-absolute file names are interpreted relative to one of the
-# HardwareRepository directories on the lookup path
+  # NB Non-absolute file names are interpreted relative to one of the
+  # HardwareRepository directories on the lookup path
 
-software_paths:
-  # Mandatory. Directory with workflow config input, e.g. instrumentation.nml
-  gphl_beamline_config: gphl_beamline_config
+  software_paths:
+    # Mandatory. Directory with workflow config input, e.g. instrumentation.nml
+    gphl_beamline_config: gphl_beamline_config
 
-  # MANDATORY for CCP4 => $GPHL_CCP4_PATH/bin/ccp4.setup-sh,
-  # unless already sourced in environment
-  GPHL_CCP4_PATH: /alt/rhfogh/Software/CCP4/latest/bin/
+    # MANDATORY for CCP4 => $GPHL_CCP4_PATH/bin/ccp4.setup-sh,
+    # unless already sourced in environment
+    GPHL_CCP4_PATH: /alt/rhfogh/Software/CCP4/latest/bin/
 
-  # MANDATORY for XDS => $GPHL_XDS_PATH/xds_par
-  # unless already sourced in environment
-  GPHL_XDS_PATH: /alt/rhfogh/Software/XDS/latest/
+    # MANDATORY for XDS => $GPHL_XDS_PATH/xds_par
+    # unless already sourced in environment
+    GPHL_XDS_PATH: /alt/rhfogh/Software/XDS/latest/
 
-  # gphl test samples directory - for collection emulation
-  gphl_test_samples: gphl/test_samples
+    # gphl test samples directory - for collection emulation
+    gphl_test_samples: gphl/test_samples
 
-  # Location of installation for processing queue (if not reachable from BCS computer.
-  # Passed as environmental variable GPHL_PROC_INSTALLATION. Optional
-  # gphl_wf_processing_installation: /users/pkeller/GPhL-ESRF/exe
+    # Location of installation for processing queue (if not reachable from BCS computer.
+    # Passed as environmental variable GPHL_PROC_INSTALLATION. Optional
+    # gphl_wf_processing_installation: /users/pkeller/GPhL-ESRF/exe
 
-# Software paths that are passed to global phasing workflow as java properties
-# Used to specify locations of alternative executables (wrappers)
-# More (unused) properties are described in the ASTRA workflow documentation
-software_properties:
-  # Location of GPhL .license directory
-  # defaults to GPHL_INSTALLATION
-  # Only needed if you do NOT use the gphl installation wrapper scripts in .../exe :
-  # co.gphl.wf.bdg_licence_dir: "{GPHL_RELEASE}/gphl_release/latest"
+  # Software paths that are passed to global phasing workflow as java properties
+  # Used to specify locations of alternative executables (wrappers)
+  # More (unused) properties are described in the ASTRA workflow documentation
+  software_properties:
+    # Location of GPhL .license directory
+    # defaults to GPHL_INSTALLATION
+    # Only needed if you do NOT use the gphl installation wrapper scripts in .../exe :
+    # co.gphl.wf.bdg_licence_dir: "{GPHL_RELEASE}/gphl_release/latest"
 
-  # MANDATORY pending change in workflow
-  co.gphl.wf.stratcal.bin: "{GPHL_INSTALLATION}/exe/run_stratcal_wrap.py"
+    # MANDATORY pending change in workflow
+    co.gphl.wf.stratcal.bin: "{GPHL_INSTALLATION}/exe/run_stratcal_wrap.py"
 
-  # OPTIONAL location of alternative executables (wrappers) supported by the workflow
-  # Each has an option (rarely used)  to specify a specific license directory -->
-  # co.gphl.wf.process.bin: {GPHL_WRAPPERS}/scripts/aP_wf_process
-  # co.gphl.wf.process.bdg_licence_dir/fill/me/in
-  # co.gphl.wf.diffractcal.bin: {GPHL_WRAPPERS}/scripts/aP_wf_rotcal
-  # co.gphl.wf.diffractcal.bdg_licence_dir/fill/me/in
-  # co.gphl.wf.simcal_predict.bin: {GPHL_WRAPPERS}/scripts/simcal_predict
-  # co.gphl.wf.simcal_predict.bdg_licence_dir/fill/me/in
-  # co.gphl.wf.transcal.bin: {GPHL_WRAPPERS}/scripts/transcal
-  # co.gphl.wf.transcal.bdg_licence_dir/fill/me/in
-  # co.gphl.wf.recen.bin: {GPHL_WRAPPERS}/scripts/recen
-  # co.gphl.wf.recen.bdg_licence_dir/fill/me/in
+    # OPTIONAL location of alternative executables (wrappers) supported by the workflow
+    # Each has an option (rarely used)  to specify a specific license directory -->
+    # co.gphl.wf.process.bin: {GPHL_WRAPPERS}/scripts/aP_wf_process
+    # co.gphl.wf.process.bdg_licence_dir/fill/me/in
+    # co.gphl.wf.diffractcal.bin: {GPHL_WRAPPERS}/scripts/aP_wf_rotcal
+    # co.gphl.wf.diffractcal.bdg_licence_dir/fill/me/in
+    # co.gphl.wf.simcal_predict.bin: {GPHL_WRAPPERS}/scripts/simcal_predict
+    # co.gphl.wf.simcal_predict.bdg_licence_dir/fill/me/in
+    # co.gphl.wf.transcal.bin: {GPHL_WRAPPERS}/scripts/transcal
+    # co.gphl.wf.transcal.bdg_licence_dir/fill/me/in
+    # co.gphl.wf.recen.bin: {GPHL_WRAPPERS}/scripts/recen
+    # co.gphl.wf.recen.bdg_licence_dir/fill/me/in
 
-  # OPTIONAL. simcal *binary* For Mock collection emulation only. Not used by workflow
-  co.gphl.wf.simcal.bin:
-    /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg/autoPROC/bin/linux64/simcal
-  co.gphl.wf.simcal.bdg_licence_dir:
-    /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg
+    # OPTIONAL. simcal *binary* For Mock collection emulation only. Not used by workflow
+    co.gphl.wf.simcal.bin:
+      /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg/autoPROC/bin/linux64/simcal
+    co.gphl.wf.simcal.bdg_licence_dir:
+      /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg
