@@ -21,34 +21,34 @@ class SampleChanger(ComponentBase):
         from mxcubeweb.routes import signals
 
         """Initialize hwobj signals."""
-        HWR.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
-        HWR.beamline.sample_changer.connect(
+        HWR.beamline.config.sample_changer.connect("stateChanged", signals.sc_state_changed)
+        HWR.beamline.config.sample_changer.connect(
             "isCollisionSafe", signals.is_collision_safe
         )
-        HWR.beamline.sample_changer.connect(
+        HWR.beamline.config.sample_changer.connect(
             "loadedSampleChanged", signals.loaded_sample_changed
         )
-        HWR.beamline.sample_changer.connect(
+        HWR.beamline.config.sample_changer.connect(
             "contentsUpdated", signals.sc_contents_update
         )
 
-        if HWR.beamline.sample_changer_maintenance is not None:
-            HWR.beamline.sample_changer_maintenance.connect(
+        if HWR.beamline.config.sample_changer_maintenance is not None:
+            HWR.beamline.config.sample_changer_maintenance.connect(
                 "globalStateChanged", signals.sc_maintenance_update
             )
 
-            HWR.beamline.sample_changer_maintenance.connect(
+            HWR.beamline.config.sample_changer_maintenance.connect(
                 "gripperChanged", self._gripper_changed
             )
 
     def get_sample_list(self):
-        samples_list = HWR.beamline.sample_changer.get_sample_list()
+        samples_list = HWR.beamline.config.sample_changer.get_sample_list()
         samples = {}
         samplesByCoords = {}
         order = []
         current_sample = {}
 
-        loaded_sample = HWR.beamline.sample_changer.get_loaded_sample()
+        loaded_sample = HWR.beamline.config.sample_changer.get_loaded_sample()
 
         for s in samples_list:
             if not s.is_present():
@@ -112,7 +112,7 @@ class SampleChanger(ComponentBase):
             return ""
 
         def _getElementID(e):
-            if e == HWR.beamline.sample_changer:
+            if e == HWR.beamline.config.sample_changer:
                 if e.get_token() is not None:
                     return e.get_token()
             else:
@@ -134,17 +134,17 @@ class SampleChanger(ComponentBase):
                 for e in element.get_components():
                     _addElement(new_element, e)
 
-        if HWR.beamline.sample_changer:
-            root_name = HWR.beamline.sample_changer.get_address()
+        if HWR.beamline.config.sample_changer:
+            root_name = HWR.beamline.config.sample_changer.get_address()
 
             contents = {"name": root_name}
 
-            if hasattr(HWR.beamline.sample_changer, "get_room_temperature_mode"):
+            if hasattr(HWR.beamline.config.sample_changer, "get_room_temperature_mode"):
                 contents[
                     "room_temperature_mode"
-                ] = HWR.beamline.sample_changer.get_room_temperature_mode()
+                ] = HWR.beamline.config.sample_changer.get_room_temperature_mode()
 
-            for element in HWR.beamline.sample_changer.get_components():
+            for element in HWR.beamline.config.sample_changer.get_components():
                 if element.is_present():
                     _addElement(contents, element)
         else:
@@ -190,7 +190,7 @@ class SampleChanger(ComponentBase):
     def mount_sample_clean_up(self, sample):
         from mxcubeweb.routes import signals
 
-        sc = HWR.beamline.sample_changer
+        sc = HWR.beamline.config.sample_changer
 
         mount_from_harvester = self.app.harvester.mount_from_harvester()
 
@@ -221,15 +221,15 @@ class SampleChanger(ComponentBase):
                 if (
                     res
                     and self.app.CENTRING_METHOD == queue_entry.CENTRING_METHOD.LOOP
-                    and not HWR.beamline.diffractometer.in_plate_mode()
+                    and not HWR.beamline.config.diffractometer.in_plate_mode()
                     and not mount_from_harvester
                 ):
-                    HWR.beamline.diffractometer.reject_centring()
+                    HWR.beamline.config.diffractometer.reject_centring()
                     msg = "Starting autoloop centring ..."
                     logging.getLogger("MX3.HWR").info(msg)
-                    C3D_MODE = HWR.beamline.diffractometer.C3D_MODE
-                    HWR.beamline.diffractometer.start_centring_method(C3D_MODE)
-                elif HWR.beamline.diffractometer.in_plate_mode():
+                    C3D_MODE = HWR.beamline.config.diffractometer.C3D_MODE
+                    HWR.beamline.config.diffractometer.start_centring_method(C3D_MODE)
+                elif HWR.beamline.config.diffractometer.in_plate_mode():
                     msg = "Starting autoloop Focusing ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     sc.move_to_crystal_position(None)
@@ -249,7 +249,7 @@ class SampleChanger(ComponentBase):
             # Clean up if the new sample was mounted or the current sample was
             # unmounted and the new one, for some reason, failed to mount
             if res or (not res and not sc.get_loaded_sample()):
-                HWR.beamline.sample_view.clear_all()
+                HWR.beamline.config.sample_view.clear_all()
 
                 # We remove the current sample from the queue, if we are moving
                 # from one sample to another and the current sample is in the queue
@@ -270,7 +270,7 @@ class SampleChanger(ComponentBase):
             signals.sc_unload(sample["location"])
 
             if not sample["location"] == "Manual":
-                HWR.beamline.sample_changer.unload(sample["location"], wait=False)
+                HWR.beamline.config.sample_changer.unload(sample["location"], wait=False)
             else:
                 self.set_current_sample(None)
                 signals.sc_load_ready(sample["location"])
@@ -282,8 +282,8 @@ class SampleChanger(ComponentBase):
             logging.getLogger("MX3.HWR").exception(msg)
             raise
         else:
-            HWR.beamline.queue_model.mounted_sample = ""
-            HWR.beamline.sample_view.clear_all()
+            HWR.beamline.config.queue_model.mounted_sample = ""
+            HWR.beamline.config.sample_view.clear_all()
 
     def mount_sample(self, sample):
         gevent.spawn(self.mount_sample_clean_up, sample)
@@ -294,14 +294,14 @@ class SampleChanger(ComponentBase):
         return self.get_sc_contents()
 
     def unmount_current(self):
-        location = HWR.beamline.sample_changer.get_loaded_sample().get_address()
+        location = HWR.beamline.config.sample_changer.get_loaded_sample().get_address()
         self.unmount_sample_clean_up({"location": location})
 
         return self.get_sc_contents()
 
     def get_loaded_sample(self):
         try:
-            sample = HWR.beamline.sample_changer.get_loaded_sample()
+            sample = HWR.beamline.config.sample_changer.get_loaded_sample()
         except Exception:
             logging.getLogger("MX3.HWR").exception("")
             sample = None
@@ -316,7 +316,7 @@ class SampleChanger(ComponentBase):
         return address, barcode
 
     def get_capacity(self):
-        baskets = HWR.beamline.sample_changer.get_basket_list()
+        baskets = HWR.beamline.config.sample_changer.get_basket_list()
         num_samples = 0
         for basket in baskets:
             num_samples += basket.get_number_of_samples()
@@ -327,8 +327,8 @@ class SampleChanger(ComponentBase):
         return res
 
     def get_maintenance_cmds(self):
-        if HWR.beamline.sample_changer_maintenance is not None:
-            ret = HWR.beamline.sample_changer_maintenance.get_cmd_info()
+        if HWR.beamline.config.sample_changer_maintenance is not None:
+            ret = HWR.beamline.config.sample_changer_maintenance.get_cmd_info()
         else:
             ret = "SC maintenance controller not defined"
 
@@ -336,15 +336,15 @@ class SampleChanger(ComponentBase):
 
     def get_global_state(self):
         try:
-            return HWR.beamline.sample_changer_maintenance.get_global_state()
+            return HWR.beamline.config.sample_changer_maintenance.get_global_state()
         except Exception:
             return "OFFLINE", "OFFLINE", "OFFLINE"
 
     def get_initial_state(self):
-        if HWR.beamline.sample_changer_maintenance is not None:
+        if HWR.beamline.config.sample_changer_maintenance is not None:
             global_state, cmdstate, msg = self.get_global_state()
 
-            cmds = HWR.beamline.sample_changer_maintenance.get_cmd_info()
+            cmds = HWR.beamline.config.sample_changer_maintenance.get_cmd_info()
 
         else:
             global_state = {}
@@ -358,7 +358,7 @@ class SampleChanger(ComponentBase):
         loaded_sample = {"address": address, "barcode": barcode}
 
         try:
-            state = HWR.beamline.sample_changer.get_status().upper()
+            state = HWR.beamline.config.sample_changer.get_status().upper()
         except Exception:
             state = "OFFLINE"
 
@@ -372,7 +372,7 @@ class SampleChanger(ComponentBase):
             },
             "cmds": {"cmds": cmds},
             "msg": msg,
-            "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),
+            "plate_mode": HWR.beamline.config.diffractometer.in_plate_mode(),
         }
 
         return initial_state
@@ -385,7 +385,7 @@ class SampleChanger(ComponentBase):
         """
         xtal_list = []
         try:
-            processing_plan = HWR.beamline.sample_changer.sync_with_crims()
+            processing_plan = HWR.beamline.config.sample_changer.sync_with_crims()
             for x in processing_plan.plate.xtal_list:
                 response = {
                     "crystal_uuid": x.crystal_uuid,
@@ -417,7 +417,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
     from mxcubeweb.routes import signals
     from mxcubeweb.app import MXCUBEApplication as mxcube
 
-    HWR.beamline.sample_view.clear_all()
+    HWR.beamline.config.sample_view.clear_all()
     logging.getLogger("user_level_log").info("Loading sample ...")
     log = logging.getLogger("user_level_log")
 
@@ -430,13 +430,13 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
         "dewarLocation": loc[0],
         "sampleBarcode": data_model.code,
         "sampleId": data_model.lims_id,
-        "sessionId": HWR.beamline.session.session_id,
+        "sessionId": HWR.beamline.config.session.session_id,
         "startTime": time.strftime("%Y-%m-%d %H:%M:%S"),
     }
 
     # devices that can move sample on beam
     # (sample changer, plate holder)
-    sample_mount_device = HWR.beamline.sample_changer
+    sample_mount_device = HWR.beamline.config.sample_changer
 
     mount_from_harvester = mxcube.harvester.mount_from_harvester()
 
@@ -501,7 +501,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
     else:
         signals.loaded_sample_changed(sample_mount_device.get_loaded_sample())
         logging.getLogger("user_level_log").info("Sample loaded")
-        dm = HWR.beamline.diffractometer
+        dm = HWR.beamline.config.diffractometer
 
         if mount_from_harvester:
             try:
@@ -510,7 +510,7 @@ def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noq
                 )
 
                 computed_offset = (
-                    HWR.beamline.harvester.get_offsets_for_sample_centering()
+                    HWR.beamline.config.harvester.get_offsets_for_sample_centering()
                 )
                 dm.start_harvester_centring(computed_offset)
 

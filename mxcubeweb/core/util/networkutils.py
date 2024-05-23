@@ -142,7 +142,7 @@ def send_mail(_from, to, subject, content):
 
 
 def send_feedback(sender_data):
-    bl_name = HWR.beamline.session.beamline_name
+    bl_name = HWR.beamline.config.session.beamline_name
     local_user = sender_data.get("LOGGED_IN_USER", "")
 
     if not bl_name:
@@ -157,17 +157,17 @@ def send_feedback(sender_data):
         except KeyError:
             local_user = "unknown_user"
 
-    _from = HWR.beamline.session.get_property("from_email", "")
+    _from = HWR.beamline.config.session.get_property("from_email", "")
 
     if not _from:
         _from = "%s@%s" % (
             local_user,
-            HWR.beamline.session.get_property("email_extension", ""),
+            HWR.beamline.config.session.get_property("email_extension", ""),
         )
 
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
-    to = HWR.beamline.session.get_property("feedback_email", "") + ",%s" % _sender
+    to = HWR.beamline.config.session.get_property("feedback_email", "") + ",%s" % _sender
     subject = "[MX3 FEEDBACK] %s (%s) on %s" % (
         local_user,
         _sender,

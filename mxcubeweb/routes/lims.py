@@ -81,7 +81,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         """
         Return the currently selected proposal. (The proposal list is part of the login_res)
         """
-        proposal_info = app.lims.get_proposal_info(HWR.beamline.session.proposal_code)
+        proposal_info = app.lims.get_proposal_info(HWR.beamline.config.session.proposal_code)
 
         return jsonify({"Proposal": proposal_info})
 

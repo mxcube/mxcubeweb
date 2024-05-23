@@ -67,7 +67,7 @@ def init_route(app, server, url_prefix):
         app.queue.set_dc_params(dc_model, dc_entry, task, sample_model)
         pt = dc_model.acquisitions[0].path_template
 
-        if HWR.beamline.queue_model.check_for_path_collisions(pt):
+        if HWR.beamline.config.queue_model.check_for_path_collisions(pt):
             msg = "[QUEUE] data collection could not be added to sample: "
             msg += "path collision"
             raise Exception(msg)
@@ -78,13 +78,13 @@ def init_route(app, server, url_prefix):
         char, char_entry = app.queue.get_entry(3)
 
         char.diffraction_plan.append([dc_model])
-        HWR.beamline.queue_model.emit("diff_plan_available", (char, [dc_model]))
+        HWR.beamline.config.queue_model.emit("diff_plan_available", (char, [dc_model]))
 
         return Response(status=200)
 
     @bp.route("/shape_mock_result/<sid>", methods=["GET"])
     def shape_mock_result(sid):
-        shape = HWR.beamline.sample_view.camera.get_shape(sid)
+        shape = HWR.beamline.config.sample_view.camera.get_shape(sid)
         hm = {}
         cm = {}
 
@@ -115,7 +115,7 @@ def init_route(app, server, url_prefix):
 
         res = {"heatmap": hm, "crystalmap": cm}
 
-        HWR.beamline.sample_view.camera.set_grid_data(sid, res)
+        HWR.beamline.config.sample_view.camera.set_grid_data(sid, res)
         signals.grid_result_available(to_camel(shape.as_dict()))
 
         return Response(status=200)

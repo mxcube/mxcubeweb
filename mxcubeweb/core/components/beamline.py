@@ -16,7 +16,7 @@ class Beamline(ComponentBase):
         from mxcubeweb.routes import signals
 
         try:
-            beamInfo = HWR.beamline.beam
+            beamInfo = HWR.beamline.config.beam
             if beamInfo is not None:
                 for sig in signals.beam_signals:
                     beamInfo.connect(beamInfo, sig, signals.beam_changed)
@@ -27,11 +27,11 @@ class Beamline(ComponentBase):
             msg += "signals"
             logging.getLogger("MX3.HWR").exception(msg)
         try:
-            actions = HWR.beamline.beamline_actions
+            actions = HWR.beamline.config.beamline_actions
             if actions is not None:
                 cmds = (
-                    HWR.beamline.beamline_actions.get_commands()
-                    + HWR.beamline.beamline_actions.get_annotated_commands()
+                    HWR.beamline.config.beamline_actions.get_commands()
+                    + HWR.beamline.config.beamline_actions.get_annotated_commands()
                 )
                 for cmd in cmds:
                     cmd.connect(
@@ -55,9 +55,9 @@ class Beamline(ComponentBase):
             msg = "error connecting to beamline actions hardware object signals"
             logging.getLogger("MX3.HWR").exception(msg)
 
-        if HWR.beamline.xrf_spectrum:
-            HWR.beamline.xrf_spectrum.connect(
-                HWR.beamline.xrf_spectrum,
+        if HWR.beamline.config.xrf_spectrum:
+            HWR.beamline.config.xrf_spectrum.connect(
+                HWR.beamline.config.xrf_spectrum,
                 "xrf_task_progress",
                 signals.xrf_task_progress,
             )
@@ -69,7 +69,7 @@ class Beamline(ComponentBase):
         """
         from mxcubeweb.routes import signals
 
-        diffractometer = HWR.beamline.diffractometer
+        diffractometer = HWR.beamline.config.diffractometer
         diffractometer.connect("phaseChanged", signals.diffractometer_phase_changed)
 
     def get_aperture(self):
@@ -80,7 +80,7 @@ class Beamline(ComponentBase):
         :rtype: tuple
         """
         aperture_list, current_aperture = [], None
-        beam = HWR.beamline.beam
+        beam = HWR.beamline.config.beam
 
         aperture_list = beam.get_available_size()["values"]
         current_aperture = beam.get_value()[-1]
@@ -110,15 +110,15 @@ class Beamline(ComponentBase):
 
         if self.app.CONFIG.app.VIDEO_FORMAT == "MPEG1":
             fmt, source_is_scalable = "MPEG1", True
-            video_sizes = HWR.beamline.sample_view.camera.get_available_stream_sizes()
-            (width, height, scale) = HWR.beamline.sample_view.camera.get_stream_size()
+            video_sizes = HWR.beamline.config.sample_view.camera.get_available_stream_sizes()
+            (width, height, scale) = HWR.beamline.config.sample_view.camera.get_stream_size()
         else:
             scale = 1
-            width = HWR.beamline.sample_view.camera.get_width()
-            height = HWR.beamline.sample_view.camera.get_height()
+            width = HWR.beamline.config.sample_view.camera.get_width()
+            height = HWR.beamline.config.sample_view.camera.get_height()
             video_sizes = [(width, height)]
 
-        pixelsPerMm = HWR.beamline.diffractometer.get_pixels_per_mm()
+        pixelsPerMm = HWR.beamline.config.diffractometer.get_pixels_per_mm()
 
         beam_info_dict = self.get_beam_info()
 
@@ -130,7 +130,7 @@ class Beamline(ComponentBase):
             "sourceIsScalable": source_is_scalable,
             "scale": scale,
             "videoSizes": video_sizes,
-            "videoHash": HWR.beamline.sample_view.camera.stream_hash,
+            "videoHash": HWR.beamline.config.sample_view.camera.stream_hash,
             "videoURL": self.app.CONFIG.app.VIDEO_STREAM_URL,
         }
 
@@ -143,7 +143,7 @@ class Beamline(ComponentBase):
         actions = list()
 
         try:
-            cmds = HWR.beamline.beamline_actions.get_commands()
+            cmds = HWR.beamline.config.beamline_actions.get_commands()
         except Exception:
             cmds = []
         for cmd in cmds:
@@ -174,7 +174,7 @@ class Beamline(ComponentBase):
 
         data.update(
             {
-                "path": HWR.beamline.session.get_base_image_directory(),
+                "path": HWR.beamline.config.session.get_base_image_directory(),
                 "actionsList": actions,
             }
         )
@@ -189,7 +189,7 @@ class Beamline(ComponentBase):
 
     def beamline_get_actions(self):
         actions = []
-        beamline_actions = HWR.beamline.beamline_actions
+        beamline_actions = HWR.beamline.config.beamline_actions
 
         if getattr(beamline_actions, "pydantic_model", None):
             for cmd_name in beamline_actions.exported_attributes.keys():
@@ -223,7 +223,7 @@ class Beamline(ComponentBase):
 
         """
         try:
-            HWR.beamline.beamline_actions.abort_command(name)
+            HWR.beamline.config.beamline_actions.abort_command(name)
         except KeyError:
             try:
                 ho = BeamlineAdapter(HWR.beamline).get_object(name.lower())
@@ -239,7 +239,7 @@ class Beamline(ComponentBase):
         : param str name: action to run
         """
         try:
-            HWR.beamline.beamline_actions.execute_command(name, params)
+            HWR.beamline.config.beamline_actions.execute_command(name, params)
         except Exception as ex:
             msg = "Action cannot run: command '%s' does not exist" % name
             raise Exception(msg) from ex
@@ -252,7 +252,7 @@ class Beamline(ComponentBase):
         :return: Beam info dictionary with keys: position, shape, size_x, size_y
         :rtype: dict
         """
-        beam = HWR.beamline.beam
+        beam = HWR.beamline.config.beam
         beam_info_dict = {
             "position": [],
             "shape": "",
@@ -283,19 +283,19 @@ class Beamline(ComponentBase):
         return beam_info_dict
 
     def prepare_beamline_for_sample(self):
-        if hasattr(HWR.beamline.collect, "prepare_for_new_sample"):
-            HWR.beamline.collect.prepare_for_new_sample()
+        if hasattr(HWR.beamline.config.collect, "prepare_for_new_sample"):
+            HWR.beamline.config.collect.prepare_for_new_sample()
 
     def diffractometer_set_phase(self, phase):
         try:
-            HWR.beamline.diffractometer.wait_device_ready(30)
+            HWR.beamline.config.diffractometer.wait_device_ready(30)
         except Exception:
             logging.getLogger("MX3.HWR").warning("Diffractometer not ready")
 
-        HWR.beamline.diffractometer.set_phase(phase)
+        HWR.beamline.config.diffractometer.set_phase(phase)
 
     def set_aperture(self, pos):
-        beam = HWR.beamline.beam
+        beam = HWR.beamline.config.beam
         msg = "Changing beam size to: %s" % pos
         logging.getLogger("MX3.HWR").info(msg)
         beam.set_value(pos)
@@ -304,17 +304,17 @@ class Beamline(ComponentBase):
         ret = {}
 
         try:
-            ret["useSC"] = HWR.beamline.diffractometer.use_sc
+            ret["useSC"] = HWR.beamline.config.diffractometer.use_sc
         except AttributeError:
             ret["useSC"] = False
 
         try:
-            ret["currentPhase"] = HWR.beamline.diffractometer.get_current_phase()
+            ret["currentPhase"] = HWR.beamline.config.diffractometer.get_current_phase()
         except AttributeError:
             ret["currentPhase"] = "None"
 
         try:
-            ret["phaseList"] = HWR.beamline.diffractometer.get_phase_list()
+            ret["phaseList"] = HWR.beamline.config.diffractometer.get_phase_list()
         except AttributeError:
             ret["phaseList"] = []
 
@@ -322,7 +322,7 @@ class Beamline(ComponentBase):
 
     def get_detector_info(self):
         try:
-            filetype = HWR.beamline.detector.get_property("file_suffix")
+            filetype = HWR.beamline.config.detector.get_property("file_suffix")
         except Exception:
             filetype = None
 
@@ -338,9 +338,9 @@ class Beamline(ComponentBase):
         res = {"path": "", "img": 0}
 
         if path:
-            fpath, img = HWR.beamline.detector.get_actual_file_path(path, img_num)
-            HWR.beamline.collect.adxv_notify(fpath, img)
-            fpath = HWR.beamline.session.get_path_with_proposal_as_root(fpath)
+            fpath, img = HWR.beamline.config.detector.get_actual_file_path(path, img_num)
+            HWR.beamline.config.collect.adxv_notify(fpath, img)
+            fpath = HWR.beamline.config.session.get_path_with_proposal_as_root(fpath)
 
             res = {"path": fpath, "img_num": img_num}
 
