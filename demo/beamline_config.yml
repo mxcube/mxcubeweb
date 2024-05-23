@@ -1,8 +1,5 @@
 ---
-
-# The class to initialise, and init parameters
-_initialise_class:
-  class: mxcubecore.HardwareObjects.Beamline.Beamline
+class: mxcubecore.HardwareObjects.Beamline.Beamline
 
 # objects
 #
@@ -12,7 +9,7 @@ _initialise_class:
 # NBNB some objects that do not currently have their own config files
 # would need those added (e.g. the centring methods)
 #
-_objects:
+objects:
   # The !!omap and the lines starting with '- ' give you an *ordered* dictionary
   # And thus a reproducible loading order
   !!omap
@@ -70,93 +67,94 @@ _objects:
 
   # - beam_realign: # Skipped - optional
 
-# Non-object attributes:
-advanced_methods:
-  - MeshScan
-  - XrayCentering
+configuration:
+  # Non-object attributes:
+  advanced_methods:
+    - MeshScan
+    - XrayCentering
 
-tunable_wavelength: true
-disable_num_passes: true
-run_processing_parallel: true
-run_number: 1
-click_centring_num_clicks: 3
+  tunable_wavelength: true
+  disable_num_passes: true
+  run_processing_parallel: true
+  run_number: 1
+  click_centring_num_clicks: 3
 
-mesh_result_format: PNG
-use_native_mesh: true
-enable_2d_points: true
+  mesh_result_format: PNG
+  use_native_mesh: true
+  enable_2d_points: true
 
-default_acquisition_parameters:
-  default:
-    # Default values, also used for standard acquisition.
-    # Values not given in other dictionaries are taken from here
-    exp_time: 0.02  # exposure time
-    osc_start: 0.0  # Only used if no current angle can be found
-    osc_range: 0.1
-    num_passes: 1
-    first_image: 1
-    overlap: 0
-    num_images: 1
-    detector_mode: 1  # Remove as not in practice used ?
-    inverse_beam: false
-    take_dark_current: true
-    skip_existing_images: true
-    take_snapshots: true
-    sub_wedge_size: 10
-    # NB 'compression' not added as apparently never used
+  default_acquisition_parameters:
+    default:
+      # Default values, also used for standard acquisition.
+      # Values not given in other dictionaries are taken from here
+      exp_time: 0.02  # exposure time
+      osc_start: 0.0  # Only used if no current angle can be found
+      osc_range: 0.1
+      num_passes: 1
+      first_image: 1
+      overlap: 0
+      num_images: 1
+      detector_mode: 1  # Remove as not in practice used ?
+      inverse_beam: false
+      take_dark_current: true
+      skip_existing_images: true
+      take_snapshots: true
+      sub_wedge_size: 10
+      # NB 'compression' not added as apparently never used
 
-  helical:
-    # Defaults for helical scan. Missing values are taken from default
-    number_of_images: 100
+      helical:
+        # Defaults for helical scan. Missing values are taken from default
+        number_of_images: 100
 
-  characterisation:
-    # Defaults for characterisation. Missing values are taken from default
-    exp_time: 0.05  # exposure time
-    osc_range: 1
-    overlap: -89
-    num_images: 4
-    shutterless: false
+    characterisation:
+      # Defaults for characterisation. Missing values are taken from default
+      exp_time: 0.05  # exposure time
+      osc_range: 1
+      overlap: -89
+      num_images: 4
+      shutterless: false
 
-  mesh:
-    # Defaults for 'advanced' acquisition. Missing values are taken from default
-    exp_time: 10  # exposure time
-    range: 10
-    num_images: 100
-    cell_counting: zig-zag
-    cell_spacing: vertical, horizontal
-    mesh_center: top-left
+    mesh:
+      # Defaults for 'advanced' acquisition. Missing values are taken from default
+      exp_time: 10  # exposure time
+      range: 10
+      num_images: 100
+      cell_counting: zig-zag
+      cell_spacing: vertical, horizontal
+      mesh_center: top-left
 
-  gphlworkflow:
-    {}
-    # Apparently this must be here, but we use all values same as default
+      gphlworkflow:
+        {}
+        # Apparently this must be here, but we use all values same as default
 
-acquisition_limit_values:
-  exposure_time:
-    - 0.02
-    - 1000
-  osc_range:
-    - -10000
-    - 10000
-  number_of_images:
-    - 1
-    - 99999
-  kappa:
-    - -5.0
-    - 240.0
+    acquisition_limit_values:
+      exposure_time:
+        - 0.02
+        - 1000
+      osc_range:
+        - -10000
+        - 10000
+      number_of_images:
+        - 1
+        - 99999
+      kappa:
+        - -5.0
+        - 240.0
 
-available_methods:
-  datacollection: true
-  characterisation: true
-  helical: true
-  xrf_spectrum: true
-  energy_scan: true
-  mesh: true
-  ssx_chip_collection: true
-  gphlworkflow: true
-  test_collection: true
+  available_methods:
+    datacollection: true
+    characterisation: true
+    helical: true
+    xrf_spectrum: true
+    energy_scan: true
+    mesh: true
+    ssx_chip_collection: true
+    gphlworkflow: true
+    test_collection: true
 
-undulators:
-  - type: PPU35C_GAP
-    device_uri: //orion:10000/id/id/30
+    undulators:
+      - type: PPU35C_GAP
+        device_uri: //orion:10000/id/id/30
 
-  - type: PPU35D_GAP
-    device_uri: //orion:10000/id/id/30
+      - type: PPU35D_GAP
+        device_uri: //orion:10000/id/id/30

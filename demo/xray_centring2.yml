@@ -1,4 +1,3 @@
 ---
 
-_initialise_class:
-  class: mxcubecore.HardwareObjects.mockup.XrayCentringMockup.XrayCentringMockup
+class: mxcubecore.HardwareObjects.mockup.XrayCentringMockup.XrayCentringMockup
