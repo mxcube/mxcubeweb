@@ -196,24 +196,24 @@ class Lims(ComponentBase):
         # If this is used often, it could be moved to a better place.
         ERROR_CODE = dict({"status": {"code": "0"}})
 
-        if HWR.beamline.lims.loginType.lower() == "user":
+        if HWR.beamline.config.lims.loginType.lower() == "user":
             try:
-                connection_ok = HWR.beamline.lims.echo()
+                connection_ok = HWR.beamline.config.lims.echo()
                 if not connection_ok:
-                    HWR.beamline.lims.init()
+                    HWR.beamline.config.lims.init()
             except Exception:
                 msg = "[LIMS] Connection Error!"
                 logging.getLogger("MX3.HWR").error(msg)
                 return ERROR_CODE
 
             try:
-                HWR.beamline.lims.lims_rest.authenticate(loginID, password)
+                HWR.beamline.config.lims.lims_rest.authenticate(loginID, password)
             except Exception:
                 logging.getLogger("MX3.HWR").error("[LIMS-REST] Could not authenticate")
                 return ERROR_CODE
 
             try:
-                proposals = HWR.beamline.lims.get_proposals_by_user(loginID)
+                proposals = HWR.beamline.config.lims.get_proposals_by_user(loginID)
 
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Retrieving proposal list for user: %s, proposals: %s"
@@ -227,13 +227,13 @@ class Lims(ComponentBase):
                 return ERROR_CODE
 
             for prop in session["proposal_list"]:
-                todays_session = HWR.beamline.lims.get_todays_session(prop)
+                todays_session = HWR.beamline.config.lims.get_todays_session(prop)
                 prop["Session"] = [todays_session["session"]]
 
             if hasattr(
-                HWR.beamline.session, "commissioning_fake_proposal"
-            ) and HWR.beamline.session.is_inhouse(loginID, None):
-                dummy = HWR.beamline.session.commissioning_fake_proposal
+                HWR.beamline.config.session, "commissioning_fake_proposal"
+            ) and HWR.beamline.config.session.is_inhouse(loginID, None):
+                dummy = HWR.beamline.config.session.commissioning_fake_proposal
                 session["proposal_list"].append(dummy)
 
             login_res["proposalList"] = session["proposal_list"]
@@ -243,10 +243,10 @@ class Lims(ComponentBase):
             }
         else:
             try:
-                login_res = HWR.beamline.lims.login(
+                login_res = HWR.beamline.config.lims.login(
                     loginID, password, create_session=create_session
                 )
-                proposal = HWR.beamline.lims.get_proposal(
+                proposal = HWR.beamline.config.lims.get_proposal(
                     login_res["Proposal"]["code"],
                     login_res["Proposal"]["number"],
                 )
@@ -270,7 +270,7 @@ class Lims(ComponentBase):
 
     def create_lims_session(self, login_res):
         for prop in session["proposal_list"]:
-            todays_session = HWR.beamline.lims.get_todays_session(prop)
+            todays_session = HWR.beamline.config.lims.get_todays_session(prop)
             prop["Session"] = [todays_session["session"]]
 
         login_res["proposalList"] = session["proposal_list"]
@@ -308,46 +308,46 @@ class Lims(ComponentBase):
         proposal_info = self.get_proposal_info(proposal)
 
         if (
-            HWR.beamline.lims.loginType.lower() == "user"
+            HWR.beamline.config.lims.loginType.lower() == "user"
             and "Commissioning" in proposal_info["Proposal"]["title"]
         ):
-            if hasattr(HWR.beamline.session, "set_in_commissioning"):
-                HWR.beamline.session.set_in_commissioning(proposal_info)
+            if hasattr(HWR.beamline.config.session, "set_in_commissioning"):
+                HWR.beamline.config.session.set_in_commissioning(proposal_info)
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Commissioning proposal flag set."
                 )
 
         if proposal_info:
-            HWR.beamline.session.proposal_code = proposal_info.get("Proposal").get(
+            HWR.beamline.config.session.proposal_code = proposal_info.get("Proposal").get(
                 "code", ""
             )
-            HWR.beamline.session.proposal_number = proposal_info.get("Proposal").get(
+            HWR.beamline.config.session.proposal_number = proposal_info.get("Proposal").get(
                 "number", ""
             )
 
-            todays_session = HWR.beamline.lims.get_todays_session(
+            todays_session = HWR.beamline.config.lims.get_todays_session(
                 proposal_info, create_session=False
             )
-            HWR.beamline.session.session_id = todays_session.get("session").get(
+            HWR.beamline.config.session.session_id = todays_session.get("session").get(
                 "sessionId"
             )
 
-            HWR.beamline.session.proposal_id = todays_session.get("session").get(
+            HWR.beamline.config.session.proposal_id = todays_session.get("session").get(
                 "proposalId"
             )
 
-            HWR.beamline.session.set_session_start_date(
+            HWR.beamline.config.session.set_session_start_date(
                 todays_session.get("session").get("startDate")
             )
 
             session["proposal"] = proposal_info
 
-            if hasattr(HWR.beamline.session, "prepare_directories"):
+            if hasattr(HWR.beamline.config.session, "prepare_directories"):
                 try:
                     logging.getLogger("MX3.HWR").info(
                         "[LIMS] Creating data directories for proposal %s" % proposal
                     )
-                    HWR.beamline.session.prepare_directories(proposal_info)
+                    HWR.beamline.config.session.prepare_directories(proposal_info)
                 except Exception:
                     logging.getLogger("MX3.HWR").info(
                         "[LIMS] Error creating data directories, %s" % sys.exc_info()[1]
@@ -374,40 +374,40 @@ class Lims(ComponentBase):
         else:
             sample = sample_data
 
-        return HWR.beamline.session.get_default_prefix(sample, generic_name)
+        return HWR.beamline.config.session.get_default_prefix(sample, generic_name)
 
     def get_default_subdir(self, sample_data):
-        return HWR.beamline.session.get_default_subdir(sample_data)
+        return HWR.beamline.config.session.get_default_subdir(sample_data)
 
     def get_dc_link(self, col_id):
-        link = HWR.beamline.lims.dc_link(col_id)
+        link = HWR.beamline.config.lims.dc_link(col_id)
 
         return link
 
     def get_dc_thumbnail(self, image_id):
-        fname, data = HWR.beamline.lims.lims_rest.get_dc_thumbnail(image_id)
+        fname, data = HWR.beamline.config.lims.lims_rest.get_dc_thumbnail(image_id)
         data = io.BytesIO(data)
 
         return fname, data
 
     def get_dc_image(self, image_id):
-        fname, data = HWR.beamline.lims.lims_rest.get_dc_image(image_id)
+        fname, data = HWR.beamline.config.lims.lims_rest.get_dc_image(image_id)
         data = io.BytesIO(data)
 
         return fname, data
 
     def get_quality_indicator_plot(self, dc_id):
-        data = HWR.beamline.lims.lims_rest.get_quality_indicator_plot(dc_id)
+        data = HWR.beamline.config.lims.lims_rest.get_quality_indicator_plot(dc_id)
         data = io.BytesIO(data)
 
         return "qind", data
 
     def synch_with_lims(self):
-        proposal_id = HWR.beamline.session.proposal_id
+        proposal_id = HWR.beamline.config.session.proposal_id
 
         # session_id is not used, so we can pass None as second argument to
         # 'db_connection.get_samples'
-        lims_samples = HWR.beamline.lims.get_samples(proposal_id, None)
+        lims_samples = HWR.beamline.config.lims.get_samples(proposal_id, None)
 
         samples_info_list = lims_samples
 
@@ -427,7 +427,7 @@ class Lims(ComponentBase):
             except (TypeError, ValueError, KeyError):
                 continue
             else:
-                if HWR.beamline.sample_changer.__class__.__TYPE__ in [
+                if HWR.beamline.config.sample_changer.__class__.__TYPE__ in [
                     "Flex Sample Changer",
                     "FlexHCD",
                     "RoboDiff",
