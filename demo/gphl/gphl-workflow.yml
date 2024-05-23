@@ -1,47 +1,47 @@
 ---
 
-_initialise_class:
-  class: mxcubecore.HardwareObjects.Gphl.GphlWorkflow.GphlWorkflow
+class: mxcubecore.HardwareObjects.Gphl.GphlWorkflow.GphlWorkflow
 
-settings:
-  # Controls for MXCuBE UI and behaviour
-  # Use configured multitrigger collection, default: false, any value is true
-  # use_multitrigger: true
-  # Use advanced_mode for adidtional UI options. Default is false, any value is true
-  advanced_mode: true
-  # Maximum allowed value of Chi, for strategy calculation
-  # maximum_chi is automticaly reduced to match kappa motor limits.
-  maximum_chi: 48.0
-  # default values for image width popup; may be overridden by the workflow
-  # The first value is the default; values are sorted before use
-  default_image_widths:
-    - 0.1
-    - 0.05
-    - 0.2
+configuration:
+  settings:
+    # Controls for MXCuBE UI and behaviour
+    # Use configured multitrigger collection, default: false, any value is true
+    # use_multitrigger: true
+    # Use advanced_mode for adidtional UI options. Default is false, any value is true
+    advanced_mode: true
+    # Maximum allowed value of Chi, for strategy calculation
+    # maximum_chi is automticaly reduced to match kappa motor limits.
+    maximum_chi: 48.0
+    # default values for image width popup; may be overridden by the workflow
+    # The first value is the default; values are sorted before use
+    default_image_widths:
+      - 0.1
+      - 0.05
+      - 0.2
 
-  # tolerance for deciding whether angles differ, in degrees;
-  # used to compare kappa and phi to decide if orientations needs separate centring
-  angular_tolerance: 1.0
-  # Characterisation strategies popup.
-  # names refer to stategies in  strategylib.nml
-  characterisation_strategies:
-    - Char_6_5_multitrigger
-    - Char_4_by_10
-  #   - Characterisation_6_5
-  #   - Char_24deg
-  #   - TEST_Characterisation_12_3
-  #   - TEST_Characterisation_12_4
-  #   - TEST_Characterisation_12_5
+    # tolerance for deciding whether angles differ, in degrees;
+    # used to compare kappa and phi to decide if orientations needs separate centring
+    angular_tolerance: 1.0
+    # Characterisation strategies popup.
+    # names refer to stategies in  strategylib.nml
+    characterisation_strategies:
+      - Char_6_5_multitrigger
+      - Char_4_by_10
+    #   - Characterisation_6_5
+    #   - Char_24deg
+    #   - TEST_Characterisation_12_3
+    #   - TEST_Characterisation_12_4
+    #   - TEST_Characterisation_12_5
 
-  # How to set starting value for beam energy. Values are:
-  # 'configured': set value from calibration and characterisation strategy file
-  # 'current': use current value
-  starting_beamline_energy: current
-  display_energy_decimals: 4
-  default_beam_energy_tag: Main
+    # How to set starting value for beam energy. Values are:
+    # 'configured': set value from calibration and characterisation strategy file
+    # 'current': use current value
+    starting_beamline_energy: current
+    display_energy_decimals: 4
+    default_beam_energy_tag: Main
 
-  # NB Temporary developer option. Defaults to 1
-  allow_duplicate_orientations: 0
+    # NB Temporary developer option. Defaults to 1
+    allow_duplicate_orientations: 0
 
   # Suppress log output of programs called from GPhL workflow
   # Default to False
@@ -373,7 +373,17 @@ workflows:
           strategy_type: transcal
           wf_selection: transcal
           variants:
+            - quick
             - full
+          beam_energy_tags:
+            - Energy_1
+            - Energy_2
+          # Workflow interleave order (string);  Slowest changing first-->
+          # 'g' (Goniostat position); 's' (Scan number);
+          # 'b' (Beam wavelength); 'd' (Detector position)-->
+          # NB position interleaving in NOT done for the moment.
+          # So the default ('gs') is a no-op
+          interleave_order: gsb
           documentation: |
             Translational calibration.
             Designed for use by beamline personnel.

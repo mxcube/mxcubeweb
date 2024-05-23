@@ -11,7 +11,6 @@
   <object role="sampy" hwrid="./udiff_sampy"></object>
   <object role="kappa" hwrid="./udiff_kappa"></object>
   <object role="kappa_phi" hwrid="./udiff_kappaphi"></object>
-  <object role="beam" hwrid="./beam"></object>
 
   <object role="backlight" href="./udiff_backlight"/>
   <object role="backlightswitch" href="./udiff_backlightswitch"/>
