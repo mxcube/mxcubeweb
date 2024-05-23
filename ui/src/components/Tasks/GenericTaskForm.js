@@ -71,7 +71,7 @@ class GenericTaskForm extends React.Component {
       'chip_type',
     ];
 
-    saveToLastUsedParameters(this.props.taskData.type, params);
+    saveToLastUsedParameters(this.props.taskData.type, parameters);
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
