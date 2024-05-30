@@ -98,9 +98,9 @@ beamline_setup:
   id: beamline_setup
   components:
     - label: Beamstop
-      attribute: beamstop
+      attribute: diffractometer.beamstop
     - label: Capillary
-      attribute: capillary
+      attribute: diffractometer.capillary
     - label: Fast Shutter
       attribute: fast_shutter
     - label: Safety shutter
