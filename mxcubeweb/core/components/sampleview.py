@@ -49,7 +49,7 @@ class HttpStreamer:
         if self._clients == 0:
             # first client connected,
             # start listening to frames from sample camera
-            HWR.beamline.config.sample_view.camera.connect(
+            HWR.beamline.sample_view.camera.connect(
                 "imageReceived", self._new_frame_received
             )
 
@@ -60,7 +60,7 @@ class HttpStreamer:
         if self._clients == 0:
             # last client disconnected,
             # disconnect from the sample camera
-            HWR.beamline.config.sample_view.camera.disconnect(
+            HWR.beamline.sample_view.camera.disconnect(
                 "imageReceived", self._new_frame_received
             )
 
@@ -119,20 +119,20 @@ class SampleView(ComponentBase):
         self.http_streamer = HttpStreamer()
 
         enable_snapshots(
-            HWR.beamline.config.collect,
-            HWR.beamline.config.diffractometer,
-            HWR.beamline.config.sample_view,
+            HWR.beamline.collect,
+            HWR.beamline.diffractometer,
+            HWR.beamline.sample_view,
         )
 
-        HWR.beamline.config.sample_view.connect("shapesChanged", self._emit_shapes_updated)
+        HWR.beamline.sample_view.connect("shapesChanged", self._emit_shapes_updated)
 
-        zoom_motor = HWR.beamline.config.diffractometer.get_object_by_role("zoom")
+        zoom_motor = HWR.beamline.diffractometer.get_object_by_role("zoom")
 
         if zoom_motor:
             zoom_motor.connect("stateChanged", self._zoom_changed)
 
     def _zoom_changed(self, *args, **kwargs):
-        ppm = HWR.beamline.config.diffractometer.get_pixels_per_mm()
+        ppm = HWR.beamline.diffractometer.get_pixels_per_mm()
         self.app.server.emit(
             "update_pixels_per_mm",
             {"pixelsPerMm": ppm},
@@ -142,7 +142,7 @@ class SampleView(ComponentBase):
     def _emit_shapes_updated(self):
         shape_dict = {}
 
-        for shape in HWR.beamline.config.sample_view.get_shapes():
+        for shape in HWR.beamline.sample_view.get_shapes():
             _s = to_camel(shape.as_dict())
             shape_dict.update({shape.id: _s})
 
@@ -159,12 +159,12 @@ class SampleView(ComponentBase):
 
     def centring_remove_current_point(self):
         if self._centring_point_id:
-            HWR.beamline.config.sample_view.delete_shape(self._centring_point_id)
+            HWR.beamline.sample_view.delete_shape(self._centring_point_id)
             self._emit_shapes_updated()
             self._centring_point_id = None
 
     def centring_add_current_point(self, *args):
-        shape = HWR.beamline.config.sample_view.get_shape(self._centring_point_id)
+        shape = HWR.beamline.sample_view.get_shape(self._centring_point_id)
 
         # There is no current centered point shape when the centring is done
         # by software like Workflows, so we add one.
@@ -172,11 +172,11 @@ class SampleView(ComponentBase):
             try:
                 if args[0]:
                     motors = args[1]["motors"]
-                    (x, y) = HWR.beamline.config.diffractometer.motor_positions_to_screen(
+                    (x, y) = HWR.beamline.diffractometer.motor_positions_to_screen(
                         motors
                     )
                     self.centring_update_current_point(motors, x, y)
-                    shape = HWR.beamline.config.sample_view.get_shape(self._centring_point_id)
+                    shape = HWR.beamline.sample_view.get_shape(self._centring_point_id)
             except Exception:
                 logging.getLogger("MX3.HWR").exception("Centring failed !")
 
@@ -186,12 +186,12 @@ class SampleView(ComponentBase):
             self._centring_point_id = None
 
     def centring_update_current_point(self, motor_positions, x, y):
-        point = HWR.beamline.config.sample_view.get_shape(self._centring_point_id)
+        point = HWR.beamline.sample_view.get_shape(self._centring_point_id)
 
         if point:
             point.move_to_mpos([motor_positions], [x, y])
         else:
-            point = HWR.beamline.config.sample_view.add_shape_from_mpos(
+            point = HWR.beamline.sample_view.add_shape_from_mpos(
                 [motor_positions], (x, y), "P"
             )
             point.state = "TMP"
@@ -223,14 +223,14 @@ class SampleView(ComponentBase):
             motor_positions.pop("beam_y", None)
             motor_positions.pop("beam_x", None)
 
-            (x, y) = HWR.beamline.config.diffractometer.motor_positions_to_screen(
+            (x, y) = HWR.beamline.diffractometer.motor_positions_to_screen(
                 motor_positions
             )
 
             self.centring_update_current_point(motor_positions, x, y)
 
             if self.app.AUTO_MOUNT_SAMPLE:
-                HWR.beamline.config.diffractometer.accept_centring()
+                HWR.beamline.diffractometer.accept_centring()
 
     def init_signals(self):
         """
@@ -239,38 +239,38 @@ class SampleView(ComponentBase):
         """
         from mxcubeweb.routes import signals
 
-        dm = HWR.beamline.config.diffractometer
+        dm = HWR.beamline.diffractometer
         dm.connect("centringStarted", signals.centring_started)
         dm.connect("centringSuccessful", self.wait_for_centring_finishes)
         dm.connect("centringFailed", self.wait_for_centring_finishes)
         dm.connect("centringAccepted", self.centring_add_current_point)
-        HWR.beamline.config.sample_view.connect("newGridResult", self.handle_grid_result)
-        self._click_limit = int(HWR.beamline.config.click_centring_num_clicks or 3)
+        HWR.beamline.sample_view.connect("newGridResult", self.handle_grid_result)
+        self._click_limit = int(HWR.beamline.click_centring_num_clicks or 3)
 
     def set_image_size(self, width, height):
-        HWR.beamline.config.sample_view.camera.restart_streaming((width, height))
+        HWR.beamline.sample_view.camera.restart_streaming((width, height))
         return self.app.beamline.get_viewport_info()
 
     def move_to_centred_position(self, point_id):
-        point = HWR.beamline.config.sample_view.get_shape(point_id)
+        point = HWR.beamline.sample_view.get_shape(point_id)
 
         if point:
             motor_positions = point.get_centred_position().as_dict()
-            HWR.beamline.config.diffractometer.move_motors(motor_positions)
+            HWR.beamline.diffractometer.move_motors(motor_positions)
 
         return point
 
     def get_shapes(self):
         shape_dict = {}
 
-        for shape in HWR.beamline.config.sample_view.get_shapes():
+        for shape in HWR.beamline.sample_view.get_shapes():
             s = shape.as_dict()
             shape_dict.update({shape.id: s})
 
         return {"shapes": to_camel(shape_dict)}
 
     def get_shape_width_sid(self, sid):
-        shape = HWR.beamline.config.sample_view.get_shape(sid)
+        shape = HWR.beamline.sample_view.get_shape(sid)
 
         if shape is not None:
             shape = shape.as_dict()
@@ -281,7 +281,7 @@ class SampleView(ComponentBase):
     def shape_add_cell_result(self, sid, cell, result):
         from mxcubeweb.routes import signals
 
-        shape = HWR.beamline.config.sample_view.get_shape(sid)
+        shape = HWR.beamline.sample_view.get_shape(sid)
         shape.set_cell_result(cell, result)
         signals.grid_result_available(to_camel(shape.as_dict()))
 
@@ -298,7 +298,7 @@ class SampleView(ComponentBase):
             pos = []
 
             # Get the shape if already exists
-            shape = HWR.beamline.config.sample_view.get_shape(shape_data.get("id", -1))
+            shape = HWR.beamline.sample_view.get_shape(shape_data.get("id", -1))
 
             # If shape does not exist add it
             if not shape:
@@ -311,7 +311,7 @@ class SampleView(ComponentBase):
 
                 shape_data[
                     "pixels_per_mm"
-                ] = HWR.beamline.config.diffractometer.get_pixels_per_mm()
+                ] = HWR.beamline.diffractometer.get_pixels_per_mm()
                 shape_data["beam_pos"] = (
                     beam_info_dict.get("position")[0],
                     beam_info_dict.get("position")[1],
@@ -323,7 +323,7 @@ class SampleView(ComponentBase):
                 if not refs:
                     try:
                         x, y = shape_data["screen_coord"]
-                        mpos = HWR.beamline.config.diffractometer.get_centred_point_from_coord(
+                        mpos = HWR.beamline.diffractometer.get_centred_point_from_coord(
                             x, y, return_by_names=True
                         )
                         pos.append(mpos)
@@ -341,19 +341,19 @@ class SampleView(ComponentBase):
                                 + (shape_data["num_rows"] / 2.0)
                                 * shape_data["cell_height"]
                             )
-                            center_positions = HWR.beamline.config.diffractometer.get_centred_point_from_coord(
+                            center_positions = HWR.beamline.diffractometer.get_centred_point_from_coord(
                                 x_c, y_c, return_by_names=True
                             )
                             pos.append(center_positions)
 
-                        shape = HWR.beamline.config.sample_view.add_shape_from_mpos(
+                        shape = HWR.beamline.sample_view.add_shape_from_mpos(
                             pos, (x, y), t
                         )
                     except Exception:
                         logging.getLogger("HWR.MX3").info(shape_data)
 
                 else:
-                    shape = HWR.beamline.config.sample_view.add_shape_from_refs(refs, t)
+                    shape = HWR.beamline.sample_view.add_shape_from_refs(refs, t)
 
             # shape will be none if creation failed, so we check if shape exists
             # before setting additional parameters
@@ -366,17 +366,17 @@ class SampleView(ComponentBase):
 
     def rotate_to(self, sid):
         if sid:
-            shape = HWR.beamline.config.sample_view.get_shape(sid)
+            shape = HWR.beamline.sample_view.get_shape(sid)
             cp = shape.get_centred_position()
             phi_value = round(float(cp.as_dict().get("phi", None)), 3)
             if phi_value:
                 try:
-                    HWR.beamline.config.diffractometer.centringPhi.set_value(phi_value)
+                    HWR.beamline.diffractometer.centringPhi.set_value(phi_value)
                 except Exception:
                     raise
 
     def move_zoom_motor(self, pos):
-        zoom_motor = HWR.beamline.config.diffractometer.get_object_by_role("zoom")
+        zoom_motor = HWR.beamline.diffractometer.get_object_by_role("zoom")
         if zoom_motor.get_state() != HardwareObjectState.READY:
             return (
                 "motor is already moving",
@@ -392,27 +392,27 @@ class SampleView(ComponentBase):
         else:
             zoom_motor.set_value(pos)
 
-        scales = HWR.beamline.config.diffractometer.get_pixels_per_mm()
+        scales = HWR.beamline.diffractometer.get_pixels_per_mm()
         return {"pixelsPerMm": [scales[0], scales[1]]}
 
     def back_light_on(self):
-        motor = HWR.beamline.config.diffractometer.get_object_by_role("BackLightSwitch")
+        motor = HWR.beamline.diffractometer.get_object_by_role("BackLightSwitch")
         motor.set_value(motor.VALUES.IN)
 
     def back_light_off(self):
-        motor = HWR.beamline.config.diffractometer.get_object_by_role("BackLightSwitch")
+        motor = HWR.beamline.diffractometer.get_object_by_role("BackLightSwitch")
         motor.set_value(motor.VALUES.OUT)
 
     def front_light_on(self):
-        motor = HWR.beamline.config.diffractometer.get_object_by_role("FrontLightSwitch")
+        motor = HWR.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
         motor.set_value(motor.VALUES.IN)
 
     def front_light_off(self):
-        motor = HWR.beamline.config.diffractometer.get_object_by_role("FrontLightSwitch")
+        motor = HWR.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
         motor.set_value(motor.VALUES.OUT)
 
     def move_motor(self, motid, newpos):
-        motor = HWR.beamline.config.diffractometer.get_object_by_role(motid.lower())
+        motor = HWR.beamline.diffractometer.get_object_by_role(motid.lower())
 
         if newpos == "stop":
             motor.stop()
@@ -428,12 +428,12 @@ class SampleView(ComponentBase):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        if not HWR.beamline.config.diffractometer.current_centring_procedure:
+        if not HWR.beamline.diffractometer.current_centring_procedure:
             msg = "Starting automatic centring"
             logging.getLogger("user_level_log").info(msg)
 
-            HWR.beamline.config.diffractometer.start_centring_method(
-                HWR.beamline.config.diffractometer.C3D_MODE
+            HWR.beamline.diffractometer.start_centring_method(
+                HWR.beamline.diffractometer.C3D_MODE
             )
         else:
             msg = "Could not starting automatic centring, already centring."
@@ -445,17 +445,17 @@ class SampleView(ComponentBase):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        if HWR.beamline.config.diffractometer.is_ready():
-            if HWR.beamline.config.diffractometer.current_centring_procedure:
+        if HWR.beamline.diffractometer.is_ready():
+            if HWR.beamline.diffractometer.current_centring_procedure:
                 logging.getLogger("user_level_log").info(
                     "Aborting current centring ..."
                 )
-                HWR.beamline.config.diffractometer.cancel_centring_method(reject=True)
+                HWR.beamline.diffractometer.cancel_centring_method(reject=True)
 
             logging.getLogger("user_level_log").info("Centring using 3-click centring")
 
-            HWR.beamline.config.diffractometer.start_centring_method(
-                HWR.beamline.config.diffractometer.MANUAL3CLICK_MODE
+            HWR.beamline.diffractometer.start_centring_method(
+                HWR.beamline.diffractometer.MANUAL3CLICK_MODE
             )
 
             self.centring_reset_click_count()
@@ -470,35 +470,35 @@ class SampleView(ComponentBase):
     def abort_centring(self):
         try:
             logging.getLogger("user_level_log").info("User canceled centring")
-            HWR.beamline.config.diffractometer.cancel_centring_method()
+            HWR.beamline.diffractometer.cancel_centring_method()
             self.centring_remove_current_point()
         except Exception:
             logging.getLogger("MX3.HWR").warning("Canceling centring failed")
 
     def centring_handle_click(self, x, y):
-        if HWR.beamline.config.diffractometer.current_centring_procedure:
-            HWR.beamline.config.diffractometer.imageClicked(x, y, x, y)
+        if HWR.beamline.diffractometer.current_centring_procedure:
+            HWR.beamline.diffractometer.imageClicked(x, y, x, y)
             self.centring_click()
         else:
             if not self.centring_clicks_left():
                 self.centring_reset_click_count()
-                HWR.beamline.config.diffractometer.cancel_centring_method()
+                HWR.beamline.diffractometer.cancel_centring_method()
 
-                HWR.beamline.config.diffractometer.start_centring_method(
-                    HWR.beamline.config.diffractometer.MANUAL3CLICK_MODE
+                HWR.beamline.diffractometer.start_centring_method(
+                    HWR.beamline.diffractometer.MANUAL3CLICK_MODE
                 )
 
         return {"clicksLeft": self.centring_clicks_left()}
 
     def reject_centring(self):
-        HWR.beamline.config.diffractometer.reject_centring()
+        HWR.beamline.diffractometer.reject_centring()
         self.centring_remove_current_point()
 
     def move_to_beam(self, x, y):
         msg = "Moving point x: %s, y: %s to beam" % (x, y)
         logging.getLogger("user_level_log").info(msg)
 
-        HWR.beamline.config.diffractometer.move_to_beam(x, y)
+        HWR.beamline.diffractometer.move_to_beam(x, y)
 
     def set_centring_method(self, method):
         if method == CENTRING_METHOD.LOOP:

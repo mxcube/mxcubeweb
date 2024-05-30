@@ -22,7 +22,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/state", methods=["GET"])
     @server.restrict
     def get_sc_state():
-        state = HWR.beamline.config.sample_changer.get_status().upper()
+        state = HWR.beamline.sample_changer.get_status().upper()
         return jsonify({"state": state})
 
     @bp.route("/loaded_sample", methods=["GET"])
@@ -41,7 +41,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def select_location(loc):
-        HWR.beamline.config.sample_changer.select(loc)
+        HWR.beamline.sample_changer.select(loc)
         return app.sample_changer.get_sc_contents()
 
     @bp.route("/scan/<loc>", methods=["GET"])
@@ -49,7 +49,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def scan_location(loc):
         # do a recursive scan
-        HWR.beamline.config.sample_changer.scan(loc, True)
+        HWR.beamline.sample_changer.scan(loc, True)
         return app.sample_changer.get_sc_contents()
 
     @bp.route("/unmount_current", methods=["POST"])
@@ -154,7 +154,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def send_command(cmdparts, args=None):
         try:
-            ret = HWR.beamline.config.sample_changer_maintenance.send_command(cmdparts, args)
+            ret = HWR.beamline.sample_changer_maintenance.send_command(cmdparts, args)
         except Exception as ex:
             msg = str(ex)
             msg = msg.replace("\n", " - ")
