@@ -63,3 +63,6 @@ npm-debug.log*
 /dump.rdb
 /supervisord.pid
 log
+
+/.venv/
+/test.py

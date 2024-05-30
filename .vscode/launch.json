@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Docker: Python (test.py)",
+            "name": "Docker: Python",
             "type": "docker",
             "request": "launch",
             "preLaunchTask": "docker-run: debug",
@@ -25,6 +25,15 @@
                 ],
             },
             "removeContainerAfterDebug": true
+        },
+        {
+            "name": "Python: test.py",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "test.py",
+            "cwd": "${workspaceFolder}",
+            "justMyCode": false,
+            "args": []
         },
         {
             "name": "Python: Debug Tests",
