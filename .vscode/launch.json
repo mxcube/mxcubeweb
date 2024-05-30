@@ -1,0 +1,47 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Docker: Python (test.py)",
+            "type": "docker",
+            "request": "launch",
+            "preLaunchTask": "docker-run: debug",
+            "python": {
+                "pathMappings": [
+                    {
+                        "localRoot": "${workspaceFolder}",
+                        "remoteRoot": "/opt/mxcubeweb"
+                    }
+                ],
+                "justMyCode": false,
+                "args": [
+                    "--repository",
+                    "/opt/mxcubeweb/test/HardwareObjectsMockup.xml",
+                    "--static-folder",
+                    "/opt/mxcubeweb/ui/build",
+                ],
+            },
+            "removeContainerAfterDebug": true
+        },
+        {
+            "name": "Python: Debug Tests",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "purpose": ["debug-test"],
+            "presentation": {
+                "hidden": true,
+                "group": "",
+                "order": 1
+            },
+            "console": "integratedTerminal",
+            "justMyCode": false,
+            "env": {
+                "GEVENT_SUPPORT": "True",
+            }
+        }
+    ]
+}

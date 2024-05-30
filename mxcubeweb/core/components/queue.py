@@ -7,6 +7,7 @@ import itertools
 import logging
 import re
 
+from os import environ
 from mock import Mock
 
 from flask_login import current_user
@@ -42,6 +43,12 @@ UNCOLLECTED = 0x0
 READY = 0
 
 ORIGIN_MX3 = "MX3"
+
+REDIS_CONN = redis.StrictRedis(
+    host=environ.get("MXCUBE_REDIS_HOST", "localhost"),
+    port=int(environ.get("MXCUBE_REDIS_PORT", "6379")),
+    password=environ.get("MXCUBE_REDIS_PASSWORD"),
+)
 
 
 class Queue(ComponentBase):
@@ -1810,7 +1817,7 @@ class Queue(ComponentBase):
         HWR.beamline.queue_model.clear_model("plate")
         HWR.beamline.queue_model.select_model("ispyb")
 
-    def save_queue(self, session, redis=redis.Redis()):
+    def save_queue(self, session, redis=REDIS_CONN):
         """
         Saves the current HWR.beamline.queue_model (HWR.beamline.queue_model) into a redis database.
         The queue that is saved is the pickled result returned by queue_to_dict
@@ -1827,7 +1834,7 @@ class Queue(ComponentBase):
             queue = self.queue_to_dict(HWR.beamline.queue_model.get_model_root())
             redis.set("self.app.queue:%d" % proposal_id, pickle.dumps(queue))
 
-    def load_queue(self, session, redis=redis.Redis()):
+    def load_queue(self, session, redis=REDIS_CONN):
         """
         Loads the queue belonging to session <session> into redis db <redis>
 

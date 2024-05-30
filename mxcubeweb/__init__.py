@@ -11,6 +11,7 @@ import redis  # noqa: E402
 import sys  # noqa: E402
 import traceback  # noqa: E402
 
+from os import environ  # noqa: E402
 from mxcubeweb.server import Server as server  # noqa: E402
 from mxcubeweb.app import MXCUBEApplication as mxcube  # noqa: E402
 from mxcubeweb.config import Config  # noqa: E402
@@ -18,6 +19,10 @@ from mxcubecore import HardwareRepository as HWR  # noqa: E402
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
+
+MXCUBE_REDIS_HOST = environ.get("MXCUBE_REDIS_HOST", "localhost")
+MXCUBE_REDIS_PORT = environ.get("MXCUBE_REDIS_PORT", "6379")
+MXCUBE_REDIS_PASSWORD = environ.get("MXCUBE_REDIS_PASSWORD")
 
 
 def parse_args(argv):
@@ -108,7 +113,11 @@ def build_server_and_config(test=False, argv=None):
     cmdline_options = parse_args(argv)
 
     try:
-        db = redis.Redis()
+        db = redis.StrictRedis(
+            host=MXCUBE_REDIS_HOST,
+            port=int(MXCUBE_REDIS_PORT),
+            password=MXCUBE_REDIS_PASSWORD,
+        )
         db.ping()
     except redis.RedisError:
         print("No Redis server is running, exiting")

@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    networks:
+      - mxcube_network
+    hostname: redis
+    healthcheck:
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      interval: 30s
+      retries: 5
+      start_period: 5s
+      timeout: 10s
+
+  mxcubeweb:
+    build:
+      context: ../
+      dockerfile: ./docker/Dockerfile
+      target: runtime
+    container_name: mxcubeweb
+    environment:
+      - "MXCUBE_REDIS_HOST=redis"
+      - "MXCUBE_REDIS_PORT=6379"
+    ports:
+      - mode: ingress
+        target: 8081
+        published: "8081"
+        protocol: tcp
+    networks:
+      - mxcube_network
+    hostname: mxcubeweb
+    profiles:
+      - web
+    depends_on:
+      - redis
+
+networks:
+  mxcube_network:
+    name: mxcube_network

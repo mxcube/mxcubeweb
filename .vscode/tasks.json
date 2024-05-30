@@ -1,0 +1,59 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "docker-build",
+            "type": "docker-build",
+            "hide": true,
+            "dockerBuild": {
+                "context": "${workspaceFolder}",
+                "dockerfile": "${workspaceFolder}/docker/Dockerfile",
+                "tag": "mxcubeweb:debug",
+                "pull": true
+            }
+        },
+        {
+            "label": "docker-run: debug",
+            "type": "docker-run",
+            "dependsOn": ["docker-build"],
+            "dockerRun": {
+                "containerName": "mxcubeweb",
+                "image": "mxcubeweb:debug",
+                "env": {
+                    "CONDA_EXE": "/opt/conda/bin/conda",
+                    "CONDA_PREFIX": "/opt/conda/envs/mxcubeweb",
+                    "CONDA_PROMPT_MODIFIER": "(MXCuBE) ",
+                    "CONDA_SHLVL": "1",
+                    "SHLVL": "1",
+                    "CONDA_PYTHON_EXE": "/opt/conda/bin/python",
+                    "CONDA_DEFAULT_ENV": "mxcubeweb",
+                    "PATH": "/opt/conda/envs/mxcubeweb/bin:/opt/conda/condabin:/opt/conda/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+                    "MXCUBE_REDIS_HOST": "redis",
+                    "MXCUBE_REDIS_PORT": "6379"
+                },
+                "volumes": [
+                    {
+                        "localPath": "${workspaceFolder}/../mxcubecore",
+                        "containerPath": "/opt/mxcubecore",
+                        "permissions": "ro"
+                    }
+                ],
+                "network": "mxcube_network",
+                "ports": [
+                    {
+                        "containerPort": 8081,
+                        "hostPort": 8081,
+                        "protocol": "tcp"
+                    }
+                ],
+                "remove": true
+            },
+            "python": {
+                "file": "/opt/mxcubeweb/mxcubeweb-server",
+                "wait": true
+            }
+        }
+    ]
+}
