@@ -84,7 +84,7 @@ class _BeamlineAdapter:
         Returns:
             (list): The methods.
         """
-        return self._bl.available_methods
+        return self._bl.config.available_methods
 
     def get_available_elements(self):
         escan = self._bl.energy_scan

@@ -126,12 +126,12 @@ class MXCUBECore:
             MXCUBECore.adapter_dict[_id] = {
                 "id": str(_id),
                 "adapter_cls": adapter_cls.__name__,
-                "ho": ho.name()[1:],
+                "ho": ho.name,
                 "adapter": adapter_instance,
             }
         else:
             logging.getLogger("MX3.HWR").warning(
-                f"Skipping {ho.name()}, id: {_id} already exists"
+                f"Skipping {ho.name}, id: {_id} already exists"
             )
 
     @staticmethod

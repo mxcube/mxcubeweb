@@ -279,7 +279,7 @@ class AdapterBase:
             data["state"] = state.name
         else:
             logging.getLogger("MX3.HWR").info(
-                f"emit_ho_changed with {state} for {self._ho.name()}"
+                f"emit_ho_changed with {state} for {self._ho.name}"
             )
 
         self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
@@ -429,10 +429,10 @@ class ActuatorAdapterBase(AdapterBase):
             data.update({"value": self.get_value(), "limits": self.limits()})
         except Exception as ex:
             logging.getLogger("MX3.HWR").exception(
-                f"Could not get dictionary representation of {self._ho.name()}"
+                f"Could not get dictionary representation of {self._ho.name}"
             )
             logging.getLogger("MX3.HWR").error(
-                f"Check status of {self._ho.name()}, object is"
+                f"Check status of {self._ho.name}, object is"
                 " offline, in fault or returns unexpected value !"
             )
 
