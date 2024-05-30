@@ -32,7 +32,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        HWR.beamline.config.sample_view.camera.streaming_greenlet.kill()
+        HWR.beamline.sample_view.camera.streaming_greenlet.kill()
         return Response(status=200)
 
     @bp.route("/camera/save", methods=["PUT"])
@@ -45,7 +45,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         Return: 'True' if command issued succesfully, otherwise 'False'.
         """
         try:
-            HWR.beamline.config.sample_view.camera.takeSnapshot(
+            HWR.beamline.sample_view.camera.takeSnapshot(
                 os.path.join(os.path.dirname(__file__), "snapshots/")
             )
             return "True"
@@ -179,7 +179,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        HWR.beamline.config.sample_view.delete_shape(sid)
+        HWR.beamline.sample_view.delete_shape(sid)
         return Response(status=200)
 
     @bp.route("/shapes/rotate_to", methods=["POST"])
@@ -400,7 +400,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         """
         Accept the centring position.
         """
-        HWR.beamline.config.diffractometer.accept_centring()
+        HWR.beamline.diffractometer.accept_centring()
         return Response(status=200)
 
     @bp.route("/centring/reject", methods=["PUT"])

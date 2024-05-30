@@ -52,7 +52,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
                 200 On success
                 409 queue could not be aborted
         """
-        HWR.beamline.config.queue_manager.stop()
+        HWR.beamline.queue_manager.stop()
         return Response(status=200)
 
     @bp.route("/pause", methods=["PUT"])
@@ -357,7 +357,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/group_folder", methods=["GET"])
     @server.restrict
     def get_group_folder():
-        resp = jsonify({"path": HWR.beamline.config.session.get_group_name()})
+        resp = jsonify({"path": HWR.beamline.session.get_group_name()})
         resp.status_code = 200
 
         return resp
