@@ -342,7 +342,7 @@ class MXCUBEApplication:
         corresponding signals/events
         """
         try:
-            MXCUBEApplication.queue.init_signals(HWR.beamline.config.queue_model)
+            MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
         except Exception:
             sys.excepthook(*sys.exc_info())
 
@@ -507,7 +507,7 @@ class MXCUBEApplication:
         Saves all application wide variables to disk, stored-mxcube-session.json
         """
         queue = MXCUBEApplication.queue.queue_to_dict(
-            HWR.beamline.config.queue_model.get_model_root()
+            HWR.beamline.queue_model.get_model_root()
         )
 
         # For the moment not storing USERS

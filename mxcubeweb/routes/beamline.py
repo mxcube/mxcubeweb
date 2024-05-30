@@ -189,7 +189,7 @@ def init_route(app, server, url_prefix):
         Retrieve data directory from the session hwobj,
         this is specific for each beamline.
         """
-        data = HWR.beamline.config.session.get_base_image_directory()
+        data = HWR.beamline.session.get_base_image_directory()
         return jsonify({"path": data})
 
     @bp.route("/prepare_beamline", methods=["PUT"])

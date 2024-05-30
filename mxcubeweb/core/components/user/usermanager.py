@@ -115,7 +115,7 @@ class BaseUserManager(ComponentBase):
         # If no user is currently in control set this user to be
         # in control
         if not active_in_control:
-            if HWR.beamline.config.lims.loginType.lower() != "user":
+            if HWR.beamline.lims.loginType.lower() != "user":
                 current_user.nickname = self.app.lims.get_proposal(current_user)
             else:
                 current_user.nickname = current_user.username
@@ -125,7 +125,7 @@ class BaseUserManager(ComponentBase):
         # Set active proposal to that of the active user
         for _u in User.query.all():
             if _u.is_authenticated and _u.in_control:
-                if HWR.beamline.config.lims.loginType.lower() != "user":
+                if HWR.beamline.lims.loginType.lower() != "user":
                     self.app.lims.select_proposal(self.app.lims.get_proposal(_u))
                 elif _u.selected_proposal is not None:
                     self.app.lims.select_proposal(_u.selected_proposal)
@@ -133,7 +133,7 @@ class BaseUserManager(ComponentBase):
     def is_inhouse_user(self, user_id):
         user_id_list = [
             "%s%s" % (code, number)
-            for (code, number) in HWR.beamline.config.session.in_house_users
+            for (code, number) in HWR.beamline.session.in_house_users
         ]
 
         return user_id in user_id_list
@@ -193,13 +193,13 @@ class BaseUserManager(ComponentBase):
         if self.is_operator():
             self.app.queue.save_queue(flask.session)
             self.app.queue.clear_queue()
-            HWR.beamline.config.sample_view.clear_all()
+            HWR.beamline.sample_view.clear_all()
             self.app.lims.init_sample_list()
 
             self.app.queue.init_queue_settings()
 
-            if hasattr(HWR.beamline.config.session, "clear_session"):
-                HWR.beamline.config.session.clear_session()
+            if hasattr(HWR.beamline.session, "clear_session"):
+                HWR.beamline.session.clear_session()
 
             self.app.CURRENTLY_MOUNTED_SAMPLE = ""
 
@@ -243,21 +243,21 @@ class BaseUserManager(ComponentBase):
             ]
 
             res = {
-                "synchrotronName": HWR.beamline.config.session.synchrotron_name,
-                "beamlineName": HWR.beamline.config.session.beamline_name,
+                "synchrotronName": HWR.beamline.session.synchrotron_name,
+                "beamlineName": HWR.beamline.session.beamline_name,
                 "loggedIn": True,
-                "loginType": HWR.beamline.config.lims.loginType.title(),
+                "loginType": HWR.beamline.lims.loginType.title(),
                 "proposalList": proposal_list,
-                "rootPath": HWR.beamline.config.session.get_base_image_directory(),
+                "rootPath": HWR.beamline.session.get_base_image_directory(),
                 "user": current_user.todict(),
             }
 
             res["selectedProposal"] = "%s%s" % (
-                HWR.beamline.config.session.proposal_code,
-                HWR.beamline.config.session.proposal_number,
+                HWR.beamline.session.proposal_code,
+                HWR.beamline.session.proposal_number,
             )
 
-            res["selectedProposalID"] = HWR.beamline.config.session.proposal_id
+            res["selectedProposalID"] = HWR.beamline.session.proposal_id
         else:
             raise Exception("Not logged in")
 
@@ -270,7 +270,7 @@ class BaseUserManager(ComponentBase):
     def _get_configured_roles(self, user):
         roles = set()
 
-        _ihs = ["%s%s" % prop for prop in HWR.beamline.config.session.in_house_users]
+        _ihs = ["%s%s" % prop for prop in HWR.beamline.session.in_house_users]
 
         if self.config.inhouse_is_staff and user in _ihs:
             roles.add("staff")
@@ -286,7 +286,7 @@ class BaseUserManager(ComponentBase):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
         username = f"{user}-{str(uuid.uuid4())}"
-        if HWR.beamline.config.lims.loginType.lower() == "user":
+        if HWR.beamline.lims.loginType.lower() == "user":
             username = f"{user}"
 
         # Make sure that the roles staff and incontrol always
@@ -299,7 +299,7 @@ class BaseUserManager(ComponentBase):
         _u = user_datastore.find_user(username=username)
 
         if not _u:
-            if HWR.beamline.config.lims.loginType.lower() != "user":
+            if HWR.beamline.lims.loginType.lower() != "user":
                 selected_proposal = user
             else:
                 selected_proposal = None
@@ -382,7 +382,7 @@ class UserManager(BaseUserManager):
             (not inhouse)
             and non_inhouse_active_users
             and (login_id not in [p.split("-")[0] for p in non_inhouse_active_users])
-            and HWR.beamline.config.lims.loginType.lower() != "user"
+            and HWR.beamline.lims.loginType.lower() != "user"
         ):
             raise Exception("Another user is already logged in")
 
@@ -391,7 +391,7 @@ class UserManager(BaseUserManager):
             if (
                 active_users
                 and current_user.username != login_id
-                and HWR.beamline.config.lims.loginType.lower() == "user"
+                and HWR.beamline.lims.loginType.lower() == "user"
             ):
                 raise Exception("Another user is already logged in")
 
