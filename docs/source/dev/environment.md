@@ -171,8 +171,8 @@ The development server listens on port **3000**
 conda activate mxcubeweb
 mxcubeweb-server -r $(pwd)/mxcubeweb/test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/mxcubeweb/ui/build/ --log-level debug
 
-# Enter the `ui` folder and issue:
-npm run start
+# In another terminal, from the root directory of `mxcubeweb`
+pnpm --prefix ui run start
 ```
 
 The above will automatically open a browser with the URL: <http://localhost:3000>
@@ -180,8 +180,8 @@ The above will automatically open a browser with the URL: <http://localhost:3000
 #### 9.3. Running the end to end (e2e) tests
 
 ```
-# Keep the backend running, and issue in the mxcubeweb root:
-npm run --prefix ./ui e2e
+# Keep the backend running, and in another terminal from the root directory of `mxcubeweb`:
+pnpm --prefix ui run e2e
 ```
 
 _This should give a result looking something like:_
