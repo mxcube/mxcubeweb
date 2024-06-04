@@ -1,11 +1,28 @@
 name: mxcubeweb
+
 channels:
   - conda-forge
+
 dependencies:
-  - python >=3.8,<3.11
-  - openldap
-  - python-ldap=3.4.0
-  - poetry
-  - nodejs
+
+  # ====================
+  # Runtime dependencies
+  # ====================
+
+  - python >=3.8,<3.11  # Make sure it matches `pyproject.toml`
+
+  # We install `python-ldap` from conda because it is "hard" to install.
+  # On PyPI it is not available as *wheel*, only as *sdist* which requires to be built
+  # with compilation steps that require a compiler and some header files.
+  # Installing with conda is much "easier".
+  - python-ldap ==3.4.3  # Make sure it matches `poetry.lock`
+
   - redis-server
-  - pnpm =9.*
+
+  # ========================
+  # Development dependencies
+  # ========================
+
+  - nodejs ==18.*|20.*  # Make sure it matches `ui/package.json`
+  - pnpm ==9.*  # Make sure it matches `ui/package.json`
+  - poetry
