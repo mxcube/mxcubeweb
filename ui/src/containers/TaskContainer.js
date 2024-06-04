@@ -3,6 +3,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';
+import DataCollectionTest from '../components/Tasks/DataCollectionTest';
 import Helical from '../components/Tasks/Helical';
 import Mesh from '../components/Tasks/Mesh';
 import AddSample from '../components/Tasks/AddSample';
@@ -129,6 +130,24 @@ class TaskContainer extends React.Component {
     case 'DataCollection': {
       return (
         <DataCollection
+          show
+          addTask={this.addTask}
+          pointID={this.props.pointID}
+          taskData={this.props.taskData}
+          hide={this.props.hideTaskParametersForm}
+          apertureList={this.props.apertureList}
+          rootPath={this.props.path}
+          attributes={this.props.attributes}
+          initialParameters={this.props.initialParameters}
+          resetTaskParameters={this.props.resetTaskParameters}
+          defaultParameters={this.props.defaultParameters}
+          taskResult={this.props.taskResult}
+        />
+      );
+    }
+    case 'DataCollectionTest': {
+      return (
+        <DataCollectionTest
           show
           addTask={this.addTask}
           pointID={this.props.pointID}

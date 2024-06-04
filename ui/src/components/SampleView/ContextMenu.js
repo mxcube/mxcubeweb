@@ -141,6 +141,11 @@ export default class ContextMenu extends React.Component {
           key: 'datacollection'
         },
         {
+          text: 'Add Datacollection (test)',
+          action: () => this.showModal('DataCollectionTest'),
+          key: 'datacollection'
+        },
+        {
           text: 'Add Characterisation',
           action: () => this.showModal('Characterisation'),
           key: 'characterisation'
@@ -172,6 +177,11 @@ export default class ContextMenu extends React.Component {
         {
           text: 'Add Datacollection',
           action: () => this.showModal('DataCollection'),
+          key: 'datacollection'
+        },
+        {
+          text: 'Add Datacollection (test)',
+          action: () => this.showModal('DataCollectionTest'),
           key: 'datacollection'
         },
         {
