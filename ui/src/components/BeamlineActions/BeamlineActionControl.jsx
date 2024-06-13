@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, ButtonToolbar } from 'react-bootstrap';
+import { Button, ButtonGroup, ButtonToolbar } from 'react-bootstrap';
 import { BiLinkExternal } from 'react-icons/bi';
 import {
   RUNNING,
@@ -19,35 +19,37 @@ export default function BeamlineActionControl(props) {
 
   return (
     <ButtonToolbar>
-      {props.actionArguments.length === 0 ? (
-        <Button
-          size="sm"
-          className="me-1"
-          variant={variant}
-          disabled={props.disabled}
-          onClick={
-            props.state !== RUNNING
-              ? () => props.handleStartAction(props.actionId, showOutput)
-              : () => props.handleStopAction(props.actionId)
-          }
-        >
-          {label}
-        </Button>
-      ) : (
-        ''
-      )}
-      {showOutput ? (
-        <Button
-          variant="outline-secondary"
-          disabled={props.disabled}
-          size="sm"
-          onClick={() => props.handleShowOutput(props.actionId)}
-        >
-          <BiLinkExternal />
-        </Button>
-      ) : (
-        ''
-      )}
+      <ButtonGroup className="d-flex flex-row" aria-label="First group">
+        {props.actionArguments.length === 0 ? (
+          <Button
+            size="sm"
+            className="me-1"
+            variant={variant}
+            disabled={props.disabled}
+            onClick={
+              props.state !== RUNNING
+                ? () => props.handleStartAction(props.actionId, showOutput)
+                : () => props.handleStopAction(props.actionId)
+            }
+          >
+            {label}
+          </Button>
+        ) : (
+          ''
+        )}
+        {showOutput ? (
+          <Button
+            variant="outline-secondary"
+            disabled={props.disabled}
+            size="sm"
+            onClick={() => props.handleShowOutput(props.actionId)}
+          >
+            <BiLinkExternal />
+          </Button>
+        ) : (
+          ''
+        )}
+      </ButtonGroup>
     </ButtonToolbar>
   );
 }
