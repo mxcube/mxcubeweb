@@ -34,6 +34,10 @@ jobs:
 
       - name: "Checkout"
         uses: "actions/checkout@v4"  # tested with v4.0.0
+        with:
+          # With shallow clone the "Last updated" timestamp can not get computed
+          # See "Caveats" at https://pypi.org/project/sphinx-last-updated-by-git
+          fetch-depth: 0
 
       # Use micromamba instead of conda for better performance
       - name: "Setup conda environment with micromamba"

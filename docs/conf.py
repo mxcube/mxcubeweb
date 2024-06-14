@@ -6,7 +6,6 @@ import importlib.metadata
 
 import mxcubeweb
 
-
 MXCUBE_NAME = "MXCuBE"
 MXCUBE_CORE_NAME = f"{MXCUBE_NAME}-Web"
 MXCUBE_WEB_NAME = f"{MXCUBE_NAME}-Web"
@@ -120,6 +119,12 @@ extensions.append("sphinx.ext.viewcode")
 # https://sphinxcontrib-httpdomain.readthedocs.io
 
 extensions.append("sphinxcontrib.autohttp.flask")
+
+
+# -- Options for sphinx_last_updated_by_git
+# https://pypi.org/project/sphinx-last-updated-by-git/
+
+extensions.append("sphinx_last_updated_by_git")
 
 
 # EOF
