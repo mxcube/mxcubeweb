@@ -20,6 +20,9 @@ build:
     python: "mambaforge-22.9"
 
   commands:
+    # With shallow clone the "Last updated" timestamps can not get computed
+    # See "Caveats" at <https://pypi.org/project/sphinx-last-updated-by-git/>
+    - "git fetch --unshallow || true"
     - "mamba env create --file conda-environment.yml --force"
     - "mamba run --name mxcubeweb poetry install --only=docs,main"
     - "(mamba run --name mxcubeweb redis-server &) && mamba run --name mxcubeweb python -m sphinx -T -E -b html -d _build/doctrees -c docs docs/source ${READTHEDOCS_OUTPUT}/html && mamba run --name mxcubeweb redis-cli shutdown"
