@@ -23,11 +23,12 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.8,<3.11"
-Flask = "^2.2.2"
-werkzeug = "2.3.7"
-Flask-SocketIO = "^5.3.2"
-flask-sqlalchemy = "^3.0.2"
-Flask-Security-Too = "^5.0.2"
+Flask = "^3.0.3"
+werkzeug = "^3.0.3"
+Flask-SocketIO = "^5.3.6"
+flask-sqlalchemy = "^3.1.1"
+Flask-Security-Too = "^5.4.3"
+flask-login = "^0.6.3"
 gevent-websocket = "0.10.1"
 spectree = "1.2.1"
 mock = "^4.0.3"
@@ -41,7 +42,6 @@ pytz = "^2022.6"
 tzlocal = "^4.2"
 mxcubecore = ">=1.102.0"
 mxcube-video-streamer = ">=1.0.0"
-bcrypt = "^4.0.1"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "2.20.0"
