@@ -205,6 +205,7 @@ class TaskContainer extends React.Component {
             apertureList={this.props.apertureList}
             availableElements={this.props.beamline.energyScanElements}
             rootPath={this.props.path}
+            defaultParameters={this.props.defaultParameters}
           />
         );
       }

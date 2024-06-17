@@ -43,6 +43,18 @@ class GenericTaskForm extends React.Component {
     this.props.handleSubmit(this.addToQueue.bind(this, true))();
   }
 
+  get jsFormStorageKey() {
+    return `current${this.props.taskData.type}Parameters`;
+  }
+
+  clearCurrentJSFormParameters() {
+    localStorage.removeItem(this.jsFormStorageKey);
+  }
+
+  saveCurrentJSFormParameters(formData) {
+    localStorage.setItem(this.jsFormStorageKey, JSON.stringify(formData));
+  }
+
   addToQueue(runNow, params) {
     const parameters = {
       ...params,
@@ -71,12 +83,16 @@ class GenericTaskForm extends React.Component {
       'chip_type',
     ];
 
-    saveToLastUsedParameters(this.props.taskData.type, parameters);
+    saveToLastUsedParameters(this.props.taskData.type, parameters, [
+      'selection',
+    ]);
+    this.clearCurrentJSFormParameters();
     this.props.addTask(parameters, stringFields, runNow);
     this.props.hide();
   }
 
   defaultParameters() {
+    this.clearCurrentJSFormParameters();
     resetLastUsedParameters(this);
   }
 
@@ -167,6 +183,18 @@ class GenericTaskForm extends React.Component {
       }
     }
 
+    const currentFormData = JSON.parse(
+      localStorage.getItem(this.jsFormStorageKey),
+    );
+
+    if (currentFormData) {
+      for (const key in currentFormData) {
+        if (s.properties[key]) {
+          s.properties[key].default = currentFormData[key];
+        }
+      }
+    }
+
     for (const key in this.props.taskData.Arraylimits) {
       if (s.properties[key]) {
         s.properties[key].exclusiveMinimum = this.props.taskData.limits[key][0];
@@ -244,10 +272,17 @@ class GenericTaskForm extends React.Component {
     const schema = this.setConstraintsFromDefualts(
       this.props.schema.user_collection_parameters,
     );
+
     return (
-      <DraggableModal show={this.props.show} onHide={this.props.hide}>
+      <DraggableModal
+        show={this.props.show}
+        onHide={() => {
+          this.clearCurrentJSFormParameters();
+          this.props.hide();
+        }}
+      >
         <Modal.Header closeButton>
-          <Modal.Title>{this.props.taskData.name}</Modal.Title>
+          <Modal.Title>{this.props.taskData.parameters.name}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>
@@ -306,6 +341,7 @@ class GenericTaskForm extends React.Component {
               uiSchema={uiSchema}
               onChange={({ formData }) => {
                 this.updateFromRemoteValidation(formData);
+                this.saveCurrentJSFormParameters(formData);
                 this.jsformData = formData;
               }}
               templates={{
