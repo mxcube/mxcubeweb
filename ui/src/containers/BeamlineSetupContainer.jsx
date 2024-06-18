@@ -104,7 +104,7 @@ function BeamlineSetupContainer(props) {
               );
             } else {
               acts.push(
-                <Nav.Item key={key} className="ms-3">
+                <Nav.Item key={key} className="me-3">
                   <InOutSwitch
                     openText={beamline.hardwareObjects[key].commands[0]}
                     offText={beamline.hardwareObjects[key].commands[1]}
@@ -208,7 +208,7 @@ function BeamlineSetupContainer(props) {
     <Navbar className="beamline-status" id="bmstatus" expand="lg">
       <Navbar.Toggle aria-controls="basic-navbar-nav" />
       <Navbar.Collapse id="basic-navbar-nav">
-        <Nav className="d-flex  me-auto">
+        <Nav className="d-flex me-auto">
           <Nav.Item className="justify-content-start">
             <BeamlineCamera cameraSetup={uiproperties.camera_setup} />
             <BeamlineActions actionsList={beamline.beamlineActionsList} />
@@ -248,7 +248,7 @@ function BeamlineSetupContainer(props) {
             </Table>
           </Nav.Item>
         </Nav>
-        <Nav className="">
+        <Nav className="me-3">
           <Nav.Item>
             <InOutSwitch
               openText="Power On"
