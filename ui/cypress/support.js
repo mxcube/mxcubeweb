@@ -19,9 +19,9 @@ Cypress.Commands.add('takeControl', () => {
 
   // ensure to click away the observer mode dialog box if present
   /* eslint-disable-next-line promise/catch-or-return, promise/prefer-await-to-then */
-  cy.findByRole('dialog').then(($dialog) => {
-    if ($dialog.text().includes('Observer mode')) {
-      cy.wrap($dialog.find('.form-control')).type('test');
+  cy.get('body').then(($body) => {
+    if ($body.text().includes('Observer mode')) {
+      cy.wrap($body.find('.modal-dialog').find('.form-control')).type('test');
       cy.findByText('OK').click();
     }
   });
@@ -31,6 +31,7 @@ Cypress.Commands.add('takeControl', () => {
   Cypress.on('uncaught:exception', (err, runnable) => {
     return true;
   });
+  cy.reload();
 });
 
 Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
@@ -41,5 +42,10 @@ Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
   cy.findByLabelText('Protein acronym').type(protein);
   cy.findByText('Mount').click();
   // reload for button changes to take effect
+  cy.reload();
+});
+
+Cypress.Commands.add('clearSamples', () => {
+  cy.request('PUT', '/mxcube/api/v0.1/queue/clear');
   cy.reload();
 });
