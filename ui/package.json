@@ -81,7 +81,7 @@
     "@testing-library/user-event": "^13.5.0",
     "babel-preset-react-app": "10.0.1",
     "concurrently": "^7.0.0",
-    "cypress": "13.1.0",
+    "cypress": "13.12.0",
     "eslint": "8.42.0",
     "eslint-config-galex": "4.5.2",
     "eslint-plugin-import": "2.27.5",
