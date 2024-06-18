@@ -144,14 +144,22 @@ export default function InOutSwitch(props) {
       >
         {!isBtnLabel ? (
           <div title={value}>
-            <Badge bg={msgBgStyle} className={styles.msgLabelStyle}>
+            <Badge
+              bg={msgBgStyle}
+              className={styles.msgLabelStyle}
+              style={{ marginBottom: '3px' }}
+            >
               {value}
             </Badge>
           </div>
         ) : (
           <Button variant="outline-secondary" className={styles.switchBtn}>
             {labelText}{' '}
-            <Badge className={styles.switchBdg} bg={msgBgStyle}>
+            <Badge
+              className={styles.switchBdg}
+              bg={msgBgStyle}
+              style={{ marginBottom: '3px' }}
+            >
               {state}
             </Badge>
           </Button>

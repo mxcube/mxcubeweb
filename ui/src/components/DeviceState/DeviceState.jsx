@@ -20,7 +20,11 @@ export default class DeviceState extends React.Component {
         >
           {this.props.labelText}
         </Badge>
-        <Badge bg={msgBgStyle} className={styles.msgLabelStyle}>
+        <Badge
+          bg={msgBgStyle}
+          className={styles.msgLabelStyle}
+          style={{ marginBottom: '3px' }}
+        >
           {this.props.data}
         </Badge>
       </div>

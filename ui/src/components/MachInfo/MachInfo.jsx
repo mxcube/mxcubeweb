@@ -57,7 +57,11 @@ function MachInfo(props) {
         <Badge bg="secondary" className={styles.machineLabel}>
           Ring Current
         </Badge>
-        <Badge bg={variant} className={styles.msgLabelStyle}>
+        <Badge
+          bg={variant}
+          className={styles.msgLabelStyle}
+          style={{ marginBottom: '3px' }}
+        >
           {info.current}
         </Badge>
       </div>
