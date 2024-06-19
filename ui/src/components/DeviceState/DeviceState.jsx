@@ -13,18 +13,10 @@ export default class DeviceState extends React.Component {
 
     return (
       <div className={styles.deviceState}>
-        <Badge
-          className={styles.labelStyle}
-          bg="secondary"
-          style={{ display: 'block', marginBottom: '3px' }}
-        >
+        <Badge className={styles.labelStyle} bg="secondary">
           {this.props.labelText}
         </Badge>
-        <Badge
-          bg={msgBgStyle}
-          className={styles.msgLabelStyle}
-          style={{ marginBottom: '3px' }}
-        >
+        <Badge className={styles.msgLabelStyle} bg={msgBgStyle}>
           {this.props.data}
         </Badge>
       </div>

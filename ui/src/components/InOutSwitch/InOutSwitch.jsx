@@ -50,7 +50,7 @@ export default function InOutSwitch(props) {
           overlay={optionsOverlay}
         >
           <div>
-            <Badge bg="secondary" className={styles.inOutLabel}>
+            <Badge className={styles.inOutLabel} bg="secondary">
               {labelText}
               <i className="fas fa-cog ms-2" />
             </Badge>
@@ -144,22 +144,14 @@ export default function InOutSwitch(props) {
       >
         {!isBtnLabel ? (
           <div title={value}>
-            <Badge
-              bg={msgBgStyle}
-              className={styles.msgLabelStyle}
-              style={{ marginBottom: '3px' }}
-            >
+            <Badge className={styles.msgLabelStyle} bg={msgBgStyle}>
               {value}
             </Badge>
           </div>
         ) : (
           <Button variant="outline-secondary" className={styles.switchBtn}>
             {labelText}{' '}
-            <Badge
-              className={styles.switchBdg}
-              bg={msgBgStyle}
-              style={{ marginBottom: '3px' }}
-            >
+            <Badge className={styles.switchBdg} bg={msgBgStyle}>
               {state}
             </Badge>
           </Button>
