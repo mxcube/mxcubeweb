@@ -54,14 +54,10 @@ function MachInfo(props) {
   return (
     <OverlayTrigger placement="bottom" overlay={machineInfoPop}>
       <div className={styles.machineInfo}>
-        <Badge bg="secondary" className={styles.machineLabel}>
+        <Badge className={styles.machineLabel} bg="secondary">
           Ring Current
         </Badge>
-        <Badge
-          bg={variant}
-          className={styles.msgLabelStyle}
-          style={{ marginBottom: '3px' }}
-        >
+        <Badge className={styles.msgLabelStyle} bg={variant}>
           {info.current}
         </Badge>
       </div>

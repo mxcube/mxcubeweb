@@ -15,6 +15,7 @@
 .switchBdg {
   max-width: 12em;
   vertical-align: bottom;
+  margin-bottom: 3px;
 }
 
 .switchBtn,
@@ -31,6 +32,6 @@
   font-size: 100%;
   border-radius: 0;
   color: white;
-
   width: 7em;
+  margin-bottom: 3px;
 }

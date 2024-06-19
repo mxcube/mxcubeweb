@@ -5,9 +5,9 @@
 .labelStyle {
   overflow: hidden;
   text-overflow: ellipsis;
-
   border-radius: 0;
   display: block;
+  margin-bottom: 3px;
 }
 
 .msgLabelStyle {
@@ -15,6 +15,6 @@
   font-size: 100%;
   border-radius: 0;
   color: black;
-
   width: 7em;
+  margin-bottom: 3px;
 }

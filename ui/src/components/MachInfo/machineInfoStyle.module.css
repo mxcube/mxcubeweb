@@ -34,9 +34,9 @@
 .msgLabelStyle {
   overflow: hidden;
   text-overflow: ellipsis;
-
   border-radius: 0%;
   display: block;
   font-size: 100%;
   color: black;
+  margin-bottom: 3px;
 }
