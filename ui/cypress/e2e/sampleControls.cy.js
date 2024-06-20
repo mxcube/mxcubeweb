@@ -18,10 +18,8 @@ describe('3-click centring', () => {
   it('Each click is rotating the sample by 90 degrees', () => {
     cy.mountSample();
     cy.contains('button', '3-click centring').click();
-    /* eslint-disable-next-line promise/catch-or-return */
     cy.get('.form-control[name="diffractometer.phi"]')
       .invoke('val')
-      /* eslint-disable-next-line promise/prefer-await-to-then */
       .then((value) => {
         let omegaValue = Number.parseFloat(value);
         Cypress._.times(2, () => {

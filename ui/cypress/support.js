@@ -18,7 +18,6 @@ Cypress.Commands.add('takeControl', () => {
   });
 
   // ensure to click away the observer mode dialog box if present
-  /* eslint-disable-next-line promise/catch-or-return, promise/prefer-await-to-then */
   cy.get('body').then(($body) => {
     if ($body.text().includes('Observer mode')) {
       cy.wrap($body.find('.modal-dialog').find('.form-control')).type('test');
