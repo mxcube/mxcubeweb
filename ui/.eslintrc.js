@@ -62,6 +62,8 @@ module.exports = createConfig({
         'testing-library/prefer-screen-queries': 'off', // Cypress provides `cy` object instead of `screen`
         'sonarjs/no-duplicate-string': 'off', // incompatible with Cypress testing syntax
         'unicorn/numeric-separators-style': 'off', // not supported
+        'promise/prefer-await-to-then': 'off', // Cypress has its own `then` command
+        'promise/catch-or-return': 'off', // Cypress has its own `then` command
       },
     },
   ],
