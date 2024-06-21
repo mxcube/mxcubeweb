@@ -9,7 +9,7 @@ Cypress.Commands.add('login', (username = 'idtest0', password = '0000') => {
   cy.findByRole('button', { name: 'Sign in' }).click();
 });
 
-Cypress.Commands.add('takeControl', () => {
+Cypress.Commands.add('takeControl', (returnPage = '/datacollection') => {
   /* firefox (only firefox) throws an unhandled promise error when executing
      this function. Hence, we tell cypress to ignore this, otherwise the tests
      fail, when we try to click the observer mode dialog away. */
@@ -17,34 +17,36 @@ Cypress.Commands.add('takeControl', () => {
     return false;
   });
 
-  // ensure to click away the observer mode dialog box if present
+  // control only needs to be taken, when observer mode is present
   cy.get('body').then(($body) => {
     if ($body.text().includes('Observer mode')) {
-      cy.wrap($body.find('.modal-dialog').find('.form-control')).type('test');
-      cy.findByText('OK').click();
+      cy.findByRole('button', { name: 'OK' }).click();
+      cy.findByText('Remote').click();
+      cy.findByRole('button', { name: 'Take control' }).click();
+      cy.visit(returnPage);
     }
   });
-  cy.request('POST', '/mxcube/api/v0.1/ra/take_control');
 
   // tell cypress to listen to any uncaught:execptions again
   Cypress.on('uncaught:exception', (err, runnable) => {
     return true;
   });
-  cy.reload();
 });
 
 Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
   cy.visit('/datacollection');
   cy.findByRole('button', { name: /Queued Samples/u }).click();
-  cy.findByText('Create new sample').click();
+  cy.findByRole('button', { name: 'Create new sample' }).click();
   cy.findByLabelText('Sample name').type(sample);
   cy.findByLabelText('Protein acronym').type(protein);
-  cy.findByText('Mount').click();
+  cy.findByRole('button', { name: 'Mount' }).click();
   // reload for button changes to take effect
   cy.reload();
 });
 
-Cypress.Commands.add('clearSamples', () => {
-  cy.request('PUT', '/mxcube/api/v0.1/queue/clear');
-  cy.reload();
+Cypress.Commands.add('clearSamples', (returnPage = '/datacollection') => {
+  cy.findByText('Samples').click();
+  cy.findByRole('button', { name: /Clear sample list/u }).click('left');
+  cy.findByRole('button', { name: 'Ok' }).click();
+  cy.visit(returnPage);
 });
