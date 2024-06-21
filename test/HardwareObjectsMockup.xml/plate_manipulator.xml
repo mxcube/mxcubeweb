@@ -1,6 +1,5 @@
 <object class="PlateManipulatorMockup">
   <!-- <equipment class = "PlateManipulator"> -->
-  <!-- <exporter_address>....embl.fr:443</exporter_address>   -->
 
   <username>Sample Changer</username>
   <!-- <command type="exporter" name="MoveToDrop">startMovePlateToShelf</command>
@@ -16,16 +15,14 @@
   <!-- <channel type="exporter" name="DropLocation">DropLocation</channel>
   <channel type="exporter" name="CurrentPhase">CurrentPhase</channel>  -->
 
-  <!-- TEMP Comment: Please Do not rename Plate Label -->
-
   <plateLabel>Crystal Direct</plateLabel>
   <numCols>12</numCols>
   <numRows>8</numRows>
   <numDrops>3</numDrops>
   <referencePosX>0.65</referencePosX>
 
-<!--
-  <plateLabel>ChipX</plateLabel>
+
+  <!-- <plateLabel>ChipX</plateLabel>
   <numCols>1</numCols>
   <numRows>2</numRows>
   <numDrops>20</numDrops>
