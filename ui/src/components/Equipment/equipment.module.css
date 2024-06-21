@@ -102,6 +102,12 @@
   cursor: crosshair;
 }
 
+.innerPlate {
+  width: 30px;
+  height: 30px;
+  padding: 5%;
+}
+
 .context_menu_provider {
   z-index: 1070;
 }

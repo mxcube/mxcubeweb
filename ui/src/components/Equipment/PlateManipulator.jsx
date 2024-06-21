@@ -192,13 +192,18 @@ export default function PlateManipulator(props) {
     selectedDrop,
   );
 
+  const _numberOfDrops = Array.from(
+    { length: plate.numberOfDrops },
+    (_, i) => i + 1,
+  );
+
   const renderWellPlateInner = (comp, x, y, x1, y1, d) =>
-    plate.numOfdrops.map((drop) => (
+    _numberOfDrops.map((drop) => (
       <Button
-        variant="content"
+        variant="light"
         as={comp}
         key={`key-${drop}-tr`}
-        style={{ width: 'fit-content', height: 'fit-content' }}
+        className={styles.innerPlate}
         onContextMenu={(e) => showContextMenu(e, `drop-${selectedDrop}-tr`)}
       >
         <rect
@@ -209,7 +214,7 @@ export default function PlateManipulator(props) {
           style={{
             fill: Number(loadedDrop) === drop ? '#ef9a9a' : '#9e9e9e',
             stroke: drop === selectedDrop ? '#0177fdad' : '#888888',
-            strokeWidth: drop === selectedDrop ? '2' : '1',
+            strokeWidth: drop === selectedDrop ? '3' : '1',
           }}
           onClick={() => {
             selectDrop(drop);
@@ -224,6 +229,7 @@ export default function PlateManipulator(props) {
         <text
           x={x1}
           y={y1 - d * drop}
+          transform={`rotate(${-plate.rotation}, ${x1}, ${y1 - d * drop - 5})`}
           style={{
             fontSize: `${plate.dropWidth / 2}px`,
             stroke:
@@ -304,7 +310,7 @@ export default function PlateManipulator(props) {
               height: 240,
               marginTop: 15,
               border: '1px solid #888888',
-              padding: '10px 0 0 10px',
+              padding: '15px 0 10px 20px',
               transform: `rotate(${plate.rotation})`,
             }}
           >
@@ -314,7 +320,7 @@ export default function PlateManipulator(props) {
           <svg
             id="wellPlateRef"
             className={styles.single_well}
-            width={240}
+            width={plate.name.includes('InSitu-1') ? 220 : 240}
             height={240}
             transform={`rotate(${plate.rotation})`}
           >
@@ -323,7 +329,7 @@ export default function PlateManipulator(props) {
                 key={`wellplate-${wo.color}`}
                 width={
                   (120 * plate.wellOption.length) / (idx + 1) -
-                  plate.welladjustWidth
+                  (plate.name.includes('InSitu-1') ? 20 : 0)
                 }
                 height={225}
                 x={0}
@@ -543,18 +549,29 @@ export default function PlateManipulator(props) {
                           onClick={() => {
                             selectWell(row, col);
                           }}
+                          onContextMenu={() => {
+                            selectWell(row, col);
+                          }}
                         >
                           <rect
                             width={plate.wellWidth}
                             height={plate.wellHeight}
                             x={0}
                             style={{
-                              stroke: crystal !== null ? '#81c784' : '#eeeeee',
                               fill:
                                 `${row}${col}:${loadedDrop}-0` ===
                                 loadedSample.address
                                   ? '#e57373'
                                   : '#e0e0e0',
+                            }}
+                          />
+                          <rect
+                            width={plate.wellWidth - 20}
+                            height={plate.wellHeight - 20}
+                            x={10}
+                            y={10}
+                            style={{
+                              fill: crystal !== null ? '#81c784' : '#eeeeee',
                             }}
                           />
                         </svg>
@@ -564,8 +581,7 @@ export default function PlateManipulator(props) {
                         >
                           <li className="dropdown-header">
                             <b>
-                              Well `${row}${col}` ':'
-                              {loadedDrop}
+                              Well {row} {col} :{loadedDrop}
                             </b>
                           </li>
                           <Separator />
