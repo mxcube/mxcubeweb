@@ -104,7 +104,7 @@ function BeamlineSetupContainer(props) {
               );
             } else {
               acts.push(
-                <Nav.Item key={key} className="me-3">
+                <Nav.Item key={key} className="ms-3">
                   <InOutSwitch
                     openText={beamline.hardwareObjects[key].commands[0]}
                     offText={beamline.hardwareObjects[key].commands[1]}
