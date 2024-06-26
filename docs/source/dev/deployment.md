@@ -34,6 +34,9 @@ Some might prefer to use a dedicated installer tool, like pip for such a task.
 
 But Poetry's lockfile format is not standardized, its content is specific to Poetry.
 So this file is not immediately usable by other installers and tools.
+For example pip can not understand `poetry.lock` and completely ignores it.
+When running a command like `pip install mxcubeweb`
+it will NOT choose the versions pinned in `poetry.lock`.
 
 To circumvent this, one could use a command like `poetry export`
 to generate a `requirements.txt` file compatible with pip (and some other tools).
@@ -45,9 +48,14 @@ it should be possible to approximate the behaviour of installing with Poetry's l
     poetry export --format=requirements.txt > requirements.txt
     ```
 
+    Note that the pre-commit hooks are configured to automatically
+    generate an exported `requirements.txt` file and keep it in sync with `poetry.lock`.
+    So this step could be skipped.
+
 1. Move the `requirements.txt` file to the deployment target system
 
-1. On the deployment system, let pip install {{project}} via the exported requirements file
+1. On the deployment system,
+    let pip install {{project}} via the exported requirements file
 
     1. Install the dependencies
         ```shell

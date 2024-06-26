@@ -13,9 +13,32 @@ repos:
           - --strict
 
   - repo: https://github.com/python-poetry/poetry
-    rev: 1.5.0
+    rev: 1.8.3
     hooks:
+
+      # Equivalent to running `poetry check --lock`.
+      # This checks that:
+      # 1. the Poetry content of the `pyproject.toml` file is valid;
+      # 2. there is a `poetry.lock` file;
+      # 3. the content of `poetry.lock` is in sync with the content of `pyproject.toml`.
       - id: poetry-check
+        args:
+          - --lock
+
+      # Equivalent to running `poetry lock --no-update`.
+      # This syncs the `poetry.lock` file with the content of the `pyproject.toml` file.
+      # This hook fails if it results in modifying `poetry.lock`.
+      - id: poetry-lock
+        args:
+          - --no-update
+
+  # Equivalent to running `poetry export`.
+  # This exports the `poetry.lock` file to the `requirements.txt` file.
+  # This hook fails if it results in modifying `requirements.txt`.
+  - repo: https://github.com/python-poetry/poetry-plugin-export
+    rev: 1.8.0
+    hooks:
+      - id: poetry-export
 
   - repo: https://github.com/myint/autoflake
     rev: v1.6.0
