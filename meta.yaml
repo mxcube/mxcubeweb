@@ -1,9 +1,10 @@
-{% set data = load_setup_py_data(setup_file="./setup.py",
-  from_recipe_dir=True) %}
+---
+
+# {% set data = load_setup_py_data(setup_file="./setup.py", from_recipe_dir=True) %}
 
 package:
-  name: {{ data.get('name') }}
-  version: {{ data.get('version') }}
+  name: {{data.get('name')}}
+  version: {{data.get('version')}}
 
 source:
   path: .
@@ -51,8 +52,8 @@ test:
     - {{data.get('name')}}
 
 about:
-  home: {{ data.get('url')}}
-  license: {{ data.get('license')}}
-  summary: {{ data.get('description')}}
-  author: {{ data.get('author')}}
-  description: {{ data.get('description')}}
+  home: {{data.get('url')}}
+  license: {{data.get('license')}}
+  summary: {{data.get('description')}}
+  author: {{data.get('author')}}
+  description: {{data.get('description')}}

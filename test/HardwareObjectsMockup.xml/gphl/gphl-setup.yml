@@ -1,3 +1,8 @@
+---
+
+# yamllint disable rule:comments
+# yamllint disable rule:comments-indentation
+# yamllint disable rule:line-length
 
 _initialise_class:
     class: mxcubecore.HardwareObjects.Gphl.GphlWorkflowConnection.GphlWorkflowConnection

@@ -1,9 +1,11 @@
+---
+
 server:
   SECRET_KEY: "ASECRETKEY"
   SECURITY_PASSWORD_SALT: "ASALT"
   PERMANENT_SESSION_LIFETIME: 60
 
-  DEBUG: False
+  DEBUG: false
 
   ALLOWED_CORS_ORIGINS:
     - "http://localhost:8081"
@@ -11,7 +13,7 @@ server:
     - "ws://localhost:8000"
 
 mxcube:
-  USE_EXTERNAL_STREAMER: True
+  USE_EXTERNAL_STREAMER: true
   VIDEO_FORMAT: MPEG1
   VIDEO_STREAM_URL: "ws://localhost:8000/ws"
 
@@ -22,7 +24,7 @@ mxcube:
 
   usermanager:
     class: UserManager
-    inhouse_is_staff: True
+    inhouse_is_staff: true
     users:
       - username: opid291
         role: staff

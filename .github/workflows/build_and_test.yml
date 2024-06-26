@@ -1,6 +1,10 @@
+---
+
 name: Python build and test
 
-on: [push, pull_request]
+on:  # yamllint disable-line rule:truthy
+  pull_request:
+  push:
 
 jobs:
   build-linux:
@@ -8,9 +12,10 @@ jobs:
     strategy:
       max-parallel: 5
       matrix:
-        python-version: ["3.10"] #, "3.9", "3.10"]
+        python-version: ["3.10"]
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
+    # yamllint disable-line rule:line-length
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
 
     # Service containers to run with `container-job`

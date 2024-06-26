@@ -1,3 +1,5 @@
+---
+
 # The class to initialise, and init parameters
 _initialise_class:
   class: mxcubecore.HardwareObjects.Beamline.Beamline
@@ -39,7 +41,7 @@ _objects:
   - sample_changer: sc.xml
   - sample_changer_maintenance: sc_maint.xml
 
-  # The 2 lines up have to be used for SC and the two line below for the plate manipulator
+  # The 2 lines up have to be used for SC and the 2 line below for the plate manipulator
   # - sample_changer: plate_manipulator.xml
   # - sample_changer_maintenance: plate_manipulator_maint.xml
 
@@ -89,14 +91,14 @@ default_acquisition_parameters:
   default:
     # Default values, also used for standard acquisition.
     # Values not given in other dictionaries are taken from here
-    exp_time: 0.02 # exposure time
-    osc_start: 0.0 # Only used if no current angle can be found
+    exp_time: 0.02  # exposure time
+    osc_start: 0.0  # Only used if no current angle can be found
     osc_range: 0.1
     num_passes: 1
     first_image: 1
     overlap: 0
     num_images: 1
-    detector_mode: 1 # Remove as not in practice used ?
+    detector_mode: 1  # Remove as not in practice used ?
     inverse_beam: false
     take_dark_current: true
     skip_existing_images: true
@@ -110,7 +112,7 @@ default_acquisition_parameters:
 
   characterisation:
     # Defaults for chareacterisation. Missing values are taken from default
-    exp_time: 0.05 # exposure time
+    exp_time: 0.05  # exposure time
     osc_range: 1
     overlap: -89
     num_images: 4
@@ -118,7 +120,7 @@ default_acquisition_parameters:
 
   mesh:
     # Defaults for 'advanced' acquisition. Missing values are taken from default
-    exp_time: 10 # exposure time
+    exp_time: 10  # exposure time
     range: 10
     num_images: 100
     cell_counting: zig-zag
@@ -144,15 +146,15 @@ acquisition_limit_values:
     - 240.0
 
 available_methods:
-  datacollection: True
-  characterisation: True
-  helical: True
-  xrf_spectrum: True
-  energy_scan: True
-  mesh: True
-  ssx_chip_collection: True
-  gphlworkflow: True
-  test_collection: True
+  datacollection: true
+  characterisation: true
+  helical: true
+  xrf_spectrum: true
+  energy_scan: true
+  mesh: true
+  ssx_chip_collection: true
+  gphlworkflow: true
+  test_collection: true
 
 undulators:
   - type: PPU35C_GAP
