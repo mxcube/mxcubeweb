@@ -15,4 +15,5 @@ Developer documentation
     login.rst
     sample-changer-changes-and-maintenance.md
     tutorial.md
+    tests.md
     deployment.md
