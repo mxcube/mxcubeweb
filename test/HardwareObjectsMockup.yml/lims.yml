@@ -1,0 +1,10 @@
+class: ISPyBClientMockup.ISPyBClientMockup
+configuration:
+    base_result_url: "\n    https://your.limsresults.org\n  "
+    loginType: proposal
+    ws_password: ''
+    ws_root: "\n    https://your.lims.org\n  "
+    ws_username: ''
+objects:
+    lims_rest: lims.lims_rest.yml
+    session: lims.lims_rest.session.yml

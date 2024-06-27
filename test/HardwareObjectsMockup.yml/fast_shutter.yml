@@ -1,0 +1,5 @@
+class: ShutterMockup.ShutterMockup
+configuration:
+    actuator_name: fast_shutter
+    username: fast_shutter
+    values: '{"OPEN": "open", "CLOSED": "closed"}'

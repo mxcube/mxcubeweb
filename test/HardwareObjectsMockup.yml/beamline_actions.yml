@@ -1,0 +1,11 @@
+class: BeamlineActionsMockup.BeamlineActionsMockup
+configuration:
+    commands: "[\n      {\"type\": \"controller\", \"name\": \"Centre Beam\", \"command\"\
+        : \"HardwareObjects.mockup.BeamlineActionsMockup.SimulatedAction\"},\n   \
+        \   {\"type\": \"controller\", \"name\": \"Quick Realign\", \"command\": \"\
+        HardwareObjects.mockup.BeamlineActionsMockup.LongSimulatedAction\"},\n   \
+        \   {\"type\": \"controller\", \"name\": \"Anneal\", \"command\": \"HardwareObjects.mockup.BeamlineActionsMockup.SimulatedActionError\"\
+        },\n      {\"type\": \"annotated\", \"command\": \"HardwareObjects.mockup.BeamlineActionsMockup.Anneal2\"\
+        },\n      {\"type\": \"annotated\", \"command\": \"HardwareObjects.mockup.BeamlineActionsMockup.QuickRealign2\"\
+        },\n      {\"type\": \"annotated\", \"command\": \"HardwareObjects.mockup.BeamlineActionsMockup.ComboTest2\"\
+        },\n    ]\n    "

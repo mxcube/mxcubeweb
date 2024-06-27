@@ -1,0 +1,11 @@
+class: XMLRPCServer.XMLRPCServer
+configuration:
+    all_interfaces: "\n    True\n  "
+    apis:
+        api:
+          - module: Native
+            recurse: true
+    port: 7171
+objects:
+    queue: xml_rpc_server.queue.yml
+    queue_model: xml_rpc_server.queue_model.yml

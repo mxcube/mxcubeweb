@@ -1,0 +1,5 @@
+class: ExporterNStateMockup.ExporterNStateMockup
+configuration:
+    use_hwstate: true
+    username: capillary
+    values: '{"IN": "BEAM", "OUT": "OFF"}'

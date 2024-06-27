@@ -1,0 +1,4 @@
+class: QueueModel.QueueModel
+configuration: {}
+objects:
+    queue: queue_model.queue.yml

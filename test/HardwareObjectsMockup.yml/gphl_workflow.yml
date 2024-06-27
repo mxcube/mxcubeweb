@@ -1,0 +1,200 @@
+class: mxcubecore.HardwareObjects.Gphl.GphlWorkflow.GphlWorkflow
+configuration:
+    settings:
+        advanced_mode: true
+        allow_duplicate_orientations: 0
+        angular_tolerance: 1.0
+        auto_acq_parameters:
+          - exposure_time: 0.02
+            image_width: 0.1
+            strategy: Char_4_by_10_multitrigger
+          - exposure_time: 0.02
+            image_width: 1.0
+            repetition_count: 1
+            resolution: 1.5
+            snapshot_count: 2
+            strategy: full
+            wedge_width: 15.0
+        characterisation_strategies:
+          - Char_6_5_multitrigger
+          - Char_4_by_10
+        default_beam_energy_tag: Main
+        default_image_widths:
+          - 0.1
+          - 0.05
+          - 0.2
+        defaults:
+            characterisation_budget_fraction: 0.05
+            decay_limit: 25
+            exposure_time: 0.01
+            interleave_order: gs
+            maximum_dose_budget: 20
+            recentring_mode: sweep
+            relative_rad_sensitivity: 1.0
+            snapshot_count: 2
+            use_cell_for_processing: true
+            wedge_width: 15
+        display_energy_decimals: 4
+        invocation_properties:
+            co.gphl.wf.persistName: wf
+        maximum_chi: 48.0
+        starting_beamline_energy: current
+        workflow_properties:
+            co.gphl.wf.blRootCheck: false
+            co.gphl.wf.process.detach: true
+            co.gphl.wf.simcal_predict.b_wilson: 26.0
+            co.gphl.wf.simcal_predict.cell_dim_sd_scale: 0.0015
+            co.gphl.wf.simcal_predict.mosaicity: 0.2
+    workflows:
+        GΦL Acquisition Workflow:
+            options:
+                beamline: 'py4j::'
+                samplesubdir: null
+            requires:
+              - point
+            strategies:
+              - documentation: "Single wavelength data acquisition for native data
+                    collection\nIncludes initial characterisation and complete collection.\n
+                    Variants:\nfull: 2-4 sweeps, ca. 600-1000 degrees, best possible
+                    data.\nquick:  1-2 sweeps, 360-400 degrees, quick and cusp-free\n
+                    minimal: 1 sweep of 180+ degrees, 1-2 centrings.\n"
+                options:
+                    beamline: 'py4j::'
+                    charpattern: generic
+                    ibpattern: ib_interleaved
+                    pattern: interleaved
+                    samplesubdir: null
+                strategy_type: native
+                title: Native data collection
+                variants:
+                  - full
+                  - minimal
+                  - quick
+                  - ultralong
+                wf_selection: mxexpt
+                wfname: GΦL Acquisition Workflow
+                wftype: acquisition
+              - documentation: "Single wavelength SAD data acquisition, full strategy.\n
+                    Aligned on even symetry axes or inverse beam.\nIncludes initial
+                    characterisation and complete collection\nVariants:\nfull: up
+                    to 540deg, three orientations\nquick: up to 360deg, two orientations\n"
+                options:
+                    beamline: 'py4j::'
+                    charpattern: generic
+                    ibpattern: ib_interleaved
+                    pattern: interleaved
+                    samplesubdir: null
+                strategy_type: phasing
+                title: Phasing (SAD)
+                variants:
+                  - full
+                  - quick
+                wf_selection: mxexpt
+                wfname: GΦL Acquisition Workflow
+                wftype: acquisition
+              - beam_energy_tags:
+                  - Peak
+                  - Remote
+                documentation: "Two wavelength MAD data acquisition, full strategy.\n
+                    Aligned on even symetry axes or inverse beam.\nIncludes initial
+                    characterisation and complete collection\nVariants:\nfull: up
+                    to 540deg, three orientations for each wwavelngth\nquick: up to
+                    360deg, two orientations for each wwavelngth\n"
+                interleave_order: gsb
+                options:
+                    beamline: 'py4j::'
+                    charpattern: generic
+                    ibpattern: ib_interleaved
+                    pattern: interleaved
+                    samplesubdir: null
+                strategy_type: phasing
+                title: Two-wavelength MAD
+                variants:
+                  - quick
+                  - full
+                wf_selection: mxexpt
+                wfname: GΦL Acquisition Workflow
+                wftype: acquisition
+              - beam_energy_tags:
+                  - Peak
+                  - Rising_Inflection
+                  - Falling_Inflection
+                documentation: "Three wavelength MAD data acquisition, full strategy.\n
+                    Aligned on even symetry axes or inverse beam.\nIncludes initial
+                    characterisation and complete collection\nVariants:\nfull: up
+                    to 540deg, three orientations for each wwavelngth\nquick: up to
+                    360deg, two orientations for each wwavelngth\n"
+                interleave_order: gsb
+                options:
+                    beamline: 'py4j::'
+                    charpattern: generic
+                    ibpattern: ib_interleaved
+                    pattern: interleaved
+                    samplesubdir: null
+                strategy_type: phasing
+                title: Three-wavelength MAD
+                variants:
+                  - quick
+                  - full
+                wf_selection: mxexpt
+                wfname: GΦL Acquisition Workflow
+                wftype: acquisition
+            strategy_name: Native data collection
+            wfname: GΦL Acquisition Workflow
+            wfpath: Gphl
+            wftype: acquisition
+        GΦL Diffractometer calibration:
+            options:
+                beamline: 'py4j::'
+                samplesubdir: null
+            requires:
+              - point
+            strategies:
+              - documentation: "Diffractometer calibration.\nDesigned for use by beamline
+                    personnel.\nCalibrates axis directions, detector pane orientation,
+                    and beam centre.\nLong data collection and processing, requiring
+                    a high-quality, high-symmetry\ncrystal of precisely known cell
+                    parameters.\nVariants:\nfull: 22 60-deg sweeps, 11 orientations\n
+                    short: 6 60-deg sweeps, 3 orientations\n"
+                options:
+                    beamline: 'py4j::'
+                    calibration: diffractcal
+                    charpattern: multiorientation
+                    samplesubdir: null
+                    strategy: DiffractCal_
+                strategy_type: diffractcal
+                title: Diffractometer calibration
+                variants:
+                  - full
+                  - short
+                wf_selection: diffractcal
+                wfname: GΦL Diffractometer calibration
+                wftype: diffractcal
+            strategy_name: Diffractometer calibration
+            wfname: GΦL Diffractometer calibration
+            wfpath: Gphl
+            wftype: diffractcal
+        GΦL Translational Calibration:
+            requires:
+              - samplegrid
+            strategies:
+              - documentation: "Translational calibration.\nDesigned for use by beamline
+                    personnel.\nCalibrates centring motors to allow prediction of
+                    centring positions\nConsists of mulltiple centrings, requiring
+                    a glass or tungsten tip.\n"
+                options:
+                    beamline: 'py4j::'
+                    file:
+                        /home/oscarsso/projects/mxcube-web/test/HardwareObjectsMockup.xml/gphl/config_esrf_id30b/transcal_2stage.json
+                    updateblconfig: null
+                strategy_type: transcal
+                title: Translational Calibration
+                variants:
+                  - full
+                wf_selection: transcal
+                wfname: GΦL Translational Calibration
+                wftype: transcal
+            strategy_name: Translational Calibration
+            wfname: GΦL Translational Calibration
+            wfpath: Gphl
+            wftype: transcal

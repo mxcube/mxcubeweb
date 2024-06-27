@@ -1,0 +1,4 @@
+class: QueueModel.QueueModel
+configuration: {}
+objects:
+    queue: xml_rpc_server.queue_model.queue.yml

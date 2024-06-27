@@ -1,0 +1,4 @@
+class: TransmissionMockup.TransmissionMockup
+configuration:
+    default_value: 10
+    username: transmission

@@ -1,0 +1,9 @@
+class: ISPyBRestClientMockup.ISPyBRestClientMockup
+configuration:
+    exi_root: "\n   https://your.exi.org\n  "
+    restPass: ''
+    restRoot: "\n   https://your.lims.org\n  "
+    restUserName: ''
+    site: "\n   ESRF\n  "
+objects:
+    session: lims.lims_rest.session.yml

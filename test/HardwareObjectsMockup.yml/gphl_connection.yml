@@ -1,0 +1,26 @@
+class: mxcubecore.HardwareObjects.Gphl.GphlWorkflowConnection.GphlWorkflowConnection
+configuration:
+    directory_locations:
+        GPHL_INSTALLATION: /alt/rhfogh/Software/GPhL/gphl_release
+    gphl_persistname: persistence
+    gphl_subdir: GPHL
+    software_paths:
+        GPHL_CCP4_PATH: /alt/rhfogh/Software/CCP4/latest/bin
+        GPHL_INSTALLATION: /alt/rhfogh/Software/GPhL/gphl_release
+        GPHL_XDS_PATH: /alt/rhfogh/Software/XDS/latest
+        co.gphl.wf.simcal.bdg_licence_dir: /alt/rhfogh/Software/GPhL/nightly_20240206/Files_workflow_TRUNK_alpha-bdg
+        co.gphl.wf.simcal.bin:
+            /alt/rhfogh/Software/GPhL/nightly_20240206/Files_workflow_TRUNK_alpha-bdg/autoPROC/bin/linux64/simcal
+        co.gphl.wf.stratcal.bin: /alt/rhfogh/Software/GPhL/gphl_release/exe/run_stratcal_wrap.py
+        gphl_beamline_config:
+            /home/oscarsso/projects/mxcube-web/test/HardwareObjectsMockup.xml/gphl/config_esrf_id30b
+        gphl_test_samples:
+            /home/oscarsso/projects/mxcube-web/test/HardwareObjectsMockup.xml/gphl/test_samples
+        runworkflow: /alt/rhfogh/Software/GPhL/gphl_release/ASTRAWorkflows/bin/runworkflow
+    software_properties:
+        co.gphl.wf.bin: /alt/rhfogh/Software/GPhL/gphl_release/exe
+        co.gphl.wf.simcal.bdg_licence_dir: /alt/rhfogh/Software/GPhL/nightly_20240206/Files_workflow_TRUNK_alpha-bdg
+        co.gphl.wf.simcal.bin:
+            /alt/rhfogh/Software/GPhL/nightly_20240206/Files_workflow_TRUNK_alpha-bdg/autoPROC/bin/linux64/simcal
+        co.gphl.wf.stratcal.bin: /alt/rhfogh/Software/GPhL/gphl_release/exe/run_stratcal_wrap.py
+        co.gphl.wf.xds.bin: /alt/rhfogh/Software/XDS/latest/xds_par
