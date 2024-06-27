@@ -1,8 +1,8 @@
 <object class = "DetectorMockup">
   <username>detector</username>
   <object hwrid="/dtox" role="detector_distance"/>
-  <tempThreshold>33.5</tempThreshold>
-  <humidityThreshold>20.0</humidityThreshold>
+  <temp_threshold>33.5</temp_threshold>
+  <humidity_threshold>20.0</humidity_threshold>
   <tolerance>0.2</tolerance>
   <type>Eiger2</type>
   <model>9M</model>
@@ -11,8 +11,8 @@
   <py>0.075</py>
   <width>3110</width>
   <height>3269</height>
-  <hasShutterless>True</hasShutterless>
-  <fileSuffix>cbf</fileSuffix>
+  <has_shutterless>True</has_shutterless>
+  <file_suffix>cbf</file_suffix>
 
   <beam>
       <!-- Values are in pixels/mm and pixels resp. -->
