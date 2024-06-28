@@ -18,11 +18,7 @@
     "cypress": "cypress open --e2e --browser firefox"
   },
   "dependencies": {
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
-    "@fortawesome/free-regular-svg-icons": "^5.15.4",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/react-fontawesome": "^0.1.17",
+    "@fortawesome/fontawesome-free": "^5.15.4",
     "@rjsf/core": "5.13.1",
     "@rjsf/utils": "5.13.1",
     "@rjsf/validator-ajv8": "5.13.1",
@@ -74,7 +70,6 @@
     "ws": "^8.5.0"
   },
   "devDependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.4",
     "@testing-library/cypress": "10.0.1",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
