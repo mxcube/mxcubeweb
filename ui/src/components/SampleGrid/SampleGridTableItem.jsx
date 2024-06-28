@@ -8,7 +8,7 @@ import {
   Badge,
   Button,
 } from 'react-bootstrap';
-import classNames from 'classnames';
+import cx from 'classnames';
 
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 
@@ -149,17 +149,14 @@ export class SampleGridTableItem extends React.Component {
   }
 
   render() {
-    const classes = classNames('samples-grid-table-item', {
+    const classes = cx('samples-grid-table-item', {
       'samples-grid-table-item-to-be-collected': this.props.picked,
       'samples-grid-table-item-collected': isCollected(this.props.sampleData),
     });
 
-    const scLocationClasses = classNames(
-      'sc_location',
-      'label',
-      'label-default',
-      { 'label-custom-success': this.props.sampleData.loadable === true },
-    );
+    const scLocationClasses = cx('sc_location', 'label', 'label-default', {
+      'label-custom-success': this.props.sampleData.loadable === true,
+    });
 
     const limsLink = this.props.sampleData.limsLink || '#';
     return (

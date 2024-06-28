@@ -33,7 +33,7 @@ import { BiMenu } from 'react-icons/bi';
 
 import MXContextMenu from '../components/GenericContextMenu/MXContextMenu';
 
-import classNames from 'classnames';
+import cx from 'classnames';
 
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
@@ -596,7 +596,7 @@ class SampleGridTableContainer extends React.Component {
         const key = sample.sampleID;
         const picked = this.props.inQueue(sample.sampleID);
 
-        const classes = classNames('samples-grid-table-li', {
+        const classes = cx('samples-grid-table-li', {
           'samples-grid-table-item-selected':
             this.props.selected[sample.sampleID],
           'samples-grid-table-item-to-be-collected': picked,
@@ -678,7 +678,7 @@ class SampleGridTableContainer extends React.Component {
     const key = sample.sampleID;
     const picked = this.props.inQueue(sample.sampleID);
 
-    const classes = classNames('samples-grid-table-li', {
+    const classes = cx('samples-grid-table-li', {
       'samples-grid-table-item-selected': this.props.selected[key],
       'samples-grid-table-item-to-be-collected': picked,
       'samples-grid-table-item-collected': isCollected(sample),
