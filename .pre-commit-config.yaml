@@ -1,8 +1,7 @@
 ---
 
 default_language_version:
-  python: python3.10
-
+  python: python3.8  # This should be set to the lowest Python version that we support.
 
 repos:
 
