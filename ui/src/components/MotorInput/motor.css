@@ -60,26 +60,17 @@
 
 input[type='number']::-webkit-inner-spin-button,
 input[type='number']::-webkit-outer-spin-button {
-  -webkit-appearance: none;
-  -moz-appearance: none;
   appearance: none;
   margin: 0;
 }
 
 input[type='number'] {
-  -moz-appearance: textfield;
+  appearance: textfield; /* remove user agent's up/down arrows */
 }
 
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-}
-
-.rw-combobox,
-.rw-datetimepicker,
-.rw-numberpicker,
-.rw-dropdownlist {
-  /* padding-right: 1.3em; */
+  appearance: none;
 }
 
 .rw-widget {
@@ -124,7 +115,6 @@ input::-webkit-inner-spin-button {
 .rw-combobox input.rw-input,
 .rw-datetimepicker input.rw-input,
 .rw-numberpicker input.rw-input {
-  -webkit-box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
   box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
 }
 
@@ -171,7 +161,6 @@ input::-webkit-inner-spin-button {
 .rw-btn[disabled],
 .rw-state-disabled .rw-btn,
 .rw-state-readonly .rw-btn {
-  -webkit-box-shadow: none;
   box-shadow: none;
   pointer-events: none;
   cursor: not-allowed;
