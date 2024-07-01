@@ -1,7 +1,7 @@
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable promise/prefer-await-to-then */
 
-import fetch from 'isomorphic-fetch';
+import { fetchDisplayImage } from '../api/detector';
 
 export function addUserMessage(records, target) {
   return {
@@ -74,23 +74,11 @@ export function showConfirmClearQueueDialog(show = true) {
 
 export function sendDisplayImage(path, imgNum) {
   return () => {
-    fetch(
-      `mxcube/api/v0.1/detector/display_image/?path=${path}&img_num=${imgNum}`,
-      {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-      },
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        window.open(
-          `https://braggy.mxcube3.esrf.fr/?file=${data.path}/image_${data.img_num}.h5.dataset`,
-          'braggy',
-        );
-      });
+    fetchDisplayImage(path, imgNum).then((data) => {
+      window.open(
+        `https://braggy.mxcube3.esrf.fr/?file=${data.path}/image_${data.img_num}.h5.dataset`,
+        'braggy',
+      );
+    });
   };
 }

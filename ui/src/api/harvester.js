@@ -2,6 +2,10 @@ import api from '.';
 
 const endpoint = api.url('/harvester');
 
+export function fetchHarvesterInitialState() {
+  return endpoint.get('/get_harvester_initial_state').json();
+}
+
 export function sendRefresh() {
   return endpoint.get('/contents').res();
 }

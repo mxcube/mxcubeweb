@@ -1,6 +1,5 @@
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable sonarjs/no-duplicate-string */
 
 import fetch from 'isomorphic-fetch';
 import { fetchBeamInfo, fetchBeamlineSetup } from '../api/beamline';
@@ -12,6 +11,11 @@ import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 
 import { showErrorPanel, setLoading, applicationFetched } from './general';
 import { fetchLoginInfo, sendLogIn, sendSignOut } from '../api/login';
+import { fetchDetectorInfo } from '../api/detector';
+import { fetchSampleChangerInitialState } from '../api/sampleChanger';
+import { fetchHarvesterInitialState } from '../api/harvester';
+import { fetchImageData, fetchShapes } from '../api/sampleview';
+import { fetchRemoteAccessSettings } from '../api/remoteAccess';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -126,61 +130,6 @@ export function getInitialState(navigate) {
   return (dispatch) => {
     const state = {};
 
-    const sampleVideoInfo = fetch('mxcube/api/v0.1/sampleview/camera', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const detectorInfo = fetch('mxcube/api/v0.1/detector/', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const savedShapes = fetch('mxcube/api/v0.1/sampleview/shapes', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-    const sampleChangerInitialState = fetch(
-      'mxcube/api/v0.1/sample_changer/get_initial_state',
-      {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-      },
-    );
-    const harvesterInitialState = fetch(
-      'mxcube/api/v0.1/harvester/get_harvester_initial_state',
-      {
-        method: 'GET',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-      },
-    );
-    const remoteAccess = fetch('mxcube/api/v0.1/ra/', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    });
-
     const pchains = [
       fetchUIProperties()
         .then((json) => {
@@ -204,8 +153,7 @@ export function getInitialState(navigate) {
           return json;
         })
         .catch(notify),
-      sampleVideoInfo
-        .then(parse)
+      fetchImageData()
         .then((json) => {
           state.Camera = json;
         })
@@ -215,8 +163,7 @@ export function getInitialState(navigate) {
           Object.assign(state, json);
         })
         .catch(notify),
-      detectorInfo
-        .then(parse)
+      fetchDetectorInfo()
         .then((json) => {
           state.detector = json;
         })
@@ -226,56 +173,38 @@ export function getInitialState(navigate) {
           state.taskParameters = json;
         })
         .catch(notify),
-      savedShapes
-        .then(parse)
+      fetchShapes()
         .then((json) => {
           state.shapes = json.shapes;
         })
         .catch(notify),
-      sampleChangerInitialState
-        .then(parse)
+      fetchSampleChangerInitialState()
         .then((json) => {
-          state.sampleChangerState = { state: json.state };
-          return json;
-        })
-        .then((json) => {
-          state.sampleChangerContents = json.contents;
-          return json;
-        })
-        .then((json) => {
-          state.loadedSample = json.loaded_sample;
-          return json;
-        })
-        .then((json) => {
-          state.sampleChangerCommands = json.cmds;
-          return json;
-        })
-        .then((json) => {
-          state.sampleChangerGlobalState = json.global_state;
-          return json;
+          const {
+            state: initialState,
+            contents,
+            loaded_sample,
+            cmds,
+            global_state,
+          } = json;
+
+          state.sampleChangerState = { state: initialState };
+          state.sampleChangerContents = contents;
+          state.loadedSample = loaded_sample;
+          state.sampleChangerCommands = cmds;
+          state.sampleChangerGlobalState = global_state;
         })
         .catch(notify),
-      harvesterInitialState
-        .then(parse)
+      fetchHarvesterInitialState()
         .then((json) => {
-          state.harvesterState = { state: json.state };
-          return json;
-        })
-        .then((json) => {
-          state.harvesterContents = json.contents;
-          return json;
-        })
-        .then((json) => {
-          state.harvesterCommands = json.cmds;
-          return json;
-        })
-        .then((json) => {
-          state.harvesterGlobalState = json.global_state;
-          return json;
+          const { state: initialState, contents, cmds, global_state } = json;
+          state.harvesterState = { state: initialState };
+          state.harvesterContents = contents;
+          state.harvesterCommands = cmds;
+          state.harvesterGlobalState = global_state;
         })
         .catch(notify),
-      remoteAccess
-        .then(parse)
+      fetchRemoteAccessSettings()
         .then((json) => {
           state.remoteAccess = json.data;
         })
@@ -303,15 +232,6 @@ export function getInitialState(navigate) {
       dispatch(setLoading(false));
     });
   };
-}
-
-function parse(response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response.json();
-  }
-  const error = new Error(response.statusText);
-  error.response = response;
-  throw error;
 }
 
 function notify(error) {
