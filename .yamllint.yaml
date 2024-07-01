@@ -6,6 +6,9 @@ ignore: |
   ui/pnpm-lock.yaml
 
 rules:
+  indentation:
+    spaces: 2
+
   # Match line length to the one set by `black` the Python formatter
   line-length:
     max: 88
