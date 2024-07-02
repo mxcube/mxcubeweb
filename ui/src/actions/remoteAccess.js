@@ -1,44 +1,34 @@
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable sonarjs/no-duplicate-string */
+
+import {
+  fetchRemoteAccessState,
+  sendGiveControl,
+  sendLogoutUser,
+  sendRequestControl,
+  sendRespondToControlRequest,
+  sendTakeControl,
+  sendUpdateAllowRemote,
+  sendUpdateNickname,
+  sendUpdateTimeoutGivesControl,
+} from '../api/remoteAccess';
 import { getLoginInfo } from './login';
 
 export function showObserverDialog(show = true) {
   return { type: 'SHOW_OBSERVER_DIALOG', show };
 }
 
-export function setRaState(data) {
-  return { type: 'SET_RA_STATE', data };
-}
-
 export function getRaState() {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/ra/', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        dispatch(setRaState(data.data));
-      });
+    fetchRemoteAccessState().then((data) => {
+      dispatch({ type: 'SET_RA_STATE', data: data.data });
+    });
   };
 }
 
-export function sendUpdateNickname(name) {
+export function updateNickname(name) {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/ra/update_user_nickname', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ name }),
-    }).then(() => {
+    sendUpdateNickname(name).then(() => {
       dispatch(getLoginInfo());
       dispatch(getRaState());
     });
@@ -52,152 +42,62 @@ export function requestControl(
   userInfo = {},
 ) {
   return () => {
-    fetch('mxcube/api/v0.1/ra/request_control', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({
-        control,
-        message,
-        name,
-        userInfo,
-      }),
-    });
+    sendRequestControl(control, message, name, userInfo);
   };
 }
 
-export function sendTakeControl() {
+export function takeControl() {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/ra/take_control', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then(() => {
+    sendTakeControl().then(() => {
       dispatch(getLoginInfo());
       dispatch(getRaState());
     });
   };
 }
 
-export function sendGiveControl(username) {
+export function giveControl(username) {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/ra/give_control', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ username }),
-    }).then(() => {
+    sendGiveControl(username).then(() => {
       dispatch(getLoginInfo());
       dispatch(getRaState());
     });
   };
 }
 
-export function sendLogoutUser(username) {
+export function logoutUser(username) {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/ra/logout_user', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ username }),
-    }).then(() => {
+    sendLogoutUser(username).then(() => {
       dispatch(getLoginInfo());
       dispatch(getRaState());
     });
   };
 }
 
-export function requestControlResponse(giveControl = true, message = '') {
-  fetch('mxcube/api/v0.1/ra/request_control_response', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({ giveControl, message }),
-  });
-
-  return { type: 'REQUEST_CONTROL_RESPONSE' };
-}
-
-export function setAllowRemoteAccess(allow) {
-  return { type: 'SET_ALLOW_REMOTE', allow };
-}
-
-export function setTimeoutGivesControl(timeoutGivesControl) {
-  return { type: 'SET_TIMEOUT_GIVES_CONTROL', timeoutGivesControl };
-}
-
-export function sendAllowRemote(allow) {
+export function respondToControlRequest(giveControl = true, message = '') {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/ra/allow_remote', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ allow }),
+    sendRespondToControlRequest(giveControl, message).then(() => {
+      dispatch(getLoginInfo());
+      dispatch(getRaState());
     });
-
-    dispatch(setAllowRemoteAccess(allow));
   };
 }
 
-export function sendTimeoutGivesControl(timeoutGivesControl) {
+export function updateAllowRemote(allow) {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/ra/timeout_gives_control', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ timeoutGivesControl }),
-    });
+    sendUpdateAllowRemote(allow);
+    dispatch({ type: 'SET_ALLOW_REMOTE', allow });
+  };
+}
 
-    dispatch(setTimeoutGivesControl(timeoutGivesControl));
+export function updateTimeoutGivesControl(timeoutGivesControl) {
+  return (dispatch) => {
+    sendUpdateTimeoutGivesControl(timeoutGivesControl);
+    dispatch({ type: 'SET_TIMEOUT_GIVES_CONTROL', timeoutGivesControl });
   };
 }
 
 export function setObservers(observers) {
   return { type: 'SET_OBSERVERS', observers };
-}
-
-export function sendChatMessage(message, username) {
-  return fetch('mxcube/api/v0.1/ra/chat', {
-    method: 'POST',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-    body: JSON.stringify({ message, username }),
-  });
-}
-
-export function getAllChatMessages() {
-  return fetch('mxcube/api/v0.1/ra/chat', {
-    method: 'GET',
-    credentials: 'include',
-    headers: {
-      Accept: 'application/json',
-      'Content-type': 'application/json',
-    },
-  }).then((response) => response.json());
 }
 
 export function resetChatMessageCount() {

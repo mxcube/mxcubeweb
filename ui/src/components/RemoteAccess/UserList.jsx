@@ -2,7 +2,7 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Row, Col, Button, Card } from 'react-bootstrap';
-import { sendGiveControl, sendLogoutUser } from '../../actions/remoteAccess';
+import { giveControl, logoutUser } from '../../actions/remoteAccess';
 
 class UserList extends React.Component {
   getObservers() {
@@ -24,7 +24,7 @@ class UserList extends React.Component {
                 size="sm"
                 variant="outline-secondary"
                 className="me-3"
-                onClick={() => this.props.sendGiveControl(observer.username)}
+                onClick={() => this.props.giveControl(observer.username)}
               >
                 Give control
               </Button>
@@ -34,7 +34,7 @@ class UserList extends React.Component {
                   <Button
                     size="sm"
                     variant="outline-secondary"
-                    onClick={() => this.props.sendLogoutUser(observer.username)}
+                    onClick={() => this.props.logoutUser(observer.username)}
                   >
                     Logout
                   </Button>
@@ -85,8 +85,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendGiveControl: bindActionCreators(sendGiveControl, dispatch),
-    sendLogoutUser: bindActionCreators(sendLogoutUser, dispatch),
+    giveControl: bindActionCreators(giveControl, dispatch),
+    logoutUser: bindActionCreators(logoutUser, dispatch),
   };
 }
 

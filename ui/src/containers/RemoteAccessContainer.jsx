@@ -8,8 +8,8 @@ import RequestControlForm from '../components/RemoteAccess/RequestControlForm';
 import UserList from '../components/RemoteAccess/UserList';
 
 import {
-  sendAllowRemote,
-  sendTimeoutGivesControl,
+  updateAllowRemote,
+  updateTimeoutGivesControl,
 } from '../actions/remoteAccess';
 
 export class RemoteAccessContainer extends React.Component {
@@ -21,14 +21,14 @@ export class RemoteAccessContainer extends React.Component {
           <Card.Body>
             <Form.Check
               type="checkbox"
-              onChange={(e) => this.props.sendAllowRemote(e.target.checked)}
+              onChange={(e) => this.props.updateAllowRemote(e.target.checked)}
               checked={this.props.remoteAccess.allowRemote}
               label="Enable remote access"
             />
             <Form.Check
               type="checkbox"
               onChange={(e) =>
-                this.props.sendTimeoutGivesControl(e.target.checked)
+                this.props.updateTimeoutGivesControl(e.target.checked)
               }
               checked={this.props.remoteAccess.timeoutGivesControl}
               label="Timeout gives control"
@@ -67,9 +67,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendAllowRemote: bindActionCreators(sendAllowRemote, dispatch),
-    sendTimeoutGivesControl: bindActionCreators(
-      sendTimeoutGivesControl,
+    updateAllowRemote: bindActionCreators(updateAllowRemote, dispatch),
+    updateTimeoutGivesControl: bindActionCreators(
+      updateTimeoutGivesControl,
       dispatch,
     ),
   };

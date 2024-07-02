@@ -3,10 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import {
-  showObserverDialog,
-  sendUpdateNickname,
-} from '../../actions/remoteAccess';
+import { showObserverDialog, updateNickname } from '../../actions/remoteAccess';
 
 export class ObserverDialog extends React.Component {
   constructor(props) {
@@ -32,13 +29,15 @@ export class ObserverDialog extends React.Component {
     );
   }
 
-  accept() {
+  accept(evt) {
+    evt.preventDefault();
+
     const name = this.name ? this.name.value : this.props.login.loginID;
 
     if (name) {
-      this.props.sendUpdateNickname(name);
+      this.props.updateNickname(name);
     } else {
-      this.props.sendUpdateNickname(this.props.login.user.username);
+      this.props.updateNickname(this.props.login.user.username);
     }
 
     this.props.hide();
@@ -107,7 +106,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     hide: bindActionCreators(showObserverDialog.bind(null, false), dispatch),
-    sendUpdateNickname: bindActionCreators(sendUpdateNickname, dispatch),
+    updateNickname: bindActionCreators(updateNickname, dispatch),
   };
 }
 
