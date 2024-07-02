@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Modal, Button, Form } from 'react-bootstrap';
-import { requestControlResponse } from '../../actions/remoteAccess';
+import { respondToControlRequest } from '../../actions/remoteAccess';
 
 export class PassControlDialog extends React.Component {
   constructor(props) {
@@ -39,12 +39,12 @@ export class PassControlDialog extends React.Component {
 
   accept() {
     const message = this.message.value;
-    this.props.requestControlResponse(true, message);
+    this.props.respondToControlRequest(true, message);
   }
 
   reject() {
     const message = this.message.value;
-    this.props.requestControlResponse(false, message);
+    this.props.respondToControlRequest(false, message);
   }
 
   render() {
@@ -92,8 +92,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    requestControlResponse: bindActionCreators(
-      requestControlResponse,
+    respondToControlRequest: bindActionCreators(
+      respondToControlRequest,
       dispatch,
     ),
   };

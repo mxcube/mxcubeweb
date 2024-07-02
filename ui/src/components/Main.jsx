@@ -20,11 +20,7 @@ import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import GphlWorkflowParametersDialog from '../containers/GphlWorkflowParametersDialog';
 import SelectProposalContainer from '../containers/SelectProposalContainer';
 import diagonalNoise from '../img/diagonal-noise.png';
-import {
-  sendChatMessage,
-  getAllChatMessages,
-  resetChatMessageCount,
-} from '../actions/remoteAccess';
+import { resetChatMessageCount } from '../actions/remoteAccess';
 import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
@@ -35,6 +31,7 @@ import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
 import { store } from '../store';
 import { getInitialState } from '../actions/login';
+import { fetchChatMessages, sendChatMessage } from '../api/remoteAccess';
 
 class Main extends React.Component {
   constructor(props) {
@@ -50,7 +47,7 @@ class Main extends React.Component {
     }
 
     // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
-    getAllChatMessages().then((json) => {
+    fetchChatMessages().then((json) => {
       json.messages.forEach((entry) => {
         if (entry.username === this.props.login.user.username) {
           addUserMessage(`${entry.date} **You:** \n\n ${entry.message} \n\n`);

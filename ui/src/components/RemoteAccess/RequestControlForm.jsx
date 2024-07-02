@@ -4,7 +4,7 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Form, Button, Card } from 'react-bootstrap';
 import { setLoading } from '../../actions/general';
-import { requestControl, sendTakeControl } from '../../actions/remoteAccess';
+import { requestControl, takeControl } from '../../actions/remoteAccess';
 
 class RequestControlForm extends React.Component {
   constructor(props) {
@@ -30,7 +30,7 @@ class RequestControlForm extends React.Component {
   }
 
   takeControlOnClick() {
-    this.props.sendTakeControl();
+    this.props.takeControl();
   }
 
   askForControl() {
@@ -96,7 +96,7 @@ function mapDispatchToProps(dispatch) {
   return {
     askForControlDialog: bindActionCreators(setLoading, dispatch),
     requestControl: bindActionCreators(requestControl, dispatch),
-    sendTakeControl: bindActionCreators(sendTakeControl, dispatch),
+    takeControl: bindActionCreators(takeControl, dispatch),
   };
 }
 

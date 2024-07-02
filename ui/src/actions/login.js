@@ -15,7 +15,7 @@ import { fetchDetectorInfo } from '../api/detector';
 import { fetchSampleChangerInitialState } from '../api/sampleChanger';
 import { fetchHarvesterInitialState } from '../api/harvester';
 import { fetchImageData, fetchShapes } from '../api/sampleview';
-import { fetchRemoteAccessSettings } from '../api/remoteAccess';
+import { fetchRemoteAccessState } from '../api/remoteAccess';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -204,7 +204,7 @@ export function getInitialState(navigate) {
           state.harvesterGlobalState = global_state;
         })
         .catch(notify),
-      fetchRemoteAccessSettings()
+      fetchRemoteAccessState()
         .then((json) => {
           state.remoteAccess = json.data;
         })
