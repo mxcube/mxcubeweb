@@ -52,7 +52,7 @@ function BeamlineSetupContainer(props) {
         <div key={`bsao-${motor.name}`} style={{ padding: '0.5em' }}>
           <p className="motor-name"> Beamstop distance: </p>
           <OneAxisTranslationControl
-            save={sampleViewActions.sendMotorPosition}
+            save={sampleViewActions.updateMotorPosition}
             value={motor.position}
             min={motor.limits[0]}
             max={motor.limits[1]}
