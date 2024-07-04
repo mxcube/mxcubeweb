@@ -17,3 +17,4 @@ Developer documentation
     tutorial.md
     tests.md
     deployment.md
+    yaml_conf_migration.md
