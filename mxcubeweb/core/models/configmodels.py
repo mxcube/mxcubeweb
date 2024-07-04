@@ -15,6 +15,7 @@ class FlaskConfigModel(BaseModel):
     SECURITY_TRACKABLE: bool = Field(True, description="")
     USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
     PERMANENT_SESSION_LIFETIME: datetime.timedelta
+    SEND_FILE_MAX_AGE_DEFAULT: int = Field(300, description="")
     CERT_KEY: str = Field("", description="Full path to signed certificate key file")
     CERT_PEM: str = Field("", description="Full path to signed certificate pem file")
 
