@@ -4,7 +4,7 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 import { loadSample } from './sampleChanger'; // eslint-disable-line import/no-cycle
-import { sendAbortCentring, updateShapes } from './sampleview';
+import { abortCentring, updateShapes } from './sampleview';
 import { selectSamplesAction, clearSampleGrid } from './sampleGrid'; // eslint-disable-line import/no-cycle
 import { TASK_UNCOLLECTED } from '../constants';
 import {
@@ -296,7 +296,7 @@ export function resumeQueue() {
 export function stopQueue() {
   return (dispatch) => {
     sendStopQueue().then(() => {
-      dispatch(sendAbortCentring());
+      dispatch(abortCentring());
     });
   };
 }

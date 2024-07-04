@@ -43,7 +43,7 @@ export default class SampleControls extends React.Component {
       this.props.showErrorPanel(true, 'There is no sample mounted');
     } else {
       if (this.props.clickCentring) {
-        this.props.sampleViewActions.sendAbortCentring();
+        this.props.sampleViewActions.abortCentring();
       }
 
       this.props.sampleViewActions.toggleDrawGrid();
@@ -84,8 +84,7 @@ export default class SampleControls extends React.Component {
   }
 
   toggleCentring() {
-    const { sendStartClickCentring, sendAbortCentring } =
-      this.props.sampleViewActions;
+    const { startClickCentring, abortCentring } = this.props.sampleViewActions;
     const { clickCentring } = this.props;
 
     // If draw grid tool enabled, disable it before starting centering
@@ -94,9 +93,9 @@ export default class SampleControls extends React.Component {
     }
 
     if (clickCentring) {
-      sendAbortCentring();
+      abortCentring();
     } else {
-      sendStartClickCentring();
+      startClickCentring();
     }
   }
 

@@ -325,7 +325,7 @@ export default class ContextMenu extends React.Component {
 
     if (this.props.clickCentring) {
       this.props.sampleViewActions.stopClickCentring();
-      this.props.sampleViewActions.sendAcceptCentring();
+      this.props.sampleViewActions.acceptCentring();
     }
 
     const type =
@@ -403,7 +403,7 @@ export default class ContextMenu extends React.Component {
       this.props.sampleViewActions.stopClickCentring();
     }
 
-    this.props.sampleViewActions.sendAcceptCentring();
+    this.props.sampleViewActions.acceptCentring();
     // associate the newly saved shape to an existing task with -1 shape.
     // Fixes issues when the task is added before a shape
     const { tasks } = this.props.sampleData;
@@ -427,18 +427,18 @@ export default class ContextMenu extends React.Component {
 
   goToPoint() {
     this.props.sampleViewActions.showContextMenu(false);
-    this.props.sampleViewActions.sendGoToPoint(this.props.shape.id);
+    this.props.sampleViewActions.moveToPoint(this.props.shape.id);
   }
 
   goToBeam() {
     const { x, y, imageRatio } = this.props;
     this.props.sampleViewActions.showContextMenu(false);
-    this.props.sampleViewActions.sendGoToBeam(x / imageRatio, y / imageRatio);
+    this.props.sampleViewActions.moveToBeam(x / imageRatio, y / imageRatio);
   }
 
   removeShape() {
     if (this.props.clickCentring) {
-      this.props.sampleViewActions.sendAbortCentring();
+      this.props.sampleViewActions.abortCentring();
     }
 
     // eslint-disable-next-line promise/catch-or-return
