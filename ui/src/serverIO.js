@@ -7,7 +7,7 @@ import {
   saveMotorPosition,
   updateMotorState,
   setBeamInfo,
-  startClickCentring,
+  startClickCentringAction,
   updateShapesAction,
   setPixelsPerMm,
   videoMessageOverlay,
@@ -354,7 +354,7 @@ class ServerIO {
 
     this.hwrSocket.on('sample_centring', (data) => {
       if (data.method === CLICK_CENTRING) {
-        this.dispatch(startClickCentring());
+        this.dispatch(startClickCentringAction());
         const msg =
           '3-Click Centring: <br /> Select centered position or center';
         this.dispatch(videoMessageOverlay(true, msg));

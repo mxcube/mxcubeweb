@@ -314,7 +314,7 @@ export default class SampleImage extends React.Component {
 
       if (this._keyPressed === 'Escape') {
         if (this.props.clickCentring) {
-          this.props.sampleViewActions.sendAbortCentring();
+          this.props.sampleViewActions.abortCentring();
         }
 
         if (this.props.drawGrid) {
@@ -326,7 +326,7 @@ export default class SampleImage extends React.Component {
 
   removeShapes() {
     if (this.props.clickCentring) {
-      this.props.sampleViewActions.sendAbortCentring();
+      this.props.sampleViewActions.abortCentring();
     }
 
     this.props.selectedShapes.forEach((shapeID) => {
@@ -340,11 +340,11 @@ export default class SampleImage extends React.Component {
 
   goToBeam(e) {
     const { sampleViewActions, imageRatio } = this.props;
-    const { sendGoToBeam } = sampleViewActions;
+    const { moveToBeam } = sampleViewActions;
 
     // Only move to beam if the click was done directly on the canvas.
     if (e.target.tagName === 'CANVAS' && e.shiftKey) {
-      sendGoToBeam(e.layerX / imageRatio, e.layerY / imageRatio);
+      moveToBeam(e.layerX / imageRatio, e.layerY / imageRatio);
     }
   }
 
@@ -541,7 +541,7 @@ export default class SampleImage extends React.Component {
     }
 
     if (clickCentring) {
-      sampleViewActions.sendCentringPoint(
+      sampleViewActions.recordCentringClick(
         option.e.layerX / imageRatio,
         option.e.layerY / imageRatio,
       );
@@ -584,7 +584,7 @@ export default class SampleImage extends React.Component {
     e.preventDefault();
     e.stopPropagation();
     const { sampleViewActions, motorSteps, hardwareObjects } = this.props;
-    const { sendMotorPosition } = sampleViewActions;
+    const { updateMotorPosition } = sampleViewActions;
     const keyPressed = this._keyPressed;
 
     const phi = hardwareObjects['diffractometer.phi'];
@@ -595,13 +595,13 @@ export default class SampleImage extends React.Component {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
-        sendMotorPosition(
+        updateMotorPosition(
           'Phi',
           phi.value + Number.parseInt(motorSteps.phiStep, 10),
         );
       } else if (e.deltaX < 0 || e.deltaY < 0) {
         // zoom out
-        sendMotorPosition(
+        updateMotorPosition(
           'Phi',
           phi.value - Number.parseInt(motorSteps.phiStep, 10),
         );
@@ -609,13 +609,13 @@ export default class SampleImage extends React.Component {
     } else if (keyPressed === 'f' && focus.state === MOTOR_STATE.READY) {
       if (e.deltaY > 0) {
         // Focus in
-        sendMotorPosition(
+        updateMotorPosition(
           'Focus',
           focus.value + Number.parseFloat(motorSteps.focusStep, 10),
         );
       } else if (e.deltaY < 0) {
         // Focus out
-        sendMotorPosition(
+        updateMotorPosition(
           'Focus',
           focus.value - Number.parseFloat(motorSteps.focusStep, 10),
         );

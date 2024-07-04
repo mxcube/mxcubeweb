@@ -1,7 +1,6 @@
 /* eslint-disable promise/catch-or-return */
 /* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable sonarjs/no-duplicate-string */
-import fetch from 'isomorphic-fetch';
+
 import { showErrorPanel } from './general';
 import {
   sendUpdateAperture,
@@ -12,147 +11,90 @@ import {
   sendDeleteShape,
   sendRotateToShape,
   sendSetVideoSize,
+  sendRecordCentringClick,
+  sendAcceptCentring,
+  sendMoveToBeam,
+  sendStartClickCentring,
+  sendAbortCentring,
+  sendMoveToPoint,
+  sendUpdateMotorPosition,
 } from '../api/sampleview';
 
 export function setMotorMoving(name, status) {
-  return {
-    type: 'SET_MOTOR_MOVING',
-    name,
-    status,
-  };
+  return { type: 'SET_MOTOR_MOVING', name, status };
 }
 
 export function setBeamInfo(info) {
-  return {
-    type: 'SET_BEAM_INFO',
-    info,
-  };
+  return { type: 'SET_BEAM_INFO', info };
 }
 
 export function setCurrentPhase(phase) {
-  return {
-    type: 'SET_CURRENT_PHASE',
-    phase,
-  };
+  return { type: 'SET_CURRENT_PHASE', phase };
 }
 
 export function setImageRatio(clientWidth) {
-  return {
-    type: 'SET_IMAGE_RATIO',
-    clientWidth,
-  };
+  return { type: 'SET_IMAGE_RATIO', clientWidth };
 }
 
 export function setOverlay(level) {
-  return {
-    type: 'SET_OVERLAY',
-    level,
-  };
+  return { type: 'SET_OVERLAY', level };
 }
 
 export function setAperture(size) {
-  return {
-    type: 'SET_APERTURE',
-    size,
-  };
+  return { type: 'SET_APERTURE', size };
 }
 
 export function setStepSize(name, value) {
-  return {
-    type: 'SET_STEP_SIZE',
-    componentName: 'sample_view',
-    name,
-    value,
-  };
+  return { type: 'SET_STEP_SIZE', componentName: 'sample_view', name, value };
 }
 
 // eslint-disable-next-line unicorn/no-object-as-default-parameter
 export function showContextMenu(show, shape = { type: 'NONE' }, x = 0, y = 0) {
-  return {
-    type: 'SHOW_CONTEXT_MENU',
-    show,
-    shape,
-    x,
-    y,
-  };
+  return { type: 'SHOW_CONTEXT_MENU', show, shape, x, y };
 }
 
 export function setPixelsPerMm(pixelsPerMm) {
-  return {
-    type: 'SET_PIXELS_PER_MM',
-    pixelsPerMm,
-  };
+  return { type: 'SET_PIXELS_PER_MM', pixelsPerMm };
 }
 
 export function measureDistance(mode) {
-  return {
-    type: 'MEASURE_DISTANCE',
-    mode,
-  };
+  return { type: 'MEASURE_DISTANCE', mode };
 }
 
 export function addDistancePoint(x, y) {
-  return {
-    type: 'ADD_DISTANCE_POINT',
-    x,
-    y,
-  };
+  return { type: 'ADD_DISTANCE_POINT', x, y };
 }
 
-export function startClickCentring() {
-  return {
-    type: 'START_CLICK_CENTRING',
-  };
+export function startClickCentringAction() {
+  return { type: 'START_CLICK_CENTRING' };
 }
 
 export function stopClickCentring() {
-  return {
-    type: 'STOP_CLICK_CENTRING',
-  };
+  return { type: 'STOP_CLICK_CENTRING' };
 }
 
 export function clearSelectedShapes() {
-  return {
-    type: 'CLEAR_SELECTED_SHAPES',
-  };
+  return { type: 'CLEAR_SELECTED_SHAPES' };
 }
 
 export function addCentringPoint(x, y) {
-  return {
-    type: 'ADD_CENTRING_POINT',
-    x,
-    y,
-  };
+  return { type: 'ADD_CENTRING_POINT', x, y };
 }
 
 export function addShapeAction(shape) {
-  return {
-    type: 'ADD_SHAPE',
-    shape,
-  };
+  return { type: 'ADD_SHAPE', shape };
 }
 
 export function updateShapesAction(shapes) {
-  return {
-    type: 'UPDATE_SHAPES',
-    shapes,
-  };
+  return { type: 'UPDATE_SHAPES', shapes };
 }
 
 export function deleteShapeAction(id) {
-  return {
-    type: 'DELETE_SHAPE',
-    id,
-  };
+  return { type: 'DELETE_SHAPE', id };
 }
 
 export function saveImageSize(width, height, pixelsPerMm) {
-  return {
-    type: 'SAVE_IMAGE_SIZE',
-    width,
-    height,
-    pixelsPerMm,
-  };
+  return { type: 'SAVE_IMAGE_SIZE', width, height, pixelsPerMm };
 }
 
 export function toggleAutoScale(width = 1) {
@@ -186,32 +128,19 @@ export function setVideoSize(width, height) {
 }
 
 export function saveMotorPosition(name, value) {
-  return {
-    type: 'SAVE_MOTOR_POSITION',
-    name,
-    value,
-  };
+  return { type: 'SAVE_MOTOR_POSITION', name, value };
 }
 
 export function updateMotorState(name, value) {
-  return {
-    type: 'UPDATE_MOTOR_STATE',
-    name,
-    value,
-  };
+  return { type: 'UPDATE_MOTOR_STATE', name, value };
 }
 
 export function setShapes(shapes) {
-  return {
-    type: 'SET_SHAPES',
-    shapes,
-  };
+  return { type: 'SET_SHAPES', shapes };
 }
 
 export function toggleCinema() {
-  return {
-    type: 'TOOGLE_CINEMA',
-  };
+  return { type: 'TOOGLE_CINEMA' };
 }
 
 export function setGridOverlay(level) {
@@ -227,10 +156,7 @@ export function centringClicksLeft(clicksLeft) {
 }
 
 export function setGridResultType(gridResultType) {
-  return {
-    type: 'SET_GRID_RESULT_TYPE',
-    gridResultType,
-  };
+  return { type: 'SET_GRID_RESULT_TYPE', gridResultType };
 }
 
 export function rotateToShape(sid) {
@@ -245,68 +171,34 @@ export function rotateToShape(sid) {
   };
 }
 
-export function sendCentringPoint(x, y) {
+export function recordCentringClick(x, y) {
   return (dispatch) => {
-    fetch('/mxcube/api/v0.1/sampleview/centring/click', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ clickPos: { x, y } }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        const { clicksLeft } = json;
-        let msg = '3-Click Centring: <br />';
+    sendRecordCentringClick(x, y).then((json) => {
+      const { clicksLeft } = json;
+      dispatch(centringClicksLeft(clicksLeft));
 
-        dispatch(centringClicksLeft(clicksLeft));
+      const msg = `3-Click Centring: <br />${
+        clicksLeft === 0
+          ? 'Save centring or clicking on screen to restart'
+          : `Clicks left: ${clicksLeft}`
+      }`;
 
-        if (clicksLeft === 0) {
-          msg += 'Save centring or clicking on screen to restart';
-        } else {
-          msg += `Clicks left: ${clicksLeft}`;
-        }
-
-        dispatch(videoMessageOverlay(true, msg));
-      });
+      dispatch(videoMessageOverlay(true, msg));
+    });
   };
 }
 
-export function sendAcceptCentring() {
+export function acceptCentring() {
   return (dispatch) => {
-    fetch('/mxcube/api/v0.1/sampleview/centring/accept', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Centring not accepted');
-      }
+    sendAcceptCentring().then(() => {
       dispatch(videoMessageOverlay(false, ''));
     });
   };
 }
 
-export function sendGoToBeam(x, y) {
+export function moveToBeam(x, y) {
   return () => {
-    fetch('/mxcube/api/v0.1/sampleview/movetobeam', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ clickPos: { x, y } }),
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused move to beam');
-      }
-    });
+    sendMoveToBeam(x, y);
   };
 }
 
@@ -373,7 +265,7 @@ export function unselectShapes(shapes) {
   };
 }
 
-export function sendStartClickCentring() {
+export function startClickCentring() {
   return (dispatch, getState) => {
     dispatch(clearSelectedShapes());
 
@@ -382,37 +274,20 @@ export function sendStartClickCentring() {
     dispatch(unselectShapes(shapes));
 
     if (queue.currentSampleID) {
-      fetch('/mxcube/api/v0.1/sampleview/centring/start3click', {
-        method: 'PUT',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-      })
-        .then((response) => {
-          if (response.status >= 400) {
-            throw new Error('Server refused to start 3click');
-          } else {
-            dispatch(startClickCentring());
-          }
+      sendStartClickCentring().then((json) => {
+        const { clicksLeft } = json;
 
-          return response.json();
-        })
-        .then((json) => {
-          const { clicksLeft } = json;
-          dispatch(centringClicksLeft(clicksLeft));
+        dispatch(startClickCentringAction());
+        dispatch(centringClicksLeft(clicksLeft));
 
-          let msg = '3-Click Centring: <br />';
+        const msg = `3-Click Centring: <br />${
+          clicksLeft === 0
+            ? 'Save centring or clicking on screen to restart'
+            : `Clicks left: ${clicksLeft}`
+        }`;
 
-          if (clicksLeft === 0) {
-            msg += 'Save centring or clicking on screen to restart';
-          } else {
-            msg += `Clicks left: ${clicksLeft}`;
-          }
-
-          dispatch(videoMessageOverlay(true, msg));
-        });
+        dispatch(videoMessageOverlay(true, msg));
+      });
     } else {
       dispatch(
         showErrorPanel(true, 'There is no sample mounted, cannot center.'),
@@ -421,62 +296,38 @@ export function sendStartClickCentring() {
   };
 }
 
-export function sendMotorPosition(motorName, value) {
-  return (dispatch) => {
-    fetch(`/mxcube/api/v0.1/sampleview/${motorName}/${value}`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status === 406) {
-        dispatch(showErrorPanel(true, response.headers.get('msg')));
-        throw new Error('Server refused to move motors: out of limits');
+export function updateMotorPosition(motorName, value) {
+  return async (dispatch) => {
+    try {
+      await sendUpdateMotorPosition(motorName, value);
+    } catch (error) {
+      if (error.status === 406) {
+        dispatch(showErrorPanel(true, error.response.headers.get('msg')));
       }
-      if (response.status >= 400) {
-        throw new Error('Server refused to move motors');
-      }
-    });
+    }
   };
 }
 
-export function sendAbortCentring() {
+export function abortCentring() {
   return (dispatch) => {
-    fetch('/mxcube/api/v0.1/sampleview/centring/abort', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to abort centring'));
-      } else {
-        dispatch(stopClickCentring());
-        dispatch(videoMessageOverlay(false, ''));
-      }
-    });
     dispatch(clearSelectedShapes());
+
+    sendAbortCentring().then(() => {
+      dispatch(stopClickCentring());
+      dispatch(videoMessageOverlay(false, ''));
+    });
   };
 }
 
-export function sendGoToPoint(id) {
-  return (dispatch) => {
-    fetch(`/mxcube/api/v0.1/sampleview/centring/${id}/moveto`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
+export function moveToPoint(id) {
+  return async (dispatch) => {
+    try {
+      await sendMoveToPoint(id);
+    } catch (error) {
+      if (error.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to move to point'));
       }
-    });
+    }
   };
 }
 
