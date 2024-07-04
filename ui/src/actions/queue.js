@@ -4,7 +4,7 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 import { loadSample } from './sampleChanger'; // eslint-disable-line import/no-cycle
-import { sendAbortCentring, sendUpdateShapes } from './sampleview';
+import { sendAbortCentring, updateShapes } from './sampleview';
 import { selectSamplesAction, clearSampleGrid } from './sampleGrid'; // eslint-disable-line import/no-cycle
 import { TASK_UNCOLLECTED } from '../constants';
 import {
@@ -507,12 +507,12 @@ export function addTask(sampleIDs, parameters, runNow) {
         if (Number.parseInt(parameters.shape) !== -1) {
           if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
             dispatch(
-              sendUpdateShapes([{ id: task.parameters.shape, state: 'SAVED' }]),
+              updateShapes([{ id: task.parameters.shape, state: 'SAVED' }]),
             );
           }
           if (state.shapes.shapes[task.parameters.shape].t === 'L') {
             dispatch(
-              sendUpdateShapes([
+              updateShapes([
                 {
                   id: state.shapes.shapes[task.parameters.shape].refs[0],
                   state: 'SAVED',
@@ -520,7 +520,7 @@ export function addTask(sampleIDs, parameters, runNow) {
               ]),
             );
             dispatch(
-              sendUpdateShapes([
+              updateShapes([
                 {
                   id: state.shapes.shapes[task.parameters.shape].refs[1],
                   state: 'SAVED',

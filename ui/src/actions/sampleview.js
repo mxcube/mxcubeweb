@@ -4,10 +4,15 @@
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 import {
-  fetchMotorPositions,
   sendUpdateAperture,
   sendUpdateCurrentPhase,
 } from '../api/diffractometer';
+import {
+  sendAddOrUpdateShapes,
+  sendDeleteShape,
+  sendRotateToShape,
+  sendSetVideoSize,
+} from '../api/sampleview';
 
 export function setMotorMoving(name, status) {
   return {
@@ -120,21 +125,21 @@ export function addCentringPoint(x, y) {
   };
 }
 
-export function addShape(shape) {
+export function addShapeAction(shape) {
   return {
     type: 'ADD_SHAPE',
     shape,
   };
 }
 
-export function updateShapes(shapes) {
+export function updateShapesAction(shapes) {
   return {
     type: 'UPDATE_SHAPES',
     shapes,
   };
 }
 
-export function deleteShape(id) {
+export function deleteShapeAction(id) {
   return {
     type: 'DELETE_SHAPE',
     id,
@@ -161,43 +166,22 @@ export function videoMessageOverlay(show, msg) {
 export function setVideoSize(width, height) {
   return (dispatch, getState) => {
     const { sampleview } = getState();
-
-    if (sampleview.sourceIsScalable) {
-      fetch('/mxcube/api/v0.1/sampleview/camera', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({ width, height }),
-      })
-        .then((response) => {
-          if (response.status >= 400) {
-            throw new Error('Server refused to set video size');
-          }
-          return response.json();
-        })
-        .then((json) => {
-          dispatch({
-            type: 'SAVE_IMAGE_SIZE',
-            width: json.imageWidth,
-            height: json.imageHeight,
-            pixelsPerMm: json.pixelsPerMm,
-            beamPosition: json.position,
-            sourceScale: json.scale,
-          });
-
-          window.initJSMpeg();
-        });
+    if (!sampleview.sourceIsScalable) {
+      return;
     }
-  };
-}
 
-export function saveMotorPositions(data) {
-  return {
-    type: 'SAVE_MOTOR_POSITIONS',
-    data,
+    sendSetVideoSize(width, height).then((json) => {
+      dispatch({
+        type: 'SAVE_IMAGE_SIZE',
+        width: json.imageWidth,
+        height: json.imageHeight,
+        pixelsPerMm: json.pixelsPerMm,
+        beamPosition: json.position,
+        sourceScale: json.scale,
+      });
+
+      window.initJSMpeg();
+    });
   };
 }
 
@@ -238,10 +222,6 @@ export function toggleDrawGrid() {
   return { type: 'DRAW_GRID' };
 }
 
-export function addGridAction(gridData) {
-  return { type: 'ADD_GRID', gridData };
-}
-
 export function centringClicksLeft(clicksLeft) {
   return { type: 'CENTRING_CLICKS_LEFT', clicksLeft };
 }
@@ -253,21 +233,15 @@ export function setGridResultType(gridResultType) {
   };
 }
 
-export function sendRotateToShape(sid) {
-  return (dispatch) => {
-    fetch('/mxcube/api/v0.1/sampleview/shapes/rotate_to', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ sid }),
-    }).then((response) => {
-      if (response.status >= 400) {
+export function rotateToShape(sid) {
+  return async (dispatch) => {
+    try {
+      await sendRotateToShape(sid);
+    } catch (error) {
+      if (error.status >= 400) {
         dispatch(showErrorPanel(true, 'Server refused to rotate grid.'));
       }
-    });
+    }
   };
 }
 
@@ -336,92 +310,47 @@ export function sendGoToBeam(x, y) {
   };
 }
 
-export function sendStartAutoCentring() {
-  return () => {
-    fetch('/mxcube/api/v0.1/sampleview/centring/startauto', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to start autocentring');
+export function addShape(shapeData = {}, successCb = null) {
+  return async (dispatch) => {
+    try {
+      const json = await sendAddOrUpdateShapes([shapeData]);
+      const shape = json.shapes[0];
+      dispatch(addShapeAction(shape));
+
+      if (successCb) {
+        successCb(shape);
       }
-
-      return response.json();
-    });
+    } catch (error) {
+      if (error.status >= 400) {
+        throw new Error('Server refused to add shape');
+      }
+    }
   };
 }
 
-export function sendAddShape(shapeData = {}, successCb = null) {
-  return (dispatch) => {
-    fetch('/mxcube/api/v0.1/sampleview/shapes', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ shapes: [shapeData] }),
-    })
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to add shape');
-        }
-        return response.json();
-      })
-      .then((json) => {
-        dispatch(addShape(json.shapes[0]));
-        if (successCb !== null) {
-          successCb(json.shapes[0]);
-        }
-      });
+export function updateShapes(shapes) {
+  return async (dispatch) => {
+    try {
+      const json = await sendAddOrUpdateShapes(shapes);
+      dispatch(updateShapesAction(json.shapes));
+    } catch (error) {
+      if (error.status >= 400) {
+        throw new Error('Server refused to update shapes');
+      }
+    }
   };
 }
 
-export function sendUpdateShapes(shapes) {
-  return (dispatch) => {
-    return fetch('/mxcube/api/v0.1/sampleview/shapes', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ shapes }),
-    })
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to update shape');
-        }
-        return response.json();
-      })
-      .then((json) => {
-        dispatch(updateShapes(json.shapes));
-      });
-  };
-}
-
-export function sendDeleteShape(id) {
-  return (dispatch) => {
-    return fetch(`/mxcube/api/v0.1/sampleview/shapes/${id}`, {
-      method: 'DELETE',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to delete shape');
-        }
-      })
-      .then(() => {
-        dispatch(deleteShape(id));
-      });
+export function deleteShape(id) {
+  return async (dispatch) => {
+    try {
+      await sendDeleteShape(id);
+      dispatch(deleteShapeAction(id));
+    } catch (error) {
+      if (error.status >= 400) {
+        throw new Error('Server refused to delete shape');
+      }
+    }
   };
 }
 
@@ -438,7 +367,7 @@ export function unselectShapes(shapes) {
           aux.selected = false;
           _shapes.push(aux);
         });
-        dispatch(sendUpdateShapes(_shapes));
+        dispatch(updateShapes(_shapes));
       }
     }
   };
@@ -489,73 +418,6 @@ export function sendStartClickCentring() {
         showErrorPanel(true, 'There is no sample mounted, cannot center.'),
       );
     }
-  };
-}
-
-export function sendZoomPos(level) {
-  return (dispatch) => {
-    fetch('/mxcube/api/v0.1/sampleview/zoom', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ level }),
-    });
-  };
-}
-
-export function sendLightOn(name) {
-  return (dispatch) => {
-    dispatch(saveMotorPosition(name, true));
-    fetch(`/mxcube/api/v0.1/sampleview/${name.toLowerCase()}on`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to turn light on'));
-      }
-    });
-  };
-}
-
-export function sendLightOff(name) {
-  return (dispatch) => {
-    dispatch(saveMotorPosition(name, false));
-    fetch(`/mxcube/api/v0.1/sampleview/${name.toLowerCase()}off`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to turn light off'));
-      }
-    });
-  };
-}
-
-export function sendStopMotor(motorName) {
-  return () => {
-    fetch(`/mxcube/api/v0.1/sampleview/${motorName}/stop`, {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Server refused to stop motor');
-      }
-    });
   };
 }
 
@@ -623,81 +485,6 @@ export function changeAperture(size) {
     sendUpdateAperture(size).then(() => {
       dispatch(setAperture(size));
     });
-  };
-}
-
-export function getSampleImageSize() {
-  return (dispatch) => {
-    fetch('/mxcube/api/v0.1/sampleview/camera', {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to return image size');
-        }
-        return response.json();
-      })
-      .then((json) => {
-        dispatch(
-          saveImageSize(json.imageWidth, json.imageHeight, json.pixelsPerMm[0]),
-        );
-      });
-  };
-}
-
-export function getMotorPosition(motor) {
-  return (dispatch) => {
-    fetch(`/mxcube/api/v0.1/sampleview/${motor}`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to get motor position');
-        }
-        return response.json();
-      })
-      .then((json) => {
-        dispatch(saveMotorPosition(motor, json[motor].position));
-      });
-  };
-}
-
-export function getMotorPositions() {
-  return (dispatch) => {
-    fetchMotorPositions().then((json) => {
-      dispatch(saveMotorPositions(json));
-    });
-  };
-}
-
-export function getPointsPosition() {
-  return (dispatch) => {
-    fetch('mxcube/api/v0.1/sampleview/centring', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-    })
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error('Server refused to return points position');
-        }
-        return response.json();
-      })
-      .then((json) => {
-        dispatch(updateShapes(json));
-      });
   };
 }
 
