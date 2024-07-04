@@ -227,7 +227,7 @@ export default class SampleImage extends React.Component {
         gridData.cellHSpace,
         value,
       );
-      this.props.sampleViewActions.sendUpdateShapes([gd]);
+      this.props.sampleViewActions.updateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(
         null,
@@ -253,7 +253,7 @@ export default class SampleImage extends React.Component {
         value,
         gridData.cellVSpace,
       );
-      this.props.sampleViewActions.sendUpdateShapes([gd]);
+      this.props.sampleViewActions.updateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(
         value,
@@ -330,7 +330,7 @@ export default class SampleImage extends React.Component {
     }
 
     this.props.selectedShapes.forEach((shapeID) => {
-      this.props.sampleViewActions.sendDeleteShape(shapeID);
+      this.props.sampleViewActions.deleteShape(shapeID);
     });
   }
 
@@ -686,7 +686,7 @@ export default class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
-      this.props.sampleViewActions.sendUpdateShapes(updatedShapes);
+      this.props.sampleViewActions.updateShapes(updatedShapes);
     }
   }
 
@@ -705,7 +705,7 @@ export default class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
-      this.props.sampleViewActions.sendUpdateShapes(updatedShapes);
+      this.props.sampleViewActions.updateShapes(updatedShapes);
     }
   }
 
@@ -733,7 +733,7 @@ export default class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
-      this.props.sampleViewActions.sendUpdateShapes(updatedShapes);
+      this.props.sampleViewActions.updateShapes(updatedShapes);
     }
   }
 
@@ -758,7 +758,7 @@ export default class SampleImage extends React.Component {
     const gd = this.drawGridPlugin.saveGrid(
       this.drawGridPlugin.currentGridData(),
     );
-    this.props.sampleViewActions.sendAddShape({ t: 'G', ...gd });
+    this.props.sampleViewActions.addShape({ t: 'G', ...gd });
     this.drawGridPlugin.reset();
   }
 
@@ -771,7 +771,7 @@ export default class SampleImage extends React.Component {
       grid.state = 'HIDDEN';
     }
 
-    this.props.sampleViewActions.sendUpdateShapes([grid]);
+    this.props.sampleViewActions.updateShapes([grid]);
   }
 
   centringMessage() {
@@ -964,10 +964,10 @@ export default class SampleImage extends React.Component {
               setVCellSpacing={this.setVCellSpacing}
               gridList={this.props.grids}
               currentGrid={this.drawGridPlugin.currentGridData()}
-              removeGrid={this.props.sampleViewActions.sendDeleteShape}
+              removeGrid={this.props.sampleViewActions.deleteShape}
               saveGrid={this.saveGrid}
               toggleVisibility={this.toggleGridVisibility}
-              rotateTo={this.props.sampleViewActions.sendRotateToShape}
+              rotateTo={this.props.sampleViewActions.rotateToShape}
               selectGrid={this.selectShape}
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
               setGridResultType={this.setGridResultType}
