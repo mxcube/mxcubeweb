@@ -392,7 +392,7 @@ export default class ContextMenu extends React.Component {
   }
 
   createPoint(x, y, cb = null) {
-    this.props.sampleViewActions.sendAddShape(
+    this.props.sampleViewActions.addShape(
       { screenCoord: [x, y], t: '2DP', state: 'SAVED' },
       cb,
     );
@@ -443,7 +443,7 @@ export default class ContextMenu extends React.Component {
 
     // eslint-disable-next-line promise/catch-or-return
     this.props.sampleViewActions
-      .sendDeleteShape(this.props.shape.id)
+      .deleteShape(this.props.shape.id)
       // eslint-disable-next-line promise/prefer-await-to-then
       .then(() => {
         this.props.sampleViewActions.showContextMenu(false);
@@ -464,7 +464,7 @@ export default class ContextMenu extends React.Component {
     this.props.sampleViewActions.showContextMenu(false);
 
     const gd = { ...this.props.shape.gridData };
-    this.props.sampleViewActions.sendAddShape({ t: 'G', ...gd });
+    this.props.sampleViewActions.addShape({ t: 'G', ...gd });
     this.props.sampleViewActions.toggleDrawGrid();
   }
 
@@ -489,12 +489,9 @@ export default class ContextMenu extends React.Component {
     }
 
     this.props.sampleViewActions.showContextMenu(false);
-    this.props.sampleViewActions.sendAddShape(
-      { t: 'L', refs: shape.id },
-      (s) => {
-        this.showModal(modal, wf, s);
-      },
-    );
+    this.props.sampleViewActions.addShape({ t: 'L', refs: shape.id }, (s) => {
+      this.showModal(modal, wf, s);
+    });
   }
 
   hideContextMenu() {

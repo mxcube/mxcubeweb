@@ -6,10 +6,6 @@ export function fetchDiffractometerInfo() {
   return endpoint.get('/info').json();
 }
 
-export function fetchMotorPositions() {
-  return endpoint.get('/movables/state').json();
-}
-
 export function sendUpdateCurrentPhase(phase) {
   return endpoint.put({ phase }, '/phase').res();
 }

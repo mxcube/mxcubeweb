@@ -8,7 +8,7 @@ import {
   updateMotorState,
   setBeamInfo,
   startClickCentring,
-  updateShapes,
+  updateShapesAction,
   setPixelsPerMm,
   videoMessageOverlay,
   setCurrentPhase,
@@ -204,7 +204,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('grid_result_available', (data) => {
-      this.dispatch(updateShapes([data.shape]));
+      this.dispatch(updateShapesAction([data.shape]));
     });
 
     this.hwrSocket.on('energy_scan_result', (data) => {

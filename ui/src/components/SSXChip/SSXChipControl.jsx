@@ -36,7 +36,7 @@ export default class SSXChipControl extends React.Component {
   }
 
   handleAddGrid(data) {
-    this.props.sampleViewActions.sendAddShape({ t: 'G', ...data });
+    this.props.sampleViewActions.addShape({ t: 'G', ...data });
   }
 
   renderChip() {
