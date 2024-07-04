@@ -10,6 +10,7 @@ import os  # noqa: E402
 import redis  # noqa: E402
 import sys  # noqa: E402
 import traceback  # noqa: E402
+from pathlib import Path  # noqa: E402
 
 from mxcubeweb.server import Server as server  # noqa: E402
 from mxcubeweb.app import MXCUBEApplication as mxcube  # noqa: E402
@@ -99,6 +100,13 @@ def parse_args(argv):
         default=False,
     )
 
+    opt_parser.add_argument(
+        "--export-yaml-config",
+        dest="yaml_export_directory",
+        type=Path,
+        help="write YAML configuration to specified path",
+    )
+
     # If `argv` is `None`, then `argparse.ArgumentParser.parse_args`
     # will know to read from `sys.argv` instead.
     return opt_parser.parse_args(argv)
@@ -119,7 +127,9 @@ def build_server_and_config(test=False, argv=None):
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing the main config files.
         # Note that the machinery was all there in the core already. rhfogh.
-        HWR.init_hardware_repository(cmdline_options.hwr_directory)
+        HWR.init_hardware_repository(
+            cmdline_options.hwr_directory, cmdline_options.yaml_export_directory
+        )
         config_path = HWR.get_hardware_repository().find_in_repository("mxcube-web")
 
         cfg = Config(config_path)
