@@ -19,7 +19,7 @@ import { QUEUE_RUNNING } from '../constants';
 import DefaultErrorBoundary from './DefaultErrorBoundary';
 import { syncWithCrims } from '../actions/sampleGrid';
 import {
-  loadSample,
+  mountSample,
   refresh,
   selectWell,
   setPlate,
@@ -167,7 +167,7 @@ class SampleViewContainer extends Component {
                   contents={this.props.sampleChangerContents}
                   loadedSample={this.props.loadedSample}
                   select={this.props.select}
-                  load={this.props.loadSample}
+                  load={this.props.mountSample}
                   sendCommand={this.props.sendCommand}
                   refresh={this.props.refresh}
                   plates={this.props.plateGrid}
@@ -315,7 +315,7 @@ function mapDispatchToProps(dispatch) {
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
     logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),
 
-    loadSample: (address) => dispatch(loadSample(address)),
+    mountSample: (address) => dispatch(mountSample(address)),
     refresh: () => dispatch(refresh()),
     selectWell: (row, col) => dispatch(selectWell(row, col)),
     setPlate: (address) => dispatch(setPlate(address)),

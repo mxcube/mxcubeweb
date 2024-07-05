@@ -1,10 +1,11 @@
 /* eslint-disable promise/catch-or-return */
-/* eslint-disable promise/no-nesting */
+
 /* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable sonarjs/no-duplicate-string */
+
 import fetch from 'isomorphic-fetch';
 import { setLoading, showErrorPanel } from './general';
 import { setQueue } from './queue'; // eslint-disable-line import/no-cycle
+import { fetchSamplesList, sendSyncWithCrims } from '../api/sampleChanger';
 
 export function updateSampleList(sampleList, order) {
   return { type: 'UPDATE_SAMPLE_LIST', sampleList, order };
@@ -106,24 +107,20 @@ export function sendGetSampleList() {
         true,
       ),
     );
-    return fetch('mxcube/api/v0.1/sample_changer/samples_list', {
-      credentials: 'include',
-    })
-      .then((response) => response.json())
-      .then(
-        (res) => {
-          const { sampleList } = res;
-          const { sampleOrder } = res;
+    return fetchSamplesList().then(
+      (json) => {
+        const { sampleList } = json;
+        const { sampleOrder } = json;
 
-          dispatch(updateSampleList(sampleList, sampleOrder));
-          dispatch(setQueue(res));
-          dispatch(setLoading(false));
-        },
-        () => {
-          dispatch(setLoading(false));
-          dispatch(showErrorPanel(true, 'Could not get samples list'));
-        },
-      );
+        dispatch(updateSampleList(sampleList, sampleOrder));
+        dispatch(setQueue(json));
+        dispatch(setLoading(false));
+      },
+      () => {
+        dispatch(setLoading(false));
+        dispatch(showErrorPanel(true, 'Could not get samples list'));
+      },
+    );
   };
 }
 
@@ -173,30 +170,23 @@ export function updateCrystalList(crystalList) {
 }
 
 export function syncWithCrims() {
-  return (dispatch) => {
-    fetch('mxcube/api/v0.1/sample_changer/sync_with_crims', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
-      if (response.status >= 400) {
+  return async (dispatch) => {
+    try {
+      const crystalList = await sendSyncWithCrims();
+      dispatch(updateCrystalList(crystalList));
+    } catch (error) {
+      if (error.status >= 400) {
         // throw new Error('Error while scanning sample changer');
         dispatch(
           showErrorPanel(
             true,
-            `Synchronization with Crims failed ${response.headers.get(
+            `Synchronization with Crims failed ${error.response.headers.get(
               'message',
             )}`,
           ),
         );
       }
-      response.json().then((crystalList) => {
-        dispatch(updateCrystalList(crystalList));
-      });
-    });
+    }
   };
 }
 

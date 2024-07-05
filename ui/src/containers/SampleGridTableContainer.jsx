@@ -49,7 +49,7 @@ import {
 
 import { deleteTask, addSampleAndMount } from '../actions/queue';
 
-import { unloadSample } from '../actions/sampleChanger';
+import { unmountSample } from '../actions/sampleChanger';
 
 import { showTaskForm } from '../actions/taskForm';
 
@@ -1155,7 +1155,7 @@ class SampleGridTableContainer extends React.Component {
   }
 
   unmount() {
-    this.props.unloadSample();
+    this.props.unmountSample();
   }
 
   renderTaskContextMenuItems() {
@@ -1364,7 +1364,7 @@ function mapDispatchToProps(dispatch) {
   return {
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
-    unloadSample: bindActionCreators(unloadSample, dispatch),
+    unmountSample: bindActionCreators(unmountSample, dispatch),
     toggleMovableAction: (key) => dispatch(toggleMovableAction(key)),
     showGenericContextMenu: (show, id, x, y) =>
       dispatch(showGenericContextMenu(show, id, x, y)),
