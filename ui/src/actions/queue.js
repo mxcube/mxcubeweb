@@ -3,7 +3,7 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
-import { loadSample } from './sampleChanger'; // eslint-disable-line import/no-cycle
+import { mountSample } from './sampleChanger'; // eslint-disable-line import/no-cycle
 import { abortCentring, updateShapes } from './sampleview';
 import { selectSamplesAction, clearSampleGrid } from './sampleGrid'; // eslint-disable-line import/no-cycle
 import { TASK_UNCOLLECTED } from '../constants';
@@ -127,7 +127,7 @@ export function addSamplesToQueue(sampleDataList) {
 export function addSampleAndMount(sampleData) {
   return (dispatch) => {
     dispatch(
-      loadSample(sampleData, () => {
+      mountSample(sampleData, () => {
         sendAddQueueItem([sampleData])
           .then((response) => {
             if (response.status >= 400) {

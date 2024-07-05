@@ -78,7 +78,7 @@ function renderSampleChangerTreeNode(props) {
 function SampleChangerTreeItem(props) {
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
-  function loadSample() {
+  function handleMountClick() {
     toggleDropdown();
     props.load({
       sampleID: props.label,
@@ -86,7 +86,7 @@ function SampleChangerTreeItem(props) {
     });
   }
 
-  function unloadSample() {
+  function handleUnmountClick() {
     toggleDropdown();
     props.unload(props.label);
   }
@@ -113,9 +113,9 @@ function SampleChangerTreeItem(props) {
               <b>Position : {props.label}</b>
             </Dropdown.Header>
             <Dropdown.Divider />
-            <Dropdown.Item onClick={loadSample}>Mount</Dropdown.Item>
+            <Dropdown.Item onClick={handleMountClick}>Mount</Dropdown.Item>
             {props.loadedSample === props.label ? (
-              <Dropdown.Item onClick={unloadSample}>
+              <Dropdown.Item onClick={handleUnmountClick}>
                 Umount this position
               </Dropdown.Item>
             ) : null}

@@ -6,8 +6,8 @@ import { Container, Row, Col } from 'react-bootstrap';
 
 import {
   select,
-  loadSample,
-  unloadSample,
+  mountSample,
+  unmountSample,
   scan,
   abort,
   sendCommand,
@@ -63,8 +63,7 @@ class EquipmentContainer extends React.Component {
                     <PlateManipulator
                       contents={this.props.contents}
                       loadedSample={this.props.loadedSample}
-                      select={this.props.select}
-                      load={this.props.loadSample}
+                      load={this.props.mountSample}
                       sendCommand={this.props.sendCommand}
                       refresh={this.props.refresh}
                       inPopover={false}
@@ -101,8 +100,8 @@ class EquipmentContainer extends React.Component {
                       state={this.props.sampleChangerState}
                       loadedSample={this.props.loadedSample}
                       select={this.props.select}
-                      load={this.props.loadSample}
-                      unload={this.props.unloadSample}
+                      load={this.props.mountSample}
+                      unload={this.props.unmountSample}
                       abort={this.props.abort}
                       scan={this.props.scan}
                       contents={this.props.contents}
@@ -214,8 +213,8 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     select: (address) => dispatch(select(address)),
-    loadSample: (address) => dispatch(loadSample(address)),
-    unloadSample: (address) => dispatch(unloadSample(address)),
+    mountSample: (address) => dispatch(mountSample(address)),
+    unmountSample: (address) => dispatch(unmountSample(address)),
     scan: (container) => dispatch(scan(container)),
     refresh: () => dispatch(refresh()),
     abort: () => dispatch(abort()),

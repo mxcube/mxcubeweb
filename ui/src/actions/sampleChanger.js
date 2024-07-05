@@ -1,10 +1,18 @@
 /* eslint-disable promise/catch-or-return */
-/* eslint-disable promise/no-nesting */
 /* eslint-disable promise/prefer-await-to-then */
-/* eslint-disable sonarjs/no-duplicate-string */
-import fetch from 'isomorphic-fetch';
 import { showErrorPanel } from './general';
 import { clearCurrentSample } from './queue'; // eslint-disable-line import/no-cycle
+import {
+  fetchLoadedSample,
+  fetchSampleChangerContents,
+  sendAbortSampleChanger,
+  sendMountSample,
+  sendSampleChangerCommand,
+  sendScanSampleChanger,
+  sendSelectContainer,
+  sendUnmountCurrentSample,
+  sendUnmountSample,
+} from '../api/sampleChanger';
 
 export function setContents(contents) {
   return { type: 'SET_SC_CONTENTS', data: { sampleChangerContents: contents } };
@@ -58,175 +66,84 @@ export function selectDrop(drop_index) {
 
 export function refresh() {
   return (dispatch) => {
-    fetch('mxcube/api/v0.1/sample_changer/contents', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Error refreshing sample changer contents');
-      }
-
-      response.json().then((contents) => {
-        dispatch(setContents(contents));
-      });
+    fetchSampleChangerContents().then((json) => {
+      dispatch(setContents(json));
     });
 
-    fetch('mxcube/api/v0.1/sample_changer/loaded_sample', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Error refreshing sample changer contents');
-      }
-
-      response.json().then((loadedSample) => {
-        dispatch(setLoadedSample(loadedSample));
-      });
+    fetchLoadedSample().then((json) => {
+      dispatch(setLoadedSample(json));
     });
   };
 }
 
 export function select(address) {
   return (dispatch) => {
-    fetch(`mxcube/api/v0.1/sample_changer/select/${address}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error(
-          `Error while selecting sample changer container @ ${address}`,
-        );
-      }
-
-      response.json().then((contents) => {
-        dispatch(setContents(contents));
-      });
+    sendSelectContainer(address).then((json) => {
+      dispatch(setContents(json));
     });
   };
 }
 
 export function scan(address) {
   return (dispatch) => {
-    fetch(`mxcube/api/v0.1/sample_changer/scan/${address}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error(`Error while scanning sample changer @ ${address}`);
-      }
-
-      response.json().then((contents) => {
-        dispatch(setContents(contents));
-      });
+    sendScanSampleChanger(address).then((json) => {
+      dispatch(setContents(json));
     });
   };
 }
 
-export function loadSample(sampleData, successCb = null) {
-  return (dispatch, getState) => {
+export function mountSample(sampleData, successCb = null) {
+  return async (dispatch, getState) => {
     const state = getState();
+    if (state.sampleChanger.loadedSample.address === sampleData.location) {
+      return;
+    }
 
-    if (state.sampleChanger.loadedSample.address !== sampleData.location) {
-      fetch('mxcube/api/v0.1/sample_changer/mount', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify(sampleData),
-      }).then((response) => {
-        if (response.status >= 400) {
-          dispatch(showErrorPanel(true, response.headers.get('message')));
-          throw new Error('Server refused to mount sample');
-        } else if (successCb) {
-          successCb();
-        }
-      });
+    try {
+      await sendMountSample(sampleData);
+
+      if (successCb) {
+        successCb();
+      }
+    } catch (error) {
+      dispatch(showErrorPanel(true, error.response.headers.get('message')));
     }
   };
 }
 
-export function unloadSample(sample) {
-  let url = '';
-  let _sample = sample;
-
-  if (sample) {
-    url = 'mxcube/api/v0.1/sample_changer/unmount';
-  } else {
-    url = 'mxcube/api/v0.1/sample_changer/unmount_current';
-  }
-
-  if (typeof sample === 'string') {
-    _sample = { location: sample };
-  }
-
-  return (dispatch) => {
-    fetch(url, {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ sample: _sample }),
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, response.headers.get('message')));
-        throw new Error('Server refused to unmount sample');
+export function unmountSample(sample) {
+  return async (dispatch) => {
+    try {
+      if (sample) {
+        await sendUnmountSample(sample);
       } else {
-        dispatch(clearCurrentSample());
+        await sendUnmountCurrentSample();
       }
-    });
+
+      dispatch(clearCurrentSample());
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(showErrorPanel(true, error.response.headers.get('message')));
+      }
+    }
   };
 }
 
 export function abort() {
-  return (dispatch) => {
-    fetch('mxcube/api/v0.1/sample_changer/send_command/abort', {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
-      if (response.status < 400) {
-        dispatch(showErrorPanel(true, 'action aborted'));
-      }
-    });
+  return async (dispatch) => {
+    await sendAbortSampleChanger();
+    dispatch(showErrorPanel(true, 'action aborted'));
   };
 }
 
 export function sendCommand(cmdparts, args) {
-  return (dispatch) => {
-    fetch(`mxcube/api/v0.1/sample_changer/send_command/${cmdparts}/${args}`, {
-      method: 'GET',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      credentials: 'include',
-    }).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, response.headers.get('message')));
+  return async (dispatch) => {
+    try {
+      await sendSampleChangerCommand(cmdparts, args);
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(showErrorPanel(true, error.response.headers.get('message')));
       }
-    });
+    }
   };
 }

@@ -33,7 +33,7 @@ import { showWorkflowParametersDialog } from '../actions/workflow';
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
 import { prepareBeamlineForNewSample } from '../actions/beamline';
-import { loadSample, unloadSample } from '../actions/sampleChanger';
+import { mountSample, unmountSample } from '../actions/sampleChanger';
 
 class SampleQueueContainer extends React.Component {
   constructor(props) {
@@ -112,7 +112,7 @@ class SampleQueueContainer extends React.Component {
           centringMethod={centringMethod}
           todoList={todo}
           sampleList={sampleList}
-          sendUnmountSample={this.props.unloadSample}
+          unmountSample={this.props.unmountSample}
         />
         <div className="m-tree queue-body">
           <Nav
@@ -153,7 +153,7 @@ class SampleQueueContainer extends React.Component {
             checked={checked}
             deleteTask={this.props.deleteTask}
             showForm={showForm}
-            unmount={this.props.unloadSample}
+            unmount={this.props.unmountSample}
             queueStatus={queueStatus}
             rootPath={rootPath}
             collapseItem={this.props.collapseItem}
@@ -178,7 +178,7 @@ class SampleQueueContainer extends React.Component {
             sampleList={sampleList}
             collapseItem={this.props.collapseItem}
             displayData={displayData}
-            mount={this.props.loadSample}
+            mount={this.props.mountSample}
             showForm={showForm}
             queueStatus={queueStatus}
             showList={this.props.showList}
@@ -260,8 +260,8 @@ function mapDispatchToProps(dispatch) {
     showList: bindActionCreators(showList, dispatch),
 
     // Sample changer actions
-    loadSample: bindActionCreators(loadSample, dispatch),
-    unloadSample: bindActionCreators(unloadSample, dispatch),
+    mountSample: bindActionCreators(mountSample, dispatch),
+    unmountSample: bindActionCreators(unmountSample, dispatch),
 
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
