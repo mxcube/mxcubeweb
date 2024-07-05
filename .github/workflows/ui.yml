@@ -6,8 +6,8 @@
 name: UI
 
 on:
-  pull_request:
-  push:
+  pull_request: null
+  push: null
 
 jobs:
   format:
