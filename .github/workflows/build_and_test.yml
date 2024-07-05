@@ -4,8 +4,8 @@
 name: Python build and test
 
 on:
-  pull_request:
-  push:
+  pull_request: null
+  push: null
 
 jobs:
   build-linux:
