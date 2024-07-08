@@ -1,11 +1,10 @@
-# %YAML 1.2
 ---
 
 # yamllint disable rule:line-length
 
 name: Create/Update Tag
 
-on:
+on:  # yamllint disable-line rule:truthy
   push:
     branches:
       - develop

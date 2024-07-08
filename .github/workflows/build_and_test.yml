@@ -1,9 +1,8 @@
-# %YAML 1.2
 ---
 
 name: Python build and test
 
-on:
+on:  # yamllint disable-line rule:truthy
   pull_request:
   push:
 
