@@ -1,11 +1,8 @@
-/* eslint-disable promise/catch-or-return */
-
 /* eslint-disable promise/prefer-await-to-then */
-
-import fetch from 'isomorphic-fetch';
 import { setLoading, showErrorPanel } from './general';
 import { setQueue } from './queue'; // eslint-disable-line import/no-cycle
 import { fetchSamplesList, sendSyncWithCrims } from '../api/sampleChanger';
+import { fetchLimsSamples } from '../api/lims';
 
 export function updateSampleList(sampleList, order) {
   return { type: 'UPDATE_SAMPLE_LIST', sampleList, order };
@@ -47,33 +44,6 @@ export function addSamplesToList(samplesData) {
     }
 
     dispatch({ type: 'ADD_SAMPLES_TO_LIST', samplesData });
-  };
-}
-
-export function setSampleOrderAction(order) {
-  return { type: 'SET_SAMPLE_ORDER', order };
-}
-
-/**
- * @deprecated New Sample Grid does not allowed sample reordering
- */
-export function sendSetSampleOrderAction(sampleOrder) {
-  return (dispatch) => {
-    fetch('mxcube/api/v0.1/queue/sample-order', {
-      method: 'POST',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ sampleOrder }),
-    }).then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Could not set sample order');
-      } else {
-        dispatch(setSampleOrderAction(sampleOrder));
-      }
-    });
   };
 }
 
@@ -124,43 +94,28 @@ export function sendGetSampleList() {
   };
 }
 
-export function sendSyncSamples() {
-  return (dispatch) => {
+export function syncSamples() {
+  return async (dispatch) => {
     dispatch(setLoading(true, 'Please wait', 'Synchronizing with ISPyB', true));
-    fetch('mxcube/api/v0.1/lims/synch_samples', { credentials: 'include' })
-      .then((response) => {
-        let result = '';
 
-        if (response.status >= 400) {
-          dispatch(setLoading(false));
-          dispatch(
-            showErrorPanel(
-              true,
-              `Synchronization with ISPyB failed ${response.headers.get(
-                'message',
-              )}`,
-            ),
-          );
-        } else {
-          result = response.json();
-        }
-
-        return result;
-      })
-      .then(
-        (json) => {
-          const { sampleList } = json;
-          const { sampleOrder } = json;
-
-          dispatch(updateSampleList(sampleList, sampleOrder));
-          dispatch(setQueue(json));
-          dispatch(setLoading(false));
-        },
-        () => {
-          dispatch(setLoading(false));
-          dispatch(showErrorPanel(true, 'Synchronization with ISPyB failed'));
-        },
-      );
+    try {
+      const json = await fetchLimsSamples();
+      dispatch(updateSampleList(json.sampleList, json.sampleOrder));
+      dispatch(setQueue(json));
+      dispatch(setLoading(false));
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(setLoading(false));
+        dispatch(
+          showErrorPanel(
+            true,
+            `Synchronization with ISPyB failed ${error.response.headers.get(
+              'message',
+            )}`,
+          ),
+        );
+      }
+    }
   };
 }
 

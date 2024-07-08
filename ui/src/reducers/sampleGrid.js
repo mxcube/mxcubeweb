@@ -76,9 +76,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, sampleList, order };
     }
-    case 'SET_SAMPLE_ORDER': {
-      return { ...state, order: action.order };
-    }
     case 'SET_SAMPLES_INFO': {
       const sampleList = {};
       Object.keys(state.sampleList).forEach((key) => {

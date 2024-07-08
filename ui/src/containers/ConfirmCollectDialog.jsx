@@ -14,10 +14,10 @@ import {
 
 import {
   startQueue,
-  sendRunSample,
+  runSample,
   setAutoMountSample,
-  sendSetCentringMethod,
-  sendSetNumSnapshots,
+  setCentringMethod,
+  setNumSnapshots,
 } from '../actions/queue';
 
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
@@ -75,14 +75,14 @@ export class ConfirmCollectDialog extends React.Component {
   }
 
   setNumSnapshots(n) {
-    this.props.sendSetNumSnapshots(n);
+    this.props.setNumSnapshots(n);
   }
 
   autoLoopCentringOnClick(e) {
     if (e.target.checked) {
-      this.props.sendSetCentringMethod(AUTO_LOOP_CENTRING);
+      this.props.setCentringMethod(AUTO_LOOP_CENTRING);
     } else {
-      this.props.sendSetCentringMethod(CLICK_CENTRING);
+      this.props.setCentringMethod(CLICK_CENTRING);
     }
   }
 
@@ -420,10 +420,10 @@ function mapDispatchToProps(dispatch) {
       dispatch,
     ),
     startQueue: bindActionCreators(startQueue, dispatch),
-    sendRunSample: bindActionCreators(sendRunSample, dispatch),
+    runSample: bindActionCreators(runSample, dispatch),
     setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
-    sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch),
-    sendSetNumSnapshots: bindActionCreators(sendSetNumSnapshots, dispatch),
+    setCentringMethod: bindActionCreators(setCentringMethod, dispatch),
+    setNumSnapshots: bindActionCreators(setNumSnapshots, dispatch),
   };
 }
 

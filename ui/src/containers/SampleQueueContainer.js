@@ -5,7 +5,7 @@ import CurrentTree from '../components/SampleQueue/CurrentTree';
 import TodoTree from '../components/SampleQueue/TodoTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
 import {
-  sendToggleCheckBox,
+  toggleCheckBox,
   pauseQueue,
   resumeQueue,
   stopQueue,
@@ -15,8 +15,7 @@ import {
   moveTask,
   setAutoMountSample,
   setAutoAddDiffPlan,
-  sendRunSample,
-  sendSetCentringMethod,
+  runSample,
   setEnabledSample,
 } from '../actions/queue';
 import {
@@ -107,8 +106,7 @@ class SampleQueueContainer extends React.Component {
           setAutoAddDiffPlan={this.props.setAutoAddDiffPlan}
           autoAddDiffPlan={autoAddDiffPlan}
           mounted={currentSampleID}
-          runSample={this.props.sendRunSample}
-          sendSetCentringMethod={this.props.sendSetCentringMethod}
+          runSample={this.props.runSample}
           centringMethod={centringMethod}
           todoList={todo}
           sampleList={sampleList}
@@ -149,7 +147,7 @@ class SampleQueueContainer extends React.Component {
             mounted={currentSampleID}
             queue={queue}
             sampleList={sampleList}
-            toggleCheckBox={this.props.sendToggleCheckBox}
+            toggleCheckBox={this.props.toggleCheckBox}
             checked={checked}
             deleteTask={this.props.deleteTask}
             showForm={showForm}
@@ -159,7 +157,7 @@ class SampleQueueContainer extends React.Component {
             collapseItem={this.props.collapseItem}
             selectItem={this.props.selectItem}
             displayData={displayData}
-            runSample={this.props.sendRunSample}
+            runSample={this.props.runSample}
             todoList={todo}
             moveTask={this.props.moveTask}
             addTask={this.props.addTask}
@@ -230,7 +228,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     // Queue actions
-    sendToggleCheckBox: bindActionCreators(sendToggleCheckBox, dispatch),
+    toggleCheckBox: bindActionCreators(toggleCheckBox, dispatch),
     pauseQueue: bindActionCreators(pauseQueue, dispatch),
     resumeQueue: bindActionCreators(resumeQueue, dispatch),
     stopQueue: bindActionCreators(stopQueue, dispatch),
@@ -240,8 +238,7 @@ function mapDispatchToProps(dispatch) {
     moveTask: bindActionCreators(moveTask, dispatch),
     setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
     setAutoAddDiffPlan: bindActionCreators(setAutoAddDiffPlan, dispatch),
-    sendRunSample: bindActionCreators(sendRunSample, dispatch),
-    sendSetCentringMethod: bindActionCreators(sendSetCentringMethod, dispatch),
+    runSample: bindActionCreators(runSample, dispatch),
     setEnabledSample: bindActionCreators(setEnabledSample, dispatch),
 
     // Workflow action

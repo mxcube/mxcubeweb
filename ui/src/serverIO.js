@@ -34,7 +34,7 @@ import {
   setCurrentSample,
   addDiffractionPlanAction,
   setSampleAttribute,
-  fetchQueue,
+  getQueue,
 } from './actions/queue';
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
 import { setLoading, showConnectionLostDialog } from './actions/general';
@@ -270,11 +270,11 @@ class ServerIO {
         this.dispatch(setSampleAttribute([record.sampleID], 'checked', false));
       } else if (record.Signal === 'update') {
         if (record.message === 'all') {
-          this.dispatch(fetchQueue());
+          this.dispatch(getQueue());
         } else if (record.message === 'observers') {
           const state = store.getState();
           if (!state.login.user.inControl) {
-            this.dispatch(fetchQueue());
+            this.dispatch(getQueue());
           }
         }
       } else {

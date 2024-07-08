@@ -26,6 +26,10 @@ export function sendRotateToShape(sid) {
   return endpoint.post({ sid }, '/shapes/rotate_to').res();
 }
 
+export function sendSetCentringMethod(centringMethod) {
+  return endpoint.put({ centringMethod }, '/centring/centring_method').res();
+}
+
 export function sendStartClickCentring() {
   return endpoint.put(undefined, '/centring/start3click').json();
 }
