@@ -16,3 +16,4 @@ Developer documentation
     sample-changer-changes-and-maintenance.md
     tutorial.md
     deployment.md
+    yaml_conf_migration.md
