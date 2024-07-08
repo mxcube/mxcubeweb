@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Form, Button } from 'react-bootstrap';
-import { sendSetGroupFolder } from '../actions/queue';
+import { setGroupFolder } from '../actions/queue';
 
 class GroupFolderInput extends React.Component {
   constructor(props) {
@@ -17,7 +17,7 @@ class GroupFolderInput extends React.Component {
   setGroupFolderInput() {
     this.setState({ validationState: 'success' });
     /* eslint-enable react/no-set-state */
-    this.props.sendSetGroupFolder(this.inputValue.value);
+    this.props.setGroupFolder(this.inputValue.value);
   }
 
   inputOnSelectHandler(e) {
@@ -76,7 +76,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendSetGroupFolder: bindActionCreators(sendSetGroupFolder, dispatch),
+    setGroupFolder: bindActionCreators(setGroupFolder, dispatch),
   };
 }
 

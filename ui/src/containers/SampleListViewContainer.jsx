@@ -30,7 +30,7 @@ import { QUEUE_RUNNING, isCollected, hasLimsData } from '../constants';
 import {
   sendGetSampleList,
   setViewModeAction,
-  sendSyncSamples,
+  syncSamples,
   syncWithCrims,
   filterAction,
   selectSamplesAction,
@@ -1012,7 +1012,7 @@ function mapDispatchToProps(dispatch) {
     getSamples: () => dispatch(sendGetSampleList()),
     setViewMode: (mode) => dispatch(setViewModeAction(mode)),
     filter: (filterOptions) => dispatch(filterAction(filterOptions)),
-    syncSamples: () => dispatch(sendSyncSamples()),
+    syncSamples: () => dispatch(syncSamples()),
     syncSamplesCrims: () => dispatch(syncWithCrims()),
     showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     selectSamples: (keys, selected) =>

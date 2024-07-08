@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
-import { sendSetNumSnapshots } from '../actions/queue';
+import { setNumSnapshots } from '../actions/queue';
 
 class NumSnapshotsDropDown extends React.Component {
   constructor(props) {
@@ -11,7 +11,7 @@ class NumSnapshotsDropDown extends React.Component {
   }
 
   setNumSnapshots(n) {
-    this.props.sendSetNumSnapshots(n);
+    this.props.setNumSnapshots(n);
   }
 
   render() {
@@ -52,7 +52,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sendSetNumSnapshots: bindActionCreators(sendSetNumSnapshots, dispatch),
+    setNumSnapshots: bindActionCreators(setNumSnapshots, dispatch),
   };
 }
 

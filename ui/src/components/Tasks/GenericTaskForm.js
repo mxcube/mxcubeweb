@@ -10,8 +10,6 @@ import JSForm from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import './style.css';
 
-import { sendUpdateDependentFields } from '../../actions/queue';
-
 import {
   FieldsHeader,
   StaticField,
@@ -20,6 +18,7 @@ import {
   resetLastUsedParameters,
   toFixed,
 } from './fields';
+import { sendUpdateDependentFields } from '../../api/queue';
 
 class GenericTaskForm extends React.Component {
   constructor(props) {

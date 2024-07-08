@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm } from 'redux-form';
@@ -8,7 +7,6 @@ class SelectProposal extends React.Component {
   constructor(props) {
     super(props);
     this.onClickRow = this.onClickRow.bind(this);
-    this.sendProposal = this.sendProposal.bind(this);
     this.handleCancel = this.handleCancel.bind(this);
     this.state = {
       pId: 0,
@@ -19,10 +17,6 @@ class SelectProposal extends React.Component {
   onClickRow(prop) {
     this.setState({ pId: prop.proposalId });
     this.setState({ pNumber: prop.code + prop.number });
-  }
-
-  sendProposal() {
-    this.props.sendSelectProposal(this.state.pNumber);
   }
 
   handleCancel() {
@@ -80,7 +74,9 @@ class SelectProposal extends React.Component {
             variant="primary"
             className="float-end"
             disabled={this.state.pNumber === null}
-            onClick={this.sendProposal}
+            onClick={() => {
+              this.props.selectProposal(this.state.pNumber);
+            }}
           >
             Select Proposal
           </Button>

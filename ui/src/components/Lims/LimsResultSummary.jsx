@@ -1,8 +1,8 @@
 /* eslint-disable promise/prefer-await-to-then */
 import React from 'react';
-import fetch from 'isomorphic-fetch';
 
 import { isUnCollected, taskHasLimsData } from '../../constants';
+import { fetchLimsResults } from '../../api/lims';
 
 export class LimsResultSummary extends React.Component {
   componentDidMount() {
@@ -17,32 +17,16 @@ export class LimsResultSummary extends React.Component {
       resultCont.innerHTML = 'Loading results, please wait ...';
 
       // eslint-disable-next-line promise/catch-or-return
-      fetch('mxcube/api/v0.1/lims/results', {
-        method: 'POST',
-        credentials: 'include',
-        headers: {
-          Accept: 'application/json',
-          'Content-type': 'application/json',
-        },
-        body: JSON.stringify({ qid: taskData.queueID }),
-      })
-        .then((response) => {
-          if (response.status >= 400) {
-            return false;
-          }
-
-          return response.json();
-        })
-        .then((data) => {
-          if (
-            data.result !== undefined &&
-            data.result !== null &&
-            data.result !== 'undefined' &&
-            data.result !== 'null'
-          ) {
-            resultCont.innerHTML = data.result;
-          }
-        });
+      fetchLimsResults(taskData.queueID).then((json) => {
+        if (
+          json.result !== undefined &&
+          json.result !== null &&
+          json.result !== 'undefined' &&
+          json.result !== 'null'
+        ) {
+          resultCont.innerHTML = json.result;
+        }
+      });
     }
   }
 
