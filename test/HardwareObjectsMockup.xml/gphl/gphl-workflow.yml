@@ -1,4 +1,3 @@
-# %YAML 1.2
 ---
 
 _initialise_class:
@@ -49,7 +48,7 @@ settings:
   # NB to get sensible results you should use the default values for resolution and
   # wavelength, and the default Eiger 16M detector
   # Otherwise the UI may still work, but the indexing solutions will be weird
-  # use_preset_spotdir: true
+  # use_preset_spotdir: True
 
 
   defaults:
@@ -100,8 +99,7 @@ settings:
     # Multiple acquisitions in order - characterisation then main
     # passed to set_pre_strategy_params and set_pre_acquisition_params
     # NB as long as we only acquire either characterisation+main or diffractcal
-    # the code will use list[0] for the first acquisition
-    # and list[-1] for the main one
+    # the code will use list[0] for the first acquisition and list[-1] for the main one
   auto_acq_parameters:
     # For characterisation acquisition
     - exposure_time: 0.02
@@ -140,7 +138,7 @@ settings:
     # File name prefix for workflow log files
     co.gphl.wf.persistName: wf
 
-    # Switch to pass log to stdout. Defaults to true
+    # Switch to pass log to stdout. Defaults to True
     # co.gphl.wf.logStdout: false
 
   # Properties applied after the java command - syntax as above-->
@@ -158,7 +156,7 @@ settings:
     # co.gphl.wf.procRootCheck: false
 
     # Parameters to individual applications
-    # Switch devMod to true to activate development parameters
+    # Switch devMod to True to activate development parameters
     # NB needed as of 20231116 no longer in active use
     # co.gphl.wf.devMode: true
     # For stratcal configuration switches edit run_stratcal_wrap.py script instead
