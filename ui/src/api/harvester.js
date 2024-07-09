@@ -7,29 +7,29 @@ export function fetchHarvesterInitialState() {
 }
 
 export function sendRefresh() {
-  return endpoint.get('/contents').res();
+  return endpoint.get('/contents').json();
 }
 
 export function sendHarvestCrystal(xtalUUID) {
-  return endpoint.post(JSON.stringify(xtalUUID), '/harvest').res();
+  return endpoint.post(JSON.stringify(xtalUUID), '/harvest').json();
 }
 
 export function sendHarvestAndLoadCrystal(xtalUUID) {
-  return endpoint.post(JSON.stringify(xtalUUID), '/harvest_and_mount').res();
+  return endpoint.post(JSON.stringify(xtalUUID), '/harvest_and_mount').json();
 }
 
 export function sendCalibratePin() {
-  return endpoint.get('/calibrate').res();
+  return endpoint.get('/calibrate').json();
 }
 
 export function sendDataCollectionToCrims() {
-  return endpoint.get('/send_data_collection_info_to_crims').res();
+  return endpoint.get('/send_data_collection_info_to_crims').json();
 }
 
 export function sendValidateCalibration(validated) {
   return endpoint
     .post(JSON.stringify(validated), '/validate_calibration')
-    .res();
+    .json();
 }
 
 export function sendAbort() {
@@ -37,5 +37,5 @@ export function sendAbort() {
 }
 
 export function sendCommand(cmdparts, args) {
-  return endpoint.get(`/send_command/${cmdparts}/${args}`).res();
+  return endpoint.get(`/send_command/${cmdparts}/${args}`).json();
 }
