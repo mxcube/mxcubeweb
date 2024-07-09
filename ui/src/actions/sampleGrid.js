@@ -94,17 +94,15 @@ export function syncSamples() {
       dispatch(setQueue(json));
       dispatch(setLoading(false));
     } catch (error) {
-      if (error.status >= 400) {
-        dispatch(setLoading(false));
-        dispatch(
-          showErrorPanel(
-            true,
-            `Synchronization with ISPyB failed ${error.response.headers.get(
-              'message',
-            )}`,
-          ),
-        );
-      }
+      dispatch(setLoading(false));
+      dispatch(
+        showErrorPanel(
+          true,
+          `Synchronization with ISPyB failed ${error.response.headers.get(
+            'message',
+          )}`,
+        ),
+      );
     }
   };
 }
@@ -120,17 +118,14 @@ export function syncWithCrims() {
       const crystalList = await sendSyncWithCrims();
       dispatch(updateCrystalList(crystalList));
     } catch (error) {
-      if (error.status >= 400) {
-        // throw new Error('Error while scanning sample changer');
-        dispatch(
-          showErrorPanel(
-            true,
-            `Synchronization with Crims failed ${error.response.headers.get(
-              'message',
-            )}`,
-          ),
-        );
-      }
+      dispatch(
+        showErrorPanel(
+          true,
+          `Synchronization with Crims failed ${error.response.headers.get(
+            'message',
+          )}`,
+        ),
+      );
     }
   };
 }

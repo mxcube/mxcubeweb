@@ -32,127 +32,110 @@ export function setHarvesterCommandResponse(response) {
 
 export function refresh() {
   return async (dispatch) => {
-    const response = await sendRefresh();
-
-    if (response.status >= 400) {
-      throw new Error('Error refreshing harvester contents');
+    try {
+      const contents = await sendRefresh();
+      dispatch(setContents(contents));
+    } catch {
+      throw new TypeError('Error refreshing harvester contents');
     }
-
-    const contents = await response.json();
-    dispatch(setContents(contents));
   };
 }
 
 export function harvestCrystal(xtalUUID, successCb = null) {
   return async (dispatch) => {
-    const response = await sendHarvestCrystal(xtalUUID);
+    try {
+      const contents = await sendHarvestCrystal(xtalUUID);
+      dispatch(setContents(contents));
 
-    if (response.status >= 400) {
-      dispatch(showErrorPanel(true, response.headers.get('message')));
+      if (successCb) {
+        successCb();
+      }
+    } catch (error) {
+      dispatch(showErrorPanel(true, error.response.headers.get('message')));
       throw new Error('Server refused to Harveste Crystal');
-    }
-
-    const contents = await response.json();
-    dispatch(setContents(contents));
-
-    if (successCb) {
-      successCb();
     }
   };
 }
 
 export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
   return async (dispatch) => {
-    const response = await sendHarvestAndLoadCrystal(xtalUUID);
+    try {
+      const contents = await sendHarvestAndLoadCrystal(xtalUUID);
+      dispatch(setContents(contents));
 
-    if (response.status >= 400) {
-      dispatch(showErrorPanel(true, response.headers.get('message')));
+      if (successCb) {
+        successCb();
+      }
+    } catch (error) {
+      dispatch(showErrorPanel(true, error.response.headers.get('message')));
       throw new Error('Server refused to Harveste or Load Crystal');
-    }
-
-    const contents = await response.json();
-    dispatch(setContents(contents));
-
-    if (successCb) {
-      successCb();
     }
   };
 }
 
 export function sendDataCollectionToCrims() {
   return async (dispatch) => {
-    const response = await sendDCToCrims();
+    try {
+      const contents = await sendDCToCrims();
+      dispatch(setContents(contents));
 
-    if (response.status >= 400) {
-      dispatch(showErrorPanel(true, response.headers.get('message')));
+      // temporary use ErrorPanel to display success message
+      dispatch(showErrorPanel(true, 'Succesfully Send DC to Crims'));
+    } catch (error) {
+      dispatch(showErrorPanel(true, error.response.headers.get('message')));
       throw new Error('Server refused to Harveste or Load Crystal');
     }
-
-    // temporary use ErrorPanel to display success message
-    dispatch(showErrorPanel(true, 'Succesfully Send DC to Crims'));
-
-    const contents = await response.json();
-    dispatch(setContents(contents));
   };
 }
 
 export function calibratePin(successCb = null) {
   return async (dispatch) => {
-    const response = await sendCalibratePin();
+    try {
+      const contents = await sendCalibratePin();
+      dispatch(setContents(contents));
 
-    if (response.status >= 400) {
-      dispatch(showErrorPanel(true, response.headers.get('message')));
+      if (successCb) {
+        successCb();
+      }
+    } catch (error) {
+      dispatch(showErrorPanel(true, error.response.headers.get('message')));
       throw new Error('Calibration Procedure Failed');
-    }
-
-    const contents = await response.json();
-    dispatch(setContents(contents));
-
-    if (successCb) {
-      successCb();
     }
   };
 }
 
 export function validateCalibration(validated, successCb = null) {
   return async (dispatch) => {
-    const response = await sendValidateCalibration(validated);
+    try {
+      const contents = await sendValidateCalibration(validated);
+      dispatch(setContents(contents));
 
-    if (response.status >= 400) {
-      dispatch(showErrorPanel(true, response.headers.get('message')));
+      if (successCb) {
+        successCb();
+      }
+    } catch (error) {
+      dispatch(showErrorPanel(true, error.response.headers.get('message')));
       throw new Error('Calibration Procedure Failed');
-    }
-
-    const contents = await response.json();
-    dispatch(setContents(contents));
-
-    if (successCb) {
-      successCb();
     }
   };
 }
 
 export function abort() {
   return async (dispatch) => {
-    const response = await sendAbort();
-
-    if (response.status < 400) {
-      dispatch(showErrorPanel(true, 'action aborted'));
-    }
+    await sendAbort();
+    dispatch(showErrorPanel(true, 'action aborted'));
   };
 }
 
 export function sendCommand(cmdparts, args) {
   return async (dispatch) => {
-    const response = await sendCmd(cmdparts, args);
-
-    if (response.status >= 400) {
-      dispatch(showErrorPanel(true, response.headers.get('message')));
+    try {
+      const answer = await sendCmd(cmdparts, args);
+      dispatch(setHarvesterCommandResponse(answer.response));
+      dispatch(setContents(answer.contents));
+    } catch (error) {
+      dispatch(showErrorPanel(true, error.response.headers.get('message')));
       throw new Error(`Error while  sending command @ ${cmdparts}`);
     }
-
-    const answer = await response.json();
-    dispatch(setHarvesterCommandResponse(answer.response));
-    dispatch(setContents(answer.contents));
   };
 }

@@ -118,9 +118,7 @@ export function unmountSample(sample) {
 
       dispatch(clearCurrentSample());
     } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, error.response.headers.get('message')));
-      }
+      dispatch(showErrorPanel(true, error.response.headers.get('message')));
     }
   };
 }
@@ -137,9 +135,7 @@ export function sendCommand(cmdparts, args) {
     try {
       await sendSampleChangerCommand(cmdparts, args);
     } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, error.response.headers.get('message')));
-      }
+      dispatch(showErrorPanel(true, error.response.headers.get('message')));
     }
   };
 }

@@ -159,10 +159,8 @@ export function rotateToShape(sid) {
   return async (dispatch) => {
     try {
       await sendRotateToShape(sid);
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to rotate grid.'));
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to rotate grid.'));
     }
   };
 }
@@ -207,10 +205,8 @@ export function addShape(shapeData = {}, successCb = null) {
       if (successCb) {
         successCb(shape);
       }
-    } catch (error) {
-      if (error.status >= 400) {
-        throw new Error('Server refused to add shape');
-      }
+    } catch {
+      throw new Error('Server refused to add shape');
     }
   };
 }
@@ -220,10 +216,8 @@ export function updateShapes(shapes) {
     try {
       const json = await sendAddOrUpdateShapes(shapes);
       dispatch(updateShapesAction(json.shapes));
-    } catch (error) {
-      if (error.status >= 400) {
-        throw new Error('Server refused to update shapes');
-      }
+    } catch {
+      throw new Error('Server refused to update shapes');
     }
   };
 }
@@ -233,10 +227,8 @@ export function deleteShape(id) {
     try {
       await sendDeleteShape(id);
       dispatch(deleteShapeAction(id));
-    } catch (error) {
-      if (error.status >= 400) {
-        throw new Error('Server refused to delete shape');
-      }
+    } catch {
+      throw new Error('Server refused to delete shape');
     }
   };
 }
@@ -316,10 +308,8 @@ export function moveToPoint(id) {
   return async (dispatch) => {
     try {
       await sendMoveToPoint(id);
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to move to point'));
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to move to point'));
     }
   };
 }

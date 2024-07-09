@@ -97,10 +97,8 @@ export function addSamplesToQueue(sampleDataList) {
     try {
       const json = await sendAddQueueItem(sampleDataList);
       dispatch(setQueue(json));
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to add sample'));
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to add sample'));
     }
 
     dispatch(queueLoading(false));
@@ -117,10 +115,8 @@ export function addSampleAndMount(sampleData) {
           const json = await sendAddQueueItem([sampleData]);
           dispatch(setQueue(json));
           dispatch(selectSamplesAction([sampleData.sampleID]));
-        } catch (error) {
-          if (error.status >= 400) {
-            dispatch(showErrorPanel(true, 'Server refused to add sample'));
-          }
+        } catch {
+          dispatch(showErrorPanel(true, 'Server refused to add sample'));
         }
 
         dispatch(queueLoading(false));
@@ -162,11 +158,9 @@ export function moveTask(sampleID, oldIndex, newIndex) {
 
     try {
       await sendMoveTask(sampleID, oldIndex, newIndex);
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
-        dispatch(showErrorPanel(true, 'Could not move task'));
-      }
+    } catch {
+      dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
+      dispatch(showErrorPanel(true, 'Could not move task'));
     }
 
     dispatch(queueLoading(false));
@@ -201,10 +195,8 @@ export function runSample(sampleID, taskIndex) {
     try {
       await sendRunSample(sampleID, taskIndex);
       dispatch({ type: 'RUN_SAMPLE', queueID: sampleID });
-    } catch (error) {
-      if (error.status >= 400) {
-        throw new Error('Server refused to run sample');
-      }
+    } catch {
+      throw new Error('Server refused to run sample');
     }
   };
 }
@@ -244,12 +236,8 @@ export function setEnabledSample(sampleIDList, value) {
       if (!value) {
         dispatch(removeSamplesFromQueueAction(sampleIDList));
       }
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(
-          showErrorPanel(true, 'Server refused to set item enabled flag'),
-        );
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to set item enabled flag'));
     }
 
     dispatch(queueLoading(false));
@@ -270,10 +258,8 @@ export function deleteTask(sampleID, taskIndex) {
     try {
       await sendDeleteQueueItem([[sampleID, taskIndex]]);
       dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to delete task'));
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to delete task'));
     }
 
     dispatch(queueLoading(false));
@@ -302,10 +288,8 @@ export function deleteTaskList(sampleIDList) {
     try {
       await sendDeleteQueueItem(itemPosList);
       dispatch(removeTaskListAction(taskList, queueIDList));
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to delete task'));
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to delete task'));
     }
 
     dispatch(queueLoading(false));
@@ -342,12 +326,10 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
       if (runNow) {
         dispatch(runSample(sampleID, taskIndex));
       }
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(
-          showErrorPanel(true, 'The task could not be modified on the server'),
-        );
-      }
+    } catch {
+      dispatch(
+        showErrorPanel(true, 'The task could not be modified on the server'),
+      );
     }
 
     dispatch(queueLoading(false));
@@ -359,7 +341,6 @@ export function addDiffractionPlanAction(tasks) {
 }
 
 export function addTask(sampleIDs, parameters, runNow) {
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   return async (dispatch, getState) => {
     const state = getState();
     const samples = [];
@@ -430,12 +411,10 @@ export function addTask(sampleIDs, parameters, runNow) {
           sl[sampleIDs[0]].tasks[sl[sampleIDs[0]].tasks.length - 1];
         dispatch(runSample(sampleIDs[0], taskIndex));
       }
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(
-          showErrorPanel(true, 'The task could not be added to the server'),
-        );
-      }
+    } catch {
+      dispatch(
+        showErrorPanel(true, 'The task could not be added to the server'),
+      );
     }
 
     dispatch(queueLoading(false));
@@ -483,10 +462,8 @@ export function deleteSamplesFromQueue(sampleIDList) {
     try {
       await sendDeleteQueueItem(itemPostList);
       dispatch(removeSamplesFromQueueAction(sampleIDList));
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to delete sample'));
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to delete sample'));
     }
 
     dispatch(queueLoading(false));
@@ -507,10 +484,8 @@ export function setAutoMountSample(automount) {
           json.automount === undefined ? false : json.automount,
         ),
       );
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, 'Could not set/unset automount'));
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Could not set/unset automount'));
     }
   };
 }
@@ -525,10 +500,8 @@ export function setAutoAddDiffPlan(autoadddiffplan) {
       const json = await sendSetAutoAddDiffPlan(autoadddiffplan);
       const a = json.auto_add_diffplan;
       dispatch(setAutoAddDiffPlanAction(a));
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, 'Could not set/unset automount'));
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Could not set/unset automount'));
     }
   };
 }

@@ -65,11 +65,9 @@ export function selectProposal(number, navigate) {
       await sendSelectProposal(number);
       navigate('/');
       dispatch(selectProposalAction(number));
-    } catch (error) {
-      if (error.status >= 400) {
-        dispatch(showErrorPanel(true, 'Server refused to select proposal'));
-        navigate('/login');
-      }
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to select proposal'));
+      navigate('/login');
     }
   };
 }
