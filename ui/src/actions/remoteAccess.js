@@ -1,6 +1,3 @@
-/* eslint-disable promise/catch-or-return */
-/* eslint-disable promise/prefer-await-to-then */
-
 import {
   fetchRemoteAccessState,
   sendGiveControl,
@@ -19,19 +16,17 @@ export function showObserverDialog(show = true) {
 }
 
 export function getRaState() {
-  return (dispatch) => {
-    fetchRemoteAccessState().then((data) => {
-      dispatch({ type: 'SET_RA_STATE', data: data.data });
-    });
+  return async (dispatch) => {
+    const data = await fetchRemoteAccessState();
+    dispatch({ type: 'SET_RA_STATE', data: data.data });
   };
 }
 
 export function updateNickname(name) {
-  return (dispatch) => {
-    sendUpdateNickname(name).then(() => {
-      dispatch(getLoginInfo());
-      dispatch(getRaState());
-    });
+  return async (dispatch) => {
+    await sendUpdateNickname(name);
+    dispatch(getLoginInfo());
+    dispatch(getRaState());
   };
 }
 
@@ -41,57 +36,51 @@ export function requestControl(
   name = '',
   userInfo = {},
 ) {
-  return () => {
-    sendRequestControl(control, message, name, userInfo);
-  };
+  return () => sendRequestControl(control, message, name, userInfo);
 }
 
 export function takeControl() {
-  return (dispatch) => {
-    sendTakeControl().then(() => {
-      dispatch(getLoginInfo());
-      dispatch(getRaState());
-    });
+  return async (dispatch) => {
+    await sendTakeControl();
+    dispatch(getLoginInfo());
+    dispatch(getRaState());
   };
 }
 
 export function giveControl(username) {
-  return (dispatch) => {
-    sendGiveControl(username).then(() => {
-      dispatch(getLoginInfo());
-      dispatch(getRaState());
-    });
+  return async (dispatch) => {
+    await sendGiveControl(username);
+    dispatch(getLoginInfo());
+    dispatch(getRaState());
   };
 }
 
 export function logoutUser(username) {
-  return (dispatch) => {
-    sendLogoutUser(username).then(() => {
-      dispatch(getLoginInfo());
-      dispatch(getRaState());
-    });
+  return async (dispatch) => {
+    await sendLogoutUser(username);
+    dispatch(getLoginInfo());
+    dispatch(getRaState());
   };
 }
 
 export function respondToControlRequest(giveControl = true, message = '') {
-  return (dispatch) => {
-    sendRespondToControlRequest(giveControl, message).then(() => {
-      dispatch(getLoginInfo());
-      dispatch(getRaState());
-    });
+  return async (dispatch) => {
+    await sendRespondToControlRequest(giveControl, message);
+    dispatch(getLoginInfo());
+    dispatch(getRaState());
   };
 }
 
 export function updateAllowRemote(allow) {
-  return (dispatch) => {
-    sendUpdateAllowRemote(allow);
+  return async (dispatch) => {
+    await sendUpdateAllowRemote(allow);
     dispatch({ type: 'SET_ALLOW_REMOTE', allow });
   };
 }
 
 export function updateTimeoutGivesControl(timeoutGivesControl) {
-  return (dispatch) => {
-    sendUpdateTimeoutGivesControl(timeoutGivesControl);
+  return async (dispatch) => {
+    await sendUpdateTimeoutGivesControl(timeoutGivesControl);
     dispatch({ type: 'SET_TIMEOUT_GIVES_CONTROL', timeoutGivesControl });
   };
 }

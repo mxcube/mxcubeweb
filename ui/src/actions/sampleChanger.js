@@ -1,5 +1,3 @@
-/* eslint-disable promise/catch-or-return */
-/* eslint-disable promise/prefer-await-to-then */
 import { showErrorPanel } from './general';
 import { clearCurrentSample } from './queue'; // eslint-disable-line import/no-cycle
 import {
@@ -65,30 +63,28 @@ export function selectDrop(drop_index) {
 }
 
 export function refresh() {
-  return (dispatch) => {
-    fetchSampleChangerContents().then((json) => {
-      dispatch(setContents(json));
-    });
+  return async (dispatch) => {
+    const [contents, sample] = await Promise.all([
+      fetchSampleChangerContents(),
+      fetchLoadedSample(),
+    ]);
 
-    fetchLoadedSample().then((json) => {
-      dispatch(setLoadedSample(json));
-    });
+    dispatch(setContents(contents));
+    dispatch(setLoadedSample(sample));
   };
 }
 
 export function select(address) {
-  return (dispatch) => {
-    sendSelectContainer(address).then((json) => {
-      dispatch(setContents(json));
-    });
+  return async (dispatch) => {
+    const contents = await sendSelectContainer(address);
+    dispatch(setContents(contents));
   };
 }
 
 export function scan(address) {
-  return (dispatch) => {
-    sendScanSampleChanger(address).then((json) => {
-      dispatch(setContents(json));
-    });
+  return async (dispatch) => {
+    const contents = await sendScanSampleChanger(address);
+    dispatch(setContents(contents));
   };
 }
 
