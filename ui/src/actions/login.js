@@ -1,4 +1,3 @@
-/* eslint-disable promise/catch-or-return */
 /* eslint-disable promise/prefer-await-to-then */
 import { fetchBeamInfo, fetchBeamlineSetup } from '../api/beamline';
 import { fetchDiffractometerInfo } from '../api/diffractometer';
@@ -105,17 +104,16 @@ export function forcedSignout() {
 }
 
 export function signOut() {
-  return (dispatch) => {
-    return sendSignOut().then(() => {
-      dispatch({ type: 'SIGNOUT' });
-      dispatch(resetLoginInfo());
-      dispatch(applicationFetched(false));
-    });
+  return async (dispatch) => {
+    await sendSignOut();
+    dispatch({ type: 'SIGNOUT' });
+    dispatch(resetLoginInfo());
+    dispatch(applicationFetched(false));
   };
 }
 
 export function getInitialState(navigate) {
-  return (dispatch) => {
+  return async (dispatch) => {
     const state = {};
 
     const pchains = [
@@ -214,11 +212,11 @@ export function getInitialState(navigate) {
         .catch(notify),
     ];
 
-    Promise.all(pchains).then(() => {
-      dispatch(setInitialState(state));
-      dispatch(applicationFetched(true));
-      dispatch(setLoading(false));
-    });
+    await Promise.all(pchains);
+
+    dispatch(setInitialState(state));
+    dispatch(applicationFetched(true));
+    dispatch(setLoading(false));
   };
 }
 

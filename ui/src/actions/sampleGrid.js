@@ -1,4 +1,3 @@
-/* eslint-disable promise/prefer-await-to-then */
 import { setLoading, showErrorPanel } from './general';
 import { setQueue } from './queue'; // eslint-disable-line import/no-cycle
 import { fetchSamplesList, sendSyncWithCrims } from '../api/sampleChanger';
@@ -13,13 +12,7 @@ export function clearSampleGrid() {
 }
 
 export function showGenericContextMenu(show, id, x = 0, y = 0) {
-  return {
-    type: 'SHOW_GENERIC_CONTEXT_MENU',
-    show,
-    id,
-    x,
-    y,
-  };
+  return { type: 'SHOW_GENERIC_CONTEXT_MENU', show, id, x, y };
 }
 
 export function addSamplesToList(samplesData) {
@@ -68,7 +61,7 @@ export function setSamplesInfoAction(sampleInfoList) {
 }
 
 export function sendGetSampleList() {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch(
       setLoading(
         true,
@@ -77,20 +70,17 @@ export function sendGetSampleList() {
         true,
       ),
     );
-    return fetchSamplesList().then(
-      (json) => {
-        const { sampleList } = json;
-        const { sampleOrder } = json;
 
-        dispatch(updateSampleList(sampleList, sampleOrder));
-        dispatch(setQueue(json));
-        dispatch(setLoading(false));
-      },
-      () => {
-        dispatch(setLoading(false));
-        dispatch(showErrorPanel(true, 'Could not get samples list'));
-      },
-    );
+    try {
+      const json = await fetchSamplesList();
+      const { sampleList, sampleOrder } = json;
+      dispatch(updateSampleList(sampleList, sampleOrder));
+      dispatch(setQueue(json));
+    } catch {
+      dispatch(showErrorPanel(true, 'Could not get samples list'));
+    }
+
+    dispatch(setLoading(false));
   };
 }
 

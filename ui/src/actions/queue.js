@@ -1,6 +1,3 @@
-/* eslint-disable promise/prefer-await-to-callbacks */
-/* eslint-disable promise/catch-or-return */
-/* eslint-disable promise/prefer-await-to-then */
 import { showErrorPanel } from './general';
 import { mountSample } from './sampleChanger'; // eslint-disable-line import/no-cycle
 import { abortCentring, updateShapes } from './sampleview';
@@ -37,18 +34,12 @@ export function clearAll() {
 }
 
 export function setQueueAction(queue) {
-  return {
-    type: 'SET_QUEUE',
-    sampleOrder: queue.sampleOrder,
-    sampleList: queue.sampleList,
-  };
+  const { sampleOrder, sampleList } = queue;
+  return { type: 'SET_QUEUE', sampleOrder, sampleList };
 }
 
 export function setCurrentSample(sampleID) {
-  return {
-    type: 'SET_CURRENT_SAMPLE',
-    sampleID,
-  };
+  return { type: 'SET_CURRENT_SAMPLE', sampleID };
 }
 
 export function setQueue(queue) {
@@ -92,18 +83,11 @@ export function removeSamplesFromQueueAction(sampleIDList) {
 }
 
 export function setSampleAttribute(sampleIDList, attr, value) {
-  return {
-    type: 'SET_SAMPLE_ATTRIBUTE',
-    sampleIDList,
-    attr,
-    value,
-  };
+  return { type: 'SET_SAMPLE_ATTRIBUTE', sampleIDList, attr, value };
 }
 
 export function clearCurrentSample() {
-  return {
-    type: 'CLEAR_CURRENT_SAMPLE',
-  };
+  return { type: 'CLEAR_CURRENT_SAMPLE' };
 }
 
 export function addSamplesToQueue(sampleDataList) {
@@ -126,18 +110,20 @@ export function addSamplesToQueue(sampleDataList) {
 export function addSampleAndMount(sampleData) {
   return (dispatch) => {
     dispatch(
-      mountSample(sampleData, () => {
-        sendAddQueueItem([sampleData])
-          .then((json) => {
-            dispatch(setQueue(json));
-            dispatch(selectSamplesAction([sampleData.sampleID]));
-          })
-          .catch((error) => {
-            if (error.status >= 400) {
-              dispatch(showErrorPanel(true, 'Server refused to add sample'));
-            }
-          })
-          .finally(() => dispatch(queueLoading(false)));
+      mountSample(sampleData, async () => {
+        dispatch(queueLoading(true));
+
+        try {
+          const json = await sendAddQueueItem([sampleData]);
+          dispatch(setQueue(json));
+          dispatch(selectSamplesAction([sampleData.sampleID]));
+        } catch (error) {
+          if (error.status >= 400) {
+            dispatch(showErrorPanel(true, 'Server refused to add sample'));
+          }
+        }
+
+        dispatch(queueLoading(false));
       }),
     );
   };
@@ -148,14 +134,13 @@ export function clearQueueAction() {
 }
 
 export function clearQueue(clearQueueOnly = false) {
-  return (dispatch) => {
-    sendClearQueue().then(() => {
-      dispatch(clearQueueAction());
+  return async (dispatch) => {
+    await sendClearQueue();
 
-      if (!clearQueueOnly) {
-        dispatch(clearSampleGrid());
-      }
-    });
+    dispatch(clearQueueAction());
+    if (!clearQueueOnly) {
+      dispatch(clearSampleGrid());
+    }
   };
 }
 
@@ -164,105 +149,76 @@ export function setStatus(queueState) {
 }
 
 export function setState(queueState) {
-  return {
-    type: 'QUEUE_STATE',
-    queueState,
-  };
+  return { type: 'QUEUE_STATE', queueState };
 }
 
 export function changeTaskOrderAction(sampleId, oldIndex, newIndex) {
-  return {
-    type: 'CHANGE_TASK_ORDER',
-    sampleId,
-    oldIndex,
-    newIndex,
-  };
+  return { type: 'CHANGE_TASK_ORDER', sampleId, oldIndex, newIndex };
 }
 
 export function moveTask(sampleID, oldIndex, newIndex) {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch(queueLoading(true));
 
-    sendMoveTask(sampleID, oldIndex, newIndex)
-      .catch((error) => {
-        if (error.status >= 400) {
-          dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
-          dispatch(showErrorPanel(true, 'Could not move task'));
-        }
-      })
-      .finally(() => {
-        dispatch(queueLoading(false));
-      });
+    try {
+      await sendMoveTask(sampleID, oldIndex, newIndex);
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
+        dispatch(showErrorPanel(true, 'Could not move task'));
+      }
+    }
+
+    dispatch(queueLoading(false));
   };
 }
 
 export function toggleChecked(sampleID, index) {
-  return {
-    type: 'TOGGLE_CHECKED',
-    sampleID,
-    index,
-  };
+  return { type: 'TOGGLE_CHECKED', sampleID, index };
 }
 
 export function startQueue(autoMountNext = true, sid = -1) {
-  return () => {
-    sendStartQueue(autoMountNext, sid);
-  };
+  return () => sendStartQueue(autoMountNext, sid);
 }
 
 export function pauseQueue() {
-  return () => {
-    sendPauseQueue();
-  };
+  return () => sendPauseQueue();
 }
 
 export function resumeQueue() {
-  return () => {
-    sendResumeQueue();
-  };
+  return () => sendResumeQueue();
 }
 
 export function stopQueue() {
-  return (dispatch) => {
-    sendStopQueue().then(() => {
-      dispatch(abortCentring());
-    });
+  return async (dispatch) => {
+    await sendStopQueue();
+    dispatch(abortCentring());
   };
 }
 
 export function runSample(sampleID, taskIndex) {
-  return (dispatch) => {
-    sendRunSample(sampleID, taskIndex)
-      .then(() => {
-        dispatch({ type: 'RUN_SAMPLE', queueID: sampleID });
-      })
-      .catch((error) => {
-        if (error.status >= 400) {
-          throw new Error('Server refused to run sample');
-        }
-      });
+  return async (dispatch) => {
+    try {
+      await sendRunSample(sampleID, taskIndex);
+      dispatch({ type: 'RUN_SAMPLE', queueID: sampleID });
+    } catch (error) {
+      if (error.status >= 400) {
+        throw new Error('Server refused to run sample');
+      }
+    }
   };
 }
 
 export function removeTaskAction(sampleID, taskIndex, queueID = null) {
-  return {
-    type: 'REMOVE_TASK',
-    sampleID,
-    taskIndex,
-    queueID,
-  };
+  return { type: 'REMOVE_TASK', sampleID, taskIndex, queueID };
 }
 
 export function removeTaskListAction(taskList, queueIDList = null) {
-  return {
-    type: 'REMOVE_TASKS_LIST',
-    taskList,
-    queueIDList,
-  };
+  return { type: 'REMOVE_TASKS_LIST', taskList, queueIDList };
 }
 
 export function setEnabledSample(sampleIDList, value) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const state = getState();
     dispatch(queueLoading(true));
 
@@ -270,61 +226,67 @@ export function setEnabledSample(sampleIDList, value) {
       (sampleID) => state.sampleGrid.sampleList[sampleID].queueID,
     );
 
-    sendSetEnabledQueueItem(qidList, value)
-      .then(() => {
-        dispatch(setSampleAttribute(sampleIDList, 'checked', value));
-        sampleIDList.forEach((sid) => {
-          // If sample is loaded by SC, set as current
-          if (state.sampleChanger.loadedSample.address === sid && value) {
-            dispatch(setCurrentSample(sid));
-          }
+    try {
+      await sendSetEnabledQueueItem(qidList, value);
+      dispatch(setSampleAttribute(sampleIDList, 'checked', value));
 
-          if (state.sampleChanger.loadedSample.address === sid && !value) {
-            dispatch(setCurrentSample(''));
-          }
-        });
-        if (!value) {
-          dispatch(removeSamplesFromQueueAction(sampleIDList));
+      sampleIDList.forEach((sid) => {
+        // If sample is loaded by SC, set as current
+        if (state.sampleChanger.loadedSample.address === sid && value) {
+          dispatch(setCurrentSample(sid));
         }
-      })
-      .catch((error) => {
-        if (error.status >= 400) {
-          dispatch(
-            showErrorPanel(true, 'Server refused to set item enabled flag'),
-          );
+
+        if (state.sampleChanger.loadedSample.address === sid && !value) {
+          dispatch(setCurrentSample(''));
         }
-      })
-      .finally(() => dispatch(queueLoading(false)));
+      });
+
+      if (!value) {
+        dispatch(removeSamplesFromQueueAction(sampleIDList));
+      }
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(
+          showErrorPanel(true, 'Server refused to set item enabled flag'),
+        );
+      }
+    }
+
+    dispatch(queueLoading(false));
   };
 }
 
 export function deleteTask(sampleID, taskIndex) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const state = getState();
     const task = state.sampleGrid.sampleList[sampleID].tasks[taskIndex];
 
-    if (task.state === TASK_UNCOLLECTED) {
-      dispatch(queueLoading(true));
-      sendDeleteQueueItem([[sampleID, taskIndex]])
-        .then(() => {
-          dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
-        })
-        .catch((error) => {
-          if (error.status >= 400) {
-            dispatch(showErrorPanel(true, 'Server refused to delete task'));
-          }
-        })
-        .finally(() => dispatch(queueLoading(false)));
+    if (task.state !== TASK_UNCOLLECTED) {
+      return;
     }
+
+    dispatch(queueLoading(true));
+
+    try {
+      await sendDeleteQueueItem([[sampleID, taskIndex]]);
+      dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to delete task'));
+      }
+    }
+
+    dispatch(queueLoading(false));
   };
 }
 
 export function deleteTaskList(sampleIDList) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const state = getState();
     const itemPosList = [];
     const taskList = [];
     const queueIDList = [];
+
     sampleIDList.forEach((sid) => {
       state.sampleGrid.sampleList[sid].tasks.forEach((task, index) => {
         if (task.state === TASK_UNCOLLECTED) {
@@ -334,17 +296,19 @@ export function deleteTaskList(sampleIDList) {
         }
       });
     });
+
     dispatch(queueLoading(true));
-    sendDeleteQueueItem(itemPosList)
-      .then(() => {
-        dispatch(removeTaskListAction(taskList, queueIDList));
-      })
-      .catch((error) => {
-        if (error.status >= 400) {
-          dispatch(showErrorPanel(true, 'Server refused to delete task'));
-        }
-      })
-      .finally(() => dispatch(queueLoading(false)));
+
+    try {
+      await sendDeleteQueueItem(itemPosList);
+      dispatch(removeTaskListAction(taskList, queueIDList));
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to delete task'));
+      }
+    }
+
+    dispatch(queueLoading(false));
   };
 }
 
@@ -353,47 +317,40 @@ export function addTaskAction(tasks) {
 }
 
 export function updateTaskAction(sampleID, taskIndex, taskData) {
-  return {
-    type: 'UPDATE_TASK',
-    sampleID,
-    taskIndex,
-    taskData,
-  };
+  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
 }
 
 export function updateTask(sampleID, taskIndex, params, runNow) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const { sampleGrid } = getState();
 
     const taskData = {
       ...sampleGrid.sampleList[sampleID].tasks[taskIndex],
       parameters: params,
     };
+
     dispatch(queueLoading(true));
 
-    sendUpdateQueueItem(
-      sampleGrid.sampleList[sampleID].queueID,
-      taskData.queueID,
-      taskData,
-    )
-      .then((json) => {
-        dispatch(updateTaskAction(sampleID, taskIndex, json));
+    try {
+      const json = await sendUpdateQueueItem(
+        sampleGrid.sampleList[sampleID].queueID,
+        taskData.queueID,
+        taskData,
+      );
+      dispatch(updateTaskAction(sampleID, taskIndex, json));
 
-        if (runNow) {
-          dispatch(runSample(sampleID, taskIndex));
-        }
-      })
-      .catch((error) => {
-        if (error.status >= 400) {
-          dispatch(
-            showErrorPanel(
-              true,
-              'The task could not be modified on the server',
-            ),
-          );
-        }
-      })
-      .finally(() => dispatch(queueLoading(false)));
+      if (runNow) {
+        dispatch(runSample(sampleID, taskIndex));
+      }
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(
+          showErrorPanel(true, 'The task could not be modified on the server'),
+        );
+      }
+    }
+
+    dispatch(queueLoading(false));
   };
 }
 
@@ -403,7 +360,7 @@ export function addDiffractionPlanAction(tasks) {
 
 export function addTask(sampleIDs, parameters, runNow) {
   // eslint-disable-next-line sonarjs/cognitive-complexity
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const state = getState();
     const samples = [];
     let shapes = [];
@@ -463,24 +420,25 @@ export function addTask(sampleIDs, parameters, runNow) {
 
     dispatch(queueLoading(true));
 
-    sendAddQueueItem(samples)
-      .then((json) => {
-        dispatch(setQueue(json));
-        if (runNow) {
-          const sl = json.sampleList;
-          const { taskIndex } =
-            sl[sampleIDs[0]].tasks[sl[sampleIDs[0]].tasks.length - 1];
-          dispatch(runSample(sampleIDs[0], taskIndex));
-        }
-      })
-      .catch((error) => {
-        if (error.status >= 400) {
-          dispatch(
-            showErrorPanel(true, 'The task could not be added to the server'),
-          );
-        }
-      })
-      .finally(() => dispatch(queueLoading(false)));
+    try {
+      const json = await sendAddQueueItem(samples);
+      dispatch(setQueue(json));
+
+      if (runNow) {
+        const sl = json.sampleList;
+        const { taskIndex } =
+          sl[sampleIDs[0]].tasks[sl[sampleIDs[0]].tasks.length - 1];
+        dispatch(runSample(sampleIDs[0], taskIndex));
+      }
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(
+          showErrorPanel(true, 'The task could not be added to the server'),
+        );
+      }
+    }
+
+    dispatch(queueLoading(false));
   };
 }
 
@@ -504,40 +462,34 @@ export function addTaskResultAction(
 }
 
 export function updateTaskLimsData(sampleID, taskIndex, limsResultData) {
-  return {
-    type: 'UPDATE_TASK_LIMS_DATA',
-    sampleID,
-    taskIndex,
-    limsResultData,
-  };
+  return { type: 'UPDATE_TASK_LIMS_DATA', sampleID, taskIndex, limsResultData };
 }
 
 export function toggleCheckBox(data, index) {
-  return (dispatch) => {
-    sendToggleCheckBox(data.queueID).then(() => {
-      dispatch(toggleChecked(data.sampleID, index));
-    });
+  return async (dispatch) => {
+    await sendToggleCheckBox(data.queueID);
+    dispatch(toggleChecked(data.sampleID, index));
   };
 }
 
 export function deleteSamplesFromQueue(sampleIDList) {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch(queueLoading(true));
 
     const itemPostList = sampleIDList.map((sampleID) => {
       return [sampleID, undefined];
     });
 
-    sendDeleteQueueItem(itemPostList)
-      .then(() => {
-        dispatch(removeSamplesFromQueueAction(sampleIDList));
-      })
-      .catch((error) => {
-        if (error.status >= 400) {
-          dispatch(showErrorPanel(true, 'Server refused to delete sample'));
-        }
-      })
-      .finally(() => dispatch(queueLoading(false)));
+    try {
+      await sendDeleteQueueItem(itemPostList);
+      dispatch(removeSamplesFromQueueAction(sampleIDList));
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(showErrorPanel(true, 'Server refused to delete sample'));
+      }
+    }
+
+    dispatch(queueLoading(false));
   };
 }
 
@@ -546,18 +498,20 @@ export function setAutoMountAction(automount) {
 }
 
 export function setAutoMountSample(automount) {
-  return (dispatch) => {
-    sendSetAutoMountSample(automount)
-      .then((json) => {
-        let a = json.automount;
-        a = a === undefined ? false : a;
-        dispatch(setAutoMountAction(a));
-      })
-      .catch((error) => {
-        if (error.status >= 400) {
-          dispatch(showErrorPanel(true, 'Could not set/unset automount'));
-        }
-      });
+  return async (dispatch) => {
+    try {
+      const json = await sendSetAutoMountSample(automount);
+
+      dispatch(
+        setAutoMountAction(
+          json.automount === undefined ? false : json.automount,
+        ),
+      );
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(showErrorPanel(true, 'Could not set/unset automount'));
+      }
+    }
   };
 }
 
@@ -566,49 +520,44 @@ export function setAutoAddDiffPlanAction(autoadd) {
 }
 
 export function setAutoAddDiffPlan(autoadddiffplan) {
-  return (dispatch) => {
-    return sendSetAutoAddDiffPlan(autoadddiffplan)
-      .then((json) => {
-        const a = json.auto_add_diffplan;
-        dispatch(setAutoAddDiffPlanAction(a));
-      })
-      .catch((error) => {
-        if (error.status >= 400) {
-          dispatch(showErrorPanel(true, 'Could not set/unset automount'));
-        }
-      });
+  return async (dispatch) => {
+    try {
+      const json = await sendSetAutoAddDiffPlan(autoadddiffplan);
+      const a = json.auto_add_diffplan;
+      dispatch(setAutoAddDiffPlanAction(a));
+    } catch (error) {
+      if (error.status >= 400) {
+        dispatch(showErrorPanel(true, 'Could not set/unset automount'));
+      }
+    }
   };
 }
 
 export function setCentringMethod(centringMethod) {
-  return (dispatch) => {
-    sendSetCentringMethod(centringMethod).then(() => {
-      dispatch(setCentringMethodAction(centringMethod));
-    });
+  return async (dispatch) => {
+    await sendSetCentringMethod(centringMethod);
+    dispatch(setCentringMethodAction(centringMethod));
   };
 }
 
 export function setNumSnapshots(numSnapshots) {
-  return (dispatch) => {
-    sendSetNumSnapshots(numSnapshots).then((response) => {
-      dispatch(setNumSnapshotsAction(numSnapshots));
-    });
+  return async (dispatch) => {
+    await sendSetNumSnapshots(numSnapshots);
+    dispatch(setNumSnapshotsAction(numSnapshots));
   };
 }
 
 export function setGroupFolder(path) {
-  return (dispatch) => {
-    sendSetGroupFolder(path).then((json) => {
-      dispatch(setGroupFolderAction(json.path));
-    });
+  return async (dispatch) => {
+    const json = await sendSetGroupFolder(path);
+    dispatch(setGroupFolderAction(json.path));
   };
 }
 
 export function setQueueSettings(name, value) {
-  return (dispatch) => {
-    sendSetQueueSettings(name, value).then(() => {
-      dispatch(setQueueSettingAction(name, value));
-    });
+  return async (dispatch) => {
+    await sendSetQueueSettings(name, value);
+    dispatch(setQueueSettingAction(name, value));
   };
 }
 

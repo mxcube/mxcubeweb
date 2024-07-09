@@ -1,6 +1,3 @@
-/* eslint-disable promise/catch-or-return */
-/* eslint-disable promise/prefer-await-to-then */
-
 import { showErrorPanel } from './general';
 import {
   sendUpdateAperture,
@@ -106,24 +103,23 @@ export function videoMessageOverlay(show, msg) {
 }
 
 export function setVideoSize(width, height) {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     const { sampleview } = getState();
     if (!sampleview.sourceIsScalable) {
       return;
     }
 
-    sendSetVideoSize(width, height).then((json) => {
-      dispatch({
-        type: 'SAVE_IMAGE_SIZE',
-        width: json.imageWidth,
-        height: json.imageHeight,
-        pixelsPerMm: json.pixelsPerMm,
-        beamPosition: json.position,
-        sourceScale: json.scale,
-      });
-
-      window.initJSMpeg();
+    const json = await sendSetVideoSize(width, height);
+    dispatch({
+      type: 'SAVE_IMAGE_SIZE',
+      width: json.imageWidth,
+      height: json.imageHeight,
+      pixelsPerMm: json.pixelsPerMm,
+      beamPosition: json.position,
+      sourceScale: json.scale,
     });
+
+    window.initJSMpeg();
   };
 }
 
@@ -172,34 +168,33 @@ export function rotateToShape(sid) {
 }
 
 export function recordCentringClick(x, y) {
-  return (dispatch) => {
-    sendRecordCentringClick(x, y).then((json) => {
-      const { clicksLeft } = json;
-      dispatch(centringClicksLeft(clicksLeft));
+  return async (dispatch) => {
+    const json = await sendRecordCentringClick(x, y);
 
-      const msg = `3-Click Centring: <br />${
-        clicksLeft === 0
-          ? 'Save centring or clicking on screen to restart'
-          : `Clicks left: ${clicksLeft}`
-      }`;
-
-      dispatch(videoMessageOverlay(true, msg));
-    });
+    const { clicksLeft } = json;
+    dispatch(centringClicksLeft(clicksLeft));
+    dispatch(
+      videoMessageOverlay(
+        true,
+        `3-Click Centring: <br />${
+          clicksLeft === 0
+            ? 'Save centring or clicking on screen to restart'
+            : `Clicks left: ${clicksLeft}`
+        }`,
+      ),
+    );
   };
 }
 
 export function acceptCentring() {
-  return (dispatch) => {
-    sendAcceptCentring().then(() => {
-      dispatch(videoMessageOverlay(false, ''));
-    });
+  return async (dispatch) => {
+    await sendAcceptCentring();
+    dispatch(videoMessageOverlay(false, ''));
   };
 }
 
 export function moveToBeam(x, y) {
-  return () => {
-    sendMoveToBeam(x, y);
-  };
+  return () => sendMoveToBeam(x, y);
 }
 
 export function addShape(shapeData = {}, successCb = null) {
@@ -266,7 +261,7 @@ export function unselectShapes(shapes) {
 }
 
 export function startClickCentring() {
-  return (dispatch, getState) => {
+  return async (dispatch, getState) => {
     dispatch(clearSelectedShapes());
 
     const { queue } = getState();
@@ -274,20 +269,19 @@ export function startClickCentring() {
     dispatch(unselectShapes(shapes));
 
     if (queue.currentSampleID) {
-      sendStartClickCentring().then((json) => {
-        const { clicksLeft } = json;
+      const json = await sendStartClickCentring();
+      const { clicksLeft } = json;
 
-        dispatch(startClickCentringAction());
-        dispatch(centringClicksLeft(clicksLeft));
+      dispatch(startClickCentringAction());
+      dispatch(centringClicksLeft(clicksLeft));
 
-        const msg = `3-Click Centring: <br />${
-          clicksLeft === 0
-            ? 'Save centring or clicking on screen to restart'
-            : `Clicks left: ${clicksLeft}`
-        }`;
+      const msg = `3-Click Centring: <br />${
+        clicksLeft === 0
+          ? 'Save centring or clicking on screen to restart'
+          : `Clicks left: ${clicksLeft}`
+      }`;
 
-        dispatch(videoMessageOverlay(true, msg));
-      });
+      dispatch(videoMessageOverlay(true, msg));
     } else {
       dispatch(
         showErrorPanel(true, 'There is no sample mounted, cannot center.'),
@@ -309,13 +303,12 @@ export function updateMotorPosition(motorName, value) {
 }
 
 export function abortCentring() {
-  return (dispatch) => {
+  return async (dispatch) => {
     dispatch(clearSelectedShapes());
 
-    sendAbortCentring().then(() => {
-      dispatch(stopClickCentring());
-      dispatch(videoMessageOverlay(false, ''));
-    });
+    await sendAbortCentring();
+    dispatch(stopClickCentring());
+    dispatch(videoMessageOverlay(false, ''));
   };
 }
 
@@ -332,17 +325,15 @@ export function moveToPoint(id) {
 }
 
 export function changeAperture(size) {
-  return (dispatch) => {
-    sendUpdateAperture(size).then(() => {
-      dispatch(setAperture(size));
-    });
+  return async (dispatch) => {
+    await sendUpdateAperture(size);
+    dispatch(setAperture(size));
   };
 }
 
 export function changeCurrentPhase(phase) {
-  return (dispatch) => {
-    sendUpdateCurrentPhase(phase).then(() => {
-      dispatch(setCurrentPhase(phase));
-    });
+  return async (dispatch) => {
+    await sendUpdateCurrentPhase(phase);
+    dispatch(setCurrentPhase(phase));
   };
 }

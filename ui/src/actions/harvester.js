@@ -1,6 +1,3 @@
-/* eslint-disable promise/catch-or-return */
-/* eslint-disable promise/no-nesting */
-/* eslint-disable promise/prefer-await-to-then */
 import {
   sendRefresh,
   sendHarvestCrystal,
@@ -34,120 +31,128 @@ export function setHarvesterCommandResponse(response) {
 }
 
 export function refresh() {
-  return (dispatch) => {
-    sendRefresh().then((response) => {
-      if (response.status >= 400) {
-        throw new Error('Error refreshing Harvester contents');
-      }
-      response.json().then((contents) => {
-        dispatch(setContents(contents));
-      });
-    });
+  return async (dispatch) => {
+    const response = await sendRefresh();
+
+    if (response.status >= 400) {
+      throw new Error('Error refreshing harvester contents');
+    }
+
+    const contents = await response.json();
+    dispatch(setContents(contents));
   };
 }
 
 export function harvestCrystal(xtalUUID, successCb = null) {
-  return (dispatch) => {
-    sendHarvestCrystal(xtalUUID).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, response.headers.get('message')));
-        throw new Error('Server refused to Harveste Crystal');
-      } else if (successCb) {
-        successCb();
-      }
-      response.json().then((contents) => {
-        dispatch(setContents(contents));
-      });
-    });
+  return async (dispatch) => {
+    const response = await sendHarvestCrystal(xtalUUID);
+
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, response.headers.get('message')));
+      throw new Error('Server refused to Harveste Crystal');
+    }
+
+    const contents = await response.json();
+    dispatch(setContents(contents));
+
+    if (successCb) {
+      successCb();
+    }
   };
 }
 
 export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
-  return (dispatch) => {
-    sendHarvestAndLoadCrystal(xtalUUID).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, response.headers.get('message')));
-        throw new Error('Server refused to Harveste or Load Crystal');
-      } else if (successCb) {
-        successCb();
-      }
-      response.json().then((contents) => {
-        dispatch(setContents(contents));
-      });
-    });
+  return async (dispatch) => {
+    const response = await sendHarvestAndLoadCrystal(xtalUUID);
+
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, response.headers.get('message')));
+      throw new Error('Server refused to Harveste or Load Crystal');
+    }
+
+    const contents = await response.json();
+    dispatch(setContents(contents));
+
+    if (successCb) {
+      successCb();
+    }
   };
 }
 
 export function sendDataCollectionToCrims() {
-  return (dispatch) => {
-    sendDCToCrims().then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, response.headers.get('message')));
-        throw new Error('Server refused to Harveste or Load Crystal');
-      } else {
-        // temporary use ErrorPanel to display success message
-        dispatch(showErrorPanel(true, 'Succesfully Send DC to Crims'));
-      }
-      response.json().then((contents) => {
-        dispatch(setContents(contents));
-      });
-    });
+  return async (dispatch) => {
+    const response = await sendDCToCrims();
+
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, response.headers.get('message')));
+      throw new Error('Server refused to Harveste or Load Crystal');
+    }
+
+    // temporary use ErrorPanel to display success message
+    dispatch(showErrorPanel(true, 'Succesfully Send DC to Crims'));
+
+    const contents = await response.json();
+    dispatch(setContents(contents));
   };
 }
 
 export function calibratePin(successCb = null) {
-  return (dispatch) => {
-    sendCalibratePin().then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, response.headers.get('message')));
-        throw new Error('Calibration Procedure Failed');
-      } else if (successCb) {
-        successCb();
-      }
-      response.json().then((contents) => {
-        dispatch(setContents(contents));
-      });
-    });
+  return async (dispatch) => {
+    const response = await sendCalibratePin();
+
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, response.headers.get('message')));
+      throw new Error('Calibration Procedure Failed');
+    }
+
+    const contents = await response.json();
+    dispatch(setContents(contents));
+
+    if (successCb) {
+      successCb();
+    }
   };
 }
 
 export function validateCalibration(validated, successCb = null) {
-  return (dispatch) => {
-    sendValidateCalibration(validated).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, response.headers.get('message')));
-        throw new Error('Calibration Procedure Failed');
-      } else if (successCb) {
-        successCb();
-      }
-      response.json().then((contents) => {
-        dispatch(setContents(contents));
-      });
-    });
+  return async (dispatch) => {
+    const response = await sendValidateCalibration(validated);
+
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, response.headers.get('message')));
+      throw new Error('Calibration Procedure Failed');
+    }
+
+    const contents = await response.json();
+    dispatch(setContents(contents));
+
+    if (successCb) {
+      successCb();
+    }
   };
 }
 
 export function abort() {
-  return (dispatch) => {
-    sendAbort().then((response) => {
-      if (response.status < 400) {
-        dispatch(showErrorPanel(true, 'action aborted'));
-      }
-    });
+  return async (dispatch) => {
+    const response = await sendAbort();
+
+    if (response.status < 400) {
+      dispatch(showErrorPanel(true, 'action aborted'));
+    }
   };
 }
 
 export function sendCommand(cmdparts, args) {
-  return (dispatch) => {
-    sendCmd(cmdparts, args).then((response) => {
-      if (response.status >= 400) {
-        dispatch(showErrorPanel(true, response.headers.get('message')));
-        throw new Error(`Error while  sending command @ ${cmdparts}`);
-      }
-      response.json().then((answer) => {
-        dispatch(setHarvesterCommandResponse(answer.response));
-        dispatch(setContents(answer.contents));
-      });
-    });
+  return async (dispatch) => {
+    const response = await sendCmd(cmdparts, args);
+
+    if (response.status >= 400) {
+      dispatch(showErrorPanel(true, response.headers.get('message')));
+      throw new Error(`Error while  sending command @ ${cmdparts}`);
+    }
+
+    const answer = await response.json();
+    dispatch(setHarvesterCommandResponse(answer.response));
+    dispatch(setContents(answer.contents));
   };
 }

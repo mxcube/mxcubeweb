@@ -1,6 +1,3 @@
-/* eslint-disable promise/catch-or-return */
-/* eslint-disable promise/prefer-await-to-then */
-
 import { fetchDisplayImage } from '../api/detector';
 
 export function addUserMessage(records, target) {
@@ -73,12 +70,11 @@ export function showConfirmClearQueueDialog(show = true) {
 }
 
 export function sendDisplayImage(path, imgNum) {
-  return () => {
-    fetchDisplayImage(path, imgNum).then((data) => {
-      window.open(
-        `https://braggy.mxcube3.esrf.fr/?file=${data.path}/image_${data.img_num}.h5.dataset`,
-        'braggy',
-      );
-    });
+  return async () => {
+    const data = await fetchDisplayImage(path, imgNum);
+    window.open(
+      `https://braggy.mxcube3.esrf.fr/?file=${data.path}/image_${data.img_num}.h5.dataset`,
+      'braggy',
+    );
   };
 }
