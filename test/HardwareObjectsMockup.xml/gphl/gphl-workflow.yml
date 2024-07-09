@@ -126,10 +126,10 @@ configuration:
         strategy: full
         repetition_count: 1
         # strategy_options:
-        #   Program options passed directly to stratcal - not needed normally
-        #   Override default settings
-        #   angular_tolerance, maximum_chi, and clip_kappa are defined in
-        #   settings (above) and strategy_type and variant by program
+        # # Program options passed directly to stratcal - not needed normally
+        # # Override default settings
+        # # angular_tolerance, maximum_chi, and clip_kappa are defined in
+        # # settings (above) and strategy_type and variant by program
         #   maximum_chi: 48.0
         #   angular_tolerance: 1.0
         #   option_name: 999.999
