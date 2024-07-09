@@ -51,7 +51,7 @@ def server(request, login_type):
 
     hw_repo = mxcubecore.HardwareRepository.get_hardware_repository()
     lims = hw_repo.get_hardware_object("lims")
-    lims.set_property("loginType", login_type)
+    lims._set_property("loginType", login_type)
 
     yield server_
 
