@@ -1,11 +1,10 @@
-%YAML 1.2
 ---
 
 # yamllint disable rule:line-length
 
 name: UI
 
-on:
+"on":
   pull_request: null
   push: null
 

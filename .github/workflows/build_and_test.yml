@@ -1,9 +1,8 @@
-%YAML 1.2
 ---
 
 name: Python build and test
 
-on:
+"on":
   pull_request: null
   push: null
 
