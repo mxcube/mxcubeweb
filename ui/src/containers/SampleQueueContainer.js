@@ -138,12 +138,7 @@ class SampleQueueContainer extends React.Component {
           </Nav>
           {loading ? (
             <div className="center-in-box" style={{ zIndex: '1000' }}>
-              <img
-                src={loader}
-                className="img-responsive"
-                width="10rem"
-                alt=""
-              />
+              <img src={loader} className="img-responsive" width="100" alt="" />
             </div>
           ) : null}
           <CurrentTree

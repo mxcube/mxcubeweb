@@ -817,7 +817,7 @@ class SampleListViewContainer extends React.Component {
             <img
               src={loader}
               className="img-centerd img-responsive"
-              width="10rem"
+              width="150"
               alt=""
             />
           </div>
