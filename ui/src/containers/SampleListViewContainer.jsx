@@ -901,7 +901,7 @@ class SampleListViewContainer extends React.Component {
                 </Dropdown>
               </Col>
               <Col sm={5} className="d-flex me-auto">
-                <Form>
+                <Form onSubmit={(evt) => evt.preventDefault()}>
                   <Form.Group as={Row} className="d-flex">
                     <Form.Label
                       style={{ whiteSpace: 'nowrap' }}
