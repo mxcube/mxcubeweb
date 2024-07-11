@@ -168,14 +168,6 @@ class BaseUserManager(ComponentBase):
             if not self.app.sample_changer.get_current_sample() and address:
                 self.app.sample_changer.get_sample_list()
 
-            # For the moment not loading queue from persistent storage (redis),
-            # uncomment to enable loading.
-            # self.app.queue.load_queue(session)
-            # logging.getLogger('MX3.HWR').info('Loaded queue')
-            logging.getLogger("MX3.HWR").info(
-                "[QUEUE] %s " % self.app.queue.queue_to_json()
-            )
-
             self.update_operator(new_login=True)
 
             msg = "User %s signed in" % user.username
@@ -191,7 +183,6 @@ class BaseUserManager(ComponentBase):
 
         # If operator logs out clear queue and sample list
         if self.is_operator():
-            self.app.queue.save_queue(flask.session)
             self.app.queue.clear_queue()
             HWR.beamline.sample_view.clear_all()
             self.app.lims.init_sample_list()
