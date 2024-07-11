@@ -61,6 +61,10 @@ class BeamlineActionsContainer extends React.Component {
 
     const defaultDialogPosition = { x: -100, y: 100 };
 
+    if (this.props.actionsList.length === 0) {
+      return null;
+    }
+
     return (
       <>
         <Dropdown
