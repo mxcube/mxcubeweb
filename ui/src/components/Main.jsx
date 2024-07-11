@@ -122,20 +122,20 @@ class Main extends React.Component {
         <Stack className="mb-4" gap={2}>
           <Outlet />
         </Stack>
-        <div className="chat-widget-dragable">
-          <Draggable>
-            <div onClick={this.onChatContainerClick}>
-              {this.props.remoteAccess.observers.length > 0 ? (
+        {this.props.remoteAccess.observers.length > 0 ? (
+          <div className="chat-widget-dragable">
+            <Draggable>
+              <div onClick={this.onChatContainerClick}>
                 <Widget
                   title="Chat"
                   subtitle=""
                   badge={this.props.remoteAccess.chatMessageCount}
                   handleNewUserMessage={this.handleNewUserMessage}
                 />
-              ) : null}
-            </div>
-          </Draggable>
-        </div>
+              </div>
+            </Draggable>
+          </div>
+        ) : null}
       </div>
     );
   }
