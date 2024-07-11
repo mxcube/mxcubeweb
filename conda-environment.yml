@@ -1,12 +1,10 @@
 ---
-
 name: mxcubeweb
 
 channels:
   - conda-forge
 
 dependencies:
-
   # ====================
   # Runtime dependencies
   # ====================
@@ -18,8 +16,6 @@ dependencies:
   # with compilation steps that require a compiler and some header files.
   # Installing with conda is much "easier".
   - python-ldap ==3.4.3  # Make sure it matches `poetry.lock`
-
-  - redis-server
 
   # ========================
   # Development dependencies
