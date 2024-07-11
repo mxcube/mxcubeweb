@@ -355,7 +355,7 @@ export default class TaskItem extends Component {
                         >
                           <i
                             style={{ marginLeft: '0px' }}
-                            className="fa fa-clipboard"
+                            className="fa fa-copy"
                             aria-hidden="true"
                           />
                         </Button>
