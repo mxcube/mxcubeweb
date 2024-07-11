@@ -810,8 +810,16 @@ class SampleListViewContainer extends React.Component {
           hide={this.props.confirmClearQueueHide}
         />
         {this.props.loading ? (
-          <div className="center-in-box" style={{ zIndex: 1200 }}>
-            <img src={loader} className="img-centerd img-responsive" alt="" />
+          <div
+            className="center-in-box"
+            style={{ zIndex: 1200, position: 'fixed' }}
+          >
+            <img
+              src={loader}
+              className="img-centerd img-responsive"
+              width="10rem"
+              alt=""
+            />
           </div>
         ) : null}
         <Card className="samples-grid-table-card">
