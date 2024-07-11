@@ -13,4 +13,8 @@
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
   }
+  "[yaml]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": false
+  },
 }
