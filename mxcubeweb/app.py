@@ -7,7 +7,6 @@ import os
 import sys
 import logging
 import traceback
-import atexit
 import json
 import time
 
@@ -311,12 +310,9 @@ class MXCUBEApplication:
         MXCUBEApplication.harvester = Harvester(MXCUBEApplication, {})
 
         MXCUBEApplication.init_signal_handlers()
-        atexit.register(MXCUBEApplication.app_atexit)
-
         # Install server-side UI state storage
         MXCUBEApplication.init_state_storage()
 
-        # MXCUBEApplication.load_settings()
         msg = "MXCuBE 3 initialized, it took %.1f seconds" % (
             time.time() - MXCUBEApplication.t0
         )
@@ -536,36 +532,3 @@ class MXCUBEApplication:
 
         with open(fname, "w+") as fp:
             json.dump(data, fp)
-
-    @staticmethod
-    def load_settings():
-        """
-        Loads application wide variables from "stored-mxcube-session.json"
-        """
-        with open("/tmp/stored-mxcube-session.json", "r") as f:
-            data = json.load(f)
-
-        MXCUBEApplication.queue.load_queue_from_dict(data.get("QUEUE", {}))
-
-        MXCUBEApplication.CENTRING_METHOD = data.get(
-            "CENTRING_METHOD", queue_entry.CENTRING_METHOD.LOOP
-        )
-        MXCUBEApplication.NODE_ID_TO_LIMS_ID = data.get("NODE_ID_TO_LIMS_ID", {})
-        MXCUBEApplication.SC_CONTENTS = data.get(
-            "SC_CONTENTS", {"FROM_CODE": {}, "FROM_LOCATION": {}}
-        )
-        MXCUBEApplication.SAMPLE_LIST = data.get(
-            "SAMPLE_LIST", {"sampleList": {}, "sampleOrder": []}
-        )
-        MXCUBEApplication.ALLOW_REMOTE = data.get("ALLOW_REMOTE", False)
-        MXCUBEApplication.TIMEOUT_GIVES_CONTROL = data.get(
-            "TIMEOUT_GIVES_CONTROL", False
-        )
-        MXCUBEApplication.AUTO_MOUNT_SAMPLE = data.get("AUTO_MOUNT_SAMPLE", False)
-        MXCUBEApplication.AUTO_ADD_DIFFPLAN = data.get("AUTO_ADD_DIFFPLAN", False)
-        MXCUBEApplication.NUM_SNAPSHOTS = data.get("NUM_SNAPSHOTS", False)
-        MXCUBEApplication.UI_STATE = data.get("UI_STATE", {})
-
-    @staticmethod
-    def app_atexit():
-        MXCUBEApplication.save_settings()

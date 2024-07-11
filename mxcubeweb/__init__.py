@@ -7,7 +7,6 @@ monkey.patch_all(thread=False)
 import argparse  # noqa: E402
 import mock  # noqa: E402
 import os  # noqa: E402
-import redis  # noqa: E402
 import sys  # noqa: E402
 import traceback  # noqa: E402
 
@@ -106,13 +105,6 @@ def parse_args(argv):
 
 def build_server_and_config(test=False, argv=None):
     cmdline_options = parse_args(argv)
-
-    try:
-        db = redis.Redis()
-        db.ping()
-    except redis.RedisError:
-        print("No Redis server is running, exiting")
-        return None, None
 
     try:
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 import json
-import pickle as pickle
 import redis
 import itertools
 import logging
@@ -1810,37 +1809,6 @@ class Queue(ComponentBase):
         HWR.beamline.queue_model.clear_model("plate")
         HWR.beamline.queue_model.select_model("ispyb")
 
-    def save_queue(self, session, redis=redis.Redis()):
-        """
-        Saves the current HWR.beamline.queue_model (HWR.beamline.queue_model) into a redis database.
-        The queue that is saved is the pickled result returned by queue_to_dict
-
-        :param session: Session to save queue for
-        :param redis: Redis database
-
-        """
-        proposal_id = getattr(current_user, "proposal", None)
-
-        if proposal_id is not None:
-            # List of samples dicts (containing tasks) sample and tasks have same
-            # order as the in queue HO
-            queue = self.queue_to_dict(HWR.beamline.queue_model.get_model_root())
-            redis.set("self.app.queue:%d" % proposal_id, pickle.dumps(queue))
-
-    def load_queue(self, session, redis=redis.Redis()):
-        """
-        Loads the queue belonging to session <session> into redis db <redis>
-
-        :param session: Session for queue to load
-        :param redis: Redis database
-        """
-        proposal_id = getattr(current_user, "proposal", None)
-
-        if proposal_id is not None:
-            serialized_queue = redis.get("self.app.queue:%d" % proposal_id)
-            queue = pickle.loads(serialized_queue)
-            self.load_queue_from_dict(queue)
-
     def queue_model_child_added(self, parent, child):
         """
         Listen to the addition of elements to the queue model ('child_added').
@@ -2221,12 +2189,7 @@ class Queue(ComponentBase):
         logging.getLogger("MX3.HWR").info(msg)
 
     def set_queue(self, json_queue, session):
-        # Clear queue
-        # HWR.beamline.queue_model = clear_queue()
-
-        # Set new queue
         self.queue_add_item(json_queue)
-        self.save_queue(session)
 
     def queue_update_item(self, sqid, tqid, data):
         model, entry = self.get_entry(tqid)
