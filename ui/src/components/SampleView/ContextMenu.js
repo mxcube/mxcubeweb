@@ -9,6 +9,7 @@ export default class ContextMenu extends React.Component {
     super(props);
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
     this.menuOptions = this.menuOptions.bind(this);
+    this.hideContextMenu = this.hideContextMenu.bind(this);
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -17,6 +18,10 @@ export default class ContextMenu extends React.Component {
     } else {
       this.hideContextMenu();
     }
+  }
+
+  componentWillUnmount() {
+    this.hideContextMenu();
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -496,8 +501,9 @@ export default class ContextMenu extends React.Component {
 
   hideContextMenu() {
     const ctxMenu = document.querySelector('#contextMenu');
-    if (ctxMenu) {
+    if (ctxMenu && this.props.show) {
       ctxMenu.style.display = 'none';
+      this.props.sampleViewActions.showContextMenu(false);
     }
   }
 

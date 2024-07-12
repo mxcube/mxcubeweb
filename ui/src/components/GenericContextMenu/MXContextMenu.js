@@ -40,6 +40,7 @@ export default class MXContextMenu extends React.Component {
     if (ctxMenu) {
       ctxMenu.classList.add('generic-context-menu-close');
     }
+    this.props.showGenericContextMenu(false, null, 0, 0);
   }
 
   render() {
