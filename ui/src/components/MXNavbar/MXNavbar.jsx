@@ -45,12 +45,10 @@ class MXNavbar extends React.Component {
         expand="lg"
       >
         <Container fluid>
-          <LinkContainer to="/remoteaccess">
-            <Navbar.Brand>
-              MXCuBE-Web{' '}
-              <span className="brand-subtitle">({this.props.mode})</span>
-            </Navbar.Brand>
-          </LinkContainer>
+          <Navbar.Brand>
+            MXCuBE-Web{' '}
+            <span className="brand-subtitle">({this.props.mode})</span>
+          </Navbar.Brand>
           <Navbar.Toggle aria-controls="responsive-navbar-nav" />
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="m-auto">
