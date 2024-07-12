@@ -47,10 +47,6 @@ const router = createBrowserRouter([
         element: <Main />,
         children: [
           {
-            index: true,
-            element: <SampleViewContainer />,
-          },
-          {
             path: 'samplegrid',
             element: <SampleListViewContainer />,
           },
@@ -73,6 +69,11 @@ const router = createBrowserRouter([
           {
             path: 'help',
             element: <HelpContainer />,
+          },
+          {
+            // Redirect `/` and any unknown route to `/datacollection`
+            path: '*?',
+            element: <Navigate to="/datacollection" replace />,
           },
         ],
       },

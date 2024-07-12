@@ -12,7 +12,7 @@ function LoginContainer(props) {
   return props.data.loggedIn === false ? (
     <Login {...props} />
   ) : (
-    <Navigate to="/" state={{ from: location }} replace />
+    <Navigate to="/datacollection" state={{ from: location }} replace />
   );
 }
 
