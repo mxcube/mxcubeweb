@@ -7,7 +7,6 @@ import { Outlet } from 'react-router-dom';
 import Draggable from 'react-draggable';
 
 import withRouter from '../components/WithRouter';
-import MXNavbarContainer from '../containers/MXNavbarContainer';
 import TaskContainer from '../containers/TaskContainer';
 import PleaseWaitDialog from '../containers/PleaseWaitDialog';
 import ErrorNotificationPanel from '../containers/ErrorNotificationPanel';
@@ -32,6 +31,7 @@ import './rachat.css';
 import { store } from '../store';
 import { getInitialState } from '../actions/login';
 import { fetchChatMessages, sendChatMessage } from '../api/remoteAccess';
+import MXNavbar from './MXNavbar/MXNavbar';
 
 class Main extends React.Component {
   constructor(props) {
@@ -118,10 +118,13 @@ class Main extends React.Component {
           taskData={this.props.general.dialogData}
           onHide={() => this.props.showDialog(false)}
         />
-        <MXNavbarContainer location={window.location} />
+
+        <MXNavbar />
+
         <Stack className="mb-4" gap={2}>
           <Outlet />
         </Stack>
+
         {this.props.remoteAccess.observers.length > 0 ? (
           <div className="chat-widget-dragable">
             <Draggable>

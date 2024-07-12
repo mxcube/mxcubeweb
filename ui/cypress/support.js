@@ -21,7 +21,7 @@ Cypress.Commands.add('takeControl', (returnPage = '/datacollection') => {
   cy.get('body').then(($body) => {
     if ($body.text().includes('Observer mode')) {
       cy.findByRole('button', { name: 'OK' }).click();
-      cy.findByText('Remote').click();
+      cy.findByRole('link', { name: /Remote/u, hidden: true }).click();
       cy.findByRole('button', { name: 'Take control' }).click();
       cy.visit(returnPage);
     }

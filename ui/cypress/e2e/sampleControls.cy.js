@@ -3,7 +3,7 @@
 describe('3-click centring', () => {
   beforeEach(() => {
     cy.login();
-    cy.findByRole('link', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
+    cy.findByRole('heading', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
     cy.takeControl();
   });
 

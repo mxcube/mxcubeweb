@@ -66,9 +66,6 @@ input[type='color']:focus,
   max-width: 100%; /* Max Width of the popover (depending on the container!) */
 }
 
-.nav-link {
-  cursor: pointer;
-}
 .btn-primary {
   background: #317fc4 !important;
 }
