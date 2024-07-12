@@ -1296,6 +1296,7 @@ class SampleGridTableContainer extends React.Component {
             show={this.props.contextMenu.show}
             x={this.props.contextMenu.x}
             y={this.props.contextMenu.y}
+            showGenericContextMenu={this.props.showGenericContextMenu}
           >
             {this.renderContextMenu(this.props.contextMenu.id)}
           </MXContextMenu>
