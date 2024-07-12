@@ -131,6 +131,13 @@
   margin-top: 10px;
   margin-bottom: 10px;
 }
+.queue-nav {
+  height: 5%;
+}
+.queue-nav-link {
+  height: 100%;
+  padding: 0.4em 0 0;
+}
 .list-head {
   padding: 1rem 1rem;
   border: 0px;
