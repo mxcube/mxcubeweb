@@ -1,113 +1,128 @@
-import React from 'react';
-import { Container, Navbar, Nav, Button } from 'react-bootstrap';
-import { LinkContainer } from 'react-router-bootstrap';
-import withRouter from '../WithRouter';
-import './MXNavbar.css';
+import React, { useEffect, useState } from 'react';
+import { Container, Navbar, Nav } from 'react-bootstrap';
+import { BsList } from 'react-icons/bs';
+import { NavLink, useLocation } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { showProposalsForm, signOut } from '../../actions/login';
 import { serverIO } from '../../serverIO';
+import styles from './MXNavbar.module.css';
 
-class MXNavbar extends React.Component {
-  constructor(props) {
-    super(props);
-    this.findProposal = this.findProposal.bind(this);
-    this.handleSignOutClick = this.handleSignOutClick.bind(this);
-  }
+function MXNavbar() {
+  const isUserLogin = useSelector((state) => state.login.loginType === 'User');
+  const selectedProposal = useSelector((state) => state.login.selectedProposal);
+  const username = useSelector((state) => state.login.user.username);
+  const inControl = useSelector((state) => state.login.user.inControl);
 
-  findProposal(prop) {
-    return (
-      `${prop.Proposal.code}${prop.Proposal.number}` ===
-      this.props.selectedProposal
-    );
-  }
+  const mode = useSelector((state) => state.general.mode);
+  const numObservers = useSelector(
+    (state) => state.remoteAccess.observers.length,
+  );
 
-  handleSignOutClick() {
-    this.props.signOut();
-    serverIO.disconnect();
-    this.props.router.navigate('/');
-  }
+  const [expanded, toggle] = useState(false);
+  const { pathname } = useLocation();
+  const dispatch = useDispatch();
 
-  render() {
-    const raStyle = this.props.user.inControl ? { color: 'white' } : {};
-    const numObservers = this.props.remoteAccess.observers.length;
+  useEffect(() => {
+    toggle(false); // collapse mobile nav when navigating
+  }, [pathname]);
 
-    document.title = `MxCuBE-Web Proposal: ${this.props.selectedProposal}`;
+  useEffect(() => {
+    document.title = `MxCuBE-Web – ${selectedProposal}`;
+  }, [selectedProposal]);
 
-    const username =
-      this.props.loginType === 'User'
-        ? `(${this.props.user.username})`
-        : `(${this.props.selectedProposal})`;
-
-    return (
-      <Navbar
-        className="pt-1 pb-1 nav-container"
-        bg="dark"
-        variant="dark"
-        collapseOnSelect
-        expand="lg"
-      >
-        <Container fluid>
-          <Navbar.Brand>
-            MXCuBE-Web{' '}
-            <span className="brand-subtitle">({this.props.mode})</span>
-          </Navbar.Brand>
-          <Navbar.Toggle aria-controls="responsive-navbar-nav" />
-          <Navbar.Collapse id="responsive-navbar-nav">
-            <Nav className="m-auto">
-              <LinkContainer className="me-4" to="/samplegrid">
-                <Nav.Item className="nav-link">Samples</Nav.Item>
-              </LinkContainer>
-              <LinkContainer className="me-4" to="/datacollection">
-                <Nav.Item className="nav-link">Data collection</Nav.Item>
-              </LinkContainer>
-              <LinkContainer className="me-4" to="/equipment">
-                <Nav.Item className="nav-link">Equipment</Nav.Item>
-              </LinkContainer>
-              <LinkContainer to="/logging">
-                <Nav.Item className="nav-link">System log</Nav.Item>
-              </LinkContainer>
-            </Nav>
-            <Nav>
-              <LinkContainer className="me-2" to="/help">
-                <Nav.Item className="nav-link">
-                  <span className="me-1 fas fa-lg fa-question-circle" />
-                  Help
-                </Nav.Item>
-              </LinkContainer>
-              <LinkContainer className="me-2" to="/remoteaccess">
-                <Nav.Item className="nav-link">
-                  <span style={raStyle} className="me-1 fas fa-lg fa-globe">
-                    {numObservers > 0 ? (
-                      <span className="badge-num">{numObservers}</span>
-                    ) : null}
-                  </span>
-                  Remote
-                </Nav.Item>
-              </LinkContainer>
-              {this.props.loginType === 'User' && (
-                <Button
-                  as={Nav.Link}
-                  className="nav-link pe-0"
-                  variant="Light"
-                  onClick={this.props.handleShowProposalForm}
-                >
-                  <span className="me-1 fas fa-lg fa-bars" />
-                  Select proposal {`(${this.props.selectedProposal})`}
-                </Button>
-              )}
-              <Button
-                as={Nav.Link}
-                className="nav-link pe-0"
-                variant="Light"
-                onClick={this.handleSignOutClick}
+  return (
+    <Navbar
+      className={styles.navBar}
+      bg="dark"
+      variant="dark"
+      expand="xl"
+      expanded={expanded}
+      onToggle={toggle}
+    >
+      <Container fluid>
+        <Navbar.Brand as="h1" className={styles.brand}>
+          MXCuBE-Web <span className={styles.brandSub}>({mode})</span>
+        </Navbar.Brand>
+        <Navbar.Toggle
+          bsPrefix={styles.toggleBtn}
+          aria-controls="responsive-navbar-nav"
+        >
+          <BsList size="2em" />
+        </Navbar.Toggle>
+        <Navbar.Collapse id="responsive-navbar-nav">
+          <Nav className={styles.mainNav}>
+            <Nav.Link as={NavLink} className={styles.navLink} to="/samplegrid">
+              Samples
+            </Nav.Link>
+            <Nav.Link
+              as={NavLink}
+              className={styles.navLink}
+              to="/datacollection"
+            >
+              Data collection
+            </Nav.Link>
+            <Nav.Link as={NavLink} className={styles.navLink} to="/equipment">
+              Equipment
+            </Nav.Link>
+            <Nav.Link as={NavLink} className={styles.navLink} to="/logging">
+              System log
+            </Nav.Link>
+          </Nav>
+          <Nav className={styles.subNav}>
+            <Nav.Link as={NavLink} className={styles.navLink} to="/help">
+              <span className="me-2 fas fa-lg fa-question-circle" />
+              Help
+            </Nav.Link>
+            <Nav.Link
+              as={NavLink}
+              className={styles.navLink}
+              to="/remoteaccess"
+            >
+              <span
+                className={styles.remoteIcon}
+                data-in-control={inControl || undefined}
               >
-                <span className="me-1 fas fa-lg fa-sign-out-alt" />
-                Sign out {username}
-              </Button>
-            </Nav>
-          </Navbar.Collapse>
-        </Container>
-      </Navbar>
-    );
-  }
+                <span className="fas fa-lg fa-globe" />
+                {numObservers > 0 && (
+                  <span className={styles.numObservers}>{numObservers}</span>
+                )}
+              </span>
+              Remote
+            </Nav.Link>
+            {isUserLogin && (
+              <button
+                className={styles.navBtn}
+                type="button"
+                onClick={() => {
+                  toggle(false);
+                  dispatch(showProposalsForm());
+                }}
+              >
+                <span className="me-2 fas fa-lg fa-bars" />
+                Proposal
+                <span className={styles.parens}> ({selectedProposal})</span>
+              </button>
+            )}
+            <button
+              className={styles.navBtn}
+              type="button"
+              onClick={() => {
+                serverIO.disconnect();
+                dispatch(signOut());
+              }}
+            >
+              <span className="me-2 fas fa-lg fa-sign-out-alt" />
+              Sign out
+              <span className={styles.parens}>
+                {' '}
+                ({isUserLogin ? username : selectedProposal})
+              </span>
+            </button>
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
+  );
 }
 
-export default withRouter(MXNavbar);
+export default MXNavbar;
