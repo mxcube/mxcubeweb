@@ -12,10 +12,11 @@ export default class MXContextMenu extends React.Component {
 
   componentDidMount() {
     this.showContextMenu(this.props.x, this.props.y);
+    document.addEventListener('click', this.hideContextMenu);
   }
 
   componentWillUnmount() {
-    this.hideContextMenu();
+    document.removeEventListener('click', this.hideContextMenu);
   }
 
   showContextMenu(x, y) {

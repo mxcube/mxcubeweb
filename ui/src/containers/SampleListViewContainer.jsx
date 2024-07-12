@@ -62,7 +62,6 @@ import '../components/SampleGrid/SampleGridTable.css';
 class SampleListViewContainer extends React.Component {
   constructor(props) {
     super(props);
-    this.onMouseDown = this.onMouseDown.bind(this);
     this.syncSamples = this.syncSamples.bind(this);
     this.mutualExclusiveFilterOption =
       this.mutualExclusiveFilterOption.bind(this);
@@ -107,17 +106,6 @@ class SampleListViewContainer extends React.Component {
   componentDidMount() {
     const localStorageViewMode = localStorage.getItem('view-mode');
     this.setViewMode(localStorageViewMode || this.props.viewMode.mode);
-  }
-
-  /**
-   * If Context menu is showed set it to false'
-   *
-   * @param {MouseEvent} e
-   */
-  onMouseDown(e) {
-    if (this.props.contextMenu.show) {
-      this.props.showGenericContextMenu(false, null, 0, 0);
-    }
   }
 
   setViewMode(mode) {
@@ -823,10 +811,7 @@ class SampleListViewContainer extends React.Component {
           </div>
         ) : null}
         <Card className="samples-grid-table-card">
-          <Card.Header
-            onMouseDown={this.onMouseDown}
-            className="samples-grid-table-card-header"
-          >
+          <Card.Header className="samples-grid-table-card-header">
             <Row className="samples-grid-table-row-header">
               <Col sm={5} className="d-flex">
                 <SplitButton
