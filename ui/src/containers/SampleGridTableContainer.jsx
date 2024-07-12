@@ -77,7 +77,6 @@ class SampleGridTableContainer extends React.Component {
     this.onMouseDown = this.onMouseDown.bind(this);
     this.onMouseUp = this.onMouseUp.bind(this);
     this.onMouseMove = this.onMouseMove.bind(this);
-    this.onKeyDown = this.onKeyDown.bind(this);
 
     this.sampleGridItemsSelectedHandler =
       this.sampleGridItemsSelectedHandler.bind(this);
@@ -114,11 +113,6 @@ class SampleGridTableContainer extends React.Component {
     this.unmount = this.unmount.bind(this);
   }
 
-  componentDidMount() {
-    document.addEventListener('keydown', this.onKeyDown, false);
-    document.addEventListener('click', this.onClick, false);
-  }
-
   shouldComponentUpdate(nextProps) {
     return (
       this.props.queue.queue !== nextProps.queue.queue ||
@@ -126,11 +120,6 @@ class SampleGridTableContainer extends React.Component {
         Object.keys(nextProps.sampleList) ||
       this.props.order !== nextProps.order
     );
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.onKeyDown);
-    document.removeEventListener('click', this.onClick);
   }
 
   /**

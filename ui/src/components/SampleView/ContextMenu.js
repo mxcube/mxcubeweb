@@ -12,6 +12,10 @@ export default class ContextMenu extends React.Component {
     this.hideContextMenu = this.hideContextMenu.bind(this);
   }
 
+  componentDidMount() {
+    document.addEventListener('click', this.hideContextMenu);
+  }
+
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.show) {
       this.showContextMenu(nextProps.x, nextProps.y);
@@ -21,7 +25,7 @@ export default class ContextMenu extends React.Component {
   }
 
   componentWillUnmount() {
-    this.hideContextMenu();
+    document.removeEventListener('click', this.hideContextMenu);
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
