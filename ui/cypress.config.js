@@ -6,4 +6,6 @@ module.exports = defineConfig({
     supportFile: 'cypress/support.js',
     screenshotsFolder: 'cypress/debug',
   },
+  viewportWidth: 1200,
+  viewportHeight: 800,
 });
