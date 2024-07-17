@@ -42,7 +42,6 @@ class Beamline(ComponentBase):
                         "commandReplyArrived",
                         signals.beamline_action_done,
                     )
-                    cmd.connect("commandReady", signals.beamline_action_done)
                     cmd.connect(
                         "commandFailed",
                         signals.beamline_action_failed,
