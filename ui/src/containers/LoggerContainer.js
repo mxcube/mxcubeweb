@@ -49,28 +49,20 @@ export class LoggerContainer extends React.Component {
           >
             <nav>
               <Pagination size="sm" className="pagination">
-                <Pagination.Item>
-                  <span onClick={this.firstPage}>
-                    <span aria-hidden="true">first</span>
-                  </span>
+                <Pagination.Item onClick={this.firstPage}>
+                  <span aria-hidden="true">first</span>
                 </Pagination.Item>
-                <Pagination.Item>
-                  <span onClick={this.backwardPage}>
-                    <span aria-hidden="true">&laquo;</span>
-                  </span>
+                <Pagination.Item onClick={this.backwardPage}>
+                  <span aria-hidden="true">&laquo;</span>
                 </Pagination.Item>
                 <Pagination.Item>
                   <span>{page}</span>
                 </Pagination.Item>
-                <Pagination.Item>
-                  <span onClick={this.forwardPage}>
-                    <span aria-hidden="true">&raquo;</span>
-                  </span>
+                <Pagination.Item onClick={this.forwardPage}>
+                  <span aria-hidden="true">&raquo;</span>
                 </Pagination.Item>
-                <Pagination.Item>
-                  <span onClick={this.lastPage}>
-                    <span aria-hidden="true">last</span>
-                  </span>
+                <Pagination.Item onClick={this.lastPage}>
+                  <span aria-hidden="true">last</span>
                 </Pagination.Item>
               </Pagination>
             </nav>
