@@ -1429,7 +1429,7 @@ class Queue(ComponentBase):
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-    def _create_dc(self, task):
+    def _create_dc(self):
         """
         Creates a data collection model and its corresponding queue entry from
         a dict with collection parameters.
@@ -1549,7 +1549,7 @@ class Queue(ComponentBase):
         sample_model, sample_entry = self.get_entry(node_id)
         params = task["parameters"]
 
-        refdc_model, refdc_entry = self._create_dc(task)
+        refdc_model, refdc_entry = self._create_dc()
         refdc_model.acquisitions[0].path_template.reference_image_prefix = "ref"
         refdc_model.set_name("refdc")
         char_params = qmo.CharacterisationParameters().set_from_dict(params)
@@ -1596,7 +1596,7 @@ class Queue(ComponentBase):
         :rtype: int
         """
         sample_model, sample_entry = self.get_entry(node_id)
-        dc_model, dc_entry = self._create_dc(task)
+        dc_model, dc_entry = self._create_dc()
         self.set_dc_params(dc_model, dc_entry, task, sample_model)
 
         group_model = qmo.TaskGroup()
@@ -1744,7 +1744,7 @@ class Queue(ComponentBase):
 
         for wedge in task["parameters"]["wedges"]:
             wc = wc + 1
-            dc_model, dc_entry = self._create_dc(wedge)
+            dc_model, dc_entry = self._create_dc()
             self.set_dc_params(dc_model, dc_entry, wedge, sample_model)
 
             # Add wedge prefix to path
