@@ -36,6 +36,8 @@ import {
 import { stopBeamlineAction } from '../actions/beamlineActions';
 import { find } from 'lodash';
 
+import styles from './SampleViewContainer.module.css';
+
 class SampleViewContainer extends Component {
   constructor(props) {
     super(props);
@@ -125,7 +127,7 @@ class SampleViewContainer extends Component {
           </Col>
         </Row>
         <Row className="gx-3 mt-2 pt-1">
-          <Col sm={1}>
+          <Col sm={2} xxl={1} className={styles.controllers}>
             <DefaultErrorBoundary>
               <div>
                 <p className="motor-name">Phase Control:</p>
@@ -253,7 +255,12 @@ class SampleViewContainer extends Component {
               />
             </DefaultErrorBoundary>
           </Col>
-          <Col sm={5} style={{ display: 'flex' }}>
+          <Col
+            sm={4}
+            xxl={5}
+            className={styles.queue}
+            style={{ display: 'flex' }}
+          >
             <DefaultErrorBoundary>
               <SampleQueueContainer />
             </DefaultErrorBoundary>

@@ -146,7 +146,7 @@ export default class CurrentTree extends React.Component {
     }
     return (
       <div>
-        <div style={{ top: '5%', height: '70%' }} className="list-body">
+        <div style={{ top: '6%', height: '69%' }} className="list-body">
           {sampleTasks.map((taskData, i) => {
             let task = null;
             const displayData = this.props.displayData[taskData.queueID] || {};
