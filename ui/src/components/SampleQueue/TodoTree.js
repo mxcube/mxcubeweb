@@ -52,6 +52,7 @@ export default class TodoTree extends React.Component {
               className="form-control"
               placeholder="Search Upcoming"
               onChange={this.setSearchWord}
+              style={{ width: '90%' }}
             />
           </div>
           <div>
