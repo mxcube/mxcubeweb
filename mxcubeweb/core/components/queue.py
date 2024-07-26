@@ -1838,7 +1838,7 @@ class Queue(ComponentBase):
         """
         Listen to the addition of elements to the queue model ('child_added').
         Add the corresponding entries to the queue if they are not already
-        added. Handels for instance the addition of reference collections for
+        added. Handles for instance the addition of reference collections for
         characterisations and workflows.
         """
         parent_model, parent_entry = self.get_entry(parent._node_id)
