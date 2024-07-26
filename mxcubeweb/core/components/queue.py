@@ -984,8 +984,9 @@ class Queue(ComponentBase):
         """
         for item in item_list:
             item_t = item["type"]
-            # If the item a sample, then add it and its tasks. If its not, get the
-            # node id for the sample of the new task and append it to the sample
+            # If the item is a sample, then add it and its tasks.
+            # Otherwise, get the node id for the sample of the
+            # new task and append it to the sample.
             sample_id = str(item["sampleID"])
 
             if item_t == "Sample":
