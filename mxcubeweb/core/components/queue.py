@@ -1470,7 +1470,11 @@ class Queue(ComponentBase):
 
         entry = entry_cls(Mock(), entry_cls.QMO(task_data=data))
         entry.set_enabled(True)
-        return entry.get_data_model(), entry
+
+        model = entry.get_data_model()
+        model.set_origin(ORIGIN_MX3)
+
+        return model, entry
 
     def _create_wf(self, task):
         """
