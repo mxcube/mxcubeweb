@@ -1,14 +1,11 @@
 # -*- coding: utf-8 -*-
 import os
 import json
-import redis
 import itertools
 import logging
 import re
 
 from mock import Mock
-
-from flask_login import current_user
 
 from mxcubecore import HardwareRepository as HWR
 
