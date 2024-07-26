@@ -982,8 +982,6 @@ class Queue(ComponentBase):
 
         Each item (dictionary) describes either a sample or a task.
         """
-        children = []
-
         for item in item_list:
             item_t = item["type"]
             # If the item a sample, then add it and its tasks. If its not, get the
@@ -1002,7 +1000,6 @@ class Queue(ComponentBase):
 
                 if tasks:
                     self._queue_add_item_rec(tasks, sample_node_id)
-                    children.extend(tasks)
 
             else:
                 if not sample_node_id:
