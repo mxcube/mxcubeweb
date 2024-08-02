@@ -512,6 +512,10 @@ export default class ContextMenu extends React.Component {
   }
 
   listOptions(type) {
+    if (type.text === undefined) {
+      return undefined;
+    }
+
     let el = (
       <Dropdown.Item key={`${type.key}_${type.text}`} onClick={type.action}>
         {type.text}
