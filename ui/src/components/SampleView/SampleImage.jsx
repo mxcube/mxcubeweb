@@ -511,23 +511,6 @@ export default class SampleImage extends React.Component {
 
     this.drawGridPlugin.clearMouseOverGridLabel(this.canvas);
 
-    if (option.target && option.target.type === 'activeSelection') {
-      const group = this.canvas.getActiveObject();
-      const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
-
-      // Important to call this for containsPoint to work properly
-      // this.canvas.discardActiveObject();
-
-      group.getObjects().forEach((obj) => {
-        if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
-          objectFound = obj;
-        } else {
-          // this.deSelectShape([obj], option.e.ctrlKey);
-        }
-      });
-    } else if (option.target) {
-      objectFound = option.target;
-    }
     const {
       sampleViewActions,
       clickCentring,
@@ -553,6 +536,19 @@ export default class SampleImage extends React.Component {
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
     } else if (option.target && !(option.e.shiftKey || option.e.ctrlKey)) {
+      if (option.target.type === 'activeSelection') {
+        const group = this.canvas.getActiveObject();
+        const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
+
+        group.getObjects().forEach((obj) => {
+          if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
+            objectFound = obj;
+          }
+        });
+      } else {
+        objectFound = option.target;
+      }
+
       const shapeData = this.drawGridPlugin.setPixelsPerMM(
         this.props.pixelsPerMm,
         this.props.shapes[objectFound.id],
