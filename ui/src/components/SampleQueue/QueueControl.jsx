@@ -10,7 +10,7 @@ import {
   QUEUE_STARTED,
 } from '../../constants';
 
-import QueueSettings from '../../containers/QueueSettings.jsx';
+import QueueSettings from '../../containers/QueueSettings';
 import loader from '../../img/busy-indicator.gif';
 
 export default class QueueControl extends React.Component {

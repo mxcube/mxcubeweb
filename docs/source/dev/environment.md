@@ -162,7 +162,7 @@ _The output should look something like the following:_
 The front end development server, webpack development server,
 listens for changes on the filesystem and builds (re-builds) the UI when a change is made.
 This makes it very easy and fast to see how a change affects the UI and makes debugging much easier.
-The development server listens on port **3000**
+The development server listens on port **5173**
 
 ```
 # The front-end needs the backend to run,
@@ -175,7 +175,7 @@ mxcubeweb-server -r $(pwd)/mxcubeweb/test/HardwareObjectsMockup.xml/ --static-fo
 pnpm --prefix ui run start
 ```
 
-The above will automatically open a browser with the URL: <http://localhost:3000>
+The above will automatically open a browser with the URL: <http://localhost:5173>
 
 #### 9.3. Running the end to end (e2e) tests
 
