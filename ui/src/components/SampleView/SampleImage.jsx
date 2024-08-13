@@ -16,7 +16,7 @@ import SampleControls from './SampleControls';
 import GridForm from './GridForm';
 import 'fabric';
 
-const jsmpeg = require('./jsmpeg.min.js');
+import { JSMpeg } from './jsmpeg.min.js';
 
 const { fabric } = window;
 fabric.Group.prototype.hasControls = false;
@@ -821,7 +821,7 @@ export default class SampleImage extends React.Component {
       }
 
       if (canvas) {
-        this.player = new jsmpeg.JSMpeg.Player(source, {
+        this.player = new JSMpeg.Player(source, {
           canvas,
           decodeFirstFrame: false,
           preserveDrawingBuffer: false,

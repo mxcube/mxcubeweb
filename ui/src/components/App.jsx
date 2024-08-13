@@ -16,7 +16,7 @@ import LoggerContainer from '../containers/LoggerContainer';
 import RemoteAccessContainer from '../containers/RemoteAccessContainer';
 import HelpContainer from '../containers/HelpContainer';
 import Main from './Main';
-import LoadingScreen from '../components/LoadingScreen/LoadingScreen';
+import LoadingScreen from './LoadingScreen/LoadingScreen';
 
 import { serverIO } from '../serverIO';
 import { getLoginInfo } from '../actions/login';

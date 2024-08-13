@@ -1,5 +1,4 @@
 ---
-
 # yamllint disable rule:line-length
 
 name: UI
@@ -130,8 +129,6 @@ jobs:
 
       - name: Build UI
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui build"
-        env:
-          DISABLE_ESLINT_PLUGIN: true
 
       - name: Start MXCuBE-Web server
         run: |
