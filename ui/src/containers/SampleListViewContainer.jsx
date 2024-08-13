@@ -451,7 +451,7 @@ class SampleListViewContainer extends React.Component {
       notInQueue: false,
       collected: false,
       notCollected: false,
-      limsFilter: false,
+      limsSamples: false,
       filterText: '',
       cellFilter: '',
       puckFilter: '',
