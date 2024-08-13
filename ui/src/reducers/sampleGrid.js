@@ -32,8 +32,7 @@ const INITIAL_STATE = {
     notCollected: false,
     cellFilter: '',
     puckFilter: '',
-    limsFilter: false,
-    useFilter: false,
+    limsSamples: false,
   },
 };
 
