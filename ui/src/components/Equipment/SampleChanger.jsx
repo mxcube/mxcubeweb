@@ -42,7 +42,7 @@ function renderSampleChangerTreeNode(props) {
   const inputId = getUniqueId();
 
   return (
-    <div>
+    <div key={props.label}>
       <li className={styles.treeLi}>
         <input // eslint-disable-line jsx-a11y/control-has-associated-label
           type="checkbox"
