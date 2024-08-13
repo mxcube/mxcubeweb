@@ -107,6 +107,9 @@ importers:
       redux-form:
         specifier: ^8.3.8
         version: 8.3.10(immutable@4.3.7)(react-redux@7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.1.2)
+      redux-logger:
+        specifier: 3.0.6
+        version: 3.0.6
       redux-thunk:
         specifier: ^2.4.1
         version: 2.4.2(redux@4.1.2)
@@ -1606,6 +1609,9 @@ packages:
   decompress-response@4.2.1:
     resolution: {integrity: sha512-jOSne2qbyE+/r8G1VU+G/82LBs2Fs4LAsTiLSHOCOMZQl2OKZ6i8i4IyHemTe+/yIXOtTcRQMzPcgyhoFlqPkw==}
     engines: {node: '>=8'}
+
+  deep-diff@0.3.8:
+    resolution: {integrity: sha512-yVn6RZmHiGnxRKR9sJb3iVV2XTF1Ghh2DiWRZ3dMnGc43yUdWWF/kX6lQyk3+P84iprfWKU/8zFTrlkvtFm1ug==}
 
   deep-equal@2.2.1:
     resolution: {integrity: sha512-lKdkdV6EOGoVn65XaOsPdH4rMxTZOnmFyuIkMjM1i5HHCbfjC97dawgTAy0deYNfuqUqW+Q5VrVaQYtUpSd6yQ==}
@@ -3598,6 +3604,9 @@ packages:
     peerDependenciesMeta:
       immutable:
         optional: true
+
+  redux-logger@3.0.6:
+    resolution: {integrity: sha512-JoCIok7bg/XpqA1JqCqXFypuqBbQzGQySrhFzewB7ThcnysTO30l4VCst86AuB9T9tuT03MAA56Jw2PNhRSNCg==}
 
   redux-thunk@2.4.2:
     resolution: {integrity: sha512-+P3TjtnP0k/FEjcBL5FZpoovtvrTNT/UXd4/sluaSyrURlSlhLSzEdfsTBW7WsKB6yPvgd7q/iZPICFjW4o57Q==}
@@ -5995,6 +6004,8 @@ snapshots:
       mimic-response: 2.1.0
     optional: true
 
+  deep-diff@0.3.8: {}
+
   deep-equal@2.2.1:
     dependencies:
       array-buffer-byte-length: 1.0.0
@@ -8348,6 +8359,10 @@ snapshots:
       redux: 4.1.2
     optionalDependencies:
       immutable: 4.3.7
+
+  redux-logger@3.0.6:
+    dependencies:
+      deep-diff: 0.3.8
 
   redux-thunk@2.4.2(redux@4.1.2):
     dependencies:
