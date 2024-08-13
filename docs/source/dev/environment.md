@@ -159,8 +159,7 @@ _The output should look something like the following:_
 
 #### 9.2. Running the front-end development server
 
-The front end development server, webpack development server,
-listens for changes on the filesystem and builds (re-builds) the UI when a change is made.
+The front end development server, listens for changes on the filesystem and builds (re-builds) the UI when a change is made.
 This makes it very easy and fast to see how a change affects the UI and makes debugging much easier.
 The development server listens on port **5173**
 

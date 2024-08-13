@@ -51,8 +51,7 @@ a library called [SocketIO](https://socket.io/) is further used to provide
 a bidirectional communication channel between backend and client.
 The backend exposes a REST API to the client.
 
-The client is implemented in ECMAScript6 and HTML5.
-React, Boostrap, and FabricJS are the main libraries used for the UI development.
+The UI is implemented in HTML, CSS and JavaScript, mainly with the React, Redux, Boostrap, and FabricJS libraries.
 
 ## Information for developers
 
