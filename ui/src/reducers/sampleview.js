@@ -129,7 +129,7 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
         beamPosition: action.info.position,
         beamShape: action.info.shape,
         beamSize: { x: action.info.size_x, y: action.info.size_y },
-       currentAperture: action.info.label,
+        currentAperture: action.info.label,
       };
     }
     case 'SET_CURRENT_PHASE': {
