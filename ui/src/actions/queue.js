@@ -498,7 +498,7 @@ export function setAutoAddDiffPlan(autoadddiffplan) {
   return async (dispatch) => {
     try {
       const json = await sendSetAutoAddDiffPlan(autoadddiffplan);
-      const a = json.auto_add_diffplan;
+      const a = json.autoadddiffplan;
       dispatch(setAutoAddDiffPlanAction(a));
     } catch {
       dispatch(showErrorPanel(true, 'Could not set/unset automount'));
