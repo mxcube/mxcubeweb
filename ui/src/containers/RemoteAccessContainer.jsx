@@ -1,81 +1,57 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-
 import { Container, Card, Form, Row, Col } from 'react-bootstrap';
-
-import RequestControlForm from '../components/RemoteAccess/RequestControlForm';
-import UserList from '../components/RemoteAccess/UserList';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   updateAllowRemote,
   updateTimeoutGivesControl,
 } from '../actions/remoteAccess';
+import RequestControlForm from '../components/RemoteAccess/RequestControlForm';
+import UserList from '../components/RemoteAccess/UserList';
 
-export class RemoteAccessContainer extends React.Component {
-  getRAOptions() {
-    return (
-      <Col sm={4}>
-        <Card className="mb-3">
-          <Card.Header>RA Options</Card.Header>
-          <Card.Body>
-            <Form.Check
-              type="checkbox"
-              onChange={(e) => this.props.updateAllowRemote(e.target.checked)}
-              checked={this.props.remoteAccess.allowRemote}
-              label="Enable remote access"
-            />
-            <Form.Check
-              type="checkbox"
-              onChange={(e) =>
-                this.props.updateTimeoutGivesControl(e.target.checked)
-              }
-              checked={this.props.remoteAccess.timeoutGivesControl}
-              label="Timeout gives control"
-            />
-          </Card.Body>
-        </Card>
-      </Col>
-    );
-  }
+function RemoteAccessContainer() {
+  const dispatch = useDispatch();
 
-  render() {
-    return (
-      <Container fluid className="mt-4">
-        <Row sm={12} className="d-flex">
-          {!this.props.login.user.inControl ? (
-            <Col sm={4} className="col-xs-4">
-              <RequestControlForm />
-            </Col>
-          ) : null}
-          <Col sm={4} className="mb-3">
-            <UserList />
+  const remoteAccess = useSelector((state) => state.remoteAccess);
+  const inControl = useSelector((state) => state.login.user.inControl);
+
+  return (
+    <Container fluid className="mt-4">
+      <Row sm={12} className="d-flex">
+        {!inControl && (
+          <Col sm={4} className="col-xs-4">
+            <RequestControlForm />
           </Col>
-          {this.getRAOptions()}
-        </Row>
-      </Container>
-    );
-  }
+        )}
+        <Col sm={4} className="mb-3">
+          <UserList />
+        </Col>
+        <Col sm={4}>
+          <Card className="mb-3">
+            <Card.Header>Options</Card.Header>
+            <Card.Body>
+              <Form.Check
+                type="checkbox"
+                onChange={(e) => dispatch(updateAllowRemote(e.target.checked))}
+                checked={remoteAccess.allowRemote}
+                label="Enable remote access"
+                id="allow-remote"
+              />
+              <Form.Check
+                type="checkbox"
+                onChange={(e) =>
+                  dispatch(updateTimeoutGivesControl(e.target.checked))
+                }
+                checked={remoteAccess.timeoutGivesControl}
+                label="Timeout gives control"
+                id="timeout-gives-control"
+              />
+            </Card.Body>
+          </Card>
+        </Col>
+      </Row>
+    </Container>
+  );
 }
 
-function mapStateToProps(state) {
-  return {
-    remoteAccess: state.remoteAccess,
-    login: state.login,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    updateAllowRemote: bindActionCreators(updateAllowRemote, dispatch),
-    updateTimeoutGivesControl: bindActionCreators(
-      updateTimeoutGivesControl,
-      dispatch,
-    ),
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(RemoteAccessContainer);
+export default RemoteAccessContainer;
