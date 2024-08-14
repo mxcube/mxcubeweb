@@ -80,6 +80,7 @@ class QueueSettings extends React.Component {
               onChange={this.autoMountNextOnClick}
               checked={this.props.queueState.autoMountNext}
               label="Automount next sample"
+              id="auto-mount-next"
             />
           </Dropdown.Item>
           <Dropdown.Item>
@@ -91,6 +92,7 @@ class QueueSettings extends React.Component {
                 this.props.queueState.centringMethod === AUTO_LOOP_CENTRING
               }
               label="Auto loop centring"
+              id="auto-loop-centring"
             />
           </Dropdown.Item>
           <Dropdown.Item>
@@ -100,6 +102,7 @@ class QueueSettings extends React.Component {
               onChange={this.setAutoAddDiffPlan}
               checked={this.props.queueState.autoAddDiffplan}
               label="Auto add diffraction plan"
+              id="auto-add-diff-plan"
             />
           </Dropdown.Item>
           <Dropdown.Item>
@@ -114,6 +117,7 @@ class QueueSettings extends React.Component {
               }}
               checked={this.props.queueState.rememberParametersBetweenSamples}
               label="Remember parameters between samples"
+              id="remember-params"
             />
           </Dropdown.Item>
           <Dropdown.Divider />
