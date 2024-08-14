@@ -41,7 +41,8 @@ export class HelpContainer extends React.Component {
           </Card.Header>
           <Card.Body>
             <span>
-              Name: `${givenName} ${familyName}`<br />
+              Name: {givenName} {familyName}
+              <br />
               Email: {email}
               <br />
               Tel: {tel} <br />
