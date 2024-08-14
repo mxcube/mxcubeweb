@@ -57,8 +57,8 @@ export class HelpContainer extends React.Component {
   render() {
     let links = [];
 
-    if (process.env.helpLinks) {
-      links = process.env.helpLinks.map((link) => (
+    if (import.meta.env.VITE_HELP_LINKS) {
+      links = import.meta.env.VITE_HELP_LINKS.map((link) => (
         // eslint-disable-next-line react/jsx-key
         <div>
           <a target="_blank" href={link.url} rel="noreferrer">
@@ -159,7 +159,7 @@ export class HelpContainer extends React.Component {
                   </Row>
                 </Card.Body>
               </Card>
-              {process.env.helpLinks ? (
+              {import.meta.env.VITE_HELP_LINKS ? (
                 <Card
                   header={
                     <div>
