@@ -646,7 +646,7 @@ def beam_changed(*args, **kwargs):
         "shape": "",
         "size_x": 0,
         "size_y": 0,
-        "aperture": 0,
+        "label": 0,
     }
     _beam = beam_info.get_value()
     beam_info_dict.update(
@@ -655,7 +655,7 @@ def beam_changed(*args, **kwargs):
             "size_x": _beam[0],
             "size_y": _beam[1],
             "shape": _beam[2].value,
-            "aperture": _beam[3],
+            "label": _beam[3],
         }
     )
     try:
