@@ -325,11 +325,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def set_autmount():
-        automount = request.get_json()
-        app.queue.set_auto_mount_sample(automount)
-        resp = jsonify({"automount": automount})
+        data = request.get_json()
+        app.queue.set_auto_mount_sample(data.get("automount", False))
+        resp = jsonify(data)
         resp.status_code = 200
-
         return resp
 
     @bp.route("/num_snapshots", methods=["PUT"])
@@ -366,9 +365,9 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def set_autoadd():
-        autoadd = request.get_json()
-        app.queue.set_auto_add_diffplan(autoadd)
-        resp = jsonify({"auto_add_diffplan": autoadd})
+        data = request.get_json()
+        app.queue.set_auto_add_diffplan(data.get("autoadddiffplan", False))
+        resp = jsonify(data)
         resp.status_code = 200
         return resp
 

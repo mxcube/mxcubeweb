@@ -61,11 +61,11 @@ export function sendMoveTask(sampleID, oldIndex, newIndex) {
 }
 
 export function sendSetAutoMountSample(automount) {
-  return endpoint.post(automount, '/automount').json();
+  return endpoint.post({ automount }, '/automount').json();
 }
 
 export function sendSetAutoAddDiffPlan(autoadddiffplan) {
-  return endpoint.post(autoadddiffplan, '/auto_add_diffplan').json();
+  return endpoint.post({ autoadddiffplan }, '/auto_add_diffplan').json();
 }
 
 export function sendSetNumSnapshots(numSnapshots) {
