@@ -1,0 +1,95 @@
+&sdcp_instrument_list
+! Values based on P14 config files 20190329 and Gleb email 20170410
+! As used in 202002 test
+
+calibration_name= 'UNKNOWN'
+beamline_name= 'ID30B'
+
+! Coordinate system.
+! NOTE that all values in this file must use the same coordinate system,
+! but that the choice of coordinate system is arbitrary
+coord_sys_name= 'ESRF'
+
+! Beam specification
+nominal_beam_dir= 0.0  0.0  1.0
+beam_sd_deg= 0.03 0.03
+lambda_sd= 0.0002
+pol_plane_n= 0.0 1.0 0.0
+pol_frac= 0.99
+
+! Detector specification
+det_name= "eiger9m"
+! Axis directions
+det_x_axis= 1.0  0.0  0.0
+det_y_axis= 0.0  1.0  0.0
+! Pixel sizes
+det_qx= 0.075000
+det_qy= 0.075000
+! Pixel counts
+det_nx= 3110
+det_ny= 3269
+! Default beam centre and detector distance - will be read from MXCuBE on acauisition
+det_org_x= 1565.715
+det_org_y= 1702.058
+det_org_dist= 240.581970
+! Sensor thickness
+d_sensor= 0.45
+
+! Detector file name. E.g. '.cbf' also covers compressed fies with suffix '.cbf.gz'
+det_filename_suffix= '.cbf'
+
+! Taken from http://xds.mpimf-heidelberg.mpg.de/html_doc/INPUT_templates/XDS-PILATUS.INP
+xds_DETECTOR= EIGER
+xds_OVERLOAD= 1048500
+
+! Detector distance axis and file naming
+det_gonio_axis_dirs=  0.0  0.0  1.0
+ ! Detector movement axis
+ ! Actual value is irrelevant, since axis is (nominally) parallel to beam
+ ! and we don't refine its direction
+det_gonio_axis_datum_settings= 500
+det_gonio_axis_limits= 195, 1000
+det_gonio_axis_names= 'Distance'
+det_gonio_axis_types= 'Translation'
+det_gonio_axis_calibratable = 'False'
+
+! Goniostat rotation axes, in order from goniostat to sample.
+! Names must match the motor name convention used in MXCuBE.
+! Axis directions will be overridden from diffraction calibration results, if present
+gonio_name= "MiniKappa"
+! Kappa axis calculated for alpha = 24,
+! component of kappa perpendicular to omega is vertical at omega = -46 degree
+gonio_axis_dirs= 1.0 0.0 0.0,
+   ! Numbers for home = -46 degrees
+   ! values taken from http://confluence.globalphasing.com/display/SDCP/ID30B+Calibration+-+20171010+and+20171012
+   ! NBNB axis lengths must be normalied to high precision; 7e-7 off causes a crash
+   0.913545457643, -0.282543013685, -0.292581855621
+   1.0 0.0 0.0
+gonio_axis_datum_settings= 0 0 0
+gonio_axis_limits= , , -8, 256, , ,
+gonio_axis_names= 'phi' 'kappa' 'kappa_phi'
+gonio_axis_scannable= 'True' 'False' 'False'
+gonio_axis_calibratable= 'False' 'True' 'True'
+
+! Nominal centring axis directions with correct signs
+gonio_centring_axis_dirs= -1.0,  0.0,  0.0,
+                           0.0, -1.0,  0.0,
+                           0.0,  0.0, -1.0
+! Actual limits on centring axes
+gonio_centring_axis_limits=  -6.5, 4.0, -2.7, 3.0, -2.8, 2.8
+! Names must match the motor name convention used in MXCuBE.
+gonio_centring_axis_names= 'phiy', 'sampx', 'sampy'
+
+! Beamstop specification, for collision avoidance and shadow description in simulation
+! Introduced for the Diamond I23 curved detector
+! Not required for strategy calculations on mini-kappa goniostat
+! DO NOT UNCOMMENT
+! beamstop_name= 'BEAMSTOPV1'
+! beamstop_param_names= 'BEAM_STOP_RADIUS' 'BEAM_STOP_S_LENGTH' 'BEAM_STOP_S_DISTANCE'
+! beamstop_param_vals=    1.0               -120.0                60.0
+
+
+! Detector segment description
+! Must match detector type
+! Otherwise DO NOT EDIT from this point of the file onwards
+/

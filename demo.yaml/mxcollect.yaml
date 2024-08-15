@@ -1,0 +1,11 @@
+%YAML 1.2
+---
+class: MultiCollectMockup.MultiCollectMockup
+configuration:
+  auto_processing:
+    program:
+      - event: after
+        executable: not_existing_executable_1
+      - event: image
+        executable: not_existing_executable_2
+  num_snapshots: 0
