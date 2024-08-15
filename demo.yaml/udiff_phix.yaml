@@ -1,0 +1,9 @@
+%YAML 1.2
+---
+class: MotorMockup.MotorMockup
+configuration:
+  GUIstep: 0.1
+  exporter_address: 130.235.94.124:9001
+  motor_name: AlignmentX
+  unit: 0.001
+  username: PhiX

@@ -1,0 +1,10 @@
+%YAML 1.2
+---
+class: MDCameraMockup.MDCameraMockup
+configuration:
+  image_name: mxcube_sample_snapshot.jpeg
+  interval: 100
+  remote_interval: 100
+  specversion: 130.235.94.114:kappa
+  tangoname: i9113/microdiff/newMD
+  username: Camera Microdiff

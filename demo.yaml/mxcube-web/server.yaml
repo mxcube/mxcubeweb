@@ -1,0 +1,30 @@
+---
+
+server:
+  SECRET_KEY: "ASECRETKEY"
+  SECURITY_PASSWORD_SALT: "ASALT"
+  PERMANENT_SESSION_LIFETIME: 60
+
+  DEBUG: false
+
+  ALLOWED_CORS_ORIGINS:
+    - "http://localhost:8081"
+    - "http://localhost:3000"
+    - "ws://localhost:8000"
+
+mxcube:
+  USE_EXTERNAL_STREAMER: true
+  VIDEO_FORMAT: MPEG1
+  VIDEO_STREAM_URL: "ws://localhost:8000/ws"
+
+  # At which port to stream from
+  VIDEO_STREAM_PORT: 8000
+  # Mode, SSX-CHIP, SSX-INJECTOR, OSC
+  mode: OSC
+
+  usermanager:
+    class: UserManager
+    inhouse_is_staff: true
+    users:
+      - username: opid291
+        role: staff

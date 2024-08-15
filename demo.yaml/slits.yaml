@@ -1,0 +1,14 @@
+%YAML 1.2
+---
+class: SlitsMockup.SlitsMockup
+configuration:
+  gapH:
+    maxGap: 0.3
+    minGap: 0.005
+    stepSize: 0.005
+    updateTolerance: 0.0005
+  gapV:
+    maxGap: 0.3
+    minGap: 0.005
+    stepSize: 0.005
+    updateTolerance: 0.0005

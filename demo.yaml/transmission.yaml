@@ -1,0 +1,6 @@
+%YAML 1.2
+---
+class: TransmissionMockup.TransmissionMockup
+configuration:
+  default_value: 10
+  username: transmission

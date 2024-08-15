@@ -1,0 +1,9 @@
+%YAML 1.2
+---
+class: MotorMockup.MotorMockup
+configuration:
+  GUIstep: 90
+  exporter_address: 130.235.94.124:9001
+  motor_name: Omega
+  unit: 0.001
+  username: Omega

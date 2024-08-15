@@ -1,0 +1,8 @@
+%YAML 1.2
+---
+class: MotorMockup.MotorMockup
+configuration:
+  default_limits: (150, 500)
+  default_value: 200
+  motor_name: DtoX
+  username: Detector distance

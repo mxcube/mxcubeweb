@@ -1,0 +1,9 @@
+%YAML 1.2
+---
+class: ISPyBRestClientMockup.ISPyBRestClientMockup
+configuration:
+  exi_root: "https://your.exi.org"
+  restPass: ''
+  restRoot: "https://your.lims.org"
+  restUserName: ''
+  site: "ESRF"

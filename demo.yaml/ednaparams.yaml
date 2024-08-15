@@ -1,0 +1,37 @@
+%YAML 1.2
+---
+class: EdnaWorkflow.EdnaWorkflow
+configuration:
+  bes_host: mxcubeweb
+  bes_port: 8100
+  workflow:
+    - path: MeshScan
+      requires: grid
+      title: WF Mesh Scan
+    - path: XrayCentring
+      requires: grid
+      title: X-ray Centring
+    - path: HelicalCharacterisation
+      requires: line
+      title: Helical characterisation
+    - path: EnhancedCharacterisation
+      requires: point
+      title: Enhanced characterisation
+    - path: MXPressE
+      requires: samplegrid
+      title: MXPressE
+    - path: MeshAndCollect
+      requires: grid
+      title: Mesh and collect
+    - path: MeshAndCollectFromFile
+      requires: grid
+      title: Mesh and collect from file
+    - path: DistanceCalibration
+      requires: point
+      title: Distance calibration
+    - path: TroubleShooting
+      requires: samplegrid
+      title: Trouble shooting
+    - path: TroubleShootingWithDialog
+      requires: samplegrid
+      title: Trouble shooting Dialog

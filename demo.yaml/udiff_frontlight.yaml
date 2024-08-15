@@ -1,0 +1,7 @@
+%YAML 1.2
+---
+class: MotorMockup.MotorMockup
+configuration:
+  exporter_address: 192.168.96.43:9001
+  motor_name: frontlight
+  username: frontlight

@@ -1,0 +1,159 @@
+---
+
+sample_view:
+  id: sample_view
+  components:
+    - label: Omega
+      attribute: diffractometer.phi
+      role: omega
+      step: 90
+      precision: 2
+      suffix: °
+    - label: Kappa
+      attribute: diffractometer.kappa
+      role: kappa
+      step: 0.1
+      precision: 1
+      suffix: °
+    - label: Kappa Phi
+      attribute: diffractometer.kappa_phi
+      role: kappa_phi
+      step: 0.1
+      precision: 1
+      suffix: °
+    - label: X
+      attribute: diffractometer.phix
+      role: phix
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Y
+      attribute: diffractometer.phiy
+      role: phiy
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Z
+      attribute: diffractometer.phiz
+      role: phiz
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Samp-X
+      attribute: diffractometer.sampx
+      role: sampx
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Samp-Y
+      attribute: diffractometer.sampy
+      role: sampy
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Sample Horizontal
+      attribute: diffractometer.phiz
+      role: sample_horizontal
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Sample Vertical
+      attribute: diffractometer.phiy
+      role: sample_vertical
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Zoom
+      attribute: diffractometer.zoom
+      role: zoom
+      step: 1
+      precision: 1
+      suffix: mm
+    - label: Focus
+      attribute: diffractometer.sampx
+      role: focus
+      step: 0.1
+      precision: 3
+      suffix: mm
+
+sample_view_video_controls:
+  id: sample_view_video_controls
+  components:
+    - id: snapshot
+      show: true
+    - id: draw_grid
+      show: true
+    - id: 3_click_centring
+      show: true
+    - id: focus
+      show: true
+    - id: zoom
+      show: true
+    - id: backlight
+      show: true
+    - id: frontlight
+      show: true
+    - id: video_size
+      show: true
+
+beamline_setup:
+  id: beamline_setup
+  components:
+    - label: Beamstop
+      attribute: diffractometer.beamstop
+    - label: Capillary
+      attribute: diffractometer.capillary
+    - label: Fast Shutter
+      attribute: fast_shutter
+    - label: Safety shutter
+      attribute: safety_shutter
+    - label: Detector
+      attribute: detector
+    - label: Energy
+      attribute: energy
+      step: 0.001
+      precision: 4
+      suffix: keV
+    - label: Resolution
+      attribute: resolution
+      step: 0.001
+      precision: 3
+      suffix: Å
+    - label: Transmission
+      attribute: transmission
+      step: 0.1
+      precision: 1
+      suffix: "%"
+    - label: Cryo
+      attribute: cryo
+      precision: 2
+      suffix: k
+    - label: Wavelength
+      attribute: energy.wavelength
+      step: 0.01
+      precision: 2
+      suffix: Å
+    - label: Detector
+      attribute: detector.detector_distance
+      step: 0.1
+      precision: 1
+      suffix: mm
+    - label: Flux
+      attribute: flux
+      precision: 2
+      suffix: ph/s
+      format: expo
+
+camera_setup:
+  id: camera_setup
+  components:
+    - label: Camera 1
+      attribute: jpg
+      url: http://localhost:8080/mjpg/video.mjpg?streamprofile=mxcube
+      width: 800
+      height: 450
+    - label: Camera 2
+      attribute: jpg
+      url: http://localhost:9090/mjpg/video.mjpg?streamprofile=mxcube
+      width: 800
+      height: 450

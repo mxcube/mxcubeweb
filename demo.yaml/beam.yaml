@@ -1,0 +1,11 @@
+%YAML 1.2
+---
+class: BeamMockup.BeamMockup
+configuration:
+  beam_divergence_horizontal: 12.0
+  beam_divergence_vertical: 12.0
+  definer_type: aperture
+  username: beam
+objects:
+  aperture: aperture.yaml
+  slits: slits.yaml

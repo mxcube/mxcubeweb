@@ -1,0 +1,31 @@
+ &SIMCAL_CRYSTAL_LIST
+ ! Taken from simcal input at
+ ! https://wwi/members/dev/kwiki/index.cgi?ClemensAutoProcSimcalExamples
+ SG_NAME = "I4",
+ CELL_DIM         =   86.7500 86.7500 85.6276
+ CELL_ANG_DEG     =   90.000 90.000 90.000
+ CELL_DIM_SD      =    0.08675 0.08675 0.0856276
+ !CELL_A_AXIS     =    0.130561 -48.185558  72.136650
+ !CELL_B_AXIS     =    48.641945 59.770538  39.837238
+ !CELL_C_AXIS     =   -70.900352 39.865532  26.757519
+ ! New orientation from Claus, so that a two-orientation strategy is
+ ! possible on I04
+ ! See https://wwi.globalphasing.com/mailman/private/proc-dev/2015-October/001694.html
+ ! CELL_A_AXIS     =    58.2780821909428   -39.8027581762392  -50.4509106924480
+ ! CELL_B_AXIS     =   -0.580160065421774  -68.4308322330094   53.3176745407913
+ ! CELL_C_AXIS     =   -63.4259296319624   -35.0202970122503  -45.6371471128775
+ ! 42-48 deg gives you both main and cusp axes
+ ! Polar angles tt,ff for horizontal goniostat require (tt-90, ff+90, -90) ??
+ U_MAT_ANG_DEG   = -60.0 120.0 -90.0
+ U_MAT_SD_DEG      = 3*0.145
+ ! U_MAT_SD_DEG      = 3*0.25
+
+ ! New resolution limit suggested by Claus : 2.0
+ ! highest inherent res of hkli data: 1.700
+ ! L/R at lambda=1A ca. 1.47
+ RES_LIMIT_DEF = 1.7
+ ! B factor to cause intensities to drop off (a bit).
+ ! 10.0 is a pretty random value
+ B_WILSON = 10.0
+ GEN_MODE = -1
+ /

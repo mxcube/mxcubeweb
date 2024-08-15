@@ -1,0 +1,81 @@
+%YAML 1.2
+---
+class: EnergyScanMockup.EnergyScanMockup
+configuration:
+  config_file: /users/blissadm/local/beamline_configuration/misc/EdgeScan.dat
+  elements:
+    element:
+      - energy: K
+        symbol: Mn
+      - energy: K
+        symbol: Fe
+      - energy: K
+        symbol: Co
+      - energy: K
+        symbol: Ni
+      - energy: K
+        symbol: Cu
+      - energy: K
+        symbol: Zn
+      - energy: K
+        symbol: As
+      - energy: K
+        symbol: Se
+      - energy: K
+        symbol: Br
+      - energy: K
+        symbol: Kr
+      - energy: K
+        symbol: Rb
+      - energy: K
+        symbol: Sr
+      - energy: K
+        symbol: Y
+      - energy: K
+        symbol: Mo
+      - energy: L
+        symbol: Sm
+      - energy: L
+        symbol: Eu
+      - energy: L
+        symbol: Gd
+      - energy: L
+        symbol: Tb
+      - energy: L
+        symbol: Ho
+      - energy: L
+        symbol: Yb
+      - energy: L
+        symbol: Lu
+      - energy: L
+        symbol: Ta
+      - energy: L
+        symbol: W
+      - energy: L
+        symbol: Re
+      - energy: L
+        symbol: Os
+      - energy: L
+        symbol: Ir
+      - energy: L
+        symbol: Pt
+      - energy: L
+        symbol: Au
+      - energy: L
+        symbol: Hg
+      - energy: L
+        symbol: Pb
+      - energy: L
+        symbol: U
+  mad:
+    defaultenergy:
+      - directory: pk
+        energy: 12.6595
+      - directory: ip
+        energy: 12.6595
+      - directory: rm
+        energy: 12.708
+  max_integrated_counts: 50000
+  min_integrated_counts: 2000
+  offset_keV: 0.025
+  theoritical_edge_threshold: 0.01

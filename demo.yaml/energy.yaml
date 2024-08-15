@@ -1,0 +1,13 @@
+%YAML 1.2
+---
+class: EnergyMockup.EnergyMockup
+configuration:
+  mad:
+    defaultenergy:
+      - directory: pk
+        energy: 12.6595
+      - directory: ip
+        energy: 12.6595
+      - directory: rm
+        energy: 12.708
+  username: energy

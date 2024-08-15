@@ -1,0 +1,26 @@
+ &SIMCAL_CRYSTAL_LIST
+ ! Taken from simcal input at
+ ! https://wwi/members/dev/kwiki/index.cgi?ClemensAutoProcSimcal20140320
+ SG_NAME = "P21",
+ CELL_DIM        =   72.0360000000000     ,   109.441000000000     ,   74.0480000000000     ,
+ CELL_ANG_DEG    =   90.0000000000000     ,   111.860000000000     ,   90.0000000000000     ,
+ CELL_DIM_SD     =  7.000000000000001E-002,  0.110000000000000     ,  7.000000000000001E-002,
+! Original orientation
+! CELL_A_AXIS     =   54.9824100000000      -34.0170250000000     -31.6979680000000,
+! CELL_B_AXIS     =  -18.8055060000000      -88.2340090000000      62.0697940000000,
+! CELL_C_AXIS     =  -63.8254320000000      -11.4903590000000     -35.6712990000000,
+! Temporary new orientation that doesn't bring the Kappa bracket into the beam
+! CELL_A_AXIS     =   45.4388774540983       -38.1381724703247     -40.8159730711413,
+! CELL_B_AXIS     =   59.0862367748296       -24.6250714568120      88.7879681458296,
+! CELL_C_AXIS     =  -55.6840853942609       -41.5456791482591      25.5338146653523,
+ ! Should get unique b axis and orthogonal axis in range
+ U_MAT_ANG_DEG   = 0.0  30.0  30.0
+ U_MAT_SD_DEG    = 3*0.04
+ ! highest inherent res of hkli data: 2.141
+ ! L/R at lambda=1A ca. 2.0
+ RES_LIMIT_DEF   =   2.141
+ ! B factor to cause intensities to drop off (a bit).
+ ! 10.0 is a pretty random value
+ B_WILSON = 10.0
+ GEN_MODE = -1
+ /

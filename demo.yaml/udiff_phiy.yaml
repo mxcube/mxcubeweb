@@ -1,0 +1,9 @@
+%YAML 1.2
+---
+class: MotorMockup.MotorMockup
+configuration:
+  direction: -1
+  exporter_address: 130.235.94.124:9001
+  motor_name: AlignmentY
+  unit: 1e-05
+  username: PhiY

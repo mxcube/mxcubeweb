@@ -1,0 +1,7 @@
+%YAML 1.2
+---
+class: SampleView.SampleView
+configuration:
+  hide_grid_threshold: 5
+objects:
+  camera: md_camera.yaml

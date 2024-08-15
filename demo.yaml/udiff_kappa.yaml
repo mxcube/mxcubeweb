@@ -1,0 +1,8 @@
+%YAML 1.2
+---
+class: MotorMockup.MotorMockup
+configuration:
+  default_limits: (0, 225)
+  exporter_address: 130.235.94.124:9001
+  motor_name: Kappa
+  username: Kappa

@@ -1,0 +1,60 @@
+<object class = "Session" role = "session">
+    <synchrotron_name>ESRF</synchrotron_name>
+    <endstation_name>mxcubewebtest</endstation_name>
+    <beamline_name>mxcubewebtest</beamline_name>
+    <email_extension>esrf.fr</email_extension>
+
+    <proposals>
+        <proposal>
+            <code>ifx</code>
+            <ispyb>fx</ispyb>
+            <gui>fx</gui>
+        </proposal>
+    </proposals>
+
+  <inhouse_users>
+    <proposal>
+      <code>idtest</code>
+      <number>0</number>
+    </proposal>
+    <proposal>
+      <code>opid</code>
+      <number>291</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>1</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>2</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>3</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>4</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>5</number>
+    </proposal>
+    <proposal>
+      <code>mxihr</code>
+      <number>6</number>
+    </proposal>
+  </inhouse_users>
+
+    <file_info>
+        <file_suffix>cbf</file_suffix>
+        <precision>4</precision>
+        <base_directory>/home/rhfogh/calc/mxcubeweb_data</base_directory>
+        <raw_data_folder_name>RAW_DATA</raw_data_folder_name>
+        <processed_data_base_directory>/home/rhfogh/calc/mxcubeweb_data</processed_data_base_directory>
+        <processed_data_folder_name>PROCESSED_DATA</processed_data_folder_name>
+        <archive_base_directory>/home/rhfogh/calc/mxcubeweb_data</archive_base_directory>
+        <archive_folder>ARCHIVE</archive_folder>
+    </file_info>
+</object>
