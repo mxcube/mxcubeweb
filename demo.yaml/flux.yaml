@@ -1,0 +1,5 @@
+%YAML 1.2
+---
+class: FluxMockup.FluxMockup
+configuration:
+  default_value: 2300000000000.0

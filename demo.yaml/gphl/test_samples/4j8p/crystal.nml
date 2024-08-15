@@ -1,0 +1,24 @@
+ &SIMCAL_CRYSTAL_LIST
+ ! Taken from simcal input at
+ ! https://wwi/members/dev/kwiki/index.cgi?ClemensAutoProcSimcalExamples
+ SG_NAME = "P41212",
+ CELL_DIM        = 56.2530 56.2530 102.3243
+ CELL_ANG_DEG    = 90.000 90.000 90.000
+ ! NB this was read as 2*(0.056253  0.102324)
+ ! CELL_DIM_SD     = 2*0.056253  0.102324
+ CELL_DIM_SD     = 0.056253  0.056253 0.102324
+ ! CELL_A_AXIS     =  -5.166694     5.119450   -55.780788
+ ! CELL_B_AXIS     =  -25.522421   49.649857     6.920784
+ ! CELL_C_AXIS     =   90.700722   47.191845    -4.069958
+ ! 42-48 deg gives you both main and cusp axes
+ ! Polar angles tt,ff for horizontal goniostat require (tt-90, ff+90, -90) ??
+ U_MAT_ANG_DEG   = -40.0, 130.0, -90.0
+ U_MAT_SD_DEG    = 3*0.192
+ ! highest inherent res of hkli data: 1.500
+ ! L/R at lambda=1A ca. 1.24
+ RES_LIMIT_DEF   =  1.5
+ ! B factor to cause intensities to drop off (a bit).
+ ! 10.0 is a pretty random value
+ B_WILSON = 10.0
+ GEN_MODE = -1
+ /

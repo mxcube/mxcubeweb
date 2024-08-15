@@ -1,0 +1,63 @@
+<object class="Gphl.CollectEmulator">
+
+  <!-- First part must mirror mxcollect.xml -->
+  <object href="/minidiff" role="diffractometer"/>
+  <object href="/mxlocal" role="beamline_configuration"/>
+  <object href="/lims" role="dbserver"/>
+
+  <object href="/energy" role="energy"/>
+  <object href="/transmission" role="transmission"/>
+  <object href="/detector" role="detector"/>
+  <object href="/resolution" role="resolution"/>
+
+  <object href="/mach-info-mockup" role="machine_info"/>
+  <object href="/sc" role="sample_changer"/>
+
+  <!--<auto_processing>-->
+    <!--<program>-->
+      <!--<executable>none_present_executable</executable>-->
+      <!--<event>after</event>-->
+    <!--</program>-->
+  <!--</auto_processing>-->
+
+  <directory_prefix>emulator</directory_prefix>
+
+  <!-- From here on specific to emulator -->
+
+  <!-- All simcal_parameters are passed to the simcal input namelist file -->
+  <!-- See Simcal documentation for more parameters and options -->
+  <simcal_parameters>
+    <!-- Simcal bacground noise level -->
+    <background>1.0</background>
+    <!-- Number of rays for simcal ray tracing (2000 minimum for testing, 5000 for use-->
+    <n_rays>2001</n_rays>
+    <!--<n_rays>5001</n_rays>-->
+    <!-- Unit cell orientation mode. 1 is calculate-from-cell, real-space -->
+    <!-- -1 is from-cell, reciprocal-space. Default is 0 (CELL_AXIS vectors) -->
+    <orient_mode>1</orient_mode>
+    <!-- Intensity generation mode - 0 means read directly from hkli file -->
+    <gen_mode>0</gen_mode>
+    <!-- sim_mode 0 turns off threaded calculation for multi-segment detectors -->
+    <sim_mode>1</sim_mode>
+  </simcal_parameters>
+
+  <!-- NB - these options are prefixed with a double hyphen -->
+  <simcal_options>
+    <!-- Simcal memory pool option, in Gb - should be 50-66% of available memory -->
+    <memory-pool>6</memory-pool>
+    <!-- Default is 1.0. Too low makes for 'insufficient spots', -->
+    <!-- too high for 'insufficient indexed fraction' errors -->
+    <!-- For now all test hkli files are sdcaled to work with scale 1.0 -->
+    <hkl-scale>1.0</hkl-scale>
+    <!-- NB set specifically for 5yav PONLY -->
+<!--    <hkl-scale>0.1</hkl-scale>-->
+  </simcal_options>
+
+  <!-- Both thread number variables should be less than all available threads -->
+  <!-- stack size taken from PK example - who knows what is best. -->
+  <environment_variables>
+    <OMP_STACKSIZE>1G</OMP_STACKSIZE>
+    <OMP_THREAD_LIMIT>6</OMP_THREAD_LIMIT>
+    <OMP_NUM_THREADS>6</OMP_NUM_THREADS>
+  </environment_variables>
+</object>

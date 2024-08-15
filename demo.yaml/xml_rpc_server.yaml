@@ -1,0 +1,10 @@
+%YAML 1.2
+---
+class: XMLRPCServer.XMLRPCServer
+configuration:
+  all_interfaces: true
+  apis:
+    api:
+      - module: Native
+        recurse: true
+  port: 7171
