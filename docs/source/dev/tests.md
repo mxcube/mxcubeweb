@@ -3,8 +3,9 @@
 Testing is a crucial aspect of software development that ensures the reliability, quality, and performance of an application. Additionally, testing facilitates better code design and architecture by encouraging modular and decoupled code. Hence, this document will focus on the different testing frameworks used in this project, explain how to correctly use them and how to contribute to the testing environment.
 
 The tests in this project include two different frameworks, namely [pytest](https://pytest.org/) and [cypress](https://www.cypress.io). The focus of both testing frameworks is slightly different:
- - `pytest` focuses on testing Python code. In the case of MXCuBE-Web the Python code is the back-end server side of the application
- - `cypress` is used for e2e tests. These tests should cover the application's workflow from the user's perspective. They simulate user interaction with the application's interface and ensure the correct functionality of features, integration of components, and overall user experience.
+
+- `pytest` focuses on testing Python code. In the case of MXCuBE-Web the Python code is the back-end server side of the application
+- `cypress` is used for e2e tests. These tests should cover the application's workflow from the user's perspective. They simulate user interaction with the application's interface and ensure the correct functionality of features, integration of components, and overall user experience.
 
 ## Prerequirements
 
@@ -28,15 +29,12 @@ The output should be similar to the following:
 
 ## E2E Tests (Cypress)
 
-The e2e tests are located in the `ui/cypress/e2e` folder and consists of multiple specs represented each by one file. The specs are designed to each contain the tests to their respective component. One exception is the `app.cy.js` which also includes tests regarding login.
+The E2E tests are located in the `ui/cypress/e2e` folder and consist of multiple specs represented each by one file. The specs are designed to each contain the tests to their respective component. One exception is the `app.cy.js` which also includes tests regarding login.
 
-To run all the tests consecutavely in a headless browser environment, you can use the following command:
+To run all the tests consecutively in a headless browser environment, start both the backend and front-end servers in separate terminals, and then run the following command from the root of the project:
 
 ```
-# Make sure to run this from the root of the project
-cd mxcubeweb
-
-pnpm --prefix ui run e2e
+pnpm --prefix ui e2e
 ```
 
 This should give you a result similar to this:
@@ -45,16 +43,20 @@ This should give you a result similar to this:
 
 The default browser for this process is chosen to be [Firefox](https://www.mozilla.org/en-US/firefox/new/).
 
-Another possibility is to use the [cypress app](https://www.cypress.io/app) to run the tests. This gives you some additional possibilities such as choosing the browser environment, run only specific specs or using an interactive debugging mode. To run the cypress app, you can run the following command:
+Another possibility is to use the [Cypress App](https://www.cypress.io/app) to run the tests. This gives you some additional possibilities such as choosing the browser environment, run only specific specs or using an interactive debugging mode. To run the Cypress App, run the following command:
 
 ```
-# Make sure to run this from the root of the project
-cd mxcubeweb
-
-pnpm --prefix ui run cypress
+pnpm --prefix ui cypress
 ```
 
 ![cypress_app](assets/cypress_client.png)
+
+If you'd like to run Cypress against the front-end production build of MXCuBE-Web, like in the CI, run the following:
+
+```
+pnpm --prefix ui build
+CYPRESS_BASE_URL="http://127.0.0.1:8081" pnpm --prefix ui e2e
+```
 
 ### Best Practices
 
@@ -84,9 +86,9 @@ The cypress tests are configured to act according to human behavior, hence durin
 
 Contribution to the testing environment is always welcomed and appreciated. To do so please follow a few simple guidelines:
 
- - Follow the test structure and add your tests to the corresponding spec or add a spec if necessary
- ![Structure](assets/cypress_structure.png)
-    The current structure envisages to use one spec for every larger component in the project, for example the queue or the sample controls field. Each spec then contains smaller group of tests for each functionality, this could be the 3-click-centring method of the sample control field or the login feature for instance. Each group of tests is restricted by the same `beforEach` and `afterEach` part which can help to prepare for everything that is needed for the tests (i.e. navigating to the correct page, remove observer mode, etc...)
- - Use an approach that simulates human behavior. This includes the preference of using function like `cy.findByText` or `cy.findByRole` over functions like `cy.get` (Use the latter only when there is no other possibility) as well as using a clicking procedure rather than using the api directly.
- - Make sure that your tests do not run in _Observer mode_ when accessing elements by using `cy.takeControl()`. Your test might not run in _Observer mode_ when called seperately, but when running in a spec of a few tests, this might be possible.
- - To keep the codebase tidy, you can add auxiliary functions in `ui/cypress/support.js`. These commands are used for clicking procedures that will be repeated by many different tests for example login, or sample mounting. Feel free to add necessary helper functions and check out the current commands.
+- Follow the test structure and add your tests to the corresponding spec or add a spec if necessary
+  ![Structure](assets/cypress_structure.png)
+  The current structure envisages to use one spec for every larger component in the project, for example the queue or the sample controls field. Each spec then contains smaller group of tests for each functionality, this could be the 3-click-centring method of the sample control field or the login feature for instance. Each group of tests is restricted by the same `beforEach` and `afterEach` part which can help to prepare for everything that is needed for the tests (i.e. navigating to the correct page, remove observer mode, etc...)
+- Use an approach that simulates human behavior. This includes the preference of using function like `cy.findByText` or `cy.findByRole` over functions like `cy.get` (Use the latter only when there is no other possibility) as well as using a clicking procedure rather than using the api directly.
+- Make sure that your tests do not run in _Observer mode_ when accessing elements by using `cy.takeControl()`. Your test might not run in _Observer mode_ when called seperately, but when running in a spec of a few tests, this might be possible.
+- To keep the codebase tidy, you can add auxiliary functions in `ui/cypress/support.js`. These commands are used for clicking procedures that will be repeated by many different tests for example login, or sample mounting. Feel free to add necessary helper functions and check out the current commands.

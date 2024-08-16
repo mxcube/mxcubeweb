@@ -137,6 +137,8 @@ jobs:
 
       - name: Run Cypress
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui e2e"
+        env:
+          CYPRESS_BASE_URL: http://127.0.0.1:8081
 
       - uses: actions/upload-artifact@v3
         if: failure()
