@@ -1,13 +1,14 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import LoginForm from '../components/LoginForm/LoginForm';
 
 function LoginContainer() {
   const loggedIn = useSelector((state) => state.login.loggedIn);
+  const location = useLocation();
 
   if (loggedIn) {
-    return <Navigate to="/datacollection" replace />;
+    return <Navigate to={location.state?.from || '/datacollection'} replace />;
   }
 
   return <LoginForm />;
