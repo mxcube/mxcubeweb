@@ -1,10 +1,8 @@
-import { useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   createBrowserRouter,
   RouterProvider,
-  useLocation,
-  Outlet,
   Navigate,
 } from 'react-router-dom';
 
@@ -20,18 +18,7 @@ import LoadingScreen from './LoadingScreen/LoadingScreen';
 
 import { serverIO } from '../serverIO';
 import { getLoginInfo } from '../actions/login';
-import { bindActionCreators } from 'redux';
-
-function PrivateOutlet() {
-  const loggedIn = useSelector((state) => state.login.loggedIn);
-  const location = useLocation();
-
-  return loggedIn ? (
-    <Outlet />
-  ) : (
-    <Navigate to="/login" state={{ from: location }} replace />
-  );
-}
+import PrivateOutlet from './PrivateOutlet';
 
 const router = createBrowserRouter([
   {
@@ -81,11 +68,12 @@ const router = createBrowserRouter([
   },
 ]);
 
-function App(props) {
-  const { loggedIn, getLoginInfo } = props;
+function App() {
+  const dispatch = useDispatch();
+  const loggedIn = useSelector((state) => state.login.loggedIn);
 
   useEffect(() => {
-    getLoginInfo();
+    dispatch(getLoginInfo());
 
     if (loggedIn) {
       serverIO.listen();
@@ -97,7 +85,7 @@ function App(props) {
 
     // no clean-up required, until we connect to serverIO
     return undefined;
-  }, [loggedIn, getLoginInfo]);
+  }, [loggedIn, dispatch]);
 
   if (loggedIn === null) {
     // Fetching login info
@@ -107,7 +95,4 @@ function App(props) {
   return <RouterProvider router={router} />;
 }
 
-export default connect(
-  (state) => ({ loggedIn: state.login.loggedIn }),
-  (dispatch) => ({ getLoginInfo: bindActionCreators(getLoginInfo, dispatch) }),
-)(App);
+export default App;

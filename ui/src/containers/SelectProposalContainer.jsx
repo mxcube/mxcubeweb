@@ -2,7 +2,7 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { signOut, selectProposal, hideProposalsForm } from '../actions/login';
-import SelectProposal from '../components/Login/SelectProposal';
+import SelectProposal from '../components/LoginForm/SelectProposal';
 import withRouter from '../components/WithRouter';
 import { serverIO } from '../serverIO';
 
