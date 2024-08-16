@@ -399,6 +399,10 @@ class ServerIO {
       this.dispatch(getLoginInfo());
     });
 
+    this.hwrSocket.on('remainObserver', (data) => {
+      this.dispatch(showWaitDialog('You were denied control', data.message));
+    });
+
     this.hwrSocket.on('observerLogout', (observer) => {
       addResponseMessage(
         `**${observer.nickname}** (${observer.ip}) disconnected.`,

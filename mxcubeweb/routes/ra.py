@@ -113,7 +113,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         observer["message"] = message
 
         server.emit(
-            "setObserver",
+            "remainObserver",
             observer,
             room=user.socketio_session_id,
             namespace="/hwr",

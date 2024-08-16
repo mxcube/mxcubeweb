@@ -69,11 +69,11 @@ export class PassControlDialog extends React.Component {
             rows="3"
           />
           <br />
-          <Button size="sm" variant="outline-secondary" onClick={this.accept}>
+          <Button variant="success" onClick={this.accept}>
             {' '}
             Give control to "{observer.nickname}"{' '}
           </Button>
-          <Button size="sm" variant="outline-secondary" onClick={this.reject}>
+          <Button variant="danger" onClick={this.reject}>
             {' '}
             Deny control{' '}
           </Button>
