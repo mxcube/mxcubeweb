@@ -20,23 +20,6 @@ export function applicationFetched(data) {
   return { type: 'APPLICATION_FETCHED', data };
 }
 
-export function setLoading(
-  loading,
-  title = '',
-  message = '',
-  blocking = false,
-  abortFun = undefined,
-) {
-  return {
-    type: 'SET_LOADING',
-    loading,
-    title,
-    message,
-    blocking,
-    abortFun,
-  };
-}
-
 export function showErrorPanel(show, message = '') {
   return {
     type: 'SHOW_ERROR_PANEL',

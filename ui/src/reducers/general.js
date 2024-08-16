@@ -1,5 +1,4 @@
 const INITIAL_STATE = {
-  loading: false,
   showErrorPanel: false,
   errorMessage: '',
   dialogData: '',
@@ -15,16 +14,6 @@ const INITIAL_STATE = {
 
 function generalReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
-    case 'SET_LOADING': {
-      return {
-        ...state,
-        loading: action.loading,
-        title: action.title,
-        message: action.message,
-        blocking: action.blocking,
-        abortFun: action.abortFun,
-      };
-    }
     case 'SHOW_ERROR_PANEL': {
       return {
         ...state,

@@ -1,34 +1,34 @@
 import React from 'react';
 import { Modal, ProgressBar, Button } from 'react-bootstrap';
-import { setLoading } from '../actions/general';
 import { useDispatch, useSelector } from 'react-redux';
+import { hideWaitDialog } from '../actions/waitDialog';
 
 function PleaseWaitDialog() {
   const dispatch = useDispatch();
 
-  const loading = useSelector(({ general }) => general.loading);
-  const title = useSelector(({ general }) => general.title);
-  const message = useSelector(({ general }) => general.message);
-  const blocking = useSelector(({ general }) => general.blocking);
-  const abortFun = useSelector(({ general }) => general.abortFun);
+  const { show, title, message, blocking, abortFun } = useSelector(
+    (state) => state.waitDialog,
+  );
 
   return (
     <Modal
       keyboard={!blocking}
       backdrop={!blocking || 'static'}
-      show={loading}
-      onHide={() => dispatch(setLoading(false))}
+      show={show}
+      onHide={() => dispatch(hideWaitDialog())}
       data-default-styles
     >
       <Modal.Header closeButton={!blocking}>
-        <Modal.Title>{title || 'Please wait'}</Modal.Title>
+        <Modal.Title>{title}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <div>
-          <p>{message || ''}</p>
-          {blocking && <ProgressBar variant="primary" animated now={100} />}
-        </div>
-      </Modal.Body>
+      {(message || blocking) && (
+        <Modal.Body>
+          <div>
+            <p>{message || ''}</p>
+            {blocking && <ProgressBar variant="primary" animated now={100} />}
+          </div>
+        </Modal.Body>
+      )}
       <Modal.Footer>
         {blocking ? (
           <Button
@@ -38,7 +38,7 @@ function PleaseWaitDialog() {
                 abortFun();
               }
 
-              dispatch(setLoading(false));
+              dispatch(hideWaitDialog());
             }}
           >
             Cancel
@@ -46,7 +46,7 @@ function PleaseWaitDialog() {
         ) : (
           <Button
             variant="outline-secondary"
-            onClick={() => dispatch(setLoading(false))}
+            onClick={() => dispatch(hideWaitDialog())}
           >
             Hide
           </Button>

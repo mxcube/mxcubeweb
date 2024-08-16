@@ -1,7 +1,8 @@
-import { setLoading, showErrorPanel } from './general';
+import { showErrorPanel } from './general';
 import { setQueue } from './queue'; // eslint-disable-line import/no-cycle
 import { fetchSamplesList, sendSyncWithCrims } from '../api/sampleChanger';
 import { fetchLimsSamples } from '../api/lims';
+import { hideWaitDialog, showWaitDialog } from './waitDialog';
 
 export function updateSampleList(sampleList, order) {
   return { type: 'UPDATE_SAMPLE_LIST', sampleList, order };
@@ -63,12 +64,7 @@ export function setSamplesInfoAction(sampleInfoList) {
 export function sendGetSampleList() {
   return async (dispatch) => {
     dispatch(
-      setLoading(
-        true,
-        'Please wait',
-        'Retrieving sample changer contents',
-        true,
-      ),
+      showWaitDialog('Please wait', 'Retrieving sample changer contents', true),
     );
 
     try {
@@ -80,21 +76,19 @@ export function sendGetSampleList() {
       dispatch(showErrorPanel(true, 'Could not get samples list'));
     }
 
-    dispatch(setLoading(false));
+    dispatch(hideWaitDialog());
   };
 }
 
 export function syncSamples() {
   return async (dispatch) => {
-    dispatch(setLoading(true, 'Please wait', 'Synchronizing with ISPyB', true));
+    dispatch(showWaitDialog('Please wait', 'Synchronizing with ISPyB', true));
 
     try {
       const json = await fetchLimsSamples();
       dispatch(updateSampleList(json.sampleList, json.sampleOrder));
       dispatch(setQueue(json));
-      dispatch(setLoading(false));
     } catch (error) {
-      dispatch(setLoading(false));
       dispatch(
         showErrorPanel(
           true,
@@ -103,6 +97,8 @@ export function syncSamples() {
           )}`,
         ),
       );
+    } finally {
+      dispatch(hideWaitDialog());
     }
   };
 }
