@@ -1,79 +1,59 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { Modal, ProgressBar, Button } from 'react-bootstrap';
 import { setLoading } from '../actions/general';
+import { useDispatch, useSelector } from 'react-redux';
 
-export class PleaseWaitDialog extends React.Component {
-  constructor(props) {
-    super(props);
-    this.hide = this.hide.bind(this);
-    this.abort = this.abort.bind(this);
-  }
+function PleaseWaitDialog() {
+  const dispatch = useDispatch();
 
-  hide() {
-    this.props.setLoading(false);
-  }
+  const loading = useSelector(({ general }) => general.loading);
+  const title = useSelector(({ general }) => general.title);
+  const message = useSelector(({ general }) => general.message);
+  const blocking = useSelector(({ general }) => general.blocking);
+  const abortFun = useSelector(({ general }) => general.abortFun);
 
-  abort() {
-    if (this.props.abortFun) {
-      this.props.abortFun();
-    }
+  return (
+    <Modal
+      keyboard={!blocking}
+      backdrop={!blocking || 'static'}
+      show={loading}
+      onHide={() => dispatch(setLoading(false))}
+      data-default-styles
+    >
+      <Modal.Header closeButton={!blocking}>
+        <Modal.Title>{title || 'Please wait'}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div>
+          <p>{message || ''}</p>
+          {blocking && <ProgressBar variant="primary" animated now={100} />}
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        {blocking ? (
+          <Button
+            variant="outline-secondary"
+            onClick={() => {
+              if (abortFun) {
+                abortFun();
+              }
 
-    this.props.setLoading(false);
-  }
-
-  render() {
-    return (
-      <Modal
-        keyboard={!this.props.blocking}
-        backdrop={!this.props.blocking || 'static'}
-        show={this.props.loading}
-        onHide={this.hide}
-        data-default-styles
-      >
-        <Modal.Header closeButton={!this.props.blocking}>
-          <Modal.Title>{this.props.title || 'Please wait'}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div>
-            <p>{this.props.message || ''}</p>
-            {this.props.blocking && (
-              <ProgressBar variant="primary" animated now={100} />
-            )}
-          </div>
-        </Modal.Body>
-        <Modal.Footer>
-          {this.props.blocking ? (
-            <Button variant="outline-secondary" onClick={this.abort}>
-              Cancel
-            </Button>
-          ) : (
-            <Button variant="outline-secondary" onClick={this.hide}>
-              Hide
-            </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
-    );
-  }
+              dispatch(setLoading(false));
+            }}
+          >
+            Cancel
+          </Button>
+        ) : (
+          <Button
+            variant="outline-secondary"
+            onClick={() => dispatch(setLoading(false))}
+          >
+            Hide
+          </Button>
+        )}
+      </Modal.Footer>
+    </Modal>
+  );
 }
 
-function mapStateToProps(state) {
-  return {
-    loading: state.general.loading,
-    title: state.general.title,
-    message: state.general.message,
-    blocking: state.general.blocking,
-    abortFun: state.general.abortFun,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    setLoading: bindActionCreators(setLoading, dispatch),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PleaseWaitDialog);
+export default PleaseWaitDialog;
