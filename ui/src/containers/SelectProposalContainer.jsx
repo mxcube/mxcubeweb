@@ -1,54 +1,39 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { signOut, selectProposal, hideProposalsForm } from '../actions/login';
 import SelectProposal from '../components/LoginForm/SelectProposal';
-import withRouter from '../components/WithRouter';
 import { serverIO } from '../serverIO';
+import { useNavigate } from 'react-router-dom';
 
-function SelectProposalContainer(props) {
-  function handleLogout() {
-    props.signOut();
-    serverIO.disconnect();
-    props.router.navigate('/');
+function SelectProposalContainer() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const login = useSelector((state) => state.login);
+
+  function handleHide() {
+    if (login.selectedProposalID === null) {
+      dispatch(signOut());
+      serverIO.disconnect();
+      navigate('/');
+    } else {
+      dispatch(hideProposalsForm());
+    }
   }
 
   const show =
-    (props.login.loginType === 'User' &&
-      props.login.selectedProposalID === null) ||
-    props.login.showProposalsForm;
+    (login.loginType === 'User' && login.selectedProposalID === null) ||
+    login.showProposalsForm;
 
   return (
     <SelectProposal
       show={show}
-      handleHide={
-        props.login.selectedProposalID === null
-          ? () => handleLogout()
-          : props.hideProposalsForm
-      }
-      data={props.login}
-      selectProposal={(selected) =>
-        props.selectProposal(selected, props.router.navigate)
-      }
+      handleHide={handleHide}
+      data={login}
+      selectProposal={(selected) => {
+        dispatch(selectProposal(selected, navigate));
+      }}
     />
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    login: state.login,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    signOut: bindActionCreators(signOut, dispatch),
-    selectProposal: bindActionCreators(selectProposal, dispatch),
-    hideProposalsForm: bindActionCreators(hideProposalsForm, dispatch),
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withRouter(SelectProposalContainer));
+export default SelectProposalContainer;
