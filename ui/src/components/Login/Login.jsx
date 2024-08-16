@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, InputGroup, Alert, Button } from 'react-bootstrap';
 
 import { Controller, useForm } from 'react-hook-form';
@@ -9,7 +9,8 @@ import withRouter from '../WithRouter';
 import styles from './Login.module.css';
 
 function LoginComponent(props) {
-  const { router, loading, logIn, showError, errorMessage } = props;
+  const { router, logIn, showError, errorMessage } = props;
+  const [loading, setLoading] = useState(false);
 
   const {
     control,
@@ -18,7 +19,12 @@ function LoginComponent(props) {
   } = useForm({ defaultValues: { username: '', password: '' } });
 
   async function handleSubmit(data) {
-    await logIn(data.username.toLowerCase(), data.password, router.navigate);
+    setLoading(true);
+    try {
+      await logIn(data.username.toLowerCase(), data.password, router.navigate);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
