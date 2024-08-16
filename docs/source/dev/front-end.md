@@ -13,7 +13,7 @@ The front-end package manager is [pnpm](https://pnpm.io/):
 - `pnpm dlx <pkg-name>` - fetch a package from the registry and run its default
   command binary (equivalent to `npx <pkg-name>`)
 
-> You can run all `pnpm` commands above from the root of the repository with `pnpm --prefix ui <cmd>`.
+> You can run all `pnpm` commands from the root of the repository with `pnpm --prefix ui <cmd>`.
 
 [Vite](https://vitejs.dev/) is used to build the project for production:
 
