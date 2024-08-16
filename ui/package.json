@@ -59,10 +59,14 @@
     "wretch": "2.7.0"
   },
   "devDependencies": {
+    "@babel/preset-react": "7.24.7",
     "@testing-library/cypress": "10.0.1",
     "@testing-library/jest-dom": "^5.16.2",
     "@testing-library/react": "^12.1.2",
     "@testing-library/user-event": "^13.5.0",
+    "@types/react": "17.0.60",
+    "@types/react-dom": "17.0.20",
+    "@types/react-redux": "7.1.33",
     "@vitejs/plugin-react-swc": "3.7.0",
     "cypress": "13.13.2",
     "eslint": "8.42.0",
