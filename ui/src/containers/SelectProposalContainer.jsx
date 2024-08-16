@@ -2,7 +2,6 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { signOut, selectProposal, hideProposalsForm } from '../actions/login';
-import { setLoading } from '../actions/general';
 import SelectProposal from '../components/Login/SelectProposal';
 import withRouter from '../components/WithRouter';
 import { serverIO } from '../serverIO';
@@ -44,7 +43,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     signOut: bindActionCreators(signOut, dispatch),
-    setLoading: bindActionCreators(setLoading, dispatch),
     selectProposal: bindActionCreators(selectProposal, dispatch),
     hideProposalsForm: bindActionCreators(hideProposalsForm, dispatch),
   };

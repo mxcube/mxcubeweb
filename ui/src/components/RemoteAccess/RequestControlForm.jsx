@@ -3,8 +3,8 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Form, Button, Card } from 'react-bootstrap';
-import { setLoading } from '../../actions/general';
 import { requestControl, takeControl } from '../../actions/remoteAccess';
+import { showWaitDialog } from '../../actions/waitDialog';
 
 class RequestControlForm extends React.Component {
   constructor(props) {
@@ -34,8 +34,7 @@ class RequestControlForm extends React.Component {
   }
 
   askForControl() {
-    this.props.askForControlDialog(
-      true,
+    this.props.showWaitDialog(
       'Asking for control',
       'Please wait while asking for control',
       true,
@@ -94,7 +93,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    askForControlDialog: bindActionCreators(setLoading, dispatch),
+    showWaitDialog: bindActionCreators(showWaitDialog, dispatch),
     requestControl: bindActionCreators(requestControl, dispatch),
     takeControl: bindActionCreators(takeControl, dispatch),
   };
