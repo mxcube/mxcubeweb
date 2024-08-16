@@ -13,7 +13,7 @@ export class PleaseWaitDialog extends React.Component {
   }
 
   hide() {
-    this.props.setLoading(this.props.blocking);
+    this.props.setLoading(false);
   }
 
   abort() {
@@ -27,10 +27,9 @@ export class PleaseWaitDialog extends React.Component {
   render() {
     return (
       <Modal
-        keyboard={false}
-        animation={false}
+        keyboard={!this.props.blocking}
+        backdrop={!this.props.blocking || 'static'}
         show={this.props.loading}
-        enforceFocus={false}
         onHide={this.hide}
         data-default-styles
       >
