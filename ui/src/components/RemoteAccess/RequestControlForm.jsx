@@ -1,102 +1,62 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Form, Button, Card } from 'react-bootstrap';
-import { requestControl, takeControl } from '../../actions/remoteAccess';
+import {
+  cancelControlRequest,
+  requestControl,
+  takeControl,
+} from '../../actions/remoteAccess';
 import { showWaitDialog } from '../../actions/waitDialog';
 
-class RequestControlForm extends React.Component {
-  constructor(props) {
-    super(props);
-    this.askForControl = this.askForControl.bind(this);
-    this.cancelControlRequest = this.cancelControlRequest.bind(this);
-    this.getTakeControlOption = this.getTakeControlOption.bind(this);
-    this.takeControlOnClick = this.takeControlOnClick.bind(this);
-  }
+function RequestControlForm() {
+  const dispatch = useDispatch();
+  const nickname = useSelector((state) => state.login.user.nickname);
 
-  getTakeControlOption() {
-    return (
-      <span style={{ marginLeft: '1em' }}>
-        <Button
-          size="sm"
-          variant="outline-secondary"
-          onClick={this.takeControlOnClick}
-        >
-          Take control
-        </Button>
-      </span>
+  function handleAskForControl(evt) {
+    evt.preventDefault();
+    const formData = new FormData(evt.target);
+
+    dispatch(
+      showWaitDialog(
+        'Asking for control',
+        'Please wait while asking for control',
+        true,
+        () => dispatch(cancelControlRequest()),
+      ),
     );
+
+    dispatch(requestControl(formData.get('message')));
   }
 
-  takeControlOnClick() {
-    this.props.takeControl();
-  }
-
-  askForControl() {
-    this.props.showWaitDialog(
-      'Asking for control',
-      'Please wait while asking for control',
-      true,
-      this.cancelControlRequest,
-    );
-    const message = this.message.value;
-    const name = this.props.login.user.nickname;
-    this.props.requestControl(true, message, name, this.props.login.user);
-  }
-
-  cancelControlRequest() {
-    const message = this.message.value;
-    const name = this.props.login.user.nickname;
-
-    this.props.requestControl(false, message, name, this.props.login.user);
-  }
-
-  render() {
-    return (
-      <Card>
-        <Card.Header>Request control</Card.Header>
-        <Card.Body>
-          <Form>
-            <Form.Group className="mb-3">
-              <Form.Label>Message</Form.Label>
-              <Form.Control
-                ref={(ref) => {
-                  this.message = ref;
-                }}
-                as="textarea"
-                defaultValue={`Hi it's ${this.props.login.user.nickname}, Please give me control`}
-                rows={3}
-              />
-            </Form.Group>
+  return (
+    <Card>
+      <Card.Header>Request control</Card.Header>
+      <Card.Body>
+        <Form onSubmit={handleAskForControl}>
+          <Form.Group className="mb-3">
+            <Form.Label>Message</Form.Label>
+            <Form.Control
+              name="message"
+              as="textarea"
+              defaultValue={`Hi, it's ${nickname}, please give me control.`}
+              rows={3}
+            />
+          </Form.Group>
+          <Button type="submit" variant="outline-secondary">
+            Ask for control
+          </Button>
+          <span style={{ marginLeft: '1em' }}>
             <Button
               variant="outline-secondary"
-              size="sm"
-              onClick={this.askForControl}
+              onClick={() => dispatch(takeControl())}
             >
-              Ask for control
+              Take control
             </Button>
-            {this.getTakeControlOption()}
-          </Form>
-        </Card.Body>
-      </Card>
-    );
-  }
+          </span>
+        </Form>
+      </Card.Body>
+    </Card>
+  );
 }
 
-function mapStateToProps(state) {
-  return {
-    remoteAccess: state.remoteAccess,
-    login: state.login,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    showWaitDialog: bindActionCreators(showWaitDialog, dispatch),
-    requestControl: bindActionCreators(requestControl, dispatch),
-    takeControl: bindActionCreators(takeControl, dispatch),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(RequestControlForm);
+export default RequestControlForm;

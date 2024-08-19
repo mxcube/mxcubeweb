@@ -36,15 +36,13 @@ def init_route(app, server, url_prefix):  # noqa: C901
                         "Timeout expired, you have control",
                     )
 
-        data = request.get_json()
-
         # Is someone already asking for control
         for observer in app.usermanager.get_observers():
             if observer.requests_control and observer.username != current_user.username:
                 msg = "Another user is already asking for control"
                 return make_response(msg, 409)
 
-        current_user.requests_control = data["control"]
+        current_user.requests_control = True
         server.user_datastore.commit()
 
         gevent.spawn(
@@ -55,6 +53,15 @@ def init_route(app, server, url_prefix):  # noqa: C901
 
         app.usermanager.emit_observers_changed()
 
+        return make_response("", 200)
+
+    @bp.route("/cancel_request", methods=["POST"])
+    @server.restrict
+    def cancel_request():
+        """Cancel request for control"""
+        current_user.requests_control = False
+        server.user_datastore.commit()
+        app.usermanager.emit_observers_changed()
         return make_response("", 200)
 
     @bp.route("/take_control", methods=["POST"])

@@ -18,10 +18,12 @@ export function sendUpdateNickname(name) {
   return endpoint.post({ name }, '/update_user_nickname').res();
 }
 
-export function sendRequestControl(control, message, name, userInfo) {
-  return endpoint
-    .post({ control, message, name, userInfo }, '/request_control')
-    .res();
+export function sendRequestControl(message) {
+  return endpoint.post({ message }, '/request_control').res();
+}
+
+export function sendCancelControlRequest() {
+  return endpoint.post(undefined, '/cancel_request').res();
 }
 
 export function sendRespondToControlRequest(giveControl, message) {

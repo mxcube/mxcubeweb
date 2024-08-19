@@ -1,5 +1,6 @@
 import {
   fetchRemoteAccessState,
+  sendCancelControlRequest,
   sendGiveControl,
   sendLogoutUser,
   sendRequestControl,
@@ -30,13 +31,12 @@ export function updateNickname(name) {
   };
 }
 
-export function requestControl(
-  control = true,
-  message = '',
-  name = '',
-  userInfo = {},
-) {
-  return () => sendRequestControl(control, message, name, userInfo);
+export function requestControl(message) {
+  return () => sendRequestControl(message);
+}
+
+export function cancelControlRequest() {
+  return () => sendCancelControlRequest();
 }
 
 export function takeControl() {
