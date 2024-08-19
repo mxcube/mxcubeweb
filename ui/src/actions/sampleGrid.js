@@ -103,6 +103,20 @@ export function syncSamples() {
   };
 }
 
+/**
+ * Sends a request to get the sample list and then synchronizes the samples with lims.
+ */
+export function sendGetandSyncSamples() {
+  return async (dispatch) => {
+    try {
+      await dispatch(sendGetSampleList());
+      await dispatch(syncSamples());
+    } catch {
+      dispatch(showErrorPanel(true, 'Could not get and sync samples list'));
+    }
+  };
+}
+
 // update list crystal from crims
 export function updateCrystalList(crystalList) {
   return { type: 'UPDATE_CRYSTAL_LIST', crystalList };

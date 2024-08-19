@@ -14,6 +14,7 @@ import { fetchHarvesterInitialState } from '../api/harvester';
 import { fetchImageData, fetchShapes } from '../api/sampleview';
 import { fetchRemoteAccessState } from '../api/remoteAccess';
 import { sendSelectProposal } from '../api/lims';
+import { sendGetandSyncSamples } from './sampleGrid';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -211,6 +212,7 @@ export function getInitialState(navigate) {
     await Promise.all(pchains);
 
     dispatch(setInitialState(state));
+    dispatch(sendGetandSyncSamples());
     dispatch(applicationFetched(true));
   };
 }
