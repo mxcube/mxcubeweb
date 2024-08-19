@@ -1,102 +1,62 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Button, Form } from 'react-bootstrap';
 import { respondToControlRequest } from '../../actions/remoteAccess';
 
-export class PassControlDialog extends React.Component {
-  constructor(props) {
-    super(props);
-    this.accept = this.accept.bind(this);
-    this.reject = this.reject.bind(this);
-    this.show = this.show.bind(this);
-    this.getObserver = this.getObserver.bind(this);
+function PassControlDialog() {
+  const dispatch = useDispatch();
+
+  const inControl = useSelector((state) => state.login.user.inControl);
+  const requestingObs = useSelector((state) =>
+    state.remoteAccess.observers.find((o) => o.requestsControl),
+  );
+
+  function handleSubmit(evt) {
+    evt.preventDefault();
+    const formData = new FormData(evt.target);
+
+    dispatch(
+      respondToControlRequest(
+        evt.nativeEvent.submitter.name === 'allow',
+        formData.get('message'),
+      ),
+    );
   }
 
-  getObserver() {
-    let observer = { name: '', message: '', requestsControl: false };
-
-    for (const o of this.props.remoteAccess.observers) {
-      if (o.requestsControl) {
-        observer = o;
-        break;
-      }
-    }
-
-    return observer;
-  }
-
-  show() {
-    let show = false;
-
-    if (this.props.login.user.inControl && this.getObserver().requestsControl) {
-      show = true;
-    }
-
-    return show;
-  }
-
-  accept() {
-    const message = this.message.value;
-    this.props.respondToControlRequest(true, message);
-  }
-
-  reject() {
-    const message = this.message.value;
-    this.props.respondToControlRequest(false, message);
-  }
-
-  render() {
-    const observer = this.getObserver();
-
-    return (
-      <Modal show={this.show()} backdrop="static" style={{ zIndex: 10_001 }}>
+  return (
+    <Modal
+      show={inControl && requestingObs}
+      backdrop="static"
+      style={{ zIndex: 10_001 }}
+    >
+      <Form onSubmit={handleSubmit}>
         <Modal.Header>
-          <Modal.Title>{observer.nickname} is asking for control</Modal.Title>
+          <Modal.Title>
+            {requestingObs?.nickname} is asking for control
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          User "{observer.nickname}" is asking for control:
+          User "{requestingObs?.nickname}" is asking for control:
         </Modal.Body>
         <Modal.Footer>
           <Form.Control
-            ref={(ref) => {
-              this.message = ref;
-            }}
+            name="message"
             defaultValue="Here you go !"
             type="textarea"
             placeholder="Message"
             rows="3"
           />
           <br />
-          <Button size="sm" variant="outline-secondary" onClick={this.accept}>
-            {' '}
-            Give control to "{observer.nickname}"{' '}
+          <Button type="submit" name="allow" variant="success">
+            Give control to "{requestingObs?.nickname}"
           </Button>
-          <Button size="sm" variant="outline-secondary" onClick={this.reject}>
-            {' '}
-            Deny control{' '}
+          <Button type="submit" name="deny" variant="danger">
+            Deny control
           </Button>
         </Modal.Footer>
-      </Modal>
-    );
-  }
+      </Form>
+    </Modal>
+  );
 }
 
-function mapStateToProps(state) {
-  return {
-    remoteAccess: state.remoteAccess,
-    login: state.login,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    respondToControlRequest: bindActionCreators(
-      respondToControlRequest,
-      dispatch,
-    ),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PassControlDialog);
+export default PassControlDialog;
