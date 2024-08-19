@@ -12,7 +12,9 @@ class UserList extends React.Component {
       observers.push(
         <Row key={observer.username} className="mt-3">
           <Col sm={4}>
-            <span style={{ lineHeight: '24px' }}>{observer.nickname}</span>
+            <span style={{ lineHeight: '24px' }}>
+              {observer.nickname || <em>Not provided</em>}
+            </span>
           </Col>
           <Col sm={3}>
             <span style={{ lineHeight: '24px' }}>{observer.ip}</span>
