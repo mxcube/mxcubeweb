@@ -19,6 +19,7 @@ import shapes from './shapes';
 import workflow from './workflow';
 import taskResult from './taskResult';
 import uiproperties from './uiproperties';
+import waitDialog from './waitDialog';
 
 const mxcubeReducer = combineReducers({
   login,
@@ -41,6 +42,7 @@ const mxcubeReducer = combineReducers({
   workflow,
   taskResult,
   form: formReducer,
+  waitDialog,
 });
 
 const rootReducer = (state, action) => {

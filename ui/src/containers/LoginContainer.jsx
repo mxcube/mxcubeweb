@@ -1,35 +1,17 @@
 import React from 'react';
-import { useLocation, Navigate } from 'react-router-dom';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { logIn } from '../actions/login';
-import { setLoading } from '../actions/general';
-import Login from '../components/Login/Login';
+import { Navigate, useLocation } from 'react-router-dom';
+import { useSelector } from 'react-redux';
+import LoginForm from '../components/LoginForm/LoginForm';
 
-function LoginContainer(props) {
+function LoginContainer() {
+  const loggedIn = useSelector((state) => state.login.loggedIn);
   const location = useLocation();
 
-  return props.data.loggedIn === false ? (
-    <Login {...props} />
-  ) : (
-    <Navigate to="/datacollection" state={{ from: location }} replace />
-  );
+  if (loggedIn) {
+    return <Navigate to={location.state?.from || '/datacollection'} replace />;
+  }
+
+  return <LoginForm />;
 }
 
-function mapStateToProps(state) {
-  return {
-    loading: state.general.loading,
-    showError: state.general.showErrorPanel,
-    errorMessage: state.general.errorMessage,
-    data: state.login,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    logIn: bindActionCreators(logIn, dispatch),
-    setLoading: bindActionCreators(setLoading, dispatch),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(LoginContainer);
+export default LoginContainer;

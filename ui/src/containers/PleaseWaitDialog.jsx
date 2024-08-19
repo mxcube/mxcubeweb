@@ -1,80 +1,59 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
 import { Modal, ProgressBar, Button } from 'react-bootstrap';
-import { setLoading } from '../actions/general';
+import { useDispatch, useSelector } from 'react-redux';
+import { hideWaitDialog } from '../actions/waitDialog';
 
-export class PleaseWaitDialog extends React.Component {
-  constructor(props) {
-    super(props);
-    this.hide = this.hide.bind(this);
-    this.abort = this.abort.bind(this);
-  }
+function PleaseWaitDialog() {
+  const dispatch = useDispatch();
 
-  hide() {
-    this.props.setLoading(this.props.blocking);
-  }
+  const { show, title, message, blocking, abortFun } = useSelector(
+    (state) => state.waitDialog,
+  );
 
-  abort() {
-    if (this.props.abortFun) {
-      this.props.abortFun();
-    }
-
-    this.props.setLoading(false);
-  }
-
-  render() {
-    return (
-      <Modal
-        keyboard={false}
-        animation={false}
-        show={this.props.loading}
-        enforceFocus={false}
-        onHide={this.hide}
-        data-default-styles
-      >
-        <Modal.Header closeButton={!this.props.blocking}>
-          <Modal.Title>{this.props.title || 'Please wait'}</Modal.Title>
-        </Modal.Header>
+  return (
+    <Modal
+      keyboard={!blocking}
+      backdrop={!blocking || 'static'}
+      show={show}
+      onHide={() => dispatch(hideWaitDialog())}
+      data-default-styles
+    >
+      <Modal.Header closeButton={!blocking}>
+        <Modal.Title>{title}</Modal.Title>
+      </Modal.Header>
+      {(message || blocking) && (
         <Modal.Body>
           <div>
-            <p>{this.props.message || ''}</p>
-            {this.props.blocking && (
-              <ProgressBar variant="primary" animated now={100} />
-            )}
+            <p>{message || ''}</p>
+            {blocking && <ProgressBar variant="primary" animated now={100} />}
           </div>
         </Modal.Body>
-        <Modal.Footer>
-          {this.props.blocking ? (
-            <Button variant="outline-secondary" onClick={this.abort}>
-              Cancel
-            </Button>
-          ) : (
-            <Button variant="outline-secondary" onClick={this.hide}>
-              Hide
-            </Button>
-          )}
-        </Modal.Footer>
-      </Modal>
-    );
-  }
+      )}
+      <Modal.Footer>
+        {blocking ? (
+          <Button
+            variant="outline-secondary"
+            onClick={() => {
+              if (abortFun) {
+                abortFun();
+              }
+
+              dispatch(hideWaitDialog());
+            }}
+          >
+            Cancel
+          </Button>
+        ) : (
+          <Button
+            variant="outline-secondary"
+            onClick={() => dispatch(hideWaitDialog())}
+          >
+            Hide
+          </Button>
+        )}
+      </Modal.Footer>
+    </Modal>
+  );
 }
 
-function mapStateToProps(state) {
-  return {
-    loading: state.general.loading,
-    title: state.general.title,
-    message: state.general.message,
-    blocking: state.general.blocking,
-    abortFun: state.general.abortFun,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    setLoading: bindActionCreators(setLoading, dispatch),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(PleaseWaitDialog);
+export default PleaseWaitDialog;

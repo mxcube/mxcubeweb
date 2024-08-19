@@ -159,7 +159,7 @@ _The output should look something like the following:_
 
 #### 9.2. Running the front-end development server
 
-The front end development server, listens for changes on the filesystem and builds (re-builds) the UI when a change is made.
+The front-end development server, listens for changes on the filesystem and builds (re-builds) the UI when a change is made.
 This makes it very easy and fast to see how a change affects the UI and makes debugging much easier.
 The development server listens on port **5173**
 
@@ -171,19 +171,20 @@ conda activate mxcubeweb
 mxcubeweb-server -r $(pwd)/mxcubeweb/test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/mxcubeweb/ui/build/ --log-level debug
 
 # In another terminal, from the root directory of `mxcubeweb`
-pnpm --prefix ui run start
+pnpm --prefix ui start
 ```
 
 The above will automatically open a browser with the URL: <http://localhost:5173>
 
 #### 9.3. Running the end to end (e2e) tests
 
+Keep both the backend and front-end servers running then run the following command in a third terminal, from the root directory of the project:
+
 ```
-# Keep the backend running, and in another terminal from the root directory of `mxcubeweb`:
-pnpm --prefix ui run e2e
+pnpm --prefix ui e2e
 ```
 
-_This should give a result looking something like:_
+The result should look like this:
 ![cypress](assets/cypress.png)
 
 #### 9.4. Ready to develop

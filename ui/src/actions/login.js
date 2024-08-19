@@ -6,7 +6,7 @@ import { fetchApplicationSettings, fetchUIProperties } from '../api/main';
 import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 
-import { showErrorPanel, setLoading, applicationFetched } from './general';
+import { showErrorPanel, applicationFetched } from './general';
 import { fetchLoginInfo, sendLogIn, sendSignOut } from '../api/login';
 import { fetchDetectorInfo } from '../api/detector';
 import { fetchSampleChangerInitialState } from '../api/sampleChanger';
@@ -81,12 +81,10 @@ export function getLoginInfo() {
 
 export function logIn(proposal, password) {
   return async (dispatch) => {
-    dispatch(setLoading(true));
     const res = await sendLogIn(proposal, password);
 
     if (res.msg !== '') {
       dispatch(showErrorPanel(true, res.msg));
-      dispatch(setLoading(false));
       return;
     }
 
@@ -214,7 +212,6 @@ export function getInitialState(navigate) {
 
     dispatch(setInitialState(state));
     dispatch(applicationFetched(true));
-    dispatch(setLoading(false));
   };
 }
 

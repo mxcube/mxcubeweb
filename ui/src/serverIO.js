@@ -37,7 +37,7 @@ import {
   getQueue,
 } from './actions/queue';
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
-import { setLoading, showConnectionLostDialog } from './actions/general';
+import { showConnectionLostDialog } from './actions/general';
 
 import {
   showWorkflowParametersDialog,
@@ -66,6 +66,7 @@ import { setEnergyScanResult } from './actions/taskResults';
 import { CLICK_CENTRING } from './constants';
 import { sendRefreshSession } from './api/login';
 import { store } from './store';
+import { hideWaitDialog, showWaitDialog } from './actions/waitDialog';
 
 class ServerIO {
   constructor() {
@@ -286,8 +287,7 @@ class ServerIO {
       switch (record.signal) {
         case 'operatingSampleChanger': {
           this.dispatch(
-            setLoading(
-              true,
+            showWaitDialog(
               'Sample changer in operation',
               record.message,
               true,
@@ -301,8 +301,7 @@ class ServerIO {
         case 'loadingSample':
         case 'loadedSample': {
           this.dispatch(
-            setLoading(
-              true,
+            showWaitDialog(
               `Loading sample ${record.location}`,
               record.message,
               true,
@@ -316,8 +315,7 @@ class ServerIO {
         case 'unLoadingSample':
         case 'unLoadedSample': {
           this.dispatch(
-            setLoading(
-              true,
+            showWaitDialog(
               `Unloading sample ${record.location}`,
               record.message,
               true,
@@ -329,22 +327,12 @@ class ServerIO {
         }
 
         case 'loadReady': {
-          this.dispatch(
-            setLoading(false, 'SC Ready', record.message, true, () =>
-              this.dispatch(stopQueue()),
-            ),
-          );
-
+          this.dispatch(hideWaitDialog());
           break;
         }
 
         case 'inSafeArea': {
-          this.dispatch(
-            setLoading(false, 'SC Safe', record.message, true, () =>
-              this.dispatch(stopQueue()),
-            ),
-          );
-
+          this.dispatch(hideWaitDialog());
           break;
         }
 
@@ -396,7 +384,7 @@ class ServerIO {
         data.operator.username === state.login.user.username &&
         !state.login.user.inControl
       ) {
-        this.dispatch(setLoading(true, 'You were given control', data.message));
+        this.dispatch(showWaitDialog('You were given control', data.message));
       } else if (
         data.observers.length > 0 &&
         state.login.user.inControl &&
@@ -404,7 +392,7 @@ class ServerIO {
           .map((el) => el.username)
           .includes(state.login.user.username)
       ) {
-        this.dispatch(setLoading(true, 'You lost control', 'You lost control'));
+        this.dispatch(showWaitDialog('You lost control'));
       }
 
       this.dispatch(getRaState());

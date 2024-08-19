@@ -1,15 +1,21 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Form, InputGroup, Alert, Button } from 'react-bootstrap';
 
 import { Controller, useForm } from 'react-hook-form';
 
 import logo from '../../img/mxcube_logo20.png';
 import loader from '../../img/loader.gif';
-import withRouter from '../WithRouter';
-import styles from './Login.module.css';
+import styles from './LoginForm.module.css';
+import { useDispatch, useSelector } from 'react-redux';
+import { logIn } from '../../actions/login';
 
-function LoginComponent(props) {
-  const { router, loading, logIn, showError, errorMessage } = props;
+function LoginForm() {
+  const dispatch = useDispatch();
+
+  const showErrorPanel = useSelector((state) => state.general.showErrorPanel);
+  const errorMessage = useSelector((state) => state.general.errorMessage);
+
+  const [loading, setLoading] = useState(false);
 
   const {
     control,
@@ -18,7 +24,12 @@ function LoginComponent(props) {
   } = useForm({ defaultValues: { username: '', password: '' } });
 
   async function handleSubmit(data) {
-    await logIn(data.username.toLowerCase(), data.password, router.navigate);
+    setLoading(true);
+    try {
+      await dispatch(logIn(data.username.toLowerCase(), data.password));
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -93,7 +104,7 @@ function LoginComponent(props) {
           )}
           Sign in
         </Button>
-        {!loading && showError && (
+        {!loading && showErrorPanel && (
           <Alert className="mt-3" variant="danger">
             <pre className={styles.errorMsg}>{errorMessage}</pre>
           </Alert>
@@ -103,4 +114,4 @@ function LoginComponent(props) {
   );
 }
 
-export default withRouter(LoginComponent);
+export default LoginForm;
