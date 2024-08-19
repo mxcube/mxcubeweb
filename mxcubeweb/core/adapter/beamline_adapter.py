@@ -56,7 +56,7 @@ class _BeamlineAdapter:
         )
 
     def get_object(self, name):
-        return self.get_attr_from_path(name)
+        return self._ho.get_hardware_object(name)
 
     def dict(self):
         """

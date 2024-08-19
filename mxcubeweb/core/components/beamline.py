@@ -221,11 +221,15 @@ class Beamline(ComponentBase):
         :param str name: Owner / Actuator of the process/action to abort
 
         """
-        try:
+        beamline_action_names = [
+            cmd.name() for cmd in HWR.beamline.beamline_actions.get_commands()
+        ]
+
+        if name in beamline_action_names:
             HWR.beamline.beamline_actions.abort_command(name)
-        except KeyError:
+        else:
             try:
-                ho = BeamlineAdapter(HWR.beamline).get_object(name.lower())
+                ho = HWR.beamline.get_hardware_object(name.lower())
             except AttributeError:
                 pass
             else:
