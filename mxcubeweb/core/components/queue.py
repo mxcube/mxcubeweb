@@ -1426,6 +1426,9 @@ class Queue(ComponentBase):
         model.element_symbol = params.get("element", "")
         model.edge = params.get("edge", "")
 
+        # MXCuBE Web specific shape attribute
+        model.shape = params["shape"]
+
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
