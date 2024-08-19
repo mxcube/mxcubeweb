@@ -10,16 +10,15 @@ class UserList extends React.Component {
 
     for (const observer of this.props.remoteAccess.observers) {
       observers.push(
-        <Row key={observer.username}>
+        <Row key={observer.username} className="mt-3">
           <Col sm={4}>
             <span style={{ lineHeight: '24px' }}>{observer.nickname}</span>
           </Col>
           <Col sm={3}>
             <span style={{ lineHeight: '24px' }}>{observer.ip}</span>
           </Col>
-          <Col sm={5} />
-          {this.props.login.user.inControl ? (
-            <Col className="mt-3" sm={5}>
+          {this.props.login.user.inControl && (
+            <Col sm={5}>
               <Button
                 size="sm"
                 variant="outline-secondary"
@@ -28,7 +27,7 @@ class UserList extends React.Component {
               >
                 Give control
               </Button>
-              {this.props.login.user.isstaff ? (
+              {this.props.login.user.isstaff && (
                 <span>
                   &nbsp;
                   <Button
@@ -39,11 +38,7 @@ class UserList extends React.Component {
                     Logout
                   </Button>
                 </span>
-              ) : null}
-            </Col>
-          ) : (
-            <Col sm={4}>
-              <span>&nbsp;</span>
+              )}
             </Col>
           )}
         </Row>,
