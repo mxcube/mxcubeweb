@@ -63,6 +63,7 @@ class User(Base, UserMixin):
     fs_uniquifier = Column(String(255), unique=True, nullable=False)
     confirmed_at = Column(DateTime())
     requests_control = Column(Boolean(False))
+    requests_control_msg = Column(String(255))
     in_control = Column(Boolean(False))
     selected_proposal = Column(String(255), unique=False)
     proposal_list = Column(JSON, unique=False)
@@ -106,4 +107,5 @@ class User(Base, UserMixin):
             "ip": self.current_login_ip,
             "currentLoginAt": current_login_at_str,
             "requestsControl": self.requests_control,
+            "requestsControlMsg": self.requests_control_msg,
         }

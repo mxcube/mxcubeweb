@@ -11,6 +11,7 @@ import {
   sendUpdateTimeoutGivesControl,
 } from '../api/remoteAccess';
 import { getLoginInfo } from './login';
+import { showWaitDialog } from './waitDialog';
 
 export function showObserverDialog(show = true) {
   return { type: 'SHOW_OBSERVER_DIALOG', show };
@@ -34,7 +35,16 @@ export function updateNickname(name) {
 export function requestControl(message) {
   return async (dispatch) => {
     await sendRequestControl(message);
+
     dispatch(getLoginInfo());
+    dispatch(
+      showWaitDialog(
+        'Asking for control',
+        'Please wait while asking for control',
+        true,
+        () => dispatch(cancelControlRequest()),
+      ),
+    );
   };
 }
 

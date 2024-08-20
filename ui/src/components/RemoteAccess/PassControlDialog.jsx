@@ -35,9 +35,9 @@ function PassControlDialog() {
             {requestingObs?.nickname} is asking for control
           </Modal.Title>
         </Modal.Header>
-        <Modal.Body>
-          User "{requestingObs?.nickname}" is asking for control:
-        </Modal.Body>
+        {requestingObs?.requestsControlMsg && (
+          <Modal.Body>{requestingObs.requestsControlMsg}</Modal.Body>
+        )}
         <Modal.Footer>
           <Form.Control
             name="message"
