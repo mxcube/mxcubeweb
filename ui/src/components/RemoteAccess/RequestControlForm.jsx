@@ -1,12 +1,7 @@
 import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Button, Card } from 'react-bootstrap';
-import {
-  cancelControlRequest,
-  requestControl,
-  takeControl,
-} from '../../actions/remoteAccess';
-import { showWaitDialog } from '../../actions/waitDialog';
+import { requestControl, takeControl } from '../../actions/remoteAccess';
 
 function RequestControlForm() {
   const dispatch = useDispatch();
@@ -15,16 +10,6 @@ function RequestControlForm() {
   function handleAskForControl(evt) {
     evt.preventDefault();
     const formData = new FormData(evt.target);
-
-    dispatch(
-      showWaitDialog(
-        'Asking for control',
-        'Please wait while asking for control',
-        true,
-        () => dispatch(cancelControlRequest()),
-      ),
-    );
-
     dispatch(requestControl(formData.get('message')));
   }
 
@@ -38,7 +23,9 @@ function RequestControlForm() {
             <Form.Control
               name="message"
               as="textarea"
-              defaultValue={`Hi, it's ${nickname}, please give me control.`}
+              defaultValue={
+                nickname && `Hi, it's ${nickname}, please give me control.`
+              }
               rows={3}
             />
           </Form.Group>

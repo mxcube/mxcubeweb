@@ -42,7 +42,9 @@ def init_route(app, server, url_prefix):  # noqa: C901
                 msg = "Another user is already asking for control"
                 return make_response(msg, 409)
 
+        data = request.get_json()
         current_user.requests_control = True
+        current_user.requests_control_msg = data['message']
         app.usermanager.update_user(current_user)
 
         server.emit("observersChanged", namespace="/hwr")
@@ -60,6 +62,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def cancel_request():
         """Cancel request for control"""
         current_user.requests_control = False
+        current_user.requests_control_msg = None
         app.usermanager.update_user(current_user)
 
         server.emit("observersChanged", namespace="/hwr")
@@ -115,8 +118,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
         newop = app.usermanager.set_operator(username)
 
         oldop.requests_control = False
-        newop.requests_control = False
+        oldop.requests_control_msg = None
         app.usermanager.update_user(oldop)
+
+        newop.requests_control = False
+        newop.requests_control_msg = None
         app.usermanager.update_user(newop)
 
         server.emit("userChanged", room=oldop.socketio_session_id, namespace="/hwr")
@@ -181,6 +187,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         else:
             # Request denied
             new_op.requests_control = False
+            new_op.requests_control_msg = None
             app.usermanager.update_user(new_op)
             server.emit("userChanged", data["message"], room=new_op.socketio_session_id, namespace="/hwr")
             server.emit("observersChanged", namespace="/hwr")
