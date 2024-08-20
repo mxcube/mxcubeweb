@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { respondToControlRequest } from '../../actions/remoteAccess';
+import { useForm } from 'react-hook-form';
 
 function PassControlDialog() {
   const dispatch = useDispatch();
@@ -11,41 +12,71 @@ function PassControlDialog() {
     state.remoteAccess.observers.find((o) => o.requestsControl),
   );
 
-  function handleSubmit(evt) {
-    evt.preventDefault();
-    const formData = new FormData(evt.target);
+  const showModal = inControl && !!requestingObs;
 
-    dispatch(
-      respondToControlRequest(
-        evt.nativeEvent.submitter.name === 'allow',
-        formData.get('message'),
-      ),
-    );
+  const {
+    register,
+    formState,
+    handleSubmit: makeOnSubmit,
+    setError,
+    reset,
+  } = useForm({ defaultValues: { message: 'Here you go!' } });
+
+  const { isDirty, isSubmitted, errors } = formState;
+
+  async function handleSubmit(data, evt) {
+    const isAllow = evt.nativeEvent.submitter.name === 'allow';
+
+    if (!isAllow && !isDirty) {
+      setError(
+        'message',
+        { message: "Please explain why you're denying this request" },
+        { shouldFocus: true },
+      );
+      return;
+    }
+
+    await dispatch(respondToControlRequest(isAllow, data.message));
   }
+
+  useEffect(() => {
+    if (!showModal) {
+      reset(); // make sure form is properly reset if requester cancels
+    }
+  }, [showModal, reset]);
 
   return (
     <Modal
-      show={inControl && requestingObs}
+      show={showModal}
       backdrop="static"
       style={{ zIndex: 10_001 }}
+      data-default-styles
     >
-      <Form onSubmit={handleSubmit}>
+      <Form onSubmit={makeOnSubmit(handleSubmit)}>
         <Modal.Header>
           <Modal.Title>
             {requestingObs?.nickname} is asking for control
           </Modal.Title>
         </Modal.Header>
-        {requestingObs?.requestsControlMsg && (
-          <Modal.Body>{requestingObs.requestsControlMsg}</Modal.Body>
-        )}
-        <Modal.Footer>
+
+        <Modal.Body>
+          {requestingObs?.requestsControlMsg && (
+            <Alert>{requestingObs.requestsControlMsg}</Alert>
+          )}
+          <Form.Label>Your response:</Form.Label>
           <Form.Control
-            name="message"
-            defaultValue="Here you go!"
             type="textarea"
+            {...register('message')}
             placeholder="Message"
-            rows="3"
+            rows="4"
+            isValid={isSubmitted && !errors.message}
+            isInvalid={isSubmitted && !!errors.message}
           />
+          <Form.Control.Feedback type="invalid">
+            {errors.message?.message}
+          </Form.Control.Feedback>
+        </Modal.Body>
+        <Modal.Footer>
           <br />
           <Button type="submit" name="allow" variant="success">
             Give control to "{requestingObs?.nickname}"
