@@ -44,7 +44,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
 
         data = request.get_json()
         current_user.requests_control = True
-        current_user.requests_control_msg = data['message']
+        current_user.requests_control_msg = data["message"]
         app.usermanager.update_user(current_user)
 
         server.emit("observersChanged", namespace="/hwr")
@@ -189,7 +189,12 @@ def init_route(app, server, url_prefix):  # noqa: C901
             new_op.requests_control = False
             new_op.requests_control_msg = None
             app.usermanager.update_user(new_op)
-            server.emit("userChanged", data["message"], room=new_op.socketio_session_id, namespace="/hwr")
+            server.emit(
+                "userChanged",
+                data["message"],
+                room=new_op.socketio_session_id,
+                namespace="/hwr",
+            )
             server.emit("observersChanged", namespace="/hwr")
 
         return make_response("", 200)
