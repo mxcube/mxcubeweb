@@ -47,7 +47,7 @@ import {
 
 import { getRaState, incChatMessageCount } from './actions/remoteAccess';
 
-import { forcedSignout, getLoginInfo } from './actions/login';
+import { signOut, getLoginInfo } from './actions/login';
 
 import {
   setSCState,
@@ -415,8 +415,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('forceSignout', () => {
-      this.dispatch(forcedSignout());
-      serverIO.disconnect();
+      this.dispatch(signOut());
     });
 
     this.hwrSocket.on('workflowParametersDialog', (data) => {

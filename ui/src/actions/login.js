@@ -93,12 +93,6 @@ export function logIn(proposal, password) {
   };
 }
 
-export function forcedSignout() {
-  return (dispatch) => {
-    dispatch({ type: 'SIGNOUT' });
-  };
-}
-
 export function signOut() {
   return async (dispatch) => {
     await sendSignOut();
