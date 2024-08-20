@@ -41,7 +41,7 @@ function PassControlDialog() {
         <Modal.Footer>
           <Form.Control
             name="message"
-            defaultValue="Here you go !"
+            defaultValue="Here you go!"
             type="textarea"
             placeholder="Message"
             rows="3"

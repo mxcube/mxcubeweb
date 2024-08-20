@@ -72,17 +72,6 @@ class BaseUserManager(ComponentBase):
 
         return user
 
-    def emit_observers_changed(self, message=""):
-        operator = self.app.usermanager.get_operator()
-
-        data = {
-            "observers": [_u.todict() for _u in self.app.usermanager.get_observers()],
-            "message": message,
-            "operator": operator.todict() if operator else {},
-        }
-
-        self.app.server.emit("observersChanged", data, namespace="/hwr")
-
     def update_active_users(self):
         for _u in User.query.all():
             if (
@@ -95,8 +84,11 @@ class BaseUserManager(ComponentBase):
                     f"Logged out inactive user {_u.username}"
                 )
                 self.app.server.user_datastore.deactivate_user(_u)
+                self.app.server.emit(
+                    "userChanged", room=_u.socketio_session_id, namespace="/hwr"
+                )
 
-        self.emit_observers_changed()
+        self.app.server.emit("observersChanged", namespace="/hwr")
 
     def update_operator(self, new_login=False):
         active_in_control = False
@@ -202,7 +194,7 @@ class BaseUserManager(ComponentBase):
         self.app.server.user_datastore.deactivate_user(user)
         flask_security.logout_user()
 
-        self.emit_observers_changed()
+        self.app.server.emit("observersChanged", namespace="/hwr")
 
     def is_authenticated(self):
         return current_user.is_authenticated()
