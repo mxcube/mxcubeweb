@@ -377,18 +377,20 @@ class ServerIO {
     });
 
     this.hwrSocket.on('userChanged', async (message) => {
-      const prevState = store.getState();
-      const { inControl: wasInControl } = prevState.login.user;
+      const { inControl: wasInControl, requestsControl: wasRequestingControl } =
+        store.getState().login.user;
 
       await this.dispatch(getLoginInfo());
 
       const newState = store.getState();
-      const { inControl } = newState.login.user;
+      const { inControl, requestsControl } = newState.login.user;
 
       if (!wasInControl && inControl) {
         this.dispatch(showWaitDialog('You were given control', message));
       } else if (wasInControl && !inControl) {
         this.dispatch(showWaitDialog('You lost control'));
+      } else if (wasRequestingControl && !requestsControl && !inControl) {
+        this.dispatch(showWaitDialog('You were denied control', message));
       }
     });
 

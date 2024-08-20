@@ -125,17 +125,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
         )
         server.emit("observersChanged", namespace="/hwr")
 
-    def remain_observer(user, message):
-        observer = user.todict()
-        observer["message"] = message
-
-        server.emit(
-            "setObserver",
-            observer,
-            room=user.socketio_session_id,
-            namespace="/hwr",
-        )
-
     @bp.route("/", methods=["GET"])
     @server.restrict
     def rasettings():
@@ -186,14 +175,15 @@ def init_route(app, server, url_prefix):  # noqa: C901
         data = request.get_json()
         new_op = observer_requesting_control()
 
-        # Request was denied
-        if not data["giveControl"]:
-            remain_observer(new_op, data["message"])
-        else:
+        if data["giveControl"]:
+            # Request approved
             toggle_operator(new_op.username, data["message"])
-
-        new_op.requests_control = False
-        app.usermanager.update_user(new_op)
+        else:
+            # Request denied
+            new_op.requests_control = False
+            app.usermanager.update_user(new_op)
+            server.emit("userChanged", data["message"], room=new_op.socketio_session_id, namespace="/hwr")
+            server.emit("observersChanged", namespace="/hwr")
 
         return make_response("", 200)
 
