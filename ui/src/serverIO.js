@@ -45,7 +45,7 @@ import {
   updateGphlWorkflowParametersDialog,
 } from './actions/workflow';
 
-import { incChatMessageCount, getRaState } from './actions/remoteAccess';
+import { getRaState, incChatMessageCount } from './actions/remoteAccess';
 
 import { forcedSignout, getLoginInfo } from './actions/login';
 
@@ -376,27 +376,24 @@ class ServerIO {
       this.dispatch(showResumeQueueDialog(true));
     });
 
-    this.hwrSocket.on('observersChanged', (data) => {
-      const state = store.getState();
+    this.hwrSocket.on('userChanged', async (message) => {
+      const prevState = store.getState();
+      const { inControl: wasInControl } = prevState.login.user;
 
-      if (
-        data.observers.length > 0 &&
-        data.operator.username === state.login.user.username &&
-        !state.login.user.inControl
-      ) {
-        this.dispatch(showWaitDialog('You were given control', data.message));
-      } else if (
-        data.observers.length > 0 &&
-        state.login.user.inControl &&
-        data.observers
-          .map((el) => el.username)
-          .includes(state.login.user.username)
-      ) {
+      await this.dispatch(getLoginInfo());
+
+      const newState = store.getState();
+      const { inControl } = newState.login.user;
+
+      if (!wasInControl && inControl) {
+        this.dispatch(showWaitDialog('You were given control', message));
+      } else if (wasInControl && !inControl) {
         this.dispatch(showWaitDialog('You lost control'));
       }
+    });
 
+    this.hwrSocket.on('observersChanged', () => {
       this.dispatch(getRaState());
-      this.dispatch(getLoginInfo());
     });
 
     this.hwrSocket.on('observerLogout', (observer) => {

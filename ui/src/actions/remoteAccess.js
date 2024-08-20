@@ -32,11 +32,17 @@ export function updateNickname(name) {
 }
 
 export function requestControl(message) {
-  return () => sendRequestControl(message);
+  return async (dispatch) => {
+    await sendRequestControl(message);
+    dispatch(getLoginInfo());
+  };
 }
 
 export function cancelControlRequest() {
-  return () => sendCancelControlRequest();
+  return async (dispatch) => {
+    await sendCancelControlRequest();
+    dispatch(getLoginInfo());
+  };
 }
 
 export function takeControl() {

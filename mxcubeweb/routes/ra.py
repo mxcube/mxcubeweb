@@ -43,15 +43,15 @@ def init_route(app, server, url_prefix):  # noqa: C901
                 return make_response(msg, 409)
 
         current_user.requests_control = True
-        server.user_datastore.commit()
+        app.usermanager.update_user(current_user)
+
+        server.emit("observersChanged", namespace="/hwr")
 
         gevent.spawn(
             handle_timeout_gives_control,
             current_user.username,
             timeout=10,
         )
-
-        app.usermanager.emit_observers_changed()
 
         return make_response("", 200)
 
@@ -60,8 +60,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def cancel_request():
         """Cancel request for control"""
         current_user.requests_control = False
-        server.user_datastore.commit()
-        app.usermanager.emit_observers_changed()
+        app.usermanager.update_user(current_user)
+
+        server.emit("observersChanged", namespace="/hwr")
+
         return make_response("", 200)
 
     @bp.route("/take_control", methods=["POST"])
@@ -92,7 +94,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
         name = request.get_json().get("name")
         current_user.nickname = name
         app.usermanager.update_user(current_user)
-        app.usermanager.emit_observers_changed()
+
+        server.emit(
+            "userChanged", room=current_user.socketio_session_id, namespace="/hwr"
+        )
+        server.emit("observersChanged", namespace="/hwr")
 
         return make_response("", 200)
 
@@ -113,7 +119,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
         app.usermanager.update_user(oldop)
         app.usermanager.update_user(newop)
 
-        app.usermanager.emit_observers_changed(message)
+        server.emit("userChanged", room=oldop.socketio_session_id, namespace="/hwr")
+        server.emit(
+            "userChanged", message, room=newop.socketio_session_id, namespace="/hwr"
+        )
+        server.emit("observersChanged", namespace="/hwr")
 
     def remain_observer(user, message):
         observer = user.todict()
