@@ -22,7 +22,7 @@ export function sendCalibratePin() {
   return endpoint.get('/calibrate').json();
 }
 
-export function sendDataCollectionToCrims() {
+export function sendDataCollectionInfoToCrims() {
   return endpoint.get('/send_data_collection_info_to_crims').json();
 }
 
@@ -32,10 +32,10 @@ export function sendValidateCalibration(validated) {
     .json();
 }
 
-export function sendAbort() {
+export function sendAbortHarvester() {
   return endpoint.get('/send_command/abort').res();
 }
 
-export function sendCommand(cmdparts, args) {
+export function sendHarvesterCommand(cmdparts, args) {
   return endpoint.get(`/send_command/${cmdparts}/${args}`).json();
 }

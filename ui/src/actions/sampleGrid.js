@@ -61,7 +61,7 @@ export function setSamplesInfoAction(sampleInfoList) {
   return { type: 'SET_SAMPLES_INFO', sampleInfoList };
 }
 
-export function sendGetSampleList() {
+export function getSamplesList() {
   return async (dispatch) => {
     dispatch(
       showWaitDialog('Please wait', 'Retrieving sample changer contents', true),

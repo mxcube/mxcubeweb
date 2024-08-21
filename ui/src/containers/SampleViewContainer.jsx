@@ -10,7 +10,7 @@ import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
-import { showErrorPanel, sendDisplayImage } from '../actions/general';
+import { showErrorPanel, displayImage } from '../actions/general';
 import { updateTask } from '../actions/queue';
 import { showTaskForm } from '../actions/taskForm';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -250,7 +250,7 @@ class SampleViewContainer extends Component {
                 busy={this.props.queueState === QUEUE_RUNNING}
                 setAttribute={this.props.setAttribute}
                 setBeamlineAttribute={this.props.setBeamlineAttribute}
-                sendDisplayImage={this.props.sendDisplayImage}
+                displayImage={this.props.displayImage}
                 meshResultFormat={this.props.meshResultFormat}
               />
             </DefaultErrorBoundary>
@@ -318,7 +318,7 @@ function mapDispatchToProps(dispatch) {
     setAttribute: bindActionCreators(setAttribute, dispatch),
     stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
-    sendDisplayImage: bindActionCreators(sendDisplayImage, dispatch),
+    displayImage: bindActionCreators(displayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
     logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),
 

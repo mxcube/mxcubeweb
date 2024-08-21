@@ -4,9 +4,9 @@ import {
   sendHarvestAndLoadCrystal,
   sendCalibratePin,
   sendValidateCalibration,
-  sendAbort,
-  sendDataCollectionToCrims as sendDCToCrims,
-  sendCommand as sendCmd,
+  sendAbortHarvester,
+  sendDataCollectionInfoToCrims,
+  sendHarvesterCommand,
 } from '../api/harvester';
 
 import { showErrorPanel } from './general';
@@ -52,7 +52,7 @@ export function harvestCrystal(xtalUUID, successCb = null) {
       }
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
-      throw new Error('Server refused to Harveste Crystal');
+      throw new Error('Server refused to harvest crystal');
     }
   };
 }
@@ -68,7 +68,7 @@ export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
       }
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
-      throw new Error('Server refused to Harveste or Load Crystal');
+      throw new Error('Server refused to harvest or load crystal');
     }
   };
 }
@@ -76,14 +76,14 @@ export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
 export function sendDataCollectionToCrims() {
   return async (dispatch) => {
     try {
-      const contents = await sendDCToCrims();
+      const contents = await sendDataCollectionInfoToCrims();
       dispatch(setContents(contents));
 
       // temporary use ErrorPanel to display success message
-      dispatch(showErrorPanel(true, 'Succesfully Send DC to Crims'));
+      dispatch(showErrorPanel(true, 'Succesfully sent DC to Crims'));
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
-      throw new Error('Server refused to Harveste or Load Crystal');
+      throw new Error('Server refused to send DC to Crims');
     }
   };
 }
@@ -99,7 +99,7 @@ export function calibratePin(successCb = null) {
       }
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
-      throw new Error('Calibration Procedure Failed');
+      throw new Error('Calibration procedure failed');
     }
   };
 }
@@ -115,14 +115,14 @@ export function validateCalibration(validated, successCb = null) {
       }
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
-      throw new Error('Calibration Procedure Failed');
+      throw new Error('Calibration procedure failed');
     }
   };
 }
 
 export function abort() {
   return async (dispatch) => {
-    await sendAbort();
+    await sendAbortHarvester();
     dispatch(showErrorPanel(true, 'action aborted'));
   };
 }
@@ -130,12 +130,12 @@ export function abort() {
 export function sendCommand(cmdparts, args) {
   return async (dispatch) => {
     try {
-      const answer = await sendCmd(cmdparts, args);
+      const answer = await sendHarvesterCommand(cmdparts, args);
       dispatch(setHarvesterCommandResponse(answer.response));
       dispatch(setContents(answer.contents));
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
-      throw new Error(`Error while  sending command @ ${cmdparts}`);
+      throw new Error(`Error while sending command @ ${cmdparts}`);
     }
   };
 }

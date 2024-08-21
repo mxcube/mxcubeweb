@@ -28,7 +28,7 @@ import { LuSettings2 } from 'react-icons/lu';
 import { QUEUE_RUNNING, isCollected, hasLimsData } from '../constants';
 
 import {
-  sendGetSampleList,
+  getSamplesList,
   setViewModeAction,
   syncSamples,
   syncWithCrims,
@@ -287,7 +287,7 @@ class SampleListViewContainer extends React.Component {
     // because they will be remove from sample List
     await this.props.setEnabledSample(manualSamples, false);
 
-    this.props.getSamples();
+    this.props.getSamplesList();
   }
 
   /**
@@ -1002,7 +1002,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    getSamples: () => dispatch(sendGetSampleList()),
+    getSamplesList: () => dispatch(getSamplesList()),
     setViewMode: (mode) => dispatch(setViewModeAction(mode)),
     filter: (filterOptions) => dispatch(filterAction(filterOptions)),
     syncSamples: () => dispatch(syncSamples()),

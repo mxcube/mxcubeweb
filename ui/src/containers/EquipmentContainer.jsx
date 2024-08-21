@@ -146,7 +146,9 @@ class EquipmentContainer extends React.Component {
                       message={this.props.haMessage}
                       sendCommand={this.props.haSendCommand}
                       calibratePin={this.props.haCalibratePin}
-                      sendDCToCrims={this.props.sendDataCollectionToCrims}
+                      sendDataCollectionToCrims={
+                        this.props.sendDataCollectionToCrims
+                      }
                       validateCalibration={this.props.haValidateCalibration}
                     />
                   </Col>
