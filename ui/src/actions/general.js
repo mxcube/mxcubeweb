@@ -52,7 +52,7 @@ export function showConfirmClearQueueDialog(show = true) {
   };
 }
 
-export function sendDisplayImage(path, imgNum) {
+export function displayImage(path, imgNum) {
   return async () => {
     const data = await fetchDisplayImage(path, imgNum);
     window.open(
