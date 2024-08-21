@@ -57,3 +57,7 @@ export function sendMoveToBeam(x, y) {
 export function sendUpdateMotorPosition(motorName, value) {
   return endpoint.put(undefined, `/${motorName}/${value}`).res();
 }
+
+export function sendTakeSnapshot(canvasData) {
+  return endpoint.post({ overlay: canvasData }, '/camera/save').blob();
+}
