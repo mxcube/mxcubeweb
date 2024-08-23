@@ -214,6 +214,12 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def get_all_mesages():
         return jsonify({"messages": app.chat.get_all_messages()})
 
+    @bp.route("/chat/set_all_read", methods=["POST"])
+    @server.restrict
+    def set_all_messages_read():
+        app.chat.set_all_messages_read()
+        return Response(status=200)
+
     @server.flask_socketio.on("connect", namespace="/hwr")
     @server.ws_restrict
     def connect():
