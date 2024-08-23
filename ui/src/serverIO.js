@@ -384,8 +384,11 @@ class ServerIO {
 
       const newState = store.getState();
       const { inControl, requestsControl } = newState.login.user;
+      const hasIncomingRequest = newState.remoteAccess.observers.some(
+        (o) => o.requestsControl,
+      );
 
-      if (!wasInControl && inControl) {
+      if (!wasInControl && inControl && !hasIncomingRequest) {
         this.dispatch(showWaitDialog('You were given control', message));
       } else if (wasInControl && !inControl) {
         this.dispatch(showWaitDialog('You lost control'));

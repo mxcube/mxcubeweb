@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { respondToControlRequest } from '../../actions/remoteAccess';
 import { useForm } from 'react-hook-form';
+import { hideWaitDialog } from '../../actions/waitDialog';
 
 function PassControlDialog() {
   const dispatch = useDispatch();
@@ -40,10 +41,12 @@ function PassControlDialog() {
   }
 
   useEffect(() => {
-    if (!showModal) {
+    if (showModal) {
+      dispatch(hideWaitDialog()); // avoid conflict with any yet-to-be-dismissed dialog
+    } else {
       reset(); // make sure form is properly reset if requester cancels
     }
-  }, [showModal, reset]);
+  }, [showModal, reset, dispatch]);
 
   return (
     <Modal
