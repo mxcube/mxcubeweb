@@ -325,10 +325,12 @@ export default class DrawGridPlugin {
       for (let nh = 0; nh < row; nh++) {
         for (let nw = 0; nw < col; nw++) {
           const index = nw + nh * col + 1;
-          fillingMatrix[nw][nh] = this.heatMapColorForValue(
-            gd,
-            result[index][1],
-          );
+          if (index < Object.keys(result).length) {
+            fillingMatrix[nw][nh] = this.heatMapColorForValue(
+              gd,
+              result[index],
+            );
+          }
         }
       }
     }
