@@ -102,7 +102,7 @@ export function signOut() {
   };
 }
 
-export function getInitialState(navigate) {
+export function getInitialState() {
   return async (dispatch) => {
     const state = {};
 
