@@ -114,7 +114,7 @@ export default class QueueControl extends React.Component {
     if (this.props.queue[idx + 1]) {
       this.props.runSample(this.props.queue[idx + 1]);
     } else {
-      this.props.unmountSample(this.props.sampleList[this.props.queue[idx]]);
+      this.props.unmountSample();
     }
   }
 

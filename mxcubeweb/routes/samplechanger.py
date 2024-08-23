@@ -89,25 +89,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
 
         return resp
 
-    @bp.route("/unmount", methods=["POST"])
-    @server.require_control
-    @server.restrict
-    def unmount_sample():
-        try:
-            resp = jsonify(
-                app.sample_changer.unmount_sample(request.get_json()["sample"])
-            )
-        except Exception as ex:
-            return (
-                "Cannot unload sample",
-                409,
-                {
-                    "Content-Type": "application/json",
-                    "message": str(ex),
-                },
-            )
-        return resp
-
     @bp.route("/capacity", methods=["GET"])
     @server.restrict
     def get_sc_capacity():
