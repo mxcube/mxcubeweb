@@ -9,6 +9,7 @@ import {
   sendUpdateAllowRemote,
   sendUpdateNickname,
   sendUpdateTimeoutGivesControl,
+  sendSetAllMessagesRead,
 } from '../api/remoteAccess';
 import { getLoginInfo } from './login';
 import { showWaitDialog } from './waitDialog';
@@ -106,9 +107,12 @@ export function setObservers(observers) {
 }
 
 export function resetChatMessageCount() {
-  return { type: 'RESET_CHAT_MESSAGE_COUNT' };
+  return async (dispatch) => {
+    await sendSetAllMessagesRead();
+    dispatch({ type: 'RESET_CHAT_MESSAGE_COUNT' });
+  };
 }
 
-export function incChatMessageCount() {
-  return { type: 'INC_CHAT_MESSAGE_COUNT' };
+export function incChatMessageCount(count = 1) {
+  return { type: 'INC_CHAT_MESSAGE_COUNT', count };
 }

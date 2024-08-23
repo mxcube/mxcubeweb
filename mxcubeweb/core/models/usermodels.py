@@ -43,6 +43,10 @@ class Message(Base):
     id = Column(Integer(), primary_key=True)
     at = Column(DateTime())
     message = Column(Text())
+    read = Column(Boolean(False))
+    from_username = Column(String(255), unique=False)
+    from_nickname = Column(String(255), unique=False)
+    from_host = Column(String(255), unique=False)
 
 
 class User(Base, UserMixin):
