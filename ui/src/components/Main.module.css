@@ -2,3 +2,14 @@
   flex: 1 1 0%;
   min-width: 0;
 }
+
+.readOnly {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 9998;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+}
