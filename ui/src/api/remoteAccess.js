@@ -51,3 +51,7 @@ export function fetchChatMessages() {
 export function sendChatMessage(message, username) {
   return endpoint.post({ message, username }, '/chat').res();
 }
+
+export function sendSetAllMessagesRead(message, username) {
+  return endpoint.post({ message, username }, '/chat/set_all_read').res();
+}

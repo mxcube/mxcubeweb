@@ -19,8 +19,16 @@ import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import GphlWorkflowParametersDialog from '../containers/GphlWorkflowParametersDialog';
 import SelectProposalContainer from '../containers/SelectProposalContainer';
 import diagonalNoise from '../img/diagonal-noise.png';
-import { resetChatMessageCount } from '../actions/remoteAccess';
-import { Widget, addResponseMessage, addUserMessage } from 'react-chat-widget';
+import {
+  resetChatMessageCount,
+  incChatMessageCount,
+} from '../actions/remoteAccess';
+import {
+  Widget,
+  addResponseMessage,
+  addUserMessage,
+  setBadgeCount,
+} from 'react-chat-widget';
 import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
 import LoadingScreen from './LoadingScreen/LoadingScreen';
@@ -48,6 +56,7 @@ class Main extends React.Component {
 
     // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
     fetchChatMessages().then((json) => {
+      let unread = 0;
       json.messages.forEach((entry) => {
         if (entry.username === this.props.login.user.username) {
           addUserMessage(`${entry.date} **You:** \n\n ${entry.message} \n\n`);
@@ -55,8 +64,14 @@ class Main extends React.Component {
           addResponseMessage(
             `${entry.date} **${entry.nickname}:** \n\n ${entry.message}`,
           );
+
+          if (!entry.read) {
+            unread++;
+          }
         }
       });
+
+      this.props.incChatMessageCount(unread);
     });
   }
 
@@ -75,6 +90,7 @@ class Main extends React.Component {
   }
 
   render() {
+    setBadgeCount(this.props.remoteAccess.chatMessageCount);
     const showReadOnlyDiv =
       !this.props.login.user.inControl &&
       this.props.router.location.pathname !== '/remoteaccess' &&
@@ -132,7 +148,6 @@ class Main extends React.Component {
                 <Widget
                   title="Chat"
                   subtitle=""
-                  badge={this.props.remoteAccess.chatMessageCount}
                   handleNewUserMessage={this.handleNewUserMessage}
                 />
               </div>
@@ -155,6 +170,7 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     resetChatMessageCount: bindActionCreators(resetChatMessageCount, dispatch),
+    incChatMessageCount: bindActionCreators(incChatMessageCount, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
   };
 }

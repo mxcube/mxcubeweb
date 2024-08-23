@@ -164,7 +164,7 @@ class ServerIO {
 
     this.hwrSocket.on('ra_chat_message', (record) => {
       const { username } = store.getState().login.user;
-      if (record.username !== username) {
+      if (record.username !== username && !record.read) {
         addResponseMessage(
           `${record.date} **${record.nickname}:** \n\n ${record.message}`,
         );

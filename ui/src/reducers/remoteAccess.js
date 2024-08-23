@@ -37,7 +37,10 @@ function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
       return { ...state, chatMessageCount: 0 };
     }
     case 'INC_CHAT_MESSAGE_COUNT': {
-      return { ...state, chatMessageCount: state.chatMessageCount + 1 };
+      return {
+        ...state,
+        chatMessageCount: state.chatMessageCount + action.count,
+      };
     }
     case 'SET_INITIAL_STATE': {
       return {
