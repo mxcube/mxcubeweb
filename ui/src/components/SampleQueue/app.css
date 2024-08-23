@@ -140,7 +140,7 @@
 }
 .list-head {
   padding: 1rem 1rem;
-  border: 0px;
+  border: 0;
 }
 .list-body {
   padding: 0.5rem 1rem;
@@ -156,7 +156,7 @@
 .queue-messages {
   height: 25%;
   width: 100%;
-  bottom: 0px;
+  bottom: 0;
   position: absolute;
   overflow-y: auto;
   overflow-x: hidden;

@@ -121,7 +121,7 @@ export default function GenericEquipmentControl(props) {
         state={props.equipment.state}
         equipmentName={props.equipment.name}
         style={{
-          margin: '0px 0px 0px 0px',
+          margin: 0,
           width: 'inherit',
           borderBottomLeftRadius: '0%',
           borderBottomRightRadius: '0%',

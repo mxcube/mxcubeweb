@@ -13,7 +13,7 @@
 .treeNodeLabel {
   font-weight: normal;
   cursor: pointer;
-  margin: 0px;
+  margin: 0;
 }
 
 .treeNodeLabel:hover {

@@ -212,8 +212,8 @@ class SampleGridTableContainer extends React.Component {
     const selectionRubberBand = document.querySelector('#selectionRubberBand');
     selectionRubberBand.style.top = `${e.clientY}px`;
     selectionRubberBand.style.left = `${e.clientX}px`;
-    selectionRubberBand.style.width = '0px';
-    selectionRubberBand.style.height = '0px';
+    selectionRubberBand.style.width = 0;
+    selectionRubberBand.style.height = 0;
     this.showRubberBand = true;
 
     if (this.props.contextMenu.show) {

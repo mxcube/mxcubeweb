@@ -238,7 +238,7 @@ function BeamlineSetupContainer(props) {
                   )}
                   <td
                     style={{
-                      border: '0px',
+                      border: 0,
                       borderLeft: '1px solid #ddd',
                       paddingLeft: '1em',
                     }}

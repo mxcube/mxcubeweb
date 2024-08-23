@@ -287,7 +287,7 @@ export default class TaskItem extends Component {
         <ProgressBar
           variant={pbarBsStyle}
           striped
-          style={{ marginBottom: '0px', height: '18px' }}
+          style={{ marginBottom: 0, height: '18px' }}
           min={0}
           max={1}
           active={this.props.progress < 1}
@@ -396,7 +396,7 @@ export default class TaskItem extends Component {
                           }}
                         >
                           <i
-                            style={{ marginLeft: '0px' }}
+                            style={{ marginLeft: 0 }}
                             className="fa fa-copy"
                             aria-hidden="true"
                           />
@@ -408,7 +408,7 @@ export default class TaskItem extends Component {
                       bordered
                       hover
                       onClick={this.showForm}
-                      style={{ fontSize: 'smaller', marginBottom: '0px' }}
+                      style={{ fontSize: 'smaller', marginBottom: 0 }}
                       className="task-parameters-table"
                     >
                       <thead>

@@ -702,9 +702,7 @@ export default function PlateManipulator(props) {
             <Popover.Header>
               {global_state.plate_info.plate_label}
             </Popover.Header>
-            <Popover.Body style={{ padding: '0px' }}>
-              {renderPlate()}
-            </Popover.Body>
+            <Popover.Body style={{ padding: 0 }}>{renderPlate()}</Popover.Body>
           </Popover>
         }
       >

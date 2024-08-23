@@ -250,7 +250,7 @@ export class TaskItem extends React.Component {
   render() {
     const style = {
       display: 'inline-block',
-      margin: '0px',
+      margin: 0,
       cursor: 'pointer',
       fontSize: '0.7em',
     };

@@ -20,7 +20,7 @@ export default function GenericEquipment(props) {
         state={props.state}
         equipmentName={props.name}
         style={{
-          margin: '0px 0px 0px 0px',
+          margin: 0,
           width: 'inherit',
           borderBottomLeftRadius: '0%',
           borderBottomRightRadius: '0%',

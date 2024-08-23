@@ -2,7 +2,7 @@
   width: 100%;
   height: auto;
   margin-right: auto;
-  margin-bottom: 0px;
+  margin-bottom: 0;
   margin-left: auto;
 }
 .insideWrapper {
@@ -18,14 +18,14 @@
   width: 100%;
   height: 100%;
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
 }
 
 #contextMenu {
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   display: none;
 }
 
@@ -57,7 +57,7 @@
   background-color: white;
   border: 1px solid #aaa;
   border-radius: 3px;
-  box-shadow: 0px 2px 3px 0px #aaa;
+  box-shadow: 0 2px 3px 0 #aaa;
   min-height: 300px;
   overflow: hidden;
   margin-bottom: 20px;
@@ -69,7 +69,7 @@
 }
 
 .divider {
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
 
 .canvas-container {
@@ -155,7 +155,7 @@
 }
 
 .step-size .popinput-input-value {
-  min-width: 0px;
+  min-width: 0;
 }
 
 .step-size span {

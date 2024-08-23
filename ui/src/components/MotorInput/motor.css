@@ -1,12 +1,12 @@
 .motor-input-container {
-  padding-right: 0px;
+  padding-right: 0;
   margin-bottom: 1em;
   font-size: 16px !important;
 }
 
 .motor-name {
   font-size: 1em;
-  margin-bottom: 0px;
+  margin-bottom: 0;
   font-weight: bold;
   display: block;
 }
@@ -26,8 +26,8 @@
 .motor-group {
   padding-top: 20px;
   padding-left: 20px;
-  padding-right: 0px;
-  padding-bottom: 0px;
+  padding-right: 0;
+  padding-bottom: 0;
 }
 
 .motor-button {
@@ -54,8 +54,8 @@
 }
 
 .rw-widget input {
-  border-bottom-right-radius: 0px;
-  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
 }
 
 input[type='number']::-webkit-inner-spin-button,
@@ -81,15 +81,15 @@ input::-webkit-inner-spin-button {
 }
 
 .rw-widget-no-right-border {
-  border-right: 0px;
-  border-top-right-radius: 0px;
-  border-bottom-right-radius: 0px;
+  border-right: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
 }
 
 .rw-widget-no-left-border {
-  border-left: 0px;
-  border-top-left-radius: 0px;
-  border-bottom-left-radius: 0px;
+  border-left: 0;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 .rw-widget-right-border {
@@ -133,8 +133,8 @@ input::-webkit-inner-spin-button {
 }
 
 .rw-widget input {
-  border-bottom-right-radius: 0px;
-  border-top-right-radius: 0px;
+  border-bottom-right-radius: 0;
+  border-top-right-radius: 0;
 }
 
 .rw-input {
@@ -222,7 +222,7 @@ input::-webkit-inner-spin-button {
 .arrow-control .arrow-small {
   width: 2em;
   height: 2em;
-  padding: 0px;
+  padding: 0;
 }
 
 .arrow-control .arrow-up {
@@ -246,13 +246,13 @@ input::-webkit-inner-spin-button {
 .arrow-control .arrow i {
   font-size: 25px;
   font-weight: bold;
-  margin-left: 0px;
+  margin-left: 0;
 }
 
 .arrow-control .arrow-small i {
   font-size: 21px;
   font-weight: bold;
-  margin-left: 0px;
+  margin-left: 0;
 }
 
 .arrow-control .arrow-settings i {
