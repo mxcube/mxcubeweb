@@ -3,7 +3,7 @@ import api from '.';
 const endpoint = api.url('/log');
 
 export function fetchLogMessages() {
-  return endpoint.get('/').json();
+  return endpoint.get('/').safeJson();
 }
 
 export function sendLogFrontEndTraceBack(stack, state) {

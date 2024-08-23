@@ -3,7 +3,7 @@ import api from '.';
 const endpoint = api.url('/ra');
 
 export function fetchRemoteAccessState() {
-  return endpoint.get('/').json();
+  return endpoint.get('/').safeJson();
 }
 
 export function sendUpdateAllowRemote(allow) {
@@ -45,7 +45,7 @@ export function sendLogoutUser(username) {
 }
 
 export function fetchChatMessages() {
-  return endpoint.get('/chat').json();
+  return endpoint.get('/chat').safeJson();
 }
 
 export function sendChatMessage(message, username) {

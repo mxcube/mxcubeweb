@@ -3,11 +3,11 @@ import api from '.';
 const endpoint = api.url('/beamline');
 
 export function fetchBeamlineSetup() {
-  return endpoint.get('/').json();
+  return endpoint.get('/').safeJson();
 }
 
 export function fetchBeamInfo() {
-  return endpoint.get('/beam/info').json();
+  return endpoint.get('/beam/info').safeJson();
 }
 
 export function sendPrepareBeamlineForNewSample() {
@@ -23,7 +23,7 @@ export function sendSetAttribute(name, type, value) {
 }
 
 export function sendGetAttribute(type, name, attr, args) {
-  return endpoint.post(args, `/${type}/${name}/${attr}`).json();
+  return endpoint.post(args, `/${type}/${name}/${attr}`).safeJson();
 }
 
 export function sendRunBeamlineAction(name, parameters) {

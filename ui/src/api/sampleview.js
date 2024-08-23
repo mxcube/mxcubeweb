@@ -3,19 +3,19 @@ import api from '.';
 const endpoint = api.url('/sampleview');
 
 export function fetchImageData() {
-  return endpoint.get('/camera').json();
+  return endpoint.get('/camera').safeJson();
 }
 
 export function sendSetVideoSize(width, height) {
-  return endpoint.post({ width, height }, '/camera').json();
+  return endpoint.post({ width, height }, '/camera').safeJson();
 }
 
 export function fetchShapes() {
-  return endpoint.get('/shapes').json();
+  return endpoint.get('/shapes').safeJson();
 }
 
 export function sendAddOrUpdateShapes(shapes) {
-  return endpoint.post({ shapes }, '/shapes').json();
+  return endpoint.post({ shapes }, '/shapes').safeJson();
 }
 
 export function sendDeleteShape(id) {
@@ -31,11 +31,11 @@ export function sendSetCentringMethod(centringMethod) {
 }
 
 export function sendStartClickCentring() {
-  return endpoint.put(undefined, '/centring/start3click').json();
+  return endpoint.put(undefined, '/centring/start3click').safeJson();
 }
 
 export function sendRecordCentringClick(x, y) {
-  return endpoint.put({ clickPos: { x, y } }, '/centring/click').json();
+  return endpoint.put({ clickPos: { x, y } }, '/centring/click').safeJson();
 }
 
 export function sendAcceptCentring() {
