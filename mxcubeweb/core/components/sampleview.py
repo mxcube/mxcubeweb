@@ -278,11 +278,11 @@ class SampleView(ComponentBase):
 
         return shape
 
-    def shape_add_cell_result(self, sid, cell, result):
+    def shape_add_result(self, sid, result, data_file):
         from mxcubeweb.routes import signals
 
         shape = HWR.beamline.sample_view.get_shape(sid)
-        shape.set_cell_result(cell, result)
+        HWR.beamline.sample_view.set_grid_data(sid, result, data_file)
         signals.grid_result_available(to_camel(shape.as_dict()))
 
     def handle_grid_result(self, shape):

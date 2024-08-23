@@ -135,20 +135,18 @@ def init_route(app, server, url_prefix):  # noqa: C901
             return Response(status=409)
 
     @bp.route("/shapes/<sid>", methods=["POST"])
-    def shape_add_cell_result(sid):
+    def shape_add_result(sid):
         """
-        Update cell result data.
-            :parameter shape_data: dict with result info (cell number, result value)
+        Update shape result data.
+            :parameter shape_data: dict with result info (result value dict, data file path)
             :response Content-type: application/json, response status.
             :statuscode: 200: no error
             :statuscode: 409: error
         """
         params = request.get_json()
-
-        cell_number = params.get("cell", 0)
-        result = params.get("result", 0)
-
-        app.sample_view.shape_add_cell_result(sid, cell_number, result)
+        result = params.get("result")
+        data_file = params.get("data_file")
+        app.sample_view.shape_add_result(sid, result, data_file)
         return Response(status=200)
 
     @bp.route("/shapes", methods=["POST"])
