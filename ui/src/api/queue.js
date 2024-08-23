@@ -3,19 +3,19 @@ import api from '.';
 const endpoint = api.url('/queue');
 
 export function fetchQueueState() {
-  return endpoint.get('/queue_state').json();
+  return endpoint.get('/queue_state').safeJson();
 }
 
 export function fetchAvailableTasks() {
-  return endpoint.get('/available_tasks').json();
+  return endpoint.get('/available_tasks').safeJson();
 }
 
 export function sendAddQueueItem(items) {
-  return endpoint.post(items, '/').json();
+  return endpoint.post(items, '/').safeJson();
 }
 
 export function sendUpdateQueueItem(sid, tindex, data) {
-  return endpoint.post(data, `/${sid}/${tindex}`).json();
+  return endpoint.post(data, `/${sid}/${tindex}`).safeJson();
 }
 
 export function sendDeleteQueueItem(itemPosList) {
@@ -61,11 +61,11 @@ export function sendMoveTask(sampleID, oldIndex, newIndex) {
 }
 
 export function sendSetAutoMountSample(automount) {
-  return endpoint.post({ automount }, '/automount').json();
+  return endpoint.post({ automount }, '/automount').safeJson();
 }
 
 export function sendSetAutoAddDiffPlan(autoadddiffplan) {
-  return endpoint.post({ autoadddiffplan }, '/auto_add_diffplan').json();
+  return endpoint.post({ autoadddiffplan }, '/auto_add_diffplan').safeJson();
 }
 
 export function sendSetNumSnapshots(numSnapshots) {
@@ -73,7 +73,7 @@ export function sendSetNumSnapshots(numSnapshots) {
 }
 
 export function sendSetGroupFolder(path) {
-  return endpoint.post({ path }, '/group_folder').json();
+  return endpoint.post({ path }, '/group_folder').safeJson();
 }
 
 export function sendSetQueueSettings(name, value) {
@@ -83,5 +83,5 @@ export function sendSetQueueSettings(name, value) {
 export function sendUpdateDependentFields(task_name, field_data) {
   return endpoint
     .post({ task_name, field_data }, '/update_dependent_field')
-    .json();
+    .safeJson();
 }

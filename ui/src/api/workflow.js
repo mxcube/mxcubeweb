@@ -3,7 +3,7 @@ import api from '.';
 const endpoint = api.url('/workflow');
 
 export function fetchAvailableWorkflows() {
-  return endpoint.get('/').json();
+  return endpoint.get('/').safeJson();
 }
 
 export function sendSubmitWorkflowParameters(data) {
