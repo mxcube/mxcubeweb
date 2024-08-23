@@ -79,7 +79,7 @@ function PassControlDialog() {
         <Modal.Footer>
           <br />
           <Button type="submit" name="allow" variant="success">
-            Give control to "{requestingObs?.nickname}"
+            Give control
           </Button>
           <Button type="submit" name="deny" variant="danger">
             Deny control

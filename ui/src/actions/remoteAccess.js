@@ -11,6 +11,7 @@ import {
   sendUpdateTimeoutGivesControl,
   sendSetAllMessagesRead,
 } from '../api/remoteAccess';
+import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
 import { showWaitDialog } from './waitDialog';
 
@@ -35,17 +36,26 @@ export function updateNickname(name) {
 
 export function requestControl(message) {
   return async (dispatch) => {
-    await sendRequestControl(message);
+    try {
+      await sendRequestControl(message);
 
-    dispatch(getLoginInfo());
-    dispatch(
-      showWaitDialog(
-        'Asking for control',
-        'Please wait while asking for control',
-        true,
-        () => dispatch(cancelControlRequest()),
-      ),
-    );
+      dispatch(getLoginInfo());
+      dispatch(
+        showWaitDialog(
+          'Asking for control',
+          'Please wait while asking for control',
+          true,
+          () => dispatch(cancelControlRequest()),
+        ),
+      );
+    } catch (error) {
+      if (error.status === 409) {
+        dispatch(showErrorPanel(true, error.text));
+        return;
+      }
+
+      throw error;
+    }
   };
 }
 
