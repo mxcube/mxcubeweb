@@ -216,7 +216,7 @@ function mapDispatchToProps(dispatch) {
   return {
     select: (address) => dispatch(select(address)),
     mountSample: (address) => dispatch(mountSample(address)),
-    unmountSample: (address) => dispatch(unmountSample(address)),
+    unmountSample: () => dispatch(unmountSample()),
     scan: (container) => dispatch(scan(container)),
     refresh: () => dispatch(refresh()),
     abort: () => dispatch(abort()),

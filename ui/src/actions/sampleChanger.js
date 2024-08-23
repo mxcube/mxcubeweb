@@ -9,7 +9,6 @@ import {
   sendScanSampleChanger,
   sendSelectContainer,
   sendUnmountCurrentSample,
-  sendUnmountSample,
 } from '../api/sampleChanger';
 
 export function setContents(contents) {
@@ -107,15 +106,10 @@ export function mountSample(sampleData, successCb = null) {
   };
 }
 
-export function unmountSample(sample) {
+export function unmountSample() {
   return async (dispatch) => {
     try {
-      if (sample) {
-        await sendUnmountSample(sample);
-      } else {
-        await sendUnmountCurrentSample();
-      }
-
+      await sendUnmountCurrentSample();
       dispatch(clearCurrentSample());
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
