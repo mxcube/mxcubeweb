@@ -15,16 +15,16 @@ export default class LabeledValue extends React.Component {
       backgroundColor: 'transparent',
       display: 'block-inline',
       fontSize: '100%',
-      borderRadius: '0px',
+      borderRadius: 0,
       color: '#000',
-      padding: '0px',
+      padding: 0,
       marginBottom: 0,
       whiteSpace: 'nowrap',
     };
 
     if (this.props.look === 'vertical') {
       labelStyle = { display: 'block', marginBottom: '3px' };
-      valueStyle = { display: 'block', fontSize: '100%', borderRadius: '0px' };
+      valueStyle = { display: 'block', fontSize: '100%', borderRadius: 0 };
     }
 
     let value = this.props.value.toFixed(

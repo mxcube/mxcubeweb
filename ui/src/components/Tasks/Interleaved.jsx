@@ -151,7 +151,7 @@ class Interleaved extends React.Component {
               striped
               bordered
               hover
-              style={{ fontSize: 'smaller', marginBottom: '0px' }}
+              style={{ fontSize: 'smaller', marginBottom: 0 }}
               className="task-parameters-table"
             >
               <thead>
@@ -222,7 +222,7 @@ class Interleaved extends React.Component {
                 striped
                 bordered
                 hover
-                style={{ fontSize: 'smaller', marginBottom: '0px' }}
+                style={{ fontSize: 'smaller', marginBottom: 0 }}
                 className="task-parameters-table mt-3"
               >
                 <thead>
