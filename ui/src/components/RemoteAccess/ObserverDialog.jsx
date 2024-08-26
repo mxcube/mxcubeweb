@@ -1,113 +1,63 @@
-/* eslint-disable react/jsx-handler-names */
-import React from 'react';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
-import { Modal, Button, Form, Row, Col } from 'react-bootstrap';
-import { showObserverDialog, updateNickname } from '../../actions/remoteAccess';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Modal, Button, Form } from 'react-bootstrap';
+import { updateNickname } from '../../actions/remoteAccess';
+import { useForm } from 'react-hook-form';
 
-export class ObserverDialog extends React.Component {
-  constructor(props) {
-    super(props);
-    this.accept = this.accept.bind(this);
-    this.reject = this.reject.bind(this);
-    this.show = this.show.bind(this);
+function ObserverDialog() {
+  const dispatch = useDispatch();
+
+  const { loginType, loginID, user } = useSelector((state) => state.login);
+  const isUserLogin = loginType === 'User';
+  const showDialog = !user.inControl && !user.nickname;
+
+  const {
+    register,
+    handleSubmit: makeOnSubmit,
+    setFocus,
+  } = useForm({
+    defaultValues: { name: loginID },
+  });
+
+  function handleSubmit(data) {
+    dispatch(updateNickname(data.name || user.username));
   }
 
-  componentDidUpdate() {
-    if (this.name && this.name.value === '') {
-      try {
-        this.name.value = this.props.login.user.nickname;
-      } catch {
-        this.name.value = '';
-      }
+  useEffect(() => {
+    if (showDialog) {
+      setFocus('name');
     }
-  }
+  }, [setFocus, showDialog]);
 
-  show() {
-    return (
-      !this.props.login.user.inControl && this.props.login.user.nickname === ''
-    );
-  }
-
-  accept(evt) {
-    evt.preventDefault();
-
-    const name = this.name ? this.name.value : this.props.login.loginID;
-
-    if (name) {
-      this.props.updateNickname(name);
-    } else {
-      this.props.updateNickname(this.props.login.user.username);
-    }
-
-    this.props.hide();
-  }
-
-  reject() {
-    this.props.hide();
-  }
-
-  title() {
-    return 'Observer mode';
-  }
-
-  render() {
-    return (
-      <Modal backdrop="static" show={this.show()} style={{ zIndex: 10_001 }}>
+  return (
+    <Modal
+      backdrop="static"
+      show={showDialog}
+      style={{ zIndex: 10_001 }}
+      data-default-styles
+    >
+      <Form onSubmit={makeOnSubmit(handleSubmit)}>
         <Modal.Header>
-          <Modal.Title>{this.title()}</Modal.Title>
+          <Modal.Title>Observer mode</Modal.Title>
         </Modal.Header>
-        <div>
-          <Modal.Body>
+        <Modal.Body>
+          <p className="mb-0">
             Someone else is currently using the beamline, you are going to be
-            logged in as an observer.{' '}
-            {this.props.login.loginType === 'User'
-              ? ''
-              : 'You have to enter your name to be able to continue.'}
-          </Modal.Body>
-          <Modal.Footer className="d-block">
-            <Form onSubmit={this.accept}>
-              {this.props.login.loginType === 'User' ? null : (
-                <Row className="mb-3">
-                  <Form.Group as={Col} sm={12}>
-                    <Form.Control
-                      ref={(ref) => {
-                        this.name = ref;
-                      }}
-                      type="text"
-                      defaultValue={this.props.login.loginID}
-                    />
-                  </Form.Group>
-                </Row>
-              )}
-              <Row className="justify-content-end">
-                <Form.Group as={Col} sm={3}>
-                  <Button style={{ float: 'right' }} type="submit">
-                    {' '}
-                    OK{' '}
-                  </Button>
-                </Form.Group>
-              </Row>
-            </Form>
-          </Modal.Footer>
-        </div>
-      </Modal>
-    );
-  }
+            logged in as an observer.
+          </p>
+          {!isUserLogin && (
+            <Form.Group className="mt-3" controlId="observerName">
+              <Form.Label>Please enter your name:</Form.Label>
+              <Form.Control {...register('name')} type="text" />
+            </Form.Group>
+          )}
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type="submit">Continue</Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  );
 }
 
-function mapStateToProps(state) {
-  return {
-    remoteAccess: state.remoteAccess,
-    login: state.login,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    hide: bindActionCreators(showObserverDialog.bind(null, false), dispatch),
-    updateNickname: bindActionCreators(updateNickname, dispatch),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(ObserverDialog);
+export default ObserverDialog;

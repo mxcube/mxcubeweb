@@ -20,7 +20,7 @@ Cypress.Commands.add('takeControl', (returnPage = '/datacollection') => {
   // control only needs to be taken, when observer mode is present
   cy.get('body').then(($body) => {
     if ($body.text().includes('Observer mode')) {
-      cy.findByRole('button', { name: 'OK' }).click();
+      cy.findByRole('button', { name: 'Continue' }).click();
       cy.findByRole('link', { name: /Remote/u, hidden: true }).click();
       cy.findByRole('button', { name: 'Take control' }).click();
       cy.visit(returnPage);
