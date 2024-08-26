@@ -15,12 +15,18 @@ describe('3-click centring', () => {
     );
   });
 
-  it.skip('Each click is rotating the sample by 90 degrees', () => {
+  it('Each click is rotating the sample by 90 degrees', () => {
     cy.mountSample();
     cy.findByRole('button', { name: 'Sample: test - test' }).should(
       'be.visible',
     );
+
     cy.findByRole('button', { name: '3-click centring' }).click();
+    cy.findByRole('button', { name: '3-click centring' }).should(
+      'have.class',
+      'active',
+    );
+
     cy.get('.form-control[name="diffractometer.phi"]')
       .invoke('val')
       .then((value) => {
