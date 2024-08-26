@@ -15,10 +15,6 @@ import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
 import { showWaitDialog } from './waitDialog';
 
-export function showObserverDialog(show = true) {
-  return { type: 'SHOW_OBSERVER_DIALOG', show };
-}
-
 export function getRaState() {
   return async (dispatch) => {
     const data = await fetchRemoteAccessState();

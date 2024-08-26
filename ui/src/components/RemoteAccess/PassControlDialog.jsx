@@ -66,21 +66,22 @@ function PassControlDialog() {
           {requestingObs?.requestsControlMsg && (
             <Alert>{requestingObs.requestsControlMsg}</Alert>
           )}
-          <Form.Label>Your response:</Form.Label>
-          <Form.Control
-            type="textarea"
-            {...register('message')}
-            placeholder="Message"
-            rows="4"
-            isValid={isSubmitted && !errors.message}
-            isInvalid={isSubmitted && !!errors.message}
-          />
-          <Form.Control.Feedback type="invalid">
-            {errors.message?.message}
-          </Form.Control.Feedback>
+          <Form.Group controlId="passControlResponse">
+            <Form.Label>Your response:</Form.Label>
+            <Form.Control
+              {...register('message')}
+              type="textarea"
+              placeholder="Message"
+              rows="4"
+              isValid={isSubmitted && !errors.message}
+              isInvalid={isSubmitted && !!errors.message}
+            />
+            <Form.Control.Feedback type="invalid">
+              {errors.message?.message}
+            </Form.Control.Feedback>
+          </Form.Group>
         </Modal.Body>
         <Modal.Footer>
-          <br />
           <Button type="submit" name="allow" variant="success">
             Give control
           </Button>

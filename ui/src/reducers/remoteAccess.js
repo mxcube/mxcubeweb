@@ -4,7 +4,6 @@ const INITIAL_STATE = {
   observers: [],
   allowRemote: false,
   timeoutGivesControl: false,
-  showObserverDialog: false,
   chatMessageCount: 0,
 };
 
@@ -23,9 +22,6 @@ function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
     }
     case 'SET_OBSERVERS': {
       return { ...state, observers: action.observers };
-    }
-    case 'SHOW_OBSERVER_DIALOG': {
-      return { ...state, showObserverDialog: action.show };
     }
     case 'SET_ALLOW_REMOTE': {
       return { ...state, allowRemote: action.allow };
