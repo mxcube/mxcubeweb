@@ -394,9 +394,9 @@ class SampleView(ComponentBase):
             self.centring_reset_click_count()
         else:
             logging.getLogger("user_level_log").warning(
-                "Diffracomter is busy, cannot start centering"
+                "Diffractometer is busy, cannot start centering"
             )
-            msg = "Diffracomter is busy, cannot start centering"
+            msg = "Diffractometer is busy, cannot start centering"
             raise RuntimeError(msg)
 
         return {"clicksLeft": self.centring_clicks_left()}
