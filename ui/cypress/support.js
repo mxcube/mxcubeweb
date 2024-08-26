@@ -1,5 +1,8 @@
 /* global Cypress, cy */
 import '@testing-library/cypress/add-commands';
+import installLogsCollector from 'cypress-terminal-report/src/installLogsCollector.js';
+
+installLogsCollector();
 
 Cypress.Commands.add('login', (username = 'idtest0', password = '0000') => {
   cy.visit('/');
