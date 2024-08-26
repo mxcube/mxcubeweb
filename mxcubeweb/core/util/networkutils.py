@@ -46,15 +46,24 @@ def remote_addr():
     return str(hdr).split(",")[-1]
 
 
-def is_local_network(ip):
+def is_local_network(ip, local_domains=[]):
     localhost = socket.gethostbyname_ex(socket.gethostname())[2][0]
     localhost_range = ".".join(localhost.split(".")[0:2])
     private_address = ".".join(ip.split(".")[0:2])
+    try:
+        private_hostname = socket.gethostbyaddr(ip)[0]
+    except (socket.herror, socket.gaierror):
+        logging.getLogger("MX3.HWR").warning(
+            "Failed to resolve the client IP: %s" % ip)
+        private_hostname = ''
 
-    return private_address == localhost_range
+    return private_address == localhost_range or \
+        any(map(lambda domain: private_hostname and
+                               private_hostname.endswith(domain),
+                local_domains))
 
 
-def is_local_host():
+def is_local_host(local_domains):
     try:
         localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]
     except Exception:
@@ -69,7 +78,8 @@ def is_local_host():
     if remote_address in [None, "None", ""]:
         remote_address = "127.0.0.1"
 
-    return remote_address in localhost_list or is_local_network(remote_address)
+    return remote_address in localhost_list or \
+        is_local_network(remote_address, local_domains)
 
 
 def valid_login_only(f):

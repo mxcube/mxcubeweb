@@ -540,9 +540,10 @@ class UserManager(BaseUserManager):
             LimsSessionManager object with login information.
         """
         self._debug("_login. login_id=%s" % login_id)
+        local_domains = self.app.CONFIG.app.LOCAL_DOMAINS
         try:
             session_manager: LimsSessionManager = HWR.beamline.lims.login(
-                login_id, password, is_local_host()
+                login_id, password, is_local_host(local_domains)
             )
         except Exception as e:
             logging.getLogger("MX3.HWR").error(e)
@@ -568,12 +569,12 @@ class UserManager(BaseUserManager):
                 raise Exception(msg)
 
         # Only allow in-house log-in from local host
-        if self.is_inhouse_user(login_id) and not is_local_host():
+        if self.is_inhouse_user(login_id) and not is_local_host(local_domains):
             msg = "In-house only allowed from localhost"
             raise Exception(msg)
 
         # Only allow local login when remote is disabled
-        if not self.app.ALLOW_REMOTE and not is_local_host():
+        if not self.app.ALLOW_REMOTE and not is_local_host(local_domains):
             msg = "Remote access disabled"
             raise Exception(msg)
 

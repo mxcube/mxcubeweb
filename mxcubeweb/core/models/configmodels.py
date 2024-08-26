@@ -153,6 +153,10 @@ class MXCUBEAppConfigModel(BaseModel):
     mode: ModeEnum = Field(
         ModeEnum.OSC, description="MXCuBE mode OSC, SSX-CHIP or SSX-INJECTOR"
     )
+    LOCAL_DOMAINS: list[str] = Field(
+        [],
+        description="If the connected client's hostname ends with one of these domains"
+                    ", it will be considered \"local\"")
     usermanager: UserManagerConfigModel
     ui_properties: dict[str, UIPropertiesModel] = {}
 
