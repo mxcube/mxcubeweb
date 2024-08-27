@@ -87,7 +87,7 @@ export function scan(address) {
   };
 }
 
-export function mountSample(sampleData, successCb = null) {
+export function mountSample(sampleData) {
   return async (dispatch, getState) => {
     const state = getState();
     if (state.sampleChanger.loadedSample.address === sampleData.location) {
@@ -96,10 +96,6 @@ export function mountSample(sampleData, successCb = null) {
 
     try {
       await sendMountSample(sampleData);
-
-      if (successCb) {
-        successCb();
-      }
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
     }

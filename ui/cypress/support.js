@@ -46,7 +46,14 @@ Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
   cy.findByLabelText('Sample name').type(sample);
   cy.findByLabelText('Protein acronym').type(protein);
   cy.findByRole('button', { name: 'Mount' }).click();
-  // reload for button changes to take effect
+
+  // Wait for "Queued Samples" tab to no longer be selected to ensure that mount command has been sent
+  cy.findByRole('button', { name: /Queued Samples/u }).should(
+    'not.have.class',
+    'active',
+  );
+
+  // Reload to see mounted sample (until WebSockets are fixed on CI)
   cy.reload();
 });
 
