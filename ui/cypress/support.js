@@ -13,9 +13,7 @@ Cypress.Commands.add('takeControl', (returnPage = '/datacollection') => {
   /* firefox (only firefox) throws an unhandled promise error when executing
      this function. Hence, we tell cypress to ignore this, otherwise the tests
      fail, when we try to click the observer mode dialog away. */
-  Cypress.on('uncaught:exception', (err, runnable) => {
-    return false;
-  });
+  Cypress.on('uncaught:exception', () => false);
 
   // control only needs to be taken, when observer mode is present
   cy.get('body').then(($body) => {
@@ -23,18 +21,23 @@ Cypress.Commands.add('takeControl', (returnPage = '/datacollection') => {
       cy.findByRole('button', { name: 'Continue' }).click();
       cy.findByRole('link', { name: /Remote/u, hidden: true }).click();
       cy.findByRole('button', { name: 'Take control' }).click();
-      cy.visit(returnPage);
     }
   });
 
   // tell cypress to listen to any uncaught:execptions again
-  Cypress.on('uncaught:exception', (err, runnable) => {
-    return true;
-  });
+  Cypress.on('uncaught:exception', () => true);
+});
+
+Cypress.Commands.add('loginWithControl', () => {
+  cy.login();
+  cy.findByRole('heading', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
+
+  cy.takeControl();
+  cy.findByRole('link', { name: /Data collection/u, hidden: true }).click();
+  cy.findByRole('button', { name: 'Run Queue' }).should('be.visible');
 });
 
 Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
-  cy.visit('/datacollection');
   cy.findByRole('button', { name: /Queued Samples/u }).click();
   cy.findByRole('button', { name: 'Create new sample' }).click();
   cy.findByLabelText('Sample name').type(sample);
@@ -44,9 +47,8 @@ Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
   cy.reload();
 });
 
-Cypress.Commands.add('clearSamples', (returnPage = '/datacollection') => {
+Cypress.Commands.add('clearSamples', () => {
   cy.findByText('Samples').click();
   cy.findByRole('button', { name: /Clear sample list/u }).click('left');
   cy.findByRole('button', { name: 'Ok' }).click();
-  cy.visit(returnPage);
 });

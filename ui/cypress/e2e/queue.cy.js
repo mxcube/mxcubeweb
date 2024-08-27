@@ -2,9 +2,7 @@
 
 describe('queue', () => {
   beforeEach(() => {
-    cy.login();
-    cy.findByRole('heading', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
-    cy.takeControl();
+    cy.loginWithControl();
   });
 
   it('mount a test sample', () => {
