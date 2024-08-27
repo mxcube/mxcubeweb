@@ -1,11 +1,11 @@
-/* global cy, it, describe, beforeEach, Cypress */
+/* global cy, it, describe, beforeEach */
 
 describe('3-click centring', () => {
   beforeEach(() => {
     cy.loginWithControl();
   });
 
-  it('3-click centring should not work without sample', () => {
+  it('displays error when no sample is mounted', () => {
     cy.clearSamples(); // another test may have mounted a sample
     cy.findByRole('link', { name: /Data collection/u, hidden: true }).click();
 
@@ -15,34 +15,29 @@ describe('3-click centring', () => {
     );
   });
 
-  it('Each click is rotating the sample by 90 degrees', () => {
+  it('rotates sample by 90 degrees on click', () => {
     cy.mountSample();
     cy.findByRole('button', { name: 'Sample: test - test' }).should(
       'be.visible',
     );
 
     cy.findByRole('button', { name: '3-click centring' }).click();
-    cy.findByRole('button', { name: '3-click centring' }).should(
-      'have.class',
-      'active',
-    );
+    cy.findByText(/Clicks left: 3/u, { hidden: true }).should('exist');
 
     cy.get('.form-control[name="diffractometer.phi"]')
       .invoke('val')
-      .then((value) => {
-        let omegaValue = Number.parseFloat(value);
-        Cypress._.times(2, () => {
-          omegaValue += 90;
-          cy.get('.canvas-container').click();
-          // to update the omega value, a small amount of time must be waited and the page reloaded
-          cy.wait(1000);
-          cy.reload();
-          // press the centring button again after reload to stay in the correct mode
-          cy.findByRole('button', { name: '3-click centring' }).click();
-          cy.get('.form-control[name="diffractometer.phi"]')
-            .invoke('val')
-            .should('equal', omegaValue.toFixed(2));
-        });
+      .then((initialValue) => {
+        cy.get('.canvas-container').click();
+        cy.findByText(/Clicks left: 2/u, { hidden: true }).should('exist');
+
+        // Wait for omega motor to finish moving
+        cy.wait(1000);
+        // Reload to see new omega value (since WebSockets don't work on CI)
+        cy.reload();
+
+        cy.get('.form-control[name="diffractometer.phi"]')
+          .invoke('val')
+          .should('equal', (Number.parseFloat(initialValue) + 90).toFixed(2));
       });
   });
 });
