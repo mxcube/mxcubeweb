@@ -45,11 +45,12 @@ function AddSample(props) {
     }
   }, [setFocus, show]);
 
-  function addAndMount(params) {
+  async function addAndMount(params) {
     const sampleData = getSampleData(params);
     addSamplesToList([sampleData]);
-    addSampleAndMount(sampleData);
     hide();
+
+    await addSampleAndMount(sampleData);
 
     if (pathname === '/' || pathname === '/datacollection') {
       // Switch to mounted sample tab

@@ -106,22 +106,18 @@ export function addSamplesToQueue(sampleDataList) {
 }
 
 export function addSampleAndMount(sampleData) {
-  return (dispatch) => {
-    dispatch(
-      mountSample(sampleData, async () => {
-        dispatch(queueLoading(true));
+  return async (dispatch) => {
+    await dispatch(mountSample(sampleData));
 
-        try {
-          const json = await sendAddQueueItem([sampleData]);
-          dispatch(setQueue(json));
-          dispatch(selectSamplesAction([sampleData.sampleID]));
-        } catch {
-          dispatch(showErrorPanel(true, 'Server refused to add sample'));
-        }
-
-        dispatch(queueLoading(false));
-      }),
-    );
+    dispatch(queueLoading(true));
+    try {
+      const json = await sendAddQueueItem([sampleData]);
+      dispatch(setQueue(json));
+      dispatch(selectSamplesAction([sampleData.sampleID]));
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to add sample'));
+    }
+    dispatch(queueLoading(false));
   };
 }
 
