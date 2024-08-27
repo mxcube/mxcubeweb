@@ -24,8 +24,7 @@ describe('login', () => {
 
 describe('app', () => {
   beforeEach(() => {
-    cy.login();
-    cy.findByRole('heading', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
+    cy.loginWithControl();
   });
 
   it('displays collection page', () => {

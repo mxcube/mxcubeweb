@@ -2,13 +2,13 @@
 
 describe('3-click centring', () => {
   beforeEach(() => {
-    cy.login();
-    cy.findByRole('heading', { name: 'MXCuBE-Web (OSC)' }).should('be.visible');
-    cy.takeControl();
+    cy.loginWithControl();
   });
 
   it('3-click centring should not work without sample', () => {
-    cy.clearSamples();
+    cy.clearSamples(); // another test may have mounted a sample
+    cy.findByRole('link', { name: /Data collection/u, hidden: true }).click();
+
     cy.findByRole('button', { name: '3-click centring' }).click();
     cy.findByRole('alert', 'Error: There is no sample mounted').should(
       'be.visible',
