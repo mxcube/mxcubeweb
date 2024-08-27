@@ -19,6 +19,9 @@ import LoadingScreen from './LoadingScreen/LoadingScreen';
 import { serverIO } from '../serverIO';
 import { getLoginInfo } from '../actions/login';
 import PrivateOutlet from './PrivateOutlet';
+import { sendRefreshSession } from '../api/login';
+
+const REFRESH_INTERVAL = 9000;
 
 const router = createBrowserRouter([
   {
@@ -77,8 +80,10 @@ function App() {
 
     if (loggedIn && import.meta.env.VITE_DISABLE_WEBSOCKETS !== 'true') {
       serverIO.listen();
+      const refreshInterval = setInterval(sendRefreshSession, REFRESH_INTERVAL);
 
       return () => {
+        clearInterval(refreshInterval);
         serverIO.disconnect();
       };
     }
