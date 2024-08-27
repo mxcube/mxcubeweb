@@ -23,8 +23,8 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
     case 'CLEAR_QUEUE': {
       return {
         ...state,
-        queue: INITIAL_STATE.queue,
-        currentSampleID: INITIAL_STATE.current,
+        queue: [],
+        currentSampleID: null,
       };
     }
     case 'ADD_SAMPLES_TO_QUEUE': {

@@ -1,23 +1,21 @@
-/* global Cypress, cy */
+/* global Cypress, cy, beforeEach */
 import '@testing-library/cypress/add-commands';
 import installLogsCollector from 'cypress-terminal-report/src/installLogsCollector.js';
 
 installLogsCollector();
 
-Cypress.Commands.add('login', (username = 'idtest0', password = '0000') => {
+beforeEach(() => {
   cy.visit('/');
+});
+
+Cypress.Commands.add('login', (username = 'idtest0', password = '0000') => {
   cy.findByRole('heading', { name: 'MXCuBE' }).should('be.visible');
   cy.findByLabelText('Login ID').type(username);
   cy.findByLabelText('Password').type(password);
   cy.findByRole('button', { name: 'Sign in' }).click();
 });
 
-Cypress.Commands.add('takeControl', (returnPage = '/datacollection') => {
-  /* firefox (only firefox) throws an unhandled promise error when executing
-     this function. Hence, we tell cypress to ignore this, otherwise the tests
-     fail, when we try to click the observer mode dialog away. */
-  Cypress.on('uncaught:exception', () => false);
-
+Cypress.Commands.add('takeControl', () => {
   // control only needs to be taken, when observer mode is present
   cy.get('body').then(($body) => {
     if ($body.text().includes('Observer mode')) {
@@ -26,9 +24,6 @@ Cypress.Commands.add('takeControl', (returnPage = '/datacollection') => {
       cy.findByRole('button', { name: 'Take control' }).click();
     }
   });
-
-  // tell cypress to listen to any uncaught:execptions again
-  Cypress.on('uncaught:exception', () => true);
 });
 
 Cypress.Commands.add('loginWithControl', () => {
@@ -45,7 +40,9 @@ Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
   cy.findByRole('button', { name: 'Create new sample' }).click();
   cy.findByLabelText('Sample name').type(sample);
   cy.findByLabelText('Protein acronym').type(protein);
-  cy.findByRole('button', { name: 'Mount' }).click();
+  cy.findByRole('dialog').within(() => {
+    cy.findByRole('button', { name: 'Mount' }).click(); // multiple "Mount" buttons if queue isn't empty
+  });
 
   // Wait for "Queued Samples" tab to no longer be selected to ensure that mount command has been sent
   cy.findByRole('button', { name: /Queued Samples/u }).should(

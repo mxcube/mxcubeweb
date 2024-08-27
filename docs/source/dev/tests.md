@@ -29,7 +29,7 @@ The output should be similar to the following:
 
 ## E2E Tests (Cypress)
 
-The E2E tests are located in the `ui/cypress/e2e` folder and consist of multiple specs represented each by one file. The specs are designed to each contain the tests to their respective component. One exception is the `app.cy.js` which also includes tests regarding login.
+The end-to-end tests are located in the `ui/cypress/e2e` folder and organised into multiple spec files by feature.
 
 To run all the tests consecutively in a headless browser environment, start both the backend and front-end servers in separate terminals, and then run the following command from the root of the project:
 
