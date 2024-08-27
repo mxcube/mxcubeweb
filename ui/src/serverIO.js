@@ -77,8 +77,8 @@ class ServerIO {
 
   disconnect() {
     this.connected = false;
-    this.hwrSocket.close();
-    this.loggingSocket.close();
+    this.hwrSocket?.close();
+    this.loggingSocket?.close();
   }
 
   connect() {
