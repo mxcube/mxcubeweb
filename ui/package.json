@@ -16,7 +16,7 @@
     "prettier": "prettier . --cache --check",
     "eslint": "eslint \"**/*.{js,jsx}\"",
     "e2e": "cypress run --e2e --browser firefox",
-    "cypress": "cypress open --e2e --browser firefox"
+    "cypress": "VITE_DISABLE_WEBSOCKETS=true cypress open --e2e --browser firefox"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",

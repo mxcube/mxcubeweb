@@ -75,7 +75,7 @@ function App() {
   useEffect(() => {
     dispatch(getLoginInfo());
 
-    if (loggedIn) {
+    if (loggedIn && import.meta.env.VITE_DISABLE_WEBSOCKETS !== 'true') {
       serverIO.listen();
 
       return () => {
