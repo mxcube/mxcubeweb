@@ -98,6 +98,7 @@ export function mountSample(sampleData) {
       await sendMountSample(sampleData);
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
+      throw error;
     }
   };
 }
