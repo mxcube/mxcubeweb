@@ -34,7 +34,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         HWR.beamline.sample_view.camera.streaming_greenlet.kill()
         return Response(status=200)
 
-    @bp.route("/camera/save", methods=["POST"])
+    @bp.route("/camera/snapshot", methods=["POST"])
     @server.restrict
     def snapshot():
         """

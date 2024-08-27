@@ -59,5 +59,5 @@ export function sendUpdateMotorPosition(motorName, value) {
 }
 
 export function sendTakeSnapshot(canvasData) {
-  return endpoint.post({ overlay: canvasData }, '/camera/save').blob();
+  return endpoint.post({ overlay: canvasData }, '/camera/snapshot').blob();
 }
