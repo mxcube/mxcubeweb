@@ -45,8 +45,8 @@ def init_route(app, server, url_prefix):  # noqa: C901
         """
         try:
             overlay = json.loads(request.data).get("overlay")
-            snapshot_data_uri = HWR.beamline.sample_view.take_snapshot(
-                overlay_data=overlay,
+            snapshot_data_uri = HWR.beamline.sample_view.get_snapshot(
+                overlay=overlay,
             )
             snapshot_data_uri.seek(0)
             return send_file(
