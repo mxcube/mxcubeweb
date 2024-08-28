@@ -478,7 +478,11 @@ export default class SampleImage extends React.Component {
             if (obj.type === 'GridGroup') {
               let gridData = this.props.grids[obj.id];
               if (gridData) {
-                const cellCenter = this.getGridCellCenter(obj, clickPoint);
+                const cellCenter = this.drawGridPlugin.getClickedCell(
+                  gridData,
+                  obj,
+                  e,
+                );
                 ctxMenuObj = {
                   type: 'GridGroupSaved',
                   gridData,
