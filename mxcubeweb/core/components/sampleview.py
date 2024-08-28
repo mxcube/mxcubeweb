@@ -118,6 +118,12 @@ class SampleView(ComponentBase):
         self._centring_point_id = None
         self.http_streamer = HttpStreamer()
 
+        enable_snapshots(
+            HWR.beamline.collect,
+            HWR.beamline.diffractometer,
+            HWR.beamline.sample_view,
+        )
+
         HWR.beamline.sample_view.connect("shapesChanged", self._emit_shapes_updated)
 
         zoom_motor = HWR.beamline.diffractometer.get_object_by_role("zoom")
@@ -607,5 +613,3 @@ def enable_snapshots(collect_object, diffractometer_object, sample_view):
     diffractometer_object.save_snapshot = types.MethodType(
         save_snapshot, diffractometer_object
     )
-
-    sample_view.set_ui_snapshot_cb(save_snapshot)
