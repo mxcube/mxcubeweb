@@ -21,6 +21,7 @@ def test_beamline_get_all_attribute(client):
 
     expected = [
         "beam",
+        "beam.aperture",
         "cryo",
         "data_publisher",
         "detector",
