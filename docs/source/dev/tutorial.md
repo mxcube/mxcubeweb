@@ -170,7 +170,7 @@ with the `humidity.xml`:
 </object>
 ```
 
-and an extra line in `mxcubeweb/test/HardwareObjectsMockup.xml/beamline_config.yml`:
+and an extra line in `mxcubeweb/demo/beamline_config.yml`:
 
 ```yaml
     - humidity: humidity.xml
