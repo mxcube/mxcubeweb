@@ -86,7 +86,6 @@ pnpm --prefix ui build
 ### 7. Running the application (server)
 
 ```
-# In the previous terminal:
 # The paths passed below need to be the absolute paths
 # to the HardwareObjectsMockup.xml and build directories
 # (that is why there is an extra `$(pwd)` in the command).
