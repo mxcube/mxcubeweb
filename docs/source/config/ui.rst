@@ -268,5 +268,5 @@ ui.yaml example
 
 Below is an example of a UI configuration file ``ui.yaml``, as used by the mockup beamline.
 
-.. literalinclude:: ../../../test/HardwareObjectsMockup.xml/mxcube-web/ui.yaml
+.. literalinclude:: ../../../demo/mxcube-web/ui.yaml
    :language: yaml

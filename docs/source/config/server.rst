@@ -210,5 +210,5 @@ server.yaml example
 
 Below is an example of a server configuration file ``server.yaml``, as used by the mockup beamline.
 
-.. literalinclude:: ../../../test/HardwareObjectsMockup.xml/mxcube-web/server.yaml
+.. literalinclude:: ../../../demo/mxcube-web/server.yaml
    :language: yaml

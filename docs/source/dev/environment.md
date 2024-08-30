@@ -86,9 +86,9 @@ pnpm --prefix ui build
 
 ```
 # The paths passed below need to be the absolute paths
-# to the HardwareObjectsMockup.xml and build directories
+# to the demo and build directories
 # (that is why there is an extra `$(pwd)` in the command).
-mxcubeweb-server -r $(pwd)/mxcubeweb/test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/mxcubeweb/ui/build/ -L debug
+mxcubeweb-server -r $(pwd)/mxcubeweb/demo/ --static-folder $(pwd)/mxcubeweb/ui/build/ -L debug
 ```
 
 _Running the above should give something similar to_
@@ -158,7 +158,7 @@ The development server listens on port **5173**
 # so before starting the development server, open a new terminal and run (as in step 7):
 
 conda activate mxcubeweb
-mxcubeweb-server -r $(pwd)/mxcubeweb/test/HardwareObjectsMockup.xml/ --static-folder $(pwd)/mxcubeweb/ui/build/ --log-level debug
+mxcubeweb-server -r $(pwd)/mxcubeweb/demo/ --static-folder $(pwd)/mxcubeweb/ui/build/ --log-level debug
 
 # In another terminal, from the root directory of `mxcubeweb`
 pnpm --prefix ui start

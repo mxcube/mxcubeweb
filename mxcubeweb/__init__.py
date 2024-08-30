@@ -9,7 +9,7 @@ import mock  # noqa: E402
 import os  # noqa: E402
 import sys  # noqa: E402
 import traceback  # noqa: E402
-
+from pathlib import Path  # noqa: E402
 from mxcubeweb.server import Server as server  # noqa: E402
 from mxcubeweb.app import MXCUBEApplication as mxcube  # noqa: E402
 from mxcubeweb.config import Config  # noqa: E402
@@ -20,10 +20,8 @@ sys.modules["Qub.CTools"] = mock.Mock()
 
 
 def parse_args(argv):
-    XML_DIR = os.path.join(
-        os.path.join(os.path.dirname(__file__), os.pardir),
-        "test/HardwareObjectsMockup.xml/",
-    )
+    # by default load the 'demo' mocked beamline
+    hwr_directory = str(Path(Path(__file__).parents[1], "demo"))
 
     opt_parser = argparse.ArgumentParser(
         description="mxcube-web Backend server command line utility."
@@ -34,7 +32,7 @@ def parse_args(argv):
         "--repository",
         dest="hwr_directory",
         help="Hardware Repository XML files path",
-        default=XML_DIR,
+        default=hwr_directory,
     )
 
     opt_parser.add_argument(
