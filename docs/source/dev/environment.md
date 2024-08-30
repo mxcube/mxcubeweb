@@ -57,8 +57,9 @@ conda env create -f conda-environment.yml --name another_name
 To choose a specific Python version when creating the conda environment,
 for example Python 3.9, one can use a command such as the following:
 
-```none
-conda env create -f conda-environment.yml python=3.9
+```
+conda create python=3.9 --name mxcubeweb
+conda env update --name mxcubeweb --file conda-environment.yml
 ```
 
 ### 4. Activate the environment
@@ -85,11 +86,6 @@ pnpm --prefix ui build
 ### 7. Running the application (server)
 
 ```
-# Start redis-server (if not already running)
-# Open a new terminal:
-conda activate mxcubeweb
-redis-server
-
 # In the previous terminal:
 # The paths passed below need to be the absolute paths
 # to the HardwareObjectsMockup.xml and build directories
@@ -138,10 +134,6 @@ python -m pip install --editable .
 
 The "editable" installations make it possible to
 add break points directly in the "checked out code".
-
-Before running any test, make sure that the local _Redis_ server is running.
-For example, with the `mxcubeweb` _conda_ environment activated in a terminal,
-run the `redis-server` command.
 
 #### 9.1. Running tests
 
