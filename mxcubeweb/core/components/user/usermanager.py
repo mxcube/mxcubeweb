@@ -388,7 +388,6 @@ class UserManager(BaseUserManager):
             and is_local_host()
             and HWR.beamline.lims.loginType.lower() != "user"
         ):
-        and is_local_host()
         and HWR.beamline.lims.loginType.lower() != "user":
             msg = "[LOGIN] Valid login from local host (%s)" % str(info)
             logging.getLogger("MX3.HWR").info(msg)
