@@ -78,7 +78,6 @@ class Beamline(ComponentBase):
         :return: Tuple, (list of apertures, current aperture)
         :rtype: tuple
         """
-        aperture_list, current_aperture = [], None
         beam = HWR.beamline.beam
 
         aperture_list = beam.get_available_size()["values"]
