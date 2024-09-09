@@ -850,6 +850,7 @@ export default function SampleListViewContainer() {
                 variant="outline-secondary"
                 className="nowrap-style"
                 title="Context Menu to Add DC or Workflow to all filtered Samples Options"
+                disabled={Object.keys(sampleList).length === 0}
                 onClick={(e) => {
                   displayContextMenu(e, 'samples-grid-table-context-menu-cell');
                 }}
