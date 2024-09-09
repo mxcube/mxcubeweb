@@ -151,7 +151,10 @@ export default function SampleGridTableContainer(props) {
   );
   const viewMode = useSelector((state) => state.sampleGrid.viewMode);
   const workflows = useSelector((state) => state.workflow.workflows);
-
+  const defaultParameters = useSelector(
+    (state) => state.taskForm.defaultParameters,
+  );
+  const availableMethods = new Set(Object.keys(defaultParameters));
   const selectionRubberBand = document.querySelector('#selectionRubberBand');
 
   const {
@@ -854,12 +857,16 @@ export default function SampleGridTableContainer(props) {
         <Dropdown.Header>
           <i className="fas fa-plus" /> Add{' '}
         </Dropdown.Header>
-        <Dropdown.Item onClick={showDataCollectionForm}>
-          Data collection
-        </Dropdown.Item>
-        <Dropdown.Item onClick={showCharacterisationForm}>
-          Characterisation
-        </Dropdown.Item>
+        {availableMethods.has('datacollection') ? (
+          <Dropdown.Item onClick={showDataCollectionForm}>
+            Data collection
+          </Dropdown.Item>
+        ) : null}
+        {availableMethods.has('characterisation') ? (
+          <Dropdown.Item onClick={showCharacterisationForm}>
+            Characterisation
+          </Dropdown.Item>
+        ) : null}
         {getWorkflowMenuOptions(workflows, showWorkflowForm).samplegrid.map(
           (wf) => (
             <Dropdown.Item onClick={wf.handleAction} key={wf.key}>
