@@ -43,7 +43,7 @@ class DataPublisherAdapter(AdapterBase):
         self.emit_ho_changed()
 
     def state(self):
-        return HardwareObjectState.READY.value
+        return HardwareObjectState.READY.name
 
     def current_data(self) -> list:
         return self._current_data_list
