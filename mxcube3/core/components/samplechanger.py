@@ -320,9 +320,10 @@ class SampleChanger(ComponentBase):
             HWR.beamline.sample_view.clear_all()
             # #添加下样品后初始化
             # HWR.beamline.sample_changer_maintenance._do_home()
-            #20231226
-            sc_maint = HWR.beamline.sample_changer_maintenance
-            sc_maint._do_dry_gripper()
+            #20231226->20240910
+            if not sample["location"] == "Manual":
+                sc_maint = HWR.beamline.sample_changer_maintenance
+                sc_maint._do_dry_gripper()
 
     def mount_sample(self, sample):
         sc = HWR.beamline.sample_changer
