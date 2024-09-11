@@ -511,8 +511,8 @@ export default class SampleImage extends React.Component {
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   leftClick(option) {
+    this.canvas.selection = true; // Enable group selection
     let objectFound = false;
-
     this.drawGridPlugin.clearMouseOverGridLabel(this.canvas);
 
     const {
@@ -521,6 +521,7 @@ export default class SampleImage extends React.Component {
       measureDistance,
       imageRatio,
       contextMenuVisible,
+      drawGrid,
     } = this.props;
 
     if (contextMenuVisible) {
@@ -528,16 +529,19 @@ export default class SampleImage extends React.Component {
     }
 
     if (clickCentring) {
+      this.canvas.selection = false; // Disable group selection
       sampleViewActions.recordCentringClick(
         option.e.layerX / imageRatio,
         option.e.layerY / imageRatio,
       );
     } else if (measureDistance) {
+      this.canvas.selection = false; // Disable group selection
       sampleViewActions.addDistancePoint(
         option.e.layerX / imageRatio,
         option.e.layerY / imageRatio,
       );
-    } else if (this.props.drawGrid) {
+    } else if (drawGrid) {
+      this.canvas.selection = false; // Disable group selection
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
     } else if (option.target && !(option.e.shiftKey || option.e.ctrlKey)) {
       if (option.target.type === 'activeSelection') {
@@ -710,10 +714,18 @@ export default class SampleImage extends React.Component {
   }
 
   selectShapeEvent(options) {
-    if (options.e !== undefined && options.selected.length > 0) {
-      this.selectShape(options.selected, options.e.ctrlKey);
-    } else if (options.e !== undefined && options.deselected.length > 0) {
-      this.deSelectShape(options.deselected);
+    if (
+      !this.props.drawGrid &&
+      !this.props.clickCentring &&
+      !this.props.measureDistance &&
+      !this.props.contextMenuVisible &&
+      options.e !== undefined
+    ) {
+      if (options.selected.length > 0) {
+        this.selectShape(options.selected, options.e.ctrlKey);
+      } else if (options.deselected.length > 0) {
+        this.deSelectShape(options.deselected);
+      }
     }
   }
 
