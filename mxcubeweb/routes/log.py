@@ -32,7 +32,7 @@ def init_route(app, server, url_prefix):
         logging.getLogger("MX3.UI").error("------ Start of UI trace back ------")
         logging.getLogger("MX3.UI").error("Traceback: %s " % args["stack"])
         logging.getLogger("MX3.UI").error(
-            "State: %s " % json.dumps(json.loads(args["state"]), indent=4)
+            "State: %s " % json.dumps(args["state"], indent=4)
         )
         logging.getLogger("MX3.UI").error("------ End of UI trace back ------")
         return make_response("", 200)
