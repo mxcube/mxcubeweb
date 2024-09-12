@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-key */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useRef, useState } from 'react';
 import { Row, Col, Form, Button, Table } from 'react-bootstrap';
@@ -11,7 +10,6 @@ function handleContextMenu(e) {
 }
 
 export default function GridForm(props) {
-  const use_advanced_settings = false;
   const {
     getGridOverlayOpacity,
     gridList,
@@ -23,8 +21,6 @@ export default function GridForm(props) {
     selectGrid,
     setGridOverlayOpacity,
     setGridResultType,
-    setHCellSpacing,
-    setVCellSpacing,
     show,
     toggleVisibility,
   } = props;
@@ -62,12 +58,6 @@ export default function GridForm(props) {
           <td>
             <span style={{ lineHeight: '24px' }}>{grid.name}</span>
           </td>
-          {use_advanced_settings
-            ? [
-                <td>{grid.cellVSpace.toFixed(2)}</td>,
-                <td>{grid.cellHSpace.toFixed(2)}</td>,
-              ]
-            : null}
           <td>
             {vdim} x {hdim}
           </td>
@@ -122,30 +112,6 @@ export default function GridForm(props) {
         <td>
           <span style={{ lineHeight: '24px' }}>*</span>
         </td>
-        {use_advanced_settings
-          ? [
-              <td>
-                <Form>
-                  <Form.Control
-                    style={{ width: '50px' }}
-                    type="text"
-                    defaultValue={0}
-                    onChange={setVCellSpacing}
-                  />
-                </Form>
-              </td>,
-              <td>
-                <Form>
-                  <Form.Control
-                    style={{ width: '50px' }}
-                    type="text"
-                    defaultValue={0}
-                    onChange={setHCellSpacing}
-                  />
-                </Form>
-              </td>,
-            ]
-          : null}
         <td />
         <td />
         <td />
@@ -184,9 +150,6 @@ export default function GridForm(props) {
             <thead>
               <tr>
                 <th>Name</th>
-                {use_advanced_settings
-                  ? [<th>V-Space (µm)</th>, <th>H-Space (µm)</th>]
-                  : null}
                 <th>Dim (µm)</th>
                 <th>#Cells</th>
                 <th>R x C</th>
