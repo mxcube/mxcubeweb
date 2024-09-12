@@ -35,8 +35,6 @@ export default class SampleImage extends React.Component {
     this.keyUp = this.keyUp.bind(this);
     this.wheel = this.wheel.bind(this);
     this.goToBeam = this.goToBeam.bind(this);
-    this.setHCellSpacing = this.setHCellSpacing.bind(this);
-    this.setVCellSpacing = this.setVCellSpacing.bind(this);
     this.setGridOverlayOpacity = this.setGridOverlayOpacity.bind(this);
     this.getGridOverlayOpacity = this.getGridOverlayOpacity.bind(this);
     this.saveGrid = this.saveGrid.bind(this);
@@ -209,58 +207,6 @@ export default class SampleImage extends React.Component {
     if (this.props.autoScale) {
       const { clientWidth } = document.querySelector('#outsideWrapper');
       this.props.sampleViewActions.setImageRatio(clientWidth);
-    }
-  }
-
-  setVCellSpacing(e) {
-    let value = Number.parseFloat(e.target.value);
-    if (Number.isNaN(value)) {
-      value = '';
-    }
-
-    const gridData = this.selectedGrid();
-
-    if (gridData) {
-      const gd = this.drawGridPlugin.setCellSpace(
-        gridData,
-        true,
-        gridData.cellHSpace,
-        value,
-      );
-      this.props.sampleViewActions.updateShapes([gd]);
-    } else if (this.props.drawGrid) {
-      this.drawGridPlugin.setCurrentCellSpace(
-        null,
-        value,
-        this.props.imageRatio,
-      );
-      this.drawGridPlugin.repaint(this.canvas);
-    }
-  }
-
-  setHCellSpacing(e) {
-    let value = Number.parseFloat(e.target.value);
-    if (Number.isNaN(value)) {
-      value = '';
-    }
-
-    const gridData = this.selectedGrid();
-
-    if (gridData) {
-      const gd = this.drawGridPlugin.setCellSpace(
-        gridData,
-        true,
-        value,
-        gridData.cellVSpace,
-      );
-      this.props.sampleViewActions.updateShapes([gd]);
-    } else if (this.props.drawGrid) {
-      this.drawGridPlugin.setCurrentCellSpace(
-        value,
-        null,
-        this.props.imageRatio,
-      );
-      this.drawGridPlugin.repaint(this.canvas);
     }
   }
 
@@ -964,8 +910,6 @@ export default class SampleImage extends React.Component {
               getGridOverlayOpacity={this.getGridOverlayOpacity}
               setGridOverlayOpacity={this.setGridOverlayOpacity}
               cellSpacing={this.props.cellSpacing}
-              setHCellSpacing={this.setHCellSpacing}
-              setVCellSpacing={this.setVCellSpacing}
               gridList={this.props.grids}
               currentGrid={this.drawGridPlugin.currentGridData()}
               removeGrid={this.props.sampleViewActions.deleteShape}
