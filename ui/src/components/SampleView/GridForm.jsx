@@ -192,7 +192,7 @@ export default class GridForm extends React.Component {
                   <Form.Check
                     name="resultType"
                     type="radio"
-                    onClick={() => this.props.setGridResultType('heatmap')}
+                    onChange={() => this.props.setGridResultType('heatmap')}
                     checked={this.props.gridResultType === 'heatmap'}
                   />
                 </Col>
@@ -207,7 +207,7 @@ export default class GridForm extends React.Component {
                   <Form.Check
                     name="resultType"
                     type="radio"
-                    onClick={() => this.props.setGridResultType('crystalmap')}
+                    onChange={() => this.props.setGridResultType('crystalmap')}
                     checked={this.props.gridResultType === 'crystalmap'}
                   />
                 </Col>
