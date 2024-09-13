@@ -758,14 +758,6 @@ export default class SampleImage extends React.Component {
     }
   }
 
-  hideGridForm() {
-    const gridForm = document.querySelector('#gridForm');
-
-    if (gridForm) {
-      gridForm.style.display = 'none';
-    }
-  }
-
   saveGrid() {
     const gd = this.drawGridPlugin.saveGrid(
       this.drawGridPlugin.currentGridData(),
