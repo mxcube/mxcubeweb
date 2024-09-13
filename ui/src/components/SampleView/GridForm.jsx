@@ -1,10 +1,14 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Row, Col, Form, Button, Table } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
 import './SampleView.css';
+
+function handleContextMenu(e) {
+  e.stopPropagation();
+}
 
 export default function GridForm(props) {
   const use_advanced_settings = false;
@@ -24,6 +28,21 @@ export default function GridForm(props) {
     show,
     toggleVisibility,
   } = props;
+
+  const draggableRef = useRef(null);
+
+  useEffect(() => {
+    const draggableElement = draggableRef.current;
+    if (draggableElement) {
+      draggableElement.addEventListener('contextmenu', handleContextMenu);
+    }
+
+    return () => {
+      if (draggableElement) {
+        draggableElement.removeEventListener('contextmenu', handleContextMenu);
+      }
+    };
+  }, [show]);
 
   function getGridControls() {
     const gridControlList = [];
