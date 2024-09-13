@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Row, Col, Form, Button, Table } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
@@ -30,6 +30,7 @@ export default function GridForm(props) {
   } = props;
 
   const draggableRef = useRef(null);
+  const [position, setPosition] = useState({ x: 20, y: 64 });
 
   useEffect(() => {
     const draggableElement = draggableRef.current;
