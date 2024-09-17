@@ -3,7 +3,7 @@ import sys
 import logging
 import ruamel.yaml
 
-from pydantic import BaseModel, ValidationError
+from pydantic.v1 import BaseModel, ValidationError
 
 from mxcubeweb.core.models.configmodels import (
     UIPropertiesListModel,
