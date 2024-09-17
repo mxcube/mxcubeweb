@@ -4,7 +4,6 @@ import { BsList } from 'react-icons/bs';
 import { NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { showProposalsForm, signOut } from '../../actions/login';
-import { serverIO } from '../../serverIO';
 import styles from './MXNavbar.module.css';
 
 function MXNavbar() {
@@ -106,10 +105,7 @@ function MXNavbar() {
             <button
               className={styles.navBtn}
               type="button"
-              onClick={() => {
-                serverIO.disconnect();
-                dispatch(signOut());
-              }}
+              onClick={() => dispatch(signOut())}
             >
               <span className="me-2 fas fa-lg fa-sign-out-alt" />
               Sign out

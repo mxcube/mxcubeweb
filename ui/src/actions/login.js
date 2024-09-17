@@ -95,10 +95,9 @@ export function logIn(proposal, password) {
 
 export function signOut() {
   return async (dispatch) => {
-    await sendSignOut();
-    dispatch({ type: 'SIGNOUT' });
     dispatch(resetLoginInfo());
     dispatch(applicationFetched(false));
+    await sendSignOut();
   };
 }
 
