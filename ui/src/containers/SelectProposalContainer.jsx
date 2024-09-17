@@ -2,7 +2,6 @@ import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { signOut, selectProposal, hideProposalsForm } from '../actions/login';
 import SelectProposal from '../components/LoginForm/SelectProposal';
-import { serverIO } from '../serverIO';
 import { useNavigate } from 'react-router-dom';
 
 function SelectProposalContainer() {
@@ -13,7 +12,6 @@ function SelectProposalContainer() {
   function handleHide() {
     if (login.selectedProposalID === null) {
       dispatch(signOut());
-      serverIO.disconnect();
     } else {
       dispatch(hideProposalsForm());
     }
