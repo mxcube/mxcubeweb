@@ -59,7 +59,6 @@ export default class SampleImage extends React.Component {
     this.player = null;
     this.centringCross = [];
     this.removeShapes = this.removeShapes.bind(this);
-    this.setGridResultType = this.setGridResultType.bind(this);
   }
 
   componentDidMount() {
@@ -197,10 +196,6 @@ export default class SampleImage extends React.Component {
 
   onMouseUp(e) {
     this.drawGridPlugin.endDrawing();
-  }
-
-  setGridResultType(resultType) {
-    this.props.sampleViewActions.setGridResultType(resultType);
   }
 
   setImageRatio() {
@@ -605,8 +600,6 @@ export default class SampleImage extends React.Component {
   updateGridResults() {
     const gd = this.selectedGrid();
 
-    this.drawGridPlugin.resultType = this.props.gridResultType;
-
     if (gd) {
       this.drawGridPlugin.setGridResult(gd.result);
     }
@@ -918,8 +911,6 @@ export default class SampleImage extends React.Component {
               rotateTo={this.props.sampleViewActions.rotateToShape}
               selectGrid={this.selectShape}
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
-              setGridResultType={this.setGridResultType}
-              gridResultType={this.props.gridResultType}
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
             <SampleControls
