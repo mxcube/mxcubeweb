@@ -1,5 +1,5 @@
 from typing import Union
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 from mxcubeweb.core.models.configmodels import ModeEnum
 
 

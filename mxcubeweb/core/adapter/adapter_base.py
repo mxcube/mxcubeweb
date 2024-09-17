@@ -3,7 +3,7 @@ import traceback
 import typing
 import logging
 
-import pydantic
+from pydantic.v1 import ValidationError, Field, create_model
 import gevent
 
 from typing import Any
@@ -59,7 +59,7 @@ class AdapterBase:
     def execute_command(self, cmd_name, args):
         try:
             self._pydantic_model_for_command(cmd_name).validate(args)
-        except pydantic.ValidationError:
+        except ValidationError:
             logging.getLogger("MX3.HWR").exception(
                 f"Error when validating input {args} for command {cmd_name}"
             )
@@ -91,7 +91,7 @@ class AdapterBase:
 
         try:
             model["return"].validate({"return": value})
-        except pydantic.ValidationError:
+        except ValidationError:
             attr_name = t.call_args["cmd_name"]
             logging.getLogger("MX3.HWR").exception(
                 f"Return value of {self._name}.{attr_name} is of wrong type"
@@ -178,16 +178,16 @@ class AdapterBase:
 
         for _n, _t in typing.get_type_hints(attr).items():
             if _n != "return":
-                input_dict[_n] = (_t, pydantic.Field(alias=_n))
+                input_dict[_n] = (_t, Field(alias=_n))
             else:
                 if not inspect.isclass(_t):
                     _t = _t.__class__
 
-                output_dict[_n] = (_t, pydantic.Field(alias=_n))
+                output_dict[_n] = (_t, Field(alias=_n))
 
         return {
-            "args": pydantic.create_model(attr.__name__, **input_dict),
-            "return": pydantic.create_model(attr.__name__, **output_dict),
+            "args": create_model(attr.__name__, **input_dict),
+            "return": create_model(attr.__name__, **output_dict),
             "signature": list(input_dict.keys()),
         }
 
@@ -232,7 +232,7 @@ class AdapterBase:
 
                 try:
                     model["return"].validate({"return": value})
-                except pydantic.ValidationError:
+                except ValidationError:
                     logging.getLogger("MX3.HWR").exception(
                         "Return value of"
                         f" {self._name}.{attribute_name} is of wrong"

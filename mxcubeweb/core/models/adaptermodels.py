@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from typing import Tuple, List, Union
-from pydantic import BaseModel, Field
+from pydantic.v1 import BaseModel, Field
 
 
 class HOModel(BaseModel):
