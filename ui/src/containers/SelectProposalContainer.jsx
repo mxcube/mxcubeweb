@@ -14,7 +14,6 @@ function SelectProposalContainer() {
     if (login.selectedProposalID === null) {
       dispatch(signOut());
       serverIO.disconnect();
-      navigate('/');
     } else {
       dispatch(hideProposalsForm());
     }
