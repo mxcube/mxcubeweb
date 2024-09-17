@@ -13,14 +13,12 @@ export default function GridForm(props) {
   const {
     getGridOverlayOpacity,
     gridList,
-    gridResultType,
     removeGrid,
     rotateTo,
     saveGrid,
     selectedGrids,
     selectGrid,
     setGridOverlayOpacity,
-    setGridResultType,
     show,
     toggleVisibility,
   } = props;
@@ -182,36 +180,6 @@ export default function GridForm(props) {
                   defaultValue={getGridOverlayOpacity()}
                   onChange={setGridOverlayOpacity}
                   name="overlaySlider"
-                />
-              </Col>
-            </Form.Group>
-            <Form.Group className="mb-2" as={Row}>
-              <Col sm="4">
-                {' '}
-                <Form.Label>Heat map</Form.Label>{' '}
-              </Col>
-              <Col sm="1"> : </Col>
-              <Col sm="7">
-                <Form.Check
-                  name="resultType"
-                  type="radio"
-                  onChange={() => setGridResultType('heatmap')}
-                  checked={gridResultType === 'heatmap'}
-                />
-              </Col>
-            </Form.Group>
-            <Form.Group as={Row}>
-              <Col sm="4">
-                {' '}
-                <Form.Label>Crystal map</Form.Label>{' '}
-              </Col>
-              <Col sm="1"> : </Col>
-              <Col sm="7">
-                <Form.Check
-                  name="resultType"
-                  type="radio"
-                  onChange={() => setGridResultType('crystalmap')}
-                  checked={gridResultType === 'crystalmap'}
                 />
               </Col>
             </Form.Group>

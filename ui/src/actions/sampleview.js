@@ -151,10 +151,6 @@ export function centringClicksLeft(clicksLeft) {
   return { type: 'CENTRING_CLICKS_LEFT', clicksLeft };
 }
 
-export function setGridResultType(gridResultType) {
-  return { type: 'SET_GRID_RESULT_TYPE', gridResultType };
-}
-
 export function rotateToShape(sid) {
   return async (dispatch) => {
     try {

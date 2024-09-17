@@ -37,7 +37,6 @@ const INITIAL_STATE = {
   cinema: false,
   phaseList: [],
   drawGrid: false,
-  gridResultType: 'heatmap',
   videoMessageOverlay: { show: false, msg: '' },
   savedPointId: '',
   selectedShapes: [],
@@ -79,9 +78,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
       }
 
       return { ...state, drawGrid: !state.drawGrid, selectedGrids };
-    }
-    case 'SET_GRID_RESULT_TYPE': {
-      return { ...state, gridResultType: action.gridResultType };
     }
     case 'MEASURE_DISTANCE': {
       return { ...state, measureDistance: action.mode, distancePoints: [] };
