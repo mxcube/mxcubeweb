@@ -100,6 +100,7 @@ configuration:
       skip_existing_images: true
       take_snapshots: true
       sub_wedge_size: 10
+      disable_processing: false  # Not really needed (default is already false)
       # NB 'compression' not added as apparently never used
 
       helical:

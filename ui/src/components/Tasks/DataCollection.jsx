@@ -293,46 +293,50 @@ class DataCollection extends React.Component {
             </CollapsableRows>
           </Form>
 
-          <FieldsHeader title="Processing" />
-          <CollapsableRows>
-            <Form>
-              <SelectField
-                col1="3"
-                col2="3"
-                propName="space_group"
-                label="Space group"
-                list={SPACE_GROUPS}
-              />
-              <Form.Label className="mb-2 mt-3">
-                <b> Unit Cell: </b>
-              </Form.Label>
-              <FieldsRow>
-                <InputField col1="1" col2="5" propName="cellA" label="a" />
-                <InputField col1="1" col2="5" propName="cellB" label="b" />
-                <InputField col1="1" col2="5" propName="cellC" label="c" />
-              </FieldsRow>
-              <FieldsRow>
-                <InputField
-                  col1="1"
-                  col2="5"
-                  propName="cellAlpha"
-                  label="&alpha;"
-                />
-                <InputField
-                  col1="1"
-                  col2="5"
-                  propName="cellBeta"
-                  label="&beta;"
-                />
-                <InputField
-                  col1="1"
-                  col2="5"
-                  propName="cellGamma"
-                  label="&gamma;"
-                />
-              </FieldsRow>
-            </Form>
-          </CollapsableRows>
+          {!this.props.initialValues.disable_processing && (
+            <div>
+              <FieldsHeader title="Processing" />
+              <CollapsableRows>
+                <Form>
+                  <SelectField
+                    col1="3"
+                    col2="3"
+                    propName="space_group"
+                    label="Space group"
+                    list={SPACE_GROUPS}
+                  />
+                  <Form.Label className="mb-2 mt-3">
+                    <b> Unit Cell: </b>
+                  </Form.Label>
+                  <FieldsRow>
+                    <InputField col1="1" col2="5" propName="cellA" label="a" />
+                    <InputField col1="1" col2="5" propName="cellB" label="b" />
+                    <InputField col1="1" col2="5" propName="cellC" label="c" />
+                  </FieldsRow>
+                  <FieldsRow>
+                    <InputField
+                      col1="1"
+                      col2="5"
+                      propName="cellAlpha"
+                      label="&alpha;"
+                    />
+                    <InputField
+                      col1="1"
+                      col2="5"
+                      propName="cellBeta"
+                      label="&beta;"
+                    />
+                    <InputField
+                      col1="1"
+                      col2="5"
+                      propName="cellGamma"
+                      label="&gamma;"
+                    />
+                  </FieldsRow>
+                </Form>
+              </CollapsableRows>
+            </div>
+          )}
         </Modal.Body>
 
         {this.props.taskData.state ? '' : this.showFooter()}
