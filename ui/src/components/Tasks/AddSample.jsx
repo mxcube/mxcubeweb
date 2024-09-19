@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Modal, ButtonToolbar, Button, Form, Row, Col } from 'react-bootstrap';
-import { bindActionCreators } from 'redux';
 import { addSamplesToList } from '../../actions/sampleGrid';
 import { addSampleAndMount, addSamplesToQueue } from '../../actions/queue';
 import { showList } from '../../actions/queueGUI';
 import { useLocation } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
+import { hideTaskParametersForm } from '../../actions/taskForm';
 
 const REQUIRED_MSG = 'This field is required';
 const PATTERN = /^[\w+:-]*$/u;
@@ -23,50 +23,44 @@ function getSampleData(params) {
   };
 }
 
-function AddSample(props) {
-  const {
-    show,
-    hide,
-    addSamplesToList,
-    addSampleAndMount,
-    addSamplesToQueue,
-    showList,
-  } = props;
-
+function AddSample() {
   const { register, formState, handleSubmit, setFocus } = useForm();
   const { isSubmitted, errors } = formState;
 
+  const dispatch = useDispatch();
   const { pathname } = useLocation();
 
   useEffect(() => {
-    if (show) {
-      // Timeout required when creating new sample from "Samples" page
-      setTimeout(() => setFocus('sampleName'), 0);
-    }
-  }, [setFocus, show]);
+    // Timeout required when creating new sample from "Samples" page
+    setTimeout(() => setFocus('sampleName'), 0);
+  }, [setFocus]);
 
   async function addAndMount(params) {
     const sampleData = getSampleData(params);
-    addSamplesToList([sampleData]);
-    hide();
+    dispatch(addSamplesToList([sampleData]));
+    dispatch(hideTaskParametersForm());
 
-    await addSampleAndMount(sampleData);
+    await dispatch(addSampleAndMount(sampleData));
 
     if (pathname === '/' || pathname === '/datacollection') {
       // Switch to mounted sample tab
-      showList('current');
+      dispatch(showList('current'));
     }
   }
 
   function addAndQueue(params) {
     const sampleData = getSampleData(params);
-    addSamplesToList([sampleData]);
-    addSamplesToQueue([sampleData]);
-    hide();
+    dispatch(addSamplesToList([sampleData]));
+    dispatch(addSamplesToQueue([sampleData]));
+    dispatch(hideTaskParametersForm());
   }
 
   return (
-    <Modal show={show} onHide={hide} data-default-styles>
+    <Modal
+      show
+      onHide={() => dispatch(hideTaskParametersForm())}
+      data-default-styles
+    >
       <Form noValidate onSubmit={handleSubmit(addAndMount)}>
         <Modal.Header closeButton>
           <Modal.Title>New Sample</Modal.Title>
@@ -129,11 +123,4 @@ function AddSample(props) {
   );
 }
 
-const AddSampleContainer = connect(undefined, (dispatch) => ({
-  addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
-  addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
-  addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
-  showList: bindActionCreators(showList, dispatch),
-}))(AddSample);
-
-export default AddSampleContainer;
+export default AddSample;

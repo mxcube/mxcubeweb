@@ -1,38 +1,27 @@
 import React from 'react';
 import { Alert } from 'react-bootstrap';
 
+const VARIANTS = {
+  READY: 'success',
+  MOVING: 'warning',
+  LOADING: 'warning',
+  DISABLED: 'danger',
+};
+
 export default function EquipmentState(props) {
-  let titleBackground;
-
-  switch (props.state) {
-    case 'READY': {
-      titleBackground = 'success';
-
-      break;
-    }
-    case 'MOVING': {
-      titleBackground = 'warning';
-
-      break;
-    }
-    case 'LOADING': {
-      titleBackground = 'warning';
-
-      break;
-    }
-    case 'DISABLED': {
-      titleBackground = 'danger';
-
-      break;
-    }
-    default: {
-      titleBackground = 'danger';
-    }
-  }
+  const { state, equipmentName } = props;
 
   return (
-    <Alert style={props.style} variant={titleBackground}>
-      {props.equipmentName} <b>{props.state}</b>
+    <Alert
+      style={{
+        margin: 0,
+        width: 'inherit',
+        borderBottomLeftRadius: 0,
+        borderBottomRightRadius: 0,
+      }}
+      variant={VARIANTS[state] || 'danger'}
+    >
+      {equipmentName} <b>{state}</b>
     </Alert>
   );
 }

@@ -2,7 +2,7 @@
 /* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
-import withRouter from '../components/WithRouter';
+import withNavigate from '../components/withNavigate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import {
@@ -1139,7 +1139,7 @@ class SampleGridTableContainer extends React.Component {
 
     if (sampleData) {
       this.props.addSampleAndMount(sampleData);
-      this.props.router.navigate('/datacollection', { replace: true });
+      this.props.navigate('/datacollection', { replace: true });
     }
   }
 
@@ -1368,4 +1368,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withRouter(SampleGridTableContainer));
+)(withNavigate(SampleGridTableContainer));

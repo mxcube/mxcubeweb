@@ -1,5 +1,4 @@
 import React from 'react';
-import withRouter from '../components/WithRouter';
 import { connect } from 'react-redux';
 import { Col } from 'react-bootstrap';
 
@@ -156,7 +155,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withRouter(NewSampleFlexView));
+export default connect(mapStateToProps, mapDispatchToProps)(NewSampleFlexView);

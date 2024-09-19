@@ -1,0 +1,31 @@
+.container .rjsf #root__title {
+  display: none;
+}
+
+.content {
+  border: 1px solid #d6d2d2;
+  border-top: none;
+  padding: 10px;
+  position: relative;
+  border-bottom-left-radius: 0%;
+}
+
+.chevron {
+  position: relative;
+  bottom: 35px;
+  float: right;
+  margin-bottom: -20px;
+  margin-right: 20px;
+}
+
+.trigger[aria-expanded='true'] > .chevron {
+  transform: rotate(180deg);
+}
+
+.cmdPopover {
+  min-width: 60em;
+}
+
+.cmdPopoverBody {
+  margin-bottom: 0.5rem;
+}
