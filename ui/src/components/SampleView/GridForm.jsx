@@ -26,6 +26,9 @@ export default function GridForm(props) {
   const draggableRef = useRef(null);
   const [position, setPosition] = useState({ x: 20, y: 64 });
 
+  // we use the useEffect function with a ref here, since React's synthetic event
+  // system (onContextMenu) could not stop the propagation
+  // see  https://github.com/mxcube/mxcubeweb/pull/1397 for more details
   useEffect(() => {
     const draggableElement = draggableRef.current;
     if (draggableElement) {
