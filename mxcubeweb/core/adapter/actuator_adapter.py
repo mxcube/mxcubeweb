@@ -49,10 +49,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
             RuntimeError: Timeout while setting the value.
             StopItteration: When a value change was interrupted (abort/cancel).
         """
-        try:
-            self._ho.set_value(float(value.value))
-        except Exception:
-            raise
+        self._ho.set_value(float(value.value))
 
     @export
     def _get_value(self) -> FloatValueModel:
