@@ -1,12 +1,9 @@
 import sys
 import logging
 import typing
-import spectree
 from werkzeug.exceptions import UnsupportedMediaType
 
 from flask import Blueprint, Response, jsonify, request, make_response
-
-from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 
 from mxcubecore import HardwareRepository as HWR
 
@@ -52,11 +49,17 @@ def create_set_route(app, server, bp, adapter, attr, name):
         def set_func(name, _th=set_type_hint):
             """
             Tries to set < name > to value
-            Replies with status code 200 on success and 409 on exceptions.
+            Replies with status code 200 on success and 400 on exceptions.
             """
             rd = _th["value"].parse_raw(request.data)
-            getattr(app.mxcubecore.get_adapter(rd.name.lower()), attr)(rd)
-            return "Value set successfully"
+            try:
+                getattr(app.mxcubecore.get_adapter(rd.name.lower()), attr)(rd)
+                return "Value set successfully"
+            except Exception as e:
+                logging.getLogger("user_level_log").error(
+                    f"{rd.name.capitalize()}: {str(e)}"
+                )
+                return make_response(str(e), 400)
 
         set_func.__name__ = f"{atype}_set_value"
 
