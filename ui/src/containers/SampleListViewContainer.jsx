@@ -3,7 +3,7 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import ReactDOM from 'react-dom';
-import withRouter from '../components/WithRouter';
+import withNavigate from '../components/withNavigate.jsx';
 import loader from '../img/loader.gif';
 
 import {
@@ -622,7 +622,7 @@ class SampleListViewContainer extends React.Component {
    * Start collection
    */
   startCollect() {
-    this.props.router.navigate('/datacollection', { replace: true });
+    this.props.navigate('/datacollection', { replace: true });
     this.props.showConfirmCollectDialog();
   }
 
@@ -1039,4 +1039,4 @@ function mapDispatchToProps(dispatch) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withRouter(SampleListViewContainer));
+)(withNavigate(SampleListViewContainer));
