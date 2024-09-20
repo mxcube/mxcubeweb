@@ -49,16 +49,17 @@ It can be changed on the command line with `--name <env-name>`.
 
 ```
 cd mxcubeweb
-conda env create -f conda-environment.yml
+conda env create --file conda-environment.yml
 # or (to pass a different name)
-conda env create -f conda-environment.yml --name another_name
+conda env create --file conda-environment.yml --name another_name
 ```
 
-To choose a specific Python version when creating the conda environment,
-for example Python 3.9, one can use a command such as the following:
+To switch to a specific Python version inside the conda environment,
+one can additionally use a command such as the following after environment creation,
+for example for Python 3.9:
 
 ```
-conda env create -f conda-environment.yml python=3.9
+conda install --name mxcubeweb 'python=3.9'
 ```
 
 ### 4. Activate the environment
