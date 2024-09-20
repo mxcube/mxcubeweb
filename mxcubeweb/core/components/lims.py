@@ -226,10 +226,6 @@ class Lims(ComponentBase):
                 )
                 return ERROR_CODE
 
-            for prop in session["proposal_list"]:
-                todays_session = HWR.beamline.lims.get_todays_session(prop)
-                prop["Session"] = [todays_session["session"]]
-
             if hasattr(
                 HWR.beamline.session, "commissioning_fake_proposal"
             ) and HWR.beamline.session.is_inhouse(loginID, None):
@@ -326,7 +322,7 @@ class Lims(ComponentBase):
             )
 
             todays_session = HWR.beamline.lims.get_todays_session(
-                proposal_info, create_session=False
+                proposal_info, create_session=True
             )
             HWR.beamline.session.session_id = todays_session.get("session").get(
                 "sessionId"
