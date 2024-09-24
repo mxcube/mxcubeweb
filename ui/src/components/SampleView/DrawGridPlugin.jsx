@@ -1,6 +1,19 @@
 import 'fabric';
 
+const TAU = Math.PI * 2;
+
 const { fabric } = window;
+
+/**
+ * Based on cell width and height in pixels,
+ * decide if we should do drawing in 'small cell size' mode.
+ *
+ *  returns true if 'small cell size' mode should be used, false otherwise
+ */
+function inSmallCellSizeMode(cellWidth, cellHeight) {
+  const MIN_CELL_PIXELS_SIZE = 6;
+  return cellWidth < MIN_CELL_PIXELS_SIZE || cellHeight < MIN_CELL_PIXELS_SIZE;
+}
 
 /**
  * Fabric Shape for drawing grid (defined by GridData)
@@ -11,6 +24,79 @@ const GridGroup = fabric.util.createClass(fabric.Group, {
   initialize(objects, options = {}) {
     this.callSuper('initialize', objects, options);
     this.id = options.id;
+  },
+});
+
+/**
+ * Custom Fabric shape, for displaying mesh scan results.
+ *
+ * This is an optimization for drawing mesh grids with large number of
+ * cells. Using one single custom fabric object for drawing results for
+ * all cells is faster, then having a per cell fabric object.
+ *
+ * Another optimization is to switch to drawing rectangles instead of ellipses,
+ * when cells are small. When cell's are a handful of pixels large, there is no
+ * noticeable visual difference between a rectangle and an ellipse. However, it
+ * appears that drawing rectangles is much faster.
+ *
+ */
+const MeshGridResult = fabric.util.createClass(fabric.Object, {
+  type: 'GridGroup',
+
+  initialize(objects, options = {}) {
+    this.callSuper('initialize', objects, options);
+  },
+
+  _render(ctx) {
+    if (inSmallCellSizeMode(this.cellTW, this.cellTH)) {
+      //
+      // the cells are small, draw them as rectangles
+      //
+
+      const xOffset = this.cellHSpace / 2;
+      const yOffset = this.cellVSpace / 2;
+      const width = this.cellTW - this.cellHSpace;
+      const height = this.cellTH - this.cellVSpace;
+
+      for (let y = 0; y < this.cellRows; y += 1) {
+        for (let x = 0; x < this.cellColumns; x += 1) {
+          ctx.beginPath();
+          ctx.fillStyle = this.fillingMatrix[x][y];
+          ctx.fillRect(
+            xOffset + x * this.cellTW,
+            yOffset + y * this.cellTH,
+            width,
+            height,
+          );
+        }
+      }
+    } else {
+      //
+      // normal cells, draw them as ellipses
+      //
+
+      const xOffset = this.cellTW / 2;
+      const yOffset = this.cellTH / 2;
+      const width = (this.cellTW - this.cellHSpace) / 2;
+      const height = (this.cellTH - this.cellVSpace) / 2;
+
+      for (let y = 0; y < this.cellRows; y += 1) {
+        for (let x = 0; x < this.cellColumns; x += 1) {
+          ctx.beginPath();
+          ctx.fillStyle = this.fillingMatrix[x][y];
+          ctx.ellipse(
+            xOffset + x * this.cellTW,
+            yOffset + y * this.cellTH,
+            width,
+            height,
+            0,
+            0,
+            TAU,
+          );
+          ctx.fill();
+        }
+      }
+    }
   },
 });
 
@@ -343,6 +429,55 @@ export default class DrawGridPlugin {
   }
 
   /**
+   * Adds dashed inner lines to a mesh grid.
+   *
+   * Does nothing if mesh is not selected,
+   * or if we are drawing in small cell size' mode.
+   */
+  addInnerLines(shapes, gridData, left, top, height, width, cellTH, cellTW) {
+    if (!gridData.selected) {
+      /* we only draw inner lines for selected meshes */
+      return;
+    }
+
+    if (inSmallCellSizeMode(cellTW, cellTH)) {
+      /* we don't draw inner lines for small cells, to reduce visual clutter */
+      return;
+    }
+
+    const lineColor = 'rgba(136, 255, 91, 0.5)';
+    const strokeArray = [5, 5];
+
+    for (let nw = 1; nw < gridData.numCols; nw++) {
+      shapes.push(
+        new fabric.Line(
+          [left + cellTW * nw, top, left + cellTW * nw, top + height],
+          {
+            stroke: lineColor,
+            strokeDashArray: strokeArray,
+            hasControls: false,
+            selectable: false,
+          },
+        ),
+      );
+    }
+
+    for (let nh = 1; nh < gridData.numRows; nh++) {
+      shapes.push(
+        new fabric.Line(
+          [left, top + cellTH * nh, left + width, top + cellTH * nh],
+          {
+            stroke: lineColor,
+            strokeDashArray: strokeArray,
+            hasControls: false,
+            selectable: false,
+          },
+        ),
+      );
+    }
+  }
+
+  /**
    * Creates a Fabric GridGroup shape from a GridData object
    *
    * @param {GridData} gd
@@ -376,40 +511,19 @@ export default class DrawGridPlugin {
       ? 'rgba(136, 255, 91, 1)'
       : 'rgba(228, 255, 9, 0.5)';
     color = gridData.result?.length > 0 ? 'rgba(228, 255, 9, 1)' : color;
-    const lineColor = gridData.selected
-      ? 'rgba(136, 255, 91, 0.5)'
-      : 'rgba(228, 255, 9, 0)';
     const outlineStrokeArray = gridData.selected ? [] : [5, 5];
-    const innerStrokeArray = gridData.selected ? [5, 5] : [0, 0];
 
     if (cellTW > 0 && cellTH > 0) {
-      for (let nw = 1; nw < gridData.numCols; nw++) {
-        shapes.push(
-          new fabric.Line(
-            [left + cellTW * nw, top, left + cellTW * nw, top + height],
-            {
-              stroke: lineColor,
-              strokeDashArray: innerStrokeArray,
-              hasControls: false,
-              selectable: false,
-            },
-          ),
-        );
-      }
-
-      for (let nh = 1; nh < gridData.numRows; nh++) {
-        shapes.push(
-          new fabric.Line(
-            [left, top + cellTH * nh, left + width, top + cellTH * nh],
-            {
-              stroke: lineColor,
-              strokeDashArray: innerStrokeArray,
-              hasControls: false,
-              selectable: false,
-            },
-          ),
-        );
-      }
+      this.addInnerLines(
+        shapes,
+        gridData,
+        left,
+        top,
+        height,
+        width,
+        cellTH,
+        cellTW,
+      );
 
       if (!this.drawing) {
         if (this.gridResultFormat === 'RGB') {
@@ -417,6 +531,21 @@ export default class DrawGridPlugin {
             gridData,
             gridData.numCols,
             gridData.numRows,
+          );
+
+          shapes.push(
+            new MeshGridResult({
+              left,
+              top,
+              cellColumns: gridData.numCols,
+              cellRows: gridData.numRows,
+              gridData,
+              cellTW,
+              cellTH,
+              cellHSpace,
+              cellVSpace,
+              fillingMatrix,
+            }),
           );
 
           for (let nw = 0; nw < gridData.numCols; nw++) {
@@ -427,31 +556,6 @@ export default class DrawGridPlugin {
                 nh,
                 gridData.numRows,
                 gridData.numCols,
-              );
-
-              shapes.push(
-                new fabric.Ellipse({
-                  left: left + cellHSpace / 2 + cellTW * nw,
-                  top: top + cellVSpace / 2 + cellTH * nh,
-                  width: cellWidth,
-                  height: cellHeight,
-                  fill: fillingMatrix[nw][nh],
-                  stroke: 'rgba(0,0,0,0)',
-                  hasControls: false,
-                  selectable: false,
-                  hasRotatingPoint: false,
-                  lockMovementX: true,
-                  lockMovementY: true,
-                  lockScalingX: true,
-                  lockScalingY: true,
-                  lockRotation: true,
-                  hoverCursor: 'pointer',
-                  originX: 'left',
-                  originY: 'top',
-                  rx: cellWidth / 2,
-                  ry: cellHeight / 2,
-                  cell: cellCount,
-                }),
               );
 
               if (this.include_cell_labels) {
