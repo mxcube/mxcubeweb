@@ -307,8 +307,8 @@ export default class DrawGridPlugin {
      */
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
-    // Asume flat result object to remain compatible with old format only
-    // suporting one type of results
+    // Assume flat result object to remain compatible with old format only
+    // supporting one type of results
     let { result } = gd;
 
     // Use selected result type if it exists
