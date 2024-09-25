@@ -1,8 +1,4 @@
 ---
-
-default_language_version:
-  python: python3.8  # This should be set to the lowest Python version that we support.
-
 repos:
 
   - repo: https://github.com/adrienverge/yamllint
