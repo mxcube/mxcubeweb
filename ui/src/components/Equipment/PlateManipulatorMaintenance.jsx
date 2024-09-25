@@ -1,216 +1,75 @@
 import React from 'react';
-import { Card, Button, ButtonGroup, InputGroup, Form } from 'react-bootstrap';
+import { Card } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+
+import ActionField from './ActionField';
+import ActionGroup from './ActionGroup';
+import ActionButton from './ActionButton';
+
+import { sendCommand } from '../../actions/sampleChanger';
 import styles from './equipment.module.css';
 
-export class PlateManipulatorActionButton extends React.Component {
-  render() {
-    let disabled;
-    if (this.props.enabled === true) {
-      disabled = false;
-    } else {
-      disabled = true;
-    }
+function PlateManipulatorMaintenance() {
+  const dispatch = useDispatch();
 
-    return (
-      <Button
-        variant="outline-secondary"
-        disabled={disabled}
-        onClick={() => this.props.sendCommand(this.props.cmd, this.props.args)}
-      >
-        {this.props.label}
-      </Button>
-    );
-  }
-}
+  const { commands, commands_state, message, global_state } = useSelector(
+    (state) => state.sampleChangerMaintenance,
+  );
 
-export class PlateManipulatorActionGroup extends React.Component {
-  render() {
-    return (
-      <Card className="mb-2">
-        <Card.Header>{this.props.name}</Card.Header>
-        <Card.Body>{this.props.actionComponent}</Card.Body>
-      </Card>
-    );
-  }
-}
+  const commandGroups = commands.cmds || [];
 
-export class PlateManipulatorAction extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      input_value: '',
-    };
-    this.inputRef = React.createRef();
-    this.handleInputChange = this.handleInputChange.bind(this);
-  }
+  const scanLimits = global_state.scan_limits
+    ? `[ ${global_state.scan_limits.toString().split(',').join(',   ')}]`
+    : '';
 
-  handleInputChange(e) {
-    if (this.props.inputType === 'number') {
-      this.setState({ input_value: Number(e.target.value) });
-    } else {
-      this.setState({ input_value: e.target.value });
-    }
-  }
+  const plateBarcode = global_state.plate_info
+    ? global_state.plate_info.plate_barcode.toString()
+    : '';
 
-  actionComponent() {
-    return (
-      <span>
-        <Form
-          onSubmit={(e) => {
-            e.preventDefault();
-          }}
-        >
-          <Form.Group size="small">
-            <Form.Label>{this.props.label}</Form.Label>
-            <br />
-            <InputGroup>
-              <Form.Control
-                size="sm"
-                required
-                value={this.state.input_value}
-                style={{
-                  maxWidth: '13em',
-                  minWidth: '13em',
-                  marginRight: '0.5em',
-                }}
-                type={this.props.inputType}
-                onChange={(e) => {
-                  this.handleInputChange(e);
-                }}
-                ref={(ref) => {
-                  this.inputRef = ref;
-                }}
-              />
-              <PlateManipulatorActionButton
-                label={this.props.btn_label}
-                cmd={this.props.cmd}
-                args={this.state.input_value}
-                enabled
-                sendCommand={this.props.sendCommand}
-                key={this.props.btn_label}
-              />
-            </InputGroup>
-          </Form.Group>
-        </Form>
-      </span>
-    );
-  }
+  return (
+    <>
+      {commandGroups.map(([grpLabel, grpCmds]) => (
+        <ActionGroup key={grpLabel} label={grpLabel}>
+          {grpCmds.map(([cmd, cmdLabel, , cmdArgs]) => (
+            <ActionButton
+              key={cmd}
+              label={cmdLabel}
+              disabled={!commands_state[cmd]}
+              onSend={() => dispatch(sendCommand(cmd, cmdArgs))}
+            />
+          ))}
+        </ActionGroup>
+      ))}
 
-  render() {
-    return (
-      <PlateManipulatorActionGroup
-        name={[
-          `${this.props.header_msg} : ${this.props.value}`,
-          this.props.viewComponent,
-        ]}
-        actionComponent={this.actionComponent()}
-        key={`${this.props.header_msg}:${this.props.value}`}
+      {message && (
+        <Card className="mb-2">
+          <Card.Header>Status message</Card.Header>
+          <Card.Body>
+            <span className={styles.scMessage}>{message}</span>
+          </Card.Body>
+        </Card>
+      )}
+
+      <ActionField
+        headerMsg={`Omega Motor Dynamic ScanLimits Interval is : ${scanLimits}`}
+        label="Desired Scan Speed"
+        inputType="number"
+        btnLabel="Get Scan Limits"
+        onSubmit={(val) => {
+          dispatch(sendCommand('getOmegaMotorDynamicScanLimits', val));
+        }}
       />
-    );
-  }
+
+      <ActionField
+        headerMsg={`Actual Plate Barcode is : ${plateBarcode}`}
+        label="Plate Barcode"
+        btnLabel="Set Plate Barcode"
+        onSubmit={(val) => {
+          dispatch(sendCommand('setPlateBarcode', val));
+        }}
+      />
+    </>
+  );
 }
 
-export default class PlateManipulatorMaintenance extends React.Component {
-  buildActionButton(cmdinfo) {
-    return (
-      <PlateManipulatorActionButton
-        label={cmdinfo[1]}
-        cmd={cmdinfo[0]}
-        args={cmdinfo[3]}
-        enabled={this.props.commands_state[cmdinfo[0]]}
-        sendCommand={this.props.sendCommand}
-        key={cmdinfo[1]}
-      />
-    );
-  }
-
-  buildActionGroup(grpinfo) {
-    const butgrp = [];
-
-    for (const cmdinfo of grpinfo[1]) {
-      butgrp.push(this.buildActionButton(cmdinfo));
-    }
-
-    return (
-      <PlateManipulatorActionGroup
-        name={grpinfo[0]}
-        actionComponent={<ButtonGroup>{butgrp}</ButtonGroup>}
-        key={grpinfo[0]}
-      />
-    );
-  }
-
-  render() {
-    const groups = [];
-    let msg = '';
-
-    if (
-      Object.keys(this.props.commands).length > 0 &&
-      this.props.commands.cmds !== 'SC maintenance controller not defined'
-    ) {
-      for (const cmdgrp of this.props.commands.cmds) {
-        groups.push(this.buildActionGroup(cmdgrp));
-      }
-    } else {
-      return <div />;
-    }
-
-    if (this.props.message !== '') {
-      msg = this.props.message;
-    }
-
-    let scan_limits = '';
-    if (this.props.global_state.scan_limits) {
-      scan_limits = `[ ${this.props.global_state.scan_limits
-        .toString()
-        .split(',')
-        .join(',   ')}]`;
-    }
-
-    let plateBarcode = '';
-    if (this.props.global_state.plate_info) {
-      plateBarcode =
-        this.props.global_state.plate_info.plate_barcode.toString();
-    }
-
-    return (
-      <div>
-        {groups}
-        {msg ? (
-          <Card className="mb-2">
-            <Card.Header>Status message</Card.Header>
-            <Card.Body>
-              <span className={styles.Message}>{msg}</span>
-            </Card.Body>
-          </Card>
-        ) : null}
-        <PlateManipulatorAction
-          btn_label="Get Scan Limits"
-          label="Desire Scan Speed"
-          cmd="getOmegaMotorDynamicScanLimits"
-          args={this.props.desireScanSpeed}
-          sendCommand={this.props.sendCommand}
-          global_state={this.props.global_state}
-          header_msg="Omega Motor Dynamic ScanLimits Interval is"
-          value={scan_limits}
-          inputType="number"
-          viewComponent=""
-          key="Scan Limits"
-        />
-        <PlateManipulatorAction
-          btn_label="Set Plate Barcode"
-          label="Plate Barcode"
-          cmd="setPlateBarcode"
-          args={this.props.desireScanSpeed}
-          sendCommand={this.props.sendCommand}
-          global_state={this.props.global_state}
-          header_msg="Actual Plate Barcode is"
-          value={plateBarcode}
-          inputType="text"
-          viewComponent=""
-          key="plate barcode"
-        />
-      </div>
-    );
-  }
-}
+export default PlateManipulatorMaintenance;
