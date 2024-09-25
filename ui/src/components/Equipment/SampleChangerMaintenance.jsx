@@ -1,64 +1,46 @@
 import React from 'react';
 import { Card } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { ActionGroup, ActionButton } from './ActionGroup';
-
+import ActionGroup from './ActionGroup';
+import ActionButton from './ActionButton';
+import { sendCommand } from '../../actions/sampleChanger';
 import styles from './equipment.module.css';
 
-export default function SampleChangerMaintenance(props) {
-  function renderActionButton(cmdinfo) {
-    return (
-      <ActionButton
-        label={cmdinfo[1]}
-        cmd={cmdinfo[0]}
-        args={cmdinfo[3]}
-        enabled={props.commands_state[cmdinfo[0]]}
-        sendCommand={props.sendCommand}
-        key={cmdinfo[1]}
-        variant="outline-secondary"
-      />
-    );
-  }
+function SampleChangerMaintenance() {
+  const dispatch = useDispatch();
 
-  function renderActionGroup(grpinfo) {
-    const butgrp = [];
+  const { commands, commands_state, message } = useSelector(
+    (state) => state.sampleChangerMaintenance,
+  );
 
-    for (const cmdinfo of grpinfo[1]) {
-      butgrp.push(renderActionButton(cmdinfo));
-    }
-
-    return <ActionGroup name={grpinfo[0]} buttons={butgrp} key={grpinfo[0]} />;
-  }
-
-  const groups = [];
-  let msg = '';
-
-  if (
-    Object.keys(props.commands).length > 0 &&
-    props.commands.cmds !== 'SC maintenance controller not defined'
-  ) {
-    for (const cmdgrp of props.commands.cmds) {
-      groups.push(renderActionGroup(cmdgrp));
-    }
-  } else {
-    return <div />;
-  }
-
-  if (props.message !== '') {
-    msg = props.message;
-  }
+  const commandGroups = commands.cmds || [];
 
   return (
-    <div>
-      {groups}
-      {msg ? (
+    <>
+      {commandGroups.map(([grpLabel, grpCmds]) => (
+        <ActionGroup key={grpLabel} label={grpLabel}>
+          {grpCmds.map(([cmd, cmdLabel, , cmdArgs]) => (
+            <ActionButton
+              key={cmd}
+              label={cmdLabel}
+              disabled={!commands_state[cmd]}
+              onSend={() => dispatch(sendCommand(cmd, cmdArgs))}
+            />
+          ))}
+        </ActionGroup>
+      ))}
+
+      {message && (
         <Card className="mb-2">
           <Card.Header>Status message</Card.Header>
           <Card.Body>
-            <span className={styles.scMessage}>{msg}</span>
+            <span className={styles.scMessage}>{message}</span>
           </Card.Body>
         </Card>
-      ) : null}
-    </div>
+      )}
+    </>
   );
 }
+
+export default SampleChangerMaintenance;

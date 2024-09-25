@@ -1,88 +1,65 @@
 import React from 'react';
 import { Row, Col, Button, Card } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { ActionGroup, ActionButton, ActionField } from './ActionGroup';
+import ActionGroup from './ActionGroup';
+import ActionButton from './ActionButton';
+import ActionField from './ActionField';
 import InOutSwitch from '../InOutSwitch/InOutSwitch';
 
-export default function HarvesterMaintenance(props) {
-  const {
-    contents,
-    message,
-    commands_state,
-    currentPlateBarcode,
-    global_state,
-    calibratePin,
-    validateCalibration,
-    sendCommand,
-    sendDataCollectionToCrims,
-    commands,
-  } = props;
+import {
+  calibratePin,
+  sendCommand,
+  sendDataCollectionToCrims,
+  validateCalibration,
+} from '../../actions/harvester';
+import styles from './equipment.module.css';
 
-  function renderActionButton(cmdInfo) {
-    return (
-      <ActionButton
-        label={cmdInfo[1]}
-        cmd={cmdInfo[0]}
-        args={cmdInfo[3]}
-        enabled={commands_state[cmdInfo[0]]}
-        sendCommand={sendCommand}
-        key={cmdInfo[1]}
-      />
-    );
-  }
+export default function HarvesterMaintenance() {
+  const dispatch = useDispatch();
 
-  function renderActionGroup(grpInfo) {
-    const butGrp = [];
+  const contents = useSelector((state) => state.harvester.contents);
+  const { commands, commands_state, global_state, message } = useSelector(
+    (state) => state.harvesterMaintenance,
+  );
 
-    for (const cmdInfo of grpInfo[1]) {
-      butGrp.push(renderActionButton(cmdInfo));
-    }
-
-    return <ActionGroup name={grpInfo[0]} buttons={butGrp} />;
-  }
-
-  const groups = [];
-
-  if (
-    Object.keys(commands).length > 0 &&
-    commands.cmds !== 'Harvester maintenance controller not defined'
-  ) {
-    for (const cmdgrp of commands.cmds) {
-      groups.push(renderActionGroup(cmdgrp));
-    }
-  } else {
-    return <div />;
-  }
-
+  const commandGroups = commands.cmds || [];
   const plateBarcode = global_state.plate_barecode?.toString();
-
-  let calibrationState = false;
-  if (contents) {
-    calibrationState = contents.calibration_state;
-  }
+  const calibrationState = contents ? contents.calibration_state : false;
 
   return (
-    <div>
-      {groups}
-      {message ? (
+    <>
+      {commandGroups.map(([grpLabel, grpCmds]) => (
+        <ActionGroup key={grpLabel} label={grpLabel}>
+          {grpCmds.map(([cmd, cmdLabel, , cmdArgs]) => (
+            <ActionButton
+              key={cmd}
+              label={cmdLabel}
+              disabled={!commands_state[cmd]}
+              onSend={() => dispatch(sendCommand(cmd, cmdArgs))}
+            />
+          ))}
+        </ActionGroup>
+      ))}
+
+      {message && (
         <Card>
           <Card.Header>Status message</Card.Header>
           <Card.Body>
-            <span className="scMessage">{message}</span>
+            <span className={styles.scMessage}>{message}</span>
           </Card.Body>
         </Card>
-      ) : null}
+      )}
+
       <ActionField
-        btn_label="Set"
+        headerMsg={`Actual Plate Barcode is : ${plateBarcode}`}
         label="Plate Barcode"
-        cmd="loadPlateWithBarcode"
-        args={currentPlateBarcode}
-        sendCommand={sendCommand}
-        global_state={global_state}
-        header_msg="Actual Plate Barcode is"
-        value={plateBarcode}
-        inputType="text"
+        btnLabel="Set"
+        onSubmit={(val) => {
+          dispatch(sendCommand('loadPlateWithBarcode', val));
+        }}
       />
+
       <Card className="mb-2">
         <Card.Header>Temperature Mode</Card.Header>
         <Card.Body>
@@ -101,10 +78,11 @@ export default function HarvesterMaintenance(props) {
             offValue={false}
             value={contents.room_temperature_mode}
             pkey="set_room_temperature_mode"
-            onSave={(pkey, value) => sendCommand(pkey, value)}
+            onSave={(pkey, value) => dispatch(sendCommand(pkey, value))}
           />
         </Card.Body>
       </Card>
+
       <div>
         <Card className="mb-2">
           <Card.Header> Procedure </Card.Header>
@@ -115,7 +93,7 @@ export default function HarvesterMaintenance(props) {
                   <Button
                     className="mt-1"
                     variant="outline-secondary"
-                    onClick={() => calibratePin()}
+                    onClick={() => dispatch(calibratePin())}
                   >
                     Calibrate
                   </Button>
@@ -131,7 +109,7 @@ export default function HarvesterMaintenance(props) {
                   <Col sm={6}>
                     <Button
                       className="mt-1 text-nowrap"
-                      onClick={() => validateCalibration(true)}
+                      onClick={() => dispatch(validateCalibration(true))}
                       variant="outline-success"
                       style={{ marginRight: '2em' }}
                     >
@@ -141,7 +119,7 @@ export default function HarvesterMaintenance(props) {
                   <Col sm={6}>
                     <Button
                       className="mt-1"
-                      onClick={() => validateCalibration(false)}
+                      onClick={() => dispatch(validateCalibration(false))}
                       variant="outline-warning"
                     >
                       Cancel Calibration
@@ -156,7 +134,7 @@ export default function HarvesterMaintenance(props) {
                 <Button
                   className="mt-1"
                   variant="outline-secondary"
-                  onClick={() => sendDataCollectionToCrims()}
+                  onClick={() => dispatch(sendDataCollectionToCrims())}
                   title="TEST : Send latest Data collection Group and to Crims"
                 >
                   Send Data to Crims
@@ -166,6 +144,6 @@ export default function HarvesterMaintenance(props) {
           </Card.Body>
         </Card>
       </div>
-    </div>
+    </>
   );
 }

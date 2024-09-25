@@ -19,13 +19,9 @@ import {
 
 import {
   abort as haAbort,
-  sendCommand as haSendCommand,
   refresh as haRefresh,
   harvestCrystal,
   harvestAndLoadCrystal,
-  calibratePin as haCalibratePin,
-  validateCalibration as haValidateCalibration,
-  sendDataCollectionToCrims,
 } from '../actions/harvester';
 
 import { showErrorPanel } from '../actions/general';
@@ -82,14 +78,7 @@ function EquipmentContainer(props) {
                   />
                 </Col>
                 <Col sm={6}>
-                  <PlateManipulatorMaintenance
-                    commands={props.commands}
-                    global_state={props.global_state}
-                    commands_state={props.commands_state}
-                    message={props.message}
-                    sendCommand={props.sendCommand}
-                    contents={props.contents}
-                  />
+                  <PlateManipulatorMaintenance />
                 </Col>
               </Row>
             ) : (
@@ -108,13 +97,7 @@ function EquipmentContainer(props) {
                   />
                 </Col>
                 <Col sm={6}>
-                  <SampleChangerMaintenance
-                    commands={props.commands}
-                    global_state={props.global_state}
-                    commands_state={props.commands_state}
-                    message={props.message}
-                    sendCommand={props.sendCommand}
-                  />
+                  <SampleChangerMaintenance />
                 </Col>
               </Row>
             )}
@@ -137,17 +120,7 @@ function EquipmentContainer(props) {
                   />
                 </Col>
                 <Col sm={3}>
-                  <HarvesterMaintenance
-                    contents={props.haContents}
-                    commands={props.haCommands}
-                    global_state={props.haGlobal_state}
-                    commands_state={props.haCommands_state}
-                    message={props.haMessage}
-                    sendCommand={props.haSendCommand}
-                    calibratePin={props.haCalibratePin}
-                    sendDataCollectionToCrims={props.sendDataCollectionToCrims}
-                    validateCalibration={props.haValidateCalibration}
-                  />
+                  <HarvesterMaintenance />
                 </Col>
               </Row>
             </GenericEquipment>
@@ -194,15 +167,10 @@ function mapStateToProps(state) {
     commands: state.sampleChangerMaintenance.commands,
     commands_state: state.sampleChangerMaintenance.commands_state,
     global_state: state.sampleChangerMaintenance.global_state,
-    message: state.sampleChangerMaintenance.message,
     beamline: state.beamline,
 
     haContents: state.harvester.contents,
     haState: state.harvester.state,
-    haCommands: state.harvesterMaintenance.commands,
-    haCommands_state: state.harvesterMaintenance.commands_state,
-    haGlobal_state: state.harvesterMaintenance.global_state,
-    haMessage: state.harvesterMaintenance.message,
   };
 }
 
@@ -225,13 +193,8 @@ function mapDispatchToProps(dispatch) {
     harvestCrystal: (address) => dispatch(harvestCrystal(address)),
     harvestAndLoadCrystal: (address) =>
       dispatch(harvestAndLoadCrystal(address)),
-    haCalibratePin: () => dispatch(haCalibratePin()),
-    sendDataCollectionToCrims: () => dispatch(sendDataCollectionToCrims()),
-    haValidateCalibration: (validated) =>
-      dispatch(haValidateCalibration(validated)),
     haRefresh: () => dispatch(haRefresh()),
     haAbort: () => dispatch(haAbort()),
-    haSendCommand: (cmd, args) => dispatch(haSendCommand(cmd, args)),
   };
 }
 
