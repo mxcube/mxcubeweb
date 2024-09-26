@@ -5,15 +5,7 @@ import React from 'react';
 import withNavigate from '../components/withNavigate';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
-import {
-  Row,
-  Col,
-  Table,
-  OverlayTrigger,
-  Tooltip,
-  Button,
-  Dropdown,
-} from 'react-bootstrap';
+import { Row, Col, Table, Button, Dropdown } from 'react-bootstrap';
 
 import LazyLoad, { forceVisible } from 'react-lazyload';
 import Collapsible from 'react-collapsible';
@@ -61,6 +53,7 @@ import SampleIsaraView from './SampleIsaraView';
 import { SampleGridTableItem } from '../components/SampleGrid/SampleGridTableItem';
 
 import { TaskItem } from '../components/SampleGrid/TaskItem';
+import TooltipTrigger from '../components/TooltipTrigger';
 
 const SETTINGS = {
   dots: false,
@@ -485,17 +478,14 @@ class SampleGridTableContainer extends React.Component {
 
     return (
       <>
-        {puck ? (
-          <span className="span-container-code"> {puckCode} </span>
-        ) : null}
-        <OverlayTrigger
+        {puck && <span className="span-container-code"> {puckCode} </span>}
+        <TooltipTrigger
+          id="pick-sample-tooltip"
           placement="auto"
-          overlay={
-            <Tooltip id="pick-sample">
-              {pickSample
-                ? 'Pick samples/ Add to Queue'
-                : 'Unpick samples / Remove from Queue'}
-            </Tooltip>
+          tooltipContent={
+            pickSample
+              ? 'Pick samples/ Add to Queue'
+              : 'Unpick samples / Remove from Queue'
           }
         >
           <Button
@@ -507,7 +497,7 @@ class SampleGridTableContainer extends React.Component {
           >
             <i>{icon}</i>
           </Button>
-        </OverlayTrigger>
+        </TooltipTrigger>
       </>
     );
   }

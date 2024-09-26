@@ -6,12 +6,12 @@ import {
   ButtonToolbar,
   OverlayTrigger,
   Popover,
-  Tooltip,
 } from 'react-bootstrap';
 import { contextMenu, Menu, Item, Separator } from 'react-contexify';
 
 import { MdSync } from 'react-icons/md';
 import styles from './equipment.module.css';
+import TooltipTrigger from '../TooltipTrigger';
 
 const strokeColor = 'rgb(136, 136, 136)';
 
@@ -634,33 +634,23 @@ export default function PlateManipulator(props) {
     >
       <Col className="ms-3">
         <ButtonToolbar className="ms-4">
-          {!inPopover ? (
+          {!inPopover && (
             <div className="me-4">
               <b>{cplate_label}</b>
             </div>
-          ) : null}
-          <OverlayTrigger
-            variant="outline-success"
-            placement="bottom"
-            overlay={
-              <Tooltip id="select-samples">
-                Refresh if Plate Location not Updated
-              </Tooltip>
-            }
+          )}
+          <TooltipTrigger
+            id="refresh-tooltip"
+            tooltipContent="Refresh if plate location not updated"
           >
             <Button size="sm" variant="outline-info" onClick={refreshClicked}>
               <MdSync size="1.5em" /> Refresh
             </Button>
-          </OverlayTrigger>
+          </TooltipTrigger>
           <span style={{ marginLeft: '1.5em' }} />
-          <OverlayTrigger
-            variant="outline-success"
-            placement="bottom"
-            overlay={
-              <Tooltip id="select-samples">
-                Synchronise sample list with CRIMS
-              </Tooltip>
-            }
+          <TooltipTrigger
+            id="sync-samples-tooltip"
+            tooltipContent="Synchronise sample list with CRIMS"
           >
             <Button
               size="sm"
@@ -669,7 +659,7 @@ export default function PlateManipulator(props) {
             >
               <MdSync size="1.5em" /> CRIMS
             </Button>
-          </OverlayTrigger>
+          </TooltipTrigger>
         </ButtonToolbar>
       </Col>
       <div className={styles.plate_div} style={cssDisable}>
