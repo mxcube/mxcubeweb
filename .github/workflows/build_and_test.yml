@@ -44,7 +44,7 @@ jobs:
       - name: Set up Conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
-          create-args:
+          create-args: >-
             python=${{ matrix.python-version }}
           micromamba-version: "latest"
           environment-file: conda-environment.yml
