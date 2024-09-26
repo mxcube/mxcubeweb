@@ -41,7 +41,7 @@ pydantic = "^1.10.18"
 PyDispatcher = "^2.0.6"
 pytz = "^2022.6"
 tzlocal = "^4.2"
-mxcubecore = ">=1.154.0"
+mxcubecore = ">=1.156.0"
 mxcube-video-streamer = ">=1.4.0"
 
 [tool.poetry.group.dev.dependencies]
