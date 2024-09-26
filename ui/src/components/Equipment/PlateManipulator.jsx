@@ -278,7 +278,7 @@ export default function PlateManipulator(props) {
           >
             Move to drop {selectedDrop}
           </Item>
-          {crystalForSelectedWell?.shelf === selectedDrop ? (
+          {crystalForSelectedWell?.shelf === selectedDrop && (
             <>
               <Separator />
               <Item
@@ -292,14 +292,13 @@ export default function PlateManipulator(props) {
                 Move to Crystal Position
               </Item>
             </>
-          ) : null}
+          )}
         </Menu>
-        {crystalForSelectedWell?.shelf === selectedDrop
-          ? crimsImg(
-              crystalForSelectedWell.image_url,
-              crystalForSelectedWell.sample,
-            )
-          : null}
+        {crystalForSelectedWell?.shelf === selectedDrop &&
+          crimsImg(
+            crystalForSelectedWell.image_url,
+            crystalForSelectedWell.sample,
+          )}
         {plate.name === 'ChipX' ? (
           <div
             style={{
@@ -486,16 +485,16 @@ export default function PlateManipulator(props) {
                           >
                             Move to this Well
                           </Item>
-                          {crystal !== null
-                            ? ((<Separator />),
-                              (<b>Crystal Info : </b>),
-                              (
-                                <ul>
-                                  <li>Sample : {crystal.sample}</li>
-                                  <li>Drop : {crystal.shelf}</li>
-                                </ul>
-                              ))
-                            : null}
+                          {crystal !== null && (
+                            <>
+                              <Separator />
+                              <b>Crystal Info : </b>
+                              <ul>
+                                <li>Sample : {crystal.sample}</li>
+                                <li>Drop : {crystal.shelf}</li>
+                              </ul>
+                            </>
+                          )}
                         </Menu>
                       </div>
                     );
@@ -592,16 +591,16 @@ export default function PlateManipulator(props) {
                           >
                             Move to this Well
                           </Item>
-                          {crystal !== null
-                            ? ((<Separator />),
-                              (<b>Crystal Info : </b>),
-                              (
-                                <ul>
-                                  <li>Sample : {crystal.sample}</li>
-                                  <li>Drop : {crystal.shelf}</li>
-                                </ul>
-                              ))
-                            : null}
+                          {crystal !== null && (
+                            <>
+                              <Separator />
+                              <b>Crystal Info : </b>
+                              <ul>
+                                <li>Sample : {crystal.sample}</li>
+                                <li>Drop : {crystal.shelf}</li>
+                              </ul>
+                            </>
+                          )}
                         </Menu>
                       </div>
                     );

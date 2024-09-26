@@ -218,13 +218,13 @@ class GenericTaskForm extends React.Component {
     } = props;
     return (
       <div className={classNames}>
-        {id !== 'root' ? (
+        {id !== 'root' && (
           <label htmlFor={id}>
             {label}
             {required ? '*' : null}
             {rawDescription ? ` (${rawDescription})` : null}
           </label>
-        ) : null}
+        )}
         {description}
         {children}
         {errors}

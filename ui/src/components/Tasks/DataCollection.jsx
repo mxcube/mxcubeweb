@@ -265,7 +265,7 @@ class DataCollection extends React.Component {
                 label="Resolution"
               />
             </FieldsRow>
-            {this.props.taskResult.energyScan.length > 0 ? (
+            {this.props.taskResult.energyScan.length > 0 && (
               <FieldsRow>
                 <SelectField
                   col1="6"
@@ -275,7 +275,7 @@ class DataCollection extends React.Component {
                   list={energyList}
                 />
               </FieldsRow>
-            ) : null}
+            )}
             <CollapsableRows>
               <FieldsRow>
                 <InputField propName="kappa" type="number" label="Kappa" />

@@ -76,7 +76,7 @@ export class LimsResultSummary extends React.Component {
         className="lims-result-summary"
         style={style}
       >
-        {!taskHasLimsData(task) ? this.taskSummary() : null}
+        {!taskHasLimsData(task) && this.taskSummary()}
         <div
           // ref="resultContainer"
           ref={(ref) => {

@@ -114,11 +114,11 @@ function SampleChangerTreeItem(props) {
             </Dropdown.Header>
             <Dropdown.Divider />
             <Dropdown.Item onClick={handleMountClick}>Mount</Dropdown.Item>
-            {props.loadedSample === props.label ? (
+            {props.loadedSample === props.label && (
               <Dropdown.Item onClick={handleUnmountClick}>
                 Umount this position
               </Dropdown.Item>
-            ) : null}
+            )}
           </DropdownButton>
           <span style={ls}>
             &nbsp;

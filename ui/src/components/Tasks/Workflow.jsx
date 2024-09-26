@@ -78,7 +78,7 @@ function Workflow(props) {
               />
             </Row>
           ) : null}
-          {strategyNames.length > 0 ? (
+          {strategyNames.length > 0 && (
             <div className="mt-3">
               <SelectField
                 propName="strategy_name"
@@ -88,7 +88,7 @@ function Workflow(props) {
                 col2={7}
               />
             </div>
-          ) : null}
+          )}
         </Form>
       </Modal.Body>
 

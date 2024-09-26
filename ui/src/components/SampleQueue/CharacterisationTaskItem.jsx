@@ -238,16 +238,16 @@ export default class TaskItem extends Component {
         <td>
           <a>{parameters.energy.toFixed(4)}</a>
         </td>
-        {parameters.kappa_phi !== null ? (
+        {parameters.kappa_phi !== null && (
           <td>
             <a>{parameters.kappa_phi.toFixed(2)}</a>
           </td>
-        ) : null}
-        {parameters.kappa !== null ? (
+        )}
+        {parameters.kappa !== null && (
           <td>
             <a>{parameters.kappa.toFixed(2)}</a>
           </td>
-        ) : null}
+        )}
       </tr>
     );
   }
@@ -291,7 +291,6 @@ export default class TaskItem extends Component {
     );
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   render() {
     const { state, data, show } = this.props;
     const wedges =
@@ -342,16 +341,16 @@ export default class TaskItem extends Component {
               <b>
                 <span className="node-name" style={{ display: 'flex' }}>
                   {this.pointIDString(wedges)} {data.label}
-                  {state === TASK_RUNNING ? this.progressBar() : null}
+                  {state === TASK_RUNNING && this.progressBar()}
                 </span>
               </b>
-              {state === TASK_UNCOLLECTED ? (
+              {state === TASK_UNCOLLECTED && (
                 <i
                   className="fas fa-times"
                   onClick={this.deleteTask}
                   style={delTaskCSS}
                 />
-              ) : null}
+              )}
             </div>
           </div>
           <Collapse in={Boolean(show)}>
@@ -413,12 +412,12 @@ export default class TaskItem extends Component {
                           <th>T (%)</th>
                           <th>Res. (&Aring;)</th>
                           <th>E (keV)</th>
-                          {wedge.parameters.kappa_phi !== null ? (
+                          {wedge.parameters.kappa_phi !== null && (
                             <th>&phi; &deg;</th>
-                          ) : null}
-                          {wedge.parameters.kappa !== null ? (
+                          )}
+                          {wedge.parameters.kappa !== null && (
                             <th>&kappa; &deg;</th>
-                          ) : null}
+                          )}
                         </tr>
                       </thead>
                       <tbody>{this.wedgeParameters(wedge)}</tbody>
