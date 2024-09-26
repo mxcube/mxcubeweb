@@ -6,20 +6,14 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {
-  ProgressBar,
-  Button,
-  Collapse,
-  Table,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
+import { ProgressBar, Button, Collapse, Table } from 'react-bootstrap';
 import {
   TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
   TASK_RUNNING,
 } from '../../constants';
+import TooltipTrigger from '../TooltipTrigger';
 
 export default class TaskItem extends Component {
   static propTypes = {
@@ -153,21 +147,20 @@ export default class TaskItem extends Component {
     const pathEndPart = path.slice(-40);
 
     return (
-      <OverlayTrigger
-        placement="bottom"
-        rootClose
-        overlay={
-          <Tooltip id="wedge-popover">
+      <TooltipTrigger
+        id="wedge-path-tooltip"
+        tooltipContent={
+          <>
             {path}
             {value}
-          </Tooltip>
+          </>
         }
       >
         <a style={{ flexGrow: 1 }}>
           .../{pathEndPart.slice(pathEndPart.indexOf('/') + 1)}
           {value}
         </a>
-      </OverlayTrigger>
+      </TooltipTrigger>
     );
   }
 

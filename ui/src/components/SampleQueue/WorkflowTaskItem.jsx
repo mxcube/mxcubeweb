@@ -5,19 +5,14 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import {
-  ProgressBar,
-  Button,
-  Collapse,
-  OverlayTrigger,
-  Tooltip,
-} from 'react-bootstrap';
+import { ProgressBar, Button, Collapse } from 'react-bootstrap';
 import {
   TASK_UNCOLLECTED,
   TASK_COLLECTED,
   TASK_COLLECT_FAILED,
   TASK_RUNNING,
 } from '../../constants';
+import TooltipTrigger from '../TooltipTrigger';
 
 export default class WorkflowTaskItem extends Component {
   static propTypes = {
@@ -122,15 +117,11 @@ export default class WorkflowTaskItem extends Component {
     const pathEndPart = path.slice(-40);
 
     return (
-      <OverlayTrigger
-        placement="bottom"
-        rootClose
-        overlay={<Tooltip id="wedge-popover">{path}</Tooltip>}
-      >
+      <TooltipTrigger id="wedge-path-tooltip" tooltipContent={path}>
         <a style={{ flexGrow: 1 }}>
           .../{pathEndPart.slice(pathEndPart.indexOf('/') + 1)}
         </a>
-      </OverlayTrigger>
+      </TooltipTrigger>
     );
   }
 

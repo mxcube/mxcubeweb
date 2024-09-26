@@ -3,7 +3,6 @@ import React from 'react';
 import {
   ListGroup,
   OverlayTrigger,
-  Tooltip,
   Popover,
   Badge,
   Button,
@@ -17,6 +16,7 @@ import { isCollected } from '../../constants';
 import { BsSquare, BsCheck2Square } from 'react-icons/bs';
 import { MdContentCopy } from 'react-icons/md';
 import './SampleGridTable.css';
+import TooltipTrigger from '../TooltipTrigger';
 
 export class SampleGridTableItem extends React.Component {
   constructor(props) {
@@ -38,33 +38,32 @@ export class SampleGridTableItem extends React.Component {
   }
 
   itemControls() {
-    let icon = <BsSquare size="0.9em" />;
-
-    if (this.props.picked) {
-      icon = <BsCheck2Square size="1em" />;
-    }
-
-    const pickButton = (
-      <OverlayTrigger
-        placement="auto"
-        overlay={
-          <Tooltip id="pick-sample">Pick/Unpick sample for collect</Tooltip>
-        }
-      >
-        <Button
-          variant="link"
-          disabled={this.props.current && this.props.picked}
-          className="samples-grid-table-item-button"
-          onClick={(e) => {
-            this.pickButtonOnClick(e);
-          }}
+    return (
+      <div className="samples-item-controls-container">
+        <TooltipTrigger
+          id="pick-sample"
+          placement="auto"
+          tooltipContent="Pick/Unpick sample for collect"
         >
-          <i>{icon}</i>
-        </Button>
-      </OverlayTrigger>
+          <Button
+            variant="link"
+            disabled={this.props.current && this.props.picked}
+            className="samples-grid-table-item-button"
+            onClick={(e) => {
+              this.pickButtonOnClick(e);
+            }}
+          >
+            <i>
+              {this.props.picked ? (
+                <BsCheck2Square size="1em" />
+              ) : (
+                <BsSquare size="0.9em" />
+              )}
+            </i>
+          </Button>
+        </TooltipTrigger>
+      </div>
     );
-
-    return <div className="samples-item-controls-container">{pickButton}</div>;
   }
 
   seqId() {

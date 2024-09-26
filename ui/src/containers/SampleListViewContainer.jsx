@@ -17,8 +17,6 @@ import {
   DropdownButton,
   InputGroup,
   Dropdown,
-  OverlayTrigger,
-  Tooltip,
 } from 'react-bootstrap';
 
 import { MdGridView } from 'react-icons/md';
@@ -56,6 +54,7 @@ import SampleGridTableContainer from './SampleGridTableContainer';
 import QueueSettings from './QueueSettings.jsx';
 
 import '../components/SampleGrid/SampleGridTable.css';
+import TooltipTrigger from '../components/TooltipTrigger.jsx';
 
 class SampleListViewContainer extends React.Component {
   constructor(props) {
@@ -821,13 +820,9 @@ class SampleListViewContainer extends React.Component {
                   </Dropdown.Item>
                 </SplitButton>
                 <span style={{ marginLeft: '1.5em' }} />
-                <OverlayTrigger
-                  placement="bottom"
-                  overlay={
-                    <Tooltip id="select-samples">
-                      Synchronise sample list with ISPyB
-                    </Tooltip>
-                  }
+                <TooltipTrigger
+                  id="sync-samples-tooltip"
+                  tooltipContent="Synchronise sample list with ISPyB"
                 >
                   <Button
                     className="nowrap-style"
@@ -840,15 +835,11 @@ class SampleListViewContainer extends React.Component {
                     />
                     ISPyB
                   </Button>
-                </OverlayTrigger>
+                </TooltipTrigger>
                 <span style={{ marginLeft: '1.5em' }} />
-                <OverlayTrigger
-                  placement="bottom"
-                  overlay={
-                    <Tooltip id="select-samples">
-                      Remove all samples from sample list and queue
-                    </Tooltip>
-                  }
+                <TooltipTrigger
+                  id="clear-samples-tooltip"
+                  tooltipContent="Remove all samples from sample list and queue"
                 >
                   <Button
                     className="nowrap-style"
@@ -862,7 +853,7 @@ class SampleListViewContainer extends React.Component {
                     />
                     Clear sample list
                   </Button>
-                </OverlayTrigger>
+                </TooltipTrigger>
                 <span style={{ marginLeft: '1.5em' }} />
                 <Dropdown>
                   <Dropdown.Toggle
