@@ -218,17 +218,17 @@ export default class WorkflowTaskItem extends Component {
               <b>
                 <span className="node-name" style={{ display: 'flex' }}>
                   {this.pointIDString(parameters)} {data.parameters.label}
-                  {state === TASK_RUNNING ? this.progressBar() : null}
+                  {state === TASK_RUNNING && this.progressBar()}
                 </span>
               </b>
-              {state === TASK_UNCOLLECTED ? (
+              {state === TASK_UNCOLLECTED && (
                 <i
                   key="delete_task"
                   className="fa fa-times"
                   onClick={this.deleteTask}
                   style={delTaskCSS}
                 />
-              ) : null}
+              )}
             </div>
           </div>
           <Collapse in={Boolean(show)}>

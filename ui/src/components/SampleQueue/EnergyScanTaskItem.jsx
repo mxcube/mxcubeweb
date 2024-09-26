@@ -224,13 +224,13 @@ export default class EnergyScanTaskItem extends Component {
                   </span>
                 </span>
               </b>
-              {state === TASK_UNCOLLECTED ? (
+              {state === TASK_UNCOLLECTED && (
                 <i
                   className="fas fa-times"
                   onClick={this.deleteTask}
                   style={delTaskCSS}
                 />
-              ) : null}
+              )}
             </div>
           </div>
           <Collapse in={Boolean(show)}>

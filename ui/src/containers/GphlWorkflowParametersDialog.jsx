@@ -269,9 +269,8 @@ function GphlWorkflowParametersDialog(props) {
                                 <Form.Group as={Col} sm>
                                   <Form.Label>
                                     {schema.properties[fieldKey].type !==
-                                    'boolean'
-                                      ? schema.properties[fieldKey].title
-                                      : null}
+                                      'boolean' &&
+                                      schema.properties[fieldKey].title}
                                   </Form.Label>
                                   {schema.properties[fieldKey].type ===
                                   'boolean' ? (

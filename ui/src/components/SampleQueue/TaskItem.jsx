@@ -168,16 +168,16 @@ export default class TaskItem extends Component {
     const { parameters } = wedge;
     return (
       <tr>
-        {parameters.osc_start !== null ? (
+        {parameters.osc_start !== null && (
           <td>
             <a>{parameters.osc_start.toFixed(2)}</a>
           </td>
-        ) : null}
-        {parameters.osc_range !== null ? (
+        )}
+        {parameters.osc_range !== null && (
           <td>
             <a>{parameters.osc_range.toFixed(2)}</a>
           </td>
-        ) : null}
+        )}
         <td>
           <a>{parameters.exp_time.toFixed(6)}</a>
         </td>
@@ -193,16 +193,16 @@ export default class TaskItem extends Component {
         <td>
           <a>{parameters.energy.toFixed(4)}</a>
         </td>
-        {parameters.kappa_phi !== null ? (
+        {parameters.kappa_phi !== null && (
           <td>
             <a>{parameters.kappa_phi.toFixed(2)}</a>
           </td>
-        ) : null}
-        {parameters.kappa !== null ? (
+        )}
+        {parameters.kappa !== null && (
           <td>
             <a>{parameters.kappa.toFixed(2)}</a>
           </td>
-        ) : null}
+        )}
       </tr>
     );
   }
@@ -300,16 +300,16 @@ export default class TaskItem extends Component {
               <b>
                 <span className="node-name" style={{ display: 'flex' }}>
                   {this.pointIDString(wedges)} {data.label}
-                  {state === TASK_RUNNING ? this.progressBar() : null}
+                  {state === TASK_RUNNING && this.progressBar()}
                 </span>
               </b>
-              {state === TASK_UNCOLLECTED ? (
+              {state === TASK_UNCOLLECTED && (
                 <i
                   className="fas fa-times"
                   onClick={this.deleteTask}
                   style={delTaskCSS}
                 />
-              ) : null}
+              )}
             </div>
           </div>
           <Collapse in={Boolean(show)}>
@@ -364,23 +364,23 @@ export default class TaskItem extends Component {
                     >
                       <thead>
                         <tr>
-                          {wedge.parameters.osc_start !== null ? (
+                          {wedge.parameters.osc_start !== null && (
                             <th>Start &deg; </th>
-                          ) : null}
-                          {wedge.parameters.osc_range !== null ? (
+                          )}
+                          {wedge.parameters.osc_range !== null && (
                             <th>Osc. &deg; </th>
-                          ) : null}
+                          )}
                           <th>t (s)</th>
                           <th># Img</th>
                           <th>T (%)</th>
                           <th>Res. (&Aring;)</th>
                           <th>E (keV)</th>
-                          {wedge.parameters.kappa_phi !== null ? (
+                          {wedge.parameters.kappa_phi !== null && (
                             <th>&phi; &deg;</th>
-                          ) : null}
-                          {wedge.parameters.kappa !== null ? (
+                          )}
+                          {wedge.parameters.kappa !== null && (
                             <th>&kappa; &deg;</th>
-                          ) : null}
+                          )}
                         </tr>
                       </thead>
                       <tbody>{this.wedgeParameters(wedge)}</tbody>

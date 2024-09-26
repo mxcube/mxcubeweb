@@ -148,7 +148,7 @@ class SampleViewContainer extends Component {
                 />
               </div>
 
-              {this.props.mode === 'SSX-CHIP' ? (
+              {this.props.mode === 'SSX-CHIP' && (
                 <SSXChipControl
                   showForm={this.props.showForm}
                   currentSampleID={currentSampleID}
@@ -163,8 +163,8 @@ class SampleViewContainer extends Component {
                   setAttribute={this.props.setAttribute}
                   sendExecuteCommand={this.props.sendExecuteCommand}
                 />
-              ) : null}
-              {this.props.sampleChangerContents.name === 'PlateManipulator' ? (
+              )}
+              {this.props.sampleChangerContents.name === 'PlateManipulator' && (
                 <PlateManipulator
                   contents={this.props.sampleChangerContents}
                   loadedSample={this.props.loadedSample}
@@ -187,7 +187,7 @@ class SampleViewContainer extends Component {
                   state={this.props.sampleChangerState}
                   inPopover
                 />
-              ) : null}
+              )}
               <MotorControls
                 save={this.props.setAttribute}
                 saveStep={setStepSize}
