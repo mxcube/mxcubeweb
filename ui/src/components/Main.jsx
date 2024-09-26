@@ -25,6 +25,7 @@ import './rachat.css';
 import { getInitialState } from '../actions/login';
 import MXNavbar from './MXNavbar/MXNavbar';
 import ChatWidget from './ChatWidget';
+import ClearQueueDialog from './SampleGrid/ClearQueueDialog';
 
 function Main() {
   const dispatch = useDispatch();
@@ -54,6 +55,7 @@ function Main() {
       )}
 
       <SelectProposalContainer />
+      <ClearQueueDialog />
       <TaskContainer />
       <PleaseWaitDialog />
       <ErrorNotificationPanel />

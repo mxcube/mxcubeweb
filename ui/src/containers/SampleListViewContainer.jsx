@@ -38,7 +38,6 @@ import {
 } from '../actions/sampleGrid';
 
 import {
-  clearQueue,
   deleteSamplesFromQueue,
   setEnabledSample,
   addSamplesToQueue,
@@ -54,7 +53,6 @@ import { showTaskForm } from '../actions/taskForm';
 
 import SampleGridTableContainer from './SampleGridTableContainer';
 
-import ConfirmActionDialog from '../components/GenericDialog/ConfirmActionDialog';
 import QueueSettings from './QueueSettings.jsx';
 
 import '../components/SampleGrid/SampleGridTable.css';
@@ -789,14 +787,6 @@ class SampleListViewContainer extends React.Component {
         id="sampleGridContainer"
         className="samples-grid-table-container mt-4"
       >
-        <ConfirmActionDialog
-          title="Clear sample grid ?"
-          message="This will remove all samples (and collections) from the grid,
-                    are you sure you would like to continue ?"
-          onOk={this.props.clearQueue}
-          show={this.props.general.showConfirmClearQueueDialog}
-          hide={this.props.confirmClearQueueHide}
-        />
         {this.props.loading ? (
           <div
             className="center-in-box"
@@ -863,7 +853,7 @@ class SampleListViewContainer extends React.Component {
                   <Button
                     className="nowrap-style"
                     variant="outline-secondary"
-                    onClick={this.props.confirmClearQueueShow}
+                    onClick={this.props.showConfirmClearQueueDialog}
                     disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
                   >
                     <i
@@ -1016,15 +1006,10 @@ function mapDispatchToProps(dispatch) {
       dispatch(setEnabledSample(qidList, value)),
     deleteTask: (qid, taskIndex) => dispatch(deleteTask(qid, taskIndex)),
     deleteTaskList: (sampleIDList) => dispatch(deleteTaskList(sampleIDList)),
-    clearQueue: () => dispatch(clearQueue()),
     addSamplesToQueue: (sampleData) => dispatch(addSamplesToQueue(sampleData)),
     stopQueue: () => dispatch(stopQueue()),
-    confirmClearQueueShow: bindActionCreators(
+    showConfirmClearQueueDialog: bindActionCreators(
       showConfirmClearQueueDialog,
-      dispatch,
-    ),
-    confirmClearQueueHide: bindActionCreators(
-      showConfirmClearQueueDialog.bind(null, false),
       dispatch,
     ),
     showConfirmCollectDialog: bindActionCreators(

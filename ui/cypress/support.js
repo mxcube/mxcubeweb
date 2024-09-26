@@ -57,5 +57,5 @@ Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
 Cypress.Commands.add('clearSamples', () => {
   cy.findByText('Samples').click();
   cy.findByRole('button', { name: /Clear sample list/u }).click('left');
-  cy.findByRole('button', { name: 'Ok' }).click();
+  cy.findByRole('button', { name: 'Clear' }).click();
 });
