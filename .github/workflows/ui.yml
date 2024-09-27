@@ -1,6 +1,10 @@
 ---
 # yamllint disable rule:line-length
 
+
+# Pin micromamba version to `1.5.10-0` because of following issue:
+# https://github.com/mamba-org/setup-micromamba/issues/225
+
 name: UI
 
 "on":
@@ -22,7 +26,7 @@ jobs:
       - name: Set up Conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
-          micromamba-version: "latest"
+          micromamba-version: 1.5.10-0
           environment-file: conda-environment.yml
           cache-environment: true
           post-cleanup: "all"
@@ -56,7 +60,7 @@ jobs:
       - name: Set up Conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
-          micromamba-version: "latest"
+          micromamba-version: 1.5.10-0
           environment-file: conda-environment.yml
           cache-environment: true
           post-cleanup: "all"
@@ -107,7 +111,7 @@ jobs:
       - name: Set up Conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
-          micromamba-version: "latest"
+          micromamba-version: 1.5.10-0
           environment-file: conda-environment.yml
           cache-environment: true
           post-cleanup: "all"
