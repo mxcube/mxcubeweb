@@ -41,12 +41,14 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
 
+      # Pin micromamba version because of following issue:
+      # https://github.com/mamba-org/setup-micromamba/issues/225
       - name: Set up Conda environment
         uses: mamba-org/setup-micromamba@v1
         with:
           create-args: >-
             python=${{ matrix.python-version }}
-          micromamba-version: "latest"
+          micromamba-version: 1.5.10-0
           environment-file: conda-environment.yml
           cache-environment: true
           post-cleanup: "all"
