@@ -63,8 +63,8 @@ importers:
         specifier: ^2.10.0
         version: 2.10.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       react-contexify:
-        specifier: ^5.0.0
-        version: 5.0.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        specifier: 6.0.0
+        version: 6.0.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       react-copy-to-clipboard:
         specifier: ^5.1.0
         version: 5.1.0(react@17.0.2)
@@ -3455,9 +3455,8 @@ packages:
       react: ~15 || ~16 || ~17 || ~18
       react-dom: ~15 || ~16 || ~17 || ~18
 
-  react-contexify@5.0.0:
-    resolution: {integrity: sha512-2FIp7lxJ6dtfGr8EZ4uVV5p5TQjd0n2h/JU7PrejNIMiCeZWvSVPFh4lj1ZvjXosglBvP7q5JQQ8yUCdSaMSaw==}
-    engines: {node: '>=10'}
+  react-contexify@6.0.0:
+    resolution: {integrity: sha512-jMhz6yZI81Jv3UDj7TXqCkhdkCFEEmvwGCPXsQuA2ZUC8EbCuVQ6Cy8FzKMXa0y454XTDClBN2YFvvmoFlrFkg==}
     peerDependencies:
       react: '>=16'
       react-dom: '>=16'
@@ -8190,7 +8189,7 @@ snapshots:
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
 
-  react-contexify@5.0.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-contexify@6.0.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
     dependencies:
       clsx: 1.2.1
       react: 17.0.2
