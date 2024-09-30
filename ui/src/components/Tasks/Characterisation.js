@@ -432,7 +432,7 @@ Characterisation = connect((state) => {
   const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
-    path: `${state.login.rootPath}/${subdir}`,
+    path: `${state.login.rootPath}/${subdir}test`,
     filename: fname,
     acqParametersLimits: limits,
     beamline: state.beamline,

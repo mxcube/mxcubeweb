@@ -146,7 +146,7 @@ export default class ContextMenu extends React.Component {
           key: 'datacollection'
         },
         {
-          text: 'Add Characterisation',
+          text: 'Add Characterisation (test 4 images)',
           action: () => this.showModal('Characterisation'),
           key: 'characterisation'
         },
@@ -185,7 +185,7 @@ export default class ContextMenu extends React.Component {
           key: 'datacollection'
         },
         {
-          text: 'Add Characterisation',
+          text: 'Add Characterisation (test 4 images)',
           action: () => this.showModal('Characterisation'),
           key: 'characterisation'
         },
