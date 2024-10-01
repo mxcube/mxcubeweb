@@ -10,8 +10,6 @@ import { Row, Col, Table, Button, Dropdown } from 'react-bootstrap';
 import LazyLoad, { forceVisible } from 'react-lazyload';
 import Collapsible from 'react-collapsible';
 
-import 'react-contexify/dist/ReactContexify.css';
-
 import { MdRemove, MdFlare, Md360 } from 'react-icons/md';
 import {
   BsSquare,

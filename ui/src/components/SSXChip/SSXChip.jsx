@@ -6,7 +6,6 @@ import { Row, Col, Form, Button, Card } from 'react-bootstrap';
 import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 import 'fabric';
 import './ssxchipcontrol.css';
-import 'react-contexify/dist/ReactContexify.css';
 
 import MotorInputContainer from '../../containers/MotorInputContainer';
 
