@@ -4,8 +4,6 @@ import { Col } from 'react-bootstrap';
 
 import { BsChevronUp, BsChevronDown } from 'react-icons/bs';
 
-import 'react-contexify/dist/ReactContexify.css';
-
 import { filterAction } from '../actions/sampleGrid';
 
 class NewSampleIsaraView extends React.Component {

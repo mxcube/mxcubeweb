@@ -2,8 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Col } from 'react-bootstrap';
 
-import 'react-contexify/dist/ReactContexify.css';
-
 import { filterAction } from '../actions/sampleGrid';
 
 class NewSampleFlexView extends React.Component {

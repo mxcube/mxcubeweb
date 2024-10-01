@@ -9,6 +9,7 @@ import { store } from './store';
 import DefaultErrorBoundary from './containers/DefaultErrorBoundary';
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import 'react-contexify/ReactContexify.css';
 
 function Root() {
   return (
