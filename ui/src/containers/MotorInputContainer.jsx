@@ -16,21 +16,19 @@ class MotorInputContainer extends Component {
 
     if (!Number.isNaN(motorhwo.value)) {
       result = (
-        <div>
-          <MotorInput
-            save={this.props.setAttribute}
-            saveStep={this.props.setStepSize}
-            step={uiprop.step}
-            value={motorhwo.value}
-            motorName={uiprop.attribute}
-            label={`${uiprop.label}:`}
-            suffix={uiprop.suffix}
-            decimalPoints={uiprop.precision}
-            state={motorhwo.state}
-            stop={this.props.stopBeamlineAction}
-            disabled={this.props.motorInputDisabled}
-          />
-        </div>
+        <MotorInput
+          save={this.props.setAttribute}
+          saveStep={this.props.setStepSize}
+          step={uiprop.step}
+          value={motorhwo.value}
+          motorName={uiprop.attribute}
+          label={`${uiprop.label}:`}
+          suffix={uiprop.suffix}
+          decimalPoints={uiprop.precision}
+          state={motorhwo.state}
+          stop={this.props.stopBeamlineAction}
+          disabled={this.props.motorInputDisabled}
+        />
       );
     }
 
