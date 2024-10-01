@@ -154,14 +154,6 @@
   display: inline;
 }
 
-.step-size .popinput-input-value {
-  min-width: 0;
-}
-
-.step-size span {
-  font-size: 11px;
-}
-
 .btn-link:hover,
 .btn-link:focus {
   text-decoration: initial !important;
