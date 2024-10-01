@@ -2,12 +2,11 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Navbar, Nav, Table, Popover } from 'react-bootstrap';
-import PopInput from '../components/PopInput/PopInput';
+import BeamlineAttribute from '../components/BeamlineAttribute/BeamlineAttribute';
 import BeamlineActions from './BeamlineActionsContainer';
 import BeamlineCamera from '../components/BeamlineCamera/BeamlineCamera';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import DeviceState from '../components/DeviceState/DeviceState';
-import LabeledValue from '../components/LabeledValue/LabeledValue';
 import MachInfo from '../components/MachInfo/MachInfo';
 import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
 import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
@@ -30,10 +29,6 @@ function BeamlineSetupContainer(props) {
     stopBeamlineAction,
     sendCommand,
   } = props;
-
-  function onCancelHandler(name) {
-    stopBeamlineAction(name);
-  }
 
   function handleSetAttribute(name, value) {
     setAttribute(name, value);
@@ -148,42 +143,30 @@ function BeamlineSetupContainer(props) {
 
       components.push(
         <td
-          key={`bs-name-${uiprop.label}`}
+          key={`bs-name-${uiprop.attribute}`}
           className="py-1 ps-3 pe-2 align-middle"
         >
           <span className="me-1">{uiprop.label}:</span>
         </td>,
         <td
-          key={`bs-val-${uiprop.label}`}
-          className="pe-3 align-middle"
+          key={`bs-val-${uiprop.attribute}`}
           style={{
-            fontWeight: 'bold',
+            padding: '0 0.625rem 0 0',
+            verticalAlign: 'middle',
             borderRight:
-              uiprop_list.length !== uiprop_list.indexOf(uiprop) + 1
+              uiprop_list.indexOf(uiprop) !== uiprop_list.length - 1
                 ? '1px solid #ddd'
-                : '',
+                : undefined,
           }}
         >
-          {beamline_attribute.readonly ? (
-            <LabeledValue
-              suffix={uiprop.suffix}
-              precision={uiprop.precision}
-              format={uiprop.format || ''}
-              name=""
-              value={beamline_attribute.value}
-              level="light"
-            />
-          ) : (
-            <PopInput
-              pkey={uiprop.attribute}
-              {...beamline_attribute}
-              precision={uiprop.precision}
-              suffix={uiprop.suffix}
-              inputSize="10"
-              onSave={handleSetAttribute}
-              onCancel={onCancelHandler}
-            />
-          )}
+          <BeamlineAttribute
+            attribute={beamline_attribute}
+            format={uiprop.format}
+            precision={uiprop.precision}
+            suffix={uiprop.suffix}
+            onSave={(value) => handleSetAttribute(uiprop.attribute, value)}
+            onCancel={() => stopBeamlineAction(uiprop.attribute)}
+          />
         </td>,
       );
     }
