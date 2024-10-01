@@ -247,7 +247,7 @@ button[disabled] {
   top: 0;
 }
 
-.btn-link {
+.btn-link:not([data-default-styles]) {
   color: #333 !important;
 }
 

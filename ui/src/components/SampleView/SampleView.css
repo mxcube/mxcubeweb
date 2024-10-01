@@ -154,8 +154,8 @@
   display: inline;
 }
 
-.btn-link:hover,
-.btn-link:focus {
+.btn-link:not([data-default-styles]):hover,
+.btn-link:not([data-default-styles]):focus {
   text-decoration: initial !important;
 }
 

@@ -1,0 +1,26 @@
+.value {
+  display: inline-flex;
+  padding: 0.5rem 0.25rem;
+  white-space: nowrap;
+}
+
+.valueBtn {
+  composes: value;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.valueBtn:hover,
+.valueBtn:focus-visible {
+  text-decoration: underline dotted;
+}
+
+.valueBtn:focus-visible {
+  outline: auto !important;
+  outline-offset: -2px;
+}
+
+.input {
+  height: 36px;
+  appearance: auto !important;
+}
