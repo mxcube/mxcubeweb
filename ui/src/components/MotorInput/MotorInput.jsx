@@ -144,7 +144,6 @@ export default class MotorInput extends React.Component {
                 <input
                   className={styles.stepInput}
                   type="number"
-                  size={3}
                   defaultValue={step}
                   disabled={this.props.disabled}
                   onChange={(evt) =>
