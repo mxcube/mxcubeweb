@@ -41,7 +41,6 @@ function BeamlineAttributeForm(props) {
         name="value"
         aria-label="Value"
         step={step}
-        size={10}
         defaultValue={value.toFixed(precision)}
         disabled={isBusy}
       />

@@ -21,6 +21,7 @@
 }
 
 .input {
+  width: 9em;
   height: 36px;
   appearance: auto !important;
 }
