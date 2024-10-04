@@ -34,15 +34,15 @@ function BeamlineAttributeForm(props) {
 
   return (
     <Form className="d-flex" noValidate onSubmit={handleSubmit}>
-      <input
+      <Form.Control
         ref={inputRef}
-        className={`form-control rw-input ${styles.input}`}
-        type="number"
+        className={styles.input}
         name="value"
-        aria-label="Value"
+        type="number"
         step={step}
         defaultValue={value.toFixed(precision)}
         disabled={isBusy}
+        aria-label="Value"
       />
       <ButtonToolbar className="ms-1">
         {isBusy ? (

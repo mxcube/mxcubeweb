@@ -1,3 +1,11 @@
+:root {
+  --hw-ready--bg: #9bce7b;
+  --hw-busy--bg: #ffff99;
+  --hw-warning--bg: #ffc499;
+  --hw-fault--bg: #ff9999;
+  --field-dirty--bg: #ec971f;
+}
+
 html,
 body,
 #root {

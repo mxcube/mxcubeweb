@@ -1,38 +1,33 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
-import '../MotorInput/motor.css';
-import '../input.css';
-import cx from 'classnames';
+import { useDispatch, useSelector } from 'react-redux';
 
-export default class ApertureInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-  }
+import { changeAperture } from '../../actions/sampleview';
+import styles from './ApertureInput.module.css';
 
-  handleChange(event) {
-    this.props.changeAperture(event.target.value);
-  }
+function ApertureInput() {
+  const dispatch = useDispatch();
 
-  render() {
-    const inputCSS = cx('form-control input-sm', {
-      'input-bg-moving': this.props.aperture === 'Unknown',
-      'input-bg-ready': this.props.aperture !== 'Unknown',
-    });
+  const value = useSelector((state) => state.sampleview.currentAperture);
+  const options = useSelector((state) => state.sampleview.apertureList);
+  const state = useSelector(
+    (state) => state.beamline.hardwareObjects['beam.aperture']?.state,
+  );
 
-    return (
-      <div className="motor-input-container">
-        <Form.Select
-          className={inputCSS}
-          style={{ float: 'none' }}
-          value={this.props.aperture}
-          onChange={this.handleChange}
-        >
-          {this.props.apertureList.map((option) => (
-            <option key={option}>{option}</option>
-          ))}
-        </Form.Select>
-      </div>
-    );
-  }
+  return (
+    <Form.Select
+      className={styles.select}
+      value={value}
+      data-busy={state === 'BUSY' || undefined}
+      onChange={(evt) => {
+        dispatch(changeAperture(evt.target.value));
+      }}
+    >
+      {options.map((option) => (
+        <option key={option}>{option}</option>
+      ))}
+    </Form.Select>
+  );
 }
+
+export default ApertureInput;

@@ -7,7 +7,7 @@ import { OverlayTrigger, Button, Dropdown } from 'react-bootstrap';
 import 'fabric';
 
 import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
-import { MOTOR_STATE } from '../../constants';
+import { HW_STATE } from '../../constants';
 
 import { find } from 'lodash';
 import styles from './SampleControls.module.css';
@@ -253,7 +253,7 @@ export default class SampleControls extends React.Component {
                   min={0}
                   max={zoom_motor.commands.length - 1}
                   value={zoom_motor.commands.indexOf(zoom_motor.value)}
-                  disabled={zoom_motor.state !== MOTOR_STATE.READY}
+                  disabled={zoom_motor.state !== HW_STATE.READY}
                   onMouseUp={(e) => {
                     this.props.setAttribute(
                       'diffractometer.zoom',
@@ -308,7 +308,7 @@ export default class SampleControls extends React.Component {
                     value={hardwareObjects['diffractometer.backlight'].value}
                     disabled={
                       hardwareObjects['diffractometer.backlight'].state !==
-                      MOTOR_STATE.READY
+                      HW_STATE.READY
                     }
                     onMouseUp={(e) =>
                       this.props.setAttribute(
@@ -373,7 +373,7 @@ export default class SampleControls extends React.Component {
                     value={hardwareObjects['diffractometer.frontlight'].value}
                     disabled={
                       hardwareObjects['diffractometer.frontlight'].state !==
-                      MOTOR_STATE.READY
+                      HW_STATE.READY
                     }
                     onMouseUp={(e) =>
                       this.props.setAttribute(

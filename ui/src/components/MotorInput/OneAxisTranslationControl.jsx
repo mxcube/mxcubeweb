@@ -1,10 +1,9 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
-import cx from 'classnames';
-import { Button, Popover } from 'react-bootstrap';
-import { MOTOR_STATE } from '../../constants';
+import { Button, Form, Popover } from 'react-bootstrap';
+import { HW_STATE } from '../../constants';
 import MotorInput from './MotorInput';
 import './motor.css';
+import styles from './OneAxisTranslationControl.module.css';
 
 // eslint-disable-next-line react/no-unsafe
 export default class OneAxisTranslationControl extends React.Component {
@@ -34,17 +33,14 @@ export default class OneAxisTranslationControl extends React.Component {
     if (this.props.value) {
       if (
         [13, 38, 40].includes(e.keyCode) &&
-        this.props.state === MOTOR_STATE.READY
+        this.props.state === HW_STATE.READY
       ) {
         this.setState({ edited: false });
         this.props.save(e.target.name, e.target.valueAsNumber);
         this.motorValue.value = this.props.value.toFixed(
           this.props.decimalPoints,
         );
-      } else if (
-        this.props.state === MOTOR_STATE.BUSY ||
-        this.props.state === MOTOR_STATE.MOVING
-      ) {
+      } else if (this.props.state === HW_STATE.BUSY) {
         this.setState({ edited: false });
         this.motorValue.value = this.props.value.toFixed(
           this.props.decimalPoints,
@@ -101,32 +97,13 @@ export default class OneAxisTranslationControl extends React.Component {
     const { value, motorName, step, decimalPoints } = this.props;
     const valueCropped = value ? value.toFixed(decimalPoints) : '';
 
-    const inputCSS = cx('form-control rw-input', {
-      'input-bg-edited': this.state.edited,
-      'input-bg-moving':
-        this.props.state === MOTOR_STATE.BUSY ||
-        this.props.state === MOTOR_STATE.MOVING,
-      'input-bg-ready': this.props.state === MOTOR_STATE.READY,
-      'input-bg-fault':
-        this.props.state === MOTOR_STATE.FAULT ||
-        this.props.state === MOTOR_STATE.OFF ||
-        this.props.state === MOTOR_STATE.ALARM ||
-        this.props.state === MOTOR_STATE.OFFLINE ||
-        this.props.state === MOTOR_STATE.INVALID,
-      'input-bg-onlimit':
-        this.props.state === MOTOR_STATE.LOWLIMIT ||
-        this.props.state === MOTOR_STATE.HIGHLIMIT,
-    });
-
     return (
       <div className="arrow-control">
         <Button
           variant="outline-secondary"
           style={{ marginRight: '2px' }}
           className="arrow-small arrow-left"
-          disabled={
-            this.props.state !== MOTOR_STATE.READY || this.props.disabled
-          }
+          disabled={this.props.state !== HW_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, 10 * step, -1)}
         >
           <i className="fas fa-angle-double-left" />
@@ -134,14 +111,12 @@ export default class OneAxisTranslationControl extends React.Component {
         <Button
           variant="outline-secondary"
           className="arrow-small arrow-left"
-          disabled={
-            this.props.state !== MOTOR_STATE.READY || this.props.disabled
-          }
+          disabled={this.props.state !== HW_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, step, -1)}
         >
           <i className="fas fa-angle-left" />
         </Button>
-        <input
+        <Form.Control
           style={{
             width: `${Number.parseFloat(decimalPoints) + 2}em`,
             height: '2.1em',
@@ -152,7 +127,7 @@ export default class OneAxisTranslationControl extends React.Component {
           ref={(ref) => {
             this.motorValue = ref;
           }}
-          className={inputCSS}
+          className={`${styles.input} rw-input`}
           onKeyUp={this.handleKey}
           type="number"
           max={this.props.max}
@@ -160,16 +135,21 @@ export default class OneAxisTranslationControl extends React.Component {
           step={step}
           defaultValue={valueCropped}
           name={motorName}
-          disabled={
-            this.props.state !== MOTOR_STATE.READY || this.props.disabled
+          disabled={this.props.state !== HW_STATE.READY || this.props.disabled}
+          data-dirty={this.state.edited || undefined}
+          data-busy={this.props.state === HW_STATE.BUSY || undefined}
+          data-warning={this.props.state === HW_STATE.WARNING || undefined}
+          data-fault={
+            this.props.state === HW_STATE.UNKNOWN ||
+            this.props.state === HW_STATE.FAULT ||
+            this.props.state === HW_STATE.OFF ||
+            undefined
           }
         />
         <Button
           variant="outline-secondary"
           className="arrow-small arrow-right"
-          disabled={
-            this.props.state !== MOTOR_STATE.READY || this.props.disabled
-          }
+          disabled={this.props.state !== HW_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, step, 1)}
         >
           <i className="fas fa-angle-right" />
@@ -178,9 +158,7 @@ export default class OneAxisTranslationControl extends React.Component {
           variant="outline-secondary"
           style={{ marginLeft: '2px' }}
           className="arrow-small arrow-right"
-          disabled={
-            this.props.state !== MOTOR_STATE.READY || this.props.disabled
-          }
+          disabled={this.props.state !== HW_STATE.READY || this.props.disabled}
           onClick={() => this.stepChange(motorName, 10 * step, 1)}
         >
           <i className="fas fa-angle-double-right" />

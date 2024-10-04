@@ -117,34 +117,15 @@ export const SPACE_GROUPS = [
   'I4132',
 ];
 
-export const MOTOR_STATE = {
+/*
+ * Base hardware object states: https://github.com/mxcube/mxcubecore/blob/03c89f2eef8af604b211f5788813df3ad4216138/mxcubecore/BaseHardwareObjects.py#L61
+ * Also used for motors: https://github.com/mxcube/mxcubecore/blob/03c89f2eef8af604b211f5788813df3ad4216138/mxcubecore/HardwareObjects/abstract/AbstractMotor.py#L40
+ */
+export const HW_STATE = {
   UNKNOWN: 'UNKNOWN',
   WARNING: 'WARNING',
-  MOVING: 'MOVING',
   BUSY: 'BUSY',
   READY: 'READY',
   FAULT: 'FAULT',
   OFF: 'OFF',
 };
-
-export const MOTOR_STATE_DESC = {};
-
-MOTOR_STATE_DESC[MOTOR_STATE.INITIALIZING] = 'Initializing';
-MOTOR_STATE_DESC[MOTOR_STATE.ON] = 'On';
-MOTOR_STATE_DESC[MOTOR_STATE.OFF] = 'Off';
-MOTOR_STATE_DESC[MOTOR_STATE.READY] = 'Ready';
-MOTOR_STATE_DESC[MOTOR_STATE.BUSY] = 'Busy';
-MOTOR_STATE_DESC[MOTOR_STATE.MOVING] = 'Moving';
-MOTOR_STATE_DESC[MOTOR_STATE.STANDBY] = 'Standby';
-MOTOR_STATE_DESC[MOTOR_STATE.DISABLED] = 'Disabled';
-MOTOR_STATE_DESC[MOTOR_STATE.UNKNOWN] = 'Unknown';
-MOTOR_STATE_DESC[MOTOR_STATE.ALARM] = 'Alarm';
-MOTOR_STATE_DESC[MOTOR_STATE.FAULT] = 'Fault';
-MOTOR_STATE_DESC[MOTOR_STATE.INVALID] = 'Invalid';
-MOTOR_STATE_DESC[MOTOR_STATE.OFFLINE] = 'Offline';
-MOTOR_STATE_DESC[MOTOR_STATE.LOWLIMIT] = 'LowLimit';
-MOTOR_STATE_DESC[MOTOR_STATE.HIGHLIMIT] = 'HighLimit';
-MOTOR_STATE_DESC[MOTOR_STATE.NOTINITIALIZED] = 'NotInitialized';
-MOTOR_STATE_DESC[MOTOR_STATE.MOVESTARTED] = 'MoveStarted';
-
-/* eslint-enable no-unused-vars */

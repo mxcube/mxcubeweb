@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
-import { MOTOR_STATE } from '../../constants';
+import { HW_STATE } from '../../constants';
 import MotorInput from './MotorInput';
 import './motor.css';
 
@@ -68,7 +68,7 @@ export default class TwoAxisTranslationControl extends React.Component {
             this.stepChange('sample_vertical', sample_verticalStep, 1)
           }
           disabled={
-            this.props.motors.sample_vertical.state !== MOTOR_STATE.READY ||
+            this.props.motors.sample_vertical.state !== HW_STATE.READY ||
             this.props.motorsDisabled
           }
           className="arrow arrow-up"
@@ -80,7 +80,7 @@ export default class TwoAxisTranslationControl extends React.Component {
           variant="outline-secondary"
           className="arrow arrow-left"
           disabled={
-            this.props.motors.sample_horizontal.state !== MOTOR_STATE.READY ||
+            this.props.motors.sample_horizontal.state !== HW_STATE.READY ||
             this.props.motorsDisabled
           }
           onClick={() =>
@@ -108,7 +108,7 @@ export default class TwoAxisTranslationControl extends React.Component {
           variant="outline-secondary"
           className="arrow arrow-right"
           disabled={
-            this.props.motors.sample_horizontal.state !== MOTOR_STATE.READY ||
+            this.props.motors.sample_horizontal.state !== HW_STATE.READY ||
             this.props.motorsDisabled
           }
           onClick={() =>
@@ -122,7 +122,7 @@ export default class TwoAxisTranslationControl extends React.Component {
           variant="outline-secondary"
           className="arrow arrow-down"
           disabled={
-            this.props.motors.sample_vertical.state !== MOTOR_STATE.READY ||
+            this.props.motors.sample_vertical.state !== HW_STATE.READY ||
             this.props.motorsDisabled
           }
           onClick={() =>
