@@ -1,40 +1,35 @@
 import React from 'react';
 import { Form } from 'react-bootstrap';
-import '../MotorInput/motor.css';
-import '../input.css';
-import cx from 'classnames';
+import { useDispatch, useSelector } from 'react-redux';
 
-export default class PhaseInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.handleChange = this.handleChange.bind(this);
-  }
+import { changeCurrentPhase } from '../../actions/sampleview';
+import styles from './PhaseInput.module.css';
 
-  handleChange(event) {
-    if (event.target.value !== 'Unknown') {
-      this.props.changePhase(event.target.value);
-    }
-  }
+function PhaseInput() {
+  const dispatch = useDispatch();
 
-  render() {
-    const inputCSS = cx('form-control input-sm', {
-      'input-bg-moving': this.props.state !== 'READY',
-      'input-bg-ready': this.props.state === 'READY',
-    });
+  const value = useSelector((state) => state.sampleview.currentPhase);
+  const options = useSelector((state) => state.sampleview.phaseList);
+  const state = useSelector(
+    (state) => state.beamline.hardwareObjects.diffractometer?.state,
+  );
 
-    return (
-      <div className="motor-input-container">
-        <Form.Select
-          className={inputCSS}
-          style={{ float: 'none' }}
-          value={this.props.phase}
-          onChange={this.handleChange}
-        >
-          {this.props.phaseList.map((option) => (
-            <option key={option}>{option}</option>
-          ))}
-        </Form.Select>
-      </div>
-    );
-  }
+  return (
+    <Form.Select
+      className={styles.select}
+      value={value}
+      data-busy={state === 'BUSY' || undefined}
+      onChange={(evt) => {
+        if (evt.target.value !== 'Unknown') {
+          dispatch(changeCurrentPhase(evt.target.value));
+        }
+      }}
+    >
+      {options.map((option) => (
+        <option key={option}>{option}</option>
+      ))}
+    </Form.Select>
+  );
 }
+
+export default PhaseInput;

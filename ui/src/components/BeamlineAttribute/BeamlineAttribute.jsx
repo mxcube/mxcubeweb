@@ -1,25 +1,15 @@
 import React, { useRef } from 'react';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
-import { STATE } from '../../actions/beamline';
 import BeamlineAttributeForm from './BeamlineAttributeForm';
 import styles from './BeamlineAttribute.module.css';
-import '../input.css';
-
-const STATE_CLASS = {
-  [STATE.BUSY]: 'input-bg-moving',
-  [STATE.ABORT]: 'input-bg-fault',
-};
+import { HW_STATE } from '../../constants';
 
 function BeamlineAttribute(props) {
   const { attribute, format, precision = 1, suffix, onSave, onCancel } = props;
-  const {
-    state = STATE.IDLE,
-    value = 0,
-    step = 0.1,
-    msg,
-    readonly = false,
-  } = attribute;
+  const { state, value = 0, step = 0.1, msg, readonly = false } = attribute;
+
+  const isBusy = state === HW_STATE.BUSY;
 
   const btnRef = useRef(null);
 
@@ -56,7 +46,7 @@ function BeamlineAttribute(props) {
         >
           <BeamlineAttributeForm
             value={value}
-            isBusy={state === STATE.BUSY}
+            isBusy={isBusy}
             step={step}
             precision={precision}
             onSave={onSave}
@@ -68,8 +58,9 @@ function BeamlineAttribute(props) {
     >
       <Button
         ref={btnRef}
-        className={`${styles.valueBtn} ${STATE_CLASS[state] || ''}`}
+        className={styles.valueBtn}
         variant="link"
+        data-busy={isBusy || undefined}
         data-default-styles
       >
         {valStr}

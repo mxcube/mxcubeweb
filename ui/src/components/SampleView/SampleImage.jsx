@@ -2,7 +2,7 @@
 /* eslint-disable sonarjs/no-duplicate-string */
 import './SampleView.css';
 import React from 'react';
-import { MOTOR_STATE } from '../../constants';
+import { HW_STATE } from '../../constants';
 import {
   makePoints,
   makeTwoDPoints,
@@ -536,7 +536,7 @@ export default class SampleImage extends React.Component {
     const focus = hardwareObjects['diffractometer.focus'];
     const zoom = hardwareObjects['diffractometer.zoom'];
 
-    if (keyPressed === 'r' && phi.state === MOTOR_STATE.READY) {
+    if (keyPressed === 'r' && phi.state === HW_STATE.READY) {
       // then we rotate phi axis by the step size defined in its box
       if (e.deltaX > 0 || e.deltaY > 0) {
         // zoom in
@@ -551,7 +551,7 @@ export default class SampleImage extends React.Component {
           phi.value - Number.parseInt(motorSteps.phiStep, 10),
         );
       }
-    } else if (keyPressed === 'f' && focus.state === MOTOR_STATE.READY) {
+    } else if (keyPressed === 'f' && focus.state === HW_STATE.READY) {
       if (e.deltaY > 0) {
         // Focus in
         updateMotorPosition(
@@ -565,7 +565,7 @@ export default class SampleImage extends React.Component {
           focus.value - Number.parseFloat(motorSteps.focusStep, 10),
         );
       }
-    } else if (keyPressed === 'z' && zoom.state === MOTOR_STATE.READY) {
+    } else if (keyPressed === 'z' && zoom.state === HW_STATE.READY) {
       // in this case zooming
       const index = zoom.commands.indexOf(zoom.value);
       if (e.deltaY > 0 && index < zoom.commands.length) {

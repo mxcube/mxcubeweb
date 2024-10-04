@@ -109,7 +109,6 @@ class SampleViewContainer extends Component {
         }
       });
     }
-    const diffractometerHo = this.props.hardwareObjects.diffractometer;
 
     return (
       <Container fluid>
@@ -129,23 +128,14 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={2} xxl={1} className={styles.controllers}>
             <DefaultErrorBoundary>
-              <div>
+              <div className="motor-input-container">
                 <p className="motor-name">Phase Control:</p>
-                <PhaseInput
-                  phase={this.props.sampleViewState.currentPhase}
-                  phaseList={this.props.sampleViewState.phaseList}
-                  changePhase={this.props.sampleViewActions.changeCurrentPhase}
-                  state={diffractometerHo.state}
-                />
+                <PhaseInput />
               </div>
 
-              <div>
+              <div className="motor-input-container">
                 <p className="motor-name">Beam size:</p>
-                <ApertureInput
-                  aperture={this.props.sampleViewState.currentAperture}
-                  apertureList={this.props.sampleViewState.apertureList}
-                  changeAperture={this.props.sampleViewActions.changeAperture}
-                />
+                <ApertureInput />
               </div>
 
               {this.props.mode === 'SSX-CHIP' && (

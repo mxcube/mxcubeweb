@@ -151,7 +151,7 @@ function BeamlineSetupContainer(props) {
         <td
           key={`bs-val-${uiprop.attribute}`}
           style={{
-            padding: '0 0.625rem 0 0',
+            padding: '0.125rem 0.625rem 0.125rem 0',
             verticalAlign: 'middle',
             borderRight:
               uiprop_list.indexOf(uiprop) !== uiprop_list.length - 1

@@ -1,12 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/jsx-handler-names */
 import React from 'react';
-import cx from 'classnames';
-import { Button } from 'react-bootstrap';
-import { MOTOR_STATE } from '../../constants';
+import { Button, Form } from 'react-bootstrap';
+import { HW_STATE } from '../../constants';
 import styles from './MotorInput.module.css';
 import './motor.css';
-import '../input.css';
 
 // eslint-disable-next-line react/no-unsafe
 export default class MotorInput extends React.Component {
@@ -40,17 +38,14 @@ export default class MotorInput extends React.Component {
 
     if (
       [13, 38, 40].includes(e.keyCode) &&
-      this.props.state === MOTOR_STATE.READY
+      this.props.state === HW_STATE.READY
     ) {
       this.setState({ edited: false });
       this.props.save(e.target.name, e.target.valueAsNumber);
       this.motorValue.value = this.props.value.toFixed(
         this.props.decimalPoints,
       );
-    } else if (
-      this.props.state === MOTOR_STATE.BUSY ||
-      this.props.state === MOTOR_STATE.MOVING
-    ) {
+    } else if (this.props.state === HW_STATE.BUSY) {
       this.setState({ edited: false });
       this.motorValue.value = this.props.value.toFixed(
         this.props.decimalPoints,
@@ -75,28 +70,11 @@ export default class MotorInput extends React.Component {
   render() {
     const { value, motorName, step, suffix, decimalPoints } = this.props;
     const valueCropped = value.toFixed(decimalPoints);
-    const inputCSS = cx('form-control rw-input', {
-      'input-bg-edited': this.state.edited,
-      'input-bg-moving':
-        this.props.state === MOTOR_STATE.BUSY ||
-        this.props.state === MOTOR_STATE.MOVING,
-      'input-bg-ready': this.props.state === MOTOR_STATE.READY,
-      'input-bg-fault':
-        this.props.state === MOTOR_STATE.FAULT ||
-        this.props.state === MOTOR_STATE.OFF ||
-        this.props.state === MOTOR_STATE.ALARM ||
-        this.props.state === MOTOR_STATE.OFFLINE ||
-        this.props.state === MOTOR_STATE.UNKNOWN ||
-        this.props.state === MOTOR_STATE.INVALID,
-      'input-bg-onlimit':
-        this.props.state === MOTOR_STATE.LOWLIMIT ||
-        this.props.state === MOTOR_STATE.HIGHLIMIT,
-    });
 
     return (
       <div className="motor-input-container">
         <p className="motor-name">{this.props.label}</p>
-        <form className="d-flex" onSubmit={this.handleKey} noValidate>
+        <form className={styles.form} onSubmit={this.handleKey} noValidate>
           <div
             className="rw-widget rw-numberpicker rw-widget-no-right-border"
             style={{ width: '90px', display: 'inline-block' }}
@@ -106,7 +84,7 @@ export default class MotorInput extends React.Component {
                 type="button"
                 className="rw-btn"
                 disabled={
-                  this.props.state !== MOTOR_STATE.READY || this.props.disabled
+                  this.props.state !== HW_STATE.READY || this.props.disabled
                 }
                 onClick={this.stepIncrement}
               >
@@ -116,30 +94,39 @@ export default class MotorInput extends React.Component {
                 type="button"
                 className="rw-btn"
                 disabled={
-                  this.props.state !== MOTOR_STATE.READY || this.props.disabled
+                  this.props.state !== HW_STATE.READY || this.props.disabled
                 }
                 onClick={this.stepDecrement}
               >
                 <i aria-hidden="true" className="rw-i fas fa-caret-down" />
               </button>
             </span>
-            <input
+            <Form.Control
               ref={(ref) => {
                 this.motorValue = ref;
               }}
-              className={inputCSS}
+              className={`${styles.valueInput} rw-input`}
               onKeyUp={this.handleKey}
               type="number"
               step={step}
               defaultValue={valueCropped}
               name={motorName}
               disabled={
-                this.props.state !== MOTOR_STATE.READY || this.props.disabled
+                this.props.state !== HW_STATE.READY || this.props.disabled
+              }
+              data-dirty={this.state.edited || undefined}
+              data-busy={this.props.state === HW_STATE.BUSY || undefined}
+              data-warning={this.props.state === HW_STATE.WARNING || undefined}
+              data-fault={
+                this.props.state === HW_STATE.UNKNOWN ||
+                this.props.state === HW_STATE.FAULT ||
+                this.props.state === HW_STATE.OFF ||
+                undefined
               }
             />
           </div>
           {this.props.saveStep &&
-            (this.props.state === MOTOR_STATE.READY ? (
+            (this.props.state === HW_STATE.READY ? (
               <>
                 <input
                   className={styles.stepInput}

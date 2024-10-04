@@ -1,0 +1,21 @@
+.input {
+  background-color: var(--hw-ready--bg) !important;
+  transition: background-color 100ms ease-in;
+}
+
+.input[data-busy] {
+  background-color: var(--hw-busy--bg) !important;
+  font-weight: 600;
+}
+
+.input[data-warning] {
+  background-color: var(--hw-warning--bg) !important;
+}
+
+.input[data-fault] {
+  background-color: var(--hw-fault--bg) !important;
+}
+
+.input[data-edited] {
+  background-color: var(--field-dirty--bg) !important;
+}
