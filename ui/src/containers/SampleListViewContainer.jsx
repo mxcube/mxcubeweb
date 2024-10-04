@@ -13,7 +13,6 @@ import {
   Col,
   Form,
   Button,
-  SplitButton,
   DropdownButton,
   InputGroup,
   Dropdown,
@@ -803,26 +802,18 @@ class SampleListViewContainer extends React.Component {
           <Card.Header className="samples-grid-table-card-header">
             <Row className="samples-grid-table-row-header">
               <Col sm={5} className="d-flex">
-                <SplitButton
-                  variant="outline-secondary"
+                <Button
                   className="nowrap-style"
-                  id="split-button-sample-changer-selection"
-                  disabled={this.props.queue.queueStatus === QUEUE_RUNNING}
-                  title="Get samples from SC"
-                  onClick={this.getSamplesFromSC}
+                  variant="outline-secondary"
+                  onClick={this.showAddSampleForm}
                 >
-                  <Dropdown.Item
-                    className="nowrap-style"
-                    eventKey="2"
-                    onClick={this.showAddSampleForm}
-                  >
-                    Create new sample
-                  </Dropdown.Item>
-                </SplitButton>
+                  <i className="fas fa-plus" style={{ marginRight: '0.5em' }} />
+                  Create new sample
+                </Button>
                 <span style={{ marginLeft: '1.5em' }} />
                 <TooltipTrigger
                   id="sync-samples-tooltip"
-                  tooltipContent="Synchronise sample list with ISPyB"
+                  tooltipContent="Get and synchronise sample list with ISPyB"
                 >
                   <Button
                     className="nowrap-style"
@@ -833,7 +824,7 @@ class SampleListViewContainer extends React.Component {
                       className="fas fa-sync-alt"
                       style={{ marginRight: '0.5em' }}
                     />
-                    ISPyB
+                    Get Samples
                   </Button>
                 </TooltipTrigger>
                 <span style={{ marginLeft: '1.5em' }} />
