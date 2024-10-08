@@ -33,7 +33,6 @@ import {
   logFrontEndTraceBack,
   setAttribute,
 } from '../actions/beamline';
-import { stopBeamlineAction } from '../actions/beamlineActions';
 import { find } from 'lodash';
 
 import styles from './SampleViewContainer.module.css';
@@ -57,22 +56,13 @@ class SampleViewContainer extends Component {
   }
 
   render() {
-    const { uiproperties, hardwareObjects } = this.props;
+    const { uiproperties } = this.props;
 
     if (!('sample_view' in uiproperties)) {
       return null;
     }
 
-    const motorUiProperties = uiproperties.sample_view.components.filter(
-      ({ value_type }) => value_type === 'MOTOR',
-    );
-
-    const motorhardwareObjects = Object.values(hardwareObjects).filter(
-      ({ type }) => type === 'MOTOR',
-    );
-
     const { sourceScale, imageRatio, motorSteps } = this.props.sampleViewState;
-    const { setStepSize } = this.props.sampleViewActions;
     const { currentSampleID } = this.props;
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
@@ -178,20 +168,8 @@ class SampleViewContainer extends Component {
                   inPopover
                 />
               )}
-              <MotorControls
-                save={this.props.setAttribute}
-                saveStep={setStepSize}
-                uiproperties={motorUiProperties}
-                hardwareObjects={motorhardwareObjects}
-                motorsDisabled={
-                  this.props.motorInputDisable ||
-                  this.props.queueState === QUEUE_RUNNING
-                }
-                steps={motorSteps}
-                stop={this.props.stopBeamlineAction}
-                sampleViewActions={this.props.sampleViewActions}
-                sampleViewState={this.props.sampleViewState}
-              />
+
+              <MotorControls />
             </DefaultErrorBoundary>
           </Col>
           <Col sm={6}>
@@ -269,7 +247,6 @@ function mapStateToProps(state) {
     queueState: state.queue.queueStatus,
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
-    motorInputDisable: state.beamline.motorInputDisable,
     hardwareObjects: state.beamline.hardwareObjects,
     availableMethods: state.beamline.availableMethods,
     defaultParameters: state.taskForm.defaultParameters,
@@ -306,7 +283,6 @@ function mapDispatchToProps(dispatch) {
     showForm: bindActionCreators(showTaskForm, dispatch),
     showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
-    stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
     setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     displayImage: bindActionCreators(displayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
