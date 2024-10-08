@@ -1,113 +1,69 @@
-import React from 'react';
-import { Button, Row, Col } from 'react-bootstrap';
-import MotorInputContainer from '../../containers/MotorInputContainer';
+import React, { useState } from 'react';
+import { Button } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 
+import MotorInputContainer from '../../containers/MotorInputContainer';
 import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
-import { find } from 'lodash';
+import styles from './MotorControls.module.css';
 
 import '../MotorInput/motor.css';
 
-export default class MotorControls extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { showAll: false };
+function MotorControls() {
+  const [showAll, setShowAll] = useState(false);
+
+  const motorsProps = useSelector((state) =>
+    state.uiproperties.sample_view.components.filter(
+      ({ value_type }) => value_type === 'MOTOR',
+    ),
+  );
+
+  const verticalMotorProps = motorsProps.find(
+    (c) => c.role === 'sample_vertical',
+  );
+  const horizontalMotorProps = motorsProps.find(
+    (c) => c.role === 'sample_horizontal',
+  );
+
+  if (!verticalMotorProps || !horizontalMotorProps) {
+    return motorsProps.map(({ attribute: k, role }) => (
+      <MotorInputContainer key={k} component="sample_view" role={role} />
+    ));
   }
 
-  renderMotorInputs(from, to) {
-    return this.props.uiproperties
-      .slice(from, to)
-      .map(({ attribute, role }) => (
-        <Col key={attribute} sm={12}>
-          <MotorInputContainer component="sample_view" role={role} />
-        </Col>
-      ));
-  }
+  return (
+    <>
+      {motorsProps.slice(0, 3).map(({ attribute: k, role }) => (
+        <MotorInputContainer key={k} component="sample_view" role={role} />
+      ))}
 
-  render() {
-    const sample_vertical_uiprop = find(this.props.uiproperties, {
-      role: 'sample_vertical',
-    });
+      <TwoAxisTranslationControl
+        verticalMotorProps={verticalMotorProps}
+        horizontalMotorProps={horizontalMotorProps}
+      />
 
-    const sample_horizontal_uiprop = find(this.props.uiproperties, {
-      role: 'sample_horizontal',
-    });
+      <Button
+        className={styles.showAllBtn}
+        size="sm"
+        variant="outline-secondary"
+        onClick={() => setShowAll(!showAll)}
+      >
+        <i className="fas fa-cogs me-2" />
+        <span className="flex-fill">
+          {showAll ? 'Hide motors' : 'Show motors'}
+        </span>
+        <i
+          className={`fas ${showAll ? 'fa-caret-up' : 'fa-caret-down'} ms-2`}
+        />
+      </Button>
 
-    const sample_vertical = find(this.props.hardwareObjects, {
-      name: sample_vertical_uiprop.attribute,
-    });
-
-    const sample_horizontal = find(this.props.hardwareObjects, {
-      name: sample_horizontal_uiprop.attribute,
-    });
-
-    const numel = this.props.uiproperties.length;
-
-    if (!sample_vertical || !sample_horizontal) {
-      return <Row className="row">{this.renderMotorInputs(0, numel)}</Row>;
-    }
-
-    const { save } = this.props;
-    const { saveStep } = this.props;
-    const _stop = this.props.stop;
-
-    const motors = {
-      sample_vertical: Object.assign(sample_vertical_uiprop, sample_vertical),
-      sample_horizontal: Object.assign(
-        sample_horizontal_uiprop,
-        sample_horizontal,
-      ),
-    };
-
-    return (
-      <Row className="row">
-        {this.renderMotorInputs(0, 3)}
-        <div>
-          <div>
-            <TwoAxisTranslationControl
-              save={save}
-              saveStep={saveStep}
-              motors={motors}
-              motorsDisabled={this.props.motorsDisabled}
-              steps={this.props.steps}
-              stop={_stop}
-            />
-          </div>
-          <div>
-            <Button
-              variant="outline-secondary"
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                marginTop: '1rem',
-                minWidth: '155px',
-                whiteSpace: 'nowrap',
-                textAlign: 'left',
-              }}
-              size="sm"
-              onClick={() => {
-                this.setState({ showAll: !this.state.showAll });
-              }}
-            >
-              <i className="fas fa-cogs" style={{ marginRight: '0.5rem' }} />
-              <span style={{ flex: '1 0 auto' }}>
-                {this.state.showAll ? 'Hide motors' : 'Show motors'}
-              </span>
-              <i
-                style={{ marginLeft: '0.5rem' }}
-                className={`fas ${
-                  this.state.showAll ? 'fa-caret-up' : 'fa-caret-down'
-                }`}
-              />
-            </Button>
-
-            {this.state.showAll && (
-              <div style={{ marginTop: '0.5rem' }}>
-                {this.renderMotorInputs(3, numel)}
-              </div>
-            )}
-          </div>
-        </div>
-      </Row>
-    );
-  }
+      {showAll &&
+        motorsProps
+          .slice(3)
+          .map(({ attribute: k, role }) => (
+            <MotorInputContainer key={k} component="sample_view" role={role} />
+          ))}
+    </>
+  );
 }
+
+export default MotorControls;
