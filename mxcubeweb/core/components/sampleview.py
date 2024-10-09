@@ -266,8 +266,10 @@ class SampleView(ComponentBase):
         for shape in HWR.beamline.sample_view.get_shapes():
             s = shape.as_dict()
             shape_dict.update({shape.id: s})
-
-        return {"shapes": to_camel(shape_dict)}
+            # shape key comes case lowered from the to_camel (2dp1), this breaks ui
+            # lest ensure it upper case by only came casing the dict data
+            _shape = {shape.id: to_camel(shape_dict[shape.id])}
+        return {"shapes": _shape}
 
     def get_shape_width_sid(self, sid):
         shape = HWR.beamline.sample_view.get_shape(sid)
