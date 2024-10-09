@@ -316,7 +316,17 @@ class SampleListViewContainer extends React.Component {
    * @return {boolean} true if sample with sampleID is in queue otherwise false
    */
   inQueue(sampleID) {
-    return this.props.queue.queue.includes(sampleID) && this.props.sampleList[sampleID].checked;
+    let result = false
+    try{
+      result = this.props.queue.queue.includes(sampleID) && this.props.sampleList[sampleID].checked;
+
+
+    }catch(error){
+      console.log('sampleID casued Error from inQueue: ')
+      console.log(sampleID)
+      console.log(error)
+    }
+    return false
   }
 
 
