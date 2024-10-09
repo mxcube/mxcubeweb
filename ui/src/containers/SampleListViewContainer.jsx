@@ -325,8 +325,9 @@ class SampleListViewContainer extends React.Component {
       console.log('sampleID casued Error from inQueue: ')
       console.log(sampleID)
       console.log(error)
+      return false
     }
-    return false
+    return result
   }
 
 
