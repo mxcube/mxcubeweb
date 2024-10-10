@@ -1,4 +1,4 @@
-.form {
+.wrapper {
   display: flex;
 }
 
@@ -20,7 +20,7 @@
   background-color: var(--hw-fault--bg) !important;
 }
 
-.valueInput[data-edited] {
+.valueInput[data-dirty] {
   background-color: var(--field-dirty--bg) !important;
 }
 
