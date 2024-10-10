@@ -24,7 +24,7 @@ describe('3-click centring', () => {
     cy.findByRole('button', { name: '3-click centring' }).click();
     cy.findByText(/Clicks left: 3/u, { hidden: true }).should('exist');
 
-    cy.get('.form-control[name="diffractometer.phi"]')
+    cy.findByTestId('MotorInput_value_diffractometer.phi')
       .invoke('val')
       .then((initialValue) => {
         cy.get('.canvas-container').click();
@@ -35,7 +35,7 @@ describe('3-click centring', () => {
         // Reload to see new omega value (since WebSockets don't work on CI)
         cy.reload();
 
-        cy.get('.form-control[name="diffractometer.phi"]')
+        cy.findByTestId('MotorInput_value_diffractometer.phi')
           .invoke('val')
           .should('equal', (Number.parseFloat(initialValue) + 90).toFixed(2));
       });

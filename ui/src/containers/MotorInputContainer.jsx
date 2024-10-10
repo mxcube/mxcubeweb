@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { QUEUE_RUNNING } from '../constants';
 
 import MotorInput from '../components/MotorInput/MotorInput';
@@ -8,62 +7,43 @@ import { stopBeamlineAction } from '../actions/beamlineActions';
 import { setAttribute } from '../actions/beamline';
 import { setStepSize } from '../actions/sampleview';
 
-class MotorInputContainer extends Component {
-  render() {
-    const { uiprop } = this.props;
-    const { motorhwo } = this.props;
-    let result = null;
+function MotorInputContainer(props) {
+  const { component, role } = props;
+  const dispatch = useDispatch();
 
-    if (!Number.isNaN(motorhwo.value)) {
-      result = (
-        <MotorInput
-          save={this.props.setAttribute}
-          saveStep={this.props.setStepSize}
-          step={uiprop.step}
-          value={motorhwo.value}
-          motorName={uiprop.attribute}
-          label={`${uiprop.label}:`}
-          suffix={uiprop.suffix}
-          decimalPoints={uiprop.precision}
-          state={motorhwo.state}
-          stop={this.props.stopBeamlineAction}
-          disabled={this.props.motorInputDisabled}
-        />
-      );
-    }
-
-    return result;
-  }
-}
-
-function mapStateToProps(state, ownProps) {
-  const { component, role } = ownProps;
-  const uiprop = state.uiproperties[component].components.find(
-    (el) => el.role === role,
+  const motorProps = useSelector((state) =>
+    state.uiproperties[component].components.find((el) => el.role === role),
   );
 
-  const motorhwo = state.beamline.hardwareObjects[uiprop.attribute];
+  const motor = useSelector(
+    (state) => state.beamline.hardwareObjects[motorProps.attribute],
+  );
 
-  return {
-    value: motorhwo.value,
-    state: motorhwo.state,
-    motorhwo,
-    uiprop,
-    motorInputDisabled:
+  const motorDisabled = useSelector(
+    (state) =>
       state.beamline.motorInputDisable ||
       state.queue.queueStatus === QUEUE_RUNNING,
-  };
+  );
+
+  if (Number.isNaN(motor.value)) {
+    return null;
+  }
+
+  return (
+    <MotorInput
+      save={(name, value) => dispatch(setAttribute(name, value))}
+      saveStep={(name, value) => dispatch(setStepSize(name, value))}
+      step={motorProps.step}
+      value={motor.value}
+      motorName={motorProps.attribute}
+      label={`${motorProps.label}:`}
+      suffix={motorProps.suffix}
+      decimalPoints={motorProps.precision}
+      state={motor.state}
+      stop={(cmdName) => dispatch(stopBeamlineAction(cmdName))}
+      disabled={motorDisabled}
+    />
+  );
 }
 
-function mapDispatchToProps(dispatch) {
-  return {
-    stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
-    setAttribute: bindActionCreators(setAttribute, dispatch),
-    setStepSize: bindActionCreators(setStepSize, dispatch),
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(MotorInputContainer);
+export default MotorInputContainer;

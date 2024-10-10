@@ -58,6 +58,8 @@ pnpm --prefix ui build
 CYPRESS_BASE_URL="http://127.0.0.1:8081" pnpm --prefix ui e2e
 ```
 
+> Currently, WebSockets don't work when running Cypress in the CI. In order to replicate the CI environement more accurately, WebSockets can be disabled locally via environment variable `VITE_DISABLE_WEBSOCKETS`. For instance, you can start the development server with sockets disabled with: `VITE_DISABLE_WEBSOCKETS=true pnpm --prefix ui start`.
+
 ### Best Practices
 
 The best use for development would be to test the components you changed first individually by using the cypress app. This allows for better error tracking and time efficiency as it prevents you from running tests on components that are not effected by your changes multiple times during development.
