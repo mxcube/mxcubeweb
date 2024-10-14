@@ -222,7 +222,7 @@ export default class SampleControls extends React.Component {
                   step={this.props.steps.focusStep}
                   motorName={foucs_motor_uiprop.attribute}
                   suffix={foucs_motor_uiprop.suffix}
-                  decimalPoints={foucs_motor_uiprop.precision}
+                  precision={foucs_motor_uiprop.precision}
                   state={focus_motor.state}
                   disabled={this.props.motorsDisabled}
                 />

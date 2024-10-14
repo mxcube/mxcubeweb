@@ -54,7 +54,7 @@ function BeamlineSetupContainer(props) {
             step={step}
             motorName={motor.name}
             suffix="mm"
-            decimalPoints="3"
+            precision="3"
             state={motor.state}
             disabled={beamline.motorInputDisable}
           />

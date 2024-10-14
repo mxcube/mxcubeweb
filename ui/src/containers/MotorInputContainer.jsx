@@ -38,7 +38,7 @@ function MotorInputContainer(props) {
       motorName={motorProps.attribute}
       label={`${motorProps.label}:`}
       suffix={motorProps.suffix}
-      decimalPoints={motorProps.precision}
+      precision={motorProps.precision}
       state={motor.state}
       stop={(cmdName) => dispatch(stopBeamlineAction(cmdName))}
       disabled={motorDisabled}

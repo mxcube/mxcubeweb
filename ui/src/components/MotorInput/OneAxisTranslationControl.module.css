@@ -1,3 +1,7 @@
+.root {
+  display: flex;
+}
+
 .input {
   background-color: var(--hw-ready--bg) !important;
   transition: background-color 100ms ease-in;

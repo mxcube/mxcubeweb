@@ -82,11 +82,10 @@ function TwoAxisTranslationControl(props) {
                 motorName={verticalMotorProps.attribute}
                 label={verticalMotorProps.label}
                 suffix={verticalMotorProps.suffix}
-                decimalPoints={verticalMotorProps.precision}
+                precision={verticalMotorProps.precision}
                 state={verticalMotor.state}
                 stop={(cmdName) => dispatch(stopBeamlineAction(cmdName))}
                 disabled={motorsDisabled}
-                inplace
               />
               <MotorInput
                 save={(name, val) => dispatch(setAttribute(name, val))}
@@ -96,11 +95,10 @@ function TwoAxisTranslationControl(props) {
                 motorName={horizontalMotorProps.attribute}
                 label={horizontalMotorProps.label}
                 suffix={horizontalMotorProps.suffix}
-                decimalPoints={horizontalMotorProps.precision}
+                precision={horizontalMotorProps.precision}
                 state={horizontalMotor.state}
                 stop={(cmdName) => dispatch(stopBeamlineAction(cmdName))}
                 disabled={motorsDisabled}
-                inplace
               />
             </Popover.Body>
           </Popover>
