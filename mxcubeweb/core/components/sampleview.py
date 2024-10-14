@@ -438,9 +438,9 @@ class SampleView(ComponentBase):
     def set_centring_method(self, method):
         if method == CENTRING_METHOD.LOOP:
             msg = "Using automatic loop centring when mounting samples"
-            self.app.CENTRING_METHOD = CENTRING_METHOD.LOOP
+            HWR.beamline.queue_manager.centring_method = CENTRING_METHOD.LOOP
         else:
             msg = "Using click centring when mounting samples"
-            self.app.CENTRING_METHOD = CENTRING_METHOD.MANUAL
+            HWR.beamline.queue_manager.centring_method = CENTRING_METHOD.MANUAL
 
         logging.getLogger("user_level_log").info(msg)
