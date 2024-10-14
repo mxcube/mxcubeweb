@@ -9,7 +9,6 @@ import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import DeviceState from '../components/DeviceState/DeviceState';
 import MachInfo from '../components/MachInfo/MachInfo';
 import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
-import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
 
 import { find, filter } from 'lodash';
 
@@ -23,32 +22,27 @@ function BeamlineSetupContainer(props) {
     beamline,
     sampleChanger,
     sampleview,
-    sampleViewActions,
     uiproperties,
     setAttribute,
     stopBeamlineAction,
     sendCommand,
   } = props;
 
-  function handleSetAttribute(name, value) {
-    setAttribute(name, value);
-  }
-
   function renderBeamstopAlignmentOverlay() {
     const { hardwareObjects } = beamline;
     const motorInputList = [];
     let popover = null;
 
-    const motor = hardwareObjects.beamstop_alignemnt_x;
+    const motor = hardwareObjects['diffractometer.beamstop_distance'];
     const step = sampleview.motorSteps.beamstop_distance;
 
-    if (motor !== undefined && motor.state !== 0) {
+    if (motor) {
       motorInputList.push(
-        <div key={`bsao-${motor.name}`} style={{ padding: '0.5em' }}>
-          <p className="motor-name"> Beamstop distance: </p>
+        <div key={`bsao-${motor.name} d-flex`} style={{ padding: '0.5em' }}>
+          <p className="motor-name mb-1"> Beamstop distance:</p>
           <OneAxisTranslationControl
-            save={sampleViewActions.updateMotorPosition}
-            value={motor.position}
+            save={setAttribute}
+            value={motor.value}
             min={motor.limits[0]}
             max={motor.limits[1]}
             step={step}
@@ -92,7 +86,7 @@ function BeamlineSetupContainer(props) {
                     labelText={uiprop.label}
                     pkey={key}
                     value={beamline.hardwareObjects[key].value}
-                    onSave={handleSetAttribute}
+                    onSave={setAttribute}
                     optionsOverlay={renderBeamstopAlignmentOverlay()}
                   />
                 </Nav.Item>,
@@ -108,7 +102,7 @@ function BeamlineSetupContainer(props) {
                     labelText={uiprop.label}
                     pkey={key}
                     value={beamline.hardwareObjects[key].value}
-                    onSave={handleSetAttribute}
+                    onSave={setAttribute}
                   />
                 </Nav.Item>,
               );
@@ -164,7 +158,7 @@ function BeamlineSetupContainer(props) {
             format={uiprop.format}
             precision={uiprop.precision}
             suffix={uiprop.suffix}
-            onSave={(value) => handleSetAttribute(uiprop.attribute, value)}
+            onSave={(value) => setAttribute(uiprop.attribute, value)}
             onCancel={() => stopBeamlineAction(uiprop.attribute)}
           />
         </td>,
@@ -268,7 +262,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
     sendCommand: bindActionCreators(sendCommand, dispatch),
     stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
