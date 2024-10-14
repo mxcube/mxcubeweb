@@ -193,9 +193,6 @@ class MXCUBEApplication:
     # Sample location of sample that are in process of being mounted
     SAMPLE_TO_BE_MOUNTED = ""
 
-    # Method used for sample centring
-    CENTRING_METHOD = queue_entry.CENTRING_METHOD.LOOP
-
     # Look up table for finding the limsID for a corresponding queueID (QueueNode)
     NODE_ID_TO_LIMS_ID = {}
 

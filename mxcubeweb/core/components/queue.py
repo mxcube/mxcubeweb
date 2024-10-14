@@ -266,7 +266,6 @@ class Queue(ComponentBase):
 
         for setting_name in [
             "REMEMBER_PARAMETERS_BETWEEN_SAMPLES",
-            "CENTRING_METHOD",
             "AUTO_ADD_DIFFPLAN",
         ]:
             settings[str_to_camel(setting_name)] = getattr(self.app, setting_name)
