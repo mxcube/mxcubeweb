@@ -1,5 +1,5 @@
 <object class="ExporterNStateMockup">
   <username>beamstop</username>
-  <values>{"OUT": "OFF", "IN": "BEAM"}</values>
+  <values>{"IN": "BEAM", "OUT": "OFF"}</values>
   <use_hwstate>True</use_hwstate>
 </object>

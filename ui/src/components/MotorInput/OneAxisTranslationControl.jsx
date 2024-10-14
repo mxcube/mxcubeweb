@@ -34,7 +34,7 @@ function OneAxisTranslationControl(props) {
         className={`${styles.input} rw-input`}
         style={{
           width: `${Number.parseFloat(precision) + 2}em`,
-          height: '2.1em',
+          height: 'auto',
           display: 'inline-block',
           marginLeft: '5px',
           marginRight: '5px',
