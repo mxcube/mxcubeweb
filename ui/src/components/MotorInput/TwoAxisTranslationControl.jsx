@@ -1,16 +1,14 @@
 import React from 'react';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
-import { HW_STATE, QUEUE_RUNNING } from '../../constants';
-import MotorInput from './MotorInput';
-import './motor.css';
 import { useDispatch, useSelector } from 'react-redux';
+
+import MotorInput from './MotorInput';
+import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import { setAttribute } from '../../actions/beamline';
-import { setMotorStep } from '../../actions/sampleview';
-import { stopBeamlineAction } from '../../actions/beamlineActions';
+import './motor.css';
 
 function TwoAxisTranslationControl(props) {
   const { verticalMotorProps, horizontalMotorProps } = props;
-
   const dispatch = useDispatch();
 
   const verticalMotor = useSelector(
@@ -28,7 +26,7 @@ function TwoAxisTranslationControl(props) {
 
   return (
     <div className="arrow-control mb-3">
-      <p className="motor-name mb-2">Sample alignment:</p>
+      <p className="motor-name mb-2">Sample alignment</p>
 
       <Button
         size="sm"
@@ -62,6 +60,7 @@ function TwoAxisTranslationControl(props) {
       >
         <i className="fas fa-angle-left" />
       </Button>
+
       <OverlayTrigger
         trigger="click"
         rootClose
@@ -70,36 +69,8 @@ function TwoAxisTranslationControl(props) {
           <Popover>
             <Popover.Header as="h3">Sample alignment motors</Popover.Header>
             <Popover.Body>
-              <MotorInput
-                save={(name, val) => dispatch(setAttribute(name, val))}
-                value={verticalMotor.value}
-                saveStep={(val) =>
-                  dispatch(setMotorStep(verticalMotorProps.role, val))
-                }
-                step={verticalMotorProps.step}
-                motorName={verticalMotorProps.attribute}
-                label={verticalMotorProps.label}
-                suffix={verticalMotorProps.suffix}
-                precision={verticalMotorProps.precision}
-                state={verticalMotor.state}
-                stop={(cmdName) => dispatch(stopBeamlineAction(cmdName))}
-                disabled={motorsDisabled}
-              />
-              <MotorInput
-                save={(name, val) => dispatch(setAttribute(name, val))}
-                value={horizontalMotor.value}
-                saveStep={(val) =>
-                  dispatch(setMotorStep(horizontalMotorProps.role, val))
-                }
-                step={horizontalMotorProps.step}
-                motorName={horizontalMotorProps.attribute}
-                label={horizontalMotorProps.label}
-                suffix={horizontalMotorProps.suffix}
-                precision={horizontalMotorProps.precision}
-                state={horizontalMotor.state}
-                stop={(cmdName) => dispatch(stopBeamlineAction(cmdName))}
-                disabled={motorsDisabled}
-              />
+              <MotorInput role="sample_vertical" />
+              <MotorInput role="sample_horizontal" />
             </Popover.Body>
           </Popover>
         }
@@ -112,6 +83,7 @@ function TwoAxisTranslationControl(props) {
           <i className="fas fa-cog" />
         </Button>
       </OverlayTrigger>
+
       <Button
         size="sm"
         variant="outline-secondary"

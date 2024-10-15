@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 
-import MotorInputContainer from '../../containers/MotorInputContainer';
+import MotorInput from '../MotorInput/MotorInput';
 import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
 import styles from './MotorControls.module.css';
 
@@ -26,14 +26,14 @@ function MotorControls() {
 
   if (!verticalMotorProps || !horizontalMotorProps) {
     return motorsProps.map(({ attribute: k, role }) => (
-      <MotorInputContainer key={k} component="sample_view" role={role} />
+      <MotorInput key={k} role={role} />
     ));
   }
 
   return (
     <>
       {motorsProps.slice(0, 3).map(({ attribute: k, role }) => (
-        <MotorInputContainer key={k} component="sample_view" role={role} />
+        <MotorInput key={k} role={role} />
       ))}
 
       <TwoAxisTranslationControl
@@ -59,9 +59,7 @@ function MotorControls() {
       {showAll &&
         motorsProps
           .slice(3)
-          .map(({ attribute: k, role }) => (
-            <MotorInputContainer key={k} component="sample_view" role={role} />
-          ))}
+          .map(({ attribute: k, role }) => <MotorInput key={k} role={role} />)}
     </>
   );
 }

@@ -119,12 +119,12 @@ class SampleViewContainer extends Component {
           <Col sm={2} xxl={1} className={styles.controllers}>
             <DefaultErrorBoundary>
               <div className="motor-input-container">
-                <p className="motor-name">Phase Control:</p>
+                <p className="motor-name">Phase Control</p>
                 <PhaseInput />
               </div>
 
               <div className="motor-input-container">
-                <p className="motor-name">Beam size:</p>
+                <p className="motor-name">Beam size</p>
                 <ApertureInput />
               </div>
 

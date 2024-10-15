@@ -155,7 +155,6 @@ export default class SampleControls extends React.Component {
       (c) => c.role === 'zoom',
     );
 
-    const focusMotor = this.props.hardwareObjects[focusMotorProps.attribute];
     const zoomMotor = this.props.hardwareObjects[zoomMotorProps.attribute];
 
     return (
@@ -206,18 +205,7 @@ export default class SampleControls extends React.Component {
             placement="bottom"
             overlay={
               <div className={styles.overlay}>
-                <OneAxisTranslationControl
-                  save={this.props.setAttribute}
-                  value={focusMotor.value}
-                  min={focusMotor.limits[0]}
-                  max={focusMotor.limits[1]}
-                  step={focusMotorProps.step}
-                  motorName={focusMotorProps.attribute}
-                  suffix={focusMotorProps.suffix}
-                  precision={focusMotorProps.precision}
-                  state={focusMotor.state}
-                  disabled={this.props.motorsDisabled}
-                />
+                <OneAxisTranslationControl motorProps={focusMotorProps} />
               </div>
             }
           >
