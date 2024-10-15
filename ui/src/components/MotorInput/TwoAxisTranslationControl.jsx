@@ -5,7 +5,7 @@ import MotorInput from './MotorInput';
 import './motor.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { setAttribute } from '../../actions/beamline';
-import { setStepSize } from '../../actions/sampleview';
+import { setMotorStep } from '../../actions/sampleview';
 import { stopBeamlineAction } from '../../actions/beamlineActions';
 
 function TwoAxisTranslationControl(props) {
@@ -18,10 +18,6 @@ function TwoAxisTranslationControl(props) {
   );
   const horizontalMotor = useSelector(
     (state) => state.beamline.hardwareObjects[horizontalMotorProps.attribute],
-  );
-
-  const { sample_verticalStep, sample_horizontalStep } = useSelector(
-    (state) => state.sampleview.motorSteps,
   );
 
   const motorsDisabled = useSelector(
@@ -41,7 +37,7 @@ function TwoAxisTranslationControl(props) {
           dispatch(
             setAttribute(
               verticalMotorProps.attribute,
-              verticalMotor.value + sample_verticalStep,
+              verticalMotor.value + verticalMotorProps.step,
             ),
           )
         }
@@ -59,7 +55,7 @@ function TwoAxisTranslationControl(props) {
           dispatch(
             setAttribute(
               horizontalMotorProps.attribute,
-              horizontalMotor.value - sample_horizontalStep,
+              horizontalMotor.value - horizontalMotorProps.step,
             ),
           )
         }
@@ -77,7 +73,9 @@ function TwoAxisTranslationControl(props) {
               <MotorInput
                 save={(name, val) => dispatch(setAttribute(name, val))}
                 value={verticalMotor.value}
-                saveStep={(name, val) => dispatch(setStepSize(name, val))}
+                saveStep={(val) =>
+                  dispatch(setMotorStep(verticalMotorProps.role, val))
+                }
                 step={verticalMotorProps.step}
                 motorName={verticalMotorProps.attribute}
                 label={verticalMotorProps.label}
@@ -90,7 +88,9 @@ function TwoAxisTranslationControl(props) {
               <MotorInput
                 save={(name, val) => dispatch(setAttribute(name, val))}
                 value={horizontalMotor.value}
-                saveStep={(name, val) => dispatch(setStepSize(name, val))}
+                saveStep={(val) =>
+                  dispatch(setMotorStep(horizontalMotorProps.role, val))
+                }
                 step={horizontalMotorProps.step}
                 motorName={horizontalMotorProps.attribute}
                 label={horizontalMotorProps.label}
@@ -121,7 +121,7 @@ function TwoAxisTranslationControl(props) {
           dispatch(
             setAttribute(
               horizontalMotorProps.attribute,
-              horizontalMotor.value + sample_horizontalStep,
+              horizontalMotor.value + horizontalMotorProps.step,
             ),
           )
         }
@@ -137,7 +137,7 @@ function TwoAxisTranslationControl(props) {
           dispatch(
             setAttribute(
               verticalMotorProps.attribute,
-              verticalMotor.value - sample_verticalStep,
+              verticalMotor.value - verticalMotorProps.step,
             ),
           )
         }

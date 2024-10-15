@@ -5,7 +5,7 @@ import { QUEUE_RUNNING } from '../constants';
 import MotorInput from '../components/MotorInput/MotorInput';
 import { stopBeamlineAction } from '../actions/beamlineActions';
 import { setAttribute } from '../actions/beamline';
-import { setStepSize } from '../actions/sampleview';
+import { setMotorStep } from '../actions/sampleview';
 
 function MotorInputContainer(props) {
   const { component, role } = props;
@@ -32,7 +32,7 @@ function MotorInputContainer(props) {
   return (
     <MotorInput
       save={(name, value) => dispatch(setAttribute(name, value))}
-      saveStep={(name, value) => dispatch(setStepSize(name, value))}
+      saveStep={(value) => dispatch(setMotorStep(motorProps.role, value))}
       step={motorProps.step}
       value={motor.value}
       motorName={motorProps.attribute}

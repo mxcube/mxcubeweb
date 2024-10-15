@@ -528,58 +528,36 @@ export default class SampleImage extends React.Component {
   wheel(e) {
     e.preventDefault();
     e.stopPropagation();
-    const { sampleViewActions, motorSteps, hardwareObjects } = this.props;
-    const { updateMotorPosition } = sampleViewActions;
+    const { hardwareObjects, uiproperties, setAttribute } = this.props;
+    const { components } = uiproperties.sample_view;
     const keyPressed = this._keyPressed;
 
-    const phi = hardwareObjects['diffractometer.phi'];
-    const focus = hardwareObjects['diffractometer.focus'];
-    const zoom = hardwareObjects['diffractometer.zoom'];
+    const omegaProps = components.find((c) => c.role === 'omega');
+    const focusProps = components.find((c) => c.role === 'focus');
+    const zoomProps = components.find((c) => c.role === 'zoom');
 
-    if (keyPressed === 'r' && phi.state === HW_STATE.READY) {
-      // then we rotate phi axis by the step size defined in its box
-      if (e.deltaX > 0 || e.deltaY > 0) {
-        // zoom in
-        updateMotorPosition(
-          'Phi',
-          phi.value + Number.parseInt(motorSteps.phiStep, 10),
-        );
-      } else if (e.deltaX < 0 || e.deltaY < 0) {
-        // zoom out
-        updateMotorPosition(
-          'Phi',
-          phi.value - Number.parseInt(motorSteps.phiStep, 10),
-        );
+    const omega = hardwareObjects[omegaProps.attribute];
+    const focus = hardwareObjects[focusProps.attribute];
+    const zoom = hardwareObjects[zoomProps.attribute];
+
+    if (keyPressed === 'r' && omega.state === HW_STATE.READY) {
+      if (e.deltaY > 0) {
+        setAttribute(omegaProps.attribute, omega.value + omegaProps.step);
+      } else if (e.deltaY < 0) {
+        setAttribute(omegaProps.attribute, omega.value - omegaProps.step);
       }
     } else if (keyPressed === 'f' && focus.state === HW_STATE.READY) {
       if (e.deltaY > 0) {
-        // Focus in
-        updateMotorPosition(
-          'Focus',
-          focus.value + Number.parseFloat(motorSteps.focusStep, 10),
-        );
+        setAttribute(focusProps.attribute, focus.value + focusProps.step);
       } else if (e.deltaY < 0) {
-        // Focus out
-        updateMotorPosition(
-          'Focus',
-          focus.value - Number.parseFloat(motorSteps.focusStep, 10),
-        );
+        setAttribute(focusProps.attribute, focus.value - focusProps.step);
       }
     } else if (keyPressed === 'z' && zoom.state === HW_STATE.READY) {
-      // in this case zooming
       const index = zoom.commands.indexOf(zoom.value);
-      if (e.deltaY > 0 && index < zoom.commands.length) {
-        // zoom in
-        this.props.setAttribute(
-          'diffractometer.zoom',
-          zoom.commands[index + 1],
-        );
+      if (e.deltaY > 0 && index < zoom.commands.length - 1) {
+        setAttribute(zoomProps.attribute, zoom.commands[index + 1]);
       } else if (e.deltaY < 0 && index > 0) {
-        // zoom out
-        this.props.setAttribute(
-          'diffractometer.zoom',
-          zoom.commands[index - 1],
-        );
+        setAttribute(zoomProps.attribute, zoom.commands[index - 1]);
       }
     }
   }

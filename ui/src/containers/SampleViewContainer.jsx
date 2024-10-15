@@ -62,7 +62,7 @@ class SampleViewContainer extends Component {
       return null;
     }
 
-    const { sourceScale, imageRatio, motorSteps } = this.props.sampleViewState;
+    const { sourceScale, imageRatio } = this.props.sampleViewState;
     const { currentSampleID } = this.props;
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
@@ -201,7 +201,6 @@ class SampleViewContainer extends Component {
                 {...this.props.sampleViewState}
                 uiproperties={uiproperties}
                 hardwareObjects={this.props.hardwareObjects}
-                steps={motorSteps}
                 imageRatio={imageRatio * sourceScale}
                 contextMenuVisible={this.props.contextMenu.show}
                 shapes={this.props.shapes}
