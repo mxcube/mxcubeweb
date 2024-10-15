@@ -1991,6 +1991,7 @@ packages:
   eslint@8.42.0:
     resolution: {integrity: sha512-ulg9Ms6E1WPf67PHaEY4/6E2tEn5/f7FXGzr3t9cBMugOmf1INYvuUwwh1aXQN4MfJ6a5K2iNwP3w4AColvI9A==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
+    deprecated: This version is no longer supported. Please see https://eslint.org/version-support for other options.
     hasBin: true
 
   espree@9.5.2:
@@ -2957,8 +2958,8 @@ packages:
     resolution: {integrity: sha512-GcRz3AWTqSUphY3vsUqQSFMbgR38a4Lh3GWlHRh/7MRwz8mcu9n2IO7HOh+bXHrR9kOPDl5RNCaEsrneb+xhHQ==}
     hasBin: true
 
-  markdown-to-jsx@7.3.2:
-    resolution: {integrity: sha512-B+28F5ucp83aQm+OxNrPkS8z0tMKaeHiy0lHJs3LqCyDQFtWuenaIrkaVTgAm1pf1AU85LXltva86hlaT17i8Q==}
+  markdown-to-jsx@7.5.0:
+    resolution: {integrity: sha512-RrBNcMHiFPcz/iqIj0n3wclzHXjwS7mzjBNWecKKVhNTIxQepIix6Il/wZCn2Cg5Y1ow2Qi84+eJrryFRWBEWw==}
     engines: {node: '>= 10'}
     peerDependencies:
       react: '>= 0.14.0'
@@ -4886,7 +4887,7 @@ snapshots:
       '@rjsf/utils': 5.13.1(react@17.0.2)
       lodash: 4.17.21
       lodash-es: 4.17.21
-      markdown-to-jsx: 7.3.2(react@17.0.2)
+      markdown-to-jsx: 7.5.0(react@17.0.2)
       nanoid: 3.3.6
       prop-types: 15.8.1
       react: 17.0.2
@@ -7621,7 +7622,7 @@ snapshots:
       mdurl: 1.0.1
       uc.micro: 1.0.6
 
-  markdown-to-jsx@7.3.2(react@17.0.2):
+  markdown-to-jsx@7.5.0(react@17.0.2):
     dependencies:
       react: 17.0.2
 
