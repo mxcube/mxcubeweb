@@ -68,9 +68,7 @@ function MotorInput(props) {
                 type="number"
                 defaultValue={step}
                 disabled={disabled}
-                onChange={(evt) =>
-                  saveStep(motorName.toLowerCase(), Number(evt.target.value))
-                }
+                onChange={(evt) => saveStep(Number(evt.target.value))}
               />
               <span className={styles.unit}>{suffix}</span>
             </>

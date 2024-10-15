@@ -14,7 +14,6 @@ import {
   sendStartClickCentring,
   sendAbortCentring,
   sendMoveToPoint,
-  sendUpdateMotorPosition,
 } from '../api/sampleview';
 
 export function setMotorMoving(name, status) {
@@ -41,8 +40,8 @@ export function setAperture(size) {
   return { type: 'SET_APERTURE', size };
 }
 
-export function setStepSize(name, value) {
-  return { type: 'SET_STEP_SIZE', componentName: 'sample_view', name, value };
+export function setMotorStep(role, value) {
+  return { type: 'SET_MOTOR_STEP', role, value };
 }
 
 // eslint-disable-next-line unicorn/no-object-as-default-parameter
@@ -274,18 +273,6 @@ export function startClickCentring() {
       dispatch(
         showErrorPanel(true, 'There is no sample mounted, cannot center.'),
       );
-    }
-  };
-}
-
-export function updateMotorPosition(motorName, value) {
-  return async (dispatch) => {
-    try {
-      await sendUpdateMotorPosition(motorName, value);
-    } catch (error) {
-      if (error.status === 406) {
-        dispatch(showErrorPanel(true, error.response.headers.get('msg')));
-      }
     }
   };
 }

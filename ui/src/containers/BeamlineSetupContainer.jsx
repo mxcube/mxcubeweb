@@ -21,7 +21,6 @@ function BeamlineSetupContainer(props) {
   const {
     beamline,
     sampleChanger,
-    sampleview,
     uiproperties,
     setAttribute,
     stopBeamlineAction,
@@ -34,7 +33,6 @@ function BeamlineSetupContainer(props) {
     let popover = null;
 
     const motor = hardwareObjects['diffractometer.beamstop_distance'];
-    const step = sampleview.motorSteps.beamstop_distance;
 
     if (motor) {
       motorInputList.push(
@@ -45,7 +43,7 @@ function BeamlineSetupContainer(props) {
             value={motor.value}
             min={motor.limits[0]}
             max={motor.limits[1]}
-            step={step}
+            step={0.1} // hardcoded for now: https://github.com/mxcube/mxcubeweb/pull/1448#discussion_r1800643857
             motorName={motor.name}
             suffix="mm"
             precision="3"
@@ -255,7 +253,6 @@ function mapStateToProps(state) {
   return {
     uiproperties: state.uiproperties,
     beamline: state.beamline,
-    sampleview: state.sampleview,
     sampleChanger: state.sampleChanger,
   };
 }

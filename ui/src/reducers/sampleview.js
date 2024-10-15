@@ -15,19 +15,6 @@ const INITIAL_STATE = {
   imageRatio: 0,
   pixelsPerMm: [0, 0],
   sourceScale: 1,
-  motorSteps: {
-    focusStep: 0.01,
-    phiStep: 90,
-    phiyStep: 0.1,
-    phizStep: 0.1,
-    sampxStep: 0.1,
-    sampyStep: 0.1,
-    kappaStep: 0.1,
-    kappaphiStep: 0.1,
-    sample_verticalStep: 0.1,
-    sample_horizontalStep: 0.1,
-    beamstop_distance: 0.01,
-  },
   apertureList: [],
   currentAperture: 0,
   currentPhase: '',
@@ -130,12 +117,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
     }
     case 'SET_CURRENT_PHASE': {
       return { ...state, currentPhase: action.phase };
-    }
-    case 'SET_STEP_SIZE': {
-      return {
-        ...state,
-        motorSteps: { ...state.motorSteps, [action.name]: action.value },
-      };
     }
     case 'SHOW_VIDEO_MESSAGE_OVERLAY': {
       return {

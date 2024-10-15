@@ -376,53 +376,6 @@ class SampleView(ComponentBase):
                 except Exception:
                     raise
 
-    def move_zoom_motor(self, pos):
-        zoom_motor = HWR.beamline.diffractometer.get_object_by_role("zoom")
-        if zoom_motor.get_state() != HardwareObjectState.READY:
-            return (
-                "motor is already moving",
-                406,
-                {
-                    "Content-Type": "application/json",
-                    "msg": "zoom already moving",
-                },
-            )
-
-        if isinstance(zoom_motor, AbstractNState):
-            zoom_motor.set_value(zoom_motor.value_to_enum(pos))
-        else:
-            zoom_motor.set_value(pos)
-
-        scales = HWR.beamline.diffractometer.get_pixels_per_mm()
-        return {"pixelsPerMm": [scales[0], scales[1]]}
-
-    def back_light_on(self):
-        motor = HWR.beamline.diffractometer.get_object_by_role("BackLightSwitch")
-        motor.set_value(motor.VALUES.IN)
-
-    def back_light_off(self):
-        motor = HWR.beamline.diffractometer.get_object_by_role("BackLightSwitch")
-        motor.set_value(motor.VALUES.OUT)
-
-    def front_light_on(self):
-        motor = HWR.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
-        motor.set_value(motor.VALUES.IN)
-
-    def front_light_off(self):
-        motor = HWR.beamline.diffractometer.get_object_by_role("FrontLightSwitch")
-        motor.set_value(motor.VALUES.OUT)
-
-    def move_motor(self, motid, newpos):
-        motor = HWR.beamline.diffractometer.get_object_by_role(motid.lower())
-
-        if newpos == "stop":
-            motor.stop()
-            return True
-        else:
-            motor.set_value(float(newpos))
-
-            return True
-
     def start_auto_centring(self):
         """
         Start automatic (lucid) centring procedure.

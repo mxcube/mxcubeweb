@@ -9,7 +9,6 @@ import 'fabric';
 import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
 import { HW_STATE } from '../../constants';
 
-import { find } from 'lodash';
 import styles from './SampleControls.module.css';
 
 const { fabric } = window;
@@ -148,23 +147,16 @@ export default class SampleControls extends React.Component {
   render() {
     const { hardwareObjects } = this.props;
 
-    const foucs_motor_uiprop = find(
-      this.props.uiproperties.sample_view.components,
-      {
-        role: 'focus',
-      },
+    const focusMotorProps = this.props.uiproperties.sample_view.components.find(
+      (c) => c.role === 'focus',
     );
 
-    const zoom_motor_uiprop = find(
-      this.props.uiproperties.sample_view.components,
-      {
-        role: 'zoom',
-      },
+    const zoomMotorProps = this.props.uiproperties.sample_view.components.find(
+      (c) => c.role === 'zoom',
     );
 
-    const focus_motor =
-      this.props.hardwareObjects[foucs_motor_uiprop.attribute];
-    const zoom_motor = this.props.hardwareObjects[zoom_motor_uiprop.attribute];
+    const focusMotor = this.props.hardwareObjects[focusMotorProps.attribute];
+    const zoomMotor = this.props.hardwareObjects[zoomMotorProps.attribute];
 
     return (
       <div className={styles.controls}>
@@ -216,14 +208,14 @@ export default class SampleControls extends React.Component {
               <div className={styles.overlay}>
                 <OneAxisTranslationControl
                   save={this.props.setAttribute}
-                  value={focus_motor.value}
-                  min={focus_motor.limits[0]}
-                  max={focus_motor.limits[1]}
-                  step={this.props.steps.focusStep}
-                  motorName={foucs_motor_uiprop.attribute}
-                  suffix={foucs_motor_uiprop.suffix}
-                  precision={foucs_motor_uiprop.precision}
-                  state={focus_motor.state}
+                  value={focusMotor.value}
+                  min={focusMotor.limits[0]}
+                  max={focusMotor.limits[1]}
+                  step={focusMotorProps.step}
+                  motorName={focusMotorProps.attribute}
+                  suffix={focusMotorProps.suffix}
+                  precision={focusMotorProps.precision}
+                  state={focusMotor.state}
                   disabled={this.props.motorsDisabled}
                 />
               </div>
@@ -251,19 +243,19 @@ export default class SampleControls extends React.Component {
                   className={styles.zoomSlider}
                   type="range"
                   min={0}
-                  max={zoom_motor.commands.length - 1}
-                  value={zoom_motor.commands.indexOf(zoom_motor.value)}
-                  disabled={zoom_motor.state !== HW_STATE.READY}
+                  max={zoomMotor.commands.length - 1}
+                  value={zoomMotor.commands.indexOf(zoomMotor.value)}
+                  disabled={zoomMotor.state !== HW_STATE.READY}
                   onMouseUp={(e) => {
                     this.props.setAttribute(
                       'diffractometer.zoom',
-                      zoom_motor.commands[Number.parseFloat(e.target.value)],
+                      zoomMotor.commands[Number.parseFloat(e.target.value)],
                     );
                   }}
                   onChange={(e) => {
                     this.props.setBeamlineAttribute(
                       'diffractometer.zoom',
-                      zoom_motor.commands[Number.parseFloat(e.target.value)],
+                      zoomMotor.commands[Number.parseFloat(e.target.value)],
                     );
                   }}
                   list="volsettings"
@@ -271,7 +263,7 @@ export default class SampleControls extends React.Component {
                 />
 
                 <datalist id="volsettings">
-                  {zoom_motor.commands.map((cmd, index) => (
+                  {zoomMotor.commands.map((cmd, index) => (
                     <option key={cmd} value={index} />
                   ))}
                 </datalist>
@@ -286,7 +278,7 @@ export default class SampleControls extends React.Component {
             >
               <i className={`${styles.controlIcon} fas fa-search`} />
               <span className={styles.controlLabel}>
-                Zoom ({zoom_motor.value}){' '}
+                Zoom ({zoomMotor.value}){' '}
               </span>
             </Button>
           </OverlayTrigger>
