@@ -2,6 +2,8 @@ import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Navbar, Nav, Table, Popover } from 'react-bootstrap';
+import { find, filter } from 'lodash';
+
 import BeamlineAttribute from '../components/BeamlineAttribute/BeamlineAttribute';
 import BeamlineActions from './BeamlineActionsContainer';
 import BeamlineCamera from '../components/BeamlineCamera/BeamlineCamera';
@@ -10,10 +12,7 @@ import DeviceState from '../components/DeviceState/DeviceState';
 import MachInfo from '../components/MachInfo/MachInfo';
 import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
 
-import { find, filter } from 'lodash';
-
 import { setAttribute } from '../actions/beamline';
-
 import { sendCommand } from '../actions/sampleChanger';
 import { stopBeamlineAction } from '../actions/beamlineActions';
 
@@ -37,18 +36,15 @@ function BeamlineSetupContainer(props) {
     if (motor) {
       motorInputList.push(
         <div key={`bsao-${motor.name} d-flex`} style={{ padding: '0.5em' }}>
-          <p className="motor-name mb-1"> Beamstop distance:</p>
+          <p className="motor-name mb-1"> Beamstop distance</p>
           <OneAxisTranslationControl
-            save={setAttribute}
-            value={motor.value}
-            min={motor.limits[0]}
-            max={motor.limits[1]}
-            step={0.1} // hardcoded for now: https://github.com/mxcube/mxcubeweb/pull/1448#discussion_r1800643857
-            motorName={motor.name}
-            suffix="mm"
-            precision="3"
-            state={motor.state}
-            disabled={beamline.motorInputDisable}
+            // No `uiproperties` object defined for beamstop distance
+            // https://github.com/mxcube/mxcubeweb/pull/1448#discussion_r1800643857
+            motorProps={{
+              attribute: motor.name,
+              step: 0.1,
+              precision: 3,
+            }}
           />
         </div>,
       );

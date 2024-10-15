@@ -7,7 +7,7 @@ import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 import 'fabric';
 import './ssxchipcontrol.css';
 
-import MotorInputContainer from '../../containers/MotorInputContainer';
+import MotorInput from '../MotorInput/MotorInput';
 
 const { fabric } = window;
 
@@ -589,16 +589,10 @@ export default class SSXChip extends React.Component {
                   <h5>Current position:</h5>
                   <Row>
                     <Col className="col-sm-auto pe-0">
-                      <MotorInputContainer
-                        component="sample_view"
-                        role="sample_vertical"
-                      />
+                      <MotorInput role="sample_vertical" />
                     </Col>
                     <Col className="col-sm-auto pe-0">
-                      <MotorInputContainer
-                        component="sample_view"
-                        role="sample_horizontal"
-                      />
+                      <MotorInput role="sample_horizontal" />
                     </Col>
                   </Row>
                 </div>

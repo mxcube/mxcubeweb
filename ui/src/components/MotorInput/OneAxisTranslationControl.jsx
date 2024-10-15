@@ -1,14 +1,30 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button } from 'react-bootstrap';
 
 import BaseMotorInput from './BaseMotorInput';
-import { HW_STATE } from '../../constants';
+import { HW_STATE, QUEUE_RUNNING } from '../../constants';
+import { setAttribute } from '../../actions/beamline';
+
 import './motor.css';
 import styles from './OneAxisTranslationControl.module.css';
 
 function OneAxisTranslationControl(props) {
-  const { motorName, value, state, step, disabled, precision, min, max, save } =
-    props;
+  const { attribute, step, precision } = props.motorProps;
+  const dispatch = useDispatch();
+
+  const motor = useSelector(
+    (state) => state.beamline.hardwareObjects[attribute],
+  );
+
+  const motorsDisabled = useSelector(
+    (state) =>
+      state.beamline.motorInputDisable ||
+      state.queue.queueStatus === QUEUE_RUNNING,
+  );
+
+  const { value, state, limits } = motor;
+  const disabled = motorsDisabled || state !== HW_STATE.READY;
 
   return (
     <div className={`${styles.root} arrow-control`}>
@@ -16,16 +32,16 @@ function OneAxisTranslationControl(props) {
         variant="outline-secondary"
         style={{ marginRight: '2px' }}
         className="arrow-small arrow-left"
-        disabled={state !== HW_STATE.READY || disabled}
-        onClick={() => save(motorName, value - 10 * step)}
+        disabled={disabled}
+        onClick={() => dispatch(setAttribute(attribute, value - 10 * step))}
       >
         <i className="fas fa-angle-double-left" />
       </Button>
       <Button
         variant="outline-secondary"
         className="arrow-small arrow-left"
-        disabled={state !== HW_STATE.READY || disabled}
-        onClick={() => save(motorName, value - step)}
+        disabled={disabled}
+        onClick={() => dispatch(setAttribute(attribute, value - step))}
       >
         <i className="fas fa-angle-left" />
       </Button>
@@ -33,7 +49,7 @@ function OneAxisTranslationControl(props) {
       <BaseMotorInput
         className={`${styles.input} rw-input`}
         style={{
-          width: `${Number.parseFloat(precision) + 2}em`,
+          width: `${precision + 2}em`,
           height: 'auto',
           display: 'inline-block',
           marginLeft: '5px',
@@ -43,18 +59,18 @@ function OneAxisTranslationControl(props) {
         state={state}
         precision={precision}
         step={step}
-        max={max}
-        min={min}
-        testId={`MotorInput_value_${motorName}`}
+        min={limits[0]}
+        max={limits[1]}
+        testId={`MotorInput_value_${attribute}`}
         disabled={disabled}
-        onChange={(val) => save(motorName, val)}
+        onChange={(val) => dispatch(setAttribute(attribute, val))}
       />
 
       <Button
         variant="outline-secondary"
         className="arrow-small arrow-right"
-        disabled={state !== HW_STATE.READY || disabled}
-        onClick={() => save(motorName, value + step)}
+        disabled={disabled}
+        onClick={() => dispatch(setAttribute(attribute, value + step))}
       >
         <i className="fas fa-angle-right" />
       </Button>
@@ -62,8 +78,8 @@ function OneAxisTranslationControl(props) {
         variant="outline-secondary"
         style={{ marginLeft: '2px' }}
         className="arrow-small arrow-right"
-        disabled={state !== HW_STATE.READY || disabled}
-        onClick={() => save(motorName, value + 10 * step)}
+        disabled={disabled}
+        onClick={() => dispatch(setAttribute(attribute, value + 10 * step))}
       >
         <i className="fas fa-angle-double-right" />
       </Button>
