@@ -1,12 +1,10 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React, { useEffect, useState } from 'react';
-import { Form } from 'react-bootstrap';
 import { HW_STATE } from '../../constants';
 
 function BaseMotorInput(props) {
   const {
     className,
-    style,
     value,
     state,
     precision,
@@ -63,9 +61,8 @@ function BaseMotorInput(props) {
 
   return (
     <form className="d-flex" noValidate onSubmit={handleSubmit}>
-      <Form.Control
+      <input
         className={className}
-        style={style}
         type="number"
         value={inputValue}
         step={step}

@@ -5,8 +5,6 @@ import { Button } from 'react-bootstrap';
 import BaseMotorInput from './BaseMotorInput';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import { setAttribute } from '../../actions/beamline';
-
-import './motor.css';
 import styles from './OneAxisTranslationControl.module.css';
 
 function OneAxisTranslationControl(props) {
@@ -27,34 +25,26 @@ function OneAxisTranslationControl(props) {
   const disabled = motorsDisabled || state !== HW_STATE.READY;
 
   return (
-    <div className={`${styles.root} arrow-control`}>
+    <div className={styles.root}>
       <Button
+        className={styles.btn}
         variant="outline-secondary"
-        style={{ marginRight: '2px' }}
-        className="arrow-small arrow-left"
         disabled={disabled}
         onClick={() => dispatch(setAttribute(attribute, value - 10 * step))}
       >
-        <i className="fas fa-angle-double-left" />
+        <i className={`${styles.btnIcon} fas fa-angle-double-left`} />
       </Button>
       <Button
+        className={styles.btn}
         variant="outline-secondary"
-        className="arrow-small arrow-left"
         disabled={disabled}
         onClick={() => dispatch(setAttribute(attribute, value - step))}
       >
-        <i className="fas fa-angle-left" />
+        <i className={`${styles.btnIcon} fas fa-angle-left`} />
       </Button>
 
       <BaseMotorInput
-        className={`${styles.input} rw-input`}
-        style={{
-          width: `${precision + 2}em`,
-          height: 'auto',
-          display: 'inline-block',
-          marginLeft: '5px',
-          marginRight: '5px',
-        }}
+        className={styles.input}
         value={value}
         state={state}
         precision={precision}
@@ -67,21 +57,20 @@ function OneAxisTranslationControl(props) {
       />
 
       <Button
+        className={styles.btn}
         variant="outline-secondary"
-        className="arrow-small arrow-right"
         disabled={disabled}
         onClick={() => dispatch(setAttribute(attribute, value + step))}
       >
-        <i className="fas fa-angle-right" />
+        <i className={`${styles.btnIcon} fas fa-angle-right`} />
       </Button>
       <Button
+        className={styles.btn}
         variant="outline-secondary"
-        style={{ marginLeft: '2px' }}
-        className="arrow-small arrow-right"
         disabled={disabled}
         onClick={() => dispatch(setAttribute(attribute, value + 10 * step))}
       >
-        <i className="fas fa-angle-double-right" />
+        <i className={`${styles.btnIcon} fas fa-angle-double-right`} />
       </Button>
     </div>
   );

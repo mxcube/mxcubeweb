@@ -151,10 +151,6 @@
   max-width: 160px !important;
 }
 
-button[disabled] {
-  opacity: 0.2;
-}
-
 .samples-grid-table-item-tasks {
   /* width: fit-content; */
   height: 26px;
