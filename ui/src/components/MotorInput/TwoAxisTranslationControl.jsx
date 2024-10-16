@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import MotorInput from './MotorInput';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import { setAttribute } from '../../actions/beamline';
-import './motor.css';
+import styles from './TwoAxisTranslationControl.module.css';
 
 function TwoAxisTranslationControl(props) {
   const { verticalMotorProps, horizontalMotorProps } = props;
@@ -25,11 +25,9 @@ function TwoAxisTranslationControl(props) {
   );
 
   return (
-    <div className="arrow-control mb-3">
-      <p className="motor-name mb-2">Sample alignment</p>
-
+    <div className={styles.root}>
       <Button
-        size="sm"
+        className={styles.btn}
         variant="outline-secondary"
         onClick={() =>
           dispatch(
@@ -40,14 +38,12 @@ function TwoAxisTranslationControl(props) {
           )
         }
         disabled={motorsDisabled || verticalMotor.state !== HW_STATE.READY}
-        className="arrow arrow-up"
       >
-        <i className="fas fa-angle-up" />
+        <i className={`${styles.btnIcon} fas fa-angle-up`} />
       </Button>
       <Button
-        size="sm"
+        className={styles.btn}
         variant="outline-secondary"
-        className="arrow arrow-left"
         disabled={motorsDisabled || horizontalMotor.state !== HW_STATE.READY}
         onClick={() =>
           dispatch(
@@ -58,7 +54,7 @@ function TwoAxisTranslationControl(props) {
           )
         }
       >
-        <i className="fas fa-angle-left" />
+        <i className={`${styles.btnIcon} fas fa-angle-left`} />
       </Button>
 
       <OverlayTrigger
@@ -75,19 +71,14 @@ function TwoAxisTranslationControl(props) {
           </Popover>
         }
       >
-        <Button
-          size="sm"
-          variant="outline-secondary"
-          className="arrow arrow-settings"
-        >
-          <i className="fas fa-cog" />
+        <Button className={styles.btn} variant="outline-secondary">
+          <i className={`${styles.btnIcon} fas fa-cog`} />
         </Button>
       </OverlayTrigger>
 
       <Button
-        size="sm"
+        className={styles.btn}
         variant="outline-secondary"
-        className="arrow arrow-right"
         disabled={motorsDisabled || horizontalMotor.state !== HW_STATE.READY}
         onClick={() =>
           dispatch(
@@ -98,12 +89,11 @@ function TwoAxisTranslationControl(props) {
           )
         }
       >
-        <i className="fas fa-angle-right" />
+        <i className={`${styles.btnIcon} fas fa-angle-right`} />
       </Button>
       <Button
-        size="sm"
+        className={styles.btn}
         variant="outline-secondary"
-        className="arrow arrow-down"
         disabled={motorsDisabled || verticalMotor.state !== HW_STATE.READY}
         onClick={() =>
           dispatch(
@@ -114,7 +104,7 @@ function TwoAxisTranslationControl(props) {
           )
         }
       >
-        <i className="fas fa-angle-down" />
+        <i className={`${styles.btnIcon} fas fa-angle-down`} />
       </Button>
     </div>
   );

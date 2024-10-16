@@ -9,7 +9,6 @@ import { setAttribute } from '../../actions/beamline';
 import { setMotorStep } from '../../actions/sampleview';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import styles from './MotorInput.module.css';
-import './motor.css';
 
 function MotorInput(props) {
   const { role } = props;
@@ -37,42 +36,37 @@ function MotorInput(props) {
   }
 
   return (
-    <div className="motor-input-container">
-      <p className="motor-name">{label}</p>
+    <div className={styles.container}>
+      <p className={styles.label}>{label}</p>
       <div className={styles.wrapper}>
-        <div
-          className="rw-widget rw-numberpicker rw-widget-no-right-border"
-          style={{ width: '90px', display: 'inline-block' }}
-        >
-          <span className="rw-select">
-            <button
-              type="button"
-              className="rw-btn"
-              disabled={!isReady || disabled}
-              onClick={() => dispatch(setAttribute(attribute, value + step))}
-            >
-              <i aria-hidden="true" className="rw-i fas fa-caret-up" />
-            </button>
-            <button
-              type="button"
-              className="rw-btn"
-              disabled={!isReady || disabled}
-              onClick={() => dispatch(setAttribute(attribute, value - step))}
-            >
-              <i aria-hidden="true" className="rw-i fas fa-caret-down" />
-            </button>
-          </span>
+        <BaseMotorInput
+          className={styles.valueInput}
+          value={value}
+          state={state}
+          precision={precision}
+          step={step}
+          testId={`MotorInput_value_${attribute}`}
+          disabled={disabled}
+          onChange={(val) => dispatch(setAttribute(attribute, val))}
+        />
 
-          <BaseMotorInput
-            className={`${styles.valueInput} rw-input`}
-            value={value}
-            state={state}
-            precision={precision}
-            step={step}
-            testId={`MotorInput_value_${attribute}`}
-            disabled={disabled}
-            onChange={(val) => dispatch(setAttribute(attribute, val))}
-          />
+        <div className={styles.arrows}>
+          <button
+            type="button"
+            className={styles.arrowBtn}
+            disabled={!isReady || disabled}
+            onClick={() => dispatch(setAttribute(attribute, value + step))}
+          >
+            <i aria-hidden="true" className="fas fa-caret-up" />
+          </button>
+          <button
+            type="button"
+            className={styles.arrowBtn}
+            disabled={!isReady || disabled}
+            onClick={() => dispatch(setAttribute(attribute, value - step))}
+          >
+            <i aria-hidden="true" className="fas fa-caret-down" />
+          </button>
         </div>
 
         {isReady ? (
@@ -90,7 +84,7 @@ function MotorInput(props) {
           </>
         ) : (
           <Button
-            className="btn-xs motor-abort rw-widget-no-left-border"
+            className={styles.abortBtn}
             variant="danger"
             onClick={() => dispatch(stopBeamlineAction(attribute))}
           >

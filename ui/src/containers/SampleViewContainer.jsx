@@ -36,6 +36,7 @@ import {
 import { find } from 'lodash';
 
 import styles from './SampleViewContainer.module.css';
+import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
 
 class SampleViewContainer extends Component {
   constructor(props) {
@@ -118,13 +119,13 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={2} xxl={1} className={styles.controllers}>
             <DefaultErrorBoundary>
-              <div className="motor-input-container">
-                <p className="motor-name">Phase Control</p>
+              <div className={motorInputStyles.container}>
+                <p className={motorInputStyles.label}>Phase Control</p>
                 <PhaseInput />
               </div>
 
-              <div className="motor-input-container">
-                <p className="motor-name">Beam size</p>
+              <div className={motorInputStyles.container}>
+                <p className={motorInputStyles.label}>Beam size</p>
                 <ApertureInput />
               </div>
 

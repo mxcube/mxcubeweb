@@ -27,34 +27,24 @@ function BeamlineSetupContainer(props) {
   } = props;
 
   function renderBeamstopAlignmentOverlay() {
-    const { hardwareObjects } = beamline;
-    const motorInputList = [];
-    let popover = null;
+    const motor = beamline.hardwareObjects['diffractometer.beamstop_distance'];
 
-    const motor = hardwareObjects['diffractometer.beamstop_distance'];
+    if (!motor) {
+      return null;
+    }
 
-    if (motor) {
-      motorInputList.push(
-        <div key={`bsao-${motor.name} d-flex`} style={{ padding: '0.5em' }}>
-          <p className="motor-name mb-1"> Beamstop distance</p>
+    return (
+      <Popover>
+        <Popover.Header as="h3">Beamstop distance</Popover.Header>
+        <Popover.Body>
           <OneAxisTranslationControl
             // No `uiproperties` object defined for beamstop distance
             // https://github.com/mxcube/mxcubeweb/pull/1448#discussion_r1800643857
-            motorProps={{
-              attribute: motor.name,
-              step: 0.1,
-              precision: 3,
-            }}
+            motorProps={{ attribute: motor.name, step: 0.1, precision: 3 }}
           />
-        </div>,
-      );
-    }
-
-    if (motorInputList.length > 0) {
-      popover = <Popover>{motorInputList}</Popover>;
-    }
-
-    return popover;
+        </Popover.Body>
+      </Popover>
+    );
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity

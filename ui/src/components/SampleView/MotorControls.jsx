@@ -4,9 +4,9 @@ import { useSelector } from 'react-redux';
 
 import MotorInput from '../MotorInput/MotorInput';
 import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
-import styles from './MotorControls.module.css';
 
-import '../MotorInput/motor.css';
+import styles from './MotorControls.module.css';
+import motorInputStyles from '../MotorInput/MotorInput.module.css';
 
 function MotorControls() {
   const [showAll, setShowAll] = useState(false);
@@ -25,21 +25,22 @@ function MotorControls() {
   );
 
   if (!verticalMotorProps || !horizontalMotorProps) {
-    return motorsProps.map(({ attribute: k, role }) => (
-      <MotorInput key={k} role={role} />
-    ));
+    return motorsProps.map(({ role }) => <MotorInput key={role} role={role} />);
   }
 
   return (
     <>
-      {motorsProps.slice(0, 3).map(({ attribute: k, role }) => (
-        <MotorInput key={k} role={role} />
+      {motorsProps.slice(0, 3).map(({ role }) => (
+        <MotorInput key={role} role={role} />
       ))}
 
-      <TwoAxisTranslationControl
-        verticalMotorProps={verticalMotorProps}
-        horizontalMotorProps={horizontalMotorProps}
-      />
+      <div className={motorInputStyles.container}>
+        <p className={`${motorInputStyles.label} mb-1`}>Sample alignment</p>
+        <TwoAxisTranslationControl
+          verticalMotorProps={verticalMotorProps}
+          horizontalMotorProps={horizontalMotorProps}
+        />
+      </div>
 
       <Button
         className={styles.showAllBtn}
@@ -59,7 +60,7 @@ function MotorControls() {
       {showAll &&
         motorsProps
           .slice(3)
-          .map(({ attribute: k, role }) => <MotorInput key={k} role={role} />)}
+          .map(({ role }) => <MotorInput key={role} role={role} />)}
     </>
   );
 }
