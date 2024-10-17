@@ -55,6 +55,11 @@ class _UISampleViewVideoControlsModel(BaseModel):
     show: bool
 
 
+class _UISampleViewVideoGridSettingsModel(BaseModel):
+    show_mesh_grid_vspace: bool = False
+    show_mesh_grid_hspace: bool = False
+
+
 class UIPropertiesModel(BaseModel):
     id: str
     components: List[UIComponentModel]
@@ -65,6 +70,9 @@ class UICameraConfigModel(UIPropertiesModel):
 
 
 class UISampleViewVideoControlsModel(UIPropertiesModel):
+    grid_settings: _UISampleViewVideoGridSettingsModel = Field(
+        default_factory=_UISampleViewVideoGridSettingsModel
+    )
     components: List[_UISampleViewVideoControlsModel]
 
 

@@ -78,6 +78,9 @@ sample_view:
 
 sample_view_video_controls:
   id: sample_view_video_controls
+  grid_settings:
+    show_mesh_grid_vspace: false
+    show_mesh_grid_hspace: false
   components:
     - id: snapshot
       show: true
