@@ -1,39 +1,19 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable react/jsx-handler-names */
-/* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
-import { OverlayTrigger, Button, Dropdown } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 
 import SnapshotControl from './SnapshotControl';
-import { HW_STATE } from '../../constants';
 
 import styles from './SampleControls.module.css';
 import GridControl from './GridControl';
 import CentringControl from './CentringControl';
 import FocusControl from './FocusControl';
 import ZoomControl from './ZoomControl';
+import LightControl from './LightControl';
 
 class SampleControls extends React.Component {
   constructor(props) {
     super(props);
-
-    this.toggleFrontLight = this.toggleLight.bind(
-      this,
-      'diffractometer.frontlight',
-    );
-    this.toggleBackLight = this.toggleLight.bind(
-      this,
-      'diffractometer.backlight',
-    );
     this.availableVideoSizes = this.availableVideoSizes.bind(this);
-  }
-
-  toggleLight(name) {
-    const lighstate = this.props.hardwareObjects[`${name}switch`].value;
-    const newState = this.props.hardwareObjects[`${name}switch`].commands.find(
-      (state) => state !== lighstate,
-    );
-    this.props.setAttribute(`${name}switch`, newState);
   }
 
   availableVideoSizes() {
@@ -75,7 +55,7 @@ class SampleControls extends React.Component {
   }
 
   render() {
-    const { hardwareObjects, getControlAvailability } = this.props;
+    const { getControlAvailability } = this.props;
 
     return (
       <div className={styles.controls}>
@@ -87,134 +67,10 @@ class SampleControls extends React.Component {
         {getControlAvailability('focus') && <FocusControl />}
         {getControlAvailability('zoom') && <ZoomControl />}
         {getControlAvailability('backlight') && (
-          <div className={styles.controlWrapper}>
-            <OverlayTrigger
-              trigger="click"
-              rootClose
-              placement="bottom"
-              overlay={
-                <div className={styles.overlay}>
-                  <input
-                    className="bar"
-                    type="range"
-                    step="0.1"
-                    min={hardwareObjects['diffractometer.backlight'].limits[0]}
-                    max={hardwareObjects['diffractometer.backlight'].limits[1]}
-                    value={hardwareObjects['diffractometer.backlight'].value}
-                    disabled={
-                      hardwareObjects['diffractometer.backlight'].state !==
-                      HW_STATE.READY
-                    }
-                    onMouseUp={(e) =>
-                      this.props.setAttribute(
-                        'diffractometer.backlight',
-                        e.target.value,
-                      )
-                    }
-                    onChange={(e) =>
-                      this.props.setBeamlineAttribute(
-                        'diffractometer.backlight',
-                        e.target.value,
-                      )
-                    }
-                    name="backlightSlider"
-                  />
-                </div>
-              }
-            >
-              {({ ref, ...triggerHandlers }) => (
-                <>
-                  <Button
-                    ref={ref}
-                    className={styles.controlBtnWithOverlay}
-                    active={
-                      hardwareObjects['diffractometer.backlightswitch']
-                        .value ===
-                      hardwareObjects['diffractometer.backlightswitch']
-                        .commands[0]
-                    }
-                    title="Backlight On/Off"
-                    data-toggle="tooltip"
-                    onClick={this.toggleBackLight}
-                  >
-                    <i className={`${styles.controlIcon} fas fa-lightbulb`} />
-                    <span className={styles.controlLabel}>Backlight</span>
-                  </Button>
-                  <Button
-                    className={styles.overlayTrigger}
-                    {...triggerHandlers}
-                  >
-                    <i className="fas fa-sort-down" />
-                  </Button>
-                </>
-              )}
-            </OverlayTrigger>
-          </div>
+          <LightControl label="Frontlight" hwoId="diffractometer.backlight" />
         )}
         {getControlAvailability('frontlight') && (
-          <div className={styles.controlWrapper}>
-            <OverlayTrigger
-              trigger="click"
-              rootClose
-              placement="bottom"
-              overlay={
-                <div className={styles.overlay}>
-                  <input
-                    className="bar"
-                    type="range"
-                    step="0.1"
-                    min={hardwareObjects['diffractometer.frontlight'].limits[0]}
-                    max={hardwareObjects['diffractometer.frontlight'].limits[1]}
-                    value={hardwareObjects['diffractometer.frontlight'].value}
-                    disabled={
-                      hardwareObjects['diffractometer.frontlight'].state !==
-                      HW_STATE.READY
-                    }
-                    onMouseUp={(e) =>
-                      this.props.setAttribute(
-                        'diffractometer.frontlight',
-                        e.target.value,
-                      )
-                    }
-                    onChange={(e) =>
-                      this.props.setBeamlineAttribute(
-                        'diffractometer.frontlight',
-                        e.target.value,
-                      )
-                    }
-                    name="frontLightSlider"
-                  />
-                </div>
-              }
-            >
-              {({ ref, ...triggerHandlers }) => (
-                <>
-                  <Button
-                    ref={ref}
-                    className={styles.controlBtnWithOverlay}
-                    active={
-                      hardwareObjects['diffractometer.frontlightswitch']
-                        .value ===
-                      hardwareObjects['diffractometer.frontlightswitch']
-                        .commands[0]
-                    }
-                    title="Front On/Off"
-                    data-toggle="tooltip"
-                    onClick={this.toggleFrontLight}
-                  >
-                    <i className={`${styles.controlIcon} fas fa-lightbulb`} />
-                    <span className={styles.controlLabel}>Frontlight</span>
-                  </Button>
-                  <Button
-                    className={styles.overlayTrigger}
-                    {...triggerHandlers}
-                  >
-                    <i className="fas fa-sort-down" />
-                  </Button>
-                </>
-              )}
-            </OverlayTrigger>
-          </div>
+          <LightControl label="Backlight" hwoId="diffractometer.frontlight" />
         )}
         {getControlAvailability('video_size') && (
           <Dropdown drop="down-centered">

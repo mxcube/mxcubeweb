@@ -25,7 +25,6 @@ function ZoomControl() {
         <div className={styles.overlay}>
           <input
             className={styles.zoomSlider}
-            name="zoomSlider"
             type="range"
             list="ZoomControl_commands"
             min={0}
