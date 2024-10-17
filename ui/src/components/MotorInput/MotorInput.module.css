@@ -3,6 +3,7 @@
 }
 
 .label {
+  display: block;
   margin-bottom: 0.125rem;
   font-weight: bold;
 }

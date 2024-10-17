@@ -4,6 +4,7 @@ import { HW_STATE } from '../../constants';
 
 function BaseMotorInput(props) {
   const {
+    id,
     className,
     value,
     state,
@@ -12,7 +13,6 @@ function BaseMotorInput(props) {
     min,
     max,
     disabled,
-    testId,
     onChange,
   } = props;
 
@@ -62,6 +62,7 @@ function BaseMotorInput(props) {
   return (
     <form className="d-flex" noValidate onSubmit={handleSubmit}>
       <input
+        id={id}
         className={className}
         type="number"
         value={inputValue}
@@ -69,7 +70,6 @@ function BaseMotorInput(props) {
         max={max}
         min={min}
         disabled={disabled || !isReady}
-        data-testid={testId}
         data-dirty={isEdited || undefined}
         data-busy={isBusy || undefined}
         data-warning={isWarning || undefined}
