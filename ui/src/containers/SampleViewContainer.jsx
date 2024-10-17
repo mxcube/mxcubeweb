@@ -35,6 +35,7 @@ import {
 } from '../actions/beamline';
 import { find } from 'lodash';
 
+import '../components/SampleView/SampleView.css';
 import styles from './SampleViewContainer.module.css';
 import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
 
