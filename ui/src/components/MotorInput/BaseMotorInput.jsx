@@ -22,7 +22,7 @@ function BaseMotorInput(props) {
   useEffect(() => {
     setInputValue(value.toFixed(precision));
     setEdited(false);
-  }, [value, precision]);
+  }, [value, precision, state]); // `state` to re-apply `precision` in case `value` doesn't change
 
   function handleKey(evt) {
     switch (evt.key) {
