@@ -44,10 +44,15 @@ function mapStateToProps(state, ownProps) {
   const uiprop = state.uiproperties[component].components.find(
     el => el.role === role
   );
+  console.log("uiprop from mapStateToProps")
+  console.log(uiprop)
+  console.log(uiprop.attribute)
+  console.log(state.beamline.hardwareObjects)
 
   const motorhwo = state.beamline.hardwareObjects[
     uiprop.attribute
   ];
+  console.log(motorhwo)
 
   return {
     value: motorhwo.value,
