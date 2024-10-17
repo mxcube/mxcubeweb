@@ -9,6 +9,8 @@ import SnapshotControl from './SnapshotControl';
 import { HW_STATE } from '../../constants';
 
 import styles from './SampleControls.module.css';
+import GridControl from './GridControl';
+import CentringControl from './CentringControl';
 
 class SampleControls extends React.Component {
   constructor(props) {
@@ -22,38 +24,7 @@ class SampleControls extends React.Component {
       this,
       'diffractometer.backlight',
     );
-    this.toggleCentring = this.toggleCentring.bind(this);
-    this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
     this.availableVideoSizes = this.availableVideoSizes.bind(this);
-  }
-
-  toggleDrawGrid() {
-    // Cancel click centering before draw grid is started
-    if (this.props.currentSampleID === '') {
-      this.props.showErrorPanel(true, 'There is no sample mounted');
-    } else {
-      if (this.props.clickCentring) {
-        this.props.sampleViewActions.abortCentring();
-      }
-
-      this.props.sampleViewActions.toggleDrawGrid();
-    }
-  }
-
-  toggleCentring() {
-    const { startClickCentring, abortCentring } = this.props.sampleViewActions;
-    const { clickCentring } = this.props;
-
-    // If draw grid tool enabled, disable it before starting centering
-    if (this.props.drawGrid) {
-      this.props.sampleViewActions.toggleDrawGrid();
-    }
-
-    if (clickCentring) {
-      abortCentring();
-    } else {
-      startClickCentring();
-    }
   }
 
   toggleLight(name) {
@@ -103,7 +74,7 @@ class SampleControls extends React.Component {
   }
 
   render() {
-    const { hardwareObjects } = this.props;
+    const { hardwareObjects, getControlAvailability } = this.props;
 
     const focusMotorProps = this.props.uiproperties.sample_view.components.find(
       (c) => c.role === 'focus',
@@ -117,34 +88,12 @@ class SampleControls extends React.Component {
 
     return (
       <div className={styles.controls}>
-        {this.props.getControlAvailability('snapshot') && (
+        {getControlAvailability('snapshot') && (
           <SnapshotControl canvas={this.props.canvas} />
         )}
-        {this.props.getControlAvailability('draw_grid') && (
-          <Button
-            className={styles.controlBtn}
-            active={this.props.drawGrid}
-            title="Draw grid"
-            data-toggle="tooltip"
-            onClick={this.toggleDrawGrid}
-          >
-            <i className={`${styles.controlIcon} fas fa-th`} />
-            <span className={styles.controlLabel}>Draw grid</span>
-          </Button>
-        )}
-        {this.props.getControlAvailability('3_click_centring') && (
-          <Button
-            className={styles.controlBtn}
-            active={this.props.clickCentring}
-            title="Start 3-click centring"
-            data-toggle="tooltip"
-            onClick={this.toggleCentring}
-          >
-            <i className={`${styles.controlIcon} fas fa-circle-notch`} />
-            <span className={styles.controlLabel}>3-click centring</span>
-          </Button>
-        )}
-        {this.props.getControlAvailability('focus') && (
+        {getControlAvailability('draw_grid') && <GridControl />}
+        {getControlAvailability('3_click_centring') && <CentringControl />}
+        {getControlAvailability('focus') && (
           <OverlayTrigger
             trigger="click"
             rootClose
@@ -166,7 +115,7 @@ class SampleControls extends React.Component {
             </Button>
           </OverlayTrigger>
         )}
-        {this.props.getControlAvailability('zoom') && (
+        {getControlAvailability('zoom') && (
           <OverlayTrigger
             trigger="click"
             rootClose
@@ -217,7 +166,7 @@ class SampleControls extends React.Component {
             </Button>
           </OverlayTrigger>
         )}
-        {this.props.getControlAvailability('backlight') && (
+        {getControlAvailability('backlight') && (
           <div className={styles.controlWrapper}>
             <OverlayTrigger
               trigger="click"
@@ -282,7 +231,7 @@ class SampleControls extends React.Component {
             </OverlayTrigger>
           </div>
         )}
-        {this.props.getControlAvailability('frontlight') && (
+        {getControlAvailability('frontlight') && (
           <div className={styles.controlWrapper}>
             <OverlayTrigger
               trigger="click"
@@ -347,7 +296,7 @@ class SampleControls extends React.Component {
             </OverlayTrigger>
           </div>
         )}
-        {this.props.getControlAvailability('video_size') && (
+        {getControlAvailability('video_size') && (
           <Dropdown drop="down-centered">
             <Dropdown.Toggle
               className={styles.controlDropDown}
