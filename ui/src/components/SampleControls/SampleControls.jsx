@@ -4,13 +4,14 @@
 import React from 'react';
 import { OverlayTrigger, Button, Dropdown } from 'react-bootstrap';
 
-import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
 import SnapshotControl from './SnapshotControl';
 import { HW_STATE } from '../../constants';
 
 import styles from './SampleControls.module.css';
 import GridControl from './GridControl';
 import CentringControl from './CentringControl';
+import FocusControl from './FocusControl';
+import ZoomControl from './ZoomControl';
 
 class SampleControls extends React.Component {
   constructor(props) {
@@ -76,16 +77,6 @@ class SampleControls extends React.Component {
   render() {
     const { hardwareObjects, getControlAvailability } = this.props;
 
-    const focusMotorProps = this.props.uiproperties.sample_view.components.find(
-      (c) => c.role === 'focus',
-    );
-
-    const zoomMotorProps = this.props.uiproperties.sample_view.components.find(
-      (c) => c.role === 'zoom',
-    );
-
-    const zoomMotor = this.props.hardwareObjects[zoomMotorProps.attribute];
-
     return (
       <div className={styles.controls}>
         {getControlAvailability('snapshot') && (
@@ -93,79 +84,8 @@ class SampleControls extends React.Component {
         )}
         {getControlAvailability('draw_grid') && <GridControl />}
         {getControlAvailability('3_click_centring') && <CentringControl />}
-        {getControlAvailability('focus') && (
-          <OverlayTrigger
-            trigger="click"
-            rootClose
-            placement="bottom"
-            overlay={
-              <div className={styles.overlay}>
-                <OneAxisTranslationControl motorProps={focusMotorProps} />
-              </div>
-            }
-          >
-            <Button
-              className={styles.controlBtn}
-              name="focus"
-              title="Focus"
-              data-toggle="tooltip"
-            >
-              <i className={`${styles.controlIcon} fas fa-adjust`} />
-              <span className={styles.controlLabel}>Focus</span>
-            </Button>
-          </OverlayTrigger>
-        )}
-        {getControlAvailability('zoom') && (
-          <OverlayTrigger
-            trigger="click"
-            rootClose
-            placement="bottom"
-            overlay={
-              <div className={styles.overlay}>
-                <input
-                  className={styles.zoomSlider}
-                  type="range"
-                  min={0}
-                  max={zoomMotor.commands.length - 1}
-                  value={zoomMotor.commands.indexOf(zoomMotor.value)}
-                  disabled={zoomMotor.state !== HW_STATE.READY}
-                  onMouseUp={(e) => {
-                    this.props.setAttribute(
-                      'diffractometer.zoom',
-                      zoomMotor.commands[Number.parseFloat(e.target.value)],
-                    );
-                  }}
-                  onChange={(e) => {
-                    this.props.setBeamlineAttribute(
-                      'diffractometer.zoom',
-                      zoomMotor.commands[Number.parseFloat(e.target.value)],
-                    );
-                  }}
-                  list="volsettings"
-                  name="zoomSlider"
-                />
-
-                <datalist id="volsettings">
-                  {zoomMotor.commands.map((cmd, index) => (
-                    <option key={cmd} value={index} />
-                  ))}
-                </datalist>
-              </div>
-            }
-          >
-            <Button
-              className={styles.controlBtn}
-              name="zoomOut"
-              title="Zoom in/out"
-              data-toggle="tooltip"
-            >
-              <i className={`${styles.controlIcon} fas fa-search`} />
-              <span className={styles.controlLabel}>
-                Zoom ({zoomMotor.value}){' '}
-              </span>
-            </Button>
-          </OverlayTrigger>
-        )}
+        {getControlAvailability('focus') && <FocusControl />}
+        {getControlAvailability('zoom') && <ZoomControl />}
         {getControlAvailability('backlight') && (
           <div className={styles.controlWrapper}>
             <OverlayTrigger
