@@ -1,24 +1,19 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/jsx-handler-names */
 /* eslint-disable sonarjs/no-duplicate-string */
-import './SampleView.css';
 import React from 'react';
 import { OverlayTrigger, Button, Dropdown } from 'react-bootstrap';
-import 'fabric';
 
 import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
+import SnapshotControl from './SnapshotControl';
 import { HW_STATE } from '../../constants';
 
 import styles from './SampleControls.module.css';
 
-const { fabric } = window;
-
-export default class SampleControls extends React.Component {
+class SampleControls extends React.Component {
   constructor(props) {
     super(props);
 
-    this.takeSnapShot = this.takeSnapShot.bind(this);
-    this.doTakeSnapshot = this.doTakeSnapshot.bind(this);
     this.toggleFrontLight = this.toggleLight.bind(
       this,
       'diffractometer.frontlight',
@@ -32,10 +27,6 @@ export default class SampleControls extends React.Component {
     this.availableVideoSizes = this.availableVideoSizes.bind(this);
   }
 
-  componentDidMount() {
-    window.takeSnapshot = this.doTakeSnapshot;
-  }
-
   toggleDrawGrid() {
     // Cancel click centering before draw grid is started
     if (this.props.currentSampleID === '') {
@@ -47,39 +38,6 @@ export default class SampleControls extends React.Component {
 
       this.props.sampleViewActions.toggleDrawGrid();
     }
-  }
-
-  doTakeSnapshot() {
-    const img = document.querySelector('#sample-img');
-    const fimg = new fabric.Image(img);
-    fimg.scale(this.props.imageRatio);
-    let imgDataURI = '';
-    this.props.canvas.setBackgroundImage(fimg);
-    this.props.canvas.renderAll();
-    imgDataURI = this.props.canvas.toDataURL({ format: 'jpeg' });
-    this.props.canvas.setBackgroundImage(0);
-    this.props.canvas.renderAll();
-    return { data: imgDataURI.slice(23), mime: imgDataURI.slice(0, 23) };
-  }
-
-  takeSnapShot(evt) {
-    /* eslint-disable unicorn/consistent-function-scoping */
-    function imageEpolog(props) {
-      const { sampleID } = props.currentSampleID;
-
-      if (sampleID in props.sampleList) {
-        return props.sampleList[sampleID].sampleName;
-      }
-
-      /* handle the case when sample is not mounted */
-      return 'no-sample';
-    }
-
-    const img = this.doTakeSnapshot();
-    const filename = `${this.props.proposal}-${imageEpolog(this.props)}.jpeg`;
-
-    evt.currentTarget.href = img.mime + img.data;
-    evt.currentTarget.download = filename;
   }
 
   toggleCentring() {
@@ -160,19 +118,7 @@ export default class SampleControls extends React.Component {
     return (
       <div className={styles.controls}>
         {this.props.getControlAvailability('snapshot') && (
-          <Button
-            as="a"
-            className={styles.controlBtn}
-            href="#"
-            target="_blank"
-            download
-            title="Take snapshot"
-            data-toggle="tooltip"
-            onClick={this.takeSnapShot}
-          >
-            <i className={`${styles.controlIcon} fas fa-camera`} />
-            <span className={styles.controlLabel}>Snapshot</span>
-          </Button>
+          <SnapshotControl canvas={this.props.canvas} />
         )}
         {this.props.getControlAvailability('draw_grid') && (
           <Button
@@ -420,3 +366,5 @@ export default class SampleControls extends React.Component {
     );
   }
 }
+
+export default SampleControls;

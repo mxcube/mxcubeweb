@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable sonarjs/no-duplicate-string */
-import './SampleView.css';
 import React from 'react';
 import { HW_STATE } from '../../constants';
 import {
@@ -12,7 +11,7 @@ import {
   makeCentringVerticalLine,
 } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
-import SampleControls from './SampleControls';
+import SampleControls from '../SampleControls/SampleControls';
 import GridForm from './GridForm';
 import 'fabric';
 
