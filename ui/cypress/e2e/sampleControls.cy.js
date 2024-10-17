@@ -32,8 +32,6 @@ describe('3-click centring', () => {
 
         // Wait for omega motor to finish moving
         cy.wait(1000);
-        // Reload to see new omega value (since WebSockets don't work on CI)
-        cy.reload();
 
         cy.findByTestId('MotorInput_value_diffractometer.phi')
           .invoke('val')

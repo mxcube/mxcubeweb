@@ -78,7 +78,7 @@ function App() {
   useEffect(() => {
     dispatch(getLoginInfo());
 
-    if (loggedIn && import.meta.env.VITE_DISABLE_WEBSOCKETS !== 'true') {
+    if (loggedIn) {
       serverIO.listen();
       const refreshInterval = setInterval(sendRefreshSession, REFRESH_INTERVAL);
 
