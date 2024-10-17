@@ -120,12 +120,19 @@ class SampleViewContainer extends Component {
           <Col sm={2} xxl={1} className={styles.controllers}>
             <DefaultErrorBoundary>
               <div className={motorInputStyles.container}>
-                <p className={motorInputStyles.label}>Phase Control</p>
+                <label className={motorInputStyles.label} htmlFor="PhaseInput">
+                  Phase Control
+                </label>
                 <PhaseInput />
               </div>
 
               <div className={motorInputStyles.container}>
-                <p className={motorInputStyles.label}>Beam size</p>
+                <label
+                  className={motorInputStyles.label}
+                  htmlFor="ApertureInput"
+                >
+                  Beam size
+                </label>
                 <ApertureInput />
               </div>
 

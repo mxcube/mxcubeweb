@@ -16,6 +16,7 @@ function PhaseInput() {
 
   return (
     <Form.Select
+      id="PhaseInput"
       className={styles.select}
       value={value}
       data-busy={state === 'BUSY' || undefined}

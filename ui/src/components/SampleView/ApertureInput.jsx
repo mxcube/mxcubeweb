@@ -16,6 +16,7 @@ function ApertureInput() {
 
   return (
     <Form.Select
+      id="ApertureInput"
       className={styles.select}
       value={value}
       data-busy={state === 'BUSY' || undefined}
