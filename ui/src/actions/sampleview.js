@@ -143,7 +143,21 @@ export function setGridOverlay(level) {
 }
 
 export function toggleDrawGrid() {
-  return { type: 'DRAW_GRID' };
+  return async (dispatch, getState) => {
+    const { sampleview, queue } = getState();
+
+    // Stop three-click centring if active
+    if (sampleview.clickCentring) {
+      await dispatch(abortCentring());
+    }
+
+    if (!sampleview.drawGrid && !queue.currentSampleID) {
+      dispatch(showErrorPanel(true, 'There is no sample mounted'));
+      return;
+    }
+
+    dispatch({ type: 'DRAW_GRID' });
+  };
 }
 
 export function centringClicksLeft(clicksLeft) {
@@ -247,33 +261,48 @@ export function unselectShapes(shapes) {
   };
 }
 
+export function toggleCentring() {
+  return async (dispatch, getState) => {
+    const { sampleview } = getState();
+
+    // Turn off grid drawing if active
+    if (sampleview.drawGrid) {
+      dispatch({ type: 'DRAW_GRID' });
+    }
+
+    if (sampleview.clickCentring) {
+      await dispatch(abortCentring());
+    } else {
+      await dispatch(startClickCentring());
+    }
+  };
+}
+
 export function startClickCentring() {
   return async (dispatch, getState) => {
-    dispatch(clearSelectedShapes());
+    const { queue, shapes } = getState();
 
-    const { queue } = getState();
-    const { shapes } = getState();
+    dispatch(clearSelectedShapes());
     dispatch(unselectShapes(shapes));
 
-    if (queue.currentSampleID) {
-      const json = await sendStartClickCentring();
-      const { clicksLeft } = json;
-
-      dispatch(startClickCentringAction());
-      dispatch(centringClicksLeft(clicksLeft));
-
-      const msg = `3-Click Centring: <br />${
-        clicksLeft === 0
-          ? 'Save centring or clicking on screen to restart'
-          : `Clicks left: ${clicksLeft}`
-      }`;
-
-      dispatch(videoMessageOverlay(true, msg));
-    } else {
-      dispatch(
-        showErrorPanel(true, 'There is no sample mounted, cannot center.'),
-      );
+    if (!queue.currentSampleID) {
+      dispatch(showErrorPanel(true, 'There is no sample mounted'));
+      return;
     }
+
+    const json = await sendStartClickCentring();
+    const { clicksLeft } = json;
+
+    dispatch(startClickCentringAction());
+    dispatch(centringClicksLeft(clicksLeft));
+
+    const msg = `3-Click Centring: <br />${
+      clicksLeft === 0
+        ? 'Save centring or clicking on screen to restart'
+        : `Clicks left: ${clicksLeft}`
+    }`;
+
+    dispatch(videoMessageOverlay(true, msg));
   };
 }
 
