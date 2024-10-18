@@ -464,6 +464,14 @@ class SampleView(ComponentBase):
 
         logging.getLogger("user_level_log").info(msg)
 
+    def restore_grids_state(self):
+        """
+        After certain actions such as data collection, we want to return grids to state that they were in before the action.
+        """
+        grids = HWR.beamline.sample_view.get_grids()
+        for grid in grids:
+            grid.state = grid.user_state
+
 
 def enable_snapshots(collect_object, diffractometer_object, sample_view):
     def _snapshot_received(data):
