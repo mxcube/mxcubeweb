@@ -4,6 +4,7 @@ import { Row, Col, Form, Button, Table } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
 import './SampleView.css';
+import { useSelector } from 'react-redux';
 
 function handleContextMenu(e) {
   e.stopPropagation();
@@ -17,6 +18,8 @@ export default function GridForm(props) {
     rotateTo,
     saveGrid,
     selectedGrids,
+    setHCellSpacing,
+    setVCellSpacing,
     selectGrid,
     setGridOverlayOpacity,
     show,
@@ -25,6 +28,13 @@ export default function GridForm(props) {
 
   const draggableRef = useRef(null);
   const [position, setPosition] = useState({ x: 20, y: 64 });
+  const { show_mesh_grid_hspace, show_mesh_grid_vspace } = useSelector(
+    (state) => state.uiproperties.sample_view_video_controls.grid_settings,
+  );
+
+  // we want these buttons to have the same size. Additionally we want to assign them more space when there are additional controls shown.
+  const addOrRemoveButtonSize =
+    show_mesh_grid_hspace || show_mesh_grid_vspace ? '100%' : '75%';
 
   // we use the useEffect function with a ref here, since React's synthetic event
   // system (onContextMenu) could not stop the propagation
@@ -59,6 +69,8 @@ export default function GridForm(props) {
           <td>
             <span style={{ lineHeight: '24px' }}>{grid.name}</span>
           </td>
+          {show_mesh_grid_hspace ? <td>{grid.cellHSpace.toFixed(2)}</td> : null}
+          {show_mesh_grid_vspace ? <td>{grid.cellVSpace.toFixed(2)}</td> : null}
           <td>
             {vdim} x {hdim}
           </td>
@@ -93,8 +105,8 @@ export default function GridForm(props) {
           </td>
           <td>
             <Button
-              size="sm"
-              style={{ width: '75%' }}
+              // we want these buttons to have the same size. Additionally we want to assign them more space when there are additional controls shown.
+              style={{ width: addOrRemoveButtonSize }}
               variant="outline-secondary"
               onClick={(e) => {
                 e.stopPropagation();
@@ -113,6 +125,31 @@ export default function GridForm(props) {
         <td>
           <span style={{ lineHeight: '24px' }}>*</span>
         </td>
+        {show_mesh_grid_hspace && (
+          <td>
+            {/* prevents refresh when pressing enter */}
+            <Form onSubmit={(event) => event.preventDefault()}>
+              <Form.Control
+                style={{ width: '50px' }}
+                type="text"
+                defaultValue={0}
+                onChange={setHCellSpacing}
+              />
+            </Form>
+          </td>
+        )}
+        {show_mesh_grid_vspace && (
+          <td>
+            <Form onSubmit={(event) => event.preventDefault()}>
+              <Form.Control
+                style={{ width: '50px' }}
+                type="text"
+                defaultValue={0}
+                onChange={setVCellSpacing}
+              />
+            </Form>
+          </td>
+        )}
         <td />
         <td />
         <td />
@@ -121,8 +158,8 @@ export default function GridForm(props) {
         <td />
         <td>
           <Button
-            size="sm"
-            style={{ width: '75%' }}
+            // we want these buttons to have the same size. Additionally we want to assign them more space when there are additional controls shown.
+            style={{ width: addOrRemoveButtonSize }}
             variant="outline-secondary"
             onClick={() => saveGrid()}
           >
@@ -151,6 +188,8 @@ export default function GridForm(props) {
             <thead>
               <tr>
                 <th>Name</th>
+                {show_mesh_grid_hspace && <th>H-Space (µm)</th>}
+                {show_mesh_grid_vspace && <th>V-Space (µm)</th>}
                 <th>Dim (µm)</th>
                 <th>#Cells</th>
                 <th>R x C</th>
