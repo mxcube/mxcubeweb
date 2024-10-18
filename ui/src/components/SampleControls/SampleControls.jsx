@@ -8,31 +8,28 @@ import ZoomControl from './ZoomControl';
 import LightControl from './LightControl';
 import VideoSizeControl from './VideoSizeControl';
 
+import { useShowControl } from './utils';
 import styles from './SampleControls.module.css';
 
-class SampleControls extends React.Component {
-  render() {
-    const { getControlAvailability } = this.props;
+function SampleControls(props) {
+  const { canvas } = props;
 
-    return (
-      <div className={styles.controls}>
-        {getControlAvailability('snapshot') && (
-          <SnapshotControl canvas={this.props.canvas} />
-        )}
-        {getControlAvailability('draw_grid') && <GridControl />}
-        {getControlAvailability('3_click_centring') && <CentringControl />}
-        {getControlAvailability('focus') && <FocusControl />}
-        {getControlAvailability('zoom') && <ZoomControl />}
-        {getControlAvailability('backlight') && (
-          <LightControl label="Frontlight" hwoId="diffractometer.backlight" />
-        )}
-        {getControlAvailability('frontlight') && (
-          <LightControl label="Backlight" hwoId="diffractometer.frontlight" />
-        )}
-        {getControlAvailability('video_size') && <VideoSizeControl />}
-      </div>
-    );
-  }
+  return (
+    <div className={styles.controls}>
+      {useShowControl('snapshot') && <SnapshotControl canvas={canvas} />}
+      {useShowControl('draw_grid') && <GridControl />}
+      {useShowControl('3_click_centring') && <CentringControl />}
+      {useShowControl('focus') && <FocusControl />}
+      {useShowControl('zoom') && <ZoomControl />}
+      {useShowControl('backlight') && (
+        <LightControl label="Frontlight" hwoId="diffractometer.backlight" />
+      )}
+      {useShowControl('frontlight') && (
+        <LightControl label="Backlight" hwoId="diffractometer.frontlight" />
+      )}
+      {useShowControl('video_size') && <VideoSizeControl />}
+    </div>
+  );
 }
 
 export default SampleControls;

@@ -118,7 +118,7 @@ export default class SampleImage extends React.Component {
       this.initJSMpeg();
     }
 
-    this.renderSampleView(this.props);
+    this.renderSampleView();
   }
 
   componentWillUnmount() {
@@ -214,7 +214,7 @@ export default class SampleImage extends React.Component {
     this.drawGridPlugin.setGridOverlay(value);
     this.props.sampleViewActions.setOverlay(value);
     this.drawGridPlugin.repaint(this.canvas);
-    this.renderSampleView(this.props);
+    this.renderSampleView();
   }
 
   getGridOverlayOpacity() {
@@ -764,7 +764,7 @@ export default class SampleImage extends React.Component {
     e.nativeEvent.stopImmediatePropagation();
   }
 
-  renderSampleView(nextProps) {
+  renderSampleView() {
     const {
       imageRatio,
       beamPosition,
@@ -778,7 +778,8 @@ export default class SampleImage extends React.Component {
       grids,
       pixelsPerMm,
       sourceScale,
-    } = nextProps;
+    } = this.props;
+
     this.drawCanvas(imageRatio, sourceScale);
     this.canvas.add(
       ...makeImageOverlay(
@@ -890,13 +891,10 @@ export default class SampleImage extends React.Component {
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
-            <SampleControls
-              showErrorPanel={this.props.showErrorPanel}
-              {...this.props}
-              canvas={this.canvas}
-              imageRatio={this.props.imageRatio}
-            />
+
+            <SampleControls canvas={this.canvas} />
             <div>{this.centringMessage()}</div>
+
             <canvas id="canvas" className="coveringCanvas" />
           </div>
         </div>

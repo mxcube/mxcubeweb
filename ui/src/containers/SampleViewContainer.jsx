@@ -28,7 +28,6 @@ import {
 } from '../actions/sampleChanger';
 
 import {
-  setBeamlineAttribute,
   executeCommand,
   logFrontEndTraceBack,
   setAttribute,
@@ -204,8 +203,6 @@ class SampleViewContainer extends Component {
                 showErrorPanel={this.props.showErrorPanel}
               />
               <SampleImage
-                getControlAvailability={this.getControlAvailability}
-                showErrorPanel={this.props.showErrorPanel}
                 sampleViewActions={this.props.sampleViewActions}
                 {...this.props.sampleViewState}
                 uiproperties={uiproperties}
@@ -220,12 +217,8 @@ class SampleViewContainer extends Component {
                 selectedGrids={selectedGrids}
                 cellCounting={this.props.cellCounting}
                 cellSpacing={this.props.cellSpacing}
-                currentSampleID={this.props.currentSampleID}
-                sampleList={this.props.sampleList}
-                proposal={this.props.proposal}
                 busy={this.props.queueState === QUEUE_RUNNING}
                 setAttribute={this.props.setAttribute}
-                setBeamlineAttribute={this.props.setBeamlineAttribute}
                 displayImage={this.props.displayImage}
                 meshResultFormat={this.props.meshResultFormat}
               />
@@ -262,7 +255,6 @@ function mapStateToProps(state) {
     workflows: state.workflow.workflows,
     cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
     cellSpacing: state.taskForm.defaultParameters.mesh.cell_spacing,
-    proposal: state.login.selectedProposal,
     remoteAccess: state.remoteAccess,
     uiproperties: state.uiproperties,
     taskForm: state.taskForm,
@@ -291,7 +283,6 @@ function mapDispatchToProps(dispatch) {
     showForm: bindActionCreators(showTaskForm, dispatch),
     showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
-    setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     displayImage: bindActionCreators(displayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
     logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),
