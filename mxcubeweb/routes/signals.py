@@ -105,6 +105,7 @@ def diffractometer_phase_changed(*args):
     logging.getLogger("user_level_log").info(
         "Diffractometer phase changed to %s" % args
     )
+    mxcube.sample_view.restore_grids_state()
     server.emit("diff_phase_changed", data, namespace="/hwr")
 
 
@@ -442,6 +443,7 @@ def collect_oscillation_failed(
     mxcube.NODE_ID_TO_LIMS_ID[node["queue_id"]] = lims_id
 
     if not mxcube.queue.is_interleaved(node["node"]):
+        mxcube.sample_view.restore_grids_state()
         try:
             HWR.beamline.lims_rest.get_dc(lims_id)
         except Exception:
@@ -470,6 +472,7 @@ def collect_oscillation_finished(owner, status, state, lims_id, osc_id, params):
     mxcube.NODE_ID_TO_LIMS_ID[node["queue_id"]] = lims_id
 
     if not mxcube.queue.is_interleaved(node["node"]):
+        mxcube.sample_view.restore_grids_state()
         msg = {
             "Signal": "collectOscillationFinished",
             "Message": task_signals["collectOscillationFinished"],
