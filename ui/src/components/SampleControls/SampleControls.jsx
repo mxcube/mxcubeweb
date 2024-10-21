@@ -22,10 +22,10 @@ function SampleControls(props) {
       {useShowControl('focus') && <FocusControl />}
       {useShowControl('zoom') && <ZoomControl />}
       {useShowControl('backlight') && (
-        <LightControl label="Frontlight" hwoId="diffractometer.backlight" />
+        <LightControl label="Backlight" hwoId="diffractometer.backlight" />
       )}
       {useShowControl('frontlight') && (
-        <LightControl label="Backlight" hwoId="diffractometer.frontlight" />
+        <LightControl label="Frontlight" hwoId="diffractometer.frontlight" />
       )}
       {useShowControl('video_size') && <VideoSizeControl />}
     </div>
