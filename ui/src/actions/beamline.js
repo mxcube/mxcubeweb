@@ -45,10 +45,6 @@ export function updateBeamlineHardwareObjectStateAction(data) {
   return { type: BL_UPDATE_HARDWARE_OBJECT_STATE, data };
 }
 
-export function setBeamlineAttribute(name, value) {
-  return updateBeamlineHardwareObjectAction({ name, value });
-}
-
 export function setAttribute(name, value) {
   return (_, getState) => {
     const state = getState();
