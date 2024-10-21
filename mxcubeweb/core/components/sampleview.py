@@ -1,18 +1,11 @@
 # -*- coding: utf-8 -*-
-import base64
-import inspect
 import logging
-import os
-import sys
-import types
 from io import StringIO
 
 import gevent.event
 import PIL
 from flask import Response
 from mxcubecore import HardwareRepository as HWR
-from mxcubecore.BaseHardwareObjects import HardwareObjectState
-from mxcubecore.HardwareObjects.abstract.AbstractNState import AbstractNState
 from mxcubecore.queue_entry.base_queue_entry import CENTRING_METHOD
 
 from mxcubeweb.core.components.component_base import ComponentBase
@@ -111,12 +104,6 @@ class SampleView(ComponentBase):
         self._click_limit = 3
         self._centring_point_id = None
         self.http_streamer = HttpStreamer()
-
-        enable_snapshots(
-            HWR.beamline.collect,
-            HWR.beamline.diffractometer,
-            HWR.beamline.sample_view,
-        )
 
         HWR.beamline.sample_view.connect("shapesChanged", self._emit_shapes_updated)
 
@@ -457,109 +444,3 @@ class SampleView(ComponentBase):
             self.app.CENTRING_METHOD = CENTRING_METHOD.MANUAL
 
         logging.getLogger("user_level_log").info(msg)
-
-
-def enable_snapshots(collect_object, diffractometer_object, sample_view):
-    def _snapshot_received(data):
-        snapshot_jpg = data.get("data", "")
-
-        global SNAPSHOT
-        SNAPSHOT = base64.b64decode(snapshot_jpg)
-        SNAPSHOT_RECEIVED.set()
-
-    def _do_take_snapshot(filename, bw=False):
-        sample_view.save_snapshot(filename, overlay=False, bw=bw)
-
-    def save_snapshot(self, filename, bw=False):
-        sample_view.save_snapshot(filename, overlay=False, bw=bw)
-        # _do_take_snapshot(filename, bw)
-
-    def take_snapshots(self, snapshots=None, _do_take_snapshot=_do_take_snapshot):
-        from mxcubeweb.app import MXCUBEApplication as mxcube
-
-        if snapshots is None:
-            # called via AbstractCollect
-            dc_params = self.current_dc_parameters
-            move_omega_relative = diffractometer_object.move_omega_relative
-        else:
-            # called via AbstractMultiCollect
-            # calling_frame = inspect.currentframe()
-            calling_frame = inspect.currentframe().f_back.f_back
-
-            dc_params = calling_frame.f_locals["data_collect_parameters"]
-            move_omega_relative = diffractometer_object.phiMotor.set_value_relative
-
-        if dc_params["take_snapshots"]:
-            # The below does not work. NUM_SNAPSHOTS needs to e got in somehow
-            number_of_snapshots = mxcube.NUM_SNAPSHOTS
-        else:
-            number_of_snapshots = 0
-
-        if number_of_snapshots > 0:
-            if (
-                hasattr(diffractometer_object, "set_phase")
-                and diffractometer_object.get_current_phase() != "Centring"
-            ):
-                use_custom_snapshot_routine = diffractometer_object.get_property(
-                    "custom_snapshot_script_dir", None
-                )
-                if not use_custom_snapshot_routine:
-                    logging.getLogger("user_level_log").info(
-                        "Moving Diffractometer to CentringPhase Not done for tests (DN)"
-                    )
-
-                    diffractometer_object.set_phase("Centring", wait=True, timeout=200)
-
-            snapshot_directory = dc_params["fileinfo"]["archive_directory"]
-            if not os.path.exists(snapshot_directory):
-                try:
-                    self.create_directories(snapshot_directory)
-                except Exception:
-                    logging.getLogger("MX3.HWR").exception(
-                        "Collection: Error creating snapshot directory"
-                    )
-
-            logging.getLogger("user_level_log").info(
-                "Taking %d sample snapshot(s)" % number_of_snapshots
-            )
-
-            for snapshot_index in range(number_of_snapshots):
-                snapshot_filename = os.path.join(
-                    snapshot_directory,
-                    "%s_%s_%s.snapshot.jpeg"
-                    % (
-                        dc_params["fileinfo"]["prefix"],
-                        dc_params["fileinfo"]["run_number"],
-                        (snapshot_index + 1),
-                    ),
-                )
-                dc_params[
-                    "xtalSnapshotFullPath%i" % (snapshot_index + 1)
-                ] = snapshot_filename
-
-                try:
-                    logging.getLogger("MX3.HWR").info(
-                        "Taking snapshot number: %d" % (snapshot_index + 1)
-                    )
-                    _do_take_snapshot(snapshot_filename)
-                    # diffractometer.save_snapshot(snapshot_filename)
-                except Exception as ex:
-                    sys.excepthook(*sys.exc_info())
-                    raise RuntimeError(
-                        "Could not take snapshot '%s'",
-                        snapshot_filename,
-                    ) from ex
-
-                if number_of_snapshots > 1:
-                    move_omega_relative(90)
-                    diffractometer_object.wait_ready()
-
-    collect_object.take_crystal_snapshots = types.MethodType(
-        take_snapshots, collect_object
-    )
-
-    diffractometer_object.save_snapshot = types.MethodType(
-        save_snapshot, diffractometer_object
-    )
-
-    sample_view.set_ui_snapshot_cb(save_snapshot)

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-
+import { sendTakeSnapshot } from '../../api/sampleview';
 import { download } from './utils';
 
 import styles from './SampleControls.module.css';
@@ -25,7 +25,7 @@ function SnapshotControl(props) {
     return sourceScale * imageRatio;
   });
 
-  const takeSnapshot = useCallback(() => {
+  const takeSnapshot = useCallback(async () => {
     const img = document.querySelector('#sample-img');
     const fimg = new fabric.Image(img);
     fimg.scale(imageRatio);
@@ -33,11 +33,20 @@ function SnapshotControl(props) {
     canvas.setBackgroundImage(fimg);
     canvas.renderAll();
 
-    const filename = `${proposal}-${currentSampleName}.jpeg`;
-    download(filename, canvas.toDataURL({ format: 'jpeg' }));
+    const imgDataURI = canvas.toDataURL({
+      format: 'jpeg',
+      backgroundColor: null,
+    });
 
     canvas.setBackgroundImage(0);
     canvas.renderAll();
+
+    const filename = `${proposal}-${currentSampleName}.jpeg`;
+    const processedImgBlob = await sendTakeSnapshot(imgDataURI);
+    download(
+      filename,
+      window.URL.createObjectURL(new Blob([processedImgBlob])),
+    );
   }, [canvas, currentSampleName, imageRatio, proposal]);
 
   useEffect(() => {
