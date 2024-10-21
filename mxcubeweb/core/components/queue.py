@@ -1437,6 +1437,7 @@ class Queue(ComponentBase):
         dc_model = qmo.DataCollection()
         dc_model.set_origin(ORIGIN_MX3)
         dc_model.center_before_collect = True
+        dc_model.take_snapshots = self.app.NUM_SNAPSHOTS
         dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
 
         return dc_model, dc_entry
@@ -2123,6 +2124,7 @@ class Queue(ComponentBase):
 
     def init_queue_settings(self):
         self.app.NUM_SNAPSHOTS = HWR.beamline.collect.get_property("num_snapshots", 4)
+        HWR.beamline.collect.number_of_snapshots = self.app.NUM_SNAPSHOTS
         self.app.AUTO_MOUNT_SAMPLE = HWR.beamline.collect.get_property(
             "auto_mount_sample", False
         )
@@ -2383,7 +2385,7 @@ class Queue(ComponentBase):
                 "inverse_beam": False,
                 "take_dark_current": True,
                 "skip_existing_images": False,
-                "take_snapshots": True,
+                "take_snapshots": self.app.NUM_SNAPSHOTS,
                 "helical": False,
                 "mesh": False,
                 "prefixTemplate": "{PREFIX}_{POSITION}",

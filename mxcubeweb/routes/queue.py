@@ -343,6 +343,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def set_num_snapshots():
         data = request.get_json()
         app.NUM_SNAPSHOTS = data.get("numSnapshots", 4)
+        HWR.beamline.collect.number_of_snapshots = app.NUM_SNAPSHOTS
         resp = jsonify({"numSnapshots": data.get("numSnapshots", 4)})
         resp.status_code = 200
 

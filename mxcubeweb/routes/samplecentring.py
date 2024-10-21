@@ -1,11 +1,13 @@
+import io
 import json
-import os
+import logging
 
 from flask import (
     Blueprint,
     Response,
     jsonify,
     request,
+    send_file,
 )
 from mxcubecore import HardwareRepository as HWR
 
@@ -39,22 +41,40 @@ def init_route(app, server, url_prefix):  # noqa: C901
         HWR.beamline.sample_view.camera.streaming_greenlet.kill()
         return Response(status=200)
 
-    @bp.route("/camera/save", methods=["PUT"])
+    @bp.route("/camera/snapshot", methods=["POST"])
     @server.restrict
     def snapshot():
         """
-        Save snapshot of the sample view
-        data = {generic_data, "Path": path} # not sure if path should be available,
-        or directly use the user/proposal path
-        Return: 'True' if command issued succesfully, otherwise 'False'.
+        Take snapshot of the sample view
+        data = {"overlay": overlay_data} overlay is the image data to overlay on sample image,
+        it should normally contain the data of shapes drawn on canvas.
+        Return: Overlayed image uri, if successful, statuscode 500 otherwise.
         """
         try:
-            HWR.beamline.sample_view.camera.takeSnapshot(
-                os.path.join(os.path.dirname(__file__), "snapshots/")
+            overlay = json.loads(request.data).get("overlay")
+            mimetype, overlay_data = overlay.split(",")
+
+            # Check if send data is a jpeg image
+            if "image/jpeg" not in mimetype:
+                raise Exception("Image type should be jpeg")
+
+            image = HWR.beamline.sample_view.take_snapshot(
+                overlay_data=overlay_data,
             )
-            return "True"
+
+            b = io.BytesIO()
+            image.save(b, "JPEG")
+            b.seek(0)
+
+            return send_file(
+                b,
+                mimetype="image/jpeg",
+                as_attachment=True,
+                download_name="snapshot.jpeg",
+            )
         except Exception:
-            return "False"
+            logging.getLogger("MX3.HWR").exception("Taking a snapshot failed")
+            return jsonify({"error": "Taking a snapshot failed"})
 
     @bp.route("/camera", methods=["GET"])
     @server.restrict
