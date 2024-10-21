@@ -12,6 +12,7 @@ function CentringControl() {
   return (
     <Button
       className={styles.controlBtn}
+      data-default-styles
       active={isActive}
       title={`${isActive ? 'Stop' : 'Start'} 3-click centring`}
       onClick={() => dispatch(toggleCentring())}

@@ -111,14 +111,14 @@ input[type='color']:focus,
   background: #dff0d8 !important;
 }
 
-.btn:focus,
-.btn:active {
+.btn:not([data-default-styles]):focus,
+.btn:not([data-default-styles]):active {
   outline: none !important;
   box-shadow: none !important;
 }
 
-.dropdown-item:focus,
-.dropdown-item:active {
+.dropdown-item:not([data-default-styles]):focus,
+.dropdown-item:not([data-default-styles]):active {
   outline: none !important;
   box-shadow: none !important;
   background: transparent;

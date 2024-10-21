@@ -12,6 +12,7 @@ function GridControl() {
   return (
     <Button
       className={styles.controlBtn}
+      data-default-styles
       active={isActive}
       title="Draw grid"
       onClick={() => dispatch(toggleDrawGrid())}

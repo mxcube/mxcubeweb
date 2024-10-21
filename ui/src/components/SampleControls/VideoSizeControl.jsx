@@ -16,19 +16,20 @@ function VideoSizeControl() {
       drop="down-centered"
       onSelect={(i) => dispatch(setVideoSize(...videoSizes[i]))}
     >
-      <Dropdown.Toggle className={styles.controlDropDown}>
+      <Dropdown.Toggle className={styles.dropdownBtn} data-default-styles>
         <i className={`${styles.controlIcon} fas fa-video`} />
-        <i className={`${styles.dropDownIcon} fas fa-sort-down`} />
+        <i className={`${styles.dropdownIcon} fas fa-sort-down`} />
         <span className={styles.controlLabel}>Video size</span>
       </Dropdown.Toggle>
 
-      <Dropdown.Menu className={styles.dropDownMenu}>
+      <Dropdown.Menu className={styles.dropdownMenu}>
         {videoSizes.map(([w, h], i) => {
           const isActive = w.toString() === width;
           return (
             <Dropdown.Item
               key={`${w}_${h}`}
-              className={styles.dropDownItem}
+              className={styles.dropdownItem}
+              data-default-styles
               eventKey={i}
               active={isActive}
             >

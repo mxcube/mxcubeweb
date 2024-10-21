@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, OverlayTrigger } from 'react-bootstrap';
+import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
 import styles from './SampleControls.module.css';
@@ -16,16 +16,16 @@ function FocusControl() {
       rootClose
       placement="bottom"
       overlay={
-        <div className={styles.overlay}>
+        <Popover id="FocusControl_popover" className={styles.popover} body>
           <OneAxisTranslationControl motorProps={focusMotorProps} />
-        </div>
+        </Popover>
       }
     >
       <Button
-        className={styles.controlBtn}
+        className={styles.popoverBtn}
+        data-default-styles
         name="focus"
         title="Focus"
-        data-toggle="tooltip"
       >
         <i className={`${styles.controlIcon} fas fa-adjust`} />
         <span className={styles.controlLabel}>Focus</span>

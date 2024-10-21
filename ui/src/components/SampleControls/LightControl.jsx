@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
-import { Button, OverlayTrigger } from 'react-bootstrap';
+import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { HW_STATE } from '../../constants';
@@ -33,7 +33,7 @@ function LightControl(props) {
         rootClose
         placement="bottom"
         overlay={
-          <div className={styles.overlay}>
+          <Popover id={`${hwoId}_popover`} className={styles.popover} body>
             <input
               className="bar"
               type="range"
@@ -46,14 +46,15 @@ function LightControl(props) {
                 dispatch(setAttribute(hwoId, evt.target.value))
               }
             />
-          </div>
+          </Popover>
         }
       >
         {({ ref, ...triggerHandlers }) => (
           <>
             <Button
               ref={ref}
-              className={styles.controlBtnWithOverlay}
+              className={styles.lightBtn}
+              data-default-styles
               active={lightSwitch.value === lightSwitch.commands[0]}
               title={`${label} on/off`}
               onClick={handleToggleClick}
@@ -61,7 +62,11 @@ function LightControl(props) {
               <i className={`${styles.controlIcon} fas fa-lightbulb`} />
               <span className={styles.controlLabel}>{label}</span>
             </Button>
-            <Button className={styles.overlayTrigger} {...triggerHandlers}>
+            <Button
+              className={styles.lightArrowBtn}
+              data-default-styles
+              {...triggerHandlers}
+            >
               <i className="fas fa-sort-down" />
             </Button>
           </>
