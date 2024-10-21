@@ -55,6 +55,16 @@
   top: 6px !important;
 }
 
+.dropDownItem:global(.active) {
+  background-color: transparent;
+  color: inherit;
+  font-weight: bold;
+}
+
+.dropDownItem:global(.active):hover {
+  background-color: var(--bs-dropdown-link-hover-bg);
+}
+
 .controlBtnWithOverlay .controlIcon {
   transform: translateX(-35%);
 }
