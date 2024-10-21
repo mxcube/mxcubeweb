@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
-import { Button, OverlayTrigger } from 'react-bootstrap';
+import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { HW_STATE } from '../../constants';
@@ -22,9 +22,8 @@ function ZoomControl() {
       rootClose
       placement="bottom"
       overlay={
-        <div className={styles.overlay}>
+        <Popover id="ZoomControl_popover" className={styles.popover} body>
           <input
-            className={styles.zoomSlider}
             type="range"
             list="ZoomControl_commands"
             min={0}
@@ -42,14 +41,14 @@ function ZoomControl() {
               <option key={cmd} value={index} />
             ))}
           </datalist>
-        </div>
+        </Popover>
       }
     >
       <Button
-        className={styles.controlBtn}
+        className={styles.popoverBtn}
+        data-default-styles
         name="zoomOut"
         title="Zoom in/out"
-        data-toggle="tooltip"
       >
         <i className={`${styles.controlIcon} fas fa-search`} />
         <span className={styles.controlLabel}>Zoom ({value}) </span>

@@ -48,6 +48,7 @@ function SnapshotControl(props) {
   return (
     <Button
       className={styles.controlBtn}
+      data-default-styles
       title="Take snapshot"
       onClick={() => takeSnapshot()}
     >
