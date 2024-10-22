@@ -22,13 +22,6 @@
   left: 0;
 }
 
-#contextMenu {
-  position: absolute;
-  top: 0;
-  left: 0;
-  display: none;
-}
-
 #video-message-overlay {
   width: 40%;
   background-color: rgb(34, 34, 34);

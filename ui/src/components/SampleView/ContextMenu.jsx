@@ -1,48 +1,32 @@
 /* eslint-disable react/jsx-handler-names */
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Dropdown } from 'react-bootstrap';
 import { getLastUsedParameters } from '../Tasks/fields';
 
-// eslint-disable-next-line react/no-unsafe
+const BESPOKE_TASK_NAMES = new Set([
+  'datacollection',
+  'characterisation',
+  'xrf_spectrum',
+  'energy_scan',
+  'mesh',
+  'helical',
+  'workflow',
+  'interleaved',
+]);
+
 export default class ContextMenu extends React.Component {
   constructor(props) {
     super(props);
     this.toggleDrawGrid = this.toggleDrawGrid.bind(this);
     this.menuOptions = this.menuOptions.bind(this);
-    this.hideContextMenu = this.hideContextMenu.bind(this);
-  }
-
-  componentDidMount() {
-    document.addEventListener('click', this.hideContextMenu);
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.show) {
-      this.showContextMenu(nextProps.x, nextProps.y);
-    } else {
-      this.hideContextMenu();
-    }
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('click', this.hideContextMenu);
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
   menuOptions() {
-    const bespokeTaskNames = new Set([
-      'datacollection',
-      'characterisation',
-      'xrf_spectrum',
-      'energy_scan',
-      'mesh',
-      'helical',
-      'workflow',
-      'interleaved',
-    ]);
     const generalTaskNames = Object.keys(
       this.props.taskForm.defaultParameters,
-    ).filter((tname) => !bespokeTaskNames.has(tname));
+    ).filter((tname) => !BESPOKE_TASK_NAMES.has(tname));
 
     const genericTasks = {
       point: [],
@@ -381,23 +365,11 @@ export default class ContextMenu extends React.Component {
         'There is no sample mounted, cannot collect data.',
       );
     }
-    this.hideContextMenu();
-    this.props.sampleViewActions.showContextMenu(false);
   }
 
   createCollectionOnCell() {
     const { cellCenter } = this.props.shape;
     this.createPoint(cellCenter[0], cellCenter[1]);
-    this.props.sampleViewActions.showContextMenu(false);
-  }
-
-  showContextMenu(x, y) {
-    const contextMenu = document.querySelector('#contextMenu');
-    if (contextMenu) {
-      contextMenu.style.top = `${y + 140}px`;
-      contextMenu.style.left = `${x + 170}px`;
-      contextMenu.style.display = 'block';
-    }
   }
 
   createPoint(x, y, cb = null) {
@@ -430,18 +402,14 @@ export default class ContextMenu extends React.Component {
         }
       });
     }
-
-    this.props.sampleViewActions.showContextMenu(false);
   }
 
   goToPoint() {
-    this.props.sampleViewActions.showContextMenu(false);
     this.props.sampleViewActions.moveToPoint(this.props.shape.id);
   }
 
   goToBeam() {
     const { x, y, imageRatio } = this.props;
-    this.props.sampleViewActions.showContextMenu(false);
     this.props.sampleViewActions.moveToBeam(x / imageRatio, y / imageRatio);
   }
 
@@ -450,28 +418,18 @@ export default class ContextMenu extends React.Component {
       this.props.sampleViewActions.abortCentring();
     }
 
-    // eslint-disable-next-line promise/catch-or-return
-    this.props.sampleViewActions
-      .deleteShape(this.props.shape.id)
-      // eslint-disable-next-line promise/prefer-await-to-then
-      .then(() => {
-        this.props.sampleViewActions.showContextMenu(false);
-      });
+    this.props.sampleViewActions.deleteShape(this.props.shape.id);
   }
 
   measureDistance() {
-    this.props.sampleViewActions.showContextMenu(false);
     this.props.sampleViewActions.measureDistance(true);
   }
 
   toggleDrawGrid() {
-    this.props.sampleViewActions.showContextMenu(false);
     this.props.sampleViewActions.toggleDrawGrid();
   }
 
   saveGrid() {
-    this.props.sampleViewActions.showContextMenu(false);
-
     const gd = { ...this.props.shape.gridData };
     this.props.sampleViewActions.addShape({ t: 'G', ...gd });
     this.props.sampleViewActions.toggleDrawGrid();
@@ -479,7 +437,6 @@ export default class ContextMenu extends React.Component {
 
   createPointAndShowModal(name, extraParams = {}) {
     const { x, y, imageRatio } = this.props;
-    this.props.sampleViewActions.showContextMenu(false);
     this.createPoint(x / imageRatio, y / imageRatio, (shape) =>
       this.showModal(name, {}, shape, extraParams),
     );
@@ -497,18 +454,9 @@ export default class ContextMenu extends React.Component {
       lines.map((x) => sid.splice(sid.indexOf(x), 1));
     }
 
-    this.props.sampleViewActions.showContextMenu(false);
     this.props.sampleViewActions.addShape({ t: 'L', refs: shape.id }, (s) => {
       this.showModal(modal, wf, s);
     });
-  }
-
-  hideContextMenu() {
-    const ctxMenu = document.querySelector('#contextMenu');
-    if (ctxMenu && this.props.show) {
-      ctxMenu.style.display = 'none';
-      this.props.sampleViewActions.showContextMenu(false);
-    }
   }
 
   listOptions(type) {
@@ -538,10 +486,29 @@ export default class ContextMenu extends React.Component {
     } else {
       optionList = menuOptions.NONE.map(this.listOptions);
     }
-    return (
-      <Dropdown.Menu show id="contextMenu" role="menu">
-        {optionList}
-      </Dropdown.Menu>
+
+    return createPortal(
+      <Dropdown
+        id="contextMenu"
+        role="menu"
+        show={this.props.show}
+        autoClose
+        onToggle={(nextShow) => {
+          if (!nextShow) {
+            this.props.sampleViewActions.showContextMenu(false);
+          }
+        }}
+        style={{
+          position: 'absolute',
+          zIndex: 9999,
+          // display: 'block',
+          top: `${this.props.y}px`,
+          left: `${this.props.x}px`,
+        }}
+      >
+        <Dropdown.Menu rootCloseEvent="mousedown">{optionList}</Dropdown.Menu>
+      </Dropdown>,
+      document.body,
     );
   }
 }
