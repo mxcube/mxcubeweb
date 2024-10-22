@@ -1,5 +1,6 @@
 import logging
 import json
+from typing import List, Union
 import uuid
 import datetime
 
@@ -19,7 +20,7 @@ class BaseUserManager(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
 
-    def get_observers(self) -> list[User]:
+    def get_observers(self) -> List[User]:
         """List users that are in observer mode.
 
         Observer mode means user is logged in (authenticated and active) but not in
@@ -46,7 +47,7 @@ class BaseUserManager(ComponentBase):
         """Return True if the current_user is an operator."""
         return getattr(current_user, "in_control", False)
 
-    def active_logged_in_users(self, exclude_inhouse: bool = False) -> list[User]:
+    def active_logged_in_users(self, exclude_inhouse: bool = False) -> List[User]:
         """List of active and logged in users.
 
         Attributes:
@@ -63,7 +64,7 @@ class BaseUserManager(ComponentBase):
 
         return users
 
-    def get_user(self, username: str) -> User | None:
+    def get_user(self, username: str) -> Union[User, None]:
         """Return user model instance based on username."""
         user = None
 
@@ -73,7 +74,7 @@ class BaseUserManager(ComponentBase):
 
         return user
 
-    def set_operator(self, username: str) -> User | None:
+    def set_operator(self, username: str) -> Union[User, None]:
         """Set the user with the given username to be an operator."""
         user = None
 
