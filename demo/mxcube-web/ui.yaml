@@ -78,14 +78,13 @@ sample_view:
 
 sample_view_video_controls:
   id: sample_view_video_controls
-  grid_settings:
-    show_mesh_grid_vspace: false
-    show_mesh_grid_hspace: false
   components:
     - id: snapshot
       show: true
     - id: draw_grid
       show: true
+      show_vspace: false
+      show_hspace: true
     - id: 3_click_centring
       show: true
     - id: focus
