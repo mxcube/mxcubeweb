@@ -1,6 +1,7 @@
 from enum import Enum
+from pydantic import model_validator
 from pydantic.v1 import BaseModel, Field
-from typing import List, Dict, Optional
+from typing import List, Dict, Literal, Optional, Union
 import datetime
 
 
@@ -56,8 +57,10 @@ class _UISampleViewVideoControlsModel(BaseModel):
 
 
 class _UISampleViewVideoGridSettingsModel(BaseModel):
-    show_mesh_grid_vspace: bool = False
-    show_mesh_grid_hspace: bool = False
+    id: Literal["draw_grid"]
+    show: bool
+    show_vspace: bool = False
+    show_hspace: bool = False
 
 
 class UIPropertiesModel(BaseModel):
@@ -70,10 +73,10 @@ class UICameraConfigModel(UIPropertiesModel):
 
 
 class UISampleViewVideoControlsModel(UIPropertiesModel):
-    grid_settings: _UISampleViewVideoGridSettingsModel = Field(
-        default_factory=_UISampleViewVideoGridSettingsModel
-    )
-    components: List[_UISampleViewVideoControlsModel]
+    # It is important to keep the Union elements in that order; from the more specific to the more general.
+    components: List[
+        Union[_UISampleViewVideoGridSettingsModel, _UISampleViewVideoControlsModel]
+    ]
 
 
 class UIPropertiesListModel(BaseModel):

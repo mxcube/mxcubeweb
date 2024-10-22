@@ -28,13 +28,14 @@ export default function GridForm(props) {
 
   const draggableRef = useRef(null);
   const [position, setPosition] = useState({ x: 20, y: 64 });
-  const { show_mesh_grid_hspace, show_mesh_grid_vspace } = useSelector(
-    (state) => state.uiproperties.sample_view_video_controls.grid_settings,
+  const { show_vspace, show_hspace } = useSelector((state) =>
+    state.uiproperties.sample_view_video_controls.components.find(
+      (component) => component.id === 'draw_grid',
+    ),
   );
 
   // we want these buttons to have the same size. Additionally we want to assign them more space when there are additional controls shown.
-  const addOrRemoveButtonSize =
-    show_mesh_grid_hspace || show_mesh_grid_vspace ? '100%' : '75%';
+  const addOrRemoveButtonSize = show_hspace || show_vspace ? '100%' : '75%';
 
   // we use the useEffect function with a ref here, since React's synthetic event
   // system (onContextMenu) could not stop the propagation
@@ -69,8 +70,8 @@ export default function GridForm(props) {
           <td>
             <span style={{ lineHeight: '24px' }}>{grid.name}</span>
           </td>
-          {show_mesh_grid_hspace ? <td>{grid.cellHSpace.toFixed(2)}</td> : null}
-          {show_mesh_grid_vspace ? <td>{grid.cellVSpace.toFixed(2)}</td> : null}
+          {show_hspace ? <td>{grid.cellHSpace.toFixed(2)}</td> : null}
+          {show_vspace ? <td>{grid.cellVSpace.toFixed(2)}</td> : null}
           <td>
             {vdim} x {hdim}
           </td>
@@ -125,7 +126,7 @@ export default function GridForm(props) {
         <td>
           <span style={{ lineHeight: '24px' }}>*</span>
         </td>
-        {show_mesh_grid_hspace && (
+        {show_hspace && (
           <td>
             {/* prevents refresh when pressing enter */}
             <Form onSubmit={(event) => event.preventDefault()}>
@@ -138,7 +139,7 @@ export default function GridForm(props) {
             </Form>
           </td>
         )}
-        {show_mesh_grid_vspace && (
+        {show_vspace && (
           <td>
             <Form onSubmit={(event) => event.preventDefault()}>
               <Form.Control
@@ -188,8 +189,8 @@ export default function GridForm(props) {
             <thead>
               <tr>
                 <th>Name</th>
-                {show_mesh_grid_hspace && <th>H-Space (µm)</th>}
-                {show_mesh_grid_vspace && <th>V-Space (µm)</th>}
+                {show_hspace && <th>H-Space (µm)</th>}
+                {show_vspace && <th>V-Space (µm)</th>}
                 <th>Dim (µm)</th>
                 <th>#Cells</th>
                 <th>R x C</th>

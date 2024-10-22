@@ -32,7 +32,6 @@ import {
   logFrontEndTraceBack,
   setAttribute,
 } from '../actions/beamline';
-import { find } from 'lodash';
 
 import '../components/SampleView/SampleView.css';
 import styles from './SampleViewContainer.module.css';
@@ -45,13 +44,10 @@ class SampleViewContainer extends Component {
   }
 
   getControlAvailability(name) {
-    const available = find(
-      this.props.uiproperties.sample_view_video_controls.components,
-      {
-        id: name,
-        show: true,
-      },
-    );
+    const available =
+      this.props.uiproperties.sample_view_video_controls.components.find(
+        (component) => component.id === name && component.show === true,
+      );
 
     return available?.show || false;
   }

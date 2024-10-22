@@ -102,14 +102,13 @@ The section has the following syntax:
 
     sample_view_video_controls:
       id: sample_view_video_controls
-      grid_settings:
-        show_mesh_grid_vspace: false
-        show_mesh_grid_hspace: false
       components:
         - id: snapshot
           show: <show>
         - id: draw_grid
           show: <show>
+          show_hspace: <show_hspace>
+          show_vspace: <show_vspace>
         - id: 3_click_centring
           show: <show>
         - id: focus
@@ -123,12 +122,9 @@ The section has the following syntax:
         - id: video_size
           show: <show>
 
-It consists of two keys:
-- `grid_settings` - settings related to the mesh grid controls in the `draw_grid` component.
-- `components` - a list of all supported sample video widgets, in the format:
-  - id: widget id
-  - show: <show> - boolean flag, when it's *true* the widget is included, when *false* it is omitted.
-
+It is a list of all supported sample video widgets.
+``<show>`` flag is a boolean, when it's *true* the widget is included, when *false* it is omitted.
+The `draw_grid` component also allows to enable setting horizontal and vertical spacing.
 
 .. image:: video_controls.png
 
