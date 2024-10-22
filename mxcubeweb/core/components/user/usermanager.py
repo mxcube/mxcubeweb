@@ -20,9 +20,10 @@ class BaseUserManager(ComponentBase):
         super().__init__(app, config)
 
     def get_observers(self) -> list[User]:
-        """
-        Return users that are in observer mode: logged in
-        (authenticated and active) but not in control of the beamline.
+        """List users that are in observer mode.
+
+        Observer mode means user is logged in (authenticated and active) but not in
+        control of the application.
         """
         return [
             user
@@ -31,7 +32,7 @@ class BaseUserManager(ComponentBase):
         ]
 
     def get_operator(self) -> User:
-        """Return user (operator) that is controlling the beamline."""
+        """Return user object that is controlling the beamline (operator)."""
         user = None
 
         for _u in User.query.all():
@@ -46,9 +47,10 @@ class BaseUserManager(ComponentBase):
         return getattr(current_user, "in_control", False)
 
     def active_logged_in_users(self, exclude_inhouse: bool = False) -> list[User]:
-        """
-        Return a list of active logged in users. With or without inhouse,
-        based on the exclude_inhouse parameter.
+        """List of active and logged in users.
+
+        Attributes:
+            exclude_inhouse (bool): exclude inhouse users from the list
         """
         self.update_active_users()
 
@@ -113,7 +115,8 @@ class BaseUserManager(ComponentBase):
         in control, the first logged in user is set. Additionally, proposal
         is set based on the operator selected_proposal field.
 
-        :param bool new_login: True if updating operator was invoked with new user logging in
+        Attributes:
+            new_login: True if method was invoked with new user login.
         """
         active_in_control = False
 
@@ -147,7 +150,11 @@ class BaseUserManager(ComponentBase):
                     self.app.lims.select_proposal(_u.selected_proposal)
 
     def is_inhouse_user(self, user_id: str) -> bool:
-        """Retrun True if the user_id is in the in-house user list."""
+        """Retrun True if the user_id is in the in-house user list.
+
+        Attributes:
+            user_id: user id composed from code and number.
+        """
         user_id_list = [
             "%s%s" % (code, number)
             for (code, number) in HWR.beamline.session.in_house_users
@@ -165,8 +172,9 @@ class BaseUserManager(ComponentBase):
         data store. If a sample is loaded in sample changer but not mounted,
         mount it and update the smaple list. Try update the operator.
 
-        :param str login_id: username
-        :param str password: password
+        Attributes:
+            login_id: username.
+            password: password.
         """
         try:
             login_res = self._login(login_id, password)
@@ -203,11 +211,11 @@ class BaseUserManager(ComponentBase):
         pass
 
     def signout(self):
-        """
-        Signing out the current user: if the user was an operator, the queue
-        and samples restored to init values, the session is cleared, the user
-        is not an operator anymore. Log out and deactivte the user, and emit
-        'observersChanged' signal.
+        """Sign out the current user.
+
+        If the user was an operator, the queue and samples are restored to init values,
+        the session is cleared, the user is not an operator anymore. Log out and
+        deactivte the user, and emit 'observersChanged' signal.
         """
         self._signout()
         user = current_user
@@ -241,7 +249,10 @@ class BaseUserManager(ComponentBase):
         return current_user.is_authenticated()
 
     def force_signout_user(self, username: str) -> None:
-        """Force signout of the annonymous or non operating user with the given username.
+        """Force signout of the annonymous or non operating user.
+
+        Attributes:
+            username: username of the user to be signed out.
         """
         user = self.get_user(username)
 
@@ -252,9 +263,12 @@ class BaseUserManager(ComponentBase):
             self.app.server.emit("forceSignout", room=socketio_sid, namespace="/hwr")
 
     def login_info(self) -> dict:
-        """
-        Return a dictionary with the login information to be displayed in the
-        application, such as: synchrotron and beamline names, proposal list etc.
+        """Login information to be displayed in the application.
+
+        Infomration such as: synchrotron and beamline names, user infromation, proposals list, selected proposal etc.
+
+        Returns:
+            dictionary with login information.
         """
         if not current_user.is_anonymous:
             login_info = convert_to_dict(json.loads(current_user.limsdata))
@@ -294,11 +308,22 @@ class BaseUserManager(ComponentBase):
         return res
 
     def update_user(self, user: User) -> None:
-        """Update user information in datastore."""
+        """Update user information in datastore.
+
+        Attributes:
+            user: User model instance.
+        """
         self.app.server.user_datastore.put(user)
         self.app.server.user_datastore.commit()
 
-    def _get_configured_roles(self, user):
+    def _get_configured_roles(self, user: str) -> list[str]:
+        """Get the roles configured for the user.
+
+        Inhouse user is always assigned additionaly a staff role.
+
+        Attributes:
+            user: username.
+        """
         roles = set()
 
         _ihs = ["%s%s" % prop for prop in HWR.beamline.session.in_house_users]
@@ -314,14 +339,20 @@ class BaseUserManager(ComponentBase):
         return list(roles)
 
     def db_create_user(self, user: str, password: str, lims_data: dict) -> User:
-        """
-        Create new user in datastore. If the user already exists,
-        update the user information.
+        """Create or update user in datastore.
 
-        :param str user: representation of (patial) username and nickname of new user
-        :param str password: password
-        :param dict lims_data: dictionary with the lims data to be updated
-        :return: User model instance existing / added to datastore
+        If the user already exists, update the user information. If not create new one.
+        Assign roles to the user, prevoiusly making sure the roles of 'staff' and
+        'incontrol' existis in data store. If not create them also.
+
+        Attributes:
+            user: representation of username (eventually part of it). Also a nickname
+                for new users.
+            password (unused): password.
+            lims_data: dictionary with the lims data to be updated.
+
+        Returns:
+            User model instance existing in or added to datastore.
         """
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
@@ -362,14 +393,15 @@ class BaseUserManager(ComponentBase):
         return user_datastore.find_user(username=username)
 
     def db_set_in_control(self, user: User, control: bool) -> None:
-        """
-        Update users (their in_control field) in the datastore. If the passed
-        user becomes an operator (control=True), the remaining users'
-        in_control fields are set to False. If passed user stops being
-        an operator, only its in_control field is set to False.
+        """Update users (their in_control field) in the datastore.
 
-        :param User user: User model instance
-        :param bool control: the user becomes an operator (Ture) or not (False)
+        If the passed user becomes an operator (control=True), the remaining users'
+        in_control fields are set to False. If passed user stops being an operator,
+        only its in_control field is set to False.
+
+        Attributes:
+            user: User model instance.
+            control: the user becomes an operator (Ture) or not (False).
         """
         user_datastore = self.app.server.user_datastore
 
@@ -394,13 +426,17 @@ class UserManager(BaseUserManager):
         super().__init__(app, config)
 
     def _login(self, login_id: str, password: str) -> dict:
-        """
-        Check loging conditions (anonymous, local/remote, existing session)
-        and return the login response information.
+        """Check loging conditions
 
-        :param str login_id: username
-        :param str password: password
-        :return: login response information
+        Login conditions are: active, anonymous, inhouse, local/remote login, within
+        existing session or not.
+
+        Attributes:
+            login_id: username
+            password: password
+
+        Returns:
+            dictionary with login response information.
         """
         login_res = self.app.lims.lims_login(login_id, password, create_session=False)
         inhouse = self.is_inhouse_user(login_id)
