@@ -284,6 +284,7 @@ class SampleView(ComponentBase):
             # If shape does not exist add it
             if not shape:
                 refs, t = shape_data.pop("refs", []), shape_data.pop("t", "")
+                state = shape_data.pop("state", "SAVED")
                 user_state = shape_data.pop("user_state", "SAVED")
 
                 # Store pixels per mm for third party software, to facilitate
@@ -329,14 +330,14 @@ class SampleView(ComponentBase):
                             pos.append(center_positions)
 
                         shape = HWR.beamline.sample_view.add_shape_from_mpos(
-                            pos, (x, y), t, user_state
+                            pos, (x, y), t, state, user_state
                         )
                     except Exception:
                         logging.getLogger("HWR.MX3").info(shape_data)
 
                 else:
                     shape = HWR.beamline.sample_view.add_shape_from_refs(
-                        refs, t, user_state
+                        refs, t, state, user_state
                     )
 
             # shape will be none if creation failed, so we check if shape exists
