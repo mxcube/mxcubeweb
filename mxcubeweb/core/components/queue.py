@@ -41,6 +41,7 @@ ORIGIN_MX3 = "MX3"
 class Queue(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
+        self.init_queue_settings()
 
     def build_prefix_path_dict(self, path_list):
         prefix_path_dict = {}
