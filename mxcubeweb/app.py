@@ -3,38 +3,37 @@ Module that contains application wide settings and state as well as functions
 for accessing and manipulating those.
 """
 
+import json
+import logging
 import os
 import sys
-import logging
-import traceback
-import json
 import time
-
-from pathlib import Path
+import traceback
 from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
+from pathlib import Path
 
+from mxcubecore import ColorFormatter
 from mxcubecore import HardwareRepository as HWR
-from mxcubecore import removeLoggingHandlers, ColorFormatter
-from mxcubecore import queue_entry
+from mxcubecore import (
+    queue_entry,
+    removeLoggingHandlers,
+)
 from mxcubecore.utils.conversion import make_table
 
-from mxcubeweb.logging_handler import MX3LoggingHandler
-from mxcubeweb.core.util.adapterutils import (
-    get_adapter_cls_from_hardware_object,
-)
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
-from mxcubeweb.core.components.component_base import import_component
-from mxcubeweb.core.components.lims import Lims
-from mxcubeweb.core.components.chat import Chat
-from mxcubeweb.core.components.samplechanger import SampleChanger
 from mxcubeweb.core.components.beamline import Beamline
-from mxcubeweb.core.components.sampleview import SampleView
+from mxcubeweb.core.components.chat import Chat
+from mxcubeweb.core.components.component_base import import_component
+from mxcubeweb.core.components.harvester import Harvester
+from mxcubeweb.core.components.lims import Lims
 from mxcubeweb.core.components.queue import Queue
+from mxcubeweb.core.components.samplechanger import SampleChanger
+from mxcubeweb.core.components.sampleview import SampleView
 from mxcubeweb.core.components.workflow import Workflow
 from mxcubeweb.core.models.configmodels import UIComponentModel
-from mxcubeweb.core.components.harvester import Harvester
-
+from mxcubeweb.core.util.adapterutils import get_adapter_cls_from_hardware_object
+from mxcubeweb.logging_handler import MX3LoggingHandler
 
 removeLoggingHandlers()
 
@@ -88,9 +87,7 @@ class MXCUBECore:
 
         :return: None
         """
-        from mxcubeweb.core.adapter.beamline_adapter import (
-            BeamlineAdapter,
-        )
+        from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
 
         fname = os.path.dirname(__file__)
         HWR.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])

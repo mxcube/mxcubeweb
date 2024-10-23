@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import base64
 
-from mxcubeweb.core.components.component_base import ComponentBase
-
 from mxcubecore import HardwareRepository as HWR
+
+from mxcubeweb.core.components.component_base import ComponentBase
 
 
 class Workflow(ComponentBase):

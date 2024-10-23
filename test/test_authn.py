@@ -7,10 +7,10 @@
 import os
 import time
 
+import mxcubecore
 import pytest
 
 import mxcubeweb
-import mxcubecore
 
 URL_BASE = "/mxcube/api/v0.1/login"
 URL_SIGNIN = f"{URL_BASE}/"  # Trailing slash is necessary

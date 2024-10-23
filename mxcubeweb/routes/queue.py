@@ -1,9 +1,15 @@
 import json
+
 import spectree
-
-from flask import Blueprint, Response, jsonify, request, session
-
+from flask import (
+    Blueprint,
+    Response,
+    jsonify,
+    request,
+    session,
+)
 from mxcubecore import HardwareRepository as HWR
+
 from mxcubeweb.core.models.generic import SimpleNameValue
 
 

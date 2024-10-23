@@ -1,7 +1,11 @@
 import json
 import logging
-from flask import Blueprint, jsonify, request
 
+from flask import (
+    Blueprint,
+    jsonify,
+    request,
+)
 from mxcubecore import HardwareRepository as HWR
 
 

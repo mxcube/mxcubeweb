@@ -1,15 +1,18 @@
+import logging
 import os
 import sys
-import logging
-import ruamel.yaml
 
-from pydantic.v1 import BaseModel, ValidationError
+import ruamel.yaml
+from pydantic.v1 import (
+    BaseModel,
+    ValidationError,
+)
 
 from mxcubeweb.core.models.configmodels import (
-    UIPropertiesListModel,
     AppConfigModel,
     FlaskConfigModel,
     MXCUBEAppConfigModel,
+    UIPropertiesListModel,
 )
 
 
