@@ -1,11 +1,13 @@
 import logging
 
-from flask import Blueprint, Response
-
+from flask import (
+    Blueprint,
+    Response,
+)
 from mxcubecore import HardwareRepository as HWR
 
-from mxcubeweb.routes import signals
 from mxcubeweb.core.util.convertutils import to_camel
+from mxcubeweb.routes import signals
 
 
 def init_route(app, server, url_prefix):

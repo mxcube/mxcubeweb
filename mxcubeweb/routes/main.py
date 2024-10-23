@@ -1,21 +1,20 @@
 import logging
-import traceback
 import time
-import flask_login
-
+import traceback
 from datetime import datetime
 
-from flask import Blueprint, jsonify, request
+import flask_login
+from flask import (
+    Blueprint,
+    jsonify,
+    request,
+)
+from mxcubecore import HardwareRepository as HWR
 from spectree import Response
 
 from mxcubeweb import __version__
+from mxcubeweb.core.models.configmodels import UIPropertiesListModel
 from mxcubeweb.core.models.generic import AppSettingsModel
-from mxcubeweb.core.models.configmodels import (
-    UIPropertiesListModel,
-)
-
-
-from mxcubecore import HardwareRepository as HWR
 
 
 def init_route(app, server, url_prefix):

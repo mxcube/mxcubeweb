@@ -1,31 +1,24 @@
-import logging
 import json
-
-from mxcubeweb.server import Server as server
-from mxcubeweb.app import MXCUBEApplication as mxcube
+import logging
 
 from flask import Response
+from mxcubecore import HardwareRepository as HWR
+from mxcubecore import queue_entry as qe
+from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
+from mxcubecore.HardwareObjects.Harvester import HarvesterState
+from mxcubecore.model import queue_model_objects as qmo
 
-from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import (
-    SampleChangerState,
-)
-
+from mxcubeweb.app import MXCUBEApplication as mxcube
 from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcubeweb.core.components.queue import (
+    COLLECTED,
+    FAILED,
     READY,
     RUNNING,
-    FAILED,
-    COLLECTED,
     WARNING,
 )
-from mxcubecore.HardwareObjects.Harvester import HarvesterState
-
-from mxcubecore.model import queue_model_objects as qmo
-from mxcubecore import queue_entry as qe
-
 from mxcubeweb.core.util.networkutils import RateLimited
-
-from mxcubecore import HardwareRepository as HWR
+from mxcubeweb.server import Server as server
 
 
 def last_queue_node():

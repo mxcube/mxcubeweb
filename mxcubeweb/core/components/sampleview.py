@@ -1,31 +1,25 @@
 # -*- coding: utf-8 -*-
-import logging
-import types
-import sys
-import os
-import inspect
-
-import PIL
-import gevent.event
-
-from flask import Response
-
-from io import StringIO
 import base64
+import inspect
+import logging
+import os
+import sys
+import types
+from io import StringIO
 
-from mxcubeweb.core.util.convertutils import to_camel, from_camel
-
-from mxcubecore.queue_entry.base_queue_entry import CENTRING_METHOD
-from mxcubecore.BaseHardwareObjects import HardwareObjectState
-from mxcubecore.HardwareObjects.abstract.AbstractNState import (
-    AbstractNState,
-)
-
-
+import gevent.event
+import PIL
+from flask import Response
 from mxcubecore import HardwareRepository as HWR
+from mxcubecore.BaseHardwareObjects import HardwareObjectState
+from mxcubecore.HardwareObjects.abstract.AbstractNState import AbstractNState
+from mxcubecore.queue_entry.base_queue_entry import CENTRING_METHOD
 
 from mxcubeweb.core.components.component_base import ComponentBase
-
+from mxcubeweb.core.util.convertutils import (
+    from_camel,
+    to_camel,
+)
 
 SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None

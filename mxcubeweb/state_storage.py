@@ -1,8 +1,9 @@
-from flask_socketio import emit
-from mxcubeweb.server import Server as server
-from mxcubeweb.app import MXCUBEApplication as mxcube
-
 import json
+
+from flask_socketio import emit
+
+from mxcubeweb.app import MXCUBEApplication as mxcube
+from mxcubeweb.server import Server as server
 
 
 def flush():

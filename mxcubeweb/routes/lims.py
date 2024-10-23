@@ -1,19 +1,21 @@
 # -*- coding: utf-8 -*-
-from subprocess import check_output
-from os.path import isfile, join
 import logging
+from os.path import (
+    isfile,
+    join,
+)
+from subprocess import check_output
 
 from flask import (
     Blueprint,
-    jsonify,
     Response,
-    send_file,
-    request,
+    jsonify,
     render_template,
+    request,
+    send_file,
 )
-
-from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore import HardwareRepository as HWR
+from mxcubecore.model import queue_model_objects as qmo
 
 from . import signals
 

@@ -1,8 +1,18 @@
-from enum import Enum
-from pydantic import model_validator
-from pydantic.v1 import BaseModel, Field
-from typing import List, Dict, Literal, Optional, Union
 import datetime
+from enum import Enum
+from typing import (
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+)
+
+from pydantic import model_validator
+from pydantic.v1 import (
+    BaseModel,
+    Field,
+)
 
 
 class FlaskConfigModel(BaseModel):

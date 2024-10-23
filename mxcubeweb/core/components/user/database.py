@@ -1,10 +1,13 @@
 import datetime
 import typing
 
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
 from flask_security import SQLAlchemySessionUserDatastore
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import (
+    scoped_session,
+    sessionmaker,
+)
 
 Base = declarative_base()
 

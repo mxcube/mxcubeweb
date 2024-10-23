@@ -1,27 +1,25 @@
 # -*- coding: utf-8 -*-
-import os
-import json
 import itertools
+import json
 import logging
+import os
 import re
+from functools import reduce
 
 from mock import Mock
-
 from mxcubecore import HardwareRepository as HWR
-
-from mxcubecore.model import queue_model_objects as qmo
-from mxcubecore.model import queue_model_enumerables as qme
-
 from mxcubecore import queue_entry as qe
+from mxcubecore.HardwareObjects.Gphl import GphlQueueEntry
+from mxcubecore.model import queue_model_enumerables as qme
+from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
 
-from mxcubecore.HardwareObjects.Gphl import GphlQueueEntry
-
 from mxcubeweb.core.components.component_base import ComponentBase
-from mxcubeweb.core.util.convertutils import str_to_camel, str_to_snake
 from mxcubeweb.core.models.generic import SimpleNameValue
-
-from functools import reduce
+from mxcubeweb.core.util.convertutils import (
+    str_to_camel,
+    str_to_snake,
+)
 
 # Important: same constants as in constants.js
 QUEUE_PAUSED = "QueuePaused"

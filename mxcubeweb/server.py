@@ -1,26 +1,30 @@
-import traceback
-import logging
-import signal
 import atexit
+import logging
 import os
-import werkzeug
-
-import gevent
-
-from werkzeug.middleware.proxy_fix import ProxyFix
-from flask import Flask, request
-from flask_socketio import SocketIO
+import signal
+import traceback
 
 import flask_security
-
-from spectree import SpecTree
-
-from mxcubeweb.core.util import networkutils
-from mxcubeweb.core.components.user.database import (
-    init_db,
-    UserDatastore,
+import gevent
+import werkzeug
+from flask import (
+    Flask,
+    request,
 )
-from mxcubeweb.core.models.usermodels import User, Role, Message
+from flask_socketio import SocketIO
+from spectree import SpecTree
+from werkzeug.middleware.proxy_fix import ProxyFix
+
+from mxcubeweb.core.components.user.database import (
+    UserDatastore,
+    init_db,
+)
+from mxcubeweb.core.models.usermodels import (
+    Message,
+    Role,
+    User,
+)
+from mxcubeweb.core.util import networkutils
 
 
 class Server:
@@ -126,38 +130,24 @@ class Server:
             Server.flask, Server.user_datastore, register_blueprint=False
         )
 
-        from mxcubeweb.routes.beamline import (
-            init_route as init_beamline_route,
-        )
-        from mxcubeweb.routes.detector import (
-            init_route as init_detector_route,
-        )
+        from mxcubeweb.routes.beamline import init_route as init_beamline_route
+        from mxcubeweb.routes.detector import init_route as init_detector_route
         from mxcubeweb.routes.diffractometer import (
             init_route as init_diffractometer_route,
         )
+        from mxcubeweb.routes.harvester import init_route as init_harvester_route
         from mxcubeweb.routes.lims import init_route as init_lims_route
         from mxcubeweb.routes.log import init_route as init_log_route
-        from mxcubeweb.routes.login import (
-            init_route as init_login_route,
-        )
+        from mxcubeweb.routes.login import init_route as init_login_route
         from mxcubeweb.routes.main import init_route as init_main_route
-        from mxcubeweb.routes.mockups import (
-            init_route as init_mockups_route,
-        )
-        from mxcubeweb.routes.queue import (
-            init_route as init_queue_route,
-        )
+        from mxcubeweb.routes.mockups import init_route as init_mockups_route
+        from mxcubeweb.routes.queue import init_route as init_queue_route
         from mxcubeweb.routes.ra import init_route as init_ra_route
-        from mxcubeweb.routes.samplecentring import (
-            init_route as init_sampleview_route,
-        )
+        from mxcubeweb.routes.samplecentring import init_route as init_sampleview_route
         from mxcubeweb.routes.samplechanger import (
             init_route as init_samplechanger_route,
         )
-        from mxcubeweb.routes.workflow import (
-            init_route as init_workflow_route,
-        )
-        from mxcubeweb.routes.harvester import init_route as init_harvester_route
+        from mxcubeweb.routes.workflow import init_route as init_workflow_route
 
         url_root_prefix = "/mxcube/api/v0.1"
 

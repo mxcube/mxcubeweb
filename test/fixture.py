@@ -4,18 +4,17 @@ from gevent import monkey
 
 monkey.patch_all(thread=False)
 
-import pytest
-import sys
-import os
-import json
 import copy
+import json
+import os
+import sys
 
+import pytest
 from input_parameters import (
     test_sample_1,
     test_sample_5,
     test_task,
 )
-
 
 MXCUBE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "../")
@@ -26,6 +25,7 @@ sys.path.append("./")
 
 
 from mxcubecore import HardwareRepository
+
 from mxcubeweb import build_server_and_config
 
 _SIO_TEST_CLIENT = None

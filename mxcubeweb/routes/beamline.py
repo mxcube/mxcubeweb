@@ -1,11 +1,16 @@
-import sys
 import logging
+import sys
 import typing
-from werkzeug.exceptions import UnsupportedMediaType
 
-from flask import Blueprint, Response, jsonify, request, make_response
-
+from flask import (
+    Blueprint,
+    Response,
+    jsonify,
+    make_response,
+    request,
+)
 from mxcubecore import HardwareRepository as HWR
+from werkzeug.exceptions import UnsupportedMediaType
 
 
 def create_get_route(app, server, bp, adapter, attr):
