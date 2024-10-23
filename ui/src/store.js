@@ -44,7 +44,7 @@ function initStore() {
   // Logger MUST BE the last middleware
   const middleware = [
     thunk,
-    createStateSyncMiddleware(config),    // 此中间件导致报错信息
+    // createStateSyncMiddleware(config),    // 此中间件导致报错信息
     createLogger()
   ];
 
@@ -70,7 +70,7 @@ function initStore() {
 
   const store = createStore(persistedReducer, composedEnhancers);
 
-  initMessageListener(store);
+  // initMessageListener(store);
 
   return store;
 }
