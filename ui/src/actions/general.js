@@ -41,6 +41,9 @@ export function setLoading(
     message,
     blocking,
     abortFun,
+    // abortFun:()=>{
+    //   console.log('test')
+    // },
   };
 }
 
