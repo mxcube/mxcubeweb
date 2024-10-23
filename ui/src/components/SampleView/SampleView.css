@@ -176,3 +176,7 @@
   color: #000;
   font-weight: bold;
 }
+
+.hid-by-user {
+  background-color: #aaa !important;
+}
