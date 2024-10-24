@@ -1,5 +1,4 @@
 import logging
-import traceback
 
 
 class MX3LoggingHandler(logging.handlers.BufferingHandler):
@@ -13,10 +12,6 @@ class MX3LoggingHandler(logging.handlers.BufferingHandler):
             pass
 
     def _record_to_json(self, record):
-        if record.exc_info:
-            stack_trace = "".join(traceback.format_exception(*record.exc_info))
-        else:
-            stack_trace = ""
         try:
             record.asctime
         except AttributeError:
@@ -26,14 +21,10 @@ class MX3LoggingHandler(logging.handlers.BufferingHandler):
             "message": record.getMessage(),
             "severity": record.levelname,
             "timestamp": record.asctime,
-            "logger": record.name,
-            "stack_trace": stack_trace,
         }
 
     def emit(self, record):
-        if record.name != "geventwebsocket.handler":
+        if record.name == "user_level_log":
             record_dict = self._record_to_json(record)
             super().emit(record_dict)
             self.server.emit("log_record", record_dict, namespace="/logging")
-        else:
-            super().emit(record)

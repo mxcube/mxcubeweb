@@ -17,11 +17,6 @@ export default class UserMessage extends React.Component {
       include = false;
     }
 
-    // Message is not for this component, skip !
-    if (this.props.target && this.props.target !== message.logger) {
-      include = false;
-    }
-
     // Filter function returns true for messages to exclude, skip !
     if (this.props.filter && this.props.filter(message)) {
       include = false;
