@@ -10,7 +10,6 @@ import LoginContainer from '../containers/LoginContainer';
 import SampleViewContainer from '../containers/SampleViewContainer';
 import SampleListViewContainer from '../containers/SampleListViewContainer';
 import EquipmentContainer from '../containers/EquipmentContainer';
-import LoggerContainer from '../containers/LoggerContainer';
 import RemoteAccessContainer from '../containers/RemoteAccessContainer';
 import HelpContainer from '../containers/HelpContainer';
 import Main from './Main';
@@ -47,10 +46,6 @@ const router = createBrowserRouter([
           {
             path: 'equipment',
             element: <EquipmentContainer />,
-          },
-          {
-            path: 'logging',
-            element: <LoggerContainer />,
           },
           {
             path: 'remoteaccess',
