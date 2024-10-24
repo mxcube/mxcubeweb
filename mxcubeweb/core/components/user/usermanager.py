@@ -441,11 +441,13 @@ class UserManager(BaseUserManager):
         """
         login_res = self.app.lims.lims_login(login_id, password, create_session=False)
         inhouse = self.is_inhouse_user(login_id)
+        valid_login = self.app.lims.lims_valid_login(login_res)
+        existing_session = self.app.lims.lims_existing_session(login_res)
 
         info = {
-            "valid": self.app.lims.lims_valid_login(login_res),
+            "valid": valid_login,
             "local": is_local_host(),
-            "existing_session": self.app.lims.lims_existing_session(login_res),
+            "existing_session": existing_session,
             "inhouse": inhouse,
         }
 
@@ -465,7 +467,7 @@ class UserManager(BaseUserManager):
                     )
 
         # Only allow in-house log-in from local host
-        if inhouse and not (inhouse and is_local_host()):
+        if inhouse and not is_local_host():
             raise Exception("In-house only allowed from localhost")
 
         non_inhouse_active_users = self.active_logged_in_users(exclude_inhouse=True)
@@ -494,19 +496,18 @@ class UserManager(BaseUserManager):
             raise Exception("Remote access disabled")
 
         # Only allow remote logins with existing sessions
-        if self.app.lims.lims_valid_login(login_res):
-            if not self.app.lims.lims_existing_session(login_res):
+        if valid_login and is_local_host():
+            if not existing_session:
                 login_res = self.app.lims.create_lims_session(login_res)
-            if is_local_host():
-                msg = "[LOGIN] Valid login from local host (%s)" % str(info)
-            else:
-                msg = "[LOGIN] Valid remote login from %s with existing session (%s)"
-                msg += msg % (remote_addr(), str(info))
-            logging.getLogger("MX3.HWR").info(msg)
+            msg = "[LOGIN] Valid login from local host (%s)" % str(info)
+        elif valid_login and existing_session:
+            msg = "[LOGIN] Valid remote login from %s with existing session (%s)"
+            msg += msg % (remote_addr(), str(info))
         else:
             logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
             raise Exception(str(info))
-
+        logging.getLogger("MX3.HWR").info(msg)
+        
         return login_res
 
     def _signout(self):
