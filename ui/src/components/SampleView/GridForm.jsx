@@ -57,13 +57,13 @@ export default function GridForm(props) {
     const gridControlList = [];
 
     for (const grid of Object.values(gridList)) {
-      const selectedStyle = selectedGrids.includes(grid.id) ? 'selected' : '';
       const vdim = grid.numRows * (grid.cellHeight + grid.cellVSpace);
       const hdim = grid.numCols * (grid.cellWidth + grid.cellHSpace);
 
       gridControlList.push(
         <tr
-          className={selectedStyle}
+          data-selected={selectedGrids.includes(grid.id)}
+          data-user-hidden={grid.userState === 'HIDDEN'}
           key={grid.name}
           onClick={(e) => selectGrid([grid], e.ctrlKey)}
         >
