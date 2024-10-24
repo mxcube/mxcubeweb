@@ -298,24 +298,19 @@ class Lims(ComponentBase):
 
     def select_proposal(self, proposal):
         proposal_info = self.get_proposal_info(proposal)
-
-        if (
-            HWR.beamline.lims.loginType.lower() == "user"
-            and "Commissioning" in proposal_info["Proposal"]["title"]
-        ):
-            if hasattr(HWR.beamline.session, "set_in_commissioning"):
+        if proposal_info:
+            active_proposal = proposal_info.get("Proposal", {})
+            if (
+                HWR.beamline.lims.loginType.lower() == "user"
+                and "Commissioning" in active_proposal.get("title", "")
+                and hasattr(HWR.beamline.session, "set_in_commissioning")
+            ):
                 HWR.beamline.session.set_in_commissioning(proposal_info)
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Commissioning proposal flag set."
                 )
-
-        if proposal_info:
-            HWR.beamline.session.proposal_code = proposal_info.get("Proposal").get(
-                "code", ""
-            )
-            HWR.beamline.session.proposal_number = proposal_info.get("Proposal").get(
-                "number", ""
-            )
+            HWR.beamline.session.proposal_code = active_proposal.get("code", "")
+            HWR.beamline.session.proposal_number = active_proposal.get("number", "")
 
             todays_session = HWR.beamline.lims.get_todays_session(
                 proposal_info, create_session=False
