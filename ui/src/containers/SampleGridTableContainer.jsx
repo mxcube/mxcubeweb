@@ -37,9 +37,9 @@ import {
   showGenericContextMenu,
 } from '../actions/sampleGrid';
 
-import { deleteTask, addSampleAndMount } from '../actions/queue';
+import { deleteTask } from '../actions/queue';
 
-import { unmountSample } from '../actions/sampleChanger';
+import { unmountSample, mountSample } from '../actions/sampleChanger';
 
 import { showTaskForm } from '../actions/taskForm';
 
@@ -1126,7 +1126,7 @@ class SampleGridTableContainer extends React.Component {
     });
 
     if (sampleData) {
-      this.props.addSampleAndMount(sampleData);
+      this.props.mountSample(sampleData);
       this.props.navigate('/datacollection', { replace: true });
     }
   }
@@ -1348,7 +1348,7 @@ function mapDispatchToProps(dispatch) {
       dispatch(showGenericContextMenu(show, id, x, y)),
     selectSamples: (keys, selected) =>
       dispatch(selectSamplesAction(keys, selected)),
-    addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
+    mountSample: bindActionCreators(mountSample, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
   };
 }
