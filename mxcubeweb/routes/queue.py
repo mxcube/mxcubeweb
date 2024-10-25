@@ -160,7 +160,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def set_queue():
-        app.queue.set_queue(request.get_json(), session)
+        app.queue.set_queue(request.get_json())
         return Response(status=200)
 
     @bp.route("/", methods=["POST"])
