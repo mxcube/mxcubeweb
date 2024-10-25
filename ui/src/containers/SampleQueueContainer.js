@@ -15,6 +15,7 @@ import { showDialog } from '../actions/general';
 import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
 import * as BeamlineActions from '../actions/beamline';
+import QuickMountTest from './QuickMountTest'
 
 function mapStateToProps(state) {
   return {
@@ -137,6 +138,8 @@ class SampleQueueContainer extends React.Component {
 
     return (
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
+        {/* <div>wait to add components</div> */}
+        <QuickMountTest/>
         <QueueControl
           ref="queueContainer"
           historyLength={history.length}
@@ -217,6 +220,7 @@ class SampleQueueContainer extends React.Component {
               shapes={this.props.shapes}
               showDialog={this.props.showDialog}
             />
+            123
             <TodoTree
               show={visibleList === 'todo'}
               list={todo}
@@ -241,6 +245,7 @@ class SampleQueueContainer extends React.Component {
               />
             </div>
           </div>
+          SampleQueueContainer end
       </div>
     );
   }

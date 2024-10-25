@@ -110,6 +110,9 @@ export function scan(address) {
 
 export function loadSample(sampleData, successCb = null) {
   return function (dispatch, getState) {
+    console.log("即将要上的样品是: ")
+    console.log(sampleData)
+
     const state = getState();
 
     if (state.sampleChanger.loadedSample.address !== sampleData.location) {

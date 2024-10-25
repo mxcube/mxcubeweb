@@ -132,6 +132,11 @@ class SampleGridTableContainer extends React.Component {
   * return {boolean} true if item is to be included otherwise false
   */
   sampleGridItemsSelectedHandler(e, sampleIDList) {
+    // console.log("sampleGridItemsSelectedHandler")
+    // console.log("e and sampleIDList: " )
+    // console.log(e)
+    // console.log(sampleIDList)
+
     const alreadySelected = sampleIDList.length === 1 && this.sampleItemIsSelected(sampleIDList[0]);
     let samplesToSelect = sampleIDList;
 
@@ -266,6 +271,7 @@ class SampleGridTableContainer extends React.Component {
   onKeyDown(e) {
     switch (e.key) {
     case 'Escape': {
+      console.log("onKeyDown")
       this.props.selectSamples(Object.keys(this.props.sampleList), false);
     break;
     }
@@ -555,6 +561,8 @@ class SampleGridTableContainer extends React.Component {
               onContextMenu={(e) => {this.displayContextMenu(e, contextMenuID, sample.sampleID)}}
               onClick={(e) => {this.selectItemUnderCursor(e, sample.sampleID)}}
             >
+              {/* 下面的应该是真实的表格组件 */}
+              {/* 其中sampleItemPickButtonOnClickHandler 这个应该是主要的勾选上的函数 */}
               <SampleGridTableItem
                   key={key}
                   itemKey={key}
@@ -565,6 +573,7 @@ class SampleGridTableContainer extends React.Component {
                   current={this.currentSample(sample.sampleID)}
                   picked={picked}
                 >
+                  {/* 不是很懂这个Slider和Slider里面的TaskItem有什么用 */}
                   <Slider
                     className="samples-grid-table-item-tasks"
                     {...settings}
@@ -766,6 +775,11 @@ class SampleGridTableContainer extends React.Component {
    * @param {string} sampleID - sampleID to toggle (remove from or add to queue)
    */
   sampleItemPickButtonOnClickHandler(e, sampleID) {
+    console.log("sampleItemPickButtonOnClickHandler")
+    console.log("e")
+    console.log(e)
+    console.log("sampleID")
+    console.log(sampleID)
     e.stopPropagation();
 
     // If sample already in the set of selected samples, add all those samples
@@ -982,21 +996,28 @@ class SampleGridTableContainer extends React.Component {
     const nb_puck = this.props.sampleChanger.contents.children[0].children.length
     return (
       <div>
+        contextMenu.show 
+        {/* 这里this.props.contextMenu.show，好像一直是false */}
         {this.props.contextMenu.show ?
           (
-            <MXContextMenu
-              id={this.props.contextMenu.id}
-              show={this.props.contextMenu.show}
-              x={this.props.contextMenu.x}
-              y={this.props.contextMenu.y}
+            <>
+              MXContextMenu start
+              <MXContextMenu
+                id={this.props.contextMenu.id}
+                show={this.props.contextMenu.show}
+                x={this.props.contextMenu.x}
+                y={this.props.contextMenu.y}
+              >
+                {this.renderContextMenu(this.props.contextMenu.id)}
+              </MXContextMenu>
+              MXContextMenu end
+            </>
 
-            >
-              {this.renderContextMenu(this.props.contextMenu.id)}
-            </MXContextMenu>
           )
           :
           null
         }
+        样品表格开始
         {this.props.viewMode.mode == 'Graphical View'?
           (
           <Row
@@ -1026,9 +1047,11 @@ class SampleGridTableContainer extends React.Component {
               xs="auto"
             >
               <div className="selection-rubber-band" id="selectionRubberBand" />
-              {/* if nb of puck is <= to 3 we order Cell Table by  pair on right Col and odd on Left */}
+              {/* comment: if nb of puck is <= to 3 we order Cell Table by  pair on right Col and odd on Left  */}
+              {/* 测试： nb_puck，在mxcube里指的是NO_OF_SAMPLES_IN_BASKET，即一个puck有16个样品的16，因此肯定会进入大于3的判断 */}
               {nb_puck <= 3 ?
                 <>
+                  <div>nb_puck xiaoyu dengyu 3</div>
                   <Col sm>
                   {this.getSampleTable(this.props).filter((n, i) => i % 2 != 1)}
                   </Col>
@@ -1037,13 +1060,19 @@ class SampleGridTableContainer extends React.Component {
                   </Col>
                 </>
                 :
-                <Col sm>
-                  {this.getSampleTable(this.props)}
-                </Col>
+                <>
+                  {/* <div>nb_puck dayu 3</div> */}
+                  {/* <div>{nb_puck}</div> */}
+                  <Col sm>
+                    {this.getSampleTable(this.props)}
+                  </Col>
+                </>
+
               }
             </Row>
           )
         }
+        样品表格结束
       </div>
     );
   }

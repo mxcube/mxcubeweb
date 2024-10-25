@@ -120,6 +120,42 @@ export function sendGetSampleList() {
   };
 }
 
+
+export function sendGetSampleListReWrite() {
+  return function (dispatch) {
+    dispatch(
+      setLoading(
+        true,
+        'Please wait',
+        'Retrieving sample changer contents',
+        true
+      )
+    );
+    return fetch('mxcube/api/v0.1/sample_changer/samples_list', {
+      credentials: 'include',
+    })
+      .then((response) => response.json())
+      .then(
+        (res) => {
+          const { sampleList } = res;
+          const { sampleOrder } = res;
+
+          dispatch(updateSampleList(sampleList, sampleOrder));
+          dispatch(setQueue(res));
+          dispatch(setLoading(false));
+        },
+        () => {
+          dispatch(setLoading(false));
+          dispatch(showErrorPanel(true, 'Could not get samples list'));
+        }
+      );
+  };
+}
+
+
+
+
+
 export function sendSyncSamples() {
   return function (dispatch) {
     dispatch(setLoading(true, 'Please wait', 'Synchronizing with ISPyB', true));
