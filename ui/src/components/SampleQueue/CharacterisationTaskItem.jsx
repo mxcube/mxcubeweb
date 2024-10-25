@@ -407,7 +407,7 @@ export default class TaskItem extends Component {
                         <tr>
                           <th>Start &deg; </th>
                           <th>Osc. &deg; </th>
-                          <th>t (ms)</th>
+                          <th>t (s)</th>
                           <th># Img</th>
                           <th>T (%)</th>
                           <th>Res. (&Aring;)</th>
