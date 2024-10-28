@@ -217,7 +217,7 @@ export default class EnergyScanTaskItem extends Component {
                       style={{ marginBottom: 0, height: '18px' }}
                       min={0}
                       max={1}
-                      active={this.props.progress < 1}
+                      animated={this.props.progress < 1}
                       label={`${(this.props.progress * 100).toPrecision(3)} %`}
                       now={this.props.progress}
                     />
