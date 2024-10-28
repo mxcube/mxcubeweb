@@ -1032,7 +1032,7 @@ class SampleGridTableContainer extends React.Component {
               cellSampleList={this.getSampleListBydCell}
             />            
             <Col sm={7}>
-              {this.getSampleTable(this.props)}
+              {/* {this.getSampleTable(this.props)} */}
             </Col>
 
           </Row>
@@ -1053,10 +1053,10 @@ class SampleGridTableContainer extends React.Component {
                 <>
                   <div>nb_puck xiaoyu dengyu 3</div>
                   <Col sm>
-                  {this.getSampleTable(this.props).filter((n, i) => i % 2 != 1)}
+                  {/* {this.getSampleTable(this.props).filter((n, i) => i % 2 != 1)} */}
                   </Col>
                   <Col sm>
-                      {this.getSampleTable(this.props).filter((n, i) => i % 2 == 1)}
+                      {/* {this.getSampleTable(this.props).filter((n, i) => i % 2 == 1)} */}
                   </Col>
                 </>
                 :
@@ -1064,7 +1064,7 @@ class SampleGridTableContainer extends React.Component {
                   {/* <div>nb_puck dayu 3</div> */}
                   {/* <div>{nb_puck}</div> */}
                   <Col sm>
-                    {this.getSampleTable(this.props)}
+                    {/* {this.getSampleTable(this.props)} */}
                   </Col>
                 </>
 

@@ -10,7 +10,7 @@ import { BsSquare, BsCheck2Square  } from "react-icons/bs";
 import { MdContentCopy } from "react-icons/md";
 import './SampleGridTable.css';
 
-
+// 这个组件的应该是真实的表格组件，get sample from list 的5*16表格
 export class SampleGridTableItem extends React.Component {
 
   constructor(props) {

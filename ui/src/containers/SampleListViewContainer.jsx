@@ -703,23 +703,27 @@ class SampleListViewContainer extends React.Component {
               </Col>
             </Row>
           </Card.Header>
+
           {this.props.sampleChanger.contents.children && this.props.order.length > 0 ?
+          // 此处是根据mxcube传来的props的sampleChanger.contents.children和sampleGrid.order.length来判断要不要加载samplelist的队列
+            
             (
-              <Card.Body className='samples-grid-table-card-body'>
-                <SampleGridTableContainer
-                  addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
-                  addSamplesToQueue={this.addSamplesToQueue}
-                  showCharacterisationForm={this.showCharacterisationForm}
-                  showDataCollectionForm={this.showDataCollectionForm}
-                  showWorkflowForm={this.showWorkflowForm}
-                  inQueue={this.inQueue}
-                  inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
-                  removeSamplesFromQueue={this.removeSamplesFromQueue}
-                  removeSelectedSamples={this.removeSelectedSamples}
-                  removeSelectedTasks={this.removeSelectedTasks}
-                  setViewMode={this.setViewMode}
-                />
-              </Card.Body>
+              <div>获取了samplelist</div>
+              // <Card.Body className='samples-grid-table-card-body'>
+              //   <SampleGridTableContainer
+              //     addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
+              //     addSamplesToQueue={this.addSamplesToQueue}
+              //     showCharacterisationForm={this.showCharacterisationForm}
+              //     showDataCollectionForm={this.showDataCollectionForm}
+              //     showWorkflowForm={this.showWorkflowForm}
+              //     inQueue={this.inQueue}
+              //     inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
+              //     removeSamplesFromQueue={this.removeSamplesFromQueue}
+              //     removeSelectedSamples={this.removeSelectedSamples}
+              //     removeSelectedTasks={this.removeSelectedTasks}
+              //     setViewMode={this.setViewMode}
+              //   />
+              // </Card.Body>
             )
             : null
           }
