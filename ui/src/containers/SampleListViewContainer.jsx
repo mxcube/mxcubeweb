@@ -338,6 +338,9 @@ class SampleListViewContainer extends React.Component {
    * @param {array} sampleIDList - array of sampleIDs to add or remove
    */
   inQueueDeleteElseAddSamples(sampleIDList, addSamples) {
+    console.log("sampleIDList and addSamples from inQueueDeleteElseAddSamples: ")
+    console.log(sampleIDList)
+    console.log(addSamples)
     const samples = [];
     const samplesToRemove = [];
     for (const sampleID of sampleIDList) {
@@ -355,7 +358,10 @@ class SampleListViewContainer extends React.Component {
       this.props.setEnabledSample(samplesToRemove, false);
       // this.props.deleteSamplesFromQueue(samplesToRemove);
     }
-    if (addSamples && samples.length > 0) { this.addSamplesToQueue(samples); }
+    if (addSamples && samples.length > 0) { 
+      // console.log("samples the end of inQueueDeleteElseAddSamples");
+      // console.log(samples);
+      this.addSamplesToQueue(samples); }
   }
 
   /**
@@ -708,22 +714,22 @@ class SampleListViewContainer extends React.Component {
           // 此处是根据mxcube传来的props的sampleChanger.contents.children和sampleGrid.order.length来判断要不要加载samplelist的队列
             
             (
-              <div>获取了samplelist</div>
-              // <Card.Body className='samples-grid-table-card-body'>
-              //   <SampleGridTableContainer
-              //     addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
-              //     addSamplesToQueue={this.addSamplesToQueue}
-              //     showCharacterisationForm={this.showCharacterisationForm}
-              //     showDataCollectionForm={this.showDataCollectionForm}
-              //     showWorkflowForm={this.showWorkflowForm}
-              //     inQueue={this.inQueue}
-              //     inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
-              //     removeSamplesFromQueue={this.removeSamplesFromQueue}
-              //     removeSelectedSamples={this.removeSelectedSamples}
-              //     removeSelectedTasks={this.removeSelectedTasks}
-              //     setViewMode={this.setViewMode}
-              //   />
-              // </Card.Body>
+              // <div>获取了samplelist</div>
+              <Card.Body className='samples-grid-table-card-body'>
+                <SampleGridTableContainer
+                  addSelectedSamplesToQueue={this.addSelectedSamplesToQueue}
+                  addSamplesToQueue={this.addSamplesToQueue}
+                  showCharacterisationForm={this.showCharacterisationForm}
+                  showDataCollectionForm={this.showDataCollectionForm}
+                  showWorkflowForm={this.showWorkflowForm}
+                  inQueue={this.inQueue}
+                  inQueueDeleteElseAddSamples={this.inQueueDeleteElseAddSamples}
+                  removeSamplesFromQueue={this.removeSamplesFromQueue}
+                  removeSelectedSamples={this.removeSelectedSamples}
+                  removeSelectedTasks={this.removeSelectedTasks}
+                  setViewMode={this.setViewMode}
+                />
+              </Card.Body>
             )
             : null
           }

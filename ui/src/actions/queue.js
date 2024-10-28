@@ -93,7 +93,10 @@ export function sendAddQueueItem(items) {
 }
 
 export function addSamplesToQueue(sampleDataList) {
+  // console.log("sampleDataList in addSamplesToQueue")
+  // console.log(sampleDataList)
   return function (dispatch) {
+    // console.log("in return function of addSamplesToQueue")
     dispatch(queueLoading(true));
 
     sendAddQueueItem(sampleDataList)

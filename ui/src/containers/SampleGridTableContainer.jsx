@@ -785,10 +785,12 @@ class SampleGridTableContainer extends React.Component {
     // If sample already in the set of selected samples, add all those samples
     // to queue
     if (this.sampleItemIsSelected(sampleID)) {
+      console.log("sample already in the set of selected samples, add all those samples to queue")
       this.props.inQueueDeleteElseAddSamples(Object.keys(this.props.selected), true);
     } else {
       // The sample is not in the set of selected samples (or no samples are
       // selected), select only sample with sampleID and add it queue
+      console.log("sample not in the set of selected samples")
       this.props.selectSamples([sampleID]);
       this.props.inQueueDeleteElseAddSamples([sampleID], true);
     }
@@ -1032,7 +1034,7 @@ class SampleGridTableContainer extends React.Component {
               cellSampleList={this.getSampleListBydCell}
             />            
             <Col sm={7}>
-              {/* {this.getSampleTable(this.props)} */}
+              {this.getSampleTable(this.props)}
             </Col>
 
           </Row>
@@ -1053,10 +1055,10 @@ class SampleGridTableContainer extends React.Component {
                 <>
                   <div>nb_puck xiaoyu dengyu 3</div>
                   <Col sm>
-                  {/* {this.getSampleTable(this.props).filter((n, i) => i % 2 != 1)} */}
+                  {this.getSampleTable(this.props).filter((n, i) => i % 2 != 1)}
                   </Col>
                   <Col sm>
-                      {/* {this.getSampleTable(this.props).filter((n, i) => i % 2 == 1)} */}
+                      {this.getSampleTable(this.props).filter((n, i) => i % 2 == 1)}
                   </Col>
                 </>
                 :
@@ -1064,7 +1066,7 @@ class SampleGridTableContainer extends React.Component {
                   {/* <div>nb_puck dayu 3</div> */}
                   {/* <div>{nb_puck}</div> */}
                   <Col sm>
-                    {/* {this.getSampleTable(this.props)} */}
+                    {this.getSampleTable(this.props)}
                   </Col>
                 </>
 
