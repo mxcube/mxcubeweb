@@ -845,6 +845,7 @@ class Queue(ComponentBase):
         :returns: The tuple model, entry
         :rtype: Tuple
         """
+        # 此函数在clear samplelist 再get sample list的时候，再添加队列就会报错，线站版也是
         # logging.getLogger("HWR").debug(
         #     "_id from get_entry: "
         # )   #添加

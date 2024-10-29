@@ -116,6 +116,7 @@ def diffractometer_phase_changed(*args):
 def sc_state_changed(*args):
     new_state = args[0]
     state_str = SampleChangerState.STATE_DESC.get(new_state, "Unknown").upper()
+    print("going to do the sc_state_changed method with new_state: ",state_str)
     server.emit("sc_state", state_str, namespace="/hwr")
 
 

@@ -251,7 +251,8 @@ class ServerIO {
         {
           this.dispatch(
             setLoading(
-              true,
+              // true,
+              false,  //此处改成false，面板就不会出现
               'Sample changer in operation',
               record.message,
               true,
