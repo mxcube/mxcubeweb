@@ -3,7 +3,6 @@ Module that contains application wide settings and state as well as functions
 for accessing and manipulating those.
 """
 
-import json
 import logging
 import os
 import sys
@@ -493,41 +492,3 @@ class MXCUBEApplication:
             ) in MXCUBEApplication.CONFIG.app.ui_properties
             if value
         }
-
-    @staticmethod
-    def save_settings():
-        """
-        Saves all application wide variables to disk, stored-mxcube-session.json
-        """
-        queue = MXCUBEApplication.queue.queue_to_dict(
-            HWR.beamline.queue_model.get_model_root()
-        )
-
-        # For the moment not storing USERS
-
-        data = {
-            "QUEUE": queue,
-            "CURRENTLY_MOUNTED_SAMPLE": MXCUBEApplication.CURRENTLY_MOUNTED_SAMPLE,
-            "SAMPLE_TO_BE_MOUNTED": MXCUBEApplication.SAMPLE_TO_BE_MOUNTED,
-            "CENTRING_METHOD": MXCUBEApplication.CENTRING_METHOD,
-            "NODE_ID_TO_LIMS_ID": MXCUBEApplication.NODE_ID_TO_LIMS_ID,
-            "INITIAL_FILE_LIST": MXCUBEApplication.INITIAL_FILE_LIST,
-            "SC_CONTENTS": MXCUBEApplication.SC_CONTENTS,
-            "SAMPLE_LIST": MXCUBEApplication.SAMPLE_LIST,
-            "TEMP_DISABLED": MXCUBEApplication.TEMP_DISABLED,
-            "ALLOW_REMOTE": MXCUBEApplication.ALLOW_REMOTE,
-            "TIMEOUT_GIVES_CONTROL": MXCUBEApplication.TIMEOUT_GIVES_CONTROL,
-            "VIDEO_FORMAT": MXCUBEApplication.VIDEO_FORMAT,
-            "AUTO_MOUNT_SAMPLE": MXCUBEApplication.AUTO_MOUNT_SAMPLE,
-            "AUTO_ADD_DIFFPLAN": MXCUBEApplication.AUTO_ADD_DIFFPLAN,
-            "NUM_SNAPSHOTS": HWR.beamline.collect.get_property(
-                "num_snapshots", MXCUBEApplication.DEFAULT_NUM_SNAPSHOTS
-            ),
-            "UI_STATE": MXCUBEApplication.UI_STATE,
-        }
-
-        fname = Path("/tmp/stored-mxcube-session.json")
-        fname.touch(exist_ok=True)
-
-        with open(fname, "w+") as fp:
-            json.dump(data, fp)
