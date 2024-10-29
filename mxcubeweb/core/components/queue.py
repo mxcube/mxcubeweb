@@ -265,7 +265,6 @@ class Queue(ComponentBase):
         settings = {}
 
         for setting_name in [
-            "NUM_SNAPSHOTS",
             "REMEMBER_PARAMETERS_BETWEEN_SAMPLES",
             "CENTRING_METHOD",
             "AUTO_ADD_DIFFPLAN",
@@ -279,6 +278,9 @@ class Queue(ComponentBase):
             "queue": sample_order,
             "sampleList": self.app.lims.sample_list_get(current_queue=queue),
             "queueStatus": self.queue_exec_state(),
+            "numSnapshots": HWR.beamline.collect.get_property(
+                "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
+            ),
         }
 
         res.update(settings)
@@ -1433,7 +1435,10 @@ class Queue(ComponentBase):
         dc_model = qmo.DataCollection()
         dc_model.set_origin(ORIGIN_MX3)
         dc_model.center_before_collect = True
-        dc_model.take_snapshots = self.app.NUM_SNAPSHOTS
+        dc_model.take_snapshots = HWR.beamline.collect.get_property(
+            "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
+        )
+
         dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
 
         return dc_model, dc_entry
@@ -2114,8 +2119,6 @@ class Queue(ComponentBase):
         )
 
     def init_queue_settings(self):
-        self.app.NUM_SNAPSHOTS = HWR.beamline.collect.get_property("num_snapshots", 4)
-        HWR.beamline.collect.number_of_snapshots = self.app.NUM_SNAPSHOTS
         self.app.AUTO_MOUNT_SAMPLE = HWR.beamline.collect.get_property(
             "auto_mount_sample", False
         )
@@ -2376,7 +2379,9 @@ class Queue(ComponentBase):
                 "inverse_beam": False,
                 "take_dark_current": True,
                 "skip_existing_images": False,
-                "take_snapshots": self.app.NUM_SNAPSHOTS,
+                "take_snapshots": HWR.beamline.collect.get_property(
+                    "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
+                ),
                 "helical": False,
                 "mesh": False,
                 "prefixTemplate": "{PREFIX}_{POSITION}",
@@ -2482,3 +2487,10 @@ class Queue(ComponentBase):
             result = ()
 
         return result
+
+    def set_num_snapshots(self, num_snapshots: int):
+        """Sets the number of snapshots to take during data collection
+        Args:
+            num_snapshots (int): number of snapshots to be taken
+        """
+        HWR.beamline.collect.number_of_snapshots = num_snapshots
