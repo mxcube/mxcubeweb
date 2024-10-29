@@ -500,7 +500,7 @@ export default class SampleImage extends React.Component {
       this.canvas.discardActiveObject();
     }
 
-    showContextMenu(true, ctxMenuObj, e.offsetX, e.offsetY);
+    showContextMenu(true, ctxMenuObj, e.pageX, e.pageY, e.offsetX, e.offsetY);
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -514,13 +514,8 @@ export default class SampleImage extends React.Component {
       clickCentring,
       measureDistance,
       imageRatio,
-      contextMenuVisible,
       drawGrid,
     } = this.props;
-
-    if (contextMenuVisible) {
-      sampleViewActions.showContextMenu(false);
-    }
 
     if (clickCentring) {
       this.canvas.selection = false; // Disable group selection

@@ -44,9 +44,23 @@ export function setMotorStep(role, value) {
   return { type: 'SET_MOTOR_STEP', role, value };
 }
 
-// eslint-disable-next-line unicorn/no-object-as-default-parameter
-export function showContextMenu(show, shape = { type: 'NONE' }, x = 0, y = 0) {
-  return { type: 'SHOW_CONTEXT_MENU', show, shape, x, y };
+export function showContextMenu(
+  show,
+  shape = { type: 'NONE' }, // eslint-disable-line unicorn/no-object-as-default-parameter
+  pageX = 0,
+  pageY = 0,
+  imageX = 0,
+  imageY = 0,
+) {
+  return {
+    type: 'SHOW_CONTEXT_MENU',
+    show,
+    shape,
+    pageX,
+    pageY,
+    imageX,
+    imageY,
+  };
 }
 
 export function setPixelsPerMm(pixelsPerMm) {
