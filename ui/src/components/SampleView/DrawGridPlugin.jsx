@@ -99,6 +99,26 @@ const MeshGridResult = fabric.util.createClass(fabric.Object, {
     }
   },
 });
+/**
+ * @typedef {Object} GridData
+ * @property {[number, number]} screenCoord
+ * @property {number} top
+ * @property {number} left
+ * @property {number} width
+ * @property {number} height
+ * @property {number} cellWidth
+ * @property {number} cellHeight
+ * @property {number} cellVSpace
+ * @property {number} cellHSpace
+ * @property {number} numCols
+ * @property {number} numRows
+ * @property {string|null} cellCountFun - name of the function
+ * @property {boolean} selected
+ * @property {string|null} id
+ * @property {'' | null | number[]} result
+ * @property {number} pixelsPerMMX
+ * @property {number} pixelsPerMMY
+ */
 
 /**
  * GridData object defines a grid
@@ -305,11 +325,11 @@ export default class DrawGridPlugin {
    * @param {float} y - bottom y coordinate of grid, (mouse y position)
    */
   update(canvas, x, y) {
-    this.gridData.screenCoord[0] = this.currentTopLeftX;
-    this.gridData.screenCoord[1] = this.currentTopLeftY;
-
-    const [left, top] = this.gridData.screenCoord;
+    const [left, top] = [this.currentTopLeftX, this.currentTopLeftY];
     const validPosition = x > left && y > top;
+    if (!(validPosition && this.drawing)) {
+      return;
+    }
 
     const cellTW =
       this.getCellWidth(this.gridData) + this.getCellHSpace(this.gridData);
@@ -324,19 +344,18 @@ export default class DrawGridPlugin {
 
     const cellLimit = 200_000;
 
-    const draw = this.drawing && validPosition && numCols * numRows < cellLimit;
-
     if (this.snapToGrid) {
       width = numCols * cellTW;
       height = numRows * cellTH;
     }
 
-    if (draw) {
+    const shouldDraw = numCols * numRows < cellLimit;
+    if (shouldDraw) {
+      this.gridData.screenCoord = [left, top];
       this.gridData.width = width;
       this.gridData.height = height;
       this.gridData.numCols = numCols;
       this.gridData.numRows = numRows;
-
       this.repaint(canvas);
     }
   }
@@ -371,12 +390,6 @@ export default class DrawGridPlugin {
     return dataFill;
   }
 
-  setResulOnCell(col, row, val) {
-    const gridData = this.currentGridData();
-    gridData.result[col][row] = val;
-    return gridData;
-  }
-
   initializeCellFilling(gd, col, row) {
     const level = this.overlayLevel || 0.2;
     const fill = `rgba(0, 0, 200, ${level})`;
@@ -396,7 +409,6 @@ export default class DrawGridPlugin {
     // Assume flat result object to remain compatible with old format only
     // supporting one type of results
     let { result } = gd;
-
     // Use selected result type if it exists
     if (
       gd.result !== null &&
@@ -424,7 +436,6 @@ export default class DrawGridPlugin {
         }
       }
     }
-
     return fillingMatrix;
   }
 
@@ -524,7 +535,6 @@ export default class DrawGridPlugin {
         cellTH,
         cellTW,
       );
-
       if (!this.drawing) {
         if (this.gridResultFormat === 'RGB') {
           const fillingMatrix = this.cellFillingFromData(
@@ -532,7 +542,6 @@ export default class DrawGridPlugin {
             gridData.numCols,
             gridData.numRows,
           );
-
           shapes.push(
             new MeshGridResult({
               left,
@@ -763,7 +772,6 @@ export default class DrawGridPlugin {
     gd.screenCoord[1] /= this.scale;
     gd.width /= this.scale;
     gd.height /= this.scale;
-
     return gd;
   }
 
