@@ -416,7 +416,7 @@ class SampleChanger(ComponentBase):
 
 
 # Disabling C901 function is too complex (19)
-def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noqa: C901
+def queue_mount_sample(data_model, centring_done_cb, async_result):  # noqa: C901
     from mxcubeweb.app import MXCUBEApplication as mxcube
     from mxcubeweb.routes import signals
 
