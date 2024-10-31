@@ -53,3 +53,7 @@ export function sendMoveToPoint(id) {
 export function sendMoveToBeam(x, y) {
   return endpoint.put({ clickPos: { x, y } }, '/movetobeam').res();
 }
+
+export function sendTakeSnapshot(canvasData) {
+  return endpoint.post({ overlay: canvasData }, '/camera/snapshot').blob();
+}

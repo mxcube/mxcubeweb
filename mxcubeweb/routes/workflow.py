@@ -1,7 +1,13 @@
 # -*- coding: utf-8 -*-
 import io
 
-from flask import Blueprint, Response, jsonify, request, send_file
+from flask import (
+    Blueprint,
+    Response,
+    jsonify,
+    request,
+    send_file,
+)
 
 
 def init_route(app, server, url_prefix):

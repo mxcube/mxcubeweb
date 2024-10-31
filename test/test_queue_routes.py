@@ -1,20 +1,18 @@
-import time
-import json
 import copy
+import json
+import time
 
+from fixture import client
 from input_parameters import (
+    default_char_acq_params,
+    default_dc_params,
+    default_mesh_params,
+    default_xrf_parameters,
+    test_edit_task,
     test_sample_5,
     test_sample_6,
     test_task,
-    test_edit_task,
-    default_dc_params,
-    default_char_acq_params,
-    default_mesh_params,
-    default_xrf_parameters,
 )
-
-
-from fixture import client
 
 
 def test_queue_get(client):

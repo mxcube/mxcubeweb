@@ -191,10 +191,7 @@ class SampleQueueContainer extends React.Component {
               />
               Log messages:
             </div>
-            <UserMessage
-              messages={this.props.logRecords}
-              target="user_level_log"
-            />
+            <UserMessage messages={this.props.logRecords} />
           </div>
         </div>
       </div>

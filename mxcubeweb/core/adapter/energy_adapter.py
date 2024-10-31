@@ -1,6 +1,7 @@
+from mxcubecore import HardwareRepository as HWR
+
 from mxcubeweb.core.adapter.actuator_adapter import ActuatorAdapter
 from mxcubeweb.core.adapter.wavelength_adapter import WavelengthAdapter
-from mxcubecore import HardwareRepository as HWR
 
 
 class EnergyAdapter(ActuatorAdapter):

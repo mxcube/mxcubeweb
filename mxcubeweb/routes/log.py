@@ -1,7 +1,13 @@
-import logging
 import json
+import logging
 
-from flask import Blueprint, jsonify, request, make_response
+from flask import (
+    Blueprint,
+    jsonify,
+    make_response,
+    request,
+)
+
 from mxcubeweb import logging_handler
 
 

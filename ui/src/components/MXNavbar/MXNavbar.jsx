@@ -63,9 +63,6 @@ function MXNavbar() {
             <Nav.Link as={NavLink} className={styles.navLink} to="/equipment">
               Equipment
             </Nav.Link>
-            <Nav.Link as={NavLink} className={styles.navLink} to="/logging">
-              System log
-            </Nav.Link>
           </Nav>
           <Nav className={styles.subNav}>
             <Nav.Link as={NavLink} className={styles.navLink} to="/help">

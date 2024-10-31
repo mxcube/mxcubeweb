@@ -1,5 +1,9 @@
-from flask import Blueprint, Response, jsonify, request
-
+from flask import (
+    Blueprint,
+    Response,
+    jsonify,
+    request,
+)
 from mxcubecore import HardwareRepository as HWR
 
 

@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 import logging
 import time
-import gevent
 
-from mxcubecore import queue_entry
+import gevent
 from mxcubecore import HardwareRepository as HWR
+from mxcubecore import queue_entry
 
 from mxcubeweb.core.components.component_base import ComponentBase
-from mxcubeweb.core.components.queue import COLLECTED, UNCOLLECTED
+from mxcubeweb.core.components.queue import (
+    COLLECTED,
+    UNCOLLECTED,
+)
 
 
 # TO CONSIDER:
@@ -414,8 +417,8 @@ class SampleChanger(ComponentBase):
 
 # Disabling C901 function is too complex (19)
 def queue_mount_sample(view, data_model, centring_done_cb, async_result):  # noqa: C901
-    from mxcubeweb.routes import signals
     from mxcubeweb.app import MXCUBEApplication as mxcube
+    from mxcubeweb.routes import signals
 
     HWR.beamline.sample_view.clear_all()
     logging.getLogger("user_level_log").info("Loading sample ...")

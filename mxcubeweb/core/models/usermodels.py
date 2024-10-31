@@ -1,20 +1,26 @@
 import pytz
 import tzlocal
-
-from mxcubeweb.core.components.user.database import Base
-from flask_security import UserMixin, RoleMixin
-from sqlalchemy.orm import relationship, backref
+from flask_security import (
+    RoleMixin,
+    UserMixin,
+)
 from sqlalchemy import (
+    JSON,
     Boolean,
-    Text,
-    Unicode,
-    DateTime,
     Column,
+    DateTime,
+    ForeignKey,
     Integer,
     String,
-    ForeignKey,
-    JSON,
+    Text,
+    Unicode,
 )
+from sqlalchemy.orm import (
+    backref,
+    relationship,
+)
+
+from mxcubeweb.core.components.user.database import Base
 
 
 class RolesUsers(Base):

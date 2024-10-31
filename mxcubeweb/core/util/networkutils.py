@@ -1,19 +1,20 @@
-import socket
-import functools
 import email.utils
-import smtplib
-import time
-import os
+import functools
 import logging
-
+import os
+import smtplib
+import socket
+import time
 from email.mime.text import MIMEText
 from email.utils import make_msgid
 
 import flask
-import flask_socketio
 import flask_security
-
-from flask_login import current_user, login_required
+import flask_socketio
+from flask_login import (
+    current_user,
+    login_required,
+)
 from mxcubecore import HardwareRepository as HWR
 
 

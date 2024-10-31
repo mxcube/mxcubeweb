@@ -1,11 +1,10 @@
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
+from mxcubeweb.core.models.adaptermodels import (
+    FloatValueModel,
+    HOActuatorValueChangeModel,
+)
 from mxcubeweb.core.util.adapterutils import export
 from mxcubeweb.core.util.networkutils import RateLimited
-
-from mxcubeweb.core.models.adaptermodels import (
-    HOActuatorValueChangeModel,
-    FloatValueModel,
-)
 
 
 class ActuatorAdapter(ActuatorAdapterBase):

@@ -1,6 +1,5 @@
 const INITIAL_STATE = {
   logRecords: [],
-  activePage: 0,
 };
 
 function loggerReducer(state = INITIAL_STATE, action = {}) {
@@ -10,9 +9,6 @@ function loggerReducer(state = INITIAL_STATE, action = {}) {
         ...state,
         logRecords: [...state.logRecords.slice(-100), action.data],
       };
-    }
-    case 'SET_PAGE_LOGGING': {
-      return { ...state, activePage: action.page };
     }
     case 'SET_INITIAL_STATE': {
       return { ...state, logRecords: [...action.data.logger] };

@@ -6,10 +6,8 @@ try:
     )
 except ImportError:
     # Python3.7 module backport
-    from importlib_metadata import (
-        PackageNotFoundError,
-        version,  # pyright: ignore[reportMissingImports]
-    )
+    from importlib_metadata import version  # pyright: ignore[reportMissingImports]
+    from importlib_metadata import PackageNotFoundError
 
 __version__: str
 try:

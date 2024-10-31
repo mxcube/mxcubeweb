@@ -23,3 +23,12 @@
   opacity: 0.5;
   pointer-events: none;
 }
+
+.numInputClean {
+  appearance: textfield;
+}
+
+.numInputClean::-webkit-inner-spin-button,
+.numInputClean::-webkit-outer-spin-button {
+  appearance: none;
+}

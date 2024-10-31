@@ -15,6 +15,7 @@
 }
 
 .input {
+  composes: numInputClean from '../../utils.module.css';
   width: 5em;
   padding: 0 0.25rem;
   margin: 0 0.125rem;
@@ -23,7 +24,6 @@
   border-radius: 0.375rem;
   text-align: center;
   transition: background-color 100ms ease-in;
-  appearance: textfield; /* hide default up/down arrows */
 }
 
 .input[data-busy] {

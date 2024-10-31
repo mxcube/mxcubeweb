@@ -28,13 +28,12 @@ import {
 } from '../actions/sampleChanger';
 
 import {
-  setBeamlineAttribute,
   executeCommand,
   logFrontEndTraceBack,
   setAttribute,
 } from '../actions/beamline';
-import { find } from 'lodash';
 
+import '../components/SampleView/SampleView.css';
 import styles from './SampleViewContainer.module.css';
 import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
 
@@ -45,13 +44,10 @@ class SampleViewContainer extends Component {
   }
 
   getControlAvailability(name) {
-    const available = find(
-      this.props.uiproperties.sample_view_video_controls.components,
-      {
-        id: name,
-        show: true,
-      },
-    );
+    const available =
+      this.props.uiproperties.sample_view_video_controls.components.find(
+        (component) => component.id === name && component.show === true,
+      );
 
     return available?.show || false;
   }
@@ -120,12 +116,19 @@ class SampleViewContainer extends Component {
           <Col sm={2} xxl={1} className={styles.controllers}>
             <DefaultErrorBoundary>
               <div className={motorInputStyles.container}>
-                <p className={motorInputStyles.label}>Phase Control</p>
+                <label className={motorInputStyles.label} htmlFor="PhaseInput">
+                  Phase Control
+                </label>
                 <PhaseInput />
               </div>
 
               <div className={motorInputStyles.container}>
-                <p className={motorInputStyles.label}>Beam size</p>
+                <label
+                  className={motorInputStyles.label}
+                  htmlFor="ApertureInput"
+                >
+                  Beam size
+                </label>
                 <ApertureInput />
               </div>
 
@@ -196,8 +199,6 @@ class SampleViewContainer extends Component {
                 showErrorPanel={this.props.showErrorPanel}
               />
               <SampleImage
-                getControlAvailability={this.getControlAvailability}
-                showErrorPanel={this.props.showErrorPanel}
                 sampleViewActions={this.props.sampleViewActions}
                 {...this.props.sampleViewState}
                 uiproperties={uiproperties}
@@ -212,12 +213,8 @@ class SampleViewContainer extends Component {
                 selectedGrids={selectedGrids}
                 cellCounting={this.props.cellCounting}
                 cellSpacing={this.props.cellSpacing}
-                currentSampleID={this.props.currentSampleID}
-                sampleList={this.props.sampleList}
-                proposal={this.props.proposal}
                 busy={this.props.queueState === QUEUE_RUNNING}
                 setAttribute={this.props.setAttribute}
-                setBeamlineAttribute={this.props.setBeamlineAttribute}
                 displayImage={this.props.displayImage}
                 meshResultFormat={this.props.meshResultFormat}
               />
@@ -254,7 +251,6 @@ function mapStateToProps(state) {
     workflows: state.workflow.workflows,
     cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
     cellSpacing: state.taskForm.defaultParameters.mesh.cell_spacing,
-    proposal: state.login.selectedProposal,
     remoteAccess: state.remoteAccess,
     uiproperties: state.uiproperties,
     taskForm: state.taskForm,
@@ -283,7 +279,6 @@ function mapDispatchToProps(dispatch) {
     showForm: bindActionCreators(showTaskForm, dispatch),
     showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
-    setBeamlineAttribute: bindActionCreators(setBeamlineAttribute, dispatch),
     displayImage: bindActionCreators(displayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
     logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),

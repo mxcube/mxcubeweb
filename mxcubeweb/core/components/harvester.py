@@ -1,13 +1,16 @@
 # -*- coding: utf-8 -*-
 from __future__ import annotations
+
 import logging
 
 from mxcubecore import HardwareRepository as HWR
+from mxcubecore.HardwareObjects.abstract.sample_changer import Crims
 
 from mxcubeweb.core.components.component_base import ComponentBase
-from mxcubeweb.core.components.queue import COLLECTED, UNCOLLECTED
-
-from mxcubecore.HardwareObjects.abstract.sample_changer import Crims
+from mxcubeweb.core.components.queue import (
+    COLLECTED,
+    UNCOLLECTED,
+)
 
 
 # TO CONSIDER:

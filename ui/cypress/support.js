@@ -22,14 +22,7 @@ Cypress.Commands.add('takeControl', () => {
       cy.findByRole('button', { name: 'Continue' }).click();
       cy.findByRole('link', { name: /Remote/u, hidden: true }).click();
       cy.findByRole('button', { name: 'Take control' }).click();
-
-      // Confirmation dialog appears only if sockets are enabled
-      // eslint-disable-next-line promise/no-nesting
-      cy.get('body').then(($body) => {
-        if ($body.text().includes('Hide')) {
-          cy.findByRole('button', { name: 'Hide' }).click();
-        }
-      });
+      cy.findByRole('button', { name: 'Hide' }).click();
     }
   });
 });
@@ -57,9 +50,6 @@ Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
     'not.have.class',
     'active',
   );
-
-  // Reload to see mounted sample (until WebSockets are fixed on CI)
-  cy.reload();
 });
 
 Cypress.Commands.add('clearSamples', () => {

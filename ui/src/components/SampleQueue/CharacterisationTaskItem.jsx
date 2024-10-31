@@ -283,7 +283,7 @@ export default class TaskItem extends Component {
           style={{ marginBottom: 0, height: '18px' }}
           min={0}
           max={1}
-          active={this.props.progress < 1}
+          animated={this.props.progress < 1}
           label={`${(this.props.progress * 100).toPrecision(3)} %`}
           now={this.props.progress}
         />
@@ -407,7 +407,7 @@ export default class TaskItem extends Component {
                         <tr>
                           <th>Start &deg; </th>
                           <th>Osc. &deg; </th>
-                          <th>t (ms)</th>
+                          <th>t (s)</th>
                           <th># Img</th>
                           <th>T (%)</th>
                           <th>Res. (&Aring;)</th>

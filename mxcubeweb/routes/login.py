@@ -1,8 +1,15 @@
 import logging
 
-from flask import Blueprint, request, jsonify, make_response, session
-from mxcubeweb.core.util import networkutils
+from flask import (
+    Blueprint,
+    jsonify,
+    make_response,
+    request,
+    session,
+)
 from flask_login import current_user
+
+from mxcubeweb.core.util import networkutils
 
 
 def init_route(app, server, url_prefix):

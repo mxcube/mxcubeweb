@@ -3,38 +3,36 @@ Module that contains application wide settings and state as well as functions
 for accessing and manipulating those.
 """
 
+import logging
 import os
 import sys
-import logging
-import traceback
-import json
 import time
-
-from pathlib import Path
+import traceback
 from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
+from pathlib import Path
 
+from mxcubecore import ColorFormatter
 from mxcubecore import HardwareRepository as HWR
-from mxcubecore import removeLoggingHandlers, ColorFormatter
-from mxcubecore import queue_entry
+from mxcubecore import (
+    queue_entry,
+    removeLoggingHandlers,
+)
 from mxcubecore.utils.conversion import make_table
 
-from mxcubeweb.logging_handler import MX3LoggingHandler
-from mxcubeweb.core.util.adapterutils import (
-    get_adapter_cls_from_hardware_object,
-)
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
-from mxcubeweb.core.components.component_base import import_component
-from mxcubeweb.core.components.lims import Lims
-from mxcubeweb.core.components.chat import Chat
-from mxcubeweb.core.components.samplechanger import SampleChanger
 from mxcubeweb.core.components.beamline import Beamline
-from mxcubeweb.core.components.sampleview import SampleView
+from mxcubeweb.core.components.chat import Chat
+from mxcubeweb.core.components.component_base import import_component
+from mxcubeweb.core.components.harvester import Harvester
+from mxcubeweb.core.components.lims import Lims
 from mxcubeweb.core.components.queue import Queue
+from mxcubeweb.core.components.samplechanger import SampleChanger
+from mxcubeweb.core.components.sampleview import SampleView
 from mxcubeweb.core.components.workflow import Workflow
 from mxcubeweb.core.models.configmodels import UIComponentModel
-from mxcubeweb.core.components.harvester import Harvester
-
+from mxcubeweb.core.util.adapterutils import get_adapter_cls_from_hardware_object
+from mxcubeweb.logging_handler import MX3LoggingHandler
 
 removeLoggingHandlers()
 
@@ -88,9 +86,7 @@ class MXCUBECore:
 
         :return: None
         """
-        from mxcubeweb.core.adapter.beamline_adapter import (
-            BeamlineAdapter,
-        )
+        from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
 
         fname = os.path.dirname(__file__)
         HWR.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
@@ -241,7 +237,7 @@ class MXCUBEApplication:
     AUTO_ADD_DIFFPLAN = False
 
     # Number of sample snapshots taken before collect
-    NUM_SNAPSHOTS = 4
+    DEFAULT_NUM_SNAPSHOTS = 4
 
     # Remember collection paramters between samples
     # or reset (defualt) between samples.
@@ -496,39 +492,3 @@ class MXCUBEApplication:
             ) in MXCUBEApplication.CONFIG.app.ui_properties
             if value
         }
-
-    @staticmethod
-    def save_settings():
-        """
-        Saves all application wide variables to disk, stored-mxcube-session.json
-        """
-        queue = MXCUBEApplication.queue.queue_to_dict(
-            HWR.beamline.queue_model.get_model_root()
-        )
-
-        # For the moment not storing USERS
-
-        data = {
-            "QUEUE": queue,
-            "CURRENTLY_MOUNTED_SAMPLE": MXCUBEApplication.CURRENTLY_MOUNTED_SAMPLE,
-            "SAMPLE_TO_BE_MOUNTED": MXCUBEApplication.SAMPLE_TO_BE_MOUNTED,
-            "CENTRING_METHOD": MXCUBEApplication.CENTRING_METHOD,
-            "NODE_ID_TO_LIMS_ID": MXCUBEApplication.NODE_ID_TO_LIMS_ID,
-            "INITIAL_FILE_LIST": MXCUBEApplication.INITIAL_FILE_LIST,
-            "SC_CONTENTS": MXCUBEApplication.SC_CONTENTS,
-            "SAMPLE_LIST": MXCUBEApplication.SAMPLE_LIST,
-            "TEMP_DISABLED": MXCUBEApplication.TEMP_DISABLED,
-            "ALLOW_REMOTE": MXCUBEApplication.ALLOW_REMOTE,
-            "TIMEOUT_GIVES_CONTROL": MXCUBEApplication.TIMEOUT_GIVES_CONTROL,
-            "VIDEO_FORMAT": MXCUBEApplication.VIDEO_FORMAT,
-            "AUTO_MOUNT_SAMPLE": MXCUBEApplication.AUTO_MOUNT_SAMPLE,
-            "AUTO_ADD_DIFFPLAN": MXCUBEApplication.AUTO_ADD_DIFFPLAN,
-            "NUM_SNAPSHOTS": MXCUBEApplication.NUM_SNAPSHOTS,
-            "UI_STATE": MXCUBEApplication.UI_STATE,
-        }
-
-        fname = Path("/tmp/stored-mxcube-session.json")
-        fname.touch(exist_ok=True)
-
-        with open(fname, "w+") as fp:
-            json.dump(data, fp)

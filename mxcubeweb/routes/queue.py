@@ -1,9 +1,15 @@
 import json
+
 import spectree
-
-from flask import Blueprint, Response, jsonify, request, session
-
+from flask import (
+    Blueprint,
+    Response,
+    jsonify,
+    request,
+    session,
+)
 from mxcubecore import HardwareRepository as HWR
+
 from mxcubeweb.core.models.generic import SimpleNameValue
 
 
@@ -154,7 +160,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def set_queue():
-        app.queue.set_queue(request.get_json(), session)
+        app.queue.set_queue(request.get_json())
         return Response(status=200)
 
     @bp.route("/", methods=["POST"])
@@ -336,8 +342,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def set_num_snapshots():
         data = request.get_json()
-        app.NUM_SNAPSHOTS = data.get("numSnapshots", 4)
-        resp = jsonify({"numSnapshots": data.get("numSnapshots", 4)})
+        app.queue.set_num_snapshots(data.get("numSnapshots", app.DEFAULT_NUM_SNAPSHOTS))
+        resp = jsonify(
+            {"numSnapshots": data.get("numSnapshots", app.DEFAULT_NUM_SNAPSHOTS)}
+        )
         resp.status_code = 200
 
         return resp

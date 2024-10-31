@@ -218,7 +218,8 @@ function ReduxInputField(prop) {
 }
 
 export function InputField(prop) {
-  return <Field name={prop.propName} component={ReduxInputField} {...prop} />;
+  const { propName, ...otherProps } = prop;
+  return <Field name={propName} component={ReduxInputField} {...otherProps} />;
 }
 
 export function DisplayField({ label, value }) {

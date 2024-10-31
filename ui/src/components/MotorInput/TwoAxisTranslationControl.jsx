@@ -28,6 +28,7 @@ function TwoAxisTranslationControl(props) {
     <div className={styles.root}>
       <Button
         className={styles.btn}
+        aria-label="Move up"
         variant="outline-secondary"
         onClick={() =>
           dispatch(
@@ -43,6 +44,7 @@ function TwoAxisTranslationControl(props) {
       </Button>
       <Button
         className={styles.btn}
+        aria-label="Move left"
         variant="outline-secondary"
         disabled={motorsDisabled || horizontalMotor.state !== HW_STATE.READY}
         onClick={() =>
@@ -65,19 +67,30 @@ function TwoAxisTranslationControl(props) {
           <Popover>
             <Popover.Header as="h3">Sample alignment motors</Popover.Header>
             <Popover.Body>
-              <MotorInput role="sample_vertical" />
-              <MotorInput role="sample_horizontal" />
+              <MotorInput
+                role="sample_vertical"
+                idPrefix="TwoAxisTranslationControl"
+              />
+              <MotorInput
+                role="sample_horizontal"
+                idPrefix="TwoAxisTranslationControl"
+              />
             </Popover.Body>
           </Popover>
         }
       >
-        <Button className={styles.btn} variant="outline-secondary">
+        <Button
+          className={styles.btn}
+          aria-label="Show sample alignment motors"
+          variant="outline-secondary"
+        >
           <i className={`${styles.btnIcon} fas fa-cog`} />
         </Button>
       </OverlayTrigger>
 
       <Button
         className={styles.btn}
+        aria-label="Move right"
         variant="outline-secondary"
         disabled={motorsDisabled || horizontalMotor.state !== HW_STATE.READY}
         onClick={() =>
@@ -93,6 +106,7 @@ function TwoAxisTranslationControl(props) {
       </Button>
       <Button
         className={styles.btn}
+        aria-label="Move down"
         variant="outline-secondary"
         disabled={motorsDisabled || verticalMotor.state !== HW_STATE.READY}
         onClick={() =>

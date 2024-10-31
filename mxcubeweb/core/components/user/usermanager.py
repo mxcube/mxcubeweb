@@ -1,19 +1,21 @@
-import logging
-import json
-from typing import List, Union
-import uuid
 import datetime
+import json
+import logging
+import uuid
+from typing import List, Union
 
 import flask
 import flask_security
 from flask_login import current_user
+from mxcubecore import HardwareRepository as HWR
 
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.usermodels import User
-from mxcubeweb.core.util.networkutils import is_local_host, remote_addr
 from mxcubeweb.core.util.convertutils import convert_to_dict
-
-from mxcubecore import HardwareRepository as HWR
+from mxcubeweb.core.util.networkutils import (
+    is_local_host,
+    remote_addr,
+)
 
 
 class BaseUserManager(ComponentBase):
