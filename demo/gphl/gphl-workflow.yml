@@ -43,6 +43,11 @@ settings:
   # NB Temporary developer option. Defaults to 1
   allow_duplicate_orientations: 0
 
+  # Suppress log output of programs called from GPhL workflow
+  # Default to False
+  suppress_external_log_output: false
+
+
   # TEST ONLY developer option. Use preset SPOT.XDS file and skip characterisation.
   # Only works for GPhL test samples with SPOT.XDS  file
   # NB to get sensible results you should use the default values for resolution and
