@@ -1,6 +1,3 @@
-#
-
-
 """Authentication tests."""
 
 
@@ -34,7 +31,7 @@ def login_type(request):
 
 
 @pytest.fixture
-def server(request, login_type):
+def server(login_type):
     try:
         os.remove(USER_DB_PATH)
     except FileNotFoundError:
@@ -114,6 +111,56 @@ def test_authn_info(client, login_type):
     assert resp.json["user"]["inControl"] == True
 
 
+# Test against user-based authentication only
+@pytest.mark.parametrize("login_type", ["user"], indirect=True)
+def test_authn_same_user(make_client):
+    """Test same user signing in within two different sessions.
+    
+    If a user signs in, the previus client session should be closed (logged out)
+    and the new client session should gain "in control" privilages.
+    """
+    session_0 = make_client()
+    resp = session_0.post(URL_SIGNIN, json=CREDENTIALS_0)
+    assert resp.status_code == 200
+    resp = session_0.get(URL_INFO)
+    assert resp.json["user"]["inControl"] == True
+
+    session_1 = make_client()
+    resp = session_1.post(URL_SIGNIN, json=CREDENTIALS_0)
+    assert resp.status_code == 200
+    resp = session_1.get(URL_INFO)
+    assert resp.json["user"]["inControl"] == True
+
+    resp = session_0.get(URL_INFO)
+    assert resp.json["loggedIn"] == False
+
+
+# Test against user-based authentication only
+@pytest.mark.parametrize("login_type", ["user"], indirect=True)
+def test_authn_different_user(make_client):
+    """Test two different users signing in.
+    
+    If a new user signs in it becomes an observer while the previus user stays
+    signed and "in control". Modal for selecting proposal should be displayed 
+    for a ne user session.
+    """
+    client_0 = make_client()
+    resp = client_0.post(URL_SIGNIN, json=CREDENTIALS_0)
+    assert resp.status_code == 200
+    resp = client_0.get(URL_INFO)
+    assert resp.json["user"]["inControl"] == True
+
+    client_1 = make_client()
+    resp = client_1.post(URL_SIGNIN, json=CREDENTIALS_1)
+    assert resp.status_code == 200
+    resp = client_1.get(URL_INFO)
+    assert resp.json["user"]["inControl"] == False
+    # TODO: check modal (this will be displayed in following PR)
+
+    resp = client_0.get(URL_INFO)
+    assert resp.json["user"]["inControl"] == True
+
+
 # Test against proposal-based authentication only
 @pytest.mark.parametrize("login_type", ["proposal"], indirect=True)
 def test_authn_same_proposal(make_client):
@@ -139,22 +186,24 @@ def test_authn_same_proposal(make_client):
 
 # Test against proposal-based authentication only
 @pytest.mark.parametrize("login_type", ["proposal"], indirect=True)
-def test_authn_different_proposals(make_client):
+def test_authn_different_proposal(make_client):
     """Test two users for different proposals.
 
     If a user signs in for a different proposal than an already signed in user,
-    this user should not be allowed to sign in.
+    the `Select proposal` modal should be displayed and the user should become 
+    an observer.
     """
     client_0 = make_client()
     resp = client_0.post(URL_SIGNIN, json=CREDENTIALS_0)
     assert resp.status_code == 200
     resp = client_0.get(URL_INFO)
-    assert resp.status_code == 200
+    assert resp.json["user"]["inControl"] == True
 
     client_1 = make_client()
     resp = client_1.post(URL_SIGNIN, json=CREDENTIALS_1)
     assert resp.status_code == 200
-    assert resp.json["msg"] == "Could not authenticate"
+    resp = client_1.get(URL_INFO)
+    assert resp.json["user"]["inControl"] == False
 
 
 def test_authn_session_timeout(client):
