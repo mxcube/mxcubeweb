@@ -2,7 +2,10 @@ import datetime
 import json
 import logging
 import uuid
-from typing import List, Union
+from typing import (
+    List,
+    Union,
+)
 
 import flask
 import flask_security
@@ -509,7 +512,7 @@ class UserManager(BaseUserManager):
             logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
             raise Exception(str(info))
         logging.getLogger("MX3.HWR").info(msg)
-        
+
         return login_res
 
     def _signout(self):
