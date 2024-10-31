@@ -115,7 +115,7 @@ def test_authn_info(client, login_type):
 @pytest.mark.parametrize("login_type", ["user"], indirect=True)
 def test_authn_same_user(make_client):
     """Test same user signing in within two different sessions.
-    
+
     If a user signs in, the previus client session should be closed (logged out)
     and the new client session should gain "in control" privilages.
     """
@@ -139,9 +139,9 @@ def test_authn_same_user(make_client):
 @pytest.mark.parametrize("login_type", ["user"], indirect=True)
 def test_authn_different_user(make_client):
     """Test two different users signing in.
-    
+
     If a new user signs in it becomes an observer while the previus user stays
-    signed and "in control". Modal for selecting proposal should be displayed 
+    signed and "in control". Modal for selecting proposal should be displayed
     for a ne user session.
     """
     client_0 = make_client()
@@ -190,7 +190,7 @@ def test_authn_different_proposal(make_client):
     """Test two users for different proposals.
 
     If a user signs in for a different proposal than an already signed in user,
-    the `Select proposal` modal should be displayed and the user should become 
+    the `Select proposal` modal should be displayed and the user should become
     an observer.
     """
     client_0 = make_client()
