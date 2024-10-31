@@ -369,13 +369,10 @@ export default class ContextMenu extends React.Component {
 
   createCollectionOnCell() {
     const { cellCenter } = this.props.shape;
-    this.createPoint(cellCenter[0], cellCenter[1]);
-  }
-
-  createPoint(x, y, cb = null) {
-    this.props.sampleViewActions.addShape(
-      { screenCoord: [x, y], t: '2DP', state: 'SAVED' },
-      cb,
+    this.props.sampleViewActions.add2DPoint(
+      cellCenter[0],
+      cellCenter[1],
+      'SAVED',
     );
   }
 
@@ -409,11 +406,8 @@ export default class ContextMenu extends React.Component {
   }
 
   goToBeam() {
-    const { imageX, imageY, imageRatio } = this.props;
-    this.props.sampleViewActions.moveToBeam(
-      imageX / imageRatio,
-      imageY / imageRatio,
-    );
+    const { sampleViewX, sampleViewY } = this.props;
+    this.props.sampleViewActions.moveToBeam(sampleViewX, sampleViewY);
   }
 
   removeShape() {
@@ -439,9 +433,13 @@ export default class ContextMenu extends React.Component {
   }
 
   createPointAndShowModal(name, extraParams = {}) {
-    const { imageX, imageY, imageRatio } = this.props;
-    this.createPoint(imageX / imageRatio, imageY / imageRatio, (shape) =>
-      this.showModal(name, {}, shape, extraParams),
+    const { sampleViewX, sampleViewY } = this.props;
+
+    this.props.sampleViewActions.add2DPoint(
+      sampleViewX,
+      sampleViewY,
+      'SAVED',
+      (shape) => this.showModal(name, {}, shape, extraParams),
     );
   }
 

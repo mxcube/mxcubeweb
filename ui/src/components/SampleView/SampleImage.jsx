@@ -500,7 +500,15 @@ export default class SampleImage extends React.Component {
       this.canvas.discardActiveObject();
     }
 
-    showContextMenu(true, ctxMenuObj, e.pageX, e.pageY, e.offsetX, e.offsetY);
+    const { imageRatio } = this.props;
+    showContextMenu(
+      true,
+      ctxMenuObj,
+      e.pageX,
+      e.pageY,
+      e.offsetX / imageRatio,
+      e.offsetY / imageRatio,
+    );
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity

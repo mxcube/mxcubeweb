@@ -3,8 +3,8 @@ const INITIAL_STATE = {
   shape: { type: 'NONE' },
   pageX: 0,
   pageY: 0,
-  imageX: 0,
-  imageY: 0,
+  sampleViewX: 0,
+  sampleViewY: 0,
   genericContextMenu: {
     id: '',
     show: false,
@@ -22,8 +22,8 @@ function contextMenuReducer(state = INITIAL_STATE, action = {}) {
         shape: action.shape,
         pageX: action.pageX,
         pageY: action.pageY,
-        imageX: action.imageX,
-        imageY: action.imageY,
+        sampleViewX: action.sampleViewX,
+        sampleViewY: action.sampleViewY,
       };
     }
     case 'SHOW_GENERIC_CONTEXT_MENU': {

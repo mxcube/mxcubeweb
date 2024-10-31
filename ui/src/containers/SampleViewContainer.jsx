@@ -188,7 +188,6 @@ class SampleViewContainer extends Component {
                 sampleID={currentSampleID}
                 sampleData={this.props.sampleList[currentSampleID]}
                 defaultParameters={this.props.defaultParameters}
-                imageRatio={imageRatio * sourceScale}
                 workflows={this.props.workflows}
                 savedPointId={this.props.sampleViewState.savedPointId}
                 groupFolder={this.props.groupFolder}
