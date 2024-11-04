@@ -46,11 +46,11 @@ export function setMotorStep(role, value) {
 
 export function showContextMenu(
   show,
-  shape = { type: 'NONE' }, // eslint-disable-line unicorn/no-object-as-default-parameter
-  pageX = 0,
-  pageY = 0,
-  sampleViewX = 0,
-  sampleViewY = 0,
+  shape,
+  pageX,
+  pageY,
+  sampleViewX,
+  sampleViewY,
 ) {
   return {
     type: 'SHOW_CONTEXT_MENU',

@@ -299,7 +299,21 @@ export default class ContextMenu extends React.Component {
   showModal(modalName, extraParams = {}, _shape = null) {
     const { sampleID, shape, sampleData, defaultParameters } = this.props;
 
-    const sid = _shape ? _shape.id : shape.id;
+    if (this.props.clickCentring) {
+      this.props.sampleViewActions.stopClickCentring();
+      this.props.sampleViewActions.acceptCentring();
+    }
+
+    if (!sampleData) {
+      this.props.showErrorPanel(
+        true,
+        'There is no sample mounted, cannot collect data.',
+      );
+
+      return;
+    }
+
+    const sid = _shape ? _shape.id : shape?.id;
     if (Array.isArray(sid)) {
       // we remove any line
       // in case we have selected (by drawing a box) two points
@@ -316,11 +330,6 @@ export default class ContextMenu extends React.Component {
       }
     }
 
-    if (this.props.clickCentring) {
-      this.props.sampleViewActions.stopClickCentring();
-      this.props.sampleViewActions.acceptCentring();
-    }
-
     const type =
       modalName === 'Generic' ? extraParams.type : modalName.toLowerCase();
     const name =
@@ -332,39 +341,32 @@ export default class ContextMenu extends React.Component {
 
     params = getLastUsedParameters(type, params);
 
-    if (sampleData) {
-      const [cell_count, numRows, numCols] = shape.gridData
-        ? [
-            shape.gridData.numCols * shape.gridData.numRows,
-            shape.gridData.numRows,
-            shape.gridData.numCols,
-          ]
-        : ['none', 0, 0];
+    const [cell_count, numRows, numCols] = shape?.gridData
+      ? [
+          shape.gridData.numCols * shape.gridData.numRows,
+          shape.gridData.numRows,
+          shape.gridData.numCols,
+        ]
+      : ['none', 0, 0];
 
-      this.props.showForm(
-        modalName,
-        [sampleID],
-        {
-          parameters: {
-            ...params,
-            ...extraParams,
-            prefix: sampleData.defaultPrefix,
-            name,
-            subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
-            cell_count,
-            numRows,
-            numCols,
-          },
-          type,
+    this.props.showForm(
+      modalName,
+      [sampleID],
+      {
+        parameters: {
+          ...params,
+          ...extraParams,
+          prefix: sampleData.defaultPrefix,
+          name,
+          subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
+          cell_count,
+          numRows,
+          numCols,
         },
-        sid,
-      );
-    } else {
-      this.props.showErrorPanel(
-        true,
-        'There is no sample mounted, cannot collect data.',
-      );
-    }
+        type,
+      },
+      sid,
+    );
   }
 
   createCollectionOnCell() {
@@ -484,7 +486,7 @@ export default class ContextMenu extends React.Component {
     const menuOptions = this.menuOptions();
     let optionList = [];
 
-    if (this.props.sampleID !== undefined) {
+    if (this.props.shape && this.props.sampleID) {
       optionList = menuOptions[this.props.shape.type].map(this.listOptions);
     } else {
       optionList = menuOptions.NONE.map(this.listOptions);

@@ -370,7 +370,7 @@ export default class SampleImage extends React.Component {
 
     const group = this.canvas.getActiveObject();
     const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
-    let ctxMenuObj = { type: 'NONE' };
+    let ctxMenuObj;
     let objectFound = false;
     // Existing selection clicked
     if (
