@@ -322,7 +322,7 @@ class BaseUserManager(ComponentBase):
         self.app.server.user_datastore.put(user)
         self.app.server.user_datastore.commit()
 
-    def _get_configured_roles(self, user: str) -> list[str]:
+    def _get_configured_roles(self, user: str) -> List[str]:
         """Get the roles configured for the user.
 
         Inhouse user is always assigned additionaly a staff role.
