@@ -203,7 +203,7 @@ def test_authn_different_proposal(make_client):
     resp = client_1.post(URL_SIGNIN, json=CREDENTIALS_1)
     assert resp.status_code == 200
     resp = client_1.get(URL_INFO)
-    assert resp.json["loggedIn"] == False
+    assert resp.json["user"]["inControl"] == False
 
 
 def test_authn_session_timeout(client):
