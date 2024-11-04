@@ -11,7 +11,7 @@ import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import styles from './MotorInput.module.css';
 
 function MotorInput(props) {
-  const { role } = props;
+  const { role, idPrefix = 'MotorInput' } = props;
   const dispatch = useDispatch();
 
   const { attribute, label, precision, step, suffix } = useSelector((state) =>
@@ -30,6 +30,7 @@ function MotorInput(props) {
 
   const { state, value } = motor;
   const isReady = state === HW_STATE.READY;
+  const id = `${idPrefix}_${role}`;
 
   if (Number.isNaN(motor.value)) {
     return null;
@@ -37,15 +38,18 @@ function MotorInput(props) {
 
   return (
     <div className={styles.container}>
-      <p className={styles.label}>{label}</p>
+      <label className={styles.label} htmlFor={id}>
+        {label}
+      </label>
+
       <div className={styles.wrapper}>
         <BaseMotorInput
+          id={id}
           className={styles.valueInput}
           value={value}
           state={state}
           precision={precision}
           step={step}
-          testId={`MotorInput_value_${attribute}`}
           disabled={disabled}
           onChange={(val) => dispatch(setAttribute(attribute, val))}
         />
@@ -54,6 +58,7 @@ function MotorInput(props) {
           <button
             type="button"
             className={styles.arrowBtn}
+            data-testid={`${id}_up`}
             disabled={!isReady || disabled}
             onClick={() => dispatch(setAttribute(attribute, value + step))}
           >
@@ -62,6 +67,7 @@ function MotorInput(props) {
           <button
             type="button"
             className={styles.arrowBtn}
+            data-testid={`${id}_down`}
             disabled={!isReady || disabled}
             onClick={() => dispatch(setAttribute(attribute, value - step))}
           >
@@ -73,6 +79,7 @@ function MotorInput(props) {
           <>
             <input
               className={styles.stepInput}
+              data-testid={`${id}_step`}
               type="number"
               defaultValue={step}
               disabled={disabled}

@@ -1,11 +1,10 @@
 import logging
-
 from enum import Enum
 
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubeweb.core.models.adaptermodels import (
-    NStateModel,
     HOActuatorValueChangeModel,
+    NStateModel,
     StrValueModel,
 )
 

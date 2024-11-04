@@ -1,6 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable sonarjs/no-duplicate-string */
-import './SampleView.css';
 import React from 'react';
 import { HW_STATE } from '../../constants';
 import {
@@ -12,7 +11,7 @@ import {
   makeCentringVerticalLine,
 } from './shapes';
 import DrawGridPlugin from './DrawGridPlugin';
-import SampleControls from './SampleControls';
+import SampleControls from '../SampleControls/SampleControls';
 import GridForm from './GridForm';
 import 'fabric';
 
@@ -35,6 +34,8 @@ export default class SampleImage extends React.Component {
     this.keyUp = this.keyUp.bind(this);
     this.wheel = this.wheel.bind(this);
     this.goToBeam = this.goToBeam.bind(this);
+    this.setHCellSpacing = this.setHCellSpacing.bind(this);
+    this.setVCellSpacing = this.setVCellSpacing.bind(this);
     this.setGridOverlayOpacity = this.setGridOverlayOpacity.bind(this);
     this.getGridOverlayOpacity = this.getGridOverlayOpacity.bind(this);
     this.saveGrid = this.saveGrid.bind(this);
@@ -119,7 +120,7 @@ export default class SampleImage extends React.Component {
       this.initJSMpeg();
     }
 
-    this.renderSampleView(this.props);
+    this.renderSampleView();
   }
 
   componentWillUnmount() {
@@ -205,6 +206,58 @@ export default class SampleImage extends React.Component {
     }
   }
 
+  setVCellSpacing(e) {
+    let value = Number.parseFloat(e.target.value);
+    if (Number.isNaN(value)) {
+      value = '';
+    }
+
+    const gridData = this.selectedGrid();
+
+    if (gridData) {
+      const gd = this.drawGridPlugin.setCellSpace(
+        gridData,
+        true,
+        gridData.cellHSpace,
+        value,
+      );
+      this.props.sampleViewActions.updateShapes([gd]);
+    } else if (this.props.drawGrid) {
+      this.drawGridPlugin.setCurrentCellSpace(
+        null,
+        value,
+        this.props.imageRatio,
+      );
+      this.drawGridPlugin.repaint(this.canvas);
+    }
+  }
+
+  setHCellSpacing(e) {
+    let value = Number.parseFloat(e.target.value);
+    if (Number.isNaN(value)) {
+      value = '';
+    }
+
+    const gridData = this.selectedGrid();
+
+    if (gridData) {
+      const gd = this.drawGridPlugin.setCellSpace(
+        gridData,
+        true,
+        value,
+        gridData.cellVSpace,
+      );
+      this.props.sampleViewActions.updateShapes([gd]);
+    } else if (this.props.drawGrid) {
+      this.drawGridPlugin.setCurrentCellSpace(
+        value,
+        null,
+        this.props.imageRatio,
+      );
+      this.drawGridPlugin.repaint(this.canvas);
+    }
+  }
+
   setGridOverlayOpacity(e) {
     let value = Number.parseFloat(e.target.value);
 
@@ -215,7 +268,7 @@ export default class SampleImage extends React.Component {
     this.drawGridPlugin.setGridOverlay(value);
     this.props.sampleViewActions.setOverlay(value);
     this.drawGridPlugin.repaint(this.canvas);
-    this.renderSampleView(this.props);
+    this.renderSampleView();
   }
 
   getGridOverlayOpacity() {
@@ -447,7 +500,7 @@ export default class SampleImage extends React.Component {
       this.canvas.discardActiveObject();
     }
 
-    showContextMenu(true, ctxMenuObj, e.offsetX, e.offsetY);
+    showContextMenu(true, ctxMenuObj, e.pageX, e.pageY, e.offsetX, e.offsetY);
   }
 
   // eslint-disable-next-line sonarjs/cognitive-complexity
@@ -461,13 +514,8 @@ export default class SampleImage extends React.Component {
       clickCentring,
       measureDistance,
       imageRatio,
-      contextMenuVisible,
       drawGrid,
     } = this.props;
-
-    if (contextMenuVisible) {
-      sampleViewActions.showContextMenu(false);
-    }
 
     if (clickCentring) {
       this.canvas.selection = false; // Disable group selection
@@ -765,7 +813,7 @@ export default class SampleImage extends React.Component {
     e.nativeEvent.stopImmediatePropagation();
   }
 
-  renderSampleView(nextProps) {
+  renderSampleView() {
     const {
       imageRatio,
       beamPosition,
@@ -779,7 +827,8 @@ export default class SampleImage extends React.Component {
       grids,
       pixelsPerMm,
       sourceScale,
-    } = nextProps;
+    } = this.props;
+
     this.drawCanvas(imageRatio, sourceScale);
     this.canvas.add(
       ...makeImageOverlay(
@@ -881,6 +930,8 @@ export default class SampleImage extends React.Component {
               getGridOverlayOpacity={this.getGridOverlayOpacity}
               setGridOverlayOpacity={this.setGridOverlayOpacity}
               cellSpacing={this.props.cellSpacing}
+              setHCellSpacing={this.setHCellSpacing}
+              setVCellSpacing={this.setVCellSpacing}
               gridList={this.props.grids}
               currentGrid={this.drawGridPlugin.currentGridData()}
               removeGrid={this.props.sampleViewActions.deleteShape}
@@ -891,13 +942,10 @@ export default class SampleImage extends React.Component {
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
-            <SampleControls
-              showErrorPanel={this.props.showErrorPanel}
-              {...this.props}
-              canvas={this.canvas}
-              imageRatio={this.props.imageRatio}
-            />
+
+            <SampleControls canvas={this.canvas} />
             <div>{this.centringMessage()}</div>
+
             <canvas id="canvas" className="coveringCanvas" />
           </div>
         </div>

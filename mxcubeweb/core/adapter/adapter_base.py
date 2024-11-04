@@ -1,17 +1,21 @@
 import inspect
+import logging
 import traceback
 import typing
-import logging
-
-from pydantic.v1 import ValidationError, Field, create_model
-import gevent
-
 from typing import Any
 
-from mxcubeweb.core.util.adapterutils import (
-    get_adapter_cls_from_hardware_object,
+import gevent
+from pydantic.v1 import (
+    Field,
+    ValidationError,
+    create_model,
 )
-from mxcubeweb.core.models.adaptermodels import HOModel, HOActuatorModel
+
+from mxcubeweb.core.models.adaptermodels import (
+    HOActuatorModel,
+    HOModel,
+)
+from mxcubeweb.core.util.adapterutils import get_adapter_cls_from_hardware_object
 
 
 class AdapterBase:

@@ -48,6 +48,11 @@ repos:
           - --remove-duplicate-keys
           - --ignore-pass-after-docstring
 
+  - repo: https://github.com/pycqa/isort
+    rev: 5.13.2
+    hooks:
+      - id: isort
+
   - repo: https://github.com/psf/black
     rev: 22.8.0
     hooks:

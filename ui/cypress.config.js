@@ -10,6 +10,6 @@ export default defineConfig({
       installLogsPrinter(on);
     },
   },
-  viewportWidth: 1200,
-  viewportHeight: 800,
+  viewportWidth: 2048,
+  viewportHeight: 1024,
 });

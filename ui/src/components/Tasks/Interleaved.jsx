@@ -231,7 +231,7 @@ class Interleaved extends React.Component {
                     <th>Start &deg; </th>
                     <th>Osc. &deg; </th>
                     <th># Img</th>
-                    <th>t (ms)</th>
+                    <th>t (s)</th>
                     <th>T (%)</th>
                     <th>Res. (&Aring;)</th>
                     <th>E (keV)</th>

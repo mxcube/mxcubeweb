@@ -51,7 +51,6 @@ function OneAxisTranslationControl(props) {
         step={step}
         min={limits[0]}
         max={limits[1]}
-        testId={`MotorInput_value_${attribute}`}
         disabled={disabled}
         onChange={(val) => dispatch(setAttribute(attribute, val))}
       />

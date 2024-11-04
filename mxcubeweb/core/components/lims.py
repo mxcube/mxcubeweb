@@ -1,21 +1,19 @@
 # -*- coding: utf-8 -*-
-import sys
-import logging
 import copy
 import io
+import json
+import logging
 import math
 import re
-import json
+import sys
 
+from flask import session
+from flask_login import current_user
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore.model import queue_model_objects as qmo
 
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.util import fsutils
-
-from flask import session
-from flask_login import current_user
-
 
 VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 

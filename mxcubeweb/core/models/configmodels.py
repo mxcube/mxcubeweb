@@ -1,7 +1,18 @@
-from enum import Enum
-from pydantic.v1 import BaseModel, Field
-from typing import List, Dict, Optional
 import datetime
+from enum import Enum
+from typing import (
+    Dict,
+    List,
+    Literal,
+    Optional,
+    Union,
+)
+
+from pydantic import model_validator
+from pydantic.v1 import (
+    BaseModel,
+    Field,
+)
 
 
 class FlaskConfigModel(BaseModel):
@@ -55,6 +66,13 @@ class _UISampleViewVideoControlsModel(BaseModel):
     show: bool
 
 
+class _UISampleViewVideoGridSettingsModel(BaseModel):
+    id: Literal["draw_grid"]
+    show: bool
+    show_vspace: bool = False
+    show_hspace: bool = False
+
+
 class UIPropertiesModel(BaseModel):
     id: str
     components: List[UIComponentModel]
@@ -65,7 +83,10 @@ class UICameraConfigModel(UIPropertiesModel):
 
 
 class UISampleViewVideoControlsModel(UIPropertiesModel):
-    components: List[_UISampleViewVideoControlsModel]
+    # It is important to keep the Union elements in that order; from the more specific to the more general.
+    components: List[
+        Union[_UISampleViewVideoGridSettingsModel, _UISampleViewVideoControlsModel]
+    ]
 
 
 class UIPropertiesListModel(BaseModel):

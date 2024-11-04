@@ -107,6 +107,8 @@ The section has the following syntax:
           show: <show>
         - id: draw_grid
           show: <show>
+          show_hspace: <show_hspace>
+          show_vspace: <show_vspace>
         - id: 3_click_centring
           show: <show>
         - id: focus
@@ -122,6 +124,7 @@ The section has the following syntax:
 
 It is a list of all supported sample video widgets.
 ``<show>`` flag is a boolean, when it's *true* the widget is included, when *false* it is omitted.
+The `draw_grid` component also allows to enable setting horizontal and vertical spacing.
 
 .. image:: video_controls.png
 

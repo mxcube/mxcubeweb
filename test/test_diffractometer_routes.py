@@ -1,8 +1,8 @@
 import json
 import random
+
 from gevent.event import Event
 from mxcubecore import HardwareRepository as HWR
-
 
 # Python 2 and 3 compatibility
 try:

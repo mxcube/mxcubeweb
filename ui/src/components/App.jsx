@@ -10,7 +10,6 @@ import LoginContainer from '../containers/LoginContainer';
 import SampleViewContainer from '../containers/SampleViewContainer';
 import SampleListViewContainer from '../containers/SampleListViewContainer';
 import EquipmentContainer from '../containers/EquipmentContainer';
-import LoggerContainer from '../containers/LoggerContainer';
 import RemoteAccessContainer from '../containers/RemoteAccessContainer';
 import HelpContainer from '../containers/HelpContainer';
 import Main from './Main';
@@ -49,10 +48,6 @@ const router = createBrowserRouter([
             element: <EquipmentContainer />,
           },
           {
-            path: 'logging',
-            element: <LoggerContainer />,
-          },
-          {
             path: 'remoteaccess',
             element: <RemoteAccessContainer />,
           },
@@ -78,7 +73,7 @@ function App() {
   useEffect(() => {
     dispatch(getLoginInfo());
 
-    if (loggedIn && import.meta.env.VITE_DISABLE_WEBSOCKETS !== 'true') {
+    if (loggedIn) {
       serverIO.listen();
       const refreshInterval = setInterval(sendRefreshSession, REFRESH_INTERVAL);
 

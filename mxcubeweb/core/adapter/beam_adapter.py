@@ -1,9 +1,9 @@
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcubeweb.core.util.adapterutils import export
 from mxcubeweb.core.models.adaptermodels import (
     HOBeamModel,
     HOBeamValueModel,
 )
+from mxcubeweb.core.util.adapterutils import export
 
 
 class BeamAdapter(ActuatorAdapterBase):

@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 import gevent
-
 from flask import (
     Blueprint,
-    jsonify,
     Response,
-    request,
-    make_response,
     copy_current_request_context,
+    jsonify,
+    make_response,
+    request,
 )
-
 from flask_login import current_user
 
 DISCONNECT_HANDLED = True
