@@ -1,7 +1,6 @@
 <object class="BeamMockup">
     <username>beam</username>
     <object hwrid="/aperture" role="aperture" />
-    <object hwrid="/slits" role="slits" />
     <definer_type>aperture</definer_type>
     <beam_divergence_horizontal>12.0</beam_divergence_horizontal>
     <beam_divergence_vertical>12.0</beam_divergence_vertical>

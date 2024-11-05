@@ -1,5 +1,0 @@
-<object class="BeamMockup">
-    <object hwrid="/aperture" role="aperture"/>
-    <object hwrid="/slits" role="slits"/>
-    <defaultBeamDivergence>(12.0, 5.0)</defaultBeamDivergence>
-</object>
