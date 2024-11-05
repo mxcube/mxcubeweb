@@ -3,8 +3,8 @@ import typing
 
 from flask_security import SQLAlchemySessionUserDatastore
 from sqlalchemy import create_engine
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import (
+    declarative_base,
     scoped_session,
     sessionmaker,
 )
