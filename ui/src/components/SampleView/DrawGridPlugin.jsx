@@ -766,7 +766,7 @@ export default class DrawGridPlugin {
    * Save a grid, reset any scaling to original scale
    */
   saveGrid(_gd) {
-    const gd = { ..._gd };
+    const gd = structuredClone(_gd);
 
     gd.screenCoord[0] /= this.scale;
     gd.screenCoord[1] /= this.scale;
