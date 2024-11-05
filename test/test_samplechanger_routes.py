@@ -1,11 +1,5 @@
 import json
 
-# Python 2 and 3 compatibility
-try:
-    unicode
-except:
-    unicode = str
-
 from fixture import client
 
 
@@ -27,7 +21,7 @@ def test_get_sc_state(client):
     resp = client.get("/mxcube/api/v0.1/sample_changer/state")
     data = json.loads(resp.data)
 
-    assert isinstance(data["state"], unicode)
+    assert isinstance(data["state"], str)
 
 
 def test_get_loaded_sample(client):
@@ -37,8 +31,8 @@ def test_get_loaded_sample(client):
     resp = client.get("/mxcube/api/v0.1/sample_changer/loaded_sample")
     data = json.loads(resp.data)
 
-    assert isinstance(data["address"], unicode)
-    assert isinstance(data["barcode"], unicode)
+    assert isinstance(data["address"], str)
+    assert isinstance(data["barcode"], str)
 
 
 def test_get_sc_contents_view(client):
@@ -78,7 +72,7 @@ def test_get_global_state(client):
     data = json.loads(resp.data)
 
     assert isinstance(data["commands_state"], dict)
-    assert isinstance(data["message"], unicode)
+    assert isinstance(data["message"], str)
     assert isinstance(data["state"], dict)
 
 
@@ -94,5 +88,5 @@ def test_get_initial_state(client):
     assert isinstance(data["contents"], dict)
     assert isinstance(data["global_state"], dict)
     assert isinstance(data["loaded_sample"], dict)
-    assert isinstance(data["msg"], unicode)
-    assert isinstance(data["state"], unicode)
+    assert isinstance(data["msg"], str)
+    assert isinstance(data["state"], str)

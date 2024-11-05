@@ -1,16 +1,9 @@
 import json
 import random
 
+from fixture import client
 from gevent.event import Event
 from mxcubecore import HardwareRepository as HWR
-
-# Python 2 and 3 compatibility
-try:
-    unicode
-except:
-    unicode = str
-
-from fixture import client
 
 
 def test_get_phase_list(client):

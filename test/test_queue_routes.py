@@ -9,7 +9,6 @@ from input_parameters import (
     default_mesh_params,
     default_xrf_parameters,
     test_edit_task,
-    test_sample_5,
     test_sample_6,
     test_task,
 )

@@ -1,11 +1,5 @@
 import json
 
-# Python 2 and 3 compatibility
-try:
-    unicode
-except:
-    unicode = str
-
 from fixture import client
 
 
@@ -55,7 +49,7 @@ def test_beamline_get_all_attribute(client):
 
     assert isinstance(data["hardwareObjects"], dict)
     assert isinstance(data["actionsList"], list)
-    assert isinstance(data["path"], unicode)
+    assert isinstance(data["path"], str)
     assert len(data["energyScanElements"]) == 31
     assert isinstance(data["availableMethods"], dict)
     assert len(actual) == len(expected)
@@ -153,5 +147,5 @@ def test_get_data_path(client):
 
     resp = client.get("/mxcube/api/v0.1/beamline/datapath")
     data = json.loads(resp.data)
-    assert isinstance(data["path"], unicode)
+    assert isinstance(data["path"], str)
     assert len(data) > 0
