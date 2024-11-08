@@ -318,7 +318,6 @@ class Queue(ComponentBase):
             "queueID": node._node_id,
             "checked": node.is_enabled(),
             "state": self.get_node_state(node._node_id)[1],
-            "limsResultData": "",
         }
 
     def _handle_dc(self, sample_node, node, include_lims_data=False):
@@ -349,17 +348,6 @@ class Queue(ComponentBase):
             parameters["path"], parameters["fileName"]
         )
 
-        limsres = {}
-        lims_id = self.app.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
-
-        # Only add data from lims if explicitly asked for, since
-        # its a operation that can take some time.
-        if include_lims_data and HWR.beamline.lims.lims_rest:
-            limsres = HWR.beamline.lims.lims_rest.get_dc(lims_id)
-
-        # Always add link to data, (no request made)
-        limsres["limsTaskLink"] = self.app.lims.get_dc_link(lims_id)
-
         dtype_label = qme.EXPERIMENT_TYPE._fields[node.experiment_type]
         dtype_label = "OSCILLATION" if dtype_label == "NATIVE" else dtype_label
         dtype_label = (
@@ -378,7 +366,6 @@ class Queue(ComponentBase):
             "queueID": queueID,
             "checked": node.is_enabled(),
             "state": state,
-            "limsResultData": limsres,
         }
 
         return res
@@ -411,17 +398,6 @@ class Queue(ComponentBase):
             parameters["directory"], parameters["fileName"]
         )
 
-        limsres = {}
-        lims_id = self.app.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
-
-        # Only add data from lims if explicitly asked for, since
-        # its a operation that can take some time.
-        if include_lims_data and HWR.beamline.lims.lims_rest:
-            limsres = HWR.beamline.lims.lims_rest.get_dc(lims_id)
-
-        # Always add link to data, (no request made)
-        limsres["limsTaskLink"] = self.app.lims.get_dc_link(lims_id)
-
         res = {
             "label": parameters["label"],
             "strategy_name": parameters["strategy_name"],
@@ -433,7 +409,6 @@ class Queue(ComponentBase):
             "queueID": queueID,
             "checked": node.is_enabled(),
             "state": state,
-            "limsResultData": limsres,
         }
 
         return res
@@ -460,17 +435,6 @@ class Queue(ComponentBase):
             parameters["path"], parameters["fileName"]
         )
 
-        limsres = {}
-        lims_id = self.app.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
-
-        # Only add data from lims if explicitly asked for, since
-        # its a operation that can take some time.
-        if include_lims_data and HWR.beamline.lims.lims_rest:
-            limsres = HWR.beamline.lims.lims_rest.get_dc(lims_id)
-
-        # Always add link to data, (no request made)
-        limsres["limsTaskLink"] = self.app.lims.get_dc_link(lims_id)
-
         res = {
             "label": parameters["label"],
             "type": "Workflow",
@@ -481,7 +445,6 @@ class Queue(ComponentBase):
             "queueID": queueID,
             "checked": node.is_enabled(),
             "state": state,
-            "limsResultData": limsres,
         }
 
         return res
@@ -577,17 +540,6 @@ class Queue(ComponentBase):
         queueID = node._node_id
         _, state = self.get_node_state(queueID)
 
-        limsres = {}
-        lims_id = self.app.NODE_ID_TO_LIMS_ID.get(node._node_id, "null")
-
-        # Only add data from lims if explicitly asked for, since
-        # its a operation that can take some time.
-        if include_lims_data and HWR.beamline.lims.lims_rest:
-            limsres = HWR.beamline.lims.lims_rest.get_dc(lims_id)
-
-        # Always add link to data, (no request made)
-        limsres["limsTaskLink"] = self.app.lims.get_dc_link(lims_id)
-
         originID, task = self._handle_diffraction_plan(node, sample_node)
 
         res = {
@@ -600,7 +552,6 @@ class Queue(ComponentBase):
             "taskIndex": self.node_index(node)["idx"],
             "queueID": node._node_id,
             "state": state,
-            "limsResultData": limsres,
             "diffractionPlan": task,
             "diffractionPlanID": originID,
         }
@@ -1618,6 +1569,7 @@ class Queue(ComponentBase):
         """
         sample_model, sample_entry = self.get_entry(node_id)
         model, entry = self._create_queue_entry(task, task_name)
+        model.set_origin(ORIGIN_MX3)
 
         acq = model.acquisitions[0]
         params = task["parameters"]
@@ -1652,7 +1604,8 @@ class Queue(ComponentBase):
             )
 
         full_path, process_path = HWR.beamline.session.get_full_path(
-            params.get("subdir", ""), task_name
+            os.path.join(params.get("subdir", ""), params.get("experiment_name", "")),
+            task_name,
         )
         acq.path_template.directory = full_path
         acq.path_template.process_directory = process_path

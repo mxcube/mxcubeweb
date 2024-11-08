@@ -12,6 +12,7 @@ from mxcubeweb.core.models.configmodels import (
     AppConfigModel,
     FlaskConfigModel,
     MXCUBEAppConfigModel,
+    SSOConfigModel,
     UIPropertiesListModel,
 )
 
@@ -36,6 +37,7 @@ class Config:
 
     flask: FlaskConfigModel
     app: MXCUBEAppConfigModel
+    sso: SSOConfigModel
 
     def __init__(self, fpath):
         Config.CONFIG_ROOT_PATH = fpath
@@ -45,6 +47,7 @@ class Config:
         self.flask = app_config.server
         self.app = app_config.mxcube
         self.app.ui_properties = uiprop
+        self.sso = app_config.sso
 
     def load_config(self, component_name, schema):
         fpath = os.path.join(Config.CONFIG_ROOT_PATH, f"{component_name}.yaml")

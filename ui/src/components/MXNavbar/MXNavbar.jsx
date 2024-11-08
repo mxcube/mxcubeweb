@@ -9,7 +9,7 @@ import styles from './MXNavbar.module.css';
 function MXNavbar() {
   const isUserLogin = useSelector((state) => state.login.loginType === 'User');
   const selectedProposal = useSelector((state) => state.login.selectedProposal);
-  const username = useSelector((state) => state.login.user.username);
+  const { username, fullname } = useSelector((state) => state.login.user);
   const inControl = useSelector((state) => state.login.user.inControl);
 
   const mode = useSelector((state) => state.general.mode);
@@ -108,7 +108,7 @@ function MXNavbar() {
               Sign out
               <span className={styles.parens}>
                 {' '}
-                ({isUserLogin ? username : selectedProposal})
+                ({isUserLogin ? fullname : username})
               </span>
             </button>
           </Nav>

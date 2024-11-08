@@ -1,0 +1,11 @@
+.selected_row {
+  font-weight: bold;
+  background-color: #add8e6;
+}
+.unselected_row {
+  cursor: pointer;
+}
+.time {
+  font-size: small;
+  color: gray;
+}

@@ -24,15 +24,14 @@ from . import signals
 def init_route(app, server, url_prefix):  # noqa: C901
     bp = Blueprint("lims", __name__, url_prefix=url_prefix)
 
-    @bp.route("/synch_samples", methods=["GET"])
+    @bp.route("/synch_samples", methods=["POST"])
     @server.restrict
     def proposal_samples():
         try:
-            res = jsonify(app.lims.synch_with_lims())
+            lims_name = request.get_json().get("lims", None)
+            res = jsonify(app.lims.synch_with_lims(lims_name))
         except Exception as ex:
-            logging.getLogger("MX3.HWR").exception(
-                "Could not synchronize with LIMS %s" % str(ex)
-            )
+            logging.getLogger("MX3.HWR").error(str(ex))
             res = (
                 "Could not synchronize with LIMS",
                 409,
@@ -44,38 +43,15 @@ def init_route(app, server, url_prefix):  # noqa: C901
 
         return res
 
-    @bp.route("/dc/thumbnail/<image_id>", methods=["GET"])
-    @server.restrict
-    def get_dc_thumbnail(image_id):
-        fname, data = app.lims.get_dc_thumbnail(image_id)
-        return send_file(data, attachment_filename=fname, as_attachment=True)
-
-    @bp.route("/dc/image/<image_id>", methods=["GET"])
-    @server.restrict
-    def get_dc_image(image_id):
-        fname, data = app.lims.get_dc_image(image_id)
-        return send_file(data, attachment_filename=fname, as_attachment=True)
-
-    @bp.route("/quality_indicator_plot/<dc_id>", methods=["GET"])
-    @server.restrict
-    def get_quality_indicator_plot(dc_id):
-        fname, data = app.lims.get_quality_indicator_plot(dc_id)
-        return send_file(data, attachment_filename=fname, as_attachment=True)
-
-    @bp.route("/dc/<dc_id>", methods=["GET"])
-    @server.restrict
-    def get_dc(dc_id):
-        data = HWR.beamline.lims_rest.get_dc(dc_id)
-        return jsonify(data)
-
     @bp.route("/proposal", methods=["POST"])
     @server.restrict
     def set_proposal():
         """
         Set the selected proposal.
         """
-        proposal_number = request.get_json().get("proposal_number", None)
-        app.lims.select_proposal(proposal_number)
+        # proposal_number is the session identifier
+        session_id = request.get_json().get("proposal_number", None)
+        app.lims.select_session(session_id)
 
         return Response(status=200)
 
@@ -85,9 +61,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         """
         Return the currently selected proposal. (The proposal list is part of the login_res)
         """
-        proposal_info = app.lims.get_proposal_info(HWR.beamline.session.proposal_code)
-
-        return jsonify({"Proposal": proposal_info})
+        return jsonify({"Proposal": app.lims.get_proposal_info()})
 
     def run_get_result_script(script_name, url):
         return check_output(["node", script_name, url], close_fds=True)

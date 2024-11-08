@@ -5,8 +5,13 @@ import uuid
 
 import flask
 import flask_security
+import requests
+
+# from authlib.oauth2.rfc6749 import OAuth2Token
+from authlib.integrations.flask_client import OAuth
 from flask_login import current_user
 from mxcubecore import HardwareRepository as HWR
+from mxcubecore.model.lims_session import LimsSessionManager
 
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.usermodels import User
@@ -20,6 +25,18 @@ from mxcubeweb.core.util.networkutils import (
 class BaseUserManager(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
+        self.oauth_client = OAuth(app=app.server.flask)
+
+        self.oauth_client.register(
+            name="keycloak",
+            client_id=self.app.CONFIG.sso.CLIENT_ID,
+            client_secret=self.app.CONFIG.sso.CLIENT_SECRET,
+            server_metadata_url=self.app.CONFIG.sso.META_DATA_URI,
+            client_kwargs={
+                "scope": "openid email profile",
+                "code_challenge_method": "S256",  # enable PKCE
+            },
+        )
 
     def get_observers(self):
         return [
@@ -109,8 +126,10 @@ class BaseUserManager(ComponentBase):
         # If no user is currently in control set this user to be
         # in control
         if not active_in_control:
-            if HWR.beamline.lims.loginType.lower() != "user":
-                current_user.nickname = self.app.lims.get_proposal(current_user)
+            if not HWR.beamline.lims.is_user_login_type():
+                # current_user.nickname = self.app.lims.get_proposal(current_user)
+                current_user.fullname = HWR.beamline.lims.get_full_user_name()
+                current_user.nickname = HWR.beamline.lims.get_user_name()
             else:
                 current_user.nickname = current_user.username
 
@@ -119,10 +138,13 @@ class BaseUserManager(ComponentBase):
         # Set active proposal to that of the active user
         for _u in User.query.all():
             if _u.is_authenticated and _u.in_control:
-                if HWR.beamline.lims.loginType.lower() != "user":
-                    self.app.lims.select_proposal(self.app.lims.get_proposal(_u))
+                if not HWR.beamline.lims.is_user_login_type():
+                    # In principle there is no need for doing so..
+                    self.app.lims.select_session(
+                        self.app.lims.get_session_manager().active_session.proposal_name
+                    )  # The username is the proposal
                 elif _u.selected_proposal is not None:
-                    self.app.lims.select_proposal(_u.selected_proposal)
+                    self.app.lims.select_session(_u.selected_proposal)
 
     def is_inhouse_user(self, user_id):
         user_id_list = [
@@ -133,14 +155,44 @@ class BaseUserManager(ComponentBase):
         return user_id in user_id_list
 
     # Abstract method to be implemented by concrete implementation
-    def _login(self, login_id, password):
+    def _login(self, login_id, password) -> LimsSessionManager:
         pass
 
-    def login(self, login_id: str, password: str):
+    def sso_validate(self) -> str:
         try:
-            login_res = self._login(login_id, password)
-        except Exception:
-            raise
+            token_response = self.oauth_client.keycloak.authorize_access_token()
+            username = token_response["userinfo"]["preferred_username"]
+            token = token_response["access_token"]
+        except Exception as e:
+            raise e
+        else:
+            self.login(username, token, sso_data=token_response)
+
+    def sso_token_expired(self) -> bool:
+        res = json.loads(
+            requests.post(
+                self.app.CONFIG.sso.TOKEN_INFO_URI,
+                headers={"Authorization": "Bearer %s" % current_user.token},
+                data={
+                    "grant_type": "refresh_token",
+                    "refresh_token": current_user.refresh_token,
+                },
+            ).json()
+        )
+
+        return "access_token" not in res
+
+    def handle_sso_logout(self):
+        if current_user.is_anonymous:
+            if self.sso_token_expired():
+                self.signout()
+
+    def login(self, login_id: str, password: str, sso_data: dict = {}):
+        try:
+            sessionManager: LimsSessionManager = self._login(login_id, password)
+        except BaseException as e:
+            logging.getLogger("MX3.HWR").error(str(e))
+            raise e
         else:
             if "sid" not in flask.session:
                 flask.session["sid"] = str(uuid.uuid4())
@@ -148,14 +200,15 @@ class BaseUserManager(ComponentBase):
             # Making sure that the session of any in active users are invalideted
             # before calling login
             self.update_active_users()
-            user = self.db_create_user(login_id, password, login_res)
+
+            user = self.db_create_user(login_id, password, sessionManager, sso_data)
             self.app.server.user_datastore.activate_user(user)
             flask_security.login_user(user, remember=False)
 
             # Important to make flask_security user tracking work
             self.app.server.security.datastore.commit()
 
-            address, barcode = self.app.sample_changer.get_loaded_sample()
+            address = self.app.sample_changer.get_loaded_sample()
 
             # If A sample is mounted (and not already marked as such),
             # get sample changer contents and add mounted sample to the queue
@@ -212,39 +265,35 @@ class BaseUserManager(ComponentBase):
 
     def login_info(self):
         if not current_user.is_anonymous:
-            login_info = convert_to_dict(json.loads(current_user.limsdata))
-
+            session_manager: LimsSessionManager = self.app.lims.get_session_manager()
             self.update_operator()
 
-            proposal_list = [
-                {
-                    "code": prop["Proposal"]["code"],
-                    "number": prop["Proposal"]["number"],
-                    "proposalId": prop["Proposal"]["proposalId"],
-                    "title": prop["Proposal"]["title"],
-                    "person": prop["Person"].get("familyName", ""),
-                }
-                for prop in login_info.get("proposalList", [])
-            ]
+            login_type = (
+                "User" if HWR.beamline.lims.is_user_login_type() else "Proposal"
+            )
 
             res = {
                 "synchrotronName": HWR.beamline.session.synchrotron_name,
                 "beamlineName": HWR.beamline.session.beamline_name,
                 "loggedIn": True,
-                "loginType": HWR.beamline.lims.loginType.title(),
-                "proposalList": proposal_list,
+                "loginType": login_type,
+                "limsName": [item.dict() for item in HWR.beamline.lims.get_lims_name()],
+                "proposalList": [
+                    session.__dict__ for session in session_manager.sessions
+                ],
                 "rootPath": HWR.beamline.session.get_base_image_directory(),
                 "user": current_user.todict(),
+                "useSSO": self.app.CONFIG.sso.USE_SSO,
             }
 
             res["selectedProposal"] = "%s%s" % (
                 HWR.beamline.session.proposal_code,
                 HWR.beamline.session.proposal_number,
             )
-
             res["selectedProposalID"] = HWR.beamline.session.proposal_id
         else:
-            raise Exception("Not logged in")
+            logging.getLogger("MX3.HWR").warning("Logged out")
+            res = {"loggedIn": False, "useSSO": self.app.CONFIG.sso.USE_SSO}
 
         return res
 
@@ -267,15 +316,20 @@ class BaseUserManager(ComponentBase):
 
         return list(roles)
 
-    def db_create_user(self, user: str, password: str, lims_data: dict):
+    def db_create_user(
+        self, user: str, password: str, lims_data: LimsSessionManager, sso_data: dict
+    ):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
-        username = f"{user}-{str(uuid.uuid4())}"
-        if HWR.beamline.lims.loginType.lower() == "user":
-            username = f"{user}"
+
+        username = HWR.beamline.lims.get_user_name()
+        fullname = HWR.beamline.lims.get_full_user_name()
+        # if HWR.beamline.lims.loginType.lower() == "user":
+        #    username = f"{user}"
 
         # Make sure that the roles staff and incontrol always
         # exists
+
         if not user_datastore.find_role("staff"):
             user_datastore.create_role(name="staff")
             user_datastore.create_role(name="incontrol")
@@ -284,22 +338,27 @@ class BaseUserManager(ComponentBase):
         _u = user_datastore.find_user(username=username)
 
         if not _u:
-            if HWR.beamline.lims.loginType.lower() != "user":
+            if not HWR.beamline.lims.is_user_login_type():
                 selected_proposal = user
             else:
                 selected_proposal = None
 
             user_datastore.create_user(
                 username=username,
-                password=flask_security.hash_password("password"),
+                fullname=fullname,
+                password="",
                 nickname=user,
                 session_id=sid,
                 selected_proposal=selected_proposal,
-                limsdata=json.dumps(lims_data),
+                limsdata=lims_data.json(),
+                refresh_token=sso_data.get("refresh_token", str(uuid.uuid4())),
+                token=sso_data.get("token", str(uuid.uuid4())),
                 roles=self._get_configured_roles(user),
             )
         else:
-            _u.limsdata = json.dumps(lims_data)
+            _u.limsdata = lims_data.json()  # json.dumps(lims_data)
+            _u.refresh_token = sso_data.get("refresh_token", str(uuid.uuid4()))
+            _u.token = sso_data.get("token", str(uuid.uuid4()))
             user_datastore.append_roles(_u, self._get_configured_roles(user))
 
         self.app.server.user_datastore.commit()
@@ -329,16 +388,24 @@ class UserManager(BaseUserManager):
     def __init__(self, app, config):
         super().__init__(app, config)
 
-    def _login(self, login_id: str, password: str):
-        login_res = self.app.lims.lims_login(login_id, password, create_session=False)
-        inhouse = self.is_inhouse_user(login_id)
+    def _debug(self, msg: str):
+        logging.getLogger("HWR").debug(msg)
 
-        info = {
-            "valid": self.app.lims.lims_valid_login(login_res),
-            "local": is_local_host(),
-            "existing_session": self.app.lims.lims_existing_session(login_res),
-            "inhouse": inhouse,
-        }
+    def _login(self, login_id: str, password: str) -> LimsSessionManager:
+        self._debug("_login. login_id=%s" % login_id)
+        try:
+            session_manager: LimsSessionManager = HWR.beamline.lims.login(
+                login_id, password, is_local_host()
+            )
+        except Exception as e:
+            logging.getLogger("MX3.HWR").error(e)
+            raise e
+
+        self._debug(
+            "_login. proposal_tuple retrieved. Sessions=%s "
+            % str(len(session_manager.sessions))
+        )
+        inhouse = self.is_inhouse_user(login_id)
 
         active_users = self.active_logged_in_users()
 
@@ -359,15 +426,11 @@ class UserManager(BaseUserManager):
         if inhouse and not (inhouse and is_local_host()):
             raise Exception("In-house only allowed from localhost")
 
-        non_inhouse_active_users = self.active_logged_in_users(exclude_inhouse=True)
-
         # Only allow other users to log-in if they are from the same proposal
-        # (making sure to exclude inhouse users who are always allowed to login)
         if (
-            (not inhouse)
-            and non_inhouse_active_users
-            and (login_id not in [p.split("-")[0] for p in non_inhouse_active_users])
-            and HWR.beamline.lims.loginType.lower() != "user"
+            active_users
+            and (login_id not in [p.split("-")[0] for p in active_users])
+            and not HWR.beamline.lims.is_user_login_type()
         ):
             raise Exception("Another user is already logged in")
 
@@ -376,7 +439,7 @@ class UserManager(BaseUserManager):
             if (
                 active_users
                 and current_user.username != login_id
-                and HWR.beamline.lims.loginType.lower() == "user"
+                and HWR.beamline.lims.is_user_login_type()
             ):
                 raise Exception("Another user is already logged in")
 
@@ -384,24 +447,26 @@ class UserManager(BaseUserManager):
         if not self.app.ALLOW_REMOTE and not is_local_host():
             raise Exception("Remote access disabled")
 
-        # Only allow remote logins with existing sessions
-        if self.app.lims.lims_valid_login(login_res) and is_local_host():
-            if not self.app.lims.lims_existing_session(login_res):
-                login_res = self.app.lims.create_lims_session(login_res)
+        return session_manager
 
-            msg = "[LOGIN] Valid login from local host (%s)" % str(info)
-            logging.getLogger("MX3.HWR").info(msg)
-        elif self.app.lims.lims_valid_login(
-            login_res
-        ) and self.app.lims.lims_existing_session(login_res):
-            msg = "[LOGIN] Valid remote login from %s with existing session (%s)"
-            msg += msg % (remote_addr(), str(info))
-            logging.getLogger("MX3.HWR").info(msg)
-        else:
-            logging.getLogger("MX3.HWR").info("Invalid login %s" % info)
-            raise Exception(str(info))
+    def _signout(self):
+        if self.app.CONFIG.sso.LOGOUT_URI:
+            requests.post(
+                self.app.CONFIG.sso.LOGOUT_URI,
+                data={
+                    "client_id": self.app.CONFIG.sso.CLIENT_ID,
+                    "client_secret": self.app.CONFIG.sso.CLIENT_SECRET,
+                    "refresh_token": current_user.refresh_token,
+                },
+            )
 
-        return login_res
+
+class SSOUserManager(BaseUserManager):
+    def __init__(self, app, config):
+        super().__init__(app, config)
+
+    def _login(self, login_id: str, password: str, sso: bool):
+        return {"status": {"code": "ok", "msg": ""}}
 
     def _signout(self):
         pass

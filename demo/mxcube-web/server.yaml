@@ -1,24 +1,35 @@
 ---
 
 server:
-  SECRET_KEY: "ASECRETKEY"
-  SECURITY_PASSWORD_SALT: "ASALT"
+  SECRET_KEY: ASECRETKEY
+  SECURITY_PASSWORD_SALT: ASALT
   PERMANENT_SESSION_LIFETIME: 60
+  CERT: NONE
 
   DEBUG: false
 
   ALLOWED_CORS_ORIGINS:
-    - "http://localhost:8081"
-    - "http://127.0.0.1:8081"
-    - "http://localhost:5173"
-    - "http://127.0.0.1:5173"
-    - "ws://localhost:8000"
-    - "ws://127.0.0.1:8000"
+    - http://localhost:8081
+    - http://127.0.0.1:8081
+    - http://localhost:5173
+    - http://127.0.0.1:5173
+    - ws://localhost:8000
+    - ws://127.0.0.1:8000
+
+sso:
+  USE_SSO: false
+  ISSUER: https://websso.[site].[com]/realms/[site]/
+  LOGOUT_URI: ""
+  TOKEN_INFO_URI: ""
+  CLIENT_SECRET: ASECRETKEY
+  CLIENT_ID: mxcube
+  SCOPE: openid email profile
+  CODE_CHALLANGE_METHOD: S256
 
 mxcube:
   USE_EXTERNAL_STREAMER: true
   VIDEO_FORMAT: MPEG1
-  VIDEO_STREAM_URL: "ws://localhost:8000/ws"
+  VIDEO_STREAM_URL: ws://localhost:8000/ws
 
   # At which port to stream from
   VIDEO_STREAM_PORT: 8000
