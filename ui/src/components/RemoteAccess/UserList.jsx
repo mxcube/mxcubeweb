@@ -44,15 +44,13 @@ function UserList() {
                 >
                   Give control
                 </Button>
-                {user.isstaff && (
-                  <Button
-                    size="sm"
-                    variant="outline-secondary"
-                    onClick={() => dispatch(logoutUser(observer.username))}
-                  >
-                    Logout
-                  </Button>
-                )}
+                <Button
+                  size="sm"
+                  variant="outline-secondary"
+                  onClick={() => dispatch(logoutUser(observer.username))}
+                >
+                  Logout
+                </Button>
               </Col>
             )}
           </Row>
