@@ -12,15 +12,15 @@ export default class SSXChipControl extends React.Component {
   }
 
   handleAddTask(triggerEvent, event, props, data) {
-    const { sampleID, sampleData, defaultParameters } = this.props;
+    const { currentSampleID, sampleData, defaultParameters } = this.props;
     const sid = -1;
 
     this.props.showForm(
       'Generic',
-      [sampleID],
+      [currentSampleID],
       {
         parameters: {
-          ...defaultParameters.ssx_chip_collection_lima2.acq_parameters,
+          ...defaultParameters.ssx_chip_collection.acq_parameters,
           name: 'SSX Collection',
           prefix: sampleData.defaultPrefix,
           subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
@@ -29,7 +29,7 @@ export default class SSXChipControl extends React.Component {
           numCols: 0,
           selection: triggerEvent.props.selection,
         },
-        type: 'ssx_chip_collection_lima2',
+        type: 'ssx_chip_collection',
       },
       sid,
     );

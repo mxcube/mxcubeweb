@@ -356,7 +356,7 @@ export default class SSXChip extends React.Component {
         let selection = [];
 
         if (object.type === 'BLOCK') {
-          selection.push([object.objectIndex]);
+          selection.push(object.objectIndex);
         }
 
         if (object.type === 'activeSelection') {
@@ -372,26 +372,18 @@ export default class SSXChip extends React.Component {
     });
 
     this.fc.on('selection:created', ({ selected, target }) => {
-      if (selected.some((obj) => obj.lockMovementX)) {
-        target.lockMovementX = true;
-      }
-      if (selected.some((obj) => obj.lockMovementY)) {
-        target.lockMovementY = true;
+      if (this.fc.getActiveObject()) {
+        this.fc.getActiveObject().lockMovementY = true;
+        this.fc.getActiveObject().lockMovementX = true;
       }
     });
 
     this.fc.on('selection:updated', ({ selected, target }) => {
-      if (selected.some((obj) => obj.lockMovementX)) {
-        target.lockMovementX = true;
-      }
-      if (selected.some((obj) => obj.lockMovementY)) {
-        target.lockMovementY = true;
+      if (this.fc.getActiveObject()) {
+        this.fc.getActiveObject().lockMovementY = true;
+        this.fc.getActiveObject().lockMovementX = true;
       }
     });
-
-    //    this.fc.on('mouse:dblclick', (event) => {
-    //      const object = canvas.findTarget(event.e);
-    //    });
 
     this.fc.add(
       ...this.renderChip(
