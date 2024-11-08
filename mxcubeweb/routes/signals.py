@@ -26,7 +26,7 @@ def last_queue_node():
 
     # Reference collections are orphans, the node we want is the
     # characterisation not the reference collection itself
-    if "refdc" in node.get_name():
+    if "ref" in node.get_name():
         parent = node.get_parent()
         node = parent._children[0]
 
@@ -243,19 +243,6 @@ def get_task_state(entry):
     node_id = entry.get_data_model()._node_id
     _, state = mxcube.queue.get_node_state(node_id)
     node_index = mxcube.queue.node_index(entry.get_data_model())
-    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
-
-    try:
-        limsres = HWR.beamline.lims.lims_rest.get_dc(lims_id)
-    except Exception:
-        limsres = {}
-
-    try:
-        limsres["limsTaskLink"] = mxcube.lims.get_dc_link(lims_id)
-    except Exception:
-        limsres["limsTaskLink"] = "#"
-        msg = "Could not get lims link for collection with id: %s" % lims_id
-        logging.getLogger("HWR").error(msg)
 
     msg = {
         "Signal": "",
@@ -263,7 +250,6 @@ def get_task_state(entry):
         "taskIndex": node_index["idx"],
         "queueID": node_id,
         "sample": node_index["sample"],
-        "limsResultData": limsres,
         "state": state,
         "progress": 1 if state == COLLECTED else 0,
     }
@@ -273,25 +259,10 @@ def get_task_state(entry):
 
 def update_task_result(entry):
     node_index = mxcube.queue.node_index(entry.get_data_model())
-    node_id = entry.get_data_model()._node_id
-    lims_id = mxcube.NODE_ID_TO_LIMS_ID.get(node_id, "null")
-
-    try:
-        limsres = HWR.beamline.lims_rest.get_dc(lims_id)
-    except Exception:
-        limsres = {}
-
-    try:
-        limsres["limsTaskLink"] = mxcube.lims.get_dc_link(lims_id)
-    except Exception:
-        limsres["limsTaskLink"] = "#"
-        msg = "Could not get lims link for collection with id: %s" % lims_id
-        logging.getLogger("HWR").error(msg)
 
     msg = {
         "sample": node_index["sample"],
         "taskIndex": node_index["idx"],
-        "limsResultData": limsres,
     }
 
     server.emit("update_task_lims_data", msg, namespace="/hwr")
@@ -396,9 +367,12 @@ def collect_oscillation_started(*args):
 
 
 def collect_image_taken(frame):
-    node = last_queue_node()
+    try:
+        node = last_queue_node()
+    except IndexError:
+        node = None
 
-    if not mxcube.queue.is_interleaved(node["node"]):
+    if node and not mxcube.queue.is_interleaved(node["node"]):
         progress = mxcube.queue.get_task_progress(last_queue_node()["node"], frame)
 
         msg = {
@@ -436,7 +410,7 @@ def collect_oscillation_failed(
 
     if not mxcube.queue.is_interleaved(node["node"]):
         try:
-            HWR.beamline.lims_rest.get_dc(lims_id)
+            HWR.beamline.get_dc(lims_id)
         except Exception:
             pass
 

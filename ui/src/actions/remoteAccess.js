@@ -16,7 +16,7 @@ import { getLoginInfo } from './login';
 import { showWaitDialog } from './waitDialog';
 
 export function getRaState() {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     const data = await fetchRemoteAccessState();
     dispatch({ type: 'SET_RA_STATE', data: data.data });
   };

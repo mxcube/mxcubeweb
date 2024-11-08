@@ -3,17 +3,17 @@
 describe('login', () => {
   it("can't login with invalid credentials", () => {
     cy.login('idte0', '0000');
-    cy.findByText('Could not authenticate').should('be.visible');
+    cy.findByText('Authentication failed').should('be.visible');
   });
 
   it("can't login with reserved password: wrong", () => {
     cy.login('idtest0', 'wrong');
-    cy.findByText('Could not authenticate').should('be.visible');
+    cy.findByText('Authentication failed').should('be.visible');
   });
 
   it("can't login with reserved password: ispybDown", () => {
     cy.login('idtest0', 'ispybDown');
-    cy.findByText('Could not authenticate').should('be.visible');
+    cy.findByText('Authentication failed').should('be.visible');
   });
 
   it('can login with valid credentials', () => {

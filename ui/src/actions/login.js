@@ -7,7 +7,12 @@ import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 
 import { showErrorPanel, applicationFetched } from './general';
-import { fetchLoginInfo, sendLogIn, sendSignOut } from '../api/login';
+import {
+  fetchLoginInfo,
+  sendLogIn,
+  sendSignOut,
+  sendSSOLogIn,
+} from '../api/login';
 import { fetchDetectorInfo } from '../api/detector';
 import { fetchSampleChangerInitialState } from '../api/sampleChanger';
 import { fetchHarvesterInitialState } from '../api/harvester';
@@ -33,6 +38,7 @@ export function resetLoginInfo() {
     selectedProposalID: '',
     loggedIn: false,
     rootPath: '',
+    useSSO: false,
   });
 }
 
@@ -93,11 +99,24 @@ export function logIn(proposal, password) {
   };
 }
 
+export function ssoLogIn() {
+  return (dispatch) => {
+    sendSSOLogIn();
+  };
+}
+
 export function signOut() {
   return async (dispatch) => {
-    dispatch(resetLoginInfo());
     dispatch(applicationFetched(false));
-    await sendSignOut();
+    // We make sure that user data is reseted so that websockets
+    // are keept dicconnected while logging out.
+    dispatch(resetLoginInfo());
+    await sendSignOut().finally(() =>
+      dispatch(
+        // Retreiving the user data from the backend
+        getLoginInfo(),
+      ),
+    );
   };
 }
 

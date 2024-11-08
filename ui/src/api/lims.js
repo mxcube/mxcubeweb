@@ -2,8 +2,8 @@ import api from '.';
 
 const endpoint = api.url('/lims');
 
-export function fetchLimsSamples() {
-  return endpoint.get('/synch_samples').safeJson();
+export function fetchLimsSamples(lims) {
+  return endpoint.post({ lims }, '/synch_samples').safeJson();
 }
 
 export function fetchLimsResults(qid) {
