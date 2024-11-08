@@ -213,8 +213,6 @@ class SampleChanger(ComponentBase):
                 elif sc.get_loaded_sample().get_address() != sample["location"]:
                     res = sc.load(sample["sampleID"], wait=True)
 
-                if res is None:
-                    res = True
                 if (
                     res is not False
                     and HWR.beamline.queue_manager.centring_method
