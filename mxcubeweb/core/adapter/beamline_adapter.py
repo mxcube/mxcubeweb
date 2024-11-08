@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
+import pydantic
+
 BEAMLINE_ADAPTER = None
 
 # Singleton like interface is needed to keep the same reference to the
@@ -67,7 +69,12 @@ class _BeamlineAdapter:
         attributes = {}
 
         for attr_name in self.app.mxcubecore.adapter_dict:
-            _d = self.app.mxcubecore.get_adapter(attr_name).dict()
+            try:
+                _d = self.app.mxcubecore.get_adapter(attr_name).dict()
+            except pydantic.ValidationError:
+                logging.getLogger("MX3.HWR").error(f"Incorrect values in {attr_name}")
+                logging.getLogger("MX3.HWR").exception("")
+
             attributes.update({attr_name: _d})
 
         return {"hardwareObjects": attributes}
