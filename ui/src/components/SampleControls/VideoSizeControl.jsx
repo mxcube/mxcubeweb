@@ -24,7 +24,7 @@ function VideoSizeControl() {
 
       <Dropdown.Menu className={styles.dropdownMenu}>
         {videoSizes.map(([w, h], i) => {
-          const isActive = w.toString() === width;
+          const isActive = w === width;
           return (
             <Dropdown.Item
               key={`${w}_${h}`}

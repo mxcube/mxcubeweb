@@ -44,7 +44,7 @@ gphl_persistname: persistence
 
 software_paths:
   # Mandatory. Directory with workflow config input, e.g. instrumentation.nml
-  gphl_beamline_config: gphl_beamline_config
+  gphl_beamline_config: gphl/config_esrf_id30b
 
   # MANDATORY for CCP4 => $GPHL_CCP4_PATH/bin/ccp4.setup-sh,
   # unless already sourced in environment

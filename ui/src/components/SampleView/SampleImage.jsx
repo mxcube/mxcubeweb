@@ -736,8 +736,10 @@ export default class SampleImage extends React.Component {
 
     if (grid.state === 'HIDDEN') {
       grid.state = 'SAVED';
+      grid.user_state = 'SAVED';
     } else {
       grid.state = 'HIDDEN';
+      grid.user_state = 'HIDDEN';
     }
 
     this.props.sampleViewActions.updateShapes([grid]);

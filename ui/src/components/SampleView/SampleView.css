@@ -164,8 +164,13 @@
   border-radius: 4px;
 }
 
-.selected {
-  background-color: #dff0d8 !important;
+table.table-striped > tbody > tr[data-selected='true'] {
+  background-color: #dff0d8;
   color: #000;
   font-weight: bold;
+}
+
+table.table-striped > tbody > tr[data-user-hidden='true'] {
+  background-color: #a3ceff;
+  font-style: italic;
 }

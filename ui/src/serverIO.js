@@ -83,10 +83,10 @@ class ServerIO {
   }
 
   disconnect() {
-    this.hwrSocket?.close();
+    this.hwrSocket?.disconnect();
     this.hwrSocket = null;
 
-    this.loggingSocket?.close();
+    this.loggingSocket?.disconnect();
     this.loggingSocket = null;
   }
 
@@ -104,16 +104,12 @@ class ServerIO {
 
     this.hwrSocket.on('disconnect', (reason) => {
       console.log('hwrSocket disconnected!'); // eslint-disable-line no-console
-      const socket = this.hwrSocket;
-
-      if (reason === 'io server disconnect') {
-        setTimeout(() => {
-          socket.connect(); // try reconnecting
-        }, 500);
-      }
 
       setTimeout(() => {
-        dispatch(showConnectionLostDialog(!socket.connected));
+        dispatch(
+          // Show message if socket still hasn't reconnected (and wasn't manually disconnected in the first place)
+          showConnectionLostDialog(this.hwrSocket && !this.hwrSocket.connected),
+        );
       }, 2000);
     });
 

@@ -5,9 +5,26 @@ import Draggable from 'react-draggable';
 
 import './SampleView.css';
 import { useSelector } from 'react-redux';
+import TooltipTrigger from '../TooltipTrigger';
 
 function handleContextMenu(e) {
   e.stopPropagation();
+}
+/**
+ * Returns the tooltip content for the hide button
+ *
+ * @param {boolean} userHidden - if the grid is hidden by the user
+ * @param {boolean} autoHidden - if the grid is hidden automatically (out of view)
+ * @returns {string} - the tooltip content
+ */
+function getHideButtonTooltip(userHidden, autoHidden) {
+  if (userHidden) {
+    return 'Grid is hidden by user';
+  }
+  if (autoHidden) {
+    return 'Grid is out of view';
+  }
+  return 'Hide grid';
 }
 
 export default function GridForm(props) {
@@ -57,13 +74,15 @@ export default function GridForm(props) {
     const gridControlList = [];
 
     for (const grid of Object.values(gridList)) {
-      const selectedStyle = selectedGrids.includes(grid.id) ? 'selected' : '';
       const vdim = grid.numRows * (grid.cellHeight + grid.cellVSpace);
       const hdim = grid.numCols * (grid.cellWidth + grid.cellHSpace);
-
+      const selected = selectedGrids.includes(grid.id);
+      const userHidden = grid.userState === 'HIDDEN';
+      const autoHidden = grid.state === 'HIDDEN' && !userHidden;
       gridControlList.push(
         <tr
-          className={selectedStyle}
+          data-selected={selected}
+          data-user-hidden={userHidden}
           key={grid.name}
           onClick={(e) => selectGrid([grid], e.ctrlKey)}
         >
@@ -93,16 +112,21 @@ export default function GridForm(props) {
             </Button>
           </td>
           <td>
-            <Button
-              size="sm"
-              variant="outline-secondary"
-              onClick={(e) => {
-                e.stopPropagation();
-                toggleVisibility(grid.id);
-              }}
+            <TooltipTrigger
+              id={`grid-${grid.id}-visibility`}
+              tooltipContent={getHideButtonTooltip(userHidden, autoHidden)}
             >
-              {grid.state === 'HIDDEN' ? 'Show' : 'Hide '}
-            </Button>
+              <Button
+                size="sm"
+                variant="outline-secondary"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  toggleVisibility(grid.id);
+                }}
+              >
+                {grid.state === 'HIDDEN' ? 'Show' : 'Hide '}
+              </Button>
+            </TooltipTrigger>
           </td>
           <td>
             <Button
