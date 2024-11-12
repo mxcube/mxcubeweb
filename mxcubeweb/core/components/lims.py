@@ -247,7 +247,6 @@ class Lims(ComponentBase):
                 logging.getLogger("MX3.HWR").error("[LIMS] Could not login to LIMS")
                 return ERROR_CODE
 
-            session["proposal_list"] = [proposal]
             login_res["proposalList"] = [proposal]
 
             logging.getLogger("MX3.HWR").info(
