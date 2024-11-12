@@ -119,19 +119,19 @@ def test_authn_same_user(make_client):
     If a user signs in, the previus client session should be closed (logged out)
     and the new client session should gain "in control" privilages.
     """
-    session_0 = make_client()
-    resp = session_0.post(URL_SIGNIN, json=CREDENTIALS_0)
+    client_0 = make_client()
+    resp = client_0.post(URL_SIGNIN, json=CREDENTIALS_0)
     assert resp.status_code == 200
-    resp = session_0.get(URL_INFO)
+    resp = client_0.get(URL_INFO)
     assert resp.json["user"]["inControl"] == True
 
-    session_1 = make_client()
-    resp = session_1.post(URL_SIGNIN, json=CREDENTIALS_0)
+    client_1 = make_client()
+    resp = client_1.post(URL_SIGNIN, json=CREDENTIALS_0)
     assert resp.status_code == 200
-    resp = session_1.get(URL_INFO)
+    resp = client_1.get(URL_INFO)
     assert resp.json["user"]["inControl"] == True
 
-    resp = session_0.get(URL_INFO)
+    resp = client_0.get(URL_INFO)
     assert resp.json["loggedIn"] == False
 
 
@@ -167,12 +167,11 @@ def test_authn_same_proposal(make_client):
     """Test two users for the same proposal.
 
     If a user signs in for the same proposal as another user already signed in,
-    this user should not be "in control".
+    this user should not be "in control". No SelectProposal modal is shown.
     """
 
     client_0 = make_client()
     resp = client_0.post(URL_SIGNIN, json=CREDENTIALS_0)
-
     assert resp.status_code == 200
     resp = client_0.get(URL_INFO)
     assert resp.json["user"]["inControl"] == True
@@ -189,9 +188,8 @@ def test_authn_same_proposal(make_client):
 def test_authn_different_proposal(make_client):
     """Test two users for different proposals.
 
-    If a user signs in for a different proposal than an already signed in user,
-    the `Select proposal` modal should be displayed and the user should become
-    an observer.
+    If a user signs in for different proposal than already signed in user,
+    this user should not be "in control". No SelectProposal modal is shown.
     """
     client_0 = make_client()
     resp = client_0.post(URL_SIGNIN, json=CREDENTIALS_0)
