@@ -46,21 +46,6 @@ function loginReducer(state = INITIAL_STATE, action = {}) {
         showProposalsForm: true,
       };
     }
-    case 'SELECT_PROPOSAL': {
-      const proposals = state.proposalList;
-
-      const propInfo = proposals.find((prop) => {
-        // const name = `${prop.code}${prop.number}`;
-        return prop.session_id === action.proposal;
-      });
-
-      return {
-        ...state,
-        selectedProposal: action.proposal,
-        selectedProposalID: propInfo.session_id,
-        showProposalsForm: false,
-      };
-    }
     case 'HIDE_PROPOSALS_FORM': {
       return { ...state, showProposalsForm: false };
     }
