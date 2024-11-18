@@ -70,7 +70,8 @@ export function selectProposal(number, navigate) {
     try {
       await sendSelectProposal(number);
       navigate('/');
-      dispatch(selectProposalAction(number));
+      dispatch(hideProposalsForm());
+      dispatch(getLoginInfo());
     } catch {
       dispatch(showErrorPanel(true, 'Server refused to select proposal'));
       navigate('/login');
