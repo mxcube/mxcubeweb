@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { Modal, Button, Tabs, Tab, Form } from 'react-bootstrap';
 import SessionTable from './SessionTable';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
 import {
   hideProposalsForm,
   selectProposal,
@@ -13,7 +12,6 @@ import ActionButton from './ActionButton';
 
 function SelectProposal() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const login = useSelector((state) => state.login);
   const { loginType, proposalList, selectedProposalID, showProposalsForm } =
@@ -55,7 +53,15 @@ function SelectProposal() {
   }
 
   return (
-    <Modal show={show} backdrop="static" onHide={() => handleHide()}>
+    <Modal
+      show={show}
+      backdrop={showProposalsForm || 'static'}
+      onHide={() => {
+        if (showProposalsForm) {
+          handleHide();
+        }
+      }}
+    >
       <Modal.Header closeButton>
         <Modal.Title>Select a session</Modal.Title>
       </Modal.Header>
@@ -100,14 +106,14 @@ function SelectProposal() {
       <Modal.Footer>
         <ActionButton
           selectedSession={selectedSession}
-          onClick={() => dispatch(selectProposal(selectedSessionId, navigate))}
+          onClick={() => dispatch(selectProposal(selectedSessionId))}
         />
         <Button
           variant="outline-secondary"
           data-default-styles
           onClick={() => handleHide()}
         >
-          Cancel
+          {showProposalsForm ? 'Cancel' : 'Sign out'}
         </Button>
       </Modal.Footer>
     </Modal>
