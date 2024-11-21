@@ -802,7 +802,7 @@ class SampleListViewContainer extends React.Component {
                 id="limsSamples"
                 checked={this.getFilterOptionValue('limsSamples')}
                 onChange={this.sampleGridFilter}
-                label="Lims Samples"
+                label="LIMS Samples"
               />
             </Col>
             <Col xs={3}>

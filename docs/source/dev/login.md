@@ -13,36 +13,36 @@ and authentication has to be delegated to a process dedicated to authentication.
 The authorization for a user to use a beamline is performed via the user portal
 or LIMS system.
 
-### Authentication with single sign on
+### Authentication with single sign-on
 
-MXCUBE can be configured to use Single sign-on (SSO) through OpenIDConnect for
+MXCUBE can be configured to use single sign-on (SSO) through OpenIDConnect for
 user authentication. The OpenIDConnect configuration is located in the
-`server.yaml` file, which should contain an `sso` section like the one below.
+`server.yaml` file, which should contain an `sso` section like the one below:
 
 ```
 sso:
-  USE_SSO: false                                              # True to use SSO false otherwise
+  USE_SSO: false                                              # `true` to use SSO
   ISSUER: https://websso.[site].[com]/realms/[site]/          # OpenIDConnect issuer URI
   LOGOUT_URI: ""                                              # OpenIDConnect logout URI
   TOKEN_INFO_URI: ""                                          # OpenIDConnect token info URI
   CLIENT_SECRET: ASECRETKEY                                   # OpenIDConnect client secret
   CLIENT_ID: mxcube                                           # OpenIDConnect client ID
-  SCOPE: openid email profile                                 # OpenIDConnect defualt scopes, none scope is actually beeing used
+  SCOPE: openid email profile                                 # OpenIDConnect default scopes, none scope is actually being used
   CODE_CHALLANGE_METHOD: S256                                 # OpenIDConnect challange method
 ```
 
 User authorization is delegated to the LIMS client inheriting `AbstractLims` and is performed in the `login` method.
 
-## HTTP Session management
+## HTTP session management
 
-MXCuBE web sessions are meant to expire when there is no activity
+MXCuBE web sessions are meant to expire when there is no activity.
 
 For this purpose:
 
 - Flask configuration setting `PERMANENT_SESSION_LIFETIME` is set
   to the preferred value (seconds).
 
-- Flask configuration setting `SESSION_REFRESH_EACH_REQUEST` is set,
+- Flask configuration setting `SESSION_REFRESH_EACH_REQUEST` is enabled,
   which is the default anyway.
 
 - Flask session setting `session.permanent` is set
