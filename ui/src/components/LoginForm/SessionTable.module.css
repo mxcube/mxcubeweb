@@ -1,3 +1,13 @@
+.table {
+  overflow: auto;
+  height: 30rem;
+  padding: 1rem 0;
+}
+
+.row {
+  outline-offset: -2px;
+}
+
 .row[data-selected='true'] {
   font-weight: bold;
   background-color: #add8e6;
@@ -5,4 +15,15 @@
 
 .row[data-selected='false'] {
   cursor: pointer;
+}
+
+.time {
+  margin-left: 0.25rem;
+  color: #555;
+  font-size: small;
+}
+
+.fallback {
+  font-style: italic;
+  padding: 0 1rem;
 }

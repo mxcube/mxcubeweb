@@ -1,171 +1,117 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Modal, Button, Tabs, Tab, Form } from 'react-bootstrap';
 import SessionTable from './SessionTable';
+import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import {
+  hideProposalsForm,
+  selectProposal,
+  signOut,
+} from '../../actions/login';
+import styles from './SessionTable.module.css';
+import ActionButton from './ActionButton';
 
-class SelectProposal extends React.Component {
-  constructor(props) {
-    super(props);
+function SelectProposal() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-    this.handleSelectProposal = this.handleSelectProposal.bind(this);
-    this.handleCancel = this.handleCancel.bind(this);
-    this.handleOnSessionSelected = this.handleOnSessionSelected.bind(this);
+  const login = useSelector((state) => state.login);
+  const { loginType, proposalList, selectedProposalID, showProposalsForm } =
+    login;
 
-    this.state = {
-      pId: null,
-      session: null,
-      proposal: null,
-      filter: '',
-      sessions: props.data.proposalList,
-      filteredSessions: props.data.proposalList,
-    };
-  }
+  const show =
+    showProposalsForm || (loginType === 'User' && selectedProposalID === null);
 
-  handleCancel() {
-    this.props.handleHide();
-  }
+  const [selectedSession, setSelectedSession] = useState(
+    proposalList.find((s) => s.session_id === selectedProposalID),
+  );
+  const selectedSessionId = selectedSession ? selectedSession.session_id : null;
 
-  handleSelectProposal() {
-    this.props.selectProposal(this.state.pId);
-  }
+  const [filter, setFilter] = useState('');
+  const filteredSessions = proposalList.filter(
+    ({ title, number, code }) =>
+      title.includes(filter) ||
+      number.includes(filter) ||
+      code.includes(filter),
+  );
 
-  getProposalBySession(session) {
-    if (!session) {
-      return '';
+  filteredSessions.sort(
+    (a, b) => (a.actual_start_date < b.actual_start_date ? 1 : -1), // sort by start date
+  );
+
+  const scheduledSessions = filteredSessions.filter(
+    (s) => s.is_scheduled_beamline && s.is_scheduled_time,
+  );
+  const unscheduledSessions = filteredSessions.filter(
+    (s) => !s.is_scheduled_beamline || !s.is_scheduled_time,
+  );
+
+  function handleHide() {
+    if (selectedProposalID === null) {
+      dispatch(signOut());
+    } else {
+      dispatch(hideProposalsForm());
     }
-    return `${session.code}-${session.number}`;
   }
 
-  handleOnSessionSelected(session) {
-    this.setState({
-      proposal: this.getProposalBySession(session),
-      session,
-      pId: session.session_id,
-    });
-  }
+  return (
+    <Modal show={show} backdrop="static" onHide={() => handleHide()}>
+      <Modal.Header closeButton>
+        <Modal.Title>Select a session</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Form.Control
+          type="text"
+          className="mb-3"
+          placeholder="Filter"
+          aria-label="Filter sessions"
+          value={filter}
+          onChange={(evt) => setFilter(evt.target.value)}
+        />
 
-  handleChange(event) {
-    const filteredSessions = this.state.sessions.filter((s) => {
-      return (
-        s.title.includes(event.target.value) ||
-        s.number.includes(event.target.value) ||
-        s.code.includes(event.target.value)
-      );
-    });
-
-    this.setState({
-      filter: event.target.value,
-      filteredSessions,
-    });
-  }
-
-  render() {
-    /** sort by start date */
-    const sortedlist = this.state.filteredSessions.sort((a, b) =>
-      a.actual_start_date < b.actual_start_date ? 1 : -1,
-    );
-
-    const { session } = this.state;
-
-    const scheduledSessions = sortedlist.filter(
-      (s) => s.is_scheduled_beamline && s.is_scheduled_time,
-    );
-
-    const nonScheduledSessions = sortedlist.filter(
-      (s) => !(s.is_scheduled_beamline && s.is_scheduled_time),
-    );
-    return (
-      <Modal
-        show={this.props.show}
-        backdrop="static"
-        onHide={this.handleCancel}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Select a session</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Form.Control
-            type="text"
-            id="search_session"
-            placeholder="Search"
-            value={this.state.filter}
-            onChange={this.handleChange.bind(this)}
-          />
-          <br />
-
-          <Tabs defaultActiveKey="scheduled" id="scheduled-tab">
-            <Tab
-              eventKey="scheduled"
-              title={`Scheduled (${scheduledSessions.length})`}
-            >
-              <div style={{ overflow: 'auto', height: '550px', padding: 10 }}>
-                <SessionTable
-                  sessions={scheduledSessions}
-                  selectedSessionId={this.state.pId}
-                  filter={this.state.filter}
-                  onSessionSelected={this.handleOnSessionSelected}
-                />
-              </div>
-            </Tab>
-            <Tab
-              eventKey="non-scheduled"
-              title={`Non scheduled (${nonScheduledSessions.length})`}
-            >
-              <div style={{ overflow: 'auto', height: '550px', padding: 10 }}>
-                <SessionTable
-                  showBeamline
-                  sessions={nonScheduledSessions}
-                  selectedSessionId={this.state.pId}
-                  filter={this.state.filter}
-                  onSessionSelected={this.handleOnSessionSelected}
-                />
-              </div>
-            </Tab>
-          </Tabs>
-        </Modal.Body>
-        <Modal.Footer>
-          {session &&
-            session.is_scheduled_beamline &&
-            !session.is_scheduled_time && (
-              <Button
-                variant="warning"
-                className="float-end"
-                disabled={this.state.pId === null}
-                onClick={this.handleSelectProposal}
-              >
-                Reschedule
-              </Button>
-            )}
-          {session && !session.is_scheduled_beamline && (
-            <Button
-              variant="danger"
-              className="float-end"
-              disabled // {this.state.pId === null}
-              onClick={this.handleSelectProposal}
-            >
-              Move here
-            </Button>
-          )}
-          <Button variant="outline-secondary" onClick={this.handleCancel}>
-            Cancel
-          </Button>
-          <Button
-            variant="primary"
-            className="float-end"
-            disabled={
-              this.state.pId === null ||
-              (session && !session.is_scheduled_beamline) ||
-              !session.is_scheduled_time
-            }
-            onClick={this.handleSelectProposal}
+        <Tabs id="scheduled-tab" defaultActiveKey="scheduled">
+          <Tab
+            eventKey="scheduled"
+            title={`Scheduled (${scheduledSessions.length})`}
           >
-            {this.state.proposal === null
-              ? 'Select Proposal'
-              : `Select ${this.state.proposal}`}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
+            <div className={styles.table}>
+              <SessionTable
+                sessions={scheduledSessions}
+                selectedSessionId={selectedSessionId}
+                onSessionSelected={setSelectedSession}
+              />
+            </div>
+          </Tab>
+          <Tab
+            eventKey="unscheduled"
+            title={`Unscheduled (${unscheduledSessions.length})`}
+          >
+            <div className={styles.table}>
+              <SessionTable
+                showBeamline
+                sessions={unscheduledSessions}
+                selectedSessionId={selectedSessionId}
+                onSessionSelected={setSelectedSession}
+              />
+            </div>
+          </Tab>
+        </Tabs>
+      </Modal.Body>
+      <Modal.Footer>
+        <ActionButton
+          selectedSession={selectedSession}
+          onClick={() => dispatch(selectProposal(selectedSessionId, navigate))}
+        />
+        <Button
+          variant="outline-secondary"
+          data-default-styles
+          onClick={() => handleHide()}
+        >
+          Cancel
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 }
 
 export default SelectProposal;
