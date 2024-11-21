@@ -73,9 +73,11 @@ class ServerIO {
   constructor() {
     this.hwrSocket = null;
     this.loggingSocket = null;
+    this.connectionLostTimeout = undefined;
   }
 
   listen() {
+    clearTimeout(this.connectionLostTimeout);
     this.disconnect(); // noop if `disconnect` is properly called on logout
 
     this.connectHwr();
@@ -105,7 +107,7 @@ class ServerIO {
     this.hwrSocket.on('disconnect', (reason) => {
       console.log('hwrSocket disconnected!'); // eslint-disable-line no-console
 
-      setTimeout(() => {
+      this.connectionLostTimeout = setTimeout(() => {
         dispatch(
           // Show message if socket still hasn't reconnected (and wasn't manually disconnected in the first place)
           showConnectionLostDialog(this.hwrSocket && !this.hwrSocket.connected),
