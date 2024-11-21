@@ -58,16 +58,14 @@ export function setInitialState(data) {
   return { type: 'SET_INITIAL_STATE', data };
 }
 
-export function selectProposal(number, navigate) {
+export function selectProposal(number) {
   return async (dispatch) => {
     try {
       await sendSelectProposal(number);
-      navigate('/');
       dispatch(hideProposalsForm());
       dispatch(getLoginInfo());
     } catch {
       dispatch(showErrorPanel(true, 'Server refused to select proposal'));
-      navigate('/login');
     }
   };
 }
