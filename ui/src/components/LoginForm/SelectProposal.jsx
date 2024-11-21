@@ -1,6 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { reduxForm } from 'redux-form';
 import { Modal, Button, Tabs, Tab, Form } from 'react-bootstrap';
 import SessionTable from './SessionTable';
 
@@ -13,11 +11,10 @@ class SelectProposal extends React.Component {
     this.handleOnSessionSelected = this.handleOnSessionSelected.bind(this);
 
     this.state = {
-      pId: 0,
-      pNumber: null,
+      pId: null,
       session: null,
       proposal: null,
-      filter: null,
+      filter: '',
       sessions: props.data.proposalList,
       filteredSessions: props.data.proposalList,
     };
@@ -28,7 +25,7 @@ class SelectProposal extends React.Component {
   }
 
   handleSelectProposal() {
-    this.props.selectProposal(this.state.pNumber);
+    this.props.selectProposal(this.state.pId);
   }
 
   getProposalBySession(session) {
@@ -43,7 +40,6 @@ class SelectProposal extends React.Component {
       proposal: this.getProposalBySession(session),
       session,
       pId: session.session_id,
-      pNumber: session.session_id,
     });
   }
 
@@ -106,7 +102,6 @@ class SelectProposal extends React.Component {
                   sessions={scheduledSessions}
                   selectedSessionId={this.state.pId}
                   filter={this.state.filter}
-                  params={{ showBeamline: false }}
                   onSessionSelected={this.handleOnSessionSelected}
                 />
               </div>
@@ -117,10 +112,10 @@ class SelectProposal extends React.Component {
             >
               <div style={{ overflow: 'auto', height: '550px', padding: 10 }}>
                 <SessionTable
+                  showBeamline
                   sessions={nonScheduledSessions}
                   selectedSessionId={this.state.pId}
                   filter={this.state.filter}
-                  params={{ showBeamline: true }}
                   onSessionSelected={this.handleOnSessionSelected}
                 />
               </div>
@@ -129,22 +124,22 @@ class SelectProposal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           {session &&
-            session.is_scheduled_beamline === true &&
-            session.is_scheduled_time === false && (
+            session.is_scheduled_beamline &&
+            !session.is_scheduled_time && (
               <Button
                 variant="warning"
                 className="float-end"
-                disabled={this.state.pNumber === null}
+                disabled={this.state.pId === null}
                 onClick={this.handleSelectProposal}
               >
                 Reschedule
               </Button>
             )}
-          {session && session.is_scheduled_beamline === false && (
+          {session && !session.is_scheduled_beamline && (
             <Button
               variant="danger"
               className="float-end"
-              disabled // {this.state.pNumber === null}
+              disabled // {this.state.pId === null}
               onClick={this.handleSelectProposal}
             >
               Move here
@@ -157,9 +152,9 @@ class SelectProposal extends React.Component {
             variant="primary"
             className="float-end"
             disabled={
-              this.state.pNumber === null ||
-              (session && session.is_scheduled_beamline === false) ||
-              session.is_scheduled_time === false
+              this.state.pId === null ||
+              (session && !session.is_scheduled_beamline) ||
+              !session.is_scheduled_time
             }
             onClick={this.handleSelectProposal}
           >
@@ -173,10 +168,4 @@ class SelectProposal extends React.Component {
   }
 }
 
-const SelectProposalForm = reduxForm({
-  form: 'proposals',
-})(SelectProposal);
-
-export default connect((state) => ({
-  initialValues: { ...state.login.data },
-}))(SelectProposalForm);
+export default SelectProposal;
