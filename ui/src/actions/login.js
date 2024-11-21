@@ -54,13 +54,6 @@ export function hideProposalsForm() {
   };
 }
 
-export function selectProposalAction(prop) {
-  return {
-    type: 'SELECT_PROPOSAL',
-    proposal: prop,
-  };
-}
-
 export function setInitialState(data) {
   return { type: 'SET_INITIAL_STATE', data };
 }

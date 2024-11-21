@@ -1,11 +1,8 @@
-.selected_row {
+.row[data-selected='true'] {
   font-weight: bold;
   background-color: #add8e6;
 }
-.unselected_row {
+
+.row[data-selected='false'] {
   cursor: pointer;
-}
-.time {
-  font-size: small;
-  color: gray;
 }
