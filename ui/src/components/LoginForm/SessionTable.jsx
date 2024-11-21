@@ -13,18 +13,22 @@ export default function SessionTable(props) {
     onSessionSelected,
   } = props;
 
+  if (sessions.length === 0) {
+    return <span className={styles.fallback}>No sessions</span>;
+  }
+
   return (
     <Table bordered hover size="sm" responsive>
       <thead>
         <tr>
-          <th>ID</th>
-          {showBeamline && <th>Beamline</th>}
-          <th>Title</th>
-          <th>Start</th>
-          <th>End</th>
-          <th>Portal</th>
-          <th>User</th>
-          <th>Logbook</th>
+          <th scope="col">ID</th>
+          {showBeamline && <th scope="col">Beamline</th>}
+          <th scope="col">Title</th>
+          <th scope="col">Start</th>
+          <th scope="col">End</th>
+          <th scope="col">Portal</th>
+          <th scope="col">User</th>
+          <th scope="col">Logbook</th>
         </tr>
       </thead>
       <tbody>
@@ -33,7 +37,14 @@ export default function SessionTable(props) {
             key={session.session_id}
             className={styles.row}
             data-selected={selectedSessionId === session.session_id}
+            tabIndex={0}
             onClick={() => onSessionSelected(session)}
+            onKeyDown={(evt) => {
+              // For keyboard accessibility; ideally add "Select" button to each row instead of making rows clickable
+              if (evt.key === 'Enter' || evt.key === ' ') {
+                onSessionSelected(session);
+              }
+            }}
           >
             <td>{`${session.code}-${session.number}`}</td>
             {showBeamline && <td>{session.beamline_name}</td>}
@@ -88,6 +99,7 @@ export default function SessionTable(props) {
                 className="p-1"
                 target="_blank"
                 rel="noreferrer"
+                aria-label="View session in Data Portal"
               >
                 <LuExternalLink />
               </a>
@@ -98,6 +110,7 @@ export default function SessionTable(props) {
                 className="p-1"
                 target="_blank"
                 rel="noreferrer"
+                aria-label="View session in User Portal"
               >
                 <LuExternalLink />
               </a>
@@ -108,6 +121,7 @@ export default function SessionTable(props) {
                 className="p-1"
                 target="_blank"
                 rel="noreferrer"
+                aria-label="View session logbook"
               >
                 <LuExternalLink />
               </a>
