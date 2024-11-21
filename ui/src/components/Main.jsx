@@ -13,19 +13,19 @@ import PassControlDialog from './RemoteAccess/PassControlDialog';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import GphlWorkflowParametersDialog from '../containers/GphlWorkflowParametersDialog';
-import SelectProposalContainer from '../containers/SelectProposalContainer';
-import diagonalNoise from '../img/diagonal-noise.png';
-import { showDialog } from '../actions/general';
 import { LimsResultDialog } from './Lims/LimsResultDialog';
 import LoadingScreen from './LoadingScreen/LoadingScreen';
+import MXNavbar from './MXNavbar/MXNavbar';
+import ChatWidget from './ChatWidget';
+import ClearQueueDialog from './SampleGrid/ClearQueueDialog';
+import SelectProposal from './LoginForm/SelectProposal';
+import { getInitialState } from '../actions/login';
+import { showDialog } from '../actions/general';
+import diagonalNoise from '../img/diagonal-noise.png';
 import styles from './Main.module.css';
 
 import 'react-chat-widget/lib/styles.css';
 import './rachat.css';
-import { getInitialState } from '../actions/login';
-import MXNavbar from './MXNavbar/MXNavbar';
-import ChatWidget from './ChatWidget';
-import ClearQueueDialog from './SampleGrid/ClearQueueDialog';
 
 function Main() {
   const dispatch = useDispatch();
@@ -54,7 +54,7 @@ function Main() {
         />
       )}
 
-      <SelectProposalContainer />
+      <SelectProposal />
       <ClearQueueDialog />
       <TaskContainer />
       <PleaseWaitDialog />
