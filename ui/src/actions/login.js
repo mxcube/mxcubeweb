@@ -99,16 +99,14 @@ export function ssoLogIn() {
 
 export function signOut() {
   return async (dispatch) => {
+    dispatch(resetLoginInfo()); // disconnect sockets before actually logging out (cf. `App.jsx`)
     dispatch(applicationFetched(false));
-    // We make sure that user data is reseted so that websockets
-    // are keept dicconnected while logging out.
-    dispatch(resetLoginInfo());
-    await sendSignOut().finally(() =>
-      dispatch(
-        // Retreiving the user data from the backend
-        getLoginInfo(),
-      ),
-    );
+
+    try {
+      await sendSignOut();
+    } finally {
+      dispatch(getLoginInfo());
+    }
   };
 }
 
