@@ -95,7 +95,7 @@ function MXNavbar() {
                 }}
               >
                 <span className="me-2 fas fa-lg fa-bars" />
-                Proposal
+                Session
                 <span className={styles.parens}> ({selectedProposal})</span>
               </button>
             )}
