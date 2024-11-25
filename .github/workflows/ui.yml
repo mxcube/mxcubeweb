@@ -1,7 +1,6 @@
 ---
 # yamllint disable rule:line-length
 
-
 # Pin micromamba version to `1.5.10-0` because of following issue:
 # https://github.com/mamba-org/setup-micromamba/issues/225
 
@@ -21,10 +20,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           micromamba-version: 1.5.10-0
           environment-file: conda-environment.yml
@@ -32,7 +31,7 @@ jobs:
           post-cleanup: "all"
 
       - name: Cache UI dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/setup-pnpm/node_modules/.bin/store
@@ -55,10 +54,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           micromamba-version: 1.5.10-0
           environment-file: conda-environment.yml
@@ -66,7 +65,7 @@ jobs:
           post-cleanup: "all"
 
       - name: Cache UI dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/setup-pnpm/node_modules/.bin/store
@@ -106,10 +105,10 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           micromamba-version: 1.5.10-0
           environment-file: conda-environment.yml
@@ -120,7 +119,7 @@ jobs:
         run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only main"
 
       - name: Cache UI dependencies
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: |
             ~/setup-pnpm/node_modules/.bin/store
@@ -144,7 +143,7 @@ jobs:
         env:
           CYPRESS_BASE_URL: http://127.0.0.1:8081
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: debug

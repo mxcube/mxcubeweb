@@ -1,6 +1,4 @@
 ---
-
-
 name: "Pages"
 
 concurrency:
@@ -11,13 +9,10 @@ concurrency:
   push: null
 
 jobs:
-
   "pages-build":
-
     runs-on: "ubuntu-22.04"
 
     services:
-
       # The Redis server is necessary to run the app,
       # which is necessary to get the Flask routes with `autoflask` directives
       redis:
@@ -31,7 +26,6 @@ jobs:
           - "6379:6379/tcp"
 
     steps:
-
       - name: "Checkout"
         uses: "actions/checkout@v4"  # tested with v4.0.0
         with:
@@ -43,7 +37,7 @@ jobs:
       # Pin micromamba version because of following issue:
       # https://github.com/mamba-org/setup-micromamba/issues/225
       - name: "Setup conda environment with micromamba"
-        uses: "mamba-org/setup-micromamba@v1"  # tested with v1.4.4
+        uses: "mamba-org/setup-micromamba@v2"  # tested with v2.0.1
         with:
           environment-file: "conda-environment.yml"
           micromamba-version: 1.5.10-0
@@ -58,12 +52,11 @@ jobs:
         # This could potentially be run only when we intent to deploy...
         # ...but it can be useful to have the artifact for debugging
         # if: "github.ref_name == github.event.repository.default_branch"
-        uses: "actions/upload-pages-artifact@v2"  # tested with v2.0.0
+        uses: "actions/upload-pages-artifact@v3"  # tested with v3.0.1
         with:
           path: "docs/build/html"
 
   "pages-deploy":
-
     if: "github.ref_name == github.event.repository.default_branch"
 
     environment:
@@ -80,13 +73,11 @@ jobs:
     runs-on: "ubuntu-22.04"
 
     steps:
-
       - name: "Setup GitHub Pages"
-        uses: "actions/configure-pages@v3"  # tested with v3.0.6
+        uses: "actions/configure-pages@v5"  # tested with v5.0.0
 
       - name: "Deploy to GitHub Pages"
         id: "deployment"
-        uses: "actions/deploy-pages@v2"  # tested with 2.0.4
-
+        uses: "actions/deploy-pages@v4"  # tested with 4.0.5
 
 ...  # EOF

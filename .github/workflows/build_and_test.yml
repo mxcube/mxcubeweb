@@ -1,5 +1,4 @@
 ---
-
 name: Python build and test
 
 "on":
@@ -35,16 +34,16 @@ jobs:
           - 6379:6379
 
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v3
+        uses: actions/setup-python@v5
         with:
           python-version: ${{ matrix.python-version }}
 
       # Pin micromamba version because of following issue:
       # https://github.com/mamba-org/setup-micromamba/issues/225
       - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v1
+        uses: mamba-org/setup-micromamba@v2
         with:
           create-args: >-
             python=${{ matrix.python-version }}
