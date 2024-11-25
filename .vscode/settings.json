@@ -10,11 +10,13 @@
   },
 
   "eslint.workingDirectories": ["./ui"],
+
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter"
-  }
-  "[yaml]": {
+  },
+
+  "[yaml][github-actions-workflow]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.formatOnSave": false
-  },
+  }
 }
