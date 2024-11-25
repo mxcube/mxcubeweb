@@ -292,7 +292,7 @@ class BaseUserManager(ComponentBase):
             )
             res["selectedProposalID"] = HWR.beamline.session.proposal_id
         else:
-            logging.getLogger("MX3.HWR").warning("Logged out")
+            logging.getLogger("MX3.HWR").info("Logged out")
             res = {"loggedIn": False, "useSSO": self.app.CONFIG.sso.USE_SSO}
 
         return res
