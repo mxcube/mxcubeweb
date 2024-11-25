@@ -27,7 +27,7 @@ jobs:
 
     steps:
       - name: "Checkout"
-        uses: "actions/checkout@v4"  # tested with v4.0.0
+        uses: "actions/checkout@v4"
         with:
           # With shallow clone the "Last updated" timestamp can not get computed
           # See "Caveats" at https://pypi.org/project/sphinx-last-updated-by-git
@@ -37,7 +37,7 @@ jobs:
       # Pin micromamba version because of following issue:
       # https://github.com/mamba-org/setup-micromamba/issues/225
       - name: "Setup conda environment with micromamba"
-        uses: "mamba-org/setup-micromamba@v2"  # tested with v2.0.1
+        uses: "mamba-org/setup-micromamba@v2"
         with:
           environment-file: "conda-environment.yml"
           micromamba-version: 1.5.10-0
@@ -52,7 +52,7 @@ jobs:
         # This could potentially be run only when we intent to deploy...
         # ...but it can be useful to have the artifact for debugging
         # if: "github.ref_name == github.event.repository.default_branch"
-        uses: "actions/upload-pages-artifact@v3"  # tested with v3.0.1
+        uses: "actions/upload-pages-artifact@v3"
         with:
           path: "docs/build/html"
 
@@ -74,10 +74,10 @@ jobs:
 
     steps:
       - name: "Setup GitHub Pages"
-        uses: "actions/configure-pages@v5"  # tested with v5.0.0
+        uses: "actions/configure-pages@v5"
 
       - name: "Deploy to GitHub Pages"
         id: "deployment"
-        uses: "actions/deploy-pages@v4"  # tested with 4.0.5
+        uses: "actions/deploy-pages@v4"
 
 ...  # EOF
