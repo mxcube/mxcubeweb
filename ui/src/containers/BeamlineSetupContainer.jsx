@@ -7,6 +7,7 @@ import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import SampleChangerSwitch from '../components/SampleChangerSwitch/SampleChangerSwitch';
 import DeviceState from '../components/DeviceState/DeviceState';
+import GetSamepleListState from '../components/GetSampleListState/GetSampleListState'
 import LabeledValue from '../components/LabeledValue/LabeledValue';
 import MachInfo from '../components/MachInfo/MachInfo';
 import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
@@ -241,9 +242,9 @@ class BeamlineSetupContainer extends React.Component {
           </Nav>
           <Nav className="me-3">
             <Nav.Item>
-             <DeviceState
+             <GetSamepleListState
                 labelText="Sample list"
-                data = { this.props.beamline.hardwareObjects.detector.state.acq_satus }
+                data = { this.props.sampleGrid.sampleList}
               />
             </Nav.Item>
           </Nav>
@@ -251,6 +252,7 @@ class BeamlineSetupContainer extends React.Component {
             <Nav.Item>
              <DeviceState
                 labelText="Detector"
+                // data = { this.props.beamline.hardwareObjects.detector.state.acq_satus }
                 data = { this.props.beamline.hardwareObjects.detector.state.acq_satus }
               />
             </Nav.Item>
@@ -292,7 +294,8 @@ function mapStateToProps(state) {
     uiproperties: state.uiproperties,
     beamline: state.beamline,
     sampleview: state.sampleview,
-    sampleChanger: state.sampleChanger
+    sampleChanger: state.sampleChanger,
+    sampleGrid:state.sampleGrid
   };
 }
 

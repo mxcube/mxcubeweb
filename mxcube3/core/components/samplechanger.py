@@ -39,6 +39,7 @@ class SampleChanger(ComponentBase):
 
     def get_sample_list(self):
         samples_list = HWR.beamline.sample_changer.get_sample_list()
+        # print("初始samples_list: ",samples_list)
 
         # 添加 start
         proteinAcronym = HWR.beamline.sample_changer.proteinAcronym
