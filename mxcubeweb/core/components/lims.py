@@ -267,6 +267,8 @@ class Lims(ComponentBase):
         return HWR.beamline.session.get_default_subdir(sample_data)
 
     def synch_with_lims(self, lims_name):
+        self.app.queue.queue_clear()
+
         # session_id is not used, so we can pass None as second argument to
         # 'db_connection.get_samples'
 
