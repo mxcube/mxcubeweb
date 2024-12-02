@@ -31,7 +31,8 @@ class NStateAdapter(ActuatorAdapterBase):
 
     def _get_valid_states(self):
         state_names = [v.name for v in self._ho.VALUES]
-        state_names.remove("UNKNOWN")
+        if "UNKNOWN" in state_names:
+            state_names.remove("UNKNOWN")
 
         return state_names
 
