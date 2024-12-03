@@ -167,6 +167,14 @@ pnpm --prefix ui start
 
 The above will automatically open a browser with the URL: <http://localhost:5173>
 
+> **Note**: In case that you decided to install MXCuBE-Web without using the `conda-environment.yml` file, the stream in the `Data Collection` tab of the UI might be missing. To resolve this:
+>
+> 1. Ensure that `ffmpeg` is properly installed on your side, to install run `sudo apt install ffmpeg`
+>    Then restart the server.
+> 1. Alternatively, you can manually install the dependencies of [MXCuBE's video-streamer](https://github.com/mxcube/video-streamer/) and restart the server afterwards.
+>
+> If the issue persists, please make sure to use the [issues](https://github.com/mxcube/mxcubeweb/issues) page and reach out for help.
+
 #### 9.3. Running the end to end (e2e) tests
 
 Keep both the backend and front-end servers running then run the following command in a third terminal, from the root directory of the project:

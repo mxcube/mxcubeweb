@@ -9,6 +9,7 @@ dependencies:
   # Runtime dependencies
   # ====================
 
+  - ffmpeg  # Not directly used by mxcube, but necessary for the video-streamer
   - python >=3.8,<3.12  # Make sure it matches `pyproject.toml`
 
   # We install `python-ldap` from conda because it is "hard" to install.
