@@ -265,10 +265,19 @@ const QuickMountTest =(props) =>{
                 </Col>
               </Row>
 
+              <Row>
+                <Col xs={3}>
+                    <label htmlFor="prefix">Prefix :</label>
+                  </Col>
+                  <Col>
+                    <Field name="prefix" component={renderField} type="text" inputStyle={{width:'500px'}}/>
+                  </Col>
+              </Row>
+
               {/* <Button type="submit" disabled={sc_state=='READY'?false:true} >Mount</Button> */}
-              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={mount} className="button-space">Collect</Button>
-              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={unmount} className="button-space">test 1 image</Button>
-              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={unmount} >test 4 images</Button>
+              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-space">Collect</Button>
+              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-space">test 1 image</Button>
+              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} >test 4 images</Button>
 
 
           </Form>
