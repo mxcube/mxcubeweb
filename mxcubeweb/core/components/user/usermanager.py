@@ -110,41 +110,42 @@ class BaseUserManager(ComponentBase):
         self.app.server.emit("observersChanged", namespace="/hwr")
 
     def update_operator(self, new_login=False):
-        active_in_control = False
+        if not current_user.is_anonymous:
+            active_in_control = False
 
-        for _u in User.query.all():
-            if _u.is_authenticated and _u.in_control:
-                active_in_control = True
-            else:
-                self.db_set_in_control(_u, False)
+            for _u in User.query.all():
+                if _u.is_authenticated and _u.in_control:
+                    active_in_control = True
+                else:
+                    self.db_set_in_control(_u, False)
 
-        # If new login and new observer login, clear nickname
-        # so that the user get an opertunity to set one
-        if new_login:
-            current_user.nickname = ""
+            # If new login and new observer login, clear nickname
+            # so that the user get an opertunity to set one
+            if new_login:
+                current_user.nickname = ""
 
-        # If no user is currently in control set this user to be
-        # in control
-        if not active_in_control:
-            if not HWR.beamline.lims.is_user_login_type():
-                # current_user.nickname = self.app.lims.get_proposal(current_user)
-                current_user.fullname = HWR.beamline.lims.get_full_user_name()
-                current_user.nickname = HWR.beamline.lims.get_user_name()
-            else:
-                current_user.nickname = current_user.username
-
-            self.db_set_in_control(current_user, True)
-
-        # Set active proposal to that of the active user
-        for _u in User.query.all():
-            if _u.is_authenticated and _u.in_control:
+            # If no user is currently in control set this user to be
+            # in control
+            if not active_in_control:
                 if not HWR.beamline.lims.is_user_login_type():
-                    # In principle there is no need for doing so..
-                    self.app.lims.select_session(
-                        self.app.lims.get_session_manager().active_session.proposal_name
-                    )  # The username is the proposal
-                elif _u.selected_proposal is not None:
-                    self.app.lims.select_session(_u.selected_proposal)
+                    # current_user.nickname = self.app.lims.get_proposal(current_user)
+                    current_user.fullname = HWR.beamline.lims.get_full_user_name()
+                    current_user.nickname = HWR.beamline.lims.get_user_name()
+                else:
+                    current_user.nickname = current_user.username
+
+                self.db_set_in_control(current_user, True)
+
+            # Set active proposal to that of the active user
+            for _u in User.query.all():
+                if _u.is_authenticated and _u.in_control:
+                    if not HWR.beamline.lims.is_user_login_type():
+                        # In principle there is no need for doing so..
+                        self.app.lims.select_session(
+                            self.app.lims.get_session_manager().active_session.proposal_name
+                        )  # The username is the proposal
+                    elif _u.selected_proposal is not None:
+                        self.app.lims.select_session(_u.selected_proposal)
 
     def is_inhouse_user(self, user_id):
         user_id_list = [
@@ -189,8 +190,9 @@ class BaseUserManager(ComponentBase):
 
     def login(self, login_id: str, password: str, sso_data: dict = {}):
         try:
-            sessionManager: LimsSessionManager = self._login(login_id, password)
-        except BaseException as e:
+            self._login(login_id, password)
+        except Exception as e:
+            self._signout(sso_data=sso_data)
             logging.getLogger("MX3.HWR").error(str(e))
             raise e
         else:
@@ -201,7 +203,7 @@ class BaseUserManager(ComponentBase):
             # before calling login
             self.update_active_users()
 
-            user = self.db_create_user(login_id, password, sessionManager, sso_data)
+            user = self.db_create_user(login_id, password, sso_data)
             self.app.server.user_datastore.activate_user(user)
             flask_security.login_user(user, remember=False)
 
@@ -299,6 +301,7 @@ class BaseUserManager(ComponentBase):
             )
             res["selectedProposalID"] = HWR.beamline.session.proposal_id
         else:
+            self._signout()
             logging.getLogger("MX3.HWR").info("Logged out")
             res = {"loggedIn": False, "useSSO": self.app.CONFIG.sso.USE_SSO}
 
@@ -323,9 +326,7 @@ class BaseUserManager(ComponentBase):
 
         return list(roles)
 
-    def db_create_user(
-        self, user: str, password: str, lims_data: LimsSessionManager, sso_data: dict
-    ):
+    def db_create_user(self, user: str, password: str, sso_data: dict):
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
 
@@ -357,13 +358,11 @@ class BaseUserManager(ComponentBase):
                 nickname=user,
                 session_id=sid,
                 selected_proposal=selected_proposal,
-                limsdata=lims_data.json(),
                 refresh_token=sso_data.get("refresh_token", str(uuid.uuid4())),
                 token=sso_data.get("token", str(uuid.uuid4())),
                 roles=self._get_configured_roles(user),
             )
         else:
-            _u.limsdata = lims_data.json()  # json.dumps(lims_data)
             _u.refresh_token = sso_data.get("refresh_token", str(uuid.uuid4()))
             _u.token = sso_data.get("token", str(uuid.uuid4()))
             user_datastore.append_roles(_u, self._get_configured_roles(user))
@@ -433,22 +432,22 @@ class UserManager(BaseUserManager):
         if inhouse and not (inhouse and is_local_host()):
             raise Exception("In-house only allowed from localhost")
 
-        # Only allow other users to log-in if they are from the same proposal
-        if (
-            active_users
-            and (login_id not in [p.split("-")[0] for p in active_users])
-            and not HWR.beamline.lims.is_user_login_type()
-        ):
-            raise Exception("Another user is already logged in")
+        # # Only allow other users to log-in if they are from the same proposal
+        # if (
+        #     active_users
+        #     and (login_id not in [p.split("-")[0] for p in active_users])
+        #     and not HWR.beamline.lims.is_user_login_type()
+        # ):
+        #     raise Exception("Another user is already logged in")
 
-        # Only allow if no one else is logged in
-        if not current_user.is_anonymous:
-            if (
-                active_users
-                and current_user.username != login_id
-                and HWR.beamline.lims.is_user_login_type()
-            ):
-                raise Exception("Another user is already logged in")
+        # # Only allow if no one else is logged in
+        # if not current_user.is_anonymous:
+        #     if (
+        #         active_users
+        #         and current_user.username != login_id
+        #         and HWR.beamline.lims.is_user_login_type()
+        #     ):
+        #         raise Exception("Another user is already logged in")
 
         # Only allow local login when remote is disabled
         if not self.app.ALLOW_REMOTE and not is_local_host():
@@ -456,14 +455,19 @@ class UserManager(BaseUserManager):
 
         return session_manager
 
-    def _signout(self):
+    def _signout(self, sso_data={}):
         if self.app.CONFIG.sso.LOGOUT_URI:
+            if not current_user.is_anonymous:
+                refresh_token = current_user.refresh_token
+            else:
+                refresh_token = sso_data.get("refresh_token", None)
+
             requests.post(
                 self.app.CONFIG.sso.LOGOUT_URI,
                 data={
                     "client_id": self.app.CONFIG.sso.CLIENT_ID,
                     "client_secret": self.app.CONFIG.sso.CLIENT_SECRET,
-                    "refresh_token": current_user.refresh_token,
+                    "refresh_token": refresh_token,
                 },
             )
 

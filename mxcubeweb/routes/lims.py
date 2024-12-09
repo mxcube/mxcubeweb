@@ -52,6 +52,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         # proposal_number is the session identifier
         session_id = request.get_json().get("proposal_number", None)
         app.lims.select_session(session_id)
+        app.usermanager.update_active_users()
 
         return Response(status=200)
 

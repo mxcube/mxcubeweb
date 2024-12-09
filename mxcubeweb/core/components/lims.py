@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 import logging
 import math
 import re
@@ -167,7 +166,7 @@ class Lims(ComponentBase):
         return prefix
 
     def get_session_manager(self) -> LimsSessionManager:
-        return LimsSessionManager.parse_obj(json.loads(current_user.limsdata))
+        return HWR.beamline.lims.session_manager
 
     def is_rescheduled_session(self, session):
         """
