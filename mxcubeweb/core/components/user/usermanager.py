@@ -41,6 +41,7 @@ class BaseUserManager(ComponentBase):
 
     def handle_sessions_changed(self, sessions):
         self.app.server.emit("sessionsChanged", namespace="/hwr")
+
     def get_observers(self):
         return [
             user
@@ -105,7 +106,9 @@ class BaseUserManager(ComponentBase):
                 logging.getLogger("HWR.MX3").info(
                     f"Logged out inactive user {_u.username}"
                 )
-                self.app.server.user_datastore.deactivate_user(_u)
+                self.app.server.user_datastore.delete_user(_u)
+                self.app.server.user_datastore.commit()
+
                 self.app.server.emit(
                     "userChanged", room=_u.socketio_session_id, namespace="/hwr"
                 )
@@ -251,7 +254,8 @@ class BaseUserManager(ComponentBase):
             msg = "User %s signed out" % user.username
             logging.getLogger("MX3.HWR").info(msg)
 
-        self.app.server.user_datastore.deactivate_user(user)
+        self.app.server.user_datastore.delete_user(user)
+        self.app.server.user_datastore.commit()
         flask_security.logout_user()
 
         self.app.server.emit("observersChanged", namespace="/hwr")
