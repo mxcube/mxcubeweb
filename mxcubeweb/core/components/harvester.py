@@ -190,45 +190,10 @@ class Harvester(ComponentBase):
             logging.getLogger("user_level_log").exception(msg)
             return False
 
-    def get_sample_info(self, sampleID: str) -> dict[str]:
+    def get_sample_by_id(self, sampleID: str):
         samples_list = HWR.beamline.sample_changer.get_sample_list()
-        sample_data = {}
-        for s in samples_list:
-            if s.get_address() == sampleID or s.get_id() == sampleID:
-                sample_data = {
-                    "location": s.get_address(),
-                    "sampleID": s.get_address(),
-                    "crystalUUID": s.get_id(),
-                    "sampleName": s.get_name(),
-                }
-                return sample_data
+        for sample in samples_list:
+            if sample.get_address() == sampleID or sample.get_id() == sampleID:
+                return sample
 
-        return sample_data
-
-    def queue_harvest_sample(self, data_model) -> None:
-        """
-        While queue execution send harvest request
-        """
-        current_queue = self.app.queue.queue_to_dict()
-
-        sample_info = self.get_sample_info(data_model.loc_str)
-        sample_uuid = sample_info["crystalUUID"]
-
-        self.harvester_device.queue_harvest_sample(
-            data_model, sample_uuid, current_queue
-        )
-
-    def queue_harvest_next_sample(self, data_model) -> None:
-        """
-        While queue execution send harvest request
-        on next sample of the queue list
-        """
-
-        current_queue = self.app.queue.queue_to_dict()
-
-        sample_info = self.get_sample_info(data_model.loc_str)
-        sample_uuid = sample_info["crystalUUID"]
-
-        self.harvester_device.queue_harvest_next_sample(
-            data_model, sample_uuid, current_queue
-        )
+        return None

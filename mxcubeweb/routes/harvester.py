@@ -59,7 +59,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def harvest_and_mount_sample():
         try:
             crystal_uuid = json.loads(request.data)
-            sample = app.harvester.get_sample_info(crystal_uuid)
+            sample = app.harvester.get_sample_by_id(crystal_uuid)
             HWR.beamline.sample_changer.harvest_and_mount_sample(
                 crystal_uuid, sample["sampleID"]
             )
