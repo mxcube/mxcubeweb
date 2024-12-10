@@ -25,6 +25,7 @@ from mxcubeweb.core.util.networkutils import (
 class BaseUserManager(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
+        HWR.beamline.lims.connect("sessionsChanged", self.handle_sessions_changed)
         self.oauth_client = OAuth(app=app.server.flask)
 
         self.oauth_client.register(
@@ -38,6 +39,8 @@ class BaseUserManager(ComponentBase):
             },
         )
 
+    def handle_sessions_changed(self, sessions):
+        self.app.server.emit("sessionsChanged", namespace="/hwr")
     def get_observers(self):
         return [
             user
@@ -261,6 +264,7 @@ class BaseUserManager(ComponentBase):
 
         if not user.in_control or current_user.is_anonymous:
             socketio_sid = user.socketio_session_id
+            HWR.beamline.lims.remove_user(username)
             self.app.server.user_datastore.delete_user(user)
             self.app.server.user_datastore.commit()
             self.app.server.emit("forceSignout", room=socketio_sid, namespace="/hwr")

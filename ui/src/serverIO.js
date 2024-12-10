@@ -370,6 +370,10 @@ class ServerIO {
       dispatch(signOut());
     });
 
+    this.hwrSocket.on('sessionsChanged', () => {
+      dispatch(getLoginInfo());
+    });
+
     this.hwrSocket.on('workflowParametersDialog', (data) => {
       if (data) {
         dispatch(showWorkflowParametersDialog(data, true));
