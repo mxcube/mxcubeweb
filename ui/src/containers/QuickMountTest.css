@@ -1,3 +1,43 @@
 .button-space {
   margin-right: 10px;
 }
+
+.button-admit {
+  margin-right: 10px;
+  border: solid 1px #c5c4c4;
+  background: #449D44!important;
+  
+  
+}
+
+.button-reset-default,.button-reset-default:disabled{
+  margin-right: 10px;
+  border: solid 1px #CCC;
+  background: white!important;
+  color: #000000cc;
+}
+
+
+/* hover代表鼠标悬浮的样式 */
+.button-reset-default:hover{
+  background:#eff1f3d7;
+  border: solid 1px #c5c4c4;
+  color: #000000;
+} 
+
+/* tab健锁定的样式 */
+.button-reset-default:focus {
+  outline: none!important;
+  box-shadow: none!important;
+  background:#eff1f3d7;
+  border: solid 1px #c5c4c4;
+  color: #000000;
+} 
+
+/* 按钮按下的结果 */
+.button-reset-default:active {
+  margin-right: 10px;
+  border: solid 1px #CCC;
+  background: white!important;
+  color: #000000cc;
+}

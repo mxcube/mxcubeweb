@@ -23,7 +23,7 @@ import {
 
 import './QuickMountTest.css'
 
-
+// 验证上样的puck，pin是否输入正确
 const validate = (values)=>{
   const errors={};
   if(!values.puck_num){
@@ -51,6 +51,7 @@ const validate = (values)=>{
   return errors;
 }
 
+// redux form固定写法
 const renderField = ({input,label,type,meta:{touched,error},inputStyle})=>{
   return (
     <>
@@ -66,6 +67,7 @@ const QuickMountTest =(props) =>{
 
     const dispatch = useDispatch();
     const { handleSubmit } = props;
+    const {initialize,initialValues} = props
 
     const {
         loadSample,
@@ -134,7 +136,7 @@ const QuickMountTest =(props) =>{
       }
     }
 
-
+    // 上样后表格自动更新下一个样品编号
     const updateDefualtValues=(values)=>{
       let {puck_num,pin_num} = values
       puck_num = parseInt(puck_num)
@@ -185,8 +187,10 @@ const QuickMountTest =(props) =>{
 
 
 
-
-
+    // 恢复默认值参数函数
+    const resetToDefaults =()=>{
+      initialize(initialValues)
+    }
 
     return (
         <>
@@ -212,75 +216,96 @@ const QuickMountTest =(props) =>{
 
           step 3:
 
-
+          {/* 上样的表格 */}
           <Form onSubmit={handleSubmit}>
           {/* <Form onSubmit={handleSubmit(mount)}> */}
           {/* <form onSubmit={handleSubmit(dispatch(loadSample))}> */}
 
-              <Row>
-                <Col xs={3}>
-                  <label htmlFor="puck_num">puck：</label>
-                </Col>
-                <Col >
-                  <Field name="puck_num" component={renderField} type="text" />
-                </Col>
-              </Row>
-              <Row>
-                <Col xs={3}>
-                  <label htmlFor="pin_num">pin：</label>
-                </Col>
-                <Col>
-                  <Field name="pin_num" component={renderField} type="text" />
-                </Col>
-              </Row>
+            <Row>
+              <Col xs={3}>
+                <label htmlFor="puck_num">puck：</label>
+              </Col>
+              <Col >
+                <Field name="puck_num" component={renderField} type="text" />
+              </Col>
+            </Row>
+            <Row>
+              <Col xs={3}>
+                <label htmlFor="pin_num">pin：</label>
+              </Col>
+              <Col>
+                <Field name="pin_num" component={renderField} type="text" />
+              </Col>
+            </Row>
 
-              {/* <Button type="submit" disabled={sc_state=='READY'?false:true} >Mount</Button> */}
-              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={mount} className="button-space">Mount</Button>
-              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={unmount} >Unmount</Button>
+            {/* <Button type="submit" disabled={sc_state=='READY'?false:true} >Mount</Button> */}
+            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={mount} className="button-space">Mount</Button>
+            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={unmount} >Unmount</Button>
 
 
-          </Form>
-          <br/>
-
-          step 4:
-          <Form onSubmit={handleSubmit}>
-          {/* <Form onSubmit={handleSubmit(mount)}> */}
-          {/* <form onSubmit={handleSubmit(dispatch(loadSample))}> */}
-
-              <Row>
-                <Col xs={3}>
-                  <label htmlFor="sub_directory">Subdirectory :</label>
-                </Col>
-                <Col >
-                  <Field name="sub_directory" component={renderField} type="text" inputStyle={{width:'500px'}}/>
-                </Col>
+            <br/>
           
-              </Row>
-              <Row>
-                <Col xs={3}>
-                  <label htmlFor="prefix">Prefix :</label>
-                </Col>
-                <Col>
-                  <Field name="prefix" component={renderField} type="text" inputStyle={{width:'500px'}}/>
-                </Col>
-              </Row>
+            {/* 下面是收集的具体参数 */}
+            step 4:
+ 
 
-              <Row>
-                <Col xs={3}>
-                    <label htmlFor="prefix">Prefix :</label>
-                  </Col>
-                  <Col>
-                    <Field name="prefix" component={renderField} type="text" inputStyle={{width:'500px'}}/>
-                  </Col>
-              </Row>
+            <Row>
+              <Col xs={3}>
+                <label htmlFor="sub_directory">Subdirectory :</label>
+              </Col>
+              <Col >
+                <Field name="sub_directory" component={renderField} type="text" inputStyle={{width:'500px'}}/>
+              </Col>
+        
+            </Row>
+            <Row>
+              <Col xs={3}>
+                <label htmlFor="prefix">Prefix :</label>
+              </Col>
+              <Col>
+                <Field name="prefix" component={renderField} type="text" inputStyle={{width:'500px'}}/>
+              </Col>
+            </Row>
+            <br/>
+            <Row>
+              <Col xs={2}>
+                <label htmlFor="range">Range:</label>
+              </Col>
+              <Col>
+                <Field name="range" component={renderField} type="text" inputStyle={{width:'170px'}}/>
+              </Col>
+              <Col xs={2}>
+                <label htmlFor="number">Number:</label>
+              </Col>
+              <Col>
+                <Field name="number" component={renderField} type="text" inputStyle={{width:'170px'}}/>
+              </Col>
+            </Row>
 
-              {/* <Button type="submit" disabled={sc_state=='READY'?false:true} >Mount</Button> */}
-              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-space">Collect</Button>
-              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-space">test 1 image</Button>
-              <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} >test 4 images</Button>
+            <Row>
+              <Col xs={2} >
+                <label htmlFor="exposure">Exposure:</label>
+              </Col>
+              <Col>
+                <Field name="exposure" component={renderField} type="text" inputStyle={{width:'170px'}}/>
+              </Col>
+              <Col xs={2}>
+                <label htmlFor="resolution">Resolution:</label>
+              </Col>
+              <Col>
+                <Field name="resolution" component={renderField} type="text" inputStyle={{width:'170px'}}/>
+              </Col>
+            </Row>
 
-
+            <br/>
+            <Button type="button"  onClick={resetToDefaults} className="button-reset-default">Defulat value (test)</Button>
+            <Button type="button"  onClick={resetToDefaults} className="button-reset-default">Defulat value</Button>
+            <br/>
+            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">Collect</Button>
+            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button>
+            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 4 images</Button>
           </Form>
+
 
           <Col xs={3}>
 
@@ -295,12 +320,16 @@ const QuickMountTest =(props) =>{
 
 
 
-
+// reduxForm的固定设置写法
 export default reduxForm({
     form: 'quickMountTest',
     initialValues:{
       puck_num:'1',
-      pin_num:'01'
+      pin_num:'01',
+      range:'1',
+      exposure:'1',
+      number:'1',
+
     },
     validate
 })(QuickMountTest);;
