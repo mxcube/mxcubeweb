@@ -290,7 +290,7 @@ class SampleView(ComponentBase):
                 # Store pixels per mm for third party software, to facilitate
                 # certain calculations
 
-                beam_info_dict = beam_info_dict = self.app.beamline.get_beam_info()
+                beam_info_dict = self.app.beamline.get_beam_info()
 
                 shape_data["pixels_per_mm"] = (
                     HWR.beamline.diffractometer.get_pixels_per_mm()

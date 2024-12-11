@@ -183,7 +183,6 @@ class Lims(ComponentBase):
         param session_id : this is a identifier that could be proposal name or session_id depending of the type of LIMS login type
         """
         logging.getLogger("MX3.HWR").debug("select_session session_id=%s" % session_id)
-        session = None
 
         # Selecting the active session in the LIMS object
         try:
