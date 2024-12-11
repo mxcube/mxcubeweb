@@ -78,7 +78,6 @@ def handle_auto_mount_next(entry):
     model = entry.get_data_model()
 
     if isinstance(model.get_parent(), qmo.TaskGroup):
-        tgroup = model.get_parent()
         auto_mount = mxcube.queue.get_auto_mount_sample()
         tgroup = entry.get_data_model()
         tgroup_list = entry.get_data_model().get_parent().get_children()
