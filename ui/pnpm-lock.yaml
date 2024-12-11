@@ -3063,13 +3063,8 @@ packages:
   nan@2.17.0:
     resolution: {integrity: sha512-2ZTgtl0nJsO0KQCjEpxcIr5D+Yv90plTitZt9JBfQvVJDS5seMl3FOvsh3+9CoYWXf/1l5OaZzzF6nDm4cagaQ==}
 
-  nanoid@3.3.6:
-    resolution: {integrity: sha512-BGcqMMJuToF7i1rt+2PWSNVnWIkGCU78jBG3RxO/bZlnZPK2Cmi2QaffxGO/2RvWi9sL+FAiRiXMgsyxQ1DIDA==}
-    engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
-    hasBin: true
-
-  nanoid@3.3.7:
-    resolution: {integrity: sha512-eSRppjcPIatRIMC1U6UngP8XFcz8MQWGQdt1MTBQ7NaAmvXDfvNxbvWV3x2y6CdEUciCSsDHDQZbhYaB8QEo2g==}
+  nanoid@3.3.8:
+    resolution: {integrity: sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==}
     engines: {node: ^10 || ^12 || ^13.7 || ^14 || >=15.0.1}
     hasBin: true
 
@@ -4888,7 +4883,7 @@ snapshots:
       lodash: 4.17.21
       lodash-es: 4.17.21
       markdown-to-jsx: 7.5.0(react@17.0.2)
-      nanoid: 3.3.6
+      nanoid: 3.3.8
       prop-types: 15.8.1
       react: 17.0.2
 
@@ -6361,7 +6356,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  eslint-module-utils@2.8.1(@typescript-eslint/parser@5.56.0(eslint@8.42.0)(typescript@5.0.3))(eslint-import-resolver-node@0.3.7)(eslint-import-resolver-typescript@3.5.4(eslint-plugin-import@2.27.5)(eslint@8.42.0))(eslint@8.42.0):
+  eslint-module-utils@2.8.1(@typescript-eslint/parser@5.56.0(eslint@8.42.0)(typescript@5.0.3))(eslint-import-resolver-node@0.3.7)(eslint-import-resolver-typescript@3.5.4)(eslint@8.42.0):
     dependencies:
       debug: 3.2.7(supports-color@8.1.1)
     optionalDependencies:
@@ -6394,7 +6389,7 @@ snapshots:
       doctrine: 2.1.0
       eslint: 8.42.0
       eslint-import-resolver-node: 0.3.7
-      eslint-module-utils: 2.8.1(@typescript-eslint/parser@5.56.0(eslint@8.42.0)(typescript@5.0.3))(eslint-import-resolver-node@0.3.7)(eslint-import-resolver-typescript@3.5.4(eslint-plugin-import@2.27.5)(eslint@8.42.0))(eslint@8.42.0)
+      eslint-module-utils: 2.8.1(@typescript-eslint/parser@5.56.0(eslint@8.42.0)(typescript@5.0.3))(eslint-import-resolver-node@0.3.7)(eslint-import-resolver-typescript@3.5.4)(eslint@8.42.0)
       has: 1.0.3
       is-core-module: 2.15.0
       is-glob: 4.0.3
@@ -7740,9 +7735,7 @@ snapshots:
   nan@2.17.0:
     optional: true
 
-  nanoid@3.3.6: {}
-
-  nanoid@3.3.7: {}
+  nanoid@3.3.8: {}
 
   nanomatch@1.2.13:
     dependencies:
@@ -8016,13 +8009,13 @@ snapshots:
 
   postcss@8.4.41:
     dependencies:
-      nanoid: 3.3.7
+      nanoid: 3.3.8
       picocolors: 1.0.1
       source-map-js: 1.2.0
 
   postcss@8.4.47:
     dependencies:
-      nanoid: 3.3.7
+      nanoid: 3.3.8
       picocolors: 1.1.0
       source-map-js: 1.2.1
 
