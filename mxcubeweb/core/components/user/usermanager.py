@@ -15,11 +15,7 @@ from mxcubecore.model.lims_session import LimsSessionManager
 
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.usermodels import User
-from mxcubeweb.core.util.convertutils import convert_to_dict
-from mxcubeweb.core.util.networkutils import (
-    is_local_host,
-    remote_addr,
-)
+from mxcubeweb.core.util.networkutils import is_local_host
 
 
 class BaseUserManager(ComponentBase):

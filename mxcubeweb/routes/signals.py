@@ -9,7 +9,6 @@ from mxcubecore.HardwareObjects.Harvester import HarvesterState
 from mxcubecore.model import queue_model_objects as qmo
 
 from mxcubeweb.app import MXCUBEApplication as mxcube
-from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcubeweb.core.components.queue import (
     COLLECTED,
     FAILED,
