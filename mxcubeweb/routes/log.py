@@ -18,7 +18,7 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def log():
         """
-        Retrive log messages
+        Retrieve log messages
         """
         messages = []
 
