@@ -1,4 +1,5 @@
 import React,{useState} from "react";
+import {connect} from 'react-redux'
 import { reduxForm, formValueSelector,Field } from 'redux-form';
 import * as SampleChangerActions from '../actions/sampleChanger';
 import { useSelector ,useDispatch} from "react-redux";
@@ -22,6 +23,7 @@ import {
 } from 'react-bootstrap';
 
 import './QuickMountTest.css'
+import { useEffect } from "react";
 
 // 验证上样的puck，pin是否输入正确
 const validate = (values)=>{
@@ -63,11 +65,21 @@ const renderField = ({input,label,type,meta:{touched,error},inputStyle})=>{
 }
 
 
+//设置不用从redux获取的初始值
+const initialValues={
+  puck_num:'1',
+  pin_num:'01',
+  range:'1',
+  exposure:'1',
+  number:'1',
+  resolution_value : '',
+}
+
 const QuickMountTest =(props) =>{
 
     const dispatch = useDispatch();
     const { handleSubmit } = props;
-    const {initialize,initialValues} = props
+    const {initialize} = props
 
     const {
         loadSample,
@@ -80,7 +92,9 @@ const QuickMountTest =(props) =>{
     const queue = useSelector((state) => state.queue)
     const sampleList = useSelector((state) => state.sampleGrid.sampleList)
     const sc_state = useSelector((state)=>state.sampleChanger.state)
-    
+    const resolution_state = useSelector((state)=>state.beamline.hardwareObjects.resolution)
+
+
 
 
     const mountAndSwitchTab =(sampleID)=>{
@@ -187,10 +201,27 @@ const QuickMountTest =(props) =>{
 
 
 
-    // 恢复默认值参数函数
-    const resetToDefaults =()=>{
-      initialize(initialValues)
+    // 恢复默认值参数函数 (test)
+    const resetToDefaults_test =()=>{
+      initialize(
+          {
+            ...initialValues,
+            resolution_value:resolution_state.value
+          }
+        )
     }
+
+    // 恢复默认值参数函数 (360_collect)
+    const resetToDefaults_data_collection =()=>{
+      initialize(
+          {
+            ...initialValues,
+            number:'360', 
+            resolution_value:resolution_state.value
+          }
+        )
+    }
+
 
     return (
         <>
@@ -263,7 +294,7 @@ const QuickMountTest =(props) =>{
                 <label htmlFor="prefix">Prefix :</label>
               </Col>
               <Col>
-                <Field name="prefix" component={renderField} type="text" inputStyle={{width:'500px'}}/>
+                <Field name="prefix" component={renderField} type="text" inputStyle={{width:'500px'}} />
               </Col>
             </Row>
             <br/>
@@ -290,16 +321,16 @@ const QuickMountTest =(props) =>{
                 <Field name="exposure" component={renderField} type="text" inputStyle={{width:'170px'}}/>
               </Col>
               <Col xs={2}>
-                <label htmlFor="resolution">Resolution:</label>
+                <label htmlFor="resolution_value">Resolution:</label>
               </Col>
               <Col>
-                <Field name="resolution" component={renderField} type="text" inputStyle={{width:'170px'}}/>
+                <Field name="resolution_value" component={renderField} type="text" inputStyle={{width:'170px'}} value='1.38'/>
               </Col>
             </Row>
 
             <br/>
-            <Button type="button"  onClick={resetToDefaults} className="button-reset-default">Defulat value (test)</Button>
-            <Button type="button"  onClick={resetToDefaults} className="button-reset-default">Defulat value</Button>
+            <Button type="button"  onClick={resetToDefaults_test} className="button-reset-default">Defulat value (test)</Button>
+            <Button type="button"  onClick={resetToDefaults_data_collection} className="button-reset-default">Defulat value</Button>
             <br/>
             <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">Collect</Button>
             <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button>
@@ -318,20 +349,22 @@ const QuickMountTest =(props) =>{
 
 }
 
+const mapStateToProps=(state)=>{
+  return {
+    initialValues:{
+      ...initialValues,
+      resolution_value : state.beamline.hardwareObjects.resolution.value,
+    }
+  }
+}
 
 
 // reduxForm的固定设置写法
-export default reduxForm({
+export default connect(mapStateToProps)(
+  reduxForm({
     form: 'quickMountTest',
-    initialValues:{
-      puck_num:'1',
-      pin_num:'01',
-      range:'1',
-      exposure:'1',
-      number:'1',
-
-    },
+   
     validate
-})(QuickMountTest);;
+})(QuickMountTest));
 
 
