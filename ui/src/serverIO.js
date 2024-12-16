@@ -438,13 +438,6 @@ class ServerIO {
 
     this.loggingSocket.on('disconnect', (reason) => {
       console.log('loggingSocket disconnected!'); // eslint-disable-line no-console
-
-      if (reason === 'io server disconnect') {
-        const socket = this.loggingSocket;
-        setTimeout(() => {
-          socket.connect();
-        }, 500);
-      }
     });
 
     this.loggingSocket.on('log_record', (record) => {
