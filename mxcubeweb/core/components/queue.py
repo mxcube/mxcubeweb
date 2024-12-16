@@ -12,6 +12,7 @@ from mxcubecore import queue_entry as qe
 from mxcubecore.HardwareObjects.Gphl import GphlQueueEntry
 from mxcubecore.model import queue_model_enumerables as qme
 from mxcubecore.model import queue_model_objects as qmo
+from mxcubecore.model.queue_model_enumerables import CENTRING_METHOD
 from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
 
 from mxcubeweb.core.components.component_base import ComponentBase
@@ -280,6 +281,7 @@ class Queue(ComponentBase):
             "numSnapshots": HWR.beamline.collect.get_property(
                 "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
             ),
+            "centringMethod": HWR.beamline.queue_manager.centring_method,
         }
 
         res.update(settings)
@@ -2076,6 +2078,21 @@ class Queue(ComponentBase):
         )
         self.app.AUTO_ADD_DIFFPLAN = HWR.beamline.collect.get_property(
             "auto_add_diff_plan", False
+        )
+        # Change value of the parameter, without changing the hardware object property.
+        # This allows to properly reset the value on logout when invoking init_queue_settings.
+        self.app.REMEMBER_PARAMETERS_BETWEEN_SAMPLES = (
+            HWR.beamline.queue_manager.get_property(
+                "remember_parameters_between_samples", False
+            )
+        )
+
+        centring_method_as_string = HWR.beamline.queue_manager.get_property(
+            "default_centring_method", "NONE"
+        )
+        HWR.beamline.queue_manager.centring_method = getattr(
+            CENTRING_METHOD,
+            centring_method_as_string,
         )
 
     def queue_start(self, sid):

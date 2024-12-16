@@ -10,7 +10,8 @@ from mxcubeweb.core.models.configmodels import ModeEnum
 
 class SimpleNameValue(BaseModel):
     name: str
-    value: Union[str, bool, int]
+    # It's important to have str before bool, to avoid issue with bool being casted to string
+    value: Union[bool, str, int]
 
 
 class AppSettingsModel(BaseModel):
