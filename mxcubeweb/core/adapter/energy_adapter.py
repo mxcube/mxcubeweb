@@ -5,6 +5,11 @@ from mxcubecore.HardwareObjects.abstract import AbstractEnergy
 
 from mxcubeweb.core.adapter.actuator_adapter import ActuatorAdapter
 from mxcubeweb.core.adapter.wavelength_adapter import WavelengthAdapter
+from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
+
+resource_handler_config = AdapterResourceHandlerConfigModel(
+    commands=["get_value", "set_value"], attributes=["data"]
+)
 
 
 class EnergyAdapter(ActuatorAdapter):
@@ -15,12 +20,12 @@ class EnergyAdapter(ActuatorAdapter):
 
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractEnergy.AbstractEnergy]
 
-    def __init__(self, *args):
+    def __init__(self, ho, role, app):
         """
         Args:
             (object): Hardware object.
         """
-        super().__init__(*args)
+        super().__init__(ho, role, app, resource_handler_config)
         self._add_adapter("wavelength", self._ho, WavelengthAdapter)
         self._type = "ENERGY"
 

@@ -31,6 +31,8 @@ from mxcubeweb.core.components.sampleview import SampleView
 from mxcubeweb.core.components.workflow import Workflow
 from mxcubeweb.core.models.configmodels import UIComponentModel
 from mxcubeweb.logging_handler import MX3LoggingHandler
+from mxcubeweb.core.server.resource_handler import AdapterResourceHandlerFactory
+
 
 removeLoggingHandlers()
 
@@ -122,6 +124,16 @@ class MXCUBEApplication:
 
         :return None:
         """
+        # The routes created by the AdapterResourceHandler
+        # via the factory are kept between calls to init as they
+        # are stored in class variable and only initialized once
+        #
+        # This is only in paractice an issue fo the tests that
+        # re-initializes the application for each test, we thus
+        # need to remove all AdapterResourceHandlers from the
+        # factory.
+        AdapterResourceHandlerFactory.unregister_all()
+
         logging.getLogger("MX3.HWR").info("Starting MXCuBE-Web...")
         MXCUBEApplication.server = server
         MXCUBEApplication.ALLOW_REMOTE = allow_remote

@@ -27,9 +27,9 @@ class MachineInfoAdapter(ActuatorAdapterBase):
 
     @RateLimited(0.1)
     def _value_change(self, *args, **kwargs):
-        self.value_change(self.get_value(), **kwargs)
+        self.value_change(self.get_value().value, **kwargs)
 
-    def _get_value(self) -> HOMachineInfoModel:
+    def get_value(self) -> HOMachineInfoModel:
         return HOMachineInfoModel(value=self.get_attributes())
 
     def get_attributes(self):

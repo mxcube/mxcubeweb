@@ -34,6 +34,16 @@ from mxcubeweb import build_server_and_config
 
 _SIO_TEST_CLIENT = None
 
+from mxcubeweb.core.server.resource_handler import AdapterResourceHandlerFactory
+
+
+@pytest.fixture(autouse=True)
+def cleanup_adapter_resource_handler():
+    yield
+
+    # Teardown
+    AdapterResourceHandlerFactory.unregister_all()
+
 
 def noop_register(*args, **kwargs):
     pass

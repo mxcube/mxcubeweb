@@ -1,6 +1,5 @@
 import json
 
-import spectree
 from flask import (
     Blueprint,
     Response,
@@ -381,10 +380,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/setting", methods=["POST"])
     @server.require_control
     @server.restrict
-    @server.validate(
-        json=SimpleNameValue,
-        resp=spectree.Response("HTTP_409", "HTTP_200"),
-    )
     def set_setting():
         result = app.queue.set_setting(SimpleNameValue(**request.json))
 

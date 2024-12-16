@@ -5,20 +5,29 @@ from mxcubecore.HardwareObjects.abstract import AbstractMotor
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubeweb.core.models.adaptermodels import (
     FloatValueModel,
-    HOActuatorValueChangeModel,
 )
+from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
 from mxcubeweb.core.util.networkutils import RateLimited
+
+resource_handler_config = AdapterResourceHandlerConfigModel(
+    url_prefix="/mxcube/api/v0.1/motor_test",
+    commands=[
+        "set_value",
+        "get_value",
+    ],
+    attributes=["data"],
+)
 
 
 class MotorAdapter(ActuatorAdapterBase):
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractMotor.AbstractMotor]
 
-    def __init__(self, ho, *args):
+    def __init__(self, ho, role, app):
         """
         Args:
-            (object): Hardware object.
+            ho (object): Hardware object.
         """
-        super().__init__(ho, *args)
+        super().__init__(ho, role, app, resource_handler_config)
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
 
@@ -26,7 +35,7 @@ class MotorAdapter(ActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    def _set_value(self, value: HOActuatorValueChangeModel):
+    def set_value(self, value: FloatValueModel):
         """
         Set the detector distance.
         Args:
@@ -41,7 +50,7 @@ class MotorAdapter(ActuatorAdapterBase):
         self._ho.set_value(float(value.value))
         return self.get_value()
 
-    def _get_value(self) -> FloatValueModel:
+    def get_value(self) -> FloatValueModel:
         """
         Read the detector distance.
         Returns:

@@ -166,3 +166,65 @@ class AppConfigModel(BaseModel):
     server: FlaskConfigModel
     mxcube: MXCUBEAppConfigModel
     sso: SSOConfigModel | None
+
+
+class AdapterResourceHandlerConfigModel(BaseModel):
+    """
+    Used to define  which adapter properties and methods that are
+    exported over HTTP. An endpoint for each method and/or property
+    is created by the AdapterResourceHandler and attached to the server.
+
+    The exports list defines the methods and properties exported,
+    the HTTP verb to use and the decorators to apply to the view
+    function,
+
+    The format is:
+    [
+        {"attr": "get_value", "method": "PUT", "decorators":[]}
+    ]
+
+    Where "attr" is the method or property of the adapter, "method"
+    is the http verb i.e GET, PUT, POST. and decoratoes are a list
+    decroator functions to apply to the resulting view function.
+
+    There are two structures that can be used for convenience, that
+    use defualt vlaues for "method" and "decorators". These are
+    commands and attributes.
+
+    Commands is list of functions/methods to export.
+    A dictionary like the one above:
+
+        ({"attr": "get_value", "method": "PUT", "decorators":[]})
+
+    Will be generated from the commands list. With the values "method" and
+    decorators set to defualt values, PUT and [restrict, require_control]
+
+    Example:
+
+        commands = ["set_value", "get_value"]
+
+    Will export the methods as .../set_value with HTTP verb PUT
+
+    In the same way:
+
+    Example:
+
+        attributes = ["data"]
+
+    Will export the property as .../data with HTTP verb GET
+    """
+
+    url_prefix: str = Field("", description="URL prefix")
+    exports: list[dict[str, str]] = Field(
+        [],
+        description=(
+            "List of dictionaires specifying each of the exported attributes or"
+            " methods, HTTP method to use and decorators to apply "
+        ),
+    )
+    commands: list[str] = Field(
+        [], description="List of exported methods, defualted to HTTP PUT"
+    )
+    attributes: list[str] = Field(
+        [], description="List of exported properties, defaulted to HTTP GET"
+    )

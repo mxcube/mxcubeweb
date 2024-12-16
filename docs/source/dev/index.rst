@@ -18,3 +18,4 @@ Developer documentation
     tests.md
     deployment.md
     yaml_conf_migration.md
+    adapter.md

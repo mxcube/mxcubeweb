@@ -1,8 +1,5 @@
-import {
-  sendExecuteCommand,
-  sendPrepareBeamlineForNewSample,
-  sendSetAttribute,
-} from '../api/beamline';
+import { sendPrepareBeamlineForNewSample } from '../api/beamline';
+import { sendExecuteCommand, sendSetAttribute } from '../api/hardware-object';
 import { sendLogFrontEndTraceBack } from '../api/log';
 
 // Action types
@@ -47,9 +44,9 @@ export function setAttribute(name, value) {
   };
 }
 
-export function executeCommand(obj, name, args) {
+export function executeCommand(object_type, object_id, name, args) {
   return () => {
-    sendExecuteCommand(obj, name, args);
+    sendExecuteCommand(object_type, object_id, name, args);
   };
 }
 

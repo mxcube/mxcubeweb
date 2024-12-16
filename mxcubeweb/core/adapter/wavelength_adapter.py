@@ -30,7 +30,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
     def _value_change(self, pos, wl, *args, **kwargs):
         self.value_change(wl)
 
-    def _set_value(self, value: HOActuatorValueChangeModel):
+    def set_value(self, value: HOActuatorValueChangeModel):
         """
         Execute the sequence to set the value.
         Args:
@@ -48,7 +48,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
         except Exception:
             raise
 
-    def _get_value(self) -> FloatValueModel:
+    def get_value(self) -> FloatValueModel:
         """
         Read the wavelength value.
         Returns:
