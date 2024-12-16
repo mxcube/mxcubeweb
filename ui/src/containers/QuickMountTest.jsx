@@ -69,9 +69,11 @@ const renderField = ({input,label,type,meta:{touched,error},inputStyle})=>{
 const initialValues={
   puck_num:'1',
   pin_num:'01',
-  range:'1',
-  exposure:'1',
-  number:'1',
+  osc_range:'',
+  exp_time:'',
+  exp_time_test:'',
+  num_images:'',
+  num_images_test:'',
   resolution_value : '',
 }
 
@@ -93,7 +95,12 @@ const QuickMountTest =(props) =>{
     const sampleList = useSelector((state) => state.sampleGrid.sampleList)
     const sc_state = useSelector((state)=>state.sampleChanger.state)
     const resolution_state = useSelector((state)=>state.beamline.hardwareObjects.resolution)
-
+    // 可以将每个参数都分成 xxx和xxx_test，但没有必要，这里只给一个exp_time的示例
+    const exp_time = useSelector((state)=>state.taskForm.defaultParameters.datacollection.acq_parameters.exp_time)
+    const exp_time_test = useSelector((state)=>state.taskForm.defaultParameters.datacollectiontest.acq_parameters.exp_time)
+    const osc_range = useSelector((state)=>state.taskForm.defaultParameters.datacollection.acq_parameters.osc_range)
+    const num_images = useSelector((state)=>state.taskForm.defaultParameters.datacollection.acq_parameters.num_images)
+    const num_images_test = useSelector((state)=>state.taskForm.defaultParameters.datacollectiontest.acq_parameters.num_images)
 
 
 
@@ -206,7 +213,10 @@ const QuickMountTest =(props) =>{
       initialize(
           {
             ...initialValues,
-            resolution_value:resolution_state.value
+            resolution_value:resolution_state.value,
+            exp_time:exp_time_test,
+            osc_range : osc_range,
+            num_images : num_images_test
           }
         )
     }
@@ -216,8 +226,11 @@ const QuickMountTest =(props) =>{
       initialize(
           {
             ...initialValues,
-            number:'360', 
-            resolution_value:resolution_state.value
+            num_images:'360', 
+            resolution_value:resolution_state.value,
+            exp_time:exp_time,
+            osc_range : osc_range,
+            num_images : num_images
           }
         )
     }
@@ -300,25 +313,25 @@ const QuickMountTest =(props) =>{
             <br/>
             <Row>
               <Col xs={2}>
-                <label htmlFor="range">Range:</label>
+                <label htmlFor="osc_range">Range:</label>
               </Col>
               <Col>
-                <Field name="range" component={renderField} type="text" inputStyle={{width:'170px'}}/>
+                <Field name="osc_range" component={renderField} type="text" inputStyle={{width:'170px'}}/>
               </Col>
               <Col xs={2}>
-                <label htmlFor="number">Number:</label>
+                <label htmlFor="num_images">Number:</label>
               </Col>
               <Col>
-                <Field name="number" component={renderField} type="text" inputStyle={{width:'170px'}}/>
+                <Field name="num_images" component={renderField} type="text" inputStyle={{width:'170px'}}/>
               </Col>
             </Row>
 
             <Row>
               <Col xs={2} >
-                <label htmlFor="exposure">Exposure:</label>
+                <label htmlFor="exp_time">Exposure:</label>
               </Col>
               <Col>
-                <Field name="exposure" component={renderField} type="text" inputStyle={{width:'170px'}}/>
+                <Field name="exp_time" component={renderField} type="text" inputStyle={{width:'170px'}}/>
               </Col>
               <Col xs={2}>
                 <label htmlFor="resolution_value">Resolution:</label>
@@ -349,11 +362,20 @@ const QuickMountTest =(props) =>{
 
 }
 
+// 从state，即mxcube config文件读取初始值，设置为初始值
 const mapStateToProps=(state)=>{
   return {
     initialValues:{
       ...initialValues,
-      resolution_value : state.beamline.hardwareObjects.resolution.value,
+      resolution_value: (state.taskForm.sampleIds.constructor !== Array
+        ? state.taskForm.taskData.parameters.resolution
+        : state.beamline.hardwareObjects.resolution.value),
+      exp_time : state.taskForm.defaultParameters.datacollection.acq_parameters.exp_time,
+      // exp_time_test : state.taskForm.defaultParameters.datacollectiontest.acq_parameters.exp_time,
+      osc_range : state.taskForm.defaultParameters.datacollection.acq_parameters.osc_range,
+      num_images : state.taskForm.defaultParameters.datacollection.acq_parameters.num_images,
+      // num_images_test : state.taskForm.defaultParameters.datacollectiontest.acq_parameters.num_images,
+
     }
   }
 }
