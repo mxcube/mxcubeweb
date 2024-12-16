@@ -65,7 +65,7 @@ const renderField = ({input,label,type,meta:{touched,error},inputStyle})=>{
 }
 
 
-//设置不用从redux获取的初始值
+//初始化各初始值，不用从redux获取的初始值都设为''，
 const initialValues={
   puck_num:'1',
   pin_num:'01',
@@ -81,7 +81,7 @@ const QuickMountTest =(props) =>{
 
     const dispatch = useDispatch();
     const { handleSubmit } = props;
-    const {initialize} = props
+    const {initialize,reset} = props
 
     const {
         loadSample,
@@ -213,10 +213,10 @@ const QuickMountTest =(props) =>{
       initialize(
           {
             ...initialValues,
+            num_images : num_images_test,
             resolution_value:resolution_state.value,
             exp_time:exp_time_test,
             osc_range : osc_range,
-            num_images : num_images_test
           }
         )
     }
@@ -226,13 +226,13 @@ const QuickMountTest =(props) =>{
       initialize(
           {
             ...initialValues,
-            num_images:'360', 
+            num_images:num_images, 
             resolution_value:resolution_state.value,
             exp_time:exp_time,
             osc_range : osc_range,
-            num_images : num_images
           }
         )
+      // reset()    //reset也是一个重置函数，但此处不用
     }
 
 
