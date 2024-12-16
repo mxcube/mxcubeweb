@@ -19,6 +19,7 @@ import { serverIO } from '../serverIO';
 import { getLoginInfo } from '../actions/login';
 import PrivateOutlet from './PrivateOutlet';
 import { sendRefreshSession } from '../api/login';
+import { useErrorBoundary } from 'react-error-boundary';
 
 const REFRESH_INTERVAL = 9000;
 
@@ -68,10 +69,11 @@ const router = createBrowserRouter([
 
 function App() {
   const dispatch = useDispatch();
+  const { showBoundary } = useErrorBoundary();
   const loggedIn = useSelector((state) => state.login.loggedIn);
 
   useEffect(() => {
-    dispatch(getLoginInfo());
+    dispatch(getLoginInfo()).catch(showBoundary); // eslint-disable-line promise/prefer-await-to-then
 
     if (loggedIn) {
       serverIO.listen();
@@ -85,7 +87,7 @@ function App() {
 
     // no clean-up required, until we connect to serverIO
     return undefined;
-  }, [loggedIn, dispatch]);
+  }, [loggedIn, dispatch, showBoundary]);
 
   if (loggedIn === null) {
     // Fetching login info
