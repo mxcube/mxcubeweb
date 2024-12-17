@@ -73,8 +73,11 @@ function App() {
   const loggedIn = useSelector((state) => state.login.loggedIn);
 
   useEffect(() => {
+    // Fetch login info on mount
     dispatch(getLoginInfo()).catch(showBoundary); // eslint-disable-line promise/prefer-await-to-then
+  }, [dispatch, showBoundary]);
 
+  useEffect(() => {
     if (loggedIn) {
       serverIO.listen();
       const refreshInterval = setInterval(sendRefreshSession, REFRESH_INTERVAL);
@@ -87,7 +90,7 @@ function App() {
 
     // no clean-up required, until we connect to serverIO
     return undefined;
-  }, [loggedIn, dispatch, showBoundary]);
+  }, [loggedIn]);
 
   if (loggedIn === null) {
     // Fetching login info
