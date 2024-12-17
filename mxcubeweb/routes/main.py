@@ -63,11 +63,6 @@ def init_route(app, server, url_prefix):
 
     @server.flask.before_request
     def before_request():
-        # logging.getLogger("MX3.HWR").debug('Remote Addr: %s', request.remote_addr)
-        # logging.getLogger("MX3.HWR").debug('Path: %s', request.full_path)
-        # logging.getLogger("MX3.HWR").debug('scheme: %s', request.scheme)
-        # logging.getLogger("MX3.HWR").debug('Headers: %s', request.headers)
-
         if not flask_login.current_user.is_anonymous:
             flask_login.current_user.last_request_timestamp = datetime.now()
             app.usermanager.update_user(flask_login.current_user)
@@ -77,7 +72,7 @@ def init_route(app, server, url_prefix):
         tb = traceback.format_exc()
         timestamp = time.strftime("[%Y-%b-%d %H:%M]")
         logging.getLogger("MX3.HWR").debug(
-            "%s %s %s %s %s 5xx INTERNAL SERVER ERROR\n%s",
+            "%s %s %s %s %s 501 INTERNAL SERVER ERROR\n%s",
             timestamp,
             request.remote_addr,
             request.method,
@@ -86,6 +81,6 @@ def init_route(app, server, url_prefix):
             tb,
         )
 
-        return tb
+        return jsonify({"error": "Server error"}), 501
 
     return bp
