@@ -14,8 +14,8 @@ dependencies:
   # We install `python-ldap` from conda because it is "hard" to install.
   # On PyPI it is not available as *wheel*, only as *sdist* which requires to be built
   # with compilation steps that require a compiler and some header files.
-  # Installing with conda is much "easier".
-  - python-ldap ==3.4.3  # Make sure it matches `poetry.lock`
+  # Installing with conda is "easier".
+  - python-ldap ==3.4.4  # Make sure it matches `poetry.lock`
 
   # ========================
   # Development dependencies
