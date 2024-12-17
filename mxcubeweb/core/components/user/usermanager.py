@@ -264,10 +264,17 @@ class BaseUserManager(ComponentBase):
             self.app.server.emit("forceSignout", room=socketio_sid, namespace="/hwr")
 
     def login_info(self):
+        # update_operator will update the login status of current_user, and make
+        # sure that the is_anonymous has the correct value.
+        # Update operator calls lims.select_session that raises an exception if
+        # there are no valid LIMS sessions.
+        try:
+            self.update_operator()
+        except Exception:
+            pass
+
         if not current_user.is_anonymous:
             session_manager: LimsSessionManager = self.app.lims.get_session_manager()
-            self.update_operator()
-
             login_type = (
                 "User" if HWR.beamline.lims.is_user_login_type() else "Proposal"
             )
