@@ -107,6 +107,21 @@ class ServerIO {
     this.hwrSocket.on('disconnect', (reason) => {
       console.log('hwrSocket disconnected!'); // eslint-disable-line no-console
 
+      if (reason === 'io server disconnect') {
+        //
+        // If socket disconnects with this reason, it is possible that our
+        // session have become invalid.
+        //
+        // That is, we can establish connection to the server, but then we
+        // get a 'unauthorized' response which closes the socket.
+        //
+        // Check if that is the case by fetching the login info. If our
+        // session is invalid, getLoginInfo() will update state to
+        // 'not logged in' and the login page will be shown.
+        //
+        dispatch(getLoginInfo());
+      }
+
       this.connectionLostTimeout = setTimeout(() => {
         dispatch(
           // Show message if socket still hasn't reconnected (and wasn't manually disconnected in the first place)
