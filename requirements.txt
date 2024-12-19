@@ -916,9 +916,9 @@ mock==4.0.3 ; python_version >= "3.8" and python_version < "3.12" \
 mxcube-video-streamer==1.5.0 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:998a8a909e9b69a55bb3776e56ae7725479ec3b196990bf15f6849c3fb824f37 \
     --hash=sha256:fd9d337aad522f60b69182050f9ddfe81d3d2490c2bc8e86ccc669f3e5855718
-mxcubecore==1.194.0 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:1b90c0a7e13207877c98542fae600586fd27e349616cb8ab4de7abdb84b50b3a \
-    --hash=sha256:aaf4ad901410368cbe75156df70e3fa09ffdc609b365786c2475c6dd318460ad
+mxcubecore==1.198.0 ; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:0abd5af4e0e33dc3a33e3ab1e280591e83a8e218f82aac822bcb952d6ad079d8 \
+    --hash=sha256:6a69ee3896b745bd2c91020a9050c09be161f3d8d0b6580327239dacec5c5a00
 numpy==1.24.4 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:04640dab83f7c6c85abf9cd729c5b65f1ebd0ccf9de90b270cd61935eef0197f \
     --hash=sha256:1452241c290f3e2a312c137a9999cdbf63f78864d63c79039bda65ee86943f61 \

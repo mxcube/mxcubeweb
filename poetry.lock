@@ -1959,13 +1959,13 @@ websockets = ">=12.0,<13.0"
 
 [[package]]
 name = "mxcubecore"
-version = "1.194.0"
+version = "1.198.0"
 description = "Core libraries for the MXCuBE application"
 optional = false
 python-versions = "<3.12,>=3.8"
 files = [
-    {file = "mxcubecore-1.194.0-py3-none-any.whl", hash = "sha256:1b90c0a7e13207877c98542fae600586fd27e349616cb8ab4de7abdb84b50b3a"},
-    {file = "mxcubecore-1.194.0.tar.gz", hash = "sha256:aaf4ad901410368cbe75156df70e3fa09ffdc609b365786c2475c6dd318460ad"},
+    {file = "mxcubecore-1.198.0-py3-none-any.whl", hash = "sha256:0abd5af4e0e33dc3a33e3ab1e280591e83a8e218f82aac822bcb952d6ad079d8"},
+    {file = "mxcubecore-1.198.0.tar.gz", hash = "sha256:6a69ee3896b745bd2c91020a9050c09be161f3d8d0b6580327239dacec5c5a00"},
 ]
 
 [package.dependencies]
@@ -3857,4 +3857,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.8,<3.12"
-content-hash = "69014920e24438bc5af40a7aebcd9b2580d03530aa76d94d2a016020960b2203"
+content-hash = "6db4b366f0622da3780d42993ddaaff256fca31f2e93954e5867ac27f05b1043"
