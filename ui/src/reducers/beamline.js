@@ -1,6 +1,12 @@
 /* eslint-disable sonarjs/no-duplicate-string */
-import { STATE } from '../actions/beamline';
 import { RUNNING, HW_STATE } from '../constants';
+
+// The different states a beamline attribute can assume.
+export const STATE = {
+  IDLE: 'READY',
+  BUSY: 'BUSY',
+  ABORT: 'UNUSABLE',
+};
 
 /**
  *  Initial redux state for beamline hardwareObjects, object containing each beamline

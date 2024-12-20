@@ -7,7 +7,8 @@ import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 
 import { showErrorPanel, applicationFetched } from './general';
-import { fetchLoginInfo, sendLogIn, sendSignOut } from '../api/login';
+import { sendSignOut } from '../api/login';
+import { fetchLoginInfo, sendLogIn } from '../api/loginBase';
 import { fetchDetectorInfo } from '../api/detector';
 import { fetchSampleChangerInitialState } from '../api/sampleChanger';
 import { fetchHarvesterInitialState } from '../api/harvester';
@@ -20,21 +21,6 @@ export function setLoginInfo(loginInfo) {
     type: 'SET_LOGIN_INFO',
     loginInfo,
   };
-}
-
-export function resetLoginInfo() {
-  return setLoginInfo({
-    beamlineName: '',
-    synchrotronName: '',
-    loginType: '',
-    user: '',
-    proposalList: [],
-    selectedProposal: '',
-    selectedProposalID: '',
-    loggedIn: false,
-    rootPath: '',
-    useSSO: false,
-  });
 }
 
 export function showProposalsForm() {
@@ -88,7 +74,7 @@ export function logIn(proposal, password) {
 
 export function signOut() {
   return async (dispatch) => {
-    dispatch(resetLoginInfo()); // disconnect sockets before actually logging out (cf. `App.jsx`)
+    dispatch(setLoginInfo({ loggedIn: false })); // disconnect sockets before actually logging out (cf. `App.jsx`)
     dispatch(applicationFetched(false));
 
     try {

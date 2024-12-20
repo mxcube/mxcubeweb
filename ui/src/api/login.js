@@ -1,17 +1,9 @@
-import api from '.';
+import api from './api';
 
 const endpoint = api.url('/login');
 
-export function sendLogIn(proposal, password, previousUser) {
-  return endpoint.post({ proposal, password, previousUser }, '/').safeJson();
-}
-
 export function sendSignOut() {
   return endpoint.headers({ Accept: '*/*' }).get('/signout').res();
-}
-
-export function fetchLoginInfo() {
-  return endpoint.get('/login_info').safeJson();
 }
 
 export function sendFeedback(sender, content) {

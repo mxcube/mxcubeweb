@@ -1,4 +1,4 @@
-import api from '.';
+import api from './api';
 
 const endpoint = api.url('/lims');
 

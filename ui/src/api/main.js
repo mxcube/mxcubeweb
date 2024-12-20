@@ -1,4 +1,4 @@
-import api from '.';
+import api from './api';
 
 export function fetchUIProperties() {
   return api.get('/uiproperties').safeJson();

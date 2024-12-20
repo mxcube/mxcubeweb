@@ -4,12 +4,6 @@ import {
   sendPrepareBeamlineForNewSample,
 } from '../api/beamline';
 import { sendLogFrontEndTraceBack } from '../api/log';
-// The different states a beamline attribute can assume.
-export const STATE = {
-  IDLE: 'READY',
-  BUSY: 'BUSY',
-  ABORT: 'UNUSABLE',
-};
 
 // Action types
 export const BL_UPDATE_HARDWARE_OBJECT = 'BL_UPDATE_HARDWARE_OBJECT';
