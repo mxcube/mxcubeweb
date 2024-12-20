@@ -1224,8 +1224,8 @@ python-dotenv==1.0.1 ; python_version >= "3.8" and python_version < "3.12" \
 python-engineio==4.10.1 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:166cea8dd7429638c5c4e3a4895beae95196e860bc6f29ed0b9fe753d1ef2072 \
     --hash=sha256:445a94004ec8034960ab99e7ce4209ec619c6e6b6a12aedcb05abeab924025c0
-python-ldap==3.4.4 ; python_version >= "3.8" and python_version < "3.12" \
-    --hash=sha256:7edb0accec4e037797705f3a05cbf36a9fde50d08c8f67f2aef99a2628fab828
+python-ldap==3.4.3 ; python_version >= "3.8" and python_version < "3.12" \
+    --hash=sha256:ab26c519a0ef2a443a2a10391fa3c5cb52d7871323399db949ebfaa9f25ee2a0
 python-socketio==5.11.4 ; python_version >= "3.8" and python_version < "3.12" \
     --hash=sha256:42efaa3e3e0b166fc72a527488a13caaac2cefc76174252486503bd496284945 \
     --hash=sha256:8b0b8ff2964b2957c865835e936310190639c00310a47d77321a594d1665355e
