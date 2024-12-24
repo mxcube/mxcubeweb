@@ -290,11 +290,22 @@ export default class ContextMenu extends React.Component {
   }
 
   showModal(modalName, extraParams = {}, _shape = null) {
+    console.log("showModal method in ContextMenu.js, the modalName is : ")
+    console.log(modalName)
     const {
       sampleID, shape, sampleData, defaultParameters
     } = this.props;
 
     const sid = _shape ? _shape.id : shape.id;
+    
+    
+    console.log("sid in showModal is : ")
+    console.log(sid)
+    console.log("sampleID in showModal is : ")
+    console.log(sampleID)
+    console.log(typeof(sampleID))
+
+
     if (Array.isArray(sid)) {
       // we remove any line
       // in case we have selected (by drawing a box) two points
@@ -319,6 +330,25 @@ export default class ContextMenu extends React.Component {
     const type = modalName === "Generic" ? extraParams.type : modalName.toLowerCase()
     const name = modalName === "Generic" ? defaultParameters[type].name: modalName.toLowerCase()
     const params = (type in defaultParameters) ? defaultParameters[type].acq_parameters : {}
+    
+    // 就是对应方法默认的defaultParameters
+    console.log("params in showModal is : ")  
+    console.log(params)
+    // 常规是{}
+    console.log("extraParams in showModal is : ")
+    console.log(extraParams)
+    // 收集方法的名字
+    console.log("name in showModal is : ")
+    console.log(name)
+    // 下面三个应该是mesh scan的参数，对于常规收集，分别是none，0，0
+    console.log("cell_count in showModal is : ")
+    console.log(shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none')
+
+    console.log("numRows in showModal is : ")
+    console.log(shape.gridData ? shape.gridData.numRows : 0)
+    console.log("numCols in showModal is : ")
+    console.log(shape.gridData ? shape.gridData.numCols : 0)
+
     this.props.showForm(
       modalName,
       [sampleID],

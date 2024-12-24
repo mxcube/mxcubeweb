@@ -72,8 +72,9 @@ class DataCollectionTest extends React.Component {
   }
 
   resetParameters(form) {
-    console.log('reset')
-    console.log(this.props.reset)
+    // console.log('reset')
+    // console.log(this.props.reset)
+    // 此处的 reset 是表格恢复默认值的实际操作函数
     this.props.reset(form.toLowerCase());
   }
 

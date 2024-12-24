@@ -7,6 +7,7 @@ import QuickGetSampleListTest from './QuickGetSampleListTest'
 import QuickSCCommandTest from './QuickSCCommandTest';
 import {selectSamplesAction} from '../actions/sampleGrid'
 import * as QueueGUIActions from '../actions/queueGUI';
+import {updateTaskData} from '../actions/taskForm'
 
 // import { Button, ButtonToolbar } from 'react-bootstrap';
 import {
@@ -75,6 +76,8 @@ const initialValues={
   num_images:'',
   num_images_test:'',
   resolution_value : '',
+  sub_directory:'',
+  prefix:'',
 }
 
 const QuickMountTest =(props) =>{
@@ -102,6 +105,12 @@ const QuickMountTest =(props) =>{
     const num_images = useSelector((state)=>state.taskForm.defaultParameters.datacollection.acq_parameters.num_images)
     const num_images_test = useSelector((state)=>state.taskForm.defaultParameters.datacollectiontest.acq_parameters.num_images)
 
+    const sub_directory = useSelector((state)=>state.taskForm.taskData.parameters.subdir)
+    const prefix = useSelector((state)=>state.taskForm.taskData.parameters.prefix)
+
+    const current = useSelector((state)=>state.queue.current)
+    
+    
 
 
     const mountAndSwitchTab =(sampleID)=>{
@@ -157,8 +166,9 @@ const QuickMountTest =(props) =>{
       }
     }
 
-    // 上样后表格自动更新下一个样品编号
+    // 上样后自动更新表格默认值
     const updateDefualtValues=(values)=>{
+      // 上样后表格自动更新下一个样品编号
       let {puck_num,pin_num} = values
       puck_num = parseInt(puck_num)
       pin_num = parseInt(pin_num)
@@ -180,7 +190,37 @@ const QuickMountTest =(props) =>{
       }
       props.change('puck_num',puck_num)
       props.change('pin_num',pin_num)
+
+      
+      props.change('sub_directory',sub_directory)
+      props.change('prefix',prefix)
+
+
     }
+
+    // const updateTaskFormValue = ()=>{
+    //   const {sampleID} = queue.current  //结构赋值
+    //   console.log("get sampleID from queue.control")
+    //   console.log(sampleID)
+    //   dispatch(updateTaskData(
+    //     [sampleID],
+    //     {
+    //       parameters:
+    //       {
+    //         ...params,
+    //         ...extraParams,
+    //         prefix: sampleData.defaultPrefix,
+    //         name,
+    //         subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
+    //         cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
+    //         numRows: shape.gridData ? shape.gridData.numRows : 0,
+    //         numCols: shape.gridData ? shape.gridData.numCols : 0
+    //       },
+    //       type,
+    //     },
+    //   ));
+
+    // }
 
     const mount = () => {
       handleSubmit((values)=>{
@@ -198,7 +238,8 @@ const QuickMountTest =(props) =>{
         inQueueOrNotAddSamples(samples,true)
   
         updateDefualtValues(values)
-        mountAndSwitchTab(sampleID_input)
+        mountAndSwitchTab(sampleID_input)   // 此处调用真实上样函数
+        console.log('mount 函数走完!!!!!!!!!!!!!!!!!!!!!!')
       })() //这里一对空阔号代表真实被调用，不加不会被调用
     };
 
@@ -210,7 +251,11 @@ const QuickMountTest =(props) =>{
 
     // 恢复默认值参数函数 (test)
     const resetToDefaults_test =()=>{
-      initialize(
+      
+      const sampleData = sampleList[current.sampleID]
+      if (typeof sampleData === 'undefined'){
+        console.log('the sampleData is undefined')
+        initialize(
           {
             ...initialValues,
             num_images : num_images_test,
@@ -219,6 +264,28 @@ const QuickMountTest =(props) =>{
             osc_range : osc_range,
           }
         )
+      }
+      else{
+        console.log("the sampleData is :")
+        console.log(sampleData)
+        console.log(sampleData.defaultSubDir)
+        console.log(sampleData.sampleID)
+        console.log(typeof(sampleData.sampleID))
+        initialize(
+          {
+            ...initialValues,
+            num_images : num_images_test,
+            resolution_value:resolution_state.value,
+            exp_time:exp_time_test,
+            osc_range : osc_range,
+            sub_directory: sampleData.defaultSubDir,
+            prefix: sampleData.defaultPrefix,
+          }
+        )
+      }
+
+      
+
     }
 
     // 恢复默认值参数函数 (360_collect)
@@ -342,7 +409,7 @@ const QuickMountTest =(props) =>{
             </Row>
 
             <br/>
-            <Button type="button"  onClick={resetToDefaults_test} className="button-reset-default">Defulat value (test)</Button>
+            <Button type="button"  onClick={resetToDefaults_test} className="button-reset-default">Default value (test)</Button>
             <Button type="button"  onClick={resetToDefaults_data_collection} className="button-reset-default">Defulat value</Button>
             <br/>
             <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">Collect</Button>
@@ -362,9 +429,9 @@ const QuickMountTest =(props) =>{
 
 }
 
-// 从state，即mxcube config文件读取初始值，设置为初始值
 const mapStateToProps=(state)=>{
   return {
+
     initialValues:{
       ...initialValues,
       resolution_value: (state.taskForm.sampleIds.constructor !== Array
@@ -375,13 +442,17 @@ const mapStateToProps=(state)=>{
       osc_range : state.taskForm.defaultParameters.datacollection.acq_parameters.osc_range,
       num_images : state.taskForm.defaultParameters.datacollection.acq_parameters.num_images,
       // num_images_test : state.taskForm.defaultParameters.datacollectiontest.acq_parameters.num_images,
+      // sub_directory : 
+    },
 
-    }
+    
+
+    
+    
   }
 }
 
 
-// reduxForm的固定设置写法
 export default connect(mapStateToProps)(
   reduxForm({
     form: 'quickMountTest',

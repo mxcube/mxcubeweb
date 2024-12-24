@@ -126,8 +126,8 @@ export function loadSample(sampleData, successCb = null) {
         body: JSON.stringify(sampleData),
       }).then((response) => {
         if (response.status >= 400) {
-          dispatch(showErrorPanel(true, response.headers.get('message')));
-          throw new Error('Server refused to mount sample');
+          dispatch(showErrorPanel(true, response.headers.get('message')));  //考虑注释
+          throw new Error('Server refused to mount sample');                // 考虑注释
         } else if (successCb) {
           successCb();
         }

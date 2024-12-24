@@ -108,6 +108,13 @@ export default (state = initialState, action) => {
         fileSuffix: action.data.detector.fileSuffix,
       };
     }
+    case 'UPDATE_TASK_DATA' :{
+      return {
+        ...state,
+        sampleIds: action.sampleIDs,
+        taskData: { ...action.taskData },
+      };
+    }
     default:
       return state;
   }

@@ -69,7 +69,7 @@ class SampleViewContainer extends Component {
 
     const { sourceScale, imageRatio, motorSteps } = this.props.sampleViewState;
     const { setStepSize } = this.props.sampleViewActions;
-    const { sampleID } = this.props.current;
+    const { sampleID } = this.props.current;  //结构赋值
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
 
@@ -236,7 +236,7 @@ class SampleViewContainer extends Component {
 
 function mapStateToProps(state) {
   return {
-    sampleList: state.sampleGrid.sampleList,
+    sampleList: state.sampleGrid.sampleList,     
     current: state.queue.current,
     groupFolder: state.queue.groupFolder,
     queueState: state.queue.queueStatus,

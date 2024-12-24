@@ -16,7 +16,7 @@ import GenericTaskForm from '../components/Tasks/GenericTaskForm';
 
 import {
   hideTaskParametersForm,
-  showTaskForm,
+  // showTaskForm,
   resetTaskParameters,
   updateDefaultParameters,
 } from '../actions/taskForm';
@@ -316,7 +316,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
+    // showTaskParametersForm: bindActionCreators(showTaskForm, dispatch),
     hideTaskParametersForm: bindActionCreators(
       hideTaskParametersForm,
       dispatch
