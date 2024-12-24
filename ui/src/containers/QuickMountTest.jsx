@@ -207,14 +207,8 @@ const QuickMountTest =(props) =>{
     //     {
     //       parameters:
     //       {
-    //         ...params,
-    //         ...extraParams,
     //         prefix: sampleData.defaultPrefix,
-    //         name,
     //         subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
-    //         cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
-    //         numRows: shape.gridData ? shape.gridData.numRows : 0,
-    //         numCols: shape.gridData ? shape.gridData.numCols : 0
     //       },
     //       type,
     //     },
