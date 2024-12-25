@@ -25,6 +25,7 @@ import {
 
 import './QuickMountTest.css'
 import { useEffect } from "react";
+import { prefix } from "@fortawesome/free-brands-svg-icons";
 
 // 验证上样的puck，pin是否输入正确
 const validate = (values)=>{
@@ -80,9 +81,37 @@ const initialValues={
   prefix:'',
 }
 
+
+
+const updatePuckPinValues =(puck_num,pin_num) =>{
+  let puck_num_local = parseInt(puck_num)
+  let pin_num_local = parseInt(pin_num)
+  if(pin_num_local<16){
+    pin_num_local+=1
+    if(pin_num_local<10){
+      pin_num_local = '0'+pin_num_local
+    }
+  }
+  else if(pin_num_local==16){
+    pin_num_local = '01'
+    if(puck_num_local>=1 && puck_num_local<37){
+      puck_num_local+=1
+    }else if(puck_num_local==37){
+      puck_num_local=1
+    }
+  }
+  return [puck_num_local,pin_num_local]
+}
+
+
+
 const QuickMountTest =(props) =>{
 
     const dispatch = useDispatch();
+    const formSelector = formValueSelector('quickMountTest')
+
+
+
     const { handleSubmit } = props;
     const {initialize,reset} = props
 
@@ -105,10 +134,14 @@ const QuickMountTest =(props) =>{
     const num_images = useSelector((state)=>state.taskForm.defaultParameters.datacollection.acq_parameters.num_images)
     const num_images_test = useSelector((state)=>state.taskForm.defaultParameters.datacollectiontest.acq_parameters.num_images)
 
-    const sub_directory = useSelector((state)=>state.taskForm.taskData.parameters.subdir)
-    const prefix = useSelector((state)=>state.taskForm.taskData.parameters.prefix)
+    // const sub_directory = useSelector((state)=>state.taskForm.taskData.parameters.subdir)
+    // const prefix = useSelector((state)=>state.taskForm.taskData.parameters.prefix)
 
     const current = useSelector((state)=>state.queue.current)
+
+    const form_input_puck_num = useSelector((state) => formSelector(state,'puck_num'))
+    const form_input_pin_num = useSelector((state) => formSelector(state,'pin_num'))
+
     
     
 
@@ -166,37 +199,30 @@ const QuickMountTest =(props) =>{
       }
     }
 
+
+
+
+
+
+
     // 上样后自动更新表格默认值
-    const updateDefualtValues=(values)=>{
+    // sampleID_input 是输入的样品id值
+    const updateDefualtValues=(values,sampleID_input)=>{
       // 上样后表格自动更新下一个样品编号
       let {puck_num,pin_num} = values
-      puck_num = parseInt(puck_num)
-      pin_num = parseInt(pin_num)
+      const [puck_num_changed,pin_num_changed] = updatePuckPinValues(puck_num,pin_num)
 
-      if(pin_num<16){
-        pin_num+=1
-        if(pin_num<10){
-          pin_num = '0'+pin_num
-        }
-      }
-      else if(pin_num==16){
-        pin_num = '01'
-        if(puck_num>=1 && puck_num<37){
-          puck_num+=1
-        }else if(puck_num==37){
-          puck_num=1
-        }
-        
-      }
-      props.change('puck_num',puck_num)
-      props.change('pin_num',pin_num)
+      props.change('puck_num',puck_num_changed)
+      props.change('pin_num',pin_num_changed)
+      const sampleData = sampleList[sampleID_input]
+
+      props.change('sub_directory',sampleData.defaultSubDir)
+      props.change('prefix',sampleData.defaultPrefix)
 
       
-      props.change('sub_directory',sub_directory)
-      props.change('prefix',prefix)
-
-
     }
+
+
 
     // const updateTaskFormValue = ()=>{
     //   const {sampleID} = queue.current  //结构赋值
@@ -231,9 +257,9 @@ const QuickMountTest =(props) =>{
         dispatch(selectSamplesAction(samples))
         inQueueOrNotAddSamples(samples,true)
   
-        updateDefualtValues(values)
+        updateDefualtValues(values,sampleID_input)
         mountAndSwitchTab(sampleID_input)   // 此处调用真实上样函数
-        console.log('mount 函数走完!!!!!!!!!!!!!!!!!!!!!!')
+        // console.log('mount 函数走完!!!!!!!!!!!!!!!!!!!!!!')
       })() //这里一对空阔号代表真实被调用，不加不会被调用
     };
 
@@ -243,19 +269,28 @@ const QuickMountTest =(props) =>{
 
 
 
-    // 恢复默认值参数函数 (test)
-    const resetToDefaults_test =()=>{
-      
+    // 恢复默认值
+    const resetToDefaults =(collect_method)=>{
+      let num_images_init = 1
+      if (collect_method === 'test'){
+        num_images_init = num_images_test
+      }
+      else if (collect_method === 'data_collection'){
+        num_images_init = num_images
+      }
+
       const sampleData = sampleList[current.sampleID]
       if (typeof sampleData === 'undefined'){
         console.log('the sampleData is undefined')
         initialize(
           {
             ...initialValues,
-            num_images : num_images_test,
+            num_images : num_images_init,
             resolution_value:resolution_state.value,
             exp_time:exp_time_test,
             osc_range : osc_range,
+
+
           }
         )
       }
@@ -263,37 +298,33 @@ const QuickMountTest =(props) =>{
         console.log("the sampleData is :")
         console.log(sampleData)
         console.log(sampleData.defaultSubDir)
-        console.log(sampleData.sampleID)
-        console.log(typeof(sampleData.sampleID))
+        // console.log(sampleData.sampleID)
+        // console.log(typeof(sampleData.sampleID)) //string
+        const sampleData_sampleID = (sampleData.sampleID).split(':')
+        const sampleData_sampleID_puck_num = sampleData_sampleID[0]
+        const sampleData_sampleID_pin_num = sampleData_sampleID[1]
+        const [puck_num_changed,pin_num_changed] = updatePuckPinValues(sampleData_sampleID_puck_num,sampleData_sampleID_pin_num)
+
+
         initialize(
           {
             ...initialValues,
-            num_images : num_images_test,
+            num_images : num_images_init,
             resolution_value:resolution_state.value,
             exp_time:exp_time_test,
             osc_range : osc_range,
             sub_directory: sampleData.defaultSubDir,
             prefix: sampleData.defaultPrefix,
+            puck_num :puck_num_changed,
+            pin_num :pin_num_changed,
           }
         )
+        // reset()    //reset也是一个重置函数，但此处不用
+
       }
 
       
 
-    }
-
-    // 恢复默认值参数函数 (360_collect)
-    const resetToDefaults_data_collection =()=>{
-      initialize(
-          {
-            ...initialValues,
-            num_images:num_images, 
-            resolution_value:resolution_state.value,
-            exp_time:exp_time,
-            osc_range : osc_range,
-          }
-        )
-      // reset()    //reset也是一个重置函数，但此处不用
     }
 
 
@@ -403,8 +434,8 @@ const QuickMountTest =(props) =>{
             </Row>
 
             <br/>
-            <Button type="button"  onClick={resetToDefaults_test} className="button-reset-default">Default value (test)</Button>
-            <Button type="button"  onClick={resetToDefaults_data_collection} className="button-reset-default">Defulat value</Button>
+            <Button type="button"  onClick={()=>resetToDefaults('test')} className="button-reset-default">Default value (test)</Button>
+            <Button type="button"  onClick={()=>resetToDefaults('data_collection')} className="button-reset-default">Defulat value</Button>
             <br/>
             <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">Collect</Button>
             <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button>
@@ -423,6 +454,7 @@ const QuickMountTest =(props) =>{
 
 }
 
+
 const mapStateToProps=(state)=>{
   return {
 
@@ -438,6 +470,7 @@ const mapStateToProps=(state)=>{
       // num_images_test : state.taskForm.defaultParameters.datacollectiontest.acq_parameters.num_images,
       // sub_directory : 
     },
+
 
     
 
