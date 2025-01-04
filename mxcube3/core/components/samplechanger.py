@@ -205,7 +205,8 @@ class SampleChanger(ComponentBase):
         sc = HWR.beamline.sample_changer
         sc_maint = HWR.beamline.sample_changer_maintenance
         print("进入samplechanger.py的mount_sample_clean_up函数,sc.count:", sc.count)
-        if sc.count >= 20:
+        # if sc.count >= 20:
+        if sc.count >= 50: #商业用户节省时间
             sc.count = 0
             # 如果计数到16但是没有发现上颗样品，说明被umount掉了，此时不执行unmount函数
             if sc.get_loaded_sample == None:
