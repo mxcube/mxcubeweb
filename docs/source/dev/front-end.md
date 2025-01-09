@@ -17,9 +17,9 @@ The front-end package manager is [pnpm](https://pnpm.io/):
 
 [Vite](https://vitejs.dev/) is used to build the project for production:
 
-- `pnpm start` - start the development server at http://localhost:5173
+- `pnpm start` - start the development server at <http://localhost:5173>
 - `pnpm build` - build the front-end for production into the `ui/build` folder
-- `pnpm preview` - serve the production build at http://localhost:5173
+- `pnpm preview` - serve the production build at <http://localhost:5173>
 
 The codebase is formatted with Prettier, linted with ESLint and tested with Cypress:
 
@@ -74,3 +74,4 @@ Environment variables are defined in file `ui/.env`. To override them, create yo
 The following environment variables are available:
 
 - `VITE_REDUX_LOGGER_ENABLED`: whether to log Redux actions to the browser console (disabled by default); useful if you're unable to install the [Redux devtools](https://github.com/reduxjs/redux-devtools/tree/main/extension#installation) browser extension.
+- `VITE_BG_COLOR`: background color for the `body` tag. Useful for making a distinction between various deployment environments.
