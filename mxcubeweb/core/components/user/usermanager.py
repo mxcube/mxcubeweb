@@ -285,6 +285,15 @@ class BaseUserManager(ComponentBase):
 
         if not current_user.is_anonymous:
             session_manager: LimsSessionManager = self.app.lims.get_session_manager()
+
+            # If no previous session selected and a single session available
+            # then it selects automatically the session
+            if (
+                current_user.selected_proposal is None
+                and session_manager.active_session is not None
+            ):
+                self.app.lims.select_session(session_manager.active_session.session_id)
+
             login_type = (
                 "User" if HWR.beamline.lims.is_user_login_type() else "Proposal"
             )
