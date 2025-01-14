@@ -292,9 +292,14 @@ export default class ContextMenu extends React.Component {
                   }),
                 key: 6,
               },
+              {
+                text: 'Create 2D Point',
+                action: () => this.createTwoDPoint(),
+                key: 7,
+              },
             ]
           : []),
-        { text: 'divider', key: 7 },
+        { text: 'divider', key: 8 },
         ...genericTasks.none,
       ],
     };
@@ -437,6 +442,17 @@ export default class ContextMenu extends React.Component {
       sampleViewY,
       'SAVED',
       (shape) => this.showModal(name, {}, shape, extraParams),
+    );
+  }
+
+  createTwoDPoint() {
+    const { sampleViewX, sampleViewY } = this.props;
+
+    this.props.sampleViewActions.add2DPoint(
+      sampleViewX,
+      sampleViewY,
+      'SAVED',
+      null,
     );
   }
 
