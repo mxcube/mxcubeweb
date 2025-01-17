@@ -9,6 +9,7 @@ import {selectSamplesAction} from '../actions/sampleGrid'
 import * as QueueGUIActions from '../actions/queueGUI';
 import {updateTaskData} from '../actions/taskForm'
 
+
 // import { Button, ButtonToolbar } from 'react-bootstrap';
 import {
   sendClearQueue,
@@ -27,9 +28,48 @@ import './QuickMountTest.css'
 import { useEffect } from "react";
 import { prefix } from "@fortawesome/free-brands-svg-icons";
 
-// 验证上样的puck，pin是否输入正确
-const validate = (values)=>{
+
+const everpolate = require('everpolate');
+
+// 验证上样的puck，pin等参数是否输入正确
+const validate = (values,props)=>{
+
+  const emptyField = 'field is empty';
+
+  console.log('prosp in validate')
+  console.log(props)
   const errors={};
+
+  // 准备工作_resolution 验证 (由validate.js源代码改写而来)
+  const currEnergy = Number.parseFloat(props.beamline.hardwareObjects.energy.value);
+  const currRes = Number.parseFloat(values.resolution_value);
+  console.log('values.energy and values.resolution in validate() in Quickountest.jsx')
+  console.log(currEnergy,currRes)
+
+  const energies = props.beamline.hardwareObjects.resolution.limits.map(value => value[0]);
+  const limitsMin = props.beamline.hardwareObjects.resolution.limits.map(value => value[1]);
+  const limitsMax = props.beamline.hardwareObjects.resolution.limits.map(value => value[2]);
+
+  let resMin = 0;
+  let resMax = 0;
+
+  if (energies.length > 2) {
+    resMin = everpolate.linear(currEnergy, energies, limitsMin);
+    resMax = everpolate.linear(currEnergy, energies, limitsMax);
+  } else {
+    resMin = props.beamline.hardwareObjects.resolution.limits[0];
+    resMax = props.beamline.hardwareObjects.resolution.limits[1];
+  }
+
+
+
+
+  // 开始验证
+
+
+
+  
+  // 验证puck_num
   if(!values.puck_num){
     errors.puck_num = 'Required';
   }else{
@@ -38,6 +78,8 @@ const validate = (values)=>{
       errors.puck_num = 'Must be like 1 or 12'
     }
   }
+  
+  // 验证pin_num
   if(!values.pin_num){
     errors.pin_num = 'Required';
   }else{
@@ -48,6 +90,90 @@ const validate = (values)=>{
       errors.pin_num = 'Must be like 01'
     }
   }
+
+
+  // 验证subdirectory
+  const subdirRegex = /^[-\w\-\/\_\{\}]+$/;
+  if(values.sub_directory===''){
+    errors.sub_directory = emptyField;
+  }else if (!subdirRegex.test(values.sub_directory)){
+    errors.sub_directory = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+  }
+
+  
+  // 验证prefix
+  const prefixRegex = /^[-\w\-\#\_\{\}\[\]]+$/;
+  if(values.prefix===''){
+    errors.prefix = emptyField;
+  }else if (!prefixRegex.test(values.prefix)){
+    errors.prefix = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+  }
+
+
+
+  // 验证range,(由validate.js源代码改写而来)
+  // console.log('props.acqParametersLimits.osc_range')
+  // console.log(props.acqParametersLimits.osc_range)
+  const osc_range_Regex = /(^[1-9]\d*\.?\d*)$|(^0\.\d*[1-9])$/
+  if (values.osc_range === '') {
+    errors.osc_range = emptyField;
+  }else if (!osc_range_Regex.test(values.osc_range)){
+    errors.osc_range = 'must be numbers';
+  }else{
+    if (Number.parseInt(values.osc_range, 10) > props.acqParametersLimits.osc_range
+      || Number.parseFloat(values.osc_range, 10) < 0) {
+      errors.osc_range = 'wrong value';
+    }
+    if (values.osc_range * values.num_images > props.acqParametersLimits.osc_max) {
+      errors.osc_range = 'Omega out of limits';
+      errors.num_images = 'Omega out of limits';
+    }
+  }
+  
+
+
+  // 验证exposure
+  const exp_time_Regex = /(^[1-9]\d*\.?\d*)$|(^0\.\d*[1-9])$/;
+  if (values.exp_time === ''){
+    errors.exp_time = emptyField;
+  }else if (!exp_time_Regex.test(values.exp_time)){
+    errors.exp_time = 'Must be numbers';
+  }else{
+    if (props.acqParametersLimits.exposure_time) {
+      const exptimemin = props.acqParametersLimits.exposure_time[0];
+      const exptimemax = props.acqParametersLimits.exposure_time[1];
+      if (Number.parseFloat(values.exp_time, 10) > exptimemax || Number.parseFloat(values.exp_time, 10) < exptimemin) {
+        errors.exp_time = 'Entered Exposure time out of allowed limit';
+      }
+    }
+  }
+  
+  
+  // 验证num_images
+  if (Number.parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images
+    || Number.parseInt(values.num_images, 10) < 1) {
+    errors.num_images = 'Entered Number of images out of allowed range';
+  }else if (values.num_images === '') {
+    errors.num_images = emptyField;
+  }else {
+    const num_img_Regex = /^\d+$/;
+    if(!num_img_Regex.test(values.num_images)){
+      errors.num_images = 'Must be numbers'
+    }
+  }
+
+  // 验证resolution,其实不需要正则表达式判断数字，上面已经强转类型了,若不是数字直接是NaN，也会报错
+  // const resRegex = /(^[1-9]\d*\.？\d*)|(^0\.\d*[1-9])$/;
+  const resRegex = /(^[1-9]\d*\.?\d*)$|(^0\.\d*[1-9])$/;
+  if (values.resolution_value === '') {
+    errors.resolution_value = emptyField;
+  }else if(!resRegex.test(values.resolution_value)){
+    errors.resolution_value = 'Must be numbers'
+  }else if(!(currRes >= resMin && currRes <= resMax)) {
+    errors.resolution_value = 'Entered Resolution outside working range';
+  }
+  
+
   // console.log("error");
   // console.log(errors)
   // console.log(typeof(values.pin_num))
@@ -137,10 +263,13 @@ const QuickMountTest =(props) =>{
     // const sub_directory = useSelector((state)=>state.taskForm.taskData.parameters.subdir)
     // const prefix = useSelector((state)=>state.taskForm.taskData.parameters.prefix)
 
-    const current = useSelector((state)=>state.queue.current)
 
-    const form_input_puck_num = useSelector((state) => formSelector(state,'puck_num'))
-    const form_input_pin_num = useSelector((state) => formSelector(state,'pin_num'))
+
+    const current = useSelector((state)=>state.queue.current)
+    const groupFolder = useSelector((state)=>state.queue.groupFolder)
+
+    // const form_input_puck_num = useSelector((state) => formSelector(state,'puck_num'))
+    // const form_input_pin_num = useSelector((state) => formSelector(state,'pin_num'))
 
     
     
@@ -216,7 +345,7 @@ const QuickMountTest =(props) =>{
       props.change('pin_num',pin_num_changed)
       const sampleData = sampleList[sampleID_input]
 
-      props.change('sub_directory',sampleData.defaultSubDir)
+      props.change('sub_directory',`${groupFolder}${sampleData.defaultSubDir}`)
       props.change('prefix',sampleData.defaultPrefix)
 
       
@@ -287,7 +416,7 @@ const QuickMountTest =(props) =>{
             ...initialValues,
             num_images : num_images_init,
             resolution_value:resolution_state.value,
-            exp_time:exp_time_test,
+            exp_time:exp_time,
             osc_range : osc_range,
 
 
@@ -295,9 +424,9 @@ const QuickMountTest =(props) =>{
         )
       }
       else{
-        console.log("the sampleData is :")
-        console.log(sampleData)
-        console.log(sampleData.defaultSubDir)
+        // console.log("the sampleData is :")
+        // console.log(sampleData)
+        // console.log(sampleData.defaultSubDir)
         // console.log(sampleData.sampleID)
         // console.log(typeof(sampleData.sampleID)) //string
         const sampleData_sampleID = (sampleData.sampleID).split(':')
@@ -311,9 +440,9 @@ const QuickMountTest =(props) =>{
             ...initialValues,
             num_images : num_images_init,
             resolution_value:resolution_state.value,
-            exp_time:exp_time_test,
+            exp_time:exp_time,
             osc_range : osc_range,
-            sub_directory: sampleData.defaultSubDir,
+            sub_directory: `${groupFolder}${sampleData.defaultSubDir}`,
             prefix: sampleData.defaultPrefix,
             puck_num :puck_num_changed,
             pin_num :pin_num_changed,
@@ -456,6 +585,18 @@ const QuickMountTest =(props) =>{
 
 
 const mapStateToProps=(state)=>{
+  // 下面的type如果从taskForm里面获取，是各种收集模式，有datacollection, datacollectionTest等，是什么取决于上次收集的模式
+  // const { type } = state.taskForm.taskData;
+  // console.log('type of QiuckMountTest.jsx')
+  // console.log(type)
+ 
+ 
+  // 这里直接默认 datacollection
+  const type = 'datacollection'
+  const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
+  
+
+
   return {
 
     initialValues:{
@@ -468,9 +609,10 @@ const mapStateToProps=(state)=>{
       osc_range : state.taskForm.defaultParameters.datacollection.acq_parameters.osc_range,
       num_images : state.taskForm.defaultParameters.datacollection.acq_parameters.num_images,
       // num_images_test : state.taskForm.defaultParameters.datacollectiontest.acq_parameters.num_images,
-      // sub_directory : 
-    },
 
+    },
+    beamline: state.beamline,
+    acqParametersLimits: limits,
 
     
 
