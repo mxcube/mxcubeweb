@@ -188,7 +188,6 @@ class Lims(ComponentBase):
 
         # Selecting the active session in the LIMS object
         try:
-            HWR.beamline.lims.set_active_session_by_id(session_id)
             session = HWR.beamline.lims.set_active_session_by_id(session_id)
             if session is None:
                 raise "No session selected on LIMS"
