@@ -845,8 +845,8 @@ class SampleListViewContainer extends React.Component {
         ) : null}
         <Card className="samples-grid-table-card">
           <Card.Header className="samples-grid-table-card-header">
-            <Row className="samples-grid-table-row-header">
-              <Col sm={5} className="d-flex">
+            <Row className="gap-2">
+              <Col className="d-flex">
                 {this.getSynchronizationDropDownList()}
                 <span style={{ marginLeft: '1.5em' }} />
                 <Button
@@ -895,7 +895,7 @@ class SampleListViewContainer extends React.Component {
                   </Dropdown.Menu>
                 </Dropdown>
               </Col>
-              <Col sm={5} className="d-flex me-auto">
+              <Col className="d-flex me-auto">
                 <Form onSubmit={(evt) => evt.preventDefault()}>
                   <Form.Group as={Row} className="d-flex">
                     <Form.Label
@@ -942,7 +942,7 @@ class SampleListViewContainer extends React.Component {
                   Add Task to Samples <LuSettings2 />
                 </Button>
               </Col>
-              <Col className="d-flex justify-content-end" sm={2}>
+              <Col className="d-flex justify-content-end">
                 <span style={{ marginLeft: '1em' }} />
                 <QueueSettings />
                 <span style={{ marginLeft: '1em' }} />
