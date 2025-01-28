@@ -292,9 +292,9 @@ class SampleView(ComponentBase):
 
                 beam_info_dict = beam_info_dict = self.app.beamline.get_beam_info()
 
-                shape_data[
-                    "pixels_per_mm"
-                ] = HWR.beamline.diffractometer.get_pixels_per_mm()
+                shape_data["pixels_per_mm"] = (
+                    HWR.beamline.diffractometer.get_pixels_per_mm()
+                )
                 shape_data["beam_pos"] = (
                     beam_info_dict.get("position")[0],
                     beam_info_dict.get("position")[1],

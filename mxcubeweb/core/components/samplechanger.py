@@ -141,9 +141,9 @@ class SampleChanger(ComponentBase):
             contents = {"name": root_name}
 
             if hasattr(HWR.beamline.sample_changer, "get_room_temperature_mode"):
-                contents[
-                    "room_temperature_mode"
-                ] = HWR.beamline.sample_changer.get_room_temperature_mode()
+                contents["room_temperature_mode"] = (
+                    HWR.beamline.sample_changer.get_room_temperature_mode()
+                )
 
             for element in HWR.beamline.sample_changer.get_components():
                 if element.is_present():

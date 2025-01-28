@@ -30,4 +30,4 @@ dependencies:
 
   - nodejs ==18.*|20.*  # Make sure it matches `ui/package.json`
   - pnpm ==9.*  # Make sure it matches `ui/package.json`
-  - poetry
+  - poetry  ==1.8.4  # Make sure it matches `.pre-commit-config.yaml`

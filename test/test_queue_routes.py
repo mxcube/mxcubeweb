@@ -150,8 +150,7 @@ def test_queue_abort(client):
 
 
 def test_queue_clear(client):
-    """Test if we can clear the queue. A sample and a task are added by fixtures and then cleared.
-    """
+    """Test if we can clear the queue. A sample and a task are added by fixtures and then cleared."""
     resp = client.put("/mxcube/api/v0.1/queue/clear")
     assert resp.status_code == 200
 
@@ -208,8 +207,7 @@ def test_queue_enable_item(client):
 
 
 def test_queue_swap_task_item(client):
-    """Test if we can swap tasks in a sample in queue. Two tasks are added with a different param and then swaped and tested
-    """
+    """Test if we can swap tasks in a sample in queue. Two tasks are added with a different param and then swaped and tested"""
     resp = client.get("/mxcube/api/v0.1/queue/")
     assert (
         resp.status_code == 200 and len(json.loads(resp.data).get("1:05")["tasks"]) == 1
