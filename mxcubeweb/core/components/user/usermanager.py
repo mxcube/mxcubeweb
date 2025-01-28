@@ -450,23 +450,6 @@ class UserManager(BaseUserManager):
         if inhouse and not (inhouse and is_local_host()):
             raise Exception("In-house only allowed from localhost")
 
-        # # Only allow other users to log-in if they are from the same proposal
-        # if (
-        #     active_users
-        #     and (login_id not in [p.split("-")[0] for p in active_users])
-        #     and not HWR.beamline.lims.is_user_login_type()
-        # ):
-        #     raise Exception("Another user is already logged in")
-
-        # # Only allow if no one else is logged in
-        # if not current_user.is_anonymous:
-        #     if (
-        #         active_users
-        #         and current_user.username != login_id
-        #         and HWR.beamline.lims.is_user_login_type()
-        #     ):
-        #         raise Exception("Another user is already logged in")
-
         # Only allow local login when remote is disabled
         if not self.app.ALLOW_REMOTE and not is_local_host():
             raise Exception("Remote access disabled")
