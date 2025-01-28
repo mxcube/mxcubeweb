@@ -10,19 +10,37 @@ version: 2
 
 build:
 
-  os: "ubuntu-22.04"
+  os: ubuntu-22.04
 
   tools:
-    python: "mambaforge-22.9"
+    python: mambaforge-22.9
 
   commands:
+
     # With shallow clone the "Last updated" timestamps can not get computed
     # See "Caveats" at <https://pypi.org/project/sphinx-last-updated-by-git/>
-    - "git fetch --unshallow || true"
-    - "mamba env create --file conda-environment.yml --force"
-    - "mamba run --name mxcubeweb poetry install --only=docs,main"
-    # yamllint disable-line rule:line-length
-    - "mamba run --name mxcubeweb python -m sphinx -T -E -b html -d _build/doctrees -c docs docs/source ${READTHEDOCS_OUTPUT}/html"
+    - git fetch --unshallow || true
+
+    # Create a Conda environment with only the dependencies necessary to build the docs:
+    # * we skip `ffmpeg` on purpose as it is not necessary to build the docs
+    # * `openldap` is necessary to build `python-ldap`
+    # * we use the lowest supported Python, we assume later versions can build as well
+    # See `conda-environment.yml` for more details.
+    - >-
+      mamba create --name=mxcubeweb
+      openldap
+      poetry
+      python=3.8
+
+    - >-
+      mamba run --name=mxcubeweb
+      poetry install --only=docs,main
+
+    - >-
+      mamba run --name mxcubeweb
+      python -m sphinx -T -E -b html -d _build/doctrees -c docs
+      docs/source
+      ${READTHEDOCS_OUTPUT}/html
 
 
 ...  # EOF
