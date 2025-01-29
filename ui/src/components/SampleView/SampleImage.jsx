@@ -1,7 +1,5 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import 'fabric';
-
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -24,7 +22,7 @@ import {
 } from '../../actions/sampleview.js';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import SampleControls from '../SampleControls/SampleControls';
-import DrawGridPlugin from './DrawGridPlugin';
+import DrawGridPlugin, { GridCache } from './DrawGridPlugin';
 import GridForm from './GridForm';
 import { JSMpeg } from './jsmpeg.min.js';
 import styles from './SampleImage.module.css';
@@ -70,6 +68,7 @@ class SampleImage extends React.Component {
     this.clearSelectionEvent = this.clearSelectionEvent.bind(this);
     this.toggleGridVisibility = this.toggleGridVisibility.bind(this);
     this.canvas = {};
+    this.gridCache = null;
     this.drawGridPlugin = new DrawGridPlugin();
     this.drawGridPlugin.setGridResultFormat(props.meshResultFormat);
     this._keyPressed = null;
@@ -85,7 +84,7 @@ class SampleImage extends React.Component {
       selectionKey: 'ctrlKey',
       preserveObjectStacking: true,
     });
-
+    this.gridCache = new GridCache(this.canvas);
     this.drawGridPlugin.canvas = this.canvas;
 
     // Bind leftClick to function
@@ -358,7 +357,8 @@ class SampleImage extends React.Component {
     canvasWindow.height = h;
     // Set the size of the created FabricJS Canvas
     this.canvas.setDimensions({ width: w, height: h });
-    this.canvas.requestRenderAll();
+
+    // Removes all canvas objects, so these are not drawn multiple times
     this.canvas.clear();
 
     // Set size of the Image from
@@ -878,18 +878,37 @@ class SampleImage extends React.Component {
 
     const fabricSelectables = [...makeLines(lines, imageRatio)];
 
+    // We need to remove the grids that have been removed from the store.
+    // Also we remove hidden grids, they will be added again if unhidden
+    this.canvas.getObjects().forEach((obj) => {
+      if (
+        (obj.type === 'GridGroup' && !grids[obj.id]) ||
+        this.props.busy ||
+        grids[obj.id]?.state === 'HIDDEN' ||
+        grids[obj.id]?.user_state === 'HIDDEN'
+      ) {
+        this.gridCache.removeGrid(obj, this.canvas);
+      }
+    });
+
     // Grids already defined (drawn)
     Object.values(grids).forEach((gd) => {
-      let gridData = { ...gd };
-
-      if (!this.props.busy && gridData.state !== 'HIDDEN') {
-        this.drawGridPlugin.setScale(imageRatio);
-        gridData = this.drawGridPlugin.setPixelsPerMM(pixelsPerMm, gridData);
-        fabricSelectables.push(
-          this.drawGridPlugin.shapeFromGridData(gridData, this.canvas)
-            .shapeGroup,
-        );
+      const gridData = { ...gd };
+      if (
+        gridData.state === 'HIDDEN' ||
+        gridData.user_state === 'HIDDEN' ||
+        this.props.busy
+      ) {
+        return;
       }
+
+      const cachedGrid = this.gridCache.addGrid(
+        gridData,
+        this.drawGridPlugin,
+        pixelsPerMm,
+        imageRatio,
+      );
+      fabricSelectables.push(cachedGrid.gridGroup);
     });
 
     // Grid beeing defined (being drawn)
