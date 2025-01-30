@@ -42,7 +42,7 @@ PyDispatcher = "^2.0.6"
 pytz = "^2022.6"
 tzlocal = "^4.2"
 mxcubecore =  ">=1.198.0"
-mxcube-video-streamer = ">=1.5.0"
+mxcube-video-streamer = ">=1.7.0"
 bcrypt = "^4.0.1"
 authlib = "^1.3.0"
 
