@@ -26,8 +26,6 @@
     "@rjsf/validator-ajv8": "5.13.1",
     "bootstrap": "5.2.3",
     "classnames": "^2.3.1",
-    "dustjs-helpers": "^1.7.4",
-    "dustjs-linkedin": "^3.0.0",
     "dygraphs": "^2.0.0",
     "fabric": "5.3.0",
     "immutability-helper": "^3.0.2",
