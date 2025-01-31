@@ -27,10 +27,6 @@ export function setSCGlobalState(data) {
   return { type: 'SET_SC_GLOBAL_STATE', data };
 }
 
-export function updateSCContents(data) {
-  return { type: 'UPDATE_SC_CONTENTS', data };
-}
-
 export function setCurrentPlate(plate_index) {
   return { type: 'SET_SC_CURRENT_PLATE', plate_index };
 }

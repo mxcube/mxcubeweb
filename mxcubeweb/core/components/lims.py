@@ -205,11 +205,32 @@ class Lims(ComponentBase):
                     "[LIMS] Commissioning proposal flag set."
                 )
 
-        HWR.beamline.session.proposal_code = session.code
-        HWR.beamline.session.proposal_number = session.number
-        HWR.beamline.session.session_id = HWR.beamline.lims.get_session_id()
-        HWR.beamline.session.proposal_id = session.proposal_id
-        HWR.beamline.session.set_session_start_date(session.start_date)
+        if HWR.beamline.session.session_id != HWR.beamline.lims.get_session_id():
+            logging.getLogger("MX3.HWR").info(
+                f"[LIMS] New session, clearing queue and sample list for {session.code}{session.number}"
+            )
+
+            # Clear data collection queue
+            self.app.queue.clear_queue()
+
+            # Remove any items on the sample view (shapes)
+            HWR.beamline.sample_view.clear_all()
+
+            # Re-initialize the samplelist
+            self.app.lims.init_sample_list()
+
+            # If a sample is mounted (and not already marked as such),
+            # get sample changer contents and add mounted sample to the queue
+            address = self.app.sample_changer.get_loaded_sample()
+            if not self.app.sample_changer.get_current_sample() and address:
+                self.app.sample_changer.get_sample_list()
+                self.app.server.emit("update_queue", {}, namespace="/hwr")
+
+            HWR.beamline.session.proposal_code = session.code
+            HWR.beamline.session.proposal_number = session.number
+            HWR.beamline.session.session_id = HWR.beamline.lims.get_session_id()
+            HWR.beamline.session.proposal_id = session.proposal_id
+            HWR.beamline.session.set_session_start_date(session.start_date)
 
         logging.getLogger("MX3.HWR").info(
             "[LIMS] Selected session. proposal=%s session_id=%s.",
@@ -236,7 +257,6 @@ class Lims(ComponentBase):
                 )
 
         # save selected proposal in users db
-
         current_user.selected_proposal = session.session_id
         self.app.usermanager.update_user(current_user)
 

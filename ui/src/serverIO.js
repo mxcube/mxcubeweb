@@ -53,7 +53,6 @@ import {
   setSCState,
   setLoadedSample,
   setSCGlobalState,
-  updateSCContents,
 } from './actions/sampleChanger';
 
 import {
@@ -414,8 +413,8 @@ class ServerIO {
       dispatch(setSCGlobalState(data));
     });
 
-    this.hwrSocket.on('sc_contents_update', () => {
-      dispatch(updateSCContents());
+    this.hwrSocket.on('update_queue', () => {
+      dispatch(getQueue());
     });
 
     this.hwrSocket.on('diff_phase_changed', (data) => {

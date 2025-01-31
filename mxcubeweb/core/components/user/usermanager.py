@@ -211,14 +211,6 @@ class BaseUserManager(ComponentBase):
 
             # Important to make flask_security user tracking work
             self.app.server.security.datastore.commit()
-
-            address = self.app.sample_changer.get_loaded_sample()
-
-            # If A sample is mounted (and not already marked as such),
-            # get sample changer contents and add mounted sample to the queue
-            if not self.app.sample_changer.get_current_sample() and address:
-                self.app.sample_changer.get_sample_list()
-
             self.update_operator(new_login=True)
 
             msg = "User %s signed in" % user.username
@@ -234,16 +226,8 @@ class BaseUserManager(ComponentBase):
 
         # If operator logs out clear queue and sample list
         if self.is_operator():
-            # self.app.queue.clear_queue()
-            # HWR.beamline.sample_view.clear_all()
-            # self.app.lims.init_sample_list()
-
-            # self.app.queue.init_queue_settings()
-
             if hasattr(HWR.beamline.session, "clear_session"):
                 HWR.beamline.session.clear_session()
-
-            # self.app.CURRENTLY_MOUNTED_SAMPLE = ""
 
             self.db_set_in_control(current_user, False)
 
