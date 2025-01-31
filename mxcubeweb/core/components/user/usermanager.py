@@ -456,7 +456,9 @@ class UserManager(BaseUserManager):
 
         return session_manager
 
-    def _signout(self, sso_data={}):
+    def _signout(self, sso_data=None):
+        sso_data = sso_data or {}
+
         if self.app.CONFIG.sso.LOGOUT_URI:
             if not current_user.is_anonymous:
                 HWR.beamline.lims.remove_user(current_user.username)
