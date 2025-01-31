@@ -214,7 +214,7 @@ class SampleChanger(ComponentBase):
                     res = sc.load(sample["sampleID"], wait=True)
 
                 if (
-                    res is not False
+                    res
                     and HWR.beamline.queue_manager.centring_method
                     == queue_entry.CENTRING_METHOD.LOOP
                     and not HWR.beamline.diffractometer.in_plate_mode()
