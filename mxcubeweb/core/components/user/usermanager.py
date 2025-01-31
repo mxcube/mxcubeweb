@@ -234,16 +234,16 @@ class BaseUserManager(ComponentBase):
 
         # If operator logs out clear queue and sample list
         if self.is_operator():
-            self.app.queue.clear_queue()
-            HWR.beamline.sample_view.clear_all()
-            self.app.lims.init_sample_list()
+            # self.app.queue.clear_queue()
+            # HWR.beamline.sample_view.clear_all()
+            # self.app.lims.init_sample_list()
 
-            self.app.queue.init_queue_settings()
+            # self.app.queue.init_queue_settings()
 
             if hasattr(HWR.beamline.session, "clear_session"):
                 HWR.beamline.session.clear_session()
 
-            self.app.CURRENTLY_MOUNTED_SAMPLE = ""
+            # self.app.CURRENTLY_MOUNTED_SAMPLE = ""
 
             self.db_set_in_control(current_user, False)
 
