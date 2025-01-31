@@ -21,6 +21,8 @@ import {
   resetLastUsedParameters,
 } from './fields';
 
+import { SPACE_GROUPS } from '../../constants';
+
 class Helical extends React.Component {
   constructor(props) {
     super(props);
@@ -73,6 +75,7 @@ class Helical extends React.Component {
     resetLastUsedParameters(this);
   }
 
+  // TODO: add widgets for entering space group and unit cell parameters
   render() {
     return (
       <DraggableModal show={this.props.show} onHide={this.props.hide}>
@@ -179,6 +182,45 @@ class Helical extends React.Component {
           </Form>
 
           <FieldsHeader title="Processing" />
+          <CollapsableRows>
+            <Form>
+              <SelectField
+                col1="3"
+                col2="3"
+                propName="space_group"
+                label="Space group"
+                list={SPACE_GROUPS}
+              />
+              <Form.Label className="mb-2 mt-3">
+                <b> Unit Cell: </b>
+              </Form.Label>
+              <FieldsRow>
+                <InputField col1="1" col2="5" propName="cellA" label="a" />
+                <InputField col1="1" col2="5" propName="cellB" label="b" />
+                <InputField col1="1" col2="5" propName="cellC" label="c" />
+              </FieldsRow>
+              <FieldsRow>
+                <InputField
+                  col1="1"
+                  col2="5"
+                  propName="cellAlpha"
+                  label="&alpha;"
+                />
+                <InputField
+                  col1="1"
+                  col2="5"
+                  propName="cellBeta"
+                  label="&beta;"
+                />
+                <InputField
+                  col1="1"
+                  col2="5"
+                  propName="cellGamma"
+                  label="&gamma;"
+                />
+              </FieldsRow>
+            </Form>
+          </CollapsableRows>
         </Modal.Body>
         {this.props.taskData.state ? (
           ''
