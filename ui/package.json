@@ -27,7 +27,7 @@
     "bootstrap": "5.2.3",
     "classnames": "^2.3.1",
     "dygraphs": "^2.0.0",
-    "fabric": "5.3.0",
+    "fabric": "5.5.1",
     "immutability-helper": "^3.0.2",
     "isomorphic-fetch": "^2.2.0",
     "lodash": "^4.17.21",
@@ -53,7 +53,7 @@
     "redux-logger": "3.0.6",
     "redux-thunk": "^2.4.1",
     "slick-carousel": "^1.8.1",
-    "socket.io-client": "^4.6.1",
+    "socket.io-client": "^4.8.1",
     "wretch": "2.7.0"
   },
   "devDependencies": {
