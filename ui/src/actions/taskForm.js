@@ -24,6 +24,17 @@ export function showTaskForm(
   };
 }
 
+export function updateTaskData(
+  sampleQueueID = [],
+  taskData = {},
+){
+  return {
+    type : 'UPDATE_TASK_DATA',
+    sampleIDs: sampleQueueID,
+    taskData,
+  }
+}
+
 export function hideTaskParametersForm() {
   return {
     type: 'HIDE_FORM',

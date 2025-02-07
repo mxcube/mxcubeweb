@@ -23,6 +23,8 @@ export default class TodoTree extends React.Component {
   }
 
   mountAndSwitchTab(sampleData) {
+    console.log("{sampleData} of mountAndSwitchTab method in TodoTree")
+    console.log(sampleData)
     this.props.mount(sampleData);
     this.props.showList('current');
   }
@@ -61,6 +63,9 @@ export default class TodoTree extends React.Component {
         </ListGroup.Item>
         <ListGroup.Item className="d-flex list-body">
           {list.map((key, id) => {
+            // 此处的key 依旧是'1:01' etc..
+            // console.log("key and id from TodoTree sample list")
+            // console.log(key,id)
             const sampleData = this.props.sampleList[key];
             const sampleName = sampleData.sampleName ? sampleData.sampleName : '';
             const proteinAcronym = sampleData.proteinAcronym

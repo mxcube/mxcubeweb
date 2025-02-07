@@ -246,21 +246,24 @@ class ServerIO {
 
     this.hwrSocket.on('sc', (record) => {
       switch (record.signal) {
-        case 'operatingSampleChanger': {
+        // 这里会导致报错
+        case 'operatingSampleChanger': 
+        {
           this.dispatch(
             setLoading(
-              true,
+              // true,
+              false,  //此处改成false，面板就不会出现
               'Sample changer in operation',
               record.message,
               true,
               () => this.dispatch(sendStopQueue())
             )
           );
-
           break;
         }
         case 'loadingSample':
-        case 'loadedSample': {
+        case 'loadedSample': 
+        {
           this.dispatch(
             setLoading(
               true,
@@ -274,7 +277,8 @@ class ServerIO {
           break;
         }
         case 'unLoadingSample':
-        case 'unLoadedSample': {
+        case 'unLoadedSample': 
+        {
           this.dispatch(
             setLoading(
               true,
@@ -287,7 +291,8 @@ class ServerIO {
 
           break;
         }
-        case 'loadReady': {
+        case 'loadReady': 
+        {
           this.dispatch(
             setLoading(false, 'SC Ready', record.message, true, () =>
               this.dispatch(sendStopQueue())
@@ -296,7 +301,8 @@ class ServerIO {
 
           break;
         }
-        case 'inSafeArea': {
+        case 'inSafeArea': 
+        {
           this.dispatch(
             setLoading(false, 'SC Safe', record.message, true, () =>
               this.dispatch(sendStopQueue())

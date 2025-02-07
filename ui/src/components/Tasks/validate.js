@@ -1,6 +1,9 @@
 const everpolate = require('everpolate');
 
 const validate = (values, props) => {
+  // console.log('prosp in validate (from validate.js)')
+  // console.log(props)
+
   const errors = {};
   if (!props.beamline.hardwareObjects) {
     // for some reason redux-form is loaded before the initial status
@@ -9,9 +12,20 @@ const validate = (values, props) => {
   const currEnergy = Number.parseFloat(values.energy);
   const currRes = Number.parseFloat(values.resolution);
   const currTransmission = Number.parseFloat(values.transmission);
+
+  // console.log('values.energy and values.resolution in validate.js')
+  // console.log(currEnergy,currRes)
+
+  //下面三个在本地测试中都是undifined
   const energies = props.beamline.hardwareObjects.resolution.limits.map(value => value[0]);
   const limitsMin = props.beamline.hardwareObjects.resolution.limits.map(value => value[1]);
   const limitsMax = props.beamline.hardwareObjects.resolution.limits.map(value => value[2]);
+
+  // console.log('energies ,limitsMin , limitsMax in validate: ')
+  // console.log(energies)
+  // console.log(limitsMin)
+  // console.log(limitsMax)
+
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
 
@@ -24,7 +38,8 @@ const validate = (values, props) => {
   if (!validFname) {
     errors.prefix = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
   }
-
+  
+  // 此处是对props.subdir 的校验，但是DataCollection组件和DataCollectionTest组件传过来的都是props.path
   if (props.subdir && !/^[-\w\-\/\_\{\}]+$/.test(props.subdir)) {
     errors.subdir = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
   }
@@ -82,6 +97,7 @@ const validate = (values, props) => {
   if (!(currRes >= resMin && currRes <= resMax)) {
     errors.resolution = 'Entered Resolution outside working range';
   }
+
 
   if (energies.length >= 2 && !(currEnergy > props.beamline.hardwareObjects.energy.limits[0]
     && currEnergy < props.beamline.hardwareObjects.energy.limits[1])) {

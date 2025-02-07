@@ -110,6 +110,9 @@ export function scan(address) {
 
 export function loadSample(sampleData, successCb = null) {
   return function (dispatch, getState) {
+    console.log("即将要上的样品是: ")
+    console.log(sampleData)
+
     const state = getState();
 
     if (state.sampleChanger.loadedSample.address !== sampleData.location) {
@@ -123,8 +126,8 @@ export function loadSample(sampleData, successCb = null) {
         body: JSON.stringify(sampleData),
       }).then((response) => {
         if (response.status >= 400) {
-          dispatch(showErrorPanel(true, response.headers.get('message')));
-          throw new Error('Server refused to mount sample');
+          dispatch(showErrorPanel(true, response.headers.get('message')));  //考虑注释
+          throw new Error('Server refused to mount sample');                // 考虑注释
         } else if (successCb) {
           successCb();
         }

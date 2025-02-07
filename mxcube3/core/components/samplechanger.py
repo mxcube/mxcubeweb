@@ -39,6 +39,7 @@ class SampleChanger(ComponentBase):
 
     def get_sample_list(self):
         samples_list = HWR.beamline.sample_changer.get_sample_list()
+        # print("初始samples_list: ",samples_list)
 
         # 添加 start
         proteinAcronym = HWR.beamline.sample_changer.proteinAcronym
@@ -404,6 +405,7 @@ class SampleChanger(ComponentBase):
             return "OFFLINE", "OFFLINE", "OFFLINE"
 
     def get_initial_state(self):
+        logging.getLogger('HWR').debug('run get_initial_state() of SC due to UI asking')
         if HWR.beamline.sample_changer_maintenance is not None:
             global_state, cmdstate, msg = self.get_global_state()
 
@@ -421,7 +423,8 @@ class SampleChanger(ComponentBase):
         loaded_sample = {"address": address, "barcode": barcode}
 
         try:
-            state = HWR.beamline.sample_changer.get_status().upper()
+            state = HWR.beamline.sample_changer.get_status().upper() #问题出在这，每次获取，不管当前状态是什么，此处state好像都是ready
+            logging.getLogger('HWR').debug('run get_initial_state() SC, state = ' + str(state))
         except Exception:
             state = "OFFLINE"
 

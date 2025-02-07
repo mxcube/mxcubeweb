@@ -41,6 +41,9 @@ export function setLoading(
     message,
     blocking,
     abortFun,
+    // abortFun:()=>{
+    //   console.log('test')
+    // },
   };
 }
 
@@ -269,6 +272,8 @@ export function getInitialState(userInControl) {
         .then(parse)
         .then((json) => {
           state.sampleChangerState = { state: json.state };
+          console.log('sampleChangerInitialState')
+          console.log(state)
           return json;
         })
         .then((json) => {

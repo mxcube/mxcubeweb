@@ -72,6 +72,9 @@ class DataCollectionTest extends React.Component {
   }
 
   resetParameters(form) {
+    // console.log('reset')
+    // console.log(this.props.reset)
+    // 此处的 reset 是表格恢复默认值的实际操作函数
     this.props.reset(form.toLowerCase());
   }
 
@@ -81,7 +84,9 @@ class DataCollectionTest extends React.Component {
     this.resetParameters(type);
     const fieldNames = Object.keys(this.props.initialParameters[type.toLowerCase()]);
     fieldNames.forEach((field) => {
-      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);
+      // console.log('field')
+      // console.log(field)
+      this.props.autofill(type.toLowerCase(), field, this.props.initialParameters[type.toLowerCase()][field]);  //这句好像没有用, autofill函数不存在
     });
   }
 

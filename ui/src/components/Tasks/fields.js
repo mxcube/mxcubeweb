@@ -120,9 +120,10 @@ function ReduxInputField(prop) {
 }
 
 export function InputField(prop) {
+  // console.log(prop)
   return <Field
     name={prop.propName}
-    component={ReduxInputField}
+    component={ReduxInputField} //这里ReduxInputField代替了像为在QuickMountTest中写的renderField
     {...prop}
   />
 }

@@ -236,6 +236,7 @@ export class TaskItem extends React.Component {
 
     return (
       <div sm={2} key={this.props.taskIndex} className=" ms-1 sample-grid-task-item">
+        TaskItem
         <OverlayTrigger
           rootClose="true"
           placement='auto'
