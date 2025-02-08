@@ -220,7 +220,7 @@ class SampleQueueContainer extends React.Component {
               shapes={this.props.shapes}
               showDialog={this.props.showDialog}
             />
-            sampleQueueContainer
+            {/* sampleQueueContainer */}
             <TodoTree
               show={visibleList === 'todo'}
               list={todo}
@@ -245,7 +245,7 @@ class SampleQueueContainer extends React.Component {
               />
             </div>
           </div>
-          SampleQueueContainer end
+          {/* SampleQueueContainer end */}
       </div>
     );
   }

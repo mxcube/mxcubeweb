@@ -998,7 +998,7 @@ class SampleGridTableContainer extends React.Component {
     const nb_puck = this.props.sampleChanger.contents.children[0].children.length
     return (
       <div>
-        contextMenu.show 
+        {/* contextMenu.show  */}
         {/* 这里this.props.contextMenu.show，好像一直是false */}
         {this.props.contextMenu.show ?
           (
@@ -1019,7 +1019,7 @@ class SampleGridTableContainer extends React.Component {
           :
           null
         }
-        样品表格开始
+        {/* 样品表格开始 */}
         {this.props.viewMode.mode == 'Graphical View'?
           (
           <Row
@@ -1065,16 +1065,16 @@ class SampleGridTableContainer extends React.Component {
                 <>
                   {/* <div>nb_puck dayu 3</div> */}
                   {/* <div>{nb_puck}</div> */}
-                  <Col sm>
+                  {/* <Col sm>
                     {this.getSampleTable(this.props)}
-                  </Col>
+                  </Col> */}
                 </>
 
               }
             </Row>
           )
         }
-        样品表格结束
+        {/* 样品表格结束 */}
       </div>
     );
   }
