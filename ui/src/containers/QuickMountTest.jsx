@@ -20,13 +20,13 @@ import {
   deleteTask,
 } from '../actions/queue';
 
+
+
 import {
   Modal, Button, Form, Row, Col, ButtonToolbar
 } from 'react-bootstrap';
 
 import './QuickMountTest.css'
-import { useEffect } from "react";
-import { prefix } from "@fortawesome/free-brands-svg-icons";
 
 
 const everpolate = require('everpolate');
@@ -68,7 +68,7 @@ const validate = (values,props)=>{
 
 
 
-  
+
   // 验证puck_num
   if(!values.puck_num){
     errors.puck_num = 'Required';
@@ -78,7 +78,7 @@ const validate = (values,props)=>{
       errors.puck_num = 'Must be like 1 or 12'
     }
   }
-  
+
   // 验证pin_num
   if(!values.pin_num){
     errors.pin_num = 'Required';
@@ -100,7 +100,7 @@ const validate = (values,props)=>{
     errors.sub_directory = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
   }
 
-  
+
   // 验证prefix
   const prefixRegex = /^[-\w\-\#\_\{\}\[\]]+$/;
   if(values.prefix===''){
@@ -129,7 +129,7 @@ const validate = (values,props)=>{
       errors.num_images = 'Omega out of limits';
     }
   }
-  
+
 
 
   // 验证exposure
@@ -147,8 +147,8 @@ const validate = (values,props)=>{
       }
     }
   }
-  
-  
+
+
   // 验证num_images
   if (Number.parseInt(values.num_images, 10) > props.acqParametersLimits.number_of_images
     || Number.parseInt(values.num_images, 10) < 1) {
@@ -172,7 +172,7 @@ const validate = (values,props)=>{
   }else if(!(currRes >= resMin && currRes <= resMax)) {
     errors.resolution_value = 'Entered Resolution outside working range';
   }
-  
+
 
   // console.log("error");
   // console.log(errors)
@@ -271,8 +271,9 @@ const QuickMountTest =(props) =>{
     // const form_input_puck_num = useSelector((state) => formSelector(state,'puck_num'))
     // const form_input_pin_num = useSelector((state) => formSelector(state,'pin_num'))
 
-    
-    
+    const sampleIds = useSelector((state)=>state.taskForm.sampleIds)
+    const taskData = useSelector((state)=>state.taskForm.taskData)
+
 
 
     const mountAndSwitchTab =(sampleID)=>{
@@ -298,8 +299,8 @@ const QuickMountTest =(props) =>{
       let result = false
       try{
         result = queue.queue.includes(sampleID) && sampleList[sampleID].checked;
-      
-      
+
+
       }catch(error){
         console.log('sampleID casued Error from inQueue: ')
         console.log(sampleID)
@@ -312,9 +313,9 @@ const QuickMountTest =(props) =>{
 
 
     const inQueueOrNotAddSamples=(sampleIDList, addSamples) =>{
-      /* 
+      /*
         adapt from inQueueDeleteElseAddSamples
-        args: ['1:01'] , true 
+        args: ['1:01'] , true
       */
       // console.log("inQueueOrNotAddSamples")
       // console.log(sampleIDList)
@@ -323,7 +324,7 @@ const QuickMountTest =(props) =>{
         if (!inQueue(sampleID)) {
           samples.push(sampleID)
         }
-  
+
       if (addSamples && samples.length > 0) { addSamplesToQueue_not_from_queue_action(samples);}
       }
     }
@@ -343,36 +344,20 @@ const QuickMountTest =(props) =>{
 
       props.change('puck_num',puck_num_changed)
       props.change('pin_num',pin_num_changed)
+      // sampleData 的获取方式和SampleViewContainer.js一样
       const sampleData = sampleList[sampleID_input]
 
       props.change('sub_directory',`${groupFolder}${sampleData.defaultSubDir}`)
       props.change('prefix',sampleData.defaultPrefix)
 
-      
+
     }
 
 
 
-    // const updateTaskFormValue = ()=>{
-    //   const {sampleID} = queue.current  //结构赋值
-    //   console.log("get sampleID from queue.control")
-    //   console.log(sampleID)
-    //   dispatch(updateTaskData(
-    //     [sampleID],
-    //     {
-    //       parameters:
-    //       {
-    //         prefix: sampleData.defaultPrefix,
-    //         subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
-    //       },
-    //       type,
-    //     },
-    //   ));
-
-    // }
-
     const mount = () => {
       handleSubmit((values)=>{
+        console.log('sc_state:')
         console.log(sc_state)
         const samples = []
         // console.log('Submitted values:', values);
@@ -380,12 +365,12 @@ const QuickMountTest =(props) =>{
         const pin_num_input = values['pin_num']
         const sampleID_input = puck_num_input+':'+pin_num_input
         // console.log(sampleID_input)
-  
+
         samples.push(sampleID_input)
-        
+
         dispatch(selectSamplesAction(samples))
         inQueueOrNotAddSamples(samples,true)
-  
+
         updateDefualtValues(values,sampleID_input)
         mountAndSwitchTab(sampleID_input)   // 此处调用真实上样函数
         // console.log('mount 函数走完!!!!!!!!!!!!!!!!!!!!!!')
@@ -418,7 +403,8 @@ const QuickMountTest =(props) =>{
             resolution_value:resolution_state.value,
             exp_time:exp_time,
             osc_range : osc_range,
-
+            sub_directory : 'wait_to_mount',
+            prefix    : 'wait_to_mount',
 
           }
         )
@@ -452,10 +438,36 @@ const QuickMountTest =(props) =>{
 
       }
 
-      
+
 
     }
 
+
+    // 更新此表单的数据到原版的 datacollection 表单
+    const updateTaskDataOfTaskForm = () =>{
+      handleSubmit((values)=>{
+        console.log('sampleIds')
+        console.log(sampleIds)
+        // console.log('taskData,typeof(taskData.parameters)')
+        // console.log(taskData.parameters)
+        // console.log(typeof(taskData.parameters))        
+        const taskData_about_change = {
+          parameters:{
+            ...taskData.parameters,
+            subdir :  values['sub_directory'],
+            prefix : values['prefix'],
+            osc_range : values['osc_range'],
+            num_images : values['num_images'],
+            exp_time : values['exp_time'],
+            resolution : values['resolution_value'],
+          }
+        }
+
+
+        dispatch(updateTaskData(sampleIds,taskData_about_change))
+
+      })() //这里一对空阔号代表真实被调用，不加不会被调用
+    }
 
     return (
         <>
@@ -470,7 +482,7 @@ const QuickMountTest =(props) =>{
               <QuickGetSampleListTest/>
             </Col>
             <Col>
-              <QuickSCCommandTest 
+              <QuickSCCommandTest
                 command={'closelid1'}
                 sc_state={sc_state}
               />
@@ -509,10 +521,10 @@ const QuickMountTest =(props) =>{
 
 
             <br/>
-          
+
             {/* 下面是收集的具体参数 */}
             step 4:
- 
+
 
             <Row>
               <Col xs={3}>
@@ -521,7 +533,7 @@ const QuickMountTest =(props) =>{
               <Col >
                 <Field name="sub_directory" component={renderField} type="text" inputStyle={{width:'500px'}}/>
               </Col>
-        
+
             </Row>
             <Row>
               <Col xs={3}>
@@ -562,13 +574,19 @@ const QuickMountTest =(props) =>{
               </Col>
             </Row>
 
+      
+            step 5:
+            <br/>
+            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={updateTaskDataOfTaskForm} className="button-admit">update</Button>
+            {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">Collect</Button> */}
+            {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button> */}
+            {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 4 images</Button> */}
+            <br/>
             <br/>
             <Button type="button"  onClick={()=>resetToDefaults('test')} className="button-reset-default">Default value (test)</Button>
             <Button type="button"  onClick={()=>resetToDefaults('data_collection')} className="button-reset-default">Defulat value</Button>
             <br/>
-            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">Collect</Button>
-            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button>
-            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 4 images</Button>
+
           </Form>
 
 
@@ -589,12 +607,12 @@ const mapStateToProps=(state)=>{
   // const { type } = state.taskForm.taskData;
   // console.log('type of QiuckMountTest.jsx')
   // console.log(type)
- 
- 
+
+
   // 这里直接默认 datacollection
   const type = 'datacollection'
   const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
-  
+
 
 
   return {
@@ -614,10 +632,10 @@ const mapStateToProps=(state)=>{
     beamline: state.beamline,
     acqParametersLimits: limits,
 
-    
 
-    
-    
+
+
+
   }
 }
 
@@ -625,7 +643,7 @@ const mapStateToProps=(state)=>{
 export default connect(mapStateToProps)(
   reduxForm({
     form: 'quickMountTest',
-   
+
     validate
 })(QuickMountTest));
 

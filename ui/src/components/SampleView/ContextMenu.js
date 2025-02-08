@@ -349,6 +349,31 @@ export default class ContextMenu extends React.Component {
     console.log("numCols in showModal is : ")
     console.log(shape.gridData ? shape.gridData.numCols : 0)
 
+    // this.props.showForm(
+    //   modalName,
+    //   [sampleID],
+    //   {
+    //     parameters:
+    //     {
+    //       ...params,
+    //       ...extraParams,
+    //       prefix: sampleData.defaultPrefix,
+    //       name,
+    //       subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
+    //       cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
+    //       numRows: shape.gridData ? shape.gridData.numRows : 0,
+    //       numCols: shape.gridData ? shape.gridData.numCols : 0
+    //     },
+    //     type,
+    //   },
+    //   sid
+    // );
+    // this.hideContextMenu();
+    // this.props.sampleActions.showContextMenu(false);
+
+
+    // 原来从sampleDate(sampleData = sampleList[sampleID_input])的deafaultPrefix获取
+    //  目录，前缀，曝光时间，分辨率，收集张数，几度一张，改为用户输入手动同步获取（用户输入完，手动同步到taskFrom.taskData）
     this.props.showForm(
       modalName,
       [sampleID],
@@ -357,9 +382,14 @@ export default class ContextMenu extends React.Component {
         {
           ...params,
           ...extraParams,
-          prefix: sampleData.defaultPrefix,
+          prefix: this.props.taskForm.taskData.parameters.prefix ? this.props.taskForm.taskData.parameters.prefix:sampleData.defaultPrefix,
+          subdir: this.props.taskForm.taskData.parameters.subdir ? this.props.taskForm.taskData.parameters.subdir : `${this.props.groupFolder}${sampleData.defaultSubDir}`,
+          osc_range : this.props.taskForm.taskData.parameters.osc_range? this.props.taskForm.taskData.parameters.osc_range: params.osc_range,
+          num_images : this.props.taskForm.taskData.parameters.num_images? this.props.taskForm.taskData.parameters.num_images: params.num_images,
+          exp_time : this.props.taskForm.taskData.parameters.exp_time? this.props.taskForm.taskData.parameters.exp_time: params.exp_time,
+          resolution : this.props.taskForm.taskData.parameters.resolution? this.props.taskForm.taskData.parameters.resolution: params.resolution,
+          
           name,
-          subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
           cell_count: shape.gridData ? shape.gridData.numCols * shape.gridData.numRows : 'none',
           numRows: shape.gridData ? shape.gridData.numRows : 0,
           numCols: shape.gridData ? shape.gridData.numCols : 0
@@ -370,8 +400,11 @@ export default class ContextMenu extends React.Component {
     );
     this.hideContextMenu();
     this.props.sampleActions.showContextMenu(false);
+
   }
 
+  
+  
   createCollectionOnCell() {
     const { cellCenter } = this.props.shape;
     this.createPoint(cellCenter[0], cellCenter[1]);

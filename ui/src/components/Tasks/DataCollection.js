@@ -294,6 +294,55 @@ DataCollection = reduxForm({
 
 const selector = formValueSelector('datacollection');
 
+
+// 原来的代码
+// DataCollection = connect((state) => {
+//   const subdir = selector(state, 'subdir');
+
+//   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
+//   if (typeof position === 'object') {
+//     const vals = Object.values(position).sort();
+//     position = `[${vals}]`;
+//   }
+
+//   let fname = '';
+
+//   if (state.taskForm.sampleID) {
+//     fname = state.taskForm.taskData.parameters.fileName;
+//   } else {
+//     const prefix = selector(state, 'prefix');
+//     fname = `${prefix}_[RUN#]_[IMG#]`;
+//   }
+
+//   const { type } = state.taskForm.taskData;
+//   const {limits} = state.taskForm.defaultParameters[type.toLowerCase()];
+
+//   return {
+//     path: `${state.login.rootPath}/${subdir}`,
+//     filename: fname,
+//     acqParametersLimits: limits,
+//     beamline: state.beamline,
+//     initialValues: {
+//       ...state.taskForm.taskData.parameters,
+//       beam_size: state.sampleview.currentAperture,
+//       resolution: (state.taskForm.sampleIds.constructor !== Array
+//         ? state.taskForm.taskData.parameters.resolution
+//         : state.beamline.hardwareObjects.resolution.value),
+//       energy: (state.taskForm.sampleIds.constructor !== Array
+//         ? state.taskForm.taskData.parameters.energy
+//         : state.beamline.hardwareObjects.energy.value),
+//       transmission: (state.taskForm.sampleIds.constructor !== Array
+//         ? state.taskForm.taskData.parameters.transmission
+//         : state.beamline.hardwareObjects.transmission.value),
+//       osc_start: (state.taskForm.sampleIds.constructor !== Array
+//         ? state.taskForm.taskData.parameters.osc_start
+//         : state.beamline.hardwareObjects["diffractometer.phi"].value)
+//     }
+//   };
+// })(DataCollection);
+
+
+// 对比原来，更改了resolution变量的来源
 DataCollection = connect((state) => {
   const subdir = selector(state, 'subdir');
 
@@ -323,7 +372,7 @@ DataCollection = connect((state) => {
     initialValues: {
       ...state.taskForm.taskData.parameters,
       beam_size: state.sampleview.currentAperture,
-      resolution: (state.taskForm.sampleIds.constructor !== Array
+      resolution: (state.taskForm.taskData.parameters.resolution
         ? state.taskForm.taskData.parameters.resolution
         : state.beamline.hardwareObjects.resolution.value),
       energy: (state.taskForm.sampleIds.constructor !== Array
