@@ -619,9 +619,11 @@ const mapStateToProps=(state)=>{
 
     initialValues:{
       ...initialValues,
-      resolution_value: (state.taskForm.sampleIds.constructor !== Array
-        ? state.taskForm.taskData.parameters.resolution
-        : state.beamline.hardwareObjects.resolution.value),
+      // 还没上样，没有taskData/aprameter，但此组件在还没上样时就要被渲染，因此不能像下面这样去判断
+      // resolution_value: (state.taskForm.taskData.parameters.resolution
+      //   ? state.taskForm.taskData.parameters.resolution
+      //   : state.beamline.hardwareObjects.resolution.value),
+      resolution_value:state.beamline.hardwareObjects.resolution.value,
       exp_time : state.taskForm.defaultParameters.datacollection.acq_parameters.exp_time,
       // exp_time_test : state.taskForm.defaultParameters.datacollectiontest.acq_parameters.exp_time,
       osc_range : state.taskForm.defaultParameters.datacollection.acq_parameters.osc_range,
