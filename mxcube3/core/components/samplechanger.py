@@ -204,23 +204,8 @@ class SampleChanger(ComponentBase):
         from mxcube3.routes import signals
 
         sc = HWR.beamline.sample_changer
-        sc_maint = HWR.beamline.sample_changer_maintenance
-        print("进入samplechanger.py的mount_sample_clean_up函数,sc.count:", sc.count)
-        # if sc.count >= 20:
-        if sc.count >= 50: #商业用户节省时间
-            sc.count = 0
-            # 如果计数到16但是没有发现上颗样品，说明被umount掉了，此时不执行unmount函数
-            if sc.get_loaded_sample == None:
-                pass
-            else:
-                # 获取先前上样样品,并做格式转换
-                pre_sample_tuple = self.get_loaded_sample()  # tuple : ('3:02', 'matr3_2')，需要转成 dict : {'sampleID': '3:02', 'location': '3:02'}
-                pre_sample = dict()
-                pre_sample['sampleID'] = pre_sample_tuple[0]
-                pre_sample['location'] = pre_sample_tuple[0]
-                self.unmount_sample_clean_up(pre_sample)    #umount会初始化，所以会清除closelid状态
-                sc.change_ifcloseLid_inBeginning_state(True) #umount现在不会初始化 just in case
-            # sc_maint._do_dry_gripper() # move this function inside the unmount_sample_clean_up
+        print("进入samplechanger.py的mount_sample_clean_up函数")
+
 
 
         res = None
@@ -334,7 +319,8 @@ class SampleChanger(ComponentBase):
 
         # gevent.spawn(self.mount_sample_clean_up, sample)
         # 计数到16，dry一下
-        if sc.count >= 30:
+        # if sc.count >= 16:
+        if sc.count >= 30:  # 节省商业用户时间
             sc.count = 0
             # 如果计数到16但是没有发现上颗样品，说明被umount掉了，此时不执行unmount函数
             if sc.get_loaded_sample == None:
@@ -347,8 +333,7 @@ class SampleChanger(ComponentBase):
                 pre_sample['location'] = pre_sample_tuple[0]
                 self.unmount_sample_clean_up(pre_sample)
                 sc.change_ifcloseLid_inBeginning_state(True)
-                time.sleep(0.2)# 下样品和dry之间稍微间隔0.2s
-            sc_maint._do_dry_gripper()
+            # sc_maint._do_dry_gripper() # move this function inside the umount_sample_clean_up
 
         self.mount_sample_clean_up(sample)
 
