@@ -12,7 +12,9 @@ from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
 
-from mxcubecore import ColorFormatter
+from mxcubecore import (
+    ColorFormatter,
+)
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import (
     queue_entry,

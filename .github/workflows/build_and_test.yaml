@@ -11,7 +11,7 @@ jobs:
     strategy:
       max-parallel: 5
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11"]
+        python-version: ["3.10", "3.11"]
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
     # yamllint disable-line rule:line-length

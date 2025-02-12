@@ -1,6 +1,6 @@
 %YAML 1.2
-
 ---
+
 
 name: mxcubeweb
 
@@ -13,7 +13,7 @@ dependencies:
   # ====================
 
   - ffmpeg  # Not directly used by mxcube, but necessary for the video-streamer
-  - python >=3.8,<3.12  # Make sure it matches `pyproject.toml`
+  - python >=3.10,<3.12  # Make sure it matches `pyproject.toml`
 
   # `openldap` is necessary for `python-ldap` but can not be installed by pip or Poetry.
   # Note also that on PyPI `python-ldap` is only available as *sdist*, not as *wheel*,
@@ -30,4 +30,7 @@ dependencies:
 
   - nodejs ==18.*|20.*  # Make sure it matches `ui/package.json`
   - pnpm ==9.*  # Make sure it matches `ui/package.json`
-  - poetry  ==1.8.4  # Make sure it matches `.pre-commit-config.yaml`
+  - poetry ==2.0.1  # Make sure it matches `.pre-commit-config.yaml` and `poetry.lock`
+
+
+...

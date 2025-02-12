@@ -13,7 +13,7 @@ repos:
           - --strict
 
   - repo: https://github.com/python-poetry/poetry
-    rev: 1.8.4
+    rev: 2.0.1
     hooks:
 
       # Equivalent to running `poetry check --lock`.
@@ -25,18 +25,16 @@ repos:
         args:
           - --lock
 
-      # Equivalent to running `poetry lock --no-update`.
+      # Equivalent to running `poetry lock`.
       # This syncs the `poetry.lock` file with the content of the `pyproject.toml` file.
       # This hook fails if it results in modifying `poetry.lock`.
       - id: poetry-lock
-        args:
-          - --no-update
 
   # Equivalent to running `poetry export`.
   # This exports the `poetry.lock` file to the `requirements.txt` file.
   # This hook fails if it results in modifying `requirements.txt`.
   - repo: https://github.com/python-poetry/poetry-plugin-export
-    rev: 1.8.0
+    rev: 1.9.0
     hooks:
       - id: poetry-export
 
@@ -53,18 +51,18 @@ repos:
           - --ignore-pass-after-docstring
 
   - repo: https://github.com/pycqa/isort
-    rev: 5.13.2
+    rev: 6.0.0
     hooks:
       - id: isort
 
-  - repo: https://github.com/psf/black
-    rev: 24.8.0
+  - repo: https://github.com/psf/black-pre-commit-mirror
+    rev: 25.1.0
     hooks:
       - id: black
         name: Black
 
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.6.0
+    rev: v5.0.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer

@@ -29,8 +29,8 @@ build:
     - >-
       mamba create --name=mxcubeweb
       openldap
-      poetry
-      python=3.8
+      poetry=2.0.1
+      python=3.10
 
     - >-
       mamba run --name=mxcubeweb
