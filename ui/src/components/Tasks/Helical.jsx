@@ -75,7 +75,6 @@ class Helical extends React.Component {
     resetLastUsedParameters(this);
   }
 
-  // TODO: add widgets for entering space group and unit cell parameters
   render() {
     return (
       <DraggableModal show={this.props.show} onHide={this.props.hide}>
