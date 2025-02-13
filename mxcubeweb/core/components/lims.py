@@ -231,7 +231,6 @@ class Lims(ComponentBase):
                     session.number,
                 )
                 raise "To be implemented for those using prepare_directories"
-                # HWR.beamline.session.prepare_directories(proposal_tuple)
             except Exception:
                 logging.getLogger("MX3.HWR").info(
                     "[LIMS] Error creating data directories, %s" % sys.exc_info()[1]

@@ -345,8 +345,6 @@ class BaseUserManager(ComponentBase):
 
         username = HWR.beamline.lims.get_user_name()
         fullname = HWR.beamline.lims.get_full_user_name()
-        # if HWR.beamline.lims.loginType.lower() == "user":
-        #    username = f"{user}"
 
         # Make sure that the roles staff and incontrol always
         # exists
