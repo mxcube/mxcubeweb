@@ -18,7 +18,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
         Args:
             (object): Hardware object.
         """
-        super(ActuatorAdapter, self).__init__(ho, *args)
+        super().__init__(ho, *args)
         self._event_rate = 4
 
         @RateLimited(self._event_rate)

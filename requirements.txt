@@ -877,9 +877,6 @@ matplotlib==3.7.5 ; python_version >= "3.10" and python_version < "3.12" \
     --hash=sha256:fbf730fca3e1f23713bc1fae0a57db386e39dc81ea57dc305c67f628c1d7a342 \
     --hash=sha256:fd4028d570fa4b31b7b165d4a685942ae9cdc669f33741e388c01857d9723eab \
     --hash=sha256:fe184b4625b4052fa88ef350b815559dd90cc6cc8e97b62f966e1ca84074aafa
-mock==4.0.3 ; python_version >= "3.10" and python_version < "3.12" \
-    --hash=sha256:122fcb64ee37cfad5b3f48d7a7d51875d7031aaf3d8be7c42e2bee25044eee62 \
-    --hash=sha256:7d3fbbde18228f4ff2f1f119a45cdffa458b4c0dee32eb4d2bb2f82554bac7bc
 mxcube-video-streamer==1.7.0 ; python_version >= "3.10" and python_version < "3.12" \
     --hash=sha256:272d0dc033f7b2d9977baa4b7ac2236a4cf208f2324fcbe5832f05cdc140bb35 \
     --hash=sha256:281d629a3e7171c6ae6045f4ed269e8ab0e2003b50bafc35bdcec761087e8aa2

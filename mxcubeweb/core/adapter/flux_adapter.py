@@ -12,7 +12,7 @@ class FluxAdapter(ActuatorAdapterBase):
         Args:
             (object): Hardware object.
         """
-        super(FluxAdapter, self).__init__(ho, *args, **kwargs)
+        super().__init__(ho, *args, **kwargs)
 
         self._read_only = ho.read_only
 
@@ -23,7 +23,7 @@ class FluxAdapter(ActuatorAdapterBase):
 
     @RateLimited(6)
     def _value_change(self, value, **kwargs):
-        value = "{:.2E}".format(Decimal(self._ho.get_value()))
+        value = f"{Decimal(self._ho.get_value()):.2E}"
         self.value_change(value, **kwargs)
 
     def _set_value(self, value=None):
@@ -37,7 +37,7 @@ class FluxAdapter(ActuatorAdapterBase):
         """
         try:
             # value = self._ho.current_flux
-            value = "{:.2E}".format(Decimal(self._ho.get_value()))
+            value = f"{Decimal(self._ho.get_value()):.2E}"
         except Exception:
             value = "0"
 

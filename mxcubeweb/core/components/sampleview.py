@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 from io import StringIO
 
@@ -433,7 +432,7 @@ class SampleView(ComponentBase):
         self.centring_remove_current_point()
 
     def move_to_beam(self, x, y):
-        msg = "Moving point x: %s, y: %s to beam" % (x, y)
+        msg = f"Moving point x: {x}, y: {y} to beam"
         logging.getLogger("user_level_log").info(msg)
 
         HWR.beamline.diffractometer.move_to_beam(x, y)

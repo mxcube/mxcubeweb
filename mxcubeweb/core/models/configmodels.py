@@ -1,11 +1,7 @@
 import datetime
 from enum import Enum
 from typing import (
-    Dict,
-    List,
     Literal,
-    Optional,
-    Union,
 )
 
 from pydantic.v1 import (
@@ -20,7 +16,7 @@ class FlaskConfigModel(BaseModel):
         description="Flask secret key",
     )
     DEBUG: bool = Field(False, description="")
-    ALLOWED_CORS_ORIGINS: List[str] = Field(["*"], description="")
+    ALLOWED_CORS_ORIGINS: list[str] = Field(["*"], description="")
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
     SECURITY_TRACKABLE: bool = Field(True, description="")
     USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
@@ -57,24 +53,24 @@ class SSOConfigModel(BaseModel):
 class UIComponentModel(BaseModel):
     label: str
     attribute: str
-    role: Optional[str]
-    step: Optional[float]
-    precision: Optional[int]
-    suffix: Optional[str]
-    description: Optional[str]
+    role: str | None
+    step: float | None
+    precision: int | None
+    suffix: str | None
+    description: str | None
     # Set internally not to be set through configuration
-    value_type: Optional[str]
-    object_type: Optional[str]
-    format: Optional[str]
+    value_type: str | None
+    object_type: str | None
+    format: str | None
 
 
 class _UICameraConfigModel(BaseModel):
     label: str
     url: str
-    format: Optional[str]
-    description: Optional[str]
-    width: Optional[int]
-    height: Optional[int]
+    format: str | None
+    description: str | None
+    width: int | None
+    height: int | None
 
 
 class _UISampleViewVideoControlsModel(BaseModel):
@@ -91,25 +87,25 @@ class _UISampleViewVideoGridSettingsModel(BaseModel):
 
 class UIPropertiesModel(BaseModel):
     id: str
-    components: List[UIComponentModel]
+    components: list[UIComponentModel]
 
 
 class UICameraConfigModel(UIPropertiesModel):
-    components: List[_UICameraConfigModel]
+    components: list[_UICameraConfigModel]
 
 
 class UISampleViewVideoControlsModel(UIPropertiesModel):
     # It is important to keep the Union elements in that order; from the more specific to the more general.
-    components: List[
-        Union[_UISampleViewVideoGridSettingsModel, _UISampleViewVideoControlsModel]
+    components: list[
+        _UISampleViewVideoGridSettingsModel | _UISampleViewVideoControlsModel
     ]
 
 
 class UIPropertiesListModel(BaseModel):
     sample_view: UIPropertiesModel
     beamline_setup: UIPropertiesModel
-    camera_setup: Optional[UICameraConfigModel]
-    sample_view_video_controls: Optional[UISampleViewVideoControlsModel]
+    camera_setup: UICameraConfigModel | None
+    sample_view_video_controls: UISampleViewVideoControlsModel | None
 
 
 class UserManagerUserConfigModel(BaseModel):
@@ -125,7 +121,7 @@ class UserManagerConfigModel(BaseModel):
         True,
         description="Treat users defined as inhouse in session.xml as staff",
     )
-    users: List[UserManagerUserConfigModel]
+    users: list[UserManagerUserConfigModel]
 
 
 class ModeEnum(str, Enum):
@@ -157,10 +153,10 @@ class MXCUBEAppConfigModel(BaseModel):
         ModeEnum.OSC, description="MXCuBE mode OSC, SSX-CHIP or SSX-INJECTOR"
     )
     usermanager: UserManagerConfigModel
-    ui_properties: Dict[str, UIPropertiesModel] = {}
+    ui_properties: dict[str, UIPropertiesModel] = {}
 
 
 class AppConfigModel(BaseModel):
     server: FlaskConfigModel
     mxcube: MXCUBEAppConfigModel
-    sso: Optional[SSOConfigModel]
+    sso: SSOConfigModel | None

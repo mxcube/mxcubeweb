@@ -13,7 +13,7 @@ class DataPublisherAdapter(AdapterBase):
         Args:
             (object): Hardware object.
         """
-        super(DataPublisherAdapter, self).__init__(ho, *args)
+        super().__init__(ho, *args)
         self._all_data_list = []
         self._current_data_list = []
         self._current_info = {}

@@ -345,7 +345,7 @@ class ActuatorAdapterBase(AdapterBase):
             (object): Hardware object to mediate for.
             (str): The name of the object.
         """
-        super(ActuatorAdapterBase, self).__init__(ho, *args)
+        super().__init__(ho, *args)
 
         self._unique = False
 
@@ -425,7 +425,7 @@ class ActuatorAdapterBase(AdapterBase):
         Returns:
             (dict): The dictionary.
         """
-        data = super(ActuatorAdapterBase, self)._dict_repr()
+        data = super()._dict_repr()
 
         try:
             data.update({"value": self.get_value(), "limits": self.limits()})

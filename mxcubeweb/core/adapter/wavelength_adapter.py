@@ -17,7 +17,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
         Args:
             (object): Hardware object.
         """
-        super(WavelengthAdapter, self).__init__(ho, *args)
+        super().__init__(ho, *args)
         self._type = "MOTOR"
 
         try:

@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 """Helper functions for pytest"""
+
 from gevent import monkey
 
 monkey.patch_all(thread=False)

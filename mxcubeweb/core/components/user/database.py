@@ -1,5 +1,4 @@
 import datetime
-import typing
 
 from flask_security import SQLAlchemySessionUserDatastore
 from sqlalchemy import create_engine
@@ -38,12 +37,12 @@ class UserDatastore(SQLAlchemySessionUserDatastore):
     def __init__(
         self,
         *args,
-        message_model=typing.Type["Message"],  # noqa: F821
+        message_model=type["Message"],  # noqa: F821
         **kwargs,
     ):
         SQLAlchemySessionUserDatastore.__init__(self, *args, **kwargs)
         self._message_model = message_model
-        self._messages_users_model = typing.Type["MessagesUsers"]  # noqa: F821
+        self._messages_users_model = type["MessagesUsers"]  # noqa: F821
 
     def create_message(self, message, from_username, from_nickname, from_host):
         return self.put(

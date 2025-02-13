@@ -12,7 +12,7 @@ class MotorAdapter(ActuatorAdapterBase):
         Args:
             (object): Hardware object.
         """
-        super(MotorAdapter, self).__init__(ho, *args)
+        super().__init__(ho, *args)
         ho.connect("valueChanged", self._value_change)
         ho.connect("stateChanged", self.state_change)
 

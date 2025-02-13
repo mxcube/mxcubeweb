@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 import itertools
 import json
 import logging
 import os
 import re
 from functools import reduce
+from unittest.mock import Mock
 
-from mock import Mock
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import queue_entry as qe
 from mxcubecore.HardwareObjects.Gphl import GphlQueueEntry
@@ -259,7 +258,7 @@ class Queue(ComponentBase):
             current = self.app.sample_changer.get_current_sample().get("sampleID", "")
         except Exception as ex:
             logging.getLogger("MX3.HWR").warning(
-                "Error retrieving current sample, {0}".format(ex.message)
+                f"Error retrieving current sample, {ex.message}"
             )
             current = ""
 

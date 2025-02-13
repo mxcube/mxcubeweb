@@ -15,7 +15,7 @@ class EnergyAdapter(ActuatorAdapter):
         Args:
             (object): Hardware object.
         """
-        super(EnergyAdapter, self).__init__(*args)
+        super().__init__(*args)
         self._add_adapter("wavelength", self._ho, WavelengthAdapter)
         self._type = "ENERGY"
 

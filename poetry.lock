@@ -1910,23 +1910,6 @@ files = [
 ]
 
 [[package]]
-name = "mock"
-version = "4.0.3"
-description = "Rolling backport of unittest.mock for all Pythons"
-optional = false
-python-versions = ">=3.6"
-groups = ["main"]
-files = [
-    {file = "mock-4.0.3-py3-none-any.whl", hash = "sha256:122fcb64ee37cfad5b3f48d7a7d51875d7031aaf3d8be7c42e2bee25044eee62"},
-    {file = "mock-4.0.3.tar.gz", hash = "sha256:7d3fbbde18228f4ff2f1f119a45cdffa458b4c0dee32eb4d2bb2f82554bac7bc"},
-]
-
-[package.extras]
-build = ["blurb", "twine", "wheel"]
-docs = ["sphinx"]
-test = ["pytest (<5.4)", "pytest-cov"]
-
-[[package]]
 name = "mxcube-video-streamer"
 version = "1.7.0"
 description = "FastAPI Based video streamer"
@@ -3895,4 +3878,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "b2e1a224345725badcfdc77d0fde3c7ae95efde37416a7d8308dbcf2654ec197"
+content-hash = "d149cf0cebccac4d05a94963d7b405ede721da87e016dedcf8bc36d38e4ad446"

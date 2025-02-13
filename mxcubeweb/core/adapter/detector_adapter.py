@@ -7,7 +7,7 @@ class DetectorAdapter(AdapterBase):
         Args:
             (object): Hardware object.
         """
-        super(DetectorAdapter, self).__init__(ho, *args)
+        super().__init__(ho, *args)
         ho.connect("stateChanged", self._state_change)
 
     def _state_change(self, *args, **kwargs):

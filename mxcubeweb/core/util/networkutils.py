@@ -132,7 +132,7 @@ def send_mail(_from, to, subject, content):
             msg = msg % (to, content, str(error_dict))
             logging.getLogger().error(msg)
         else:
-            msg = "Feedback sent to %s, msg: \n %s" % (to, content)
+            msg = f"Feedback sent to {to}, msg: \n {content}"
             logging.getLogger("MX3.HWR").info(msg)
 
     except smtplib.SMTPException as e:
@@ -161,7 +161,7 @@ def send_feedback(sender_data):
     _from = HWR.beamline.session.get_property("from_email", "")
 
     if not _from:
-        _from = "%s@%s" % (
+        _from = "{}@{}".format(
             local_user,
             HWR.beamline.session.get_property("email_extension", ""),
         )
@@ -169,7 +169,7 @@ def send_feedback(sender_data):
     # Sender information provided by user
     _sender = sender_data.get("sender", "")
     to = HWR.beamline.session.get_property("feedback_email", "") + ",%s" % _sender
-    subject = "[MX3 FEEDBACK] %s (%s) on %s" % (
+    subject = "[MX3 FEEDBACK] {} ({}) on {}".format(
         local_user,
         _sender,
         bl_name,

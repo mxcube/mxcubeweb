@@ -155,8 +155,7 @@ class BaseUserManager(ComponentBase):
 
     def is_inhouse_user(self, user_id):
         user_id_list = [
-            "%s%s" % (code, number)
-            for (code, number) in HWR.beamline.session.in_house_users
+            f"{code}{number}" for (code, number) in HWR.beamline.session.in_house_users
         ]
 
         return user_id in user_id_list
@@ -312,7 +311,7 @@ class BaseUserManager(ComponentBase):
                 "useSSO": self.app.CONFIG.sso.USE_SSO,
             }
 
-            res["selectedProposal"] = "%s%s" % (
+            res["selectedProposal"] = "{}{}".format(
                 HWR.beamline.session.proposal_code,
                 HWR.beamline.session.proposal_number,
             )

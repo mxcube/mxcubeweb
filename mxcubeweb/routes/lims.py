@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 from os.path import (
     isfile,
@@ -104,7 +103,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
                         url_list = data["limsResultData"]["workflow_result_url_list"]
                     except Exception as ex:
                         logging.getLogger("MX3.HWR").warning(
-                            "Error retrieving wf url list, {0}".format(ex.message)
+                            f"Error retrieving wf url list, {ex.message}"
                         )
                         url_list = None
 

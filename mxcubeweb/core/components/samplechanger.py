@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import logging
 
 import gevent
@@ -202,7 +201,7 @@ class SampleChanger(ComponentBase):
             current_queue = self.app.queue.queue_to_dict()
 
             if sample["location"] != "Manual":
-                msg = "Mounting sample: %s (%s)" % (
+                msg = "Mounting sample: {} ({})".format(
                     sample["location"],
                     sample.get("sampleName", ""),
                 )
