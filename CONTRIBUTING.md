@@ -285,12 +285,14 @@ def function_with_types_in_docstring(param1, param2):
   """
 ```
 
-You can use [autopep8](https://pypi.org/project/autopep8/) and [black](https://pypi.org/project/autopep8/) to format your code:
+The Python code is to be formatted and checked for lint with
+[*ruff*](https://astral.sh/ruff).
+This repository uses [*pre-commit*](https://pre-commit.com/) hooks
+to check the code quality automatically.
+These checks are done for each pull request on GitHub.
+It is also recommended to do these checks locally by enabling the git pre-commit hooks.
+For example with a one-time command like this: `pre-commit install`.
 
-```bash
-autopep8 -a -r -j 0 -i --max-line-length 88 ./
-black --safe ./
-```
 
 
 ## Continuous integration (CI)

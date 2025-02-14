@@ -1,0 +1,601 @@
+target-version = "py310"
+
+
+[format]
+
+
+[lint]
+ignore = [
+    "ANN",  # flake8-annotations: ignored, too many hits (1322)
+    "D",  # pydocstyle: ignored, too many hits (958)
+    "PLR2004",  # magic-value-comparison: ignored, too many hits
+    "UP",  # pyupgrade: ignored for now, can be fixed automatically by ruff itself
+]
+select = [
+    "ALL",
+]
+
+
+[lint.per-file-ignores]
+"docs/conf.py" = [
+    "A001",
+    "DTZ002",
+    "INP001",
+    "PLR2044",
+]
+"mxcubeweb/__init__.py" = [
+    "COM812",
+    "E501",
+    "FBT002",
+    "N813",
+    "N814",
+    "PTH109",
+    "RET505",
+    "S108",
+]
+"mxcubeweb/__version__.py" = [
+    "I001",
+    "PTH123",
+]
+"mxcubeweb/app.py" = [
+    "BLE001",
+    "C416",
+    "C408",
+    "COM812",
+    "E501",
+    "EM101",
+    "F401",
+    "G002",
+    "G004",
+    "I001",
+    "N806",
+    "N814",
+    "PLR0913",
+    "PTH101",
+    "PTH113",
+    "PTH118",
+    "PTH120",
+    "PTH123",
+    "RET503",
+    "RUF012",
+    "S103",
+    "S110",
+    "SIM108",
+    "SIM115",
+    "SIM212",
+    "T201",
+]
+"mxcubeweb/config.py" = [
+    "G004",
+    "PTH118",
+    "PTH123",
+    "RET504",
+    "TRY400",
+]
+"mxcubeweb/core/adapter/actuator_adapter.py" = [
+    "B904",
+    "BLE001",
+    "EM101",
+    "PIE804",
+    "S110",
+    "TRY003",
+]
+"mxcubeweb/core/adapter/adapter_base.py" = [
+    "ARG002",
+    "B904",
+    "COM812",
+    "EM101",
+    "G003",
+    "G004",
+    "RET505",
+    "RUF012",
+    "SLF001",
+    "SIM105",
+    "SIM212",
+    "TRY003",
+    "TRY400",
+]
+"mxcubeweb/core/adapter/beam_adapter.py" = [
+    "COM812",
+    "PIE804",
+]
+"mxcubeweb/core/adapter/beamline_action_adapter.py" = [
+    "BLE001",
+    "COM812",
+    "PIE804",
+    "RET504",
+    "SIM108",
+    "TRY400",
+]
+"mxcubeweb/core/adapter/beamline_adapter.py" = [
+    "BLE001",
+    "COM812",
+    "G004",
+    "N802",
+    "PLW0603",
+    "TRY400",
+]
+"mxcubeweb/core/adapter/data_publisher_adapter.py" = [
+    "COM812",
+    "RUF012",
+]
+"mxcubeweb/core/adapter/diffractometer_adapter.py" = [
+    "RET504",
+    "RUF012",
+]
+"mxcubeweb/core/adapter/energy_adapter.py" = [
+    "N814",
+    "COM812",
+]
+"mxcubeweb/core/adapter/flux_adapter.py" = [
+    "BLE001",
+    "ERA001",
+    "S110",
+    "SIM105",
+]
+"mxcubeweb/core/adapter/machine_info_adapter.py" = [
+    "ARG002",
+    "PIE804",
+]
+"mxcubeweb/core/adapter/motor_adapter.py" = [
+    "B904",
+    "EM101",
+    "PIE804",
+    "TRY003",
+]
+"mxcubeweb/core/adapter/nstate_adapter.py" = [
+    "BLE001",
+    "COM812",
+    "PIE804",
+    "SIM108",
+    "TRY400",
+]
+"mxcubeweb/core/adapter/wavelength_adapter.py" = [
+    "ARG002",
+    "BLE001",
+    "EM101",
+    "PIE804",
+    "S110",
+    "TRY003",
+    "TRY203",
+]
+"mxcubeweb/core/components/*.py" = [
+    "INP001",
+]
+"mxcubeweb/core/components/app.py" = [
+    "E501",
+]
+"mxcubeweb/core/components/beamline.py" = [
+    "BLE001",
+    "C408",
+    "COM812",
+    "N806",
+    "N814",
+    "SIM118",
+    "TRY002",
+]
+"mxcubeweb/core/components/chat.py" = [
+    "ARG002",
+    "COM812",
+    "DTZ005",
+    "PERF401",
+]
+"mxcubeweb/core/components/component_base.py" = [
+    "COM812",
+    "FLY002",
+    "G004",
+]
+"mxcubeweb/core/components/harvester.py" = [
+    "BLE001",
+    "COM812",
+    "F401",
+    "N803",
+    "N806",
+    "N814",
+    "RET504",
+    "TRY300",
+]
+"mxcubeweb/core/components/lims.py" = [
+    "BLE001",
+    "B016",
+    "COM812",
+    "E501",
+    "ERA001",
+    "F401",
+    "FBT002",
+    "FURB188",
+    "G002",
+    "N814",
+    "SIM102",
+    "TRY301",
+]
+"mxcubeweb/core/components/queue.py" = [
+    "A005",
+    "ARG002",
+    "BLE001",
+    "B010",
+    "C411",
+    "C901",
+    "COM812",
+    "E501",
+    "EM101",
+    "ERA001",
+    "FBT002",
+    "FBT003",
+    "FIX002",
+    "G001",
+    "G002",
+    "G004",
+    "N806",
+    "N814",
+    "PIE804",
+    "PERF401",
+    "PLR0912",
+    "PLR0915",
+    "PLR1704",
+    "PLR1714",
+    "PLR5501",
+    "PLW0127",
+    "PLW0603",
+    "PLW2901",
+    "PTH113",
+    "PTH118",
+    "RET504",
+    "RET506",
+    "S110",
+    "SIM105",
+    "SIM108",
+    "SIM201",
+    "SLF001",
+    "TD002",
+    "TD003",
+    "TRY003",
+    "TRY002",
+]
+"mxcubeweb/core/components/samplechanger.py" = [
+    "BLE001",
+    "COM812",
+    "FBT003",
+    "N802",
+    "N806",
+    "N814",
+    "PLR5501",
+    "RET504",
+    "SIM108",
+    "SIM114",
+    "SIM201",
+    "TRY300",
+]
+"mxcubeweb/core/components/sampleview.py" = [
+    "ARG002",
+    "BLE001",
+    "COM812",
+    "E501",
+    "EM101",
+    "N814",
+    "PLR5501",
+    "PLW0127",
+    "PLW0128",
+    "SIM114",
+    "TRY003",
+    "TRY203",
+]
+"mxcubeweb/core/components/user/*.py" = [
+    "INP001",
+]
+"mxcubeweb/core/components/user/database.py" = [
+    "COM812",
+    "DTZ005",
+]
+"mxcubeweb/core/components/user/dummyusermanager.py" = [
+    "RET504",
+]
+"mxcubeweb/core/components/user/usermanager.py" = [
+    "ARG002",
+    "BLE001",
+    "B006",
+    "C901",
+    "COM812",
+    "DTZ005",
+    "EM101",
+    "ERA001",
+    "F401",
+    "FBT001",
+    "FBT002",
+    "FBT003",
+    "G004",
+    "N814",
+    "PLR5501",
+    "RET506",
+    "S110",
+    "S113",
+    "SIM102",
+    "SIM105",
+    "SIM101",
+    "TRY002",
+    "TRY003",
+    "TRY203",
+    "TRY201",
+    "TRY400",
+]
+"mxcubeweb/core/components/workflow.py" = [
+    "ARG002",
+    "BLE001",
+    "N814",
+    "RET504",
+    "S110",
+]
+"mxcubeweb/core/models/*.py" = [
+    "INP001",
+]
+"mxcubeweb/core/models/adaptermodels.py" = [
+    "FBT003",
+    "N815",
+]
+"mxcubeweb/core/models/configmodels.py" = [
+    "COM812",
+    "E501",
+    "FBT003",
+    "RUF012",
+    "S108",
+]
+"mxcubeweb/core/models/generic.py" = [
+    "COM812",
+    "E501",
+    "FBT003",
+]
+"mxcubeweb/core/models/usermodels.py" = [
+    "COM812",
+    "FBT003",
+]
+"mxcubeweb/core/util/*.py" = [
+    "INP001",
+]
+"mxcubeweb/core/util/adapterutils.py" = [
+    "COM812",
+    "PLR0911",
+    "RET505",
+    "SLF001",
+    "SIM101",
+]
+"mxcubeweb/core/util/convertutils.py" = [
+    "C404",
+    "COM812",
+    "FBT002",
+    "FBT003",
+    "PLW2901",
+]
+"mxcubeweb/core/util/fsutils.py" = [
+    "B006",
+    "PTH122",
+    "SIM102",
+    "SIM105",
+]
+"mxcubeweb/core/util/networkutils.py" = [
+    "BLE001",
+    "F401",
+    "G002",
+    "N802",
+    "N803",
+    "N806",
+    "N814",
+    "RET502",
+    "RET503",
+    "RET505",
+    "SIM108",
+    "TRY400",
+]
+"mxcubeweb/logging_handler.py" = [
+    "B018",
+    "SLF001",
+]
+"mxcubeweb/routes/beamline.py" = [
+    "ARG001",
+    "BLE001",
+    "C901",
+    "COM812",
+    "G002",
+    "G004",
+    "N814",
+    "PLR0913",
+    "RUF010",
+    "SIM118",
+    "SLF001",
+    "TRY300",
+    "TRY400",
+]
+"mxcubeweb/routes/diffractometer.py" = [
+    "COM812",
+    "N814",
+]
+"mxcubeweb/routes/harvester.py" = [
+    "COM812",
+    "G004",
+    "N814",
+    "RET503",
+    "RET504",
+    "SIM210",
+]
+"mxcubeweb/routes/lims.py" = [
+    "BLE001",
+    "C901",
+    "COM812",
+    "E501",
+    "F401",
+    "FBT003",
+    "G001",
+    "N814",
+    "PLR0912",
+    "PLR0915",
+    "PTH113",
+    "PTH118",
+    "RUF100",
+    "S603",
+    "S607",
+    "SIM101",
+    "SIM114",
+    "TRY400",
+]
+"mxcubeweb/routes/log.py" = [
+    "ARG001",
+    "COM812",
+    "G002",
+]
+"mxcubeweb/routes/login.py" = [
+    "BLE001",
+    "C901",
+    "COM812",
+    "F401",
+    "N814",
+    "RET504",
+]
+"mxcubeweb/routes/main.py" = [
+    "ARG001",
+    "COM812",
+    "DTZ005",
+    "N814",
+]
+"mxcubeweb/routes/mockups.py" = [
+    "N814",
+    "S311",
+    "SLF001",
+    "TRY002",
+]
+"mxcubeweb/routes/queue.py" = [
+    "A005",
+    "BLE001",
+    "COM812",
+    "F401",
+    "N814",
+    "PLR0915",
+    "SIM108",
+    "TRY300",
+]
+"mxcubeweb/routes/ra.py" = [
+    "ARG001",
+    "COM812",
+    "PLR0915",
+    "SIM102",
+]
+"mxcubeweb/routes/samplecentring.py" = [
+    "ARG001",
+    "BLE001",
+    "COM812",
+    "E501",
+    "EM101",
+    "N814",
+    "PLR0915",
+    "RET505",
+    "TRY002",
+    "TRY003",
+    "TRY301",
+]
+"mxcubeweb/routes/samplechanger.py" = [
+    "BLE001",
+    "FBT003",
+    "N814",
+]
+"mxcubeweb/routes/signals.py" = [
+    "ARG001",
+    "COM812",
+    "B006",
+    "BLE001",
+    "F401",
+    "FBT003",
+    "FIX002",
+    "G002",
+    "G003",
+    "N803",
+    "N806",
+    "N813",
+    "N814",
+    "N816",
+    "PLR0913",
+    "RET504",
+    "S110",
+    "TD002",
+    "TD003",
+    "TD004",
+    "SLF001",
+    "SIM108",
+    "SIM105",
+    "TRY400",
+]
+"mxcubeweb/routes/workflow.py" = [
+    "ARG001",
+    "ARG004",
+    "RET504",
+]
+"mxcubeweb/server.py" = [
+    "ARG004",
+    "COM812",
+    "EM101",
+    "N805",
+    "PTH118",
+    "PTH120",
+    "PTH123",
+    "S104",
+    "S108",
+    "SIM102",
+]
+"mxcubeweb/state_storage.py" = [
+    "ARG001",
+    "C408",
+    "N813",
+    "SIM118",
+]
+"test/*.py" = [
+    "INP001",
+]
+"test/fixture.py" = [
+    "COM812",
+    "E402",
+    "E501",
+    "PLW0603",
+    "PT018",
+    "PT022",
+    "PTH100",
+    "PTH107",
+    "PTH118",
+    "PTH120",
+    "S101",  # "Use of `assert` detected": ignored because tests do rely on `assert`
+    "S108",
+    "SIM105",
+]
+"test/input_parameters.py" = [
+    "COM812",
+]
+"test/test_*.py" = [
+    "E712",
+    "F811",
+    "S101",  # "Use of `assert` detected": ignored because tests do rely on `assert`
+]
+"test/test_authn.py" = [
+    "ARG001",
+    "ERA001",
+    "PLR2044",
+    "PTH107",
+    "S108",
+    "SIM105",
+]
+"test/test_beamline_routes.py" = [
+    "F401",
+]
+"test/test_diffractometer_routes.py" = [
+    "COM812",
+    "F401",
+    "N814",
+    "S311",
+]
+"test/test_queue_routes.py" = [
+    "E501",
+    "F401",
+    "PT018",
+]
+"test/test_samplechanger_routes.py" = [
+    "F401",
+]
+
+
+[lint.pydocstyle]
+convention = "google"

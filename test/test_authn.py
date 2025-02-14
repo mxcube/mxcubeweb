@@ -3,7 +3,6 @@
 
 """Authentication tests."""
 
-
 import os
 import time
 
