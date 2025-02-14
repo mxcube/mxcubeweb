@@ -6,6 +6,7 @@ import UserMessage from '../components/Notify/UserMessage';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
 import TodoTree from '../components/SampleQueue/TodoTree';
+import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import loader from '../img/loader.gif';
 import { getSampleName } from '../utils';
 import styles from './SampleQueueContainer.module.css';
@@ -58,6 +59,11 @@ function SampleQueueContainer() {
               <b>Queued Samples ({todo.length})</b>
             </Nav.Link>
           </Nav.Item>
+          <Nav.Item>
+            <Nav.Link eventKey="chip" className="queue-nav-link">
+              <i className="fas fa-braille" /> &nbsp; <b>Chip callibration</b>
+            </Nav.Link>
+          </Nav.Item>
         </Nav>
 
         <div className={styles.queueBody}>
@@ -70,6 +76,7 @@ function SampleQueueContainer() {
             <CurrentTree currentSample={currentSample} />
           )}
           {visibleList === 'todo' && <TodoTree list={todo} />}
+	  {visibleList === 'chip' && <SSXChipControl />}
         </div>
       </div>
 

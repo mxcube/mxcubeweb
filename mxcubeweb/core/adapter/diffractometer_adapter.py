@@ -7,15 +7,12 @@ from mxcubeweb.core.adapter.adapter_base import AdapterBase
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
 resource_handler_config = ResourceHandlerConfigModel(
-    commands=["set_chip_layout", "set_phase"],
+    commands=["set_chip_layout", "set_phase", "use_position_for_callibration", "ir_auto_focus"],
     attributes=["data", "get_value", "head_configuration"],
 )
 
 
 class DiffractometerAdapter(AdapterBase):
-    ATTRIBUTES = ["head_configuration"]
-    METHODS = ["set_chip_layout"]
-
     SUPPORTED_TYPES: ClassVar[list[object]] = [
         MiniDiff.MiniDiff,
         GenericDiffractometer.GenericDiffractometer,
@@ -71,3 +68,9 @@ class DiffractometerAdapter(AdapterBase):
     def set_phase(self, phase: str) -> bool:
         self._ho.set_phase(phase)
         return True
+
+    def use_position_for_callibration(self, data:dict) -> bool:
+        return self._ho.use_position_for_callibration(data)
+
+    def ir_auto_focus(self) -> bool:
+        return self._ho.ir_auto_focus()

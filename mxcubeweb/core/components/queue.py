@@ -2238,6 +2238,7 @@ class Queue(ComponentBase):
 
     def get_task_progress(self, node, pdata):
         progress = 0
+        return progress
 
         if node.is_executed():
             progress = 1
