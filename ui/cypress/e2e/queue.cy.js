@@ -12,17 +12,13 @@ describe('queue', () => {
     );
   });
 
-  it('unmount sample and clear queue on log out', () => {
+  it('queue is not cleard and sample not un-mounted on logout', () => {
     cy.mountSample('foo', 'bar');
     cy.findByRole('button', { name: 'Sample: bar - foo' }).should('be.visible');
 
     cy.findByRole('button', { name: /Sign out/u, hidden: true }).click();
     cy.login();
 
-    cy.findByRole('button', { name: 'Sample: bar - foo' }).should('not.exist');
-    cy.findByRole('button', { name: 'Current' }).should('be.visible');
-    cy.findByRole('button', { name: 'Queued Samples (0)' }).should(
-      'be.visible',
-    );
+    cy.findByRole('button', { name: 'Sample: bar - foo' }).should('be.visible');
   });
 });
