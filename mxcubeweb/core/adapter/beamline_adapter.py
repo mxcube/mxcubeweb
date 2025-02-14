@@ -95,26 +95,3 @@ class _BeamlineAdapter:
             elements = escan.get_elements()
 
         return {"elements": elements}
-
-    def get_acquisition_limit_values(self):
-        """
-        Get the limits for the acquisition parameters.
-        Returns:
-            (dict): The limits.
-        """
-        _limits = self._bl.get_acquisition_limit_values()
-        limits = {}
-
-        for key, value in _limits.items():
-            if isinstance(value, str) and "," in value:
-                try:
-                    limits[key] = list(map(float, _limits[key].split(",")))
-                except Exception:
-                    msg = "[BEAMLINE_ADAPTER] Could not get limits for %s," % key
-                    msg += " using -10000, 10000"
-                    logging.getLogger("MX3.HWR").info(msg)
-                    limits[key] = [-10000, 10000]
-            else:
-                limits[key] = value
-
-        return limits
