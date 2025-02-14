@@ -13,8 +13,12 @@ import UserMessage from '../components/Notify/UserMessage';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
 import TodoTree from '../components/SampleQueue/TodoTree';
+import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import loader from '../img/loader.gif';
 import styles from './SampleQueueContainer.module.css';
+
+import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
+import { executeCommand, setAttribute } from '../actions/beamline';
 
 class SampleQueueContainer extends React.Component {
   constructor(props) {
@@ -64,6 +68,27 @@ class SampleQueueContainer extends React.Component {
         : '';
     }
 
+    const grids = {};
+    const selectedGrids = [];
+
+    if (this.props.shapes !== undefined) {
+      Object.keys(this.props.shapes).forEach((key) => {
+        const shape = this.props.shapes[key];
+        switch (shape.t) {
+          case 'G': {
+            grids[shape.id] = shape;
+
+            if (shape.selected) {
+              selectedGrids.push(shape);
+            }
+
+            break;
+          }
+          // No default
+        }
+      });
+    }
+
     return (
       <div className={styles.container}>
         <QueueControl />
@@ -91,6 +116,11 @@ class SampleQueueContainer extends React.Component {
                 <b>Queued Samples ({todo.length})</b>
               </Nav.Link>
             </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey="chip" className="queue-nav-link">
+                <i className="fas fa-braille" /> &nbsp; <b>Chip callibration</b>
+              </Nav.Link>
+            </Nav.Item>
           </Nav>
           {loading ? (
             <div className={styles.centerInBox} style={{ zIndex: '1000' }}>
@@ -114,18 +144,35 @@ class SampleQueueContainer extends React.Component {
             }
           />
           {visibleList === 'todo' && <TodoTree list={todo} />}
-          <div className={styles.queueMessages}>
-            <div className={styles.queueMessagesTitle}>
-              <span
-                style={{ marginRight: '7px' }}
-                className="fas fa-lg fa-info-circle"
-              />
-              Log messages:
+          <SSXChipControl
+            show={visibleList === 'chip'}
+            showForm={showForm}
+            currentSampleID={this.props.currentSampleID}
+            sampleData={this.props.sampleList[currentSampleID]}
+            defaultParameters={this.props.defaultParameters}
+            groupFolder={this.props.groupFolder}
+            hardwareObjects={this.props.hardwareObjects}
+            uiproperties={this.props.uiproperties.sample_view}
+            sampleViewActions={this.props.sampleViewActions}
+            grids={grids}
+            selectedGrids={selectedGrids}
+            setAttribute={this.props.setAttribute}
+            sendExecuteCommand={this.props.sendExecuteCommand}
+          />
+	  {visibleList !== 'chip' && (
+            <div className={styles.queueMessages}>
+              <div className={styles.queueMessagesTitle}>
+                <span
+                  style={{ marginRight: '7px' }}
+                  className="fas fa-lg fa-info-circle"
+                />
+                Log messages:
+              </div>
+              <div className={styles.queueMessagesBody}>
+                <UserMessage />
+              </div>
             </div>
-            <div className={styles.queueMessagesBody}>
-              <UserMessage />
-            </div>
-          </div>
+          )}
         </div>
       </div>
     );
@@ -138,6 +185,9 @@ function mapStateToProps(state) {
     currentSampleID: state.queue.currentSampleID,
     visibleList: state.queueGUI.visibleList,
     queue: state.queue.queue,
+    groupFolder: state.queue.groupFolder,
+    hardwareObjects: state.beamline.hardwareObjects,
+    uiproperties: state.uiproperties,
     sampleList: state.sampleGrid.sampleList,
     sampleOrder: state.sampleGrid.order,
     checked: state.queue.checked,
@@ -147,6 +197,7 @@ function mapStateToProps(state) {
     plotsInfo: state.beamline.plotsInfo,
     selectedShapes: state.sampleview.selectedShapes,
     shapes: state.shapes,
+    defaultParameters: state.taskForm.defaultParameters,
   };
 }
 
@@ -165,6 +216,9 @@ function mapDispatchToProps(dispatch) {
 
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
+    sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
+    setAttribute: bindActionCreators(setAttribute, dispatch),
+    sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
   };
 }
 
