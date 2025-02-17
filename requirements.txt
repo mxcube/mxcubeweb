@@ -334,7 +334,7 @@ dnspython==2.6.1 ; python_version >= "3.10" and python_version < "3.12" \
 email-validator==2.2.0 ; python_version >= "3.10" and python_version < "3.12" \
     --hash=sha256:561977c2d73ce3611850a06fa56b414621e0c8faa9d66f2611407d87465da631 \
     --hash=sha256:cb690f344c617a714f22e66ae771445a1ceb46821152df8e165c5f9a364582b7
-exceptiongroup==1.2.2 ; python_version >= "3.10" and python_version < "3.11" \
+exceptiongroup==1.2.2 ; python_version == "3.10" \
     --hash=sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b \
     --hash=sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc
 f90nml==1.4.3 ; python_version >= "3.10" and python_version < "3.12" \

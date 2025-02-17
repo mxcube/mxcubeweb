@@ -10,9 +10,9 @@ maintainers = [
     {name = "The MXCuBE collaboration", email = "mxcube@esrf.fr"},
 ]
 readme = "README.md"
-url.homepage = "https://github.com/mxcube/mxcubeweb"
-url.repository = "https://github.com/mxcube/mxcubeweb"
-url.documentation = "https://mxcubeweb.readthedocs.io/"
+urls.homepage = "https://github.com/mxcube/mxcubeweb"
+urls.repository = "https://github.com/mxcube/mxcubeweb"
+urls.documentation = "https://mxcubeweb.readthedocs.io/"
 keywords = ["mxcube", "mxcube3", "mxcubeweb"]
 classifiers = [
     "Development Status :: 5 - Production/Stable",
