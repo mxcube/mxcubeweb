@@ -20,7 +20,7 @@ select = [
 "docs/conf.py" = [
     "A001",
     "DTZ002",
-    "INP001",
+    "INP001",  # `implicit-namespace-package`: `conf.py` is not meant to be imported
     "PLR2044",
 ]
 "mxcubeweb/__init__.py" = [
@@ -159,9 +159,6 @@ select = [
     "TRY003",
     "TRY203",
 ]
-"mxcubeweb/core/components/*.py" = [
-    "INP001",
-]
 "mxcubeweb/core/components/app.py" = [
     "E501",
 ]
@@ -280,9 +277,6 @@ select = [
     "TRY003",
     "TRY203",
 ]
-"mxcubeweb/core/components/user/*.py" = [
-    "INP001",
-]
 "mxcubeweb/core/components/user/database.py" = [
     "COM812",
     "DTZ005",
@@ -325,9 +319,6 @@ select = [
     "RET504",
     "S110",
 ]
-"mxcubeweb/core/models/*.py" = [
-    "INP001",
-]
 "mxcubeweb/core/models/adaptermodels.py" = [
     "FBT003",
     "N815",
@@ -347,9 +338,6 @@ select = [
 "mxcubeweb/core/models/usermodels.py" = [
     "COM812",
     "FBT003",
-]
-"mxcubeweb/core/util/*.py" = [
-    "INP001",
 ]
 "mxcubeweb/core/util/adapterutils.py" = [
     "COM812",
