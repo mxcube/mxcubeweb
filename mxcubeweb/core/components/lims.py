@@ -210,7 +210,7 @@ class Lims(ComponentBase):
                 f"[LIMS] New session, clearing queue and sample list for {session.code}{session.number}"
             )
 
-            # Clear data collection queue
+            # Clear data collection queue (HardwareObject)
             self.app.queue.clear_queue()
 
             # Remove any items on the sample view (shapes)
