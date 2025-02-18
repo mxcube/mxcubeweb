@@ -279,44 +279,40 @@ class BaseUserManager(ComponentBase):
         except Exception:
             pass
 
-        if not current_user.is_anonymous:
-            session_manager: LimsSessionManager = self.app.lims.get_session_manager()
-
-            # If no previous session selected and a single session available
-            # then it selects automatically the session
-            if (
-                current_user.selected_proposal is None
-                and session_manager.active_session is not None
-            ):
-                self.app.lims.select_session(session_manager.active_session.session_id)
-
-            login_type = (
-                "User" if HWR.beamline.lims.is_user_login_type() else "Proposal"
-            )
-
-            res = {
-                "synchrotronName": HWR.beamline.session.synchrotron_name,
-                "beamlineName": HWR.beamline.session.beamline_name,
-                "loggedIn": True,
-                "loginType": login_type,
-                "limsName": [item.dict() for item in HWR.beamline.lims.get_lims_name()],
-                "proposalList": [
-                    session.__dict__ for session in session_manager.sessions
-                ],
-                "rootPath": HWR.beamline.session.get_base_image_directory(),
-                "user": current_user.todict(),
-                "useSSO": self.app.CONFIG.sso.USE_SSO,
-            }
-
-            res["selectedProposal"] = "%s%s" % (
-                HWR.beamline.session.proposal_code,
-                HWR.beamline.session.proposal_number,
-            )
-            res["selectedProposalID"] = HWR.beamline.session.proposal_id
-        else:
+        if current_user.is_anonymous:
             self._signout()
             logging.getLogger("MX3.HWR").info("Logged out")
             res = {"loggedIn": False, "useSSO": self.app.CONFIG.sso.USE_SSO}
+
+        session_manager: LimsSessionManager = self.app.lims.get_session_manager()
+
+        # If no previous session selected and a single session available
+        # then it selects automatically the session
+        if (
+            current_user.selected_proposal is None
+            and session_manager.active_session is not None
+        ):
+            self.app.lims.select_session(session_manager.active_session.session_id)
+
+        login_type = "User" if HWR.beamline.lims.is_user_login_type() else "Proposal"
+
+        res = {
+            "synchrotronName": HWR.beamline.session.synchrotron_name,
+            "beamlineName": HWR.beamline.session.beamline_name,
+            "loggedIn": True,
+            "loginType": login_type,
+            "limsName": [item.dict() for item in HWR.beamline.lims.get_lims_name()],
+            "proposalList": [session.__dict__ for session in session_manager.sessions],
+            "rootPath": HWR.beamline.session.get_base_image_directory(),
+            "user": current_user.todict(),
+            "useSSO": self.app.CONFIG.sso.USE_SSO,
+        }
+
+        res["selectedProposal"] = "%s%s" % (
+            HWR.beamline.session.proposal_code,
+            HWR.beamline.session.proposal_number,
+        )
+        res["selectedProposalID"] = HWR.beamline.session.proposal_id
 
         return res
 
