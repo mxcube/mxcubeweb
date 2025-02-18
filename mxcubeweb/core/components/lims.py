@@ -219,12 +219,9 @@ class Lims(ComponentBase):
             # Re-initialize the samplelist
             self.app.lims.init_sample_list()
 
-            # If a sample is mounted (and not already marked as such),
-            # get sample changer contents and add mounted sample to the queue
-            address = self.app.sample_changer.get_loaded_sample()
-            if not self.app.sample_changer.get_current_sample() and address:
-                self.app.sample_changer.get_sample_list()
-                self.app.server.emit("update_queue", {}, namespace="/hwr")
+            # Get sample list and send update to client
+            self.app.sample_changer.get_sample_list()
+            self.app.server.emit("update_queue", {}, namespace="/hwr")
 
             HWR.beamline.session.proposal_code = session.code
             HWR.beamline.session.proposal_number = session.number
