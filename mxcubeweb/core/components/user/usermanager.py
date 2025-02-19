@@ -39,14 +39,20 @@ class BaseUserManager(ComponentBase):
     def handle_sessions_changed(self, sessions):
         self.app.server.emit("sessionsChanged", namespace="/hwr")
 
-    def get_observers(self):
+    def get_observers(self) -> list[User]:
+        """List users that are in observer mode.
+
+        Observer mode means user is logged in (authenticated and active) but not in
+        control of the application.
+        """
         return [
             user
             for user in User.query.all()
             if ((not user.in_control) and user.is_authenticated and user.is_active)
         ]
 
-    def get_operator(self):
+    def get_operator(self) -> User:
+        """Return user object that is controlling the beamline (operator)."""
         user = None
 
         for _u in User.query.all():
@@ -56,10 +62,16 @@ class BaseUserManager(ComponentBase):
 
         return user
 
-    def is_operator(self):
+    def is_operator(self) -> bool:
+        """Return True if the current_user is an operator."""
         return getattr(current_user, "in_control", False)
 
-    def active_logged_in_users(self, exclude_inhouse=False):
+    def active_logged_in_users(self, exclude_inhouse: bool = False) -> list[User]:
+        """List of active and logged in users.
+
+        Attributes:
+            exclude_inhouse (bool): exclude inhouse users from the list
+        """
         self.update_active_users()
 
         if exclude_inhouse:
@@ -71,7 +83,8 @@ class BaseUserManager(ComponentBase):
 
         return users
 
-    def get_user(self, username):
+    def get_user(self, username: str) -> User | None:
+        """Return user model instance based on username."""
         user = None
 
         for _u in User.query.all():
@@ -80,7 +93,8 @@ class BaseUserManager(ComponentBase):
 
         return user
 
-    def set_operator(self, username):
+    def set_operator(self, username: str) -> User | None:
+        """Set the user with the given username to be an operator."""
         user = None
 
         for _u in User.query.all():
@@ -92,7 +106,12 @@ class BaseUserManager(ComponentBase):
 
         return user
 
-    def update_active_users(self):
+    def update_active_users(self) -> None:
+        """
+        Check if any user have been inactive for a period longer than the
+        session lifetime. If so, deactivate the user in datastore and emit
+        the relvant signals `userChanged` and `observersChanged` to the client.
+        """
         for _u in User.query.all():
             if (
                 _u.active
@@ -112,7 +131,15 @@ class BaseUserManager(ComponentBase):
 
         self.app.server.emit("observersChanged", namespace="/hwr")
 
-    def update_operator(self, new_login=False):
+    def update_operator(self, new_login: bool = False) -> None:
+        """
+        Set the operator based on the logged in users. If no user is currently
+        in control, the first logged in user is set. Additionally, proposal
+        is set based on the operator selected_proposal field.
+
+        Attributes:
+            new_login: True if method was invoked with new user login.
+        """
         if not current_user.is_anonymous:
             active_in_control = False
 
@@ -150,7 +177,12 @@ class BaseUserManager(ComponentBase):
                     elif _u.selected_proposal is not None:
                         self.app.lims.select_session(_u.selected_proposal)
 
-    def is_inhouse_user(self, user_id):
+    def is_inhouse_user(self, user_id: str) -> bool:
+        """Retrun True if the user_id is in the in-house user list.
+
+        Attributes:
+            user_id: user id composed from code and number.
+        """
         user_id_list = [
             "%s%s" % (code, number)
             for (code, number) in HWR.beamline.session.in_house_users
@@ -159,7 +191,7 @@ class BaseUserManager(ComponentBase):
         return user_id in user_id_list
 
     # Abstract method to be implemented by concrete implementation
-    def _login(self, login_id, password) -> LimsSessionManager:
+    def _login(self, login_id: str, password: str) -> LimsSessionManager:
         pass
 
     def sso_validate(self) -> str:
@@ -190,7 +222,16 @@ class BaseUserManager(ComponentBase):
         if current_user.is_anonymous and self.sso_token_expired():
             self.signout()
 
-    def login(self, login_id: str, password: str, sso_data: dict = {}):
+    def login(self, login_id: str, password: str, sso_data: dict = {}) -> None:
+        """
+        Create new session for the user if it does not exist. Activate user in
+        data store. If a sample is loaded in sample changer but not mounted,
+        mount it and update the smaple list. Try update the operator.
+
+        Attributes:
+            login_id: username.
+            password: password.
+        """
         try:
             self._login(login_id, password)
         except Exception as e:
@@ -220,7 +261,13 @@ class BaseUserManager(ComponentBase):
     def _signout(self):
         pass
 
-    def signout(self):
+    def signout(self) -> None:
+        """Sign out the current user.
+
+        If the user was an operator, the queue and samples are restored to init values,
+        the session is cleared, the user is not an operator anymore. Log out and
+        deactivte the user, and emit 'observersChanged' signal.
+        """
         self._signout()
         user = current_user
 
@@ -240,10 +287,16 @@ class BaseUserManager(ComponentBase):
 
         self.app.server.emit("observersChanged", namespace="/hwr")
 
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
+        """Return True whether the current user is authenticated."""
         return current_user.is_authenticated()
 
-    def force_signout_user(self, username):
+    def force_signout_user(self, username: str) -> None:
+        """Force signout of the annonymous or non operating user.
+
+        Attributes:
+            username: username of the user to be signed out.
+        """
         user = self.get_user(username)
 
         if not user.in_control or current_user.is_anonymous:
@@ -253,7 +306,14 @@ class BaseUserManager(ComponentBase):
             self.app.server.user_datastore.commit()
             self.app.server.emit("forceSignout", room=socketio_sid, namespace="/hwr")
 
-    def login_info(self):
+    def login_info(self) -> dict:
+        """
+        Login information to be displayed in the application such as: synchrotron and
+        beamline names, user infromation, proposals list, selected proposal etc.
+
+        Returns:
+            dictionary with login information.
+        """
         # update_operator will update the login status of current_user, and make
         # sure that the is_anonymous has the correct value.
         # Update operator calls lims.select_session that raises an exception if
@@ -302,11 +362,23 @@ class BaseUserManager(ComponentBase):
 
         return res
 
-    def update_user(self, user):
+    def update_user(self, user: User) -> None:
+        """Update user information in datastore.
+
+        Attributes:
+            user: User model instance.
+        """
         self.app.server.user_datastore.put(user)
         self.app.server.user_datastore.commit()
 
-    def _get_configured_roles(self, user):
+    def _get_configured_roles(self, user: str) -> list[str]:
+        """Get the roles configured for the user.
+
+        Inhouse user has always assigned staff role additionaly.
+
+        Attributes:
+            user: username.
+        """
         roles = set()
 
         _ihs = ["%s%s" % prop for prop in HWR.beamline.session.in_house_users]
@@ -321,16 +393,29 @@ class BaseUserManager(ComponentBase):
 
         return list(roles)
 
-    def db_create_user(self, user: str, password: str, sso_data: dict):
+    def db_create_user(self, user: str, password: str, sso_data: dict) -> User:
+        """Create or update user in datastore.
+
+        If the user already exists, update the user information. If not create new one.
+        Assign roles to the user, prevoiusly making sure the roles of 'staff' and
+        'incontrol' existis in data store. If not create them also.
+
+        Attributes:
+            user: representation of username (eventually part of it). Also a nickname
+                for new users.
+            password (unused): password.
+            sso_data: dictionary with the lims data to be updated.
+
+        Returns:
+            User model instance existing in or added to datastore.
+        """
         sid = flask.session["sid"]
         user_datastore = self.app.server.user_datastore
 
         username = HWR.beamline.lims.get_user_name()
         fullname = HWR.beamline.lims.get_full_user_name()
 
-        # Make sure that the roles staff and incontrol always
-        # exists
-
+        # Make sure that the roles staff and incontrol always exists
         if not user_datastore.find_role("staff"):
             user_datastore.create_role(name="staff")
             user_datastore.create_role(name="incontrol")
@@ -364,7 +449,17 @@ class BaseUserManager(ComponentBase):
 
         return user_datastore.find_user(username=username)
 
-    def db_set_in_control(self, user, control):
+    def db_set_in_control(self, user: User, control: bool) -> None:
+        """Update users (their in_control field) in the datastore.
+
+        If the passed user becomes an operator (control=True), the remaining users'
+        in_control fields are set to False. If passed user stops being an operator,
+        only its in_control field is set to False.
+
+        Attributes:
+            user: User model instance.
+            control: the user becomes an operator (Ture) or not (False).
+        """
         user_datastore = self.app.server.user_datastore
 
         if control:
@@ -391,6 +486,15 @@ class UserManager(BaseUserManager):
         logging.getLogger("HWR").debug(msg)
 
     def _login(self, login_id: str, password: str) -> LimsSessionManager:
+        """Check loging conditions such as: active, anonymous, inhouse, local/remote.
+
+        Attributes:
+            login_id: username
+            password: password
+
+        Returns:
+            LimsSessionManager object with login information.
+        """
         self._debug("_login. login_id=%s" % login_id)
         try:
             session_manager: LimsSessionManager = HWR.beamline.lims.login(
@@ -405,11 +509,7 @@ class UserManager(BaseUserManager):
             % str(len(session_manager.sessions))
         )
 
-        inhouse = self.is_inhouse_user(login_id)
-
-        active_users = self.active_logged_in_users()
-
-        if login_id in active_users:
+        if login_id in self.active_logged_in_users():
             if current_user.is_anonymous:
                 self.force_signout_user(login_id)
             else:
@@ -424,9 +524,8 @@ class UserManager(BaseUserManager):
                 raise Exception(msg)
 
         # Only allow in-house log-in from local host
-        if inhouse and not (inhouse and is_local_host()):
-            msg = "In-house only allowed from localhost"
-            raise Exception(msg)
+        if self.is_inhouse_user(login_id) and not is_local_host():
+            raise Exception("In-house only allowed from localhost")
 
         # Only allow local login when remote is disabled
         if not self.app.ALLOW_REMOTE and not is_local_host():
