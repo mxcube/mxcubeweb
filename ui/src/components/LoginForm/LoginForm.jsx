@@ -11,6 +11,19 @@ import { logIn } from '../../actions/login';
 
 const SSO_PATH = '/mxcube/api/v0.1/login/ssologin';
 
+/**
+ * @param loginType {'User' | 'Proposal'} - login type; 'User' for User-type login, 'Proposal' otherwise.
+ * @param useSSO {boolean} - true if SSO is enabled
+ *
+ * @returns {string} - text used in the sign-in button
+ */
+function getSignInText(useSSO, loginType) {
+  if (useSSO) {
+    return 'Sign in with SSO';
+  }
+  return loginType === 'User' ? 'Sign in' : 'Sign in with proposal';
+}
+
 function LoginForm() {
   const dispatch = useDispatch();
 
@@ -26,6 +39,8 @@ function LoginForm() {
   } = useForm({ defaultValues: { username: '', password: '' } });
 
   const useSSO = useSelector((state) => state.login.useSSO);
+  const loginType = useSelector((state) => state.login.loginType);
+  const signInText = getSignInText(useSSO, loginType);
 
   async function handleSubmit(data) {
     if (useSSO) {
@@ -116,7 +131,7 @@ function LoginForm() {
           {loading && (
             <img className={styles.loader} src={loader} width="25" alt="" />
           )}
-          Sign in with {useSSO ? 'SSO' : 'proposal'}
+          {signInText}
         </Button>
 
         {!loading && showErrorPanel && (

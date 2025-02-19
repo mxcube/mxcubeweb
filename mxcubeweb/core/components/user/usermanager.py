@@ -279,10 +279,16 @@ class BaseUserManager(ComponentBase):
         except Exception:
             pass
 
+        login_type = "User" if HWR.beamline.lims.is_user_login_type() else "Proposal"
+
         if current_user.is_anonymous:
             self._signout()
             logging.getLogger("MX3.HWR").info("Logged out")
-            res = {"loggedIn": False, "useSSO": self.app.CONFIG.sso.USE_SSO}
+            return {
+                "loggedIn": False,
+                "useSSO": self.app.CONFIG.sso.USE_SSO,
+                "loginType": login_type,
+            }
 
         session_manager: LimsSessionManager = self.app.lims.get_session_manager()
 
@@ -293,8 +299,6 @@ class BaseUserManager(ComponentBase):
             and session_manager.active_session is not None
         ):
             self.app.lims.select_session(session_manager.active_session.session_id)
-
-        login_type = "User" if HWR.beamline.lims.is_user_login_type() else "Proposal"
 
         res = {
             "synchrotronName": HWR.beamline.session.synchrotron_name,
