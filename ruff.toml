@@ -7,6 +7,7 @@ target-version = "py310"
 [lint]
 ignore = [
     "ANN",  # flake8-annotations: ignored, too many hits (1322)
+    "COM812",  # Ruff recommends to ignore this linter rule when using its formatter
     "D",  # pydocstyle: ignored, too many hits (958)
     "PLR2004",  # magic-value-comparison: ignored, too many hits
     "UP",  # pyupgrade: ignored for now, can be fixed automatically by ruff itself
@@ -24,7 +25,6 @@ select = [
     "PLR2044",
 ]
 "mxcubeweb/__init__.py" = [
-    "COM812",
     "E501",
     "FBT002",
     "N813",
@@ -41,7 +41,6 @@ select = [
     "BLE001",
     "C416",
     "C408",
-    "COM812",
     "E501",
     "EM101",
     "F401",
@@ -83,7 +82,6 @@ select = [
 "mxcubeweb/core/adapter/adapter_base.py" = [
     "ARG002",
     "B904",
-    "COM812",
     "EM101",
     "G003",
     "G004",
@@ -96,12 +94,10 @@ select = [
     "TRY400",
 ]
 "mxcubeweb/core/adapter/beam_adapter.py" = [
-    "COM812",
     "PIE804",
 ]
 "mxcubeweb/core/adapter/beamline_action_adapter.py" = [
     "BLE001",
-    "COM812",
     "PIE804",
     "RET504",
     "SIM108",
@@ -109,14 +105,12 @@ select = [
 ]
 "mxcubeweb/core/adapter/beamline_adapter.py" = [
     "BLE001",
-    "COM812",
     "G004",
     "N802",
     "PLW0603",
     "TRY400",
 ]
 "mxcubeweb/core/adapter/data_publisher_adapter.py" = [
-    "COM812",
     "RUF012",
 ]
 "mxcubeweb/core/adapter/diffractometer_adapter.py" = [
@@ -125,7 +119,6 @@ select = [
 ]
 "mxcubeweb/core/adapter/energy_adapter.py" = [
     "N814",
-    "COM812",
 ]
 "mxcubeweb/core/adapter/flux_adapter.py" = [
     "BLE001",
@@ -145,7 +138,6 @@ select = [
 ]
 "mxcubeweb/core/adapter/nstate_adapter.py" = [
     "BLE001",
-    "COM812",
     "PIE804",
     "SIM108",
     "TRY400",
@@ -165,7 +157,6 @@ select = [
 "mxcubeweb/core/components/beamline.py" = [
     "BLE001",
     "C408",
-    "COM812",
     "N806",
     "N814",
     "SIM118",
@@ -173,18 +164,15 @@ select = [
 ]
 "mxcubeweb/core/components/chat.py" = [
     "ARG002",
-    "COM812",
     "DTZ005",
     "PERF401",
 ]
 "mxcubeweb/core/components/component_base.py" = [
-    "COM812",
     "FLY002",
     "G004",
 ]
 "mxcubeweb/core/components/harvester.py" = [
     "BLE001",
-    "COM812",
     "F401",
     "N803",
     "N806",
@@ -195,7 +183,6 @@ select = [
 "mxcubeweb/core/components/lims.py" = [
     "BLE001",
     "B016",
-    "COM812",
     "E501",
     "ERA001",
     "F401",
@@ -213,7 +200,6 @@ select = [
     "B010",
     "C411",
     "C901",
-    "COM812",
     "E501",
     "EM101",
     "ERA001",
@@ -251,7 +237,6 @@ select = [
 ]
 "mxcubeweb/core/components/samplechanger.py" = [
     "BLE001",
-    "COM812",
     "FBT003",
     "N802",
     "N806",
@@ -266,7 +251,6 @@ select = [
 "mxcubeweb/core/components/sampleview.py" = [
     "ARG002",
     "BLE001",
-    "COM812",
     "E501",
     "EM101",
     "N814",
@@ -278,7 +262,6 @@ select = [
     "TRY203",
 ]
 "mxcubeweb/core/components/user/database.py" = [
-    "COM812",
     "DTZ005",
 ]
 "mxcubeweb/core/components/user/dummyusermanager.py" = [
@@ -289,7 +272,6 @@ select = [
     "BLE001",
     "B006",
     "C901",
-    "COM812",
     "DTZ005",
     "EM101",
     "ERA001",
@@ -324,23 +306,19 @@ select = [
     "N815",
 ]
 "mxcubeweb/core/models/configmodels.py" = [
-    "COM812",
     "E501",
     "FBT003",
     "RUF012",
     "S108",
 ]
 "mxcubeweb/core/models/generic.py" = [
-    "COM812",
     "E501",
     "FBT003",
 ]
 "mxcubeweb/core/models/usermodels.py" = [
-    "COM812",
     "FBT003",
 ]
 "mxcubeweb/core/util/adapterutils.py" = [
-    "COM812",
     "PLR0911",
     "RET505",
     "SLF001",
@@ -348,7 +326,6 @@ select = [
 ]
 "mxcubeweb/core/util/convertutils.py" = [
     "C404",
-    "COM812",
     "FBT002",
     "FBT003",
     "PLW2901",
@@ -381,7 +358,6 @@ select = [
     "ARG001",
     "BLE001",
     "C901",
-    "COM812",
     "G002",
     "G004",
     "N814",
@@ -393,11 +369,9 @@ select = [
     "TRY400",
 ]
 "mxcubeweb/routes/diffractometer.py" = [
-    "COM812",
     "N814",
 ]
 "mxcubeweb/routes/harvester.py" = [
-    "COM812",
     "G004",
     "N814",
     "RET503",
@@ -407,7 +381,6 @@ select = [
 "mxcubeweb/routes/lims.py" = [
     "BLE001",
     "C901",
-    "COM812",
     "E501",
     "F401",
     "FBT003",
@@ -426,20 +399,17 @@ select = [
 ]
 "mxcubeweb/routes/log.py" = [
     "ARG001",
-    "COM812",
     "G002",
 ]
 "mxcubeweb/routes/login.py" = [
     "BLE001",
     "C901",
-    "COM812",
     "F401",
     "N814",
     "RET504",
 ]
 "mxcubeweb/routes/main.py" = [
     "ARG001",
-    "COM812",
     "DTZ005",
     "N814",
 ]
@@ -452,7 +422,6 @@ select = [
 "mxcubeweb/routes/queue.py" = [
     "A005",
     "BLE001",
-    "COM812",
     "F401",
     "N814",
     "PLR0915",
@@ -461,14 +430,12 @@ select = [
 ]
 "mxcubeweb/routes/ra.py" = [
     "ARG001",
-    "COM812",
     "PLR0915",
     "SIM102",
 ]
 "mxcubeweb/routes/samplecentring.py" = [
     "ARG001",
     "BLE001",
-    "COM812",
     "E501",
     "EM101",
     "N814",
@@ -485,7 +452,6 @@ select = [
 ]
 "mxcubeweb/routes/signals.py" = [
     "ARG001",
-    "COM812",
     "B006",
     "BLE001",
     "F401",
@@ -516,7 +482,6 @@ select = [
 ]
 "mxcubeweb/server.py" = [
     "ARG004",
-    "COM812",
     "EM101",
     "N805",
     "PTH118",
@@ -536,7 +501,6 @@ select = [
     "INP001",
 ]
 "test/fixture.py" = [
-    "COM812",
     "E402",
     "E501",
     "PLW0603",
@@ -549,9 +513,6 @@ select = [
     "S101",  # "Use of `assert` detected": ignored because tests do rely on `assert`
     "S108",
     "SIM105",
-]
-"test/input_parameters.py" = [
-    "COM812",
 ]
 "test/test_*.py" = [
     "E712",
@@ -570,7 +531,6 @@ select = [
     "F401",
 ]
 "test/test_diffractometer_routes.py" = [
-    "COM812",
     "F401",
     "N814",
     "S311",
