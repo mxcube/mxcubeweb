@@ -12,9 +12,7 @@ from flask import (
     jsonify,
     render_template,
     request,
-    send_file,
 )
-from mxcubecore import HardwareRepository as HWR
 from mxcubecore.model import queue_model_objects as qmo
 
 from . import signals

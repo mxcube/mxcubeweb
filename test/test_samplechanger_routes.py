@@ -1,7 +1,5 @@
 import json
 
-from fixture import client
-
 
 def test_get_sample_list(client):
     """

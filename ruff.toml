@@ -43,7 +43,6 @@ select = [
     "C408",
     "E501",
     "EM101",
-    "F401",
     "G002",
     "G004",
     "I001",
@@ -173,7 +172,6 @@ select = [
 ]
 "mxcubeweb/core/components/harvester.py" = [
     "BLE001",
-    "F401",
     "N803",
     "N806",
     "N814",
@@ -185,7 +183,6 @@ select = [
     "B016",
     "E501",
     "ERA001",
-    "F401",
     "FBT002",
     "FURB188",
     "G002",
@@ -275,7 +272,6 @@ select = [
     "DTZ005",
     "EM101",
     "ERA001",
-    "F401",
     "FBT001",
     "FBT002",
     "FBT003",
@@ -338,7 +334,6 @@ select = [
 ]
 "mxcubeweb/core/util/networkutils.py" = [
     "BLE001",
-    "F401",
     "G002",
     "N802",
     "N803",
@@ -382,7 +377,6 @@ select = [
     "BLE001",
     "C901",
     "E501",
-    "F401",
     "FBT003",
     "G001",
     "N814",
@@ -404,7 +398,6 @@ select = [
 "mxcubeweb/routes/login.py" = [
     "BLE001",
     "C901",
-    "F401",
     "N814",
     "RET504",
 ]
@@ -422,7 +415,6 @@ select = [
 "mxcubeweb/routes/queue.py" = [
     "A005",
     "BLE001",
-    "F401",
     "N814",
     "PLR0915",
     "SIM108",
@@ -454,7 +446,6 @@ select = [
     "ARG001",
     "B006",
     "BLE001",
-    "F401",
     "FBT003",
     "FIX002",
     "G002",
@@ -500,7 +491,7 @@ select = [
 "test/*.py" = [
     "INP001",
 ]
-"test/fixture.py" = [
+"test/conftest.py" = [
     "E402",
     "E501",
     "PLW0603",
@@ -516,7 +507,6 @@ select = [
 ]
 "test/test_*.py" = [
     "E712",
-    "F811",
     "S101",  # "Use of `assert` detected": ignored because tests do rely on `assert`
 ]
 "test/test_authn.py" = [
@@ -527,21 +517,13 @@ select = [
     "S108",
     "SIM105",
 ]
-"test/test_beamline_routes.py" = [
-    "F401",
-]
 "test/test_diffractometer_routes.py" = [
-    "F401",
     "N814",
     "S311",
 ]
 "test/test_queue_routes.py" = [
     "E501",
-    "F401",
     "PT018",
-]
-"test/test_samplechanger_routes.py" = [
-    "F401",
 ]
 
 

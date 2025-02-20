@@ -2,7 +2,6 @@ import copy
 import json
 import time
 
-from fixture import client
 from input_parameters import (
     default_char_acq_params,
     default_dc_params,

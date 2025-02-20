@@ -17,7 +17,6 @@ from mxcubecore import (
 )
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import (
-    queue_entry,
     removeLoggingHandlers,
 )
 from mxcubecore.utils.conversion import make_table

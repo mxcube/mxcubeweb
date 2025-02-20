@@ -6,7 +6,6 @@ from flask import (
     Response,
     jsonify,
     request,
-    session,
 )
 from mxcubecore import HardwareRepository as HWR
 

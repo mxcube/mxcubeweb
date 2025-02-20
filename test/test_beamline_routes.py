@@ -1,7 +1,5 @@
 import json
 
-from fixture import client
-
 
 def test_beamline_get_all_attribute(client):
     """

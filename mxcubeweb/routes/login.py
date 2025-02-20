@@ -10,7 +10,6 @@ from flask import (
     url_for,
 )
 from flask_login import current_user
-from mxcubecore import HardwareRepository as HWR
 
 from mxcubeweb.core.util import networkutils
 

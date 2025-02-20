@@ -1,7 +1,6 @@
 import json
 import random
 
-from fixture import client
 from gevent.event import Event
 from mxcubecore import HardwareRepository as HWR
 
