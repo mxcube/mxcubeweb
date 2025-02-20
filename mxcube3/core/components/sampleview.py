@@ -361,8 +361,9 @@ class SampleView(ComponentBase):
 
 
     def update_shapes(self, shapes):
-        logging.getLogger("HWR.MX3").info("get into update_shapes method in sampleview")
-        logging.getLogger("HWR.MX3").debug("shape from react, width: %f , height: %f. " %(shapes[0]['width'], shapes[0]['height']))
+        # 下面的打印日志代码是针对raster scan的，对于3-click和2d-point会导致exception
+        # logging.getLogger("HWR.MX3").info("get into update_shapes method in sampleview")
+        # logging.getLogger("HWR.MX3").debug("shape from react, width: %f , height: %f. " %(shapes[0]['width'], shapes[0]['height']))
 
         updated_shapes = []
 
@@ -398,11 +399,12 @@ class SampleView(ComponentBase):
                         # x,y 的坐标是正方形左上的点，坐标是对的
                         x, y = shape_data["screen_coord"]
 
-                        logging.getLogger("HWR.MX3").info("step into mpos = HWR.beamline.diffractometer.get_centred_point_from_coord()")
-                        # shape_data[cell_width] and shape[cell_height]之前一直是100,现在是50
-                        logging.getLogger("HWR.MX3").debug(
-                            "shape_data[cell_width] and shape[cell_height] in update_shapes of sampleview.py: %s, %s " %(shape_data["cell_width"], shape_data["cell_height"]))
-                        # mpos 是md2各电机对应给定x，y，坐标的参数
+                        # 下面的打印日志代码是针对raster scan的，对于3-click和2d-point会导致exception
+                        # logging.getLogger("HWR.MX3").info("step into mpos = HWR.beamline.diffractometer.get_centred_point_from_coord()")
+                        # # shape_data[cell_width] and shape[cell_height]之前一直是100,现在是50
+                        # logging.getLogger("HWR.MX3").debug(
+                        #     "shape_data[cell_width] and shape[cell_height] in update_shapes of sampleview.py: %s, %s " %(shape_data["cell_width"], shape_data["cell_height"]))
+                        # # mpos 是md2各电机对应给定x，y，坐标的参数
                         mpos = HWR.beamline.diffractometer.get_centred_point_from_coord(
                             x, y, return_by_names=True
                         )
