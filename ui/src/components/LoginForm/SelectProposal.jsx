@@ -78,10 +78,7 @@ function SelectProposal() {
         />
 
         <Tabs id="scheduled-tab" defaultActiveKey="scheduled">
-          <Tab
-            eventKey="scheduled"
-            title={`Scheduled (${scheduledSessions.length})`}
-          >
+          <Tab eventKey="active" title={`Active (${scheduledSessions.length})`}>
             <div className={styles.table}>
               <SessionTable
                 sessions={scheduledSessions}
@@ -91,8 +88,8 @@ function SelectProposal() {
             </div>
           </Tab>
           <Tab
-            eventKey="unscheduled"
-            title={`Unscheduled (${unscheduledSessions.length})`}
+            eventKey="scheduled"
+            title={`Scheduled (${unscheduledSessions.length})`}
           >
             <div className={styles.table}>
               <SessionTable
