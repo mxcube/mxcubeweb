@@ -206,6 +206,7 @@ class Lims(ComponentBase):
                 )
 
         if HWR.beamline.session.session_id != HWR.beamline.lims.get_session_id():
+            # ruff: noqa: G004
             logging.getLogger("MX3.HWR").info(
                 f"[LIMS] New session, clearing queue and sample list for {session.code}{session.number}"
             )
