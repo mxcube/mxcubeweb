@@ -28,14 +28,13 @@ def init_route(app, server, url_prefix):  # noqa: C901
         try:
             lims_name = request.get_json().get("lims", None)
             res = jsonify(app.lims.synch_with_lims(lims_name))
-        except Exception as ex:
-            logging.getLogger("MX3.HWR").error(str(ex))
+        except Exception:
+            logging.getLogger("MX3.HWR").exception("Could not synchronize with Lims")
             res = (
                 "Could not synchronize with LIMS",
                 409,
                 {
                     "Content-Type": "application/json",
-                    "message": str(ex),
                 },
             )
 

@@ -99,8 +99,8 @@ class BaseUserManager(ComponentBase):
                 and (datetime.datetime.now() - _u.last_request_timestamp)
                 > flask.current_app.permanent_session_lifetime
             ):
-                logging.getLogger("HWR.MX3").info(
-                    f"Logged out inactive user {_u.username}"
+                logging.getLogger("MX3.HWR").info(
+                    "Logged out inactive user %s", _u.username
                 )
                 self.app.server.user_datastore.delete_user(_u)
                 self.app.server.user_datastore.commit()

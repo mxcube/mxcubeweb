@@ -333,7 +333,7 @@ class SampleView(ComponentBase):
                             pos, (x, y), t, state, user_state
                         )
                     except Exception:
-                        logging.getLogger("HWR.MX3").info(shape_data)
+                        logging.getLogger("MX3.HWR").info(shape_data)
 
                 else:
                     shape = HWR.beamline.sample_view.add_shape_from_refs(

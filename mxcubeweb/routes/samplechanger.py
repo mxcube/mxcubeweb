@@ -1,9 +1,12 @@
+import logging
+
 from flask import (
     Blueprint,
     Response,
     jsonify,
     request,
 )
+from markupsafe import escape
 from mxcubecore import HardwareRepository as HWR
 
 
@@ -62,13 +65,13 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def unmount_current():
         try:
             res = app.sample_changer.unmount_current()
-        except Exception as ex:
+        except Exception:
+            logging.getLogger("MX3.HWR").exception("Cannot unload sample")
             res = (
                 "Cannot unload sample",
                 409,
                 {
                     "Content-Type": "application/json",
-                    "message": str(ex),
                 },
             )
         return jsonify(res)
@@ -77,17 +80,15 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def mount_sample():
-        resp = Response(status=200)
-
         try:
             resp = jsonify(app.sample_changer.mount_sample(request.get_json()))
-        except Exception as ex:
+        except Exception:
+            logging.getLogger("MX3.HWR").exception("Cannot load sample")
             resp = (
                 "Cannot load sample",
                 409,
                 {
                     "Content-Type": "application/json",
-                    "message": str(ex),
                 },
             )
 
@@ -140,13 +141,16 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def send_command(cmdparts, args=None):
         try:
             ret = HWR.beamline.sample_changer_maintenance.send_command(cmdparts, args)
-        except Exception as ex:
-            msg = str(ex)
-            msg = msg.replace("\n", " - ")
+        except Exception:
+            logging.getLogger("MX3.HWR").exception(
+                "SC cannot execute command %s", cmdparts
+            )
             return (
-                "Cannot execute command",
+                f"Cannot execute command {escape(cmdparts)}",
                 406,
-                {"Content-Type": "application/json", "message": msg},
+                {
+                    "Content-Type": "application/json",
+                },
             )
         else:
             return jsonify(response=ret)

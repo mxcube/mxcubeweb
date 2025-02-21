@@ -1,5 +1,4 @@
 import logging
-import sys
 import typing
 
 from flask import (
@@ -9,6 +8,7 @@ from flask import (
     make_response,
     request,
 )
+from markupsafe import escape
 from mxcubecore import HardwareRepository as HWR
 from werkzeug.exceptions import UnsupportedMediaType
 
@@ -60,11 +60,11 @@ def create_set_route(app, server, bp, adapter, attr, name):
             try:
                 getattr(app.mxcubecore.get_adapter(rd.name.lower()), attr)(rd)
                 return "Value set successfully"
-            except Exception as e:
+            except Exception:
                 logging.getLogger("user_level_log").error(
-                    f"{rd.name.capitalize()}: {str(e)}"
+                    "Could not set %s", rd.name.capitalize()
                 )
-                return make_response(str(e), 400)
+                return make_response(f"Could not set {rd.name.capitalize()}", 400)
 
         set_func.__name__ = f"{atype}_set_value"
 
@@ -151,8 +151,8 @@ def init_route(app, server, url_prefix):
         try:
             app.beamline.beamline_abort_action(name)
         except Exception:
-            err = str(sys.exc_info()[1])
-            return make_response(err, 500)
+            logging.getLogger("MX3.HWR").exception("Could not abort %s", name)
+            return make_response(f"Could not abort {escape(name)}", 500)
         else:
             logging.getLogger("user_level_log").error("%s, aborted" % name)
             return make_response("{}", 200)
@@ -176,8 +176,9 @@ def init_route(app, server, url_prefix):
 
         try:
             app.beamline.beamline_run_action(name, params)
-        except Exception as ex:
-            return make_response(str(ex), 500)
+        except Exception:
+            logging.getLogger("MX3.HWR").exception("Cannot run action %s", name)
+            return make_response(f"Cannot run action {escape(name)}", 500)
         else:
             return make_response("{}", 200)
 
