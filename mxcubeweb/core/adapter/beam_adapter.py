@@ -57,7 +57,7 @@ class BeamAdapter(ActuatorAdapterBase):
             }
         )
 
-        return HOBeamValueModel(**{"value": beam_info_dict})
+        return HOBeamValueModel(value=beam_info_dict)
 
     @export
     def get_size(self) -> HOBeamModel:

@@ -60,7 +60,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            return FloatValueModel(**{"value": self._ho.get_value()})
+            return FloatValueModel(value=self._ho.get_value())
         except (AttributeError, TypeError):
             raise ValueError("Could not get value")
 

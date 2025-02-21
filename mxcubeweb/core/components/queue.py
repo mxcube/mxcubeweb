@@ -1409,13 +1409,11 @@ class Queue(ComponentBase):
         queue_entry_name = task_name.title().replace("_", "") + "QueueEntry"
         entry_cls = getattr(qe, queue_entry_name)
         data = entry_cls.DATA_MODEL(
-            **{
-                "path_parameters": task["parameters"],
-                "common_parameters": task["parameters"],
-                "user_collection_parameters": task["parameters"],
-                "collection_parameters": task["parameters"],
-                "legacy_parameters": task["parameters"],
-            }
+            path_parameters=task["parameters"],
+            common_parameters=task["parameters"],
+            user_collection_parameters=task["parameters"],
+            collection_parameters=task["parameters"],
+            legacy_parameters=task["parameters"],
         )
 
         entry = entry_cls(Mock(), entry_cls.QMO(task_data=data))

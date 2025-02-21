@@ -25,7 +25,7 @@ class MachineInfoAdapter(ActuatorAdapterBase):
         self.value_change(self.get_value(), **kwargs)
 
     def _get_value(self) -> HOMachineInfoModel:
-        return HOMachineInfoModel(**{"value": self.get_attributes()})
+        return HOMachineInfoModel(value=self.get_attributes())
 
     def get_attributes(self):
         """Read the information from the HO. Format the output."""

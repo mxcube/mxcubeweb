@@ -43,7 +43,7 @@ class BeamlineActionAdapter(ActuatorAdapterBase):
         self._ho.set_value(self._ho.VALUES[value.value])
 
     def _get_value(self) -> StrValueModel:
-        return StrValueModel(**{"value": self._ho.get_value().name})
+        return StrValueModel(value=self._ho.get_value().name)
 
     def msg(self):
         try:

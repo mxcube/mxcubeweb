@@ -74,7 +74,6 @@ select = [
     "B904",
     "BLE001",
     "EM101",
-    "PIE804",
     "S110",
     "TRY003",
 ]
@@ -92,12 +91,8 @@ select = [
     "TRY003",
     "TRY400",
 ]
-"mxcubeweb/core/adapter/beam_adapter.py" = [
-    "PIE804",
-]
 "mxcubeweb/core/adapter/beamline_action_adapter.py" = [
     "BLE001",
-    "PIE804",
     "RET504",
     "SIM108",
     "TRY400",
@@ -127,17 +122,14 @@ select = [
 ]
 "mxcubeweb/core/adapter/machine_info_adapter.py" = [
     "ARG002",
-    "PIE804",
 ]
 "mxcubeweb/core/adapter/motor_adapter.py" = [
     "B904",
     "EM101",
-    "PIE804",
     "TRY003",
 ]
 "mxcubeweb/core/adapter/nstate_adapter.py" = [
     "BLE001",
-    "PIE804",
     "SIM108",
     "TRY400",
 ]
@@ -145,7 +137,6 @@ select = [
     "ARG002",
     "BLE001",
     "EM101",
-    "PIE804",
     "S110",
     "TRY003",
     "TRY203",
@@ -208,7 +199,6 @@ select = [
     "G004",
     "N806",
     "N814",
-    "PIE804",
     "PERF401",
     "PLR0912",
     "PLR0915",

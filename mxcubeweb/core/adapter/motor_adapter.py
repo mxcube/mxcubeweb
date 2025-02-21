@@ -48,7 +48,7 @@ class MotorAdapter(ActuatorAdapterBase):
         except (TypeError, AttributeError):
             value = 0.0
 
-        return FloatValueModel(**{"value": value})
+        return FloatValueModel(value=value)
 
     def state(self):
         """

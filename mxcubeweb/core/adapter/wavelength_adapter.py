@@ -57,7 +57,7 @@ class WavelengthAdapter(ActuatorAdapterBase):
             ValueError: When value for any reason can't be retrieved.
         """
         try:
-            return FloatValueModel(**{"value": self._ho.get_wavelength()})
+            return FloatValueModel(value=self._ho.get_wavelength())
         except (AttributeError, TypeError) as ex:
             raise ValueError("Could not get value") from ex
 
