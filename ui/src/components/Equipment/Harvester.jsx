@@ -125,7 +125,7 @@ export default function Harvester(props) {
                           <CopyToClipboard
                             text={item.crystal_uuid}
                             tittle="crystal uuid"
-                            id={item.crystal_uuid}
+                            id={`copy_${item.crystal_uuid}`}
                           />
                         </div>
                       </div>

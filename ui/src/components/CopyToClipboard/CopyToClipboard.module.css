@@ -1,0 +1,11 @@
+.btnContent {
+  border: 0 !important;
+}
+
+.link {
+  opacity: 25%;
+}
+
+.link:hover {
+  opacity: 100%;
+}

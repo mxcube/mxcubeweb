@@ -201,7 +201,7 @@ export class SampleGridTableItem extends React.Component {
             <CopyToClipboard
               text={this.sampleDisplayName()}
               tittle="Sample Name"
-              id={this.sampleDisplayName()}
+              id={`copy_${this.sampleDisplayName()}`}
             />
             {this.seqId()}
           </div>
