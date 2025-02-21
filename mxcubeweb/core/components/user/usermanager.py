@@ -107,10 +107,10 @@ class BaseUserManager(ComponentBase):
         return user
 
     def update_active_users(self) -> None:
-        """
-        Check if any user have been inactive for a period longer than the
-        session lifetime. If so, deactivate the user in datastore and emit
-        the relvant signals `userChanged` and `observersChanged` to the client.
+        """Check if any user have been inactive for longer than session lifetime.
+
+        If so, deactivate the user in datastore and emit the relvant signals 
+        ``userChanged`` and ``observersChanged`` to the client.
         """
         for _u in User.query.all():
             if (
@@ -178,10 +178,13 @@ class BaseUserManager(ComponentBase):
                         self.app.lims.select_session(_u.selected_proposal)
 
     def is_inhouse_user(self, user_id: str) -> bool:
-        """Retrun True if the user_id is in the in-house user list.
+        """Check if the ``user_id`` is in the in-house user list.
 
         Attributes:
             user_id: user id composed from code and number.
+
+        Returns:
+            ``True`` if ``user_id`` is in the in-house user list, ``False`` otherwise.
         """
         user_id_list = [
             "%s%s" % (code, number)
@@ -223,14 +226,15 @@ class BaseUserManager(ComponentBase):
             self.signout()
 
     def login(self, login_id: str, password: str, sso_data: dict = {}) -> None:
-        """
+        """Login the user.
+
         Create new session for the user if it does not exist. Activate user in
         data store. If a sample is loaded in sample changer but not mounted,
         mount it and update the smaple list. Try update the operator.
 
         Attributes:
-            login_id: username.
-            password: password.
+            login_id: The username.
+            password: The password.
         """
         try:
             self._login(login_id, password)
@@ -288,7 +292,11 @@ class BaseUserManager(ComponentBase):
         self.app.server.emit("observersChanged", namespace="/hwr")
 
     def is_authenticated(self) -> bool:
-        """Return True whether the current user is authenticated."""
+        """Check if the current user is authenticated.
+        
+        Returns:
+            ``True`` if the current user is authenticated.
+        """
         return current_user.is_authenticated()
 
     def force_signout_user(self, username: str) -> None:
@@ -307,12 +315,17 @@ class BaseUserManager(ComponentBase):
             self.app.server.emit("forceSignout", room=socketio_sid, namespace="/hwr")
 
     def login_info(self) -> dict:
-        """
-        Login information to be displayed in the application such as: synchrotron and
-        beamline names, user infromation, proposals list, selected proposal etc.
+        """Get the login information to be displayed in the application.
+
+        Login information to be displayed in the application such as: 
+        * synchrotron and beamline names
+        * user infromation
+        * proposals list
+        * selected proposal
+        * and so on
 
         Returns:
-            dictionary with login information.
+            Dictionary with login information.
         """
         # update_operator will update the login status of current_user, and make
         # sure that the is_anonymous has the correct value.
