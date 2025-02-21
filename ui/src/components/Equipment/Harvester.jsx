@@ -1,11 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, Button, Badge } from 'react-bootstrap';
 import { contextMenu, Menu, Item, Separator } from 'react-contexify';
-
-import { CopyToClipboard } from 'react-copy-to-clipboard';
-import { MdContentCopy } from 'react-icons/md';
 import { FcRefresh, FcUpload, FcCollect } from 'react-icons/fc';
 
+import CopyToClipboard from '../../components/CopyToClipboard/CopyToClipboard.jsx';
 import ImageViewer from '../ImageViewer/ImageViewer.jsx';
 
 import styles from './equipment.module.css';
@@ -31,8 +29,6 @@ const sampleStateBackground = (key) => {
 };
 
 export default function Harvester(props) {
-  const [copied, setCopied] = useState(false);
-
   function showContextMenu(event, id) {
     let position = {
       x: event.clientX,
@@ -58,11 +54,6 @@ export default function Harvester(props) {
 
   const harvestAndLoadCrystal = (UUID) => {
     props.harvestAndLoadCrystal(UUID);
-  };
-
-  const onCopy = () => {
-    setCopied(true);
-    setTimeout(() => setCopied(false), 1000);
   };
 
   const renderCrystalMenu = (key) => (
@@ -129,30 +120,13 @@ export default function Harvester(props) {
                             {item.state ? item.state.replaceAll('_', ' ') : ''}
                           </Badge>
                         </div>
-                        <div className={styles.crystal_uuid_caption}>
+                        <div>
                           <span className="me-1">{item.crystal_uuid}</span>
                           <CopyToClipboard
-                            className="copy-link copy-link-ha"
                             text={item.crystal_uuid}
-                            onCopy={onCopy}
-                          >
-                            <Button variant="content" className="btn-copy-link">
-                              <MdContentCopy
-                                style={{ float: 'right' }}
-                                size=""
-                              />
-                              <span
-                                className={`tooltiptext ${
-                                  copied ? 'copy-link-glow' : ''
-                                }`}
-                                id="myTooltip"
-                              >
-                                {copied
-                                  ? 'crystal uuid Copied'
-                                  : 'Copy crystal uuid to Clipboard'}
-                              </span>
-                            </Button>
-                          </CopyToClipboard>
+                            tittle="crystal uuid"
+                            id={item.crystal_uuid}
+                          />
                         </div>
                       </div>
                     </div>

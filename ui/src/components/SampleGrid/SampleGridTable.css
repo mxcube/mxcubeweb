@@ -152,7 +152,6 @@
 }
 
 .samples-grid-table-item-tasks {
-  /* width: fit-content; */
   height: 26px;
   padding-left: 19px;
   display: grid;
@@ -178,10 +177,6 @@
   left: 1px;
 }
 
-.samples-grid-table-item-tasks > .slick-next {
-  /* right: -25px */
-}
-
 .new-sample-grid-task-item {
   margin: 0 !important;
 }
@@ -194,10 +189,6 @@
   border: 3px dashed #585555 !important;
 }
 
-.div-samples-grid-table-item-top {
-  /* width: 180px; */
-}
-
 .samples-grid-table-item-name-pt {
   white-space: nowrap;
   overflow: hidden;
@@ -207,13 +198,10 @@
   font-size: small;
   font-weight: bold;
   pointer-events: auto;
-  max-width: 62%;
+  max-width: 160px;
   background: #5cb85c;
-  white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  position: absolute;
-  top: 8px;
 }
 
 .dm {
@@ -293,75 +281,10 @@
   font-weight: bolder;
 }
 
-.copy-link {
-  width: 20px;
-  height: 20px;
-  padding: 0%;
-  margin-bottom: -25px;
-  position: relative;
-  top: -5px;
-  opacity: 25%;
-}
-
-.copy-link-ha {
-  margin-top: -14px;
-}
-.copy-link:hover {
-  opacity: 100%;
-}
-
-.copy-link > .copy-icon {
-  color: #e7eff1;
-}
-
-.copy-link > .tooltiptext::after {
-  content: '';
-  position: absolute;
-  bottom: 100%;
-  left: 20%;
-  margin-left: -5px;
-  border-width: 5px;
-  border-style: solid;
-  border-color: transparent transparent #0122388e transparent;
-}
-
-.copy-link > .tooltiptext {
-  z-index: 20000;
-  visibility: hidden;
-  white-space: nowrap;
-  background-color: #015f9d;
-  color: #ffffff;
-  text-align: center;
-  border-radius: 6px;
-  padding: 2px;
-  position: relative;
-  z-index: 1;
-  top: 8px;
-  right: 40px;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
-
-.copy-link:focus {
-  cursor: pointer;
-  outline: none;
-}
-
-.copy-link-glow {
-  margin-left: 20px;
-  transition: all 0.1s ease-in-out;
-}
-
-.copy-link:hover .tooltiptext {
-  visibility: visible;
-  opacity: 1;
-}
-
 /* Graphical View / Flex grid css */
 
 .div-flex-pie-collapsible {
   width: 95%;
-  /* margin: auto auto 2em auto; */
 }
 
 .div-svg-flex {

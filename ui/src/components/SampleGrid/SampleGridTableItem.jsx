@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import {
   ListGroup,
@@ -9,12 +8,11 @@ import {
 } from 'react-bootstrap';
 import cx from 'classnames';
 
-import { CopyToClipboard } from 'react-copy-to-clipboard';
+import CopyToClipboard from '../../components/CopyToClipboard/CopyToClipboard';
 
 import { isCollected } from '../../constants';
 
 import { BsSquare, BsCheck2Square } from 'react-icons/bs';
-import { MdContentCopy } from 'react-icons/md';
 import './SampleGridTable.css';
 import TooltipTrigger from '../TooltipTrigger';
 
@@ -22,13 +20,8 @@ export class SampleGridTableItem extends React.Component {
   constructor(props) {
     super(props);
     this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
-    this.sampleItemOnClick = this.sampleItemOnClick.bind(this);
-
+    this.handleItemClick = this.handleItemClick.bind(this);
     this.sampleInformation = this.sampleInformation.bind(this);
-    this.onCopy = this.onCopy.bind(this);
-    this.state = {
-      copied: false,
-    };
   }
 
   pickButtonOnClick(e) {
@@ -132,7 +125,7 @@ export class SampleGridTableItem extends React.Component {
     );
   }
 
-  sampleItemOnClick(e) {
+  handleItemClick(e) {
     if (this.props.onClick) {
       this.props.onClick(e, this.props.sampleData.sampleID);
     }
@@ -140,11 +133,6 @@ export class SampleGridTableItem extends React.Component {
 
   currentSampleText() {
     return this.props.current ? '(MOUNTED)' : '';
-  }
-
-  onCopy() {
-    this.setState({ copied: true });
-    setTimeout(() => this.setState({ copied: false }), 1000);
   }
 
   render() {
@@ -165,31 +153,12 @@ export class SampleGridTableItem extends React.Component {
         ref={(ref) => {
           this.sampleItem = ref;
         }}
-        onClick={this.sampleItemOnClick}
+        onClick={this.handleItemClick}
       >
         <ListGroup.Item className={classes}>
           <div className="samples-grid-table-item-top d-flex">
             {this.itemControls()}
-            <div className="div-samples-grid-table-item-top">
-              <CopyToClipboard
-                className="copy-link"
-                text={this.sampleDisplayName()}
-                onCopy={this.onCopy}
-              >
-                <Button variant="content" className="btn-copy-link">
-                  <MdContentCopy style={{ float: 'right' }} size="" />
-                  <span
-                    className={`tooltiptext ${
-                      this.state.copied ? 'copy-link-glow' : ''
-                    }`}
-                    id="myTooltip"
-                  >
-                    {this.state.copied
-                      ? 'Sample Name Copied'
-                      : 'Copy Sample Name to Clipboard'}
-                  </span>
-                </Button>
-              </CopyToClipboard>
+            <div>
               <OverlayTrigger
                 placement="right"
                 overlay={
@@ -213,7 +182,7 @@ export class SampleGridTableItem extends React.Component {
                   ref={(ref) => {
                     this.pacronym = ref;
                   }}
-                  className="samples-grid-table-item-name-protein-acronym ms-1"
+                  className="samples-grid-table-item-name-protein-acronym ms-1 mt-2"
                   data-type="text"
                   data-pk="1"
                   data-url="/post"
@@ -229,6 +198,11 @@ export class SampleGridTableItem extends React.Component {
                 {this.props.sampleData.location} {this.currentSampleText()}
               </div>
             </div>
+            <CopyToClipboard
+              text={this.sampleDisplayName()}
+              tittle="Sample Name"
+              id={this.sampleDisplayName()}
+            />
             {this.seqId()}
           </div>
           {this.props.children}
