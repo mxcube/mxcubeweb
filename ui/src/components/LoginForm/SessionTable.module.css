@@ -17,6 +17,11 @@
   cursor: pointer;
 }
 
+.row_now {
+  background-color: #eeff9c;
+  outline-offset: -2px;
+}
+
 .time {
   margin-left: 0.25rem;
   color: #555;

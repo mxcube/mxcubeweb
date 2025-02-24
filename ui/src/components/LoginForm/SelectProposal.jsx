@@ -77,7 +77,7 @@ function SelectProposal() {
           onChange={(evt) => setFilter(evt.target.value)}
         />
 
-        <Tabs id="scheduled-tab" defaultActiveKey="scheduled">
+        <Tabs id="scheduled-tab" defaultActiveKey="active">
           <Tab eventKey="active" title={`Active (${scheduledSessions.length})`}>
             <div className={styles.table}>
               <SessionTable
