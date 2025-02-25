@@ -930,7 +930,7 @@ class SampleListViewContainer extends React.Component {
                 <span style={{ marginLeft: '2em' }} />
                 <Button
                   variant="outline-secondary"
-                  className="all-samples-actions-menu"
+                  className="nowrap-style"
                   title="Context Menu to Add DC or Workflow to all filtered Samples Options"
                   onClick={(e) => {
                     this.displayContextMenu(
