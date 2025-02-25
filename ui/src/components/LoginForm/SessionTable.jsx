@@ -3,18 +3,7 @@ import { Table } from 'react-bootstrap';
 import { LuExternalLink } from 'react-icons/lu';
 import SessionDateTime from './SessionDateTime';
 import styles from './SessionTable.module.css';
-import { isDateInRange } from './utils';
-
-const HIGHLIGHTED_TIME_RANGE = 1;
-
-function isAroundNow(session) {
-  const { actual_start_date, actual_end_date } = session;
-  return isDateInRange(
-    actual_start_date,
-    actual_end_date,
-    HIGHLIGHTED_TIME_RANGE,
-  );
-}
+import { isAroundNow } from './utils';
 
 export default function SessionTable(props) {
   const {

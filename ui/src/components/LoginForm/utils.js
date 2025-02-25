@@ -5,8 +5,7 @@ function parseDate(yyyymmdd) {
   return new Date(`${year}-${month}-${day}`);
 }
 
-export function isDateInRange(startDateStr, endDateStr, rangeInDays) {
-  // Helper function to parse YYYYMMDD format into Date object
+function isDateInRange(startDateStr, endDateStr, rangeInDays) {
   const startDate = parseDate(startDateStr);
   const endDate = parseDate(endDateStr);
 
@@ -23,4 +22,11 @@ export function isDateInRange(startDateStr, endDateStr, rangeInDays) {
 
   // Check if any date in the range (today ± rangeInDays) falls within the given date range
   return lowerBound <= endDate && upperBound >= startDate;
+}
+
+export function isAroundNow(session) {
+  const { actual_start_date, actual_end_date } = session;
+  const time_range = 1;
+
+  return isDateInRange(actual_start_date, actual_end_date, time_range);
 }
