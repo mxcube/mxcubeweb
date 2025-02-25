@@ -1,7 +1,7 @@
 [![Build and test](https://github.com/mxcube/mxcubeweb/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/mxcube/mxcubeweb/actions/workflows/build_and_test.yml)
 ![PyPI](https://img.shields.io/pypi/v/mxcubeweb)
 
-<p align="center"><img src="https://mxcube.github.io/mxcube/img/mxcube_logo20.png" width="125"/></p>
+<p align="center"><img src="https://mxcube.github.io/img/mxcube_logo20.png" width="125"/></p>
 
 # MXCuBE-Web
 
