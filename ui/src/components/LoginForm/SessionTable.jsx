@@ -1,38 +1,20 @@
 import React from 'react';
 import { Table } from 'react-bootstrap';
 import { LuExternalLink } from 'react-icons/lu';
-
 import SessionDateTime from './SessionDateTime';
 import styles from './SessionTable.module.css';
-
-function isDateInRange(actualStartDate, actualEndDate, rangeInDays) {
-  // Helper function to parse YYYYMMDD format into Date object
-  function parseDate(yyyymmdd) {
-    const year = yyyymmdd.slice(0, 4);
-    const month = yyyymmdd.slice(4, 6);
-    const day = yyyymmdd.slice(6, 8);
-    return new Date(`${year}-${month}-${day}`);
-  }
-
-  const startDate = parseDate(actualStartDate);
-  const endDate = parseDate(actualEndDate);
-
-  // Get today's date without time
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  // Calculate the lower and upper bounds based on the rangeInDays
-  const lowerBound = new Date(today);
-  lowerBound.setDate(today.getDate() - rangeInDays);
-
-  const upperBound = new Date(today);
-  upperBound.setDate(today.getDate() + rangeInDays);
-
-  // Check if any date in the range (today ± rangeInDays) falls within the given date range
-  return lowerBound <= endDate && upperBound >= startDate;
-}
+import { isDateInRange } from './utils';
 
 const HIGHLIGHTED_TIME_RANGE = 1;
+
+function isAroundNow(session) {
+  const { actual_start_date, actual_end_date } = session;
+  return isDateInRange(
+    actual_start_date,
+    actual_end_date,
+    HIGHLIGHTED_TIME_RANGE,
+  );
+}
 
 export default function SessionTable(props) {
   const {
@@ -45,7 +27,6 @@ export default function SessionTable(props) {
   if (sessions.length === 0) {
     return <span className={styles.fallback}>No sessions</span>;
   }
-
 
   return (
     <Table bordered hover size="sm" responsive>
@@ -65,11 +46,8 @@ export default function SessionTable(props) {
         {sessions.map((session) => (
           <tr
             key={session.session_id}
-            className={
-              isDateInRange(session.actual_start_date, session.actual_end_date, HIGHLIGHTED_TIME_RANGE)
-                ? styles.row_now
-                : styles.row
-            }
+            className={styles.row}
+            data-highlight={isAroundNow(session) || undefined}
             data-selected={selectedSessionId === session.session_id}
             tabIndex={0}
             onClick={() => onSessionSelected(session)}
