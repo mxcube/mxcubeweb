@@ -14,7 +14,6 @@ export default defineConfig({
       '/mxcube/api': 'http://127.0.0.1:8081',
       '/socket.io/': { target: 'ws://127.0.0.1:8081', ws: true },
     },
-    allowedHosts : ["lalex.esrf.fr"]
   },
   build: {
     outDir: 'build',
