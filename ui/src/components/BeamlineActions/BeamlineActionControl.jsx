@@ -6,30 +6,43 @@ import {
   twoStateActuatorIsActive,
   TWO_STATE_ACTUATOR,
 } from '../../constants';
+import { showActionOutput } from '../../actions/beamlineActions';
+import { useDispatch } from 'react-redux';
 
 export default function BeamlineActionControl(props) {
-  let variant = props.state === RUNNING ? 'danger' : 'primary';
-  let label = props.state === RUNNING ? 'Stop' : 'Run';
-  const showOutput = props.type !== TWO_STATE_ACTUATOR;
+  const {
+    actionId,
+    actionArguments,
+    handleStartAction,
+    handleStopAction,
+    state,
+    disabled,
+    type,
+    data,
+  } = props;
+  let variant = state === RUNNING ? 'danger' : 'primary';
+  let label = state === RUNNING ? 'Stop' : 'Run';
+  const showOutput = type !== TWO_STATE_ACTUATOR;
+  const dispatch = useDispatch();
 
-  if (props.type === 'INOUT') {
-    label = String(props.data).toUpperCase();
-    variant = twoStateActuatorIsActive(props.data) ? 'success' : 'danger';
+  if (type === 'INOUT') {
+    label = String(data).toUpperCase();
+    variant = twoStateActuatorIsActive(data) ? 'success' : 'danger';
   }
 
   return (
     <ButtonToolbar>
       <ButtonGroup className="d-flex flex-row" aria-label="First group">
-        {props.actionArguments.length === 0 ? (
+        {actionArguments.length === 0 ? (
           <Button
             size="sm"
             className="me-1"
             variant={variant}
-            disabled={props.disabled}
+            disabled={disabled}
             onClick={
-              props.state !== RUNNING
-                ? () => props.handleStartAction(props.actionId, showOutput)
-                : () => props.handleStopAction(props.actionId)
+              state !== RUNNING
+                ? () => handleStartAction(actionId, showOutput)
+                : () => handleStopAction(actionId)
             }
           >
             {label}
@@ -40,9 +53,9 @@ export default function BeamlineActionControl(props) {
         {showOutput ? (
           <Button
             variant="outline-secondary"
-            disabled={props.disabled}
+            disabled={disabled}
             size="sm"
-            onClick={() => props.handleShowOutput(props.actionId)}
+            onClick={() => dispatch(showActionOutput(actionId))}
           >
             <BiLinkExternal />
           </Button>

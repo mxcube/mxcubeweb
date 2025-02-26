@@ -21,7 +21,6 @@ export default function BeamlineActionDialog(props) {
     handleStartAction,
     handleStartAnnotatedAction,
     handleOnPlotDisplay,
-    handleSetActionArgument,
     plotId,
   } = props;
 
@@ -43,7 +42,6 @@ export default function BeamlineActionDialog(props) {
             actionArguments={actionArguments}
             handleStopAction={handleStopAction}
             handleStartAction={handleStartAction}
-            handleSetActionArgument={handleSetActionArgument}
           />
         )}
         {actionType === 'JSONSchema' && (
@@ -65,7 +63,7 @@ export default function BeamlineActionDialog(props) {
             {actionMessages.length > 0 && (
               <Card>
                 {actionMessages.map((message) => (
-                  <p key={message}>{message.message}</p>
+                  <p key={`message- ${message.timestamp}`}>{message.message}</p>
                 ))}
               </Card>
             )}

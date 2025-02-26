@@ -1,5 +1,7 @@
 import React, { Fragment } from 'react';
 import { Row, Col, Button, Form } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
+import { setArgumentValue } from '../../actions/beamlineActions';
 
 export default function BeamlineActionForm(props) {
   const {
@@ -8,8 +10,9 @@ export default function BeamlineActionForm(props) {
     actionArguments,
     handleStopAction,
     handleStartAction,
-    handleSetActionArgument,
   } = props;
+
+  const dispatch = useDispatch();
 
   return (
     <Row>
@@ -25,7 +28,7 @@ export default function BeamlineActionForm(props) {
               value={arg.value}
               disabled={isActionRunning}
               onChange={(e) => {
-                handleSetActionArgument(actionId, i, e.target.value);
+                dispatch(setArgumentValue(actionId, i, e.target.value));
               }}
             />
           </Col>
