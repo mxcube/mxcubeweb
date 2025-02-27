@@ -10,7 +10,6 @@ ignore = [
     "COM812",  # Ruff recommends to ignore this linter rule when using its formatter
     "D",  # pydocstyle: ignored, too many hits (958)
     "PLR2004",  # magic-value-comparison: ignored, too many hits
-    "UP",  # pyupgrade: ignored for now, can be fixed automatically by ruff itself
 ]
 select = [
     "ALL",
@@ -32,6 +31,7 @@ select = [
     "PTH109",
     "RET505",
     "S108",
+    "UP026",
 ]
 "mxcubeweb/__version__.py" = [
     "I001",
@@ -39,8 +39,8 @@ select = [
 ]
 "mxcubeweb/app.py" = [
     "BLE001",
-    "C416",
     "C408",
+    "C416",
     "E501",
     "EM101",
     "G002",
@@ -57,11 +57,10 @@ select = [
     "RET503",
     "RUF012",
     "S103",
-    "S110",
     "SIM108",
     "SIM115",
-    "SIM212",
     "T201",
+    "UP031",
 ]
 "mxcubeweb/config.py" = [
     "G004",
@@ -76,6 +75,7 @@ select = [
     "EM101",
     "S110",
     "TRY003",
+    "UP008",
 ]
 "mxcubeweb/core/adapter/adapter_base.py" = [
     "ARG002",
@@ -85,11 +85,16 @@ select = [
     "G004",
     "RET505",
     "RUF012",
-    "SLF001",
     "SIM105",
     "SIM212",
+    "SLF001",
     "TRY003",
     "TRY400",
+    "UP008",
+    "UP031",
+]
+"mxcubeweb/core/adapter/beam_adapter.py" = [
+    "UP008",
 ]
 "mxcubeweb/core/adapter/beamline_action_adapter.py" = [
     "BLE001",
@@ -98,27 +103,35 @@ select = [
     "TRY400",
 ]
 "mxcubeweb/core/adapter/beamline_adapter.py" = [
-    "BLE001",
     "G004",
     "N802",
     "PLW0603",
     "TRY400",
+    "UP009",
 ]
 "mxcubeweb/core/adapter/data_publisher_adapter.py" = [
     "RUF012",
+    "UP008",
+]
+"mxcubeweb/core/adapter/detector_adapter.py" = [
+    "UP008",
 ]
 "mxcubeweb/core/adapter/diffractometer_adapter.py" = [
     "RET504",
     "RUF012",
+    "UP008",
 ]
 "mxcubeweb/core/adapter/energy_adapter.py" = [
     "N814",
+    "UP008",
 ]
 "mxcubeweb/core/adapter/flux_adapter.py" = [
     "BLE001",
     "ERA001",
     "S110",
     "SIM105",
+    "UP008",
+    "UP032",
 ]
 "mxcubeweb/core/adapter/machine_info_adapter.py" = [
     "ARG002",
@@ -127,11 +140,13 @@ select = [
     "B904",
     "EM101",
     "TRY003",
+    "UP008",
 ]
 "mxcubeweb/core/adapter/nstate_adapter.py" = [
     "BLE001",
     "SIM108",
     "TRY400",
+    "UP008",
 ]
 "mxcubeweb/core/adapter/wavelength_adapter.py" = [
     "ARG002",
@@ -140,9 +155,7 @@ select = [
     "S110",
     "TRY003",
     "TRY203",
-]
-"mxcubeweb/core/components/app.py" = [
-    "E501",
+    "UP008",
 ]
 "mxcubeweb/core/components/beamline.py" = [
     "BLE001",
@@ -151,6 +164,8 @@ select = [
     "N814",
     "SIM118",
     "TRY002",
+    "UP009",
+    "UP031",
 ]
 "mxcubeweb/core/components/chat.py" = [
     "ARG002",
@@ -160,6 +175,7 @@ select = [
 "mxcubeweb/core/components/component_base.py" = [
     "FLY002",
     "G004",
+    "UP009",
 ]
 "mxcubeweb/core/components/harvester.py" = [
     "BLE001",
@@ -168,24 +184,26 @@ select = [
     "N814",
     "RET504",
     "TRY300",
+    "UP009",
 ]
 "mxcubeweb/core/components/lims.py" = [
-    "BLE001",
     "B016",
+    "BLE001",
     "E501",
-    "ERA001",
     "FBT002",
     "FURB188",
     "G002",
     "N814",
     "SIM102",
     "TRY301",
+    "UP009",
+    "UP031",
 ]
 "mxcubeweb/core/components/queue.py" = [
     "A005",
     "ARG002",
-    "BLE001",
     "B010",
+    "BLE001",
     "C411",
     "C901",
     "E501",
@@ -206,7 +224,6 @@ select = [
     "PLR1714",
     "PLR5501",
     "PLW0127",
-    "PLW0603",
     "PLW2901",
     "PTH113",
     "PTH118",
@@ -219,8 +236,13 @@ select = [
     "SLF001",
     "TD002",
     "TD003",
-    "TRY003",
     "TRY002",
+    "TRY003",
+    "UP009",
+    "UP026",
+    "UP030",
+    "UP031",
+    "UP032",
 ]
 "mxcubeweb/core/components/samplechanger.py" = [
     "BLE001",
@@ -234,6 +256,8 @@ select = [
     "SIM114",
     "SIM201",
     "TRY300",
+    "UP009",
+    "UP031",
 ]
 "mxcubeweb/core/components/sampleview.py" = [
     "ARG002",
@@ -243,21 +267,23 @@ select = [
     "N814",
     "PLR5501",
     "PLW0127",
-    "PLW0128",
     "SIM114",
     "TRY003",
     "TRY203",
+    "UP009",
+    "UP031",
 ]
 "mxcubeweb/core/components/user/database.py" = [
     "DTZ005",
+    "UP006",
 ]
 "mxcubeweb/core/components/user/dummyusermanager.py" = [
     "RET504",
 ]
 "mxcubeweb/core/components/user/usermanager.py" = [
     "ARG002",
-    "BLE001",
     "B006",
+    "BLE001",
     "C901",
     "DTZ005",
     "EM101",
@@ -272,12 +298,12 @@ select = [
     "S113",
     "SIM102",
     "SIM105",
-    "SIM101",
     "TRY002",
     "TRY003",
-    "TRY203",
     "TRY201",
+    "TRY203",
     "TRY400",
+    "UP031",
 ]
 "mxcubeweb/core/components/workflow.py" = [
     "ARG002",
@@ -285,20 +311,29 @@ select = [
     "N814",
     "RET504",
     "S110",
+    "UP009",
 ]
 "mxcubeweb/core/models/adaptermodels.py" = [
     "FBT003",
     "N815",
+    "UP006",
+    "UP007",
+    "UP009",
+    "UP035",
 ]
 "mxcubeweb/core/models/configmodels.py" = [
     "E501",
     "FBT003",
     "RUF012",
     "S108",
+    "UP006",
+    "UP007",
+    "UP035",
 ]
 "mxcubeweb/core/models/generic.py" = [
     "E501",
     "FBT003",
+    "UP007",
 ]
 "mxcubeweb/core/models/usermodels.py" = [
     "FBT003",
@@ -306,13 +341,12 @@ select = [
 "mxcubeweb/core/util/adapterutils.py" = [
     "PLR0911",
     "RET505",
-    "SLF001",
     "SIM101",
+    "SLF001",
 ]
 "mxcubeweb/core/util/convertutils.py" = [
     "C404",
     "FBT002",
-    "FBT003",
     "PLW2901",
 ]
 "mxcubeweb/core/util/fsutils.py" = [
@@ -333,6 +367,7 @@ select = [
     "RET505",
     "SIM108",
     "TRY400",
+    "UP031",
 ]
 "mxcubeweb/logging_handler.py" = [
     "B018",
@@ -345,17 +380,16 @@ select = [
     "G002",
     "N814",
     "PLR0913",
-    "RUF010",
     "SIM118",
     "SLF001",
     "TRY300",
     "TRY400",
+    "UP031",
 ]
 "mxcubeweb/routes/diffractometer.py" = [
     "N814",
 ]
 "mxcubeweb/routes/harvester.py" = [
-    "G004",
     "N814",
     "RET503",
     "RET504",
@@ -367,7 +401,6 @@ select = [
     "E501",
     "FBT003",
     "G001",
-    "N814",
     "PLR0912",
     "PLR0915",
     "PTH113",
@@ -377,17 +410,20 @@ select = [
     "S607",
     "SIM101",
     "SIM114",
-    "TRY400",
+    "UP009",
+    "UP030",
+    "UP032",
 ]
 "mxcubeweb/routes/log.py" = [
     "ARG001",
     "G002",
+    "UP031",
 ]
 "mxcubeweb/routes/login.py" = [
     "BLE001",
     "C901",
-    "N814",
     "RET504",
+    "UP031",
 ]
 "mxcubeweb/routes/main.py" = [
     "ARG001",
@@ -412,6 +448,7 @@ select = [
     "ARG001",
     "PLR0915",
     "SIM102",
+    "UP009",
 ]
 "mxcubeweb/routes/samplecentring.py" = [
     "ARG001",
@@ -446,18 +483,19 @@ select = [
     "PLR0913",
     "RET504",
     "S110",
+    "SIM105",
+    "SIM108",
+    "SLF001",
     "TD002",
     "TD003",
     "TD004",
-    "SLF001",
-    "SIM108",
-    "SIM105",
     "TRY400",
+    "UP031",
 ]
 "mxcubeweb/routes/workflow.py" = [
     "ARG001",
-    "ARG004",
     "RET504",
+    "UP009",
 ]
 "mxcubeweb/server.py" = [
     "ARG004",
@@ -469,6 +507,8 @@ select = [
     "S104",
     "S108",
     "SIM102",
+    "UP015",
+    "UP031",
 ]
 "mxcubeweb/state_storage.py" = [
     "ARG001",
@@ -492,6 +532,7 @@ select = [
     "S101",  # "Use of `assert` detected": ignored because tests do rely on `assert`
     "S108",
     "SIM105",
+    "UP009",
 ]
 "test/test_*.py" = [
     "E712",
@@ -512,6 +553,7 @@ select = [
 "test/test_queue_routes.py" = [
     "E501",
     "PT018",
+    "UP032",
 ]
 
 
