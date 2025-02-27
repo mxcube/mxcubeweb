@@ -474,7 +474,7 @@ const QuickMountTest =(props) =>{
           <Row>
             <Col xs={3}>step 1:</Col>
 
-            <Col>step 2:</Col>
+            <Col>step 2: （click only when robot not in freeze position）</Col>
 
           </Row>
           <Row>
@@ -483,7 +483,7 @@ const QuickMountTest =(props) =>{
             </Col>
             <Col>
               <QuickSCCommandTest
-                command={'closelid1'}
+                command={'park'}
                 sc_state={sc_state}
               />
             </Col>
