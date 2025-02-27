@@ -51,6 +51,4 @@ class Config:
 
     def load_config(self, component_name, schema):
         fpath = os.path.join(Config.CONFIG_ROOT_PATH, f"{component_name}.yaml")
-        config = ConfigLoader().load(path=fpath, schema=schema)
-
-        return config
+        return ConfigLoader().load(path=fpath, schema=schema)

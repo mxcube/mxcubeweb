@@ -166,13 +166,11 @@ class Queue(ComponentBase):
         if not node:
             node = HWR.beamline.queue_model.get_model_root()
 
-        res = reduce(
+        return reduce(
             lambda x, y: x.update(y) or x,
             self.queue_to_dict_rec(node, include_lims_data),
             {},
         )
-
-        return res
 
     def queue_to_json(self, node=None, include_lims_data=False):
         """
@@ -358,7 +356,7 @@ class Queue(ComponentBase):
             else dtype_label
         )
 
-        res = {
+        return {
             "label": dtype_label + " (" + parameters["fileName"] + ")",
             "type": "DataCollection",
             "parameters": parameters,
@@ -369,8 +367,6 @@ class Queue(ComponentBase):
             "checked": node.is_enabled(),
             "state": state,
         }
-
-        return res
 
     def _handle_gphl_wf(self, sample_node, node, include_lims_data=False):
         pt = node.path_template
@@ -400,7 +396,7 @@ class Queue(ComponentBase):
             parameters["directory"], parameters["fileName"]
         )
 
-        res = {
+        return {
             "label": parameters["label"],
             "strategy_name": parameters["strategy_name"],
             "type": "GphlWorkflow",
@@ -412,8 +408,6 @@ class Queue(ComponentBase):
             "checked": node.is_enabled(),
             "state": state,
         }
-
-        return res
 
     def _handle_wf(self, sample_node, node, include_lims_data):
         queueID = node._node_id
@@ -437,7 +431,7 @@ class Queue(ComponentBase):
             parameters["path"], parameters["fileName"]
         )
 
-        res = {
+        return {
             "label": parameters["label"],
             "type": "Workflow",
             "name": node._type,
@@ -448,8 +442,6 @@ class Queue(ComponentBase):
             "checked": node.is_enabled(),
             "state": state,
         }
-
-        return res
 
     def _handle_xrf(self, sample_node, node):
         queueID = node._node_id
@@ -475,7 +467,7 @@ class Queue(ComponentBase):
             parameters["path"], parameters["fileName"]
         )
 
-        res = {
+        return {
             "label": "XRF Scan",
             "type": "xrf_spectrum",
             "parameters": parameters,
@@ -486,8 +478,6 @@ class Queue(ComponentBase):
             "checked": node.is_enabled(),
             "state": state,
         }
-
-        return res
 
     def _handle_energy_scan(self, sample_node, node):
         queueID = node._node_id
@@ -515,7 +505,7 @@ class Queue(ComponentBase):
             parameters["path"], parameters["fileName"]
         )
 
-        res = {
+        return {
             "label": "Energy Scan",
             "type": "energy_scan",
             "parameters": parameters,
@@ -526,8 +516,6 @@ class Queue(ComponentBase):
             "checked": node.is_enabled(),
             "state": state,
         }
-
-        return res
 
     def _handle_char(self, parent_node, node, include_lims_data=False):
         sample_node = parent_node.get_sample_node()
@@ -544,7 +532,7 @@ class Queue(ComponentBase):
 
         originID, task = self._handle_diffraction_plan(node, sample_node)
 
-        res = {
+        return {
             "label": "CHARACTERISATION",
             "type": "Characterisation",
             "parameters": parameters,
@@ -557,8 +545,6 @@ class Queue(ComponentBase):
             "diffractionPlan": task,
             "diffractionPlanID": originID,
         }
-
-        return res
 
     def _handle_diffraction_plan(self, node, sample_node):
         model, _ = self.get_entry(node._node_id)
@@ -590,7 +576,7 @@ class Queue(ComponentBase):
         queueID = node._node_id
         _, state = self.get_node_state(queueID)
 
-        res = {
+        return {
             "label": "Interleaved",
             "type": "Interleaved",
             "parameters": {
@@ -604,8 +590,6 @@ class Queue(ComponentBase):
             "queueID": node._node_id,
             "state": state,
         }
-
-        return res
 
     def _handle_sample(self, node, include_lims_data=False):
         location = "Manual" if node.free_pin_mode else node.loc_str
@@ -909,9 +893,7 @@ class Queue(ComponentBase):
                 for ti in reversed(tindex_list):
                     self.delete_entry_at([[sid, int(ti)]])
 
-        res = self.queue_to_dict()
-
-        return res
+        return self.queue_to_dict()
 
     def _queue_add_item_rec(self, item_list, sample_node_id=None):
         """
@@ -2407,11 +2389,10 @@ class Queue(ComponentBase):
             msg = "[QUEUE] sample info could not be retrieved"
             logging.getLogger("MX3.HWR").error(msg)
             raise Exception(msg)
-        else:
-            # Find task with queue id method_id
-            for task in sample.tasks:
-                if task["queueID"] == int(method_id):
-                    return task
+        # Find task with queue id method_id
+        for task in sample.tasks:
+            if task["queueID"] == int(method_id):
+                return task
 
         msg = "[QUEUE] method info could not be retrieved, it does not exits for"
         msg += " the given sample"

@@ -40,23 +40,22 @@ def get_adapter_cls_from_hardware_object(ho):
         ho, AbstractShutter.AbstractShutter
     ):
         return NStateAdapter
-    elif isinstance(ho, MiniDiff.MiniDiff) or isinstance(
+    if isinstance(ho, MiniDiff.MiniDiff) or isinstance(
         ho, GenericDiffractometer.GenericDiffractometer
     ):
         return DiffractometerAdapter
-    elif isinstance(ho, AbstractEnergy.AbstractEnergy):
+    if isinstance(ho, AbstractEnergy.AbstractEnergy):
         return EnergyAdapter
-    elif isinstance(ho, AbstractDetector.AbstractDetector):
+    if isinstance(ho, AbstractDetector.AbstractDetector):
         return DetectorAdapter
-    elif isinstance(ho, AbstractMachineInfo.AbstractMachineInfo):
+    if isinstance(ho, AbstractMachineInfo.AbstractMachineInfo):
         return MachineInfoAdapter
-    elif isinstance(ho, AbstractBeam.AbstractBeam):
+    if isinstance(ho, AbstractBeam.AbstractBeam):
         return BeamAdapter
-    elif isinstance(ho, DataPublisher.DataPublisher):
+    if isinstance(ho, DataPublisher.DataPublisher):
         return DataPublisherAdapter
-    elif isinstance(ho, AbstractMotor.AbstractMotor):
+    if isinstance(ho, AbstractMotor.AbstractMotor):
         return MotorAdapter
-    elif isinstance(ho, AbstractActuator.AbstractActuator):
+    if isinstance(ho, AbstractActuator.AbstractActuator):
         return ActuatorAdapter
-    else:
-        return None
+    return None

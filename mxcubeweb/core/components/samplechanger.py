@@ -315,11 +315,10 @@ class SampleChanger(ComponentBase):
         num_samples = 0
         for basket in baskets:
             num_samples += basket.get_number_of_samples()
-        res = {
+        return {
             "num_baskets": len(baskets),
             "num_samples": num_samples,
         }
-        return res
 
     def get_maintenance_cmds(self):
         if HWR.beamline.sample_changer_maintenance is not None:
@@ -357,7 +356,7 @@ class SampleChanger(ComponentBase):
         except Exception:
             state = "OFFLINE"
 
-        initial_state = {
+        return {
             "state": state,
             "loaded_sample": loaded_sample,
             "contents": contents,
@@ -369,8 +368,6 @@ class SampleChanger(ComponentBase):
             "msg": msg,
             "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),
         }
-
-        return initial_state
 
     def sync_with_crims(self):
         """
@@ -394,8 +391,7 @@ class SampleChanger(ComponentBase):
                     "sample": x.sample,
                 }
                 xtal_list.append(response)
-            res = {"xtal_list": xtal_list}
-            return res
+            return {"xtal_list": xtal_list}
         except Exception:
             logging.getLogger("MX3.HWR").exception("Could not get crystal List")
             return {"xtal_list": xtal_list}

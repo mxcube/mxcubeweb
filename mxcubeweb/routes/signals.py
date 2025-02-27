@@ -242,7 +242,7 @@ def get_task_state(entry):
     _, state = mxcube.queue.get_node_state(node_id)
     node_index = mxcube.queue.node_index(entry.get_data_model())
 
-    msg = {
+    return {
         "Signal": "",
         "Message": "",
         "taskIndex": node_index["idx"],
@@ -251,8 +251,6 @@ def get_task_state(entry):
         "state": state,
         "progress": 1 if state == COLLECTED else 0,
     }
-
-    return msg
 
 
 def update_task_result(entry):

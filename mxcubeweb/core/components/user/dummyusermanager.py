@@ -7,8 +7,7 @@ class DummyUserManager(BaseUserManager):
 
     def _login(self, login_id, password):
         # Assuming that ISPyB is used
-        login_res = self.app.lims.lims_login(login_id, password, create_session=False)
-        return login_res
+        return self.app.lims.lims_login(login_id, password, create_session=False)
 
     def _signout(self):
         pass

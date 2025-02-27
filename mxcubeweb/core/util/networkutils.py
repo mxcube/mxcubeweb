@@ -33,7 +33,7 @@ def RateLimited(maxPerSecond):
             leftToWait = minInterval - elapsed
             if leftToWait > 0:
                 # ignore update
-                return
+                return None
             ret = func(*args, **kargs)
             lastTimeCalled.update({key: time.time()})
             return ret
@@ -80,8 +80,7 @@ def valid_login_only(f):
     def wrapped(*args, **kwargs):
         if not current_user.is_authenticated:
             return flask.Response(status=404)
-        else:
-            return f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     return wrapped
 
@@ -91,8 +90,7 @@ def require_control(f):
     def wrapped(*args, **kwargs):
         if current_user.is_authenticated and not current_user.in_control:
             return flask.Response(status=401)
-        else:
-            return f(*args, **kwargs)
+        return f(*args, **kwargs)
 
     return wrapped
 
@@ -102,8 +100,8 @@ def ws_valid_login_only(f):
     def wrapped(*args, **kwargs):
         if not current_user.is_authenticated:
             flask_socketio.disconnect()
-        else:
-            return f(*args, **kwargs)
+            return None
+        return f(*args, **kwargs)
 
     return wrapped
 

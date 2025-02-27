@@ -63,10 +63,7 @@ def init_route(app, server, url_prefix):
     @bp.route("/ssologin", methods=["GET"])
     def ssosignin():
         redirect_uri = url_for("login.auth", _external=True)
-        response = app.usermanager.oauth_client.keycloak.authorize_redirect(
-            redirect_uri
-        )
-        return response
+        return app.usermanager.oauth_client.keycloak.authorize_redirect(redirect_uri)
 
     @bp.route("/auth", methods=["GET"])
     def auth():

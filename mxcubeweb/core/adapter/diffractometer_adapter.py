@@ -33,9 +33,7 @@ class DiffractometerAdapter(AdapterBase):
 
     def head_configuration(self) -> dict:
         data = self._ho.get_head_configuration()
-        data = data.dict() if data else {}
-
-        return data
+        return data.dict() if data else {}
 
     def set_chip_layout(
         self,

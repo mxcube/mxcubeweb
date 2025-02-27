@@ -40,11 +40,10 @@ class Workflow(ComponentBase):
         base64data = HWR.beamline.sample_view.get_grid_data(gid)
         base64data = base64data if base64data else ""
 
-        data = base64.b64decode(base64data)
-        return data
+        return base64.b64decode(base64data)
 
     def test_workflow_dialog(self, wf):
-        dialog = {
+        return {
             "properties": {
                 "name": {
                     "title": "Task name",
@@ -66,5 +65,3 @@ class Workflow(ComponentBase):
             "required": ["name"],
             "dialogName": "Trouble shooting !",
         }
-
-        return dialog

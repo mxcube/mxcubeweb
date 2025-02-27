@@ -81,8 +81,7 @@ class AdapterBase:
         try:
             if _cmd:
                 return _cmd(**args)
-            else:
-                return self._ho.execute_exported_command(cmd_name, args)
+            return self._ho.execute_exported_command(cmd_name, args)
         except Exception as ex:
             self._command_exception(cmd_name, ex)
             logging.getLogger("MX3.HWR").exception("")
@@ -198,8 +197,7 @@ class AdapterBase:
     def _pydantic_model_for_command(self, cmd_name):
         if cmd_name in self.METHODS:
             return self._model_from_typehint(getattr(self, cmd_name, None))["args"]
-        else:
-            return self._ho.pydantic_model[cmd_name]
+        return self._ho.pydantic_model[cmd_name]
 
     def _exported_methods(self):
         exported_methods = {}

@@ -418,13 +418,12 @@ class UserManager(BaseUserManager):
                 if current_user.username == login_id:
                     msg = "You are already logged in"
                     raise Exception(msg)
-                else:
-                    msg = (
-                        "Login rejected, you are already logged in"
-                        " somewhere else\nand Another user is already"
-                        " logged in"
-                    )
-                    raise Exception(msg)
+                msg = (
+                    "Login rejected, you are already logged in"
+                    " somewhere else\nand Another user is already"
+                    " logged in"
+                )
+                raise Exception(msg)
 
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):

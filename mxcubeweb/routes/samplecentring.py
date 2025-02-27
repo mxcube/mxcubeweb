@@ -123,8 +123,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
 
         if point:
             return Response(status=200)
-        else:
-            return Response(status=409)
+        return Response(status=409)
 
     @bp.route("/shapes", methods=["GET"])
     @server.restrict
@@ -156,8 +155,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
             resp = jsonify(shape)
             resp.status_code = 200
             return resp
-        else:
-            return Response(status=409)
+        return Response(status=409)
 
     @bp.route("/shapes/<sid>", methods=["POST"])
     def shape_add_result(sid):

@@ -30,14 +30,12 @@ class BeamlineActionAdapter(ActuatorAdapterBase):
         self.value_change(v)
 
     def commands(self):
-        method_list = [
+        return [
             attribute
             for attribute in dir(self._ho.__class__)
             if callable(getattr(self._ho.__class__, attribute))
             and attribute.startswith("_") is False
         ]
-
-        return method_list
 
     def _set_value(self, value: HOActuatorValueChangeModel):
         self._ho.set_value(self._ho.VALUES[value.value])

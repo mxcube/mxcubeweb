@@ -112,6 +112,7 @@ class MXCUBECore:
     def _get_object_from_id(_id):
         if _id in MXCUBECore.adapter_dict:
             return MXCUBECore.adapter_dict[_id]["adapter"]
+        return None
 
     @staticmethod
     def _get_adapter_id(ho):

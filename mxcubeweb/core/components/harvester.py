@@ -50,7 +50,7 @@ class Harvester(ComponentBase):
         except Exception:
             state = "OFFLINE"
 
-        initial_state = {
+        return {
             "state": state,
             "contents": contents,
             "global_state": {"global_state": global_state, "commands_state": cmdstate},
@@ -58,8 +58,6 @@ class Harvester(ComponentBase):
             "msg": msg,
             "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),
         }
-
-        return initial_state
 
     def mount_from_harvester(self):
         sc = HWR.beamline.sample_changer

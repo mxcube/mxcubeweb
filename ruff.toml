@@ -29,7 +29,6 @@ select = [
     "N813",
     "N814",
     "PTH109",
-    "RET505",
     "S108",
 ]
 "mxcubeweb/__version__.py" = [
@@ -50,7 +49,6 @@ select = [
     "PTH118",
     "PTH120",
     "PTH123",
-    "RET503",
     "RUF012",
     "S103",
     "SIM108",
@@ -62,7 +60,6 @@ select = [
     "G004",
     "PTH118",
     "PTH123",
-    "RET504",
     "TRY400",
 ]
 "mxcubeweb/core/adapter/actuator_adapter.py" = [
@@ -76,7 +73,6 @@ select = [
     "B904",
     "G003",
     "G004",
-    "RET505",
     "RUF012",
     "SIM105",
     "SIM212",
@@ -87,7 +83,6 @@ select = [
 ]
 "mxcubeweb/core/adapter/beamline_action_adapter.py" = [
     "BLE001",
-    "RET504",
     "SIM108",
     "TRY400",
 ]
@@ -101,7 +96,6 @@ select = [
     "RUF012",
 ]
 "mxcubeweb/core/adapter/diffractometer_adapter.py" = [
-    "RET504",
     "RUF012",
 ]
 "mxcubeweb/core/adapter/energy_adapter.py" = [
@@ -155,7 +149,6 @@ select = [
     "N803",
     "N806",
     "N814",
-    "RET504",
     "TRY300",
 ]
 "mxcubeweb/core/components/lims.py" = [
@@ -196,8 +189,6 @@ select = [
     "PLW2901",
     "PTH113",
     "PTH118",
-    "RET504",
-    "RET506",
     "S110",
     "SIM105",
     "SIM108",
@@ -218,7 +209,6 @@ select = [
     "N806",
     "N814",
     "PLR5501",
-    "RET504",
     "SIM108",
     "SIM114",
     "SIM201",
@@ -240,9 +230,6 @@ select = [
 "mxcubeweb/core/components/user/database.py" = [
     "DTZ005",
 ]
-"mxcubeweb/core/components/user/dummyusermanager.py" = [
-    "RET504",
-]
 "mxcubeweb/core/components/user/usermanager.py" = [
     "ARG002",
     "B006",
@@ -255,7 +242,6 @@ select = [
     "FBT003",
     "N814",
     "PLR5501",
-    "RET506",
     "S110",
     "S113",
     "SIM102",
@@ -271,7 +257,6 @@ select = [
     "ARG002",
     "BLE001",
     "N814",
-    "RET504",
     "S110",
 ]
 "mxcubeweb/core/models/adaptermodels.py" = [
@@ -293,7 +278,6 @@ select = [
 ]
 "mxcubeweb/core/util/adapterutils.py" = [
     "PLR0911",
-    "RET505",
     "SIM101",
     "SLF001",
 ]
@@ -314,9 +298,6 @@ select = [
     "N803",
     "N806",
     "N814",
-    "RET502",
-    "RET503",
-    "RET505",
     "SIM108",
     "TRY400",
     "UP031",
@@ -343,8 +324,6 @@ select = [
 ]
 "mxcubeweb/routes/harvester.py" = [
     "N814",
-    "RET503",
-    "RET504",
     "SIM210",
 ]
 "mxcubeweb/routes/lims.py" = [
@@ -373,7 +352,6 @@ select = [
 "mxcubeweb/routes/login.py" = [
     "BLE001",
     "C901",
-    "RET504",
     "UP031",
 ]
 "mxcubeweb/routes/main.py" = [
@@ -406,7 +384,6 @@ select = [
     "E501",
     "N814",
     "PLR0915",
-    "RET505",
     "TRY002",
     "TRY003",
     "TRY301",
@@ -430,7 +407,6 @@ select = [
     "N814",
     "N816",
     "PLR0913",
-    "RET504",
     "S110",
     "SIM105",
     "SIM108",
@@ -443,7 +419,6 @@ select = [
 ]
 "mxcubeweb/routes/workflow.py" = [
     "ARG001",
-    "RET504",
 ]
 "mxcubeweb/server.py" = [
     "ARG004",

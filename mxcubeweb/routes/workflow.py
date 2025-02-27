@@ -34,12 +34,10 @@ def init_route(app, server, url_prefix):
     @bp.route("/mesh_result/<gid>/<t>", methods=["GET"])
     # @server.restrict
     def get_grid_data(gid, t, rand):
-        res = send_file(
+        return send_file(
             io.BytesIO(app.workflow.get_mesh_result(gid, t)),
             mimetype="image/png",
         )
-
-        return res
 
     # This route is only for testing
     @bp.route("/dialog/<wf>", methods=["GET"])
