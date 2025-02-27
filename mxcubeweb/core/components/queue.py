@@ -842,7 +842,7 @@ class Queue(ComponentBase):
         :param list sample_order: List of sample ids
         """
         current_queue = self.queue_to_dict()
-        sid_list = list([sid for sid in order if current_queue.get(sid, False)])
+        sid_list = [sid for sid in order if current_queue.get(sid, False)]
 
         if sid_list:
             queue_id_list = [current_queue[sid]["queueID"] for sid in sid_list]

@@ -7,7 +7,7 @@ from mxcubeweb.server import Server as server
 
 
 def flush():
-    mxcube.UI_STATE = dict()
+    mxcube.UI_STATE = {}
 
 
 def init():

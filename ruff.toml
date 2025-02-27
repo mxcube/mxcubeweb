@@ -38,8 +38,6 @@ select = [
 ]
 "mxcubeweb/app.py" = [
     "BLE001",
-    "C408",
-    "C416",
     "E501",
     "EM101",
     "G002",
@@ -142,7 +140,6 @@ select = [
 ]
 "mxcubeweb/core/components/beamline.py" = [
     "BLE001",
-    "C408",
     "N806",
     "N814",
     "SIM118",
@@ -183,7 +180,6 @@ select = [
     "ARG002",
     "B010",
     "BLE001",
-    "C411",
     "C901",
     "E501",
     "EM101",
@@ -310,7 +306,6 @@ select = [
     "SLF001",
 ]
 "mxcubeweb/core/util/convertutils.py" = [
-    "C404",
     "FBT002",
     "PLW2901",
 ]
@@ -473,7 +468,6 @@ select = [
 ]
 "mxcubeweb/state_storage.py" = [
     "ARG001",
-    "C408",
     "N813",
     "SIM118",
 ]

@@ -16,15 +16,10 @@ def convert_to_dict(ispyb_object):
                     (convert_to_dict(x) if not isinstance(x, dict) else x) for x in val
                 ]
             elif isinstance(val, dict):
-                val = dict(
-                    [
-                        (
-                            k,
-                            (convert_to_dict(x) if not isinstance(x, dict) else x),
-                        )
-                        for k, x in val.items()
-                    ]
-                )
+                val = {
+                    k: (convert_to_dict(x) if not isinstance(x, dict) else x)
+                    for k, x in val.items()
+                }
 
             d[key] = val
 

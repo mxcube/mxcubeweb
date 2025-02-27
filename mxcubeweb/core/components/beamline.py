@@ -137,7 +137,7 @@ class Beamline(ComponentBase):
     def beamline_get_all_attributes(self):
         ho = BeamlineAdapter(HWR.beamline)
         data = ho.dict()
-        actions = list()
+        actions = []
 
         try:
             cmds = HWR.beamline.beamline_actions.get_commands()
