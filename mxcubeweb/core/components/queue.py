@@ -73,7 +73,8 @@ class Queue(ComponentBase):
             pt.run_number += 1
 
             if pt.run_number > 1000:
-                raise RuntimeError("Over a thousand runs of the same collection")
+                msg = "Over a thousand runs of the same collection"
+                raise RuntimeError(msg)
 
             start_fname, end_fname = pt.get_first_and_last_file()
 

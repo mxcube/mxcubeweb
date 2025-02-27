@@ -416,21 +416,25 @@ class UserManager(BaseUserManager):
                 self.force_signout_user(login_id)
             else:
                 if current_user.username == login_id:
-                    raise Exception("You are already logged in")
+                    msg = "You are already logged in"
+                    raise Exception(msg)
                 else:
-                    raise Exception(
+                    msg = (
                         "Login rejected, you are already logged in"
                         " somewhere else\nand Another user is already"
                         " logged in"
                     )
+                    raise Exception(msg)
 
         # Only allow in-house log-in from local host
         if inhouse and not (inhouse and is_local_host()):
-            raise Exception("In-house only allowed from localhost")
+            msg = "In-house only allowed from localhost"
+            raise Exception(msg)
 
         # Only allow local login when remote is disabled
         if not self.app.ALLOW_REMOTE and not is_local_host():
-            raise Exception("Remote access disabled")
+            msg = "Remote access disabled"
+            raise Exception(msg)
 
         return session_manager
 

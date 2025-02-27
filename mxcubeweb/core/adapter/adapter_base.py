@@ -418,7 +418,8 @@ class ActuatorAdapterBase(AdapterBase):
             # as we are returning floats
             return (0, 0) if None in self._ho.get_limits() else self._ho.get_limits()
         except (AttributeError, TypeError):
-            raise ValueError("Could not get limits")
+            msg = "Could not get limits"
+            raise ValueError(msg)
 
     def _dict_repr(self):
         """Dictionary representation of the hardware object.

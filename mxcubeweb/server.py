@@ -37,9 +37,8 @@ class Server:
     flask_socketio = None
 
     def __init__(self):
-        raise NotImplementedError(
-            "Server is to be used as a pure static class, don't instantiate."
-        )
+        msg = "Server is to be used as a pure static class, don't instantiate."
+        raise NotImplementedError(msg)
 
     @staticmethod
     def exception_handler(e):

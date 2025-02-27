@@ -72,4 +72,5 @@ class MotorAdapter(ActuatorAdapterBase):
         try:
             return self._ho.get_limits()
         except (AttributeError, TypeError):
-            raise ValueError("Could not get limits")
+            msg = "Could not get limits"
+            raise ValueError(msg)

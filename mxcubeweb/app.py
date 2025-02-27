@@ -248,9 +248,8 @@ class MXCUBEApplication:
     server = None
 
     def __init__(self):
-        raise NotImplementedError(
-            "MXCUBEApplication is to be used as a pure static class, dont instanciate"
-        )
+        msg = "MXCUBEApplication is to be used as a pure static class, dont instanciate"
+        raise NotImplementedError(msg)
 
     @staticmethod
     def init(

@@ -62,7 +62,8 @@ class ActuatorAdapter(ActuatorAdapterBase):
         try:
             return FloatValueModel(value=self._ho.get_value())
         except (AttributeError, TypeError):
-            raise ValueError("Could not get value")
+            msg = "Could not get value"
+            raise ValueError(msg)
 
     def stop(self):
         """
