@@ -71,7 +71,8 @@ def client():
 
     resp = client.get("/mxcube/api/v0.1/queue/")
 
-    assert resp.status_code == 200 and json.loads(resp.data).get("1:05")
+    assert resp.status_code == 200
+    assert json.loads(resp.data).get("1:05")
 
     queue_id = json.loads(resp.data).get("1:05")["queueID"]
     task_to_add = copy.deepcopy(test_task)
@@ -114,7 +115,7 @@ def add_sample(client):
     )
 
     assert resp.status_code == 200
-    yield client
+    return client
 
 
 @pytest.fixture
@@ -122,7 +123,8 @@ def add_task(client):
     """Fixture to add a task to the sample in the queue queue, since it is required for alot of test cases."""
     resp = client.get("/mxcube/api/v0.1/queue")
 
-    assert resp.status_code == 200 and json.loads(resp.data).get("1:05")
+    assert resp.status_code == 200
+    assert json.loads(resp.data).get("1:05")
 
     queue_id = json.loads(resp.data).get("1:05")["queueID"]
     task_to_add = copy.deepcopy(test_task)
@@ -137,4 +139,4 @@ def add_task(client):
 
     assert resp.status_code == 200
 
-    yield client
+    return client

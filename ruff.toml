@@ -443,8 +443,6 @@ select = [
     "E402",
     "E501",
     "PLW0603",
-    "PT018",
-    "PT022",
     "PTH100",
     "PTH107",
     "PTH118",
@@ -471,7 +469,6 @@ select = [
 ]
 "test/test_queue_routes.py" = [
     "E501",
-    "PT018",
     "UP032",
 ]
 
