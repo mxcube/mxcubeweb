@@ -1,10 +1,3 @@
-# -*- coding: utf-8 -*-
-from typing import (
-    List,
-    Tuple,
-    Union,
-)
-
 from pydantic.v1 import (
     BaseModel,
     Field,
@@ -22,7 +15,7 @@ class HOModel(BaseModel):
         description="True if the object can only be read (not manipluated)",
     )
     attributes: dict = Field({}, description="Data attributes")
-    commands: Union[dict, list] = Field({}, description="Available methods")
+    commands: dict | list = Field({}, description="Available methods")
 
     # pyflakes are a bit picky with F821 (Undefined name),
     # not even sure "forbid" should ba considered as an undefined name
@@ -32,7 +25,7 @@ class HOModel(BaseModel):
 
 class HOActuatorModel(HOModel):
     value: float = Field(0, description="Value of actuator (position)")
-    limits: Tuple[float, float] = Field((-1, -1), description="Limits (min max)")
+    limits: tuple[float, float] = Field((-1, -1), description="Limits (min max)")
 
 
 class NStateModel(HOActuatorModel):
@@ -49,9 +42,9 @@ class HOActuatorValueChangeModel(BaseModel):
 
 
 class HOBeamRawValueModel(BaseModel):
-    apertureList: List[str] = Field([0], description="List of available apertures")
+    apertureList: list[str] = Field([0], description="List of available apertures")
     currentAperture: str = Field(0, description="Current aperture label")
-    position: Tuple[float, float] = Field((0, 0), description="Beam position on OAV")
+    position: tuple[float, float] = Field((0, 0), description="Beam position on OAV")
     shape: str = Field("ellipse", descrption="Beam shape")
     size_x: float = Field(
         0.01,

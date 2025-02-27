@@ -53,7 +53,7 @@ class Server:
         # of non-zero exit code, so we don't kill the processes
         # when running the tests
         if not Server.flask.testing:
-            with open("/tmp/mxcube.pid", "r") as f:
+            with open("/tmp/mxcube.pid") as f:
                 pid_list = f.read().strip()
                 pid_list = pid_list.split(" ")
                 pid_list.reverse()

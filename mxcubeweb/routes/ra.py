@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import gevent
 from flask import (
     Blueprint,

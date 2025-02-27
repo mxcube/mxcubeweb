@@ -10,7 +10,7 @@ class DiffractometerAdapter(AdapterBase):
         Args:
             (object): Hardware object.
         """
-        super(DiffractometerAdapter, self).__init__(ho, *args)
+        super().__init__(ho, *args)
         ho.connect("stateChanged", self._state_change)
         ho.connect("valueChanged", self._state_change)
         ho.connect("phaseChanged", self._diffractometer_phase_changed)

@@ -1,12 +1,11 @@
-# -*- coding: utf-8 -*-
 import itertools
 import json
 import logging
 import os
 import re
 from functools import reduce
+from unittest.mock import Mock
 
-from mock import Mock
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import queue_entry as qe
 from mxcubecore.HardwareObjects.Gphl import GphlQueueEntry

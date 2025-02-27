@@ -12,7 +12,7 @@ class FluxAdapter(ActuatorAdapterBase):
         Args:
             (object): Hardware object.
         """
-        super(FluxAdapter, self).__init__(ho, *args, **kwargs)
+        super().__init__(ho, *args, **kwargs)
 
         self._read_only = ho.read_only
 
