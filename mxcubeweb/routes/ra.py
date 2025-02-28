@@ -25,13 +25,12 @@ def init_route(app, server, url_prefix):  # noqa: C901
         def handle_timeout_gives_control(sid, timeout=30):
             gevent.sleep(timeout)
 
-            if app.TIMEOUT_GIVES_CONTROL:
+            if app.TIMEOUT_GIVES_CONTROL and current_user.requests_control:
                 # Pass control to user if still waiting
-                if current_user.requests_control:
-                    toggle_operator(
-                        current_user.username,
-                        "Timeout expired, you have control",
-                    )
+                toggle_operator(
+                    current_user.username,
+                    "Timeout expired, you have control",
+                )
 
         # Is someone already asking for control
         for observer in app.usermanager.get_observers():

@@ -388,11 +388,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def set_setting():
         result = app.queue.set_setting(SimpleNameValue(**request.json))
 
-        if result:
-            resp = jsonify({result[0]: result[1]})
-        else:
-            resp = Response(status=409)
-
-        return resp
+        return jsonify({result[0]: result[1]}) if result else Response(status=409)
 
     return bp

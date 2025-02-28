@@ -1,3 +1,4 @@
+import contextlib
 from decimal import Decimal
 
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
@@ -16,10 +17,8 @@ class FluxAdapter(ActuatorAdapterBase):
 
         self._read_only = ho.read_only
 
-        try:
+        with contextlib.suppress(Exception):
             ho.connect("valueChanged", self._value_change)
-        except Exception:
-            pass
 
     @RateLimited(6)
     def _value_change(self, value, **kwargs):

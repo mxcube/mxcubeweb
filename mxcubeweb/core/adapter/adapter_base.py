@@ -1,3 +1,4 @@
+import contextlib
 import inspect
 import logging
 import traceback
@@ -40,7 +41,7 @@ class AdapterBase:
         self._msg = ""
 
     def get_adapter_id(self, ho=None):
-        ho = self._ho if not ho else ho
+        ho = ho if ho else self._ho
         return self.app.mxcubecore._get_adapter_id(ho)
 
     def _add_adapter(self, attr_name, ho, adapter_cls=None):
@@ -347,10 +348,8 @@ class ActuatorAdapterBase(AdapterBase):
 
         self._unique = False
 
-        try:
+        with contextlib.suppress(AttributeError):
             self._read_only = ho.read_only
-        except AttributeError:
-            pass
 
     # Don't limit rate this method with utils.LimitRate, all subclasses
     # will share this method thus all methods will be effected if limit rated.

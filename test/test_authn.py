@@ -3,6 +3,7 @@
 
 """Authentication tests."""
 
+import contextlib
 import os
 import time
 
@@ -34,10 +35,8 @@ def login_type(request):
 
 @pytest.fixture
 def server(request, login_type):
-    try:
+    with contextlib.suppress(FileNotFoundError):
         os.remove(USER_DB_PATH)
-    except FileNotFoundError:
-        pass
 
     mxcubecore.HardwareRepository.uninit_hardware_repository()
 
@@ -54,10 +53,8 @@ def server(request, login_type):
 
     yield server_
 
-    try:
+    with contextlib.suppress(FileNotFoundError):
         os.remove(USER_DB_PATH)
-    except FileNotFoundError:
-        pass
 
 
 @pytest.fixture

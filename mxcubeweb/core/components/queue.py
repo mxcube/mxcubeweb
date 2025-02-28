@@ -1,3 +1,4 @@
+import contextlib
 import itertools
 import json
 import logging
@@ -111,10 +112,8 @@ class Queue(ComponentBase):
                 else:
                     tlist.extend(group.get_children())
 
-            try:
+            with contextlib.suppress(Exception):
                 index = tlist.index(node)
-            except Exception:
-                pass
 
         return {
             "sample": sample,
@@ -648,10 +647,7 @@ class Queue(ComponentBase):
         """
         result = []
 
-        if isinstance(node, list):
-            node_list = node
-        else:
-            node_list = node.get_children()
+        node_list = node if isinstance(node, list) else node.get_children()
 
         for node in node_list:
             # NB under GPhL workflow, nodes do not have predictable distance
@@ -1639,7 +1635,7 @@ class Queue(ComponentBase):
         HWR.beamline.queue_model.add_child(parent_model, group_model)
         HWR.beamline.queue_model.add_child(group_model, wf_model)
 
-        if not task["parameters"]["wfpath"] == "Gphl":
+        if task["parameters"]["wfpath"] != "Gphl":
             self.set_wf_params(wf_model, dc_entry, task, sample_model)
 
         group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)

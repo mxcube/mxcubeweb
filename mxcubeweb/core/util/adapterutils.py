@@ -36,13 +36,9 @@ def get_adapter_cls_from_hardware_object(ho):
     from mxcubeweb.core.adapter.motor_adapter import MotorAdapter
     from mxcubeweb.core.adapter.nstate_adapter import NStateAdapter
 
-    if isinstance(ho, AbstractNState.AbstractNState) or isinstance(
-        ho, AbstractShutter.AbstractShutter
-    ):
+    if isinstance(ho, AbstractNState.AbstractNState | AbstractShutter.AbstractShutter):
         return NStateAdapter
-    if isinstance(ho, MiniDiff.MiniDiff) or isinstance(
-        ho, GenericDiffractometer.GenericDiffractometer
-    ):
+    if isinstance(ho, MiniDiff.MiniDiff | GenericDiffractometer.GenericDiffractometer):
         return DiffractometerAdapter
     if isinstance(ho, AbstractEnergy.AbstractEnergy):
         return EnergyAdapter

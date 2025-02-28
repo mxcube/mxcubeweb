@@ -51,7 +51,6 @@ select = [
     "PTH123",
     "RUF012",
     "S103",
-    "SIM108",
     "SIM115",
     "T201",
     "UP031",
@@ -74,8 +73,6 @@ select = [
     "G003",
     "G004",
     "RUF012",
-    "SIM105",
-    "SIM212",
     "SLF001",
     "TRY003",
     "TRY400",
@@ -83,7 +80,6 @@ select = [
 ]
 "mxcubeweb/core/adapter/beamline_action_adapter.py" = [
     "BLE001",
-    "SIM108",
     "TRY400",
 ]
 "mxcubeweb/core/adapter/beamline_adapter.py" = [
@@ -105,7 +101,6 @@ select = [
     "BLE001",
     "ERA001",
     "S110",
-    "SIM105",
     "UP032",
 ]
 "mxcubeweb/core/adapter/machine_info_adapter.py" = [
@@ -117,7 +112,6 @@ select = [
 ]
 "mxcubeweb/core/adapter/nstate_adapter.py" = [
     "BLE001",
-    "SIM108",
     "TRY400",
 ]
 "mxcubeweb/core/adapter/wavelength_adapter.py" = [
@@ -131,7 +125,6 @@ select = [
     "BLE001",
     "N806",
     "N814",
-    "SIM118",
     "TRY002",
     "UP031",
 ]
@@ -159,7 +152,6 @@ select = [
     "FURB188",
     "G002",
     "N814",
-    "SIM102",
     "TRY301",
     "UP031",
 ]
@@ -190,9 +182,6 @@ select = [
     "PTH113",
     "PTH118",
     "S110",
-    "SIM105",
-    "SIM108",
-    "SIM201",
     "SLF001",
     "TD002",
     "TD003",
@@ -209,9 +198,6 @@ select = [
     "N806",
     "N814",
     "PLR5501",
-    "SIM108",
-    "SIM114",
-    "SIM201",
     "TRY300",
     "UP031",
 ]
@@ -222,7 +208,6 @@ select = [
     "N814",
     "PLR5501",
     "PLW0127",
-    "SIM114",
     "TRY003",
     "TRY203",
     "UP031",
@@ -244,8 +229,6 @@ select = [
     "PLR5501",
     "S110",
     "S113",
-    "SIM102",
-    "SIM105",
     "TRY002",
     "TRY003",
     "TRY201",
@@ -278,7 +261,6 @@ select = [
 ]
 "mxcubeweb/core/util/adapterutils.py" = [
     "PLR0911",
-    "SIM101",
     "SLF001",
 ]
 "mxcubeweb/core/util/convertutils.py" = [
@@ -288,8 +270,6 @@ select = [
 "mxcubeweb/core/util/fsutils.py" = [
     "B006",
     "PTH122",
-    "SIM102",
-    "SIM105",
 ]
 "mxcubeweb/core/util/networkutils.py" = [
     "BLE001",
@@ -298,7 +278,6 @@ select = [
     "N803",
     "N806",
     "N814",
-    "SIM108",
     "TRY400",
     "UP031",
 ]
@@ -313,7 +292,6 @@ select = [
     "G002",
     "N814",
     "PLR0913",
-    "SIM118",
     "SLF001",
     "TRY300",
     "TRY400",
@@ -324,7 +302,6 @@ select = [
 ]
 "mxcubeweb/routes/harvester.py" = [
     "N814",
-    "SIM210",
 ]
 "mxcubeweb/routes/lims.py" = [
     "BLE001",
@@ -339,8 +316,6 @@ select = [
     "RUF100",
     "S603",
     "S607",
-    "SIM101",
-    "SIM114",
     "UP030",
     "UP032",
 ]
@@ -370,13 +345,11 @@ select = [
     "BLE001",
     "N814",
     "PLR0915",
-    "SIM108",
     "TRY300",
 ]
 "mxcubeweb/routes/ra.py" = [
     "ARG001",
     "PLR0915",
-    "SIM102",
 ]
 "mxcubeweb/routes/samplecentring.py" = [
     "ARG001",
@@ -408,8 +381,6 @@ select = [
     "N816",
     "PLR0913",
     "S110",
-    "SIM105",
-    "SIM108",
     "SLF001",
     "TD002",
     "TD003",
@@ -428,13 +399,11 @@ select = [
     "PTH123",
     "S104",
     "S108",
-    "SIM102",
     "UP031",
 ]
 "mxcubeweb/state_storage.py" = [
     "ARG001",
     "N813",
-    "SIM118",
 ]
 "test/*.py" = [
     "INP001",
@@ -449,7 +418,6 @@ select = [
     "PTH120",
     "S101",  # "Use of `assert` detected": ignored because tests do rely on `assert`
     "S108",
-    "SIM105",
 ]
 "test/test_*.py" = [
     "E712",
@@ -461,7 +429,6 @@ select = [
     "PLR2044",
     "PTH107",
     "S108",
-    "SIM105",
 ]
 "test/test_diffractometer_routes.py" = [
     "N814",

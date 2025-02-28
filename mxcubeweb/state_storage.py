@@ -47,4 +47,4 @@ def init():
 
     @server.flask_socketio.on("ui_state_getkeys", namespace="/ui_state")
     def ui_state_getkeys(*args):
-        return ["reduxPersist:" + k for k in mxcube.UI_STATE.keys()]
+        return ["reduxPersist:" + k for k in mxcube.UI_STATE]

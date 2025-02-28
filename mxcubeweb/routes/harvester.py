@@ -108,7 +108,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def send_ha_command(cmdparts, args=None):
         try:
             if cmdparts == "set_room_temperature_mode":
-                value = True if args in ["true", "True", "TRUE", "1"] else False
+                value = args in ["true", "True", "TRUE", "1"]
                 HWR.beamline.harvester_maintenance.send_command(cmdparts, value)
                 # Temporary set MD and SC Temperature mode at the same time
                 HWR.beamline.sample_changer.set_room_temperature_mode(value)

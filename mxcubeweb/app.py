@@ -396,10 +396,7 @@ class MXCUBEApplication:
             )
             uilog_file_handler.setFormatter(file_formatter)
 
-        if not log_level:
-            log_level = "INFO"
-        else:
-            log_level = log_level.upper()
+        log_level = "INFO" if not log_level else log_level.upper()
 
         custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
         custom_log_handler.setLevel(log_level)

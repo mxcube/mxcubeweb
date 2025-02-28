@@ -25,10 +25,7 @@ def RateLimited(maxPerSecond):
 
     def decorate(func):
         def rateLimitedFunction(*args, **kargs):
-            if type(args[0]) is dict:
-                key = args[0].get("Signal")
-            else:
-                key = args[0]
+            key = args[0].get("Signal") if type(args[0]) is dict else args[0]
             elapsed = time.time() - lastTimeCalled.get(key, 0)
             leftToWait = minInterval - elapsed
             if leftToWait > 0:

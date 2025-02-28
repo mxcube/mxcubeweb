@@ -1,3 +1,4 @@
+import contextlib
 import json
 import logging
 
@@ -175,10 +176,7 @@ def loaded_sample_changed(sample):
         else:
             sample = HWR.beamline.sample_changer.get_loaded_sample()
 
-            if sample:
-                address = sample.get_address()
-            else:
-                address = None
+            address = sample.get_address() if sample else None
 
             mxcube.sample_changer.set_current_sample(address)
 
@@ -405,10 +403,8 @@ def collect_oscillation_failed(
     mxcube.NODE_ID_TO_LIMS_ID[node["queue_id"]] = lims_id
 
     if not mxcube.queue.is_interleaved(node["node"]):
-        try:
+        with contextlib.suppress(Exception):
             HWR.beamline.get_dc(lims_id)
-        except Exception:
-            pass
 
         msg = {
             "Signal": "collectOscillationFailed",

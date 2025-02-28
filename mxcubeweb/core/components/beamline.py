@@ -189,7 +189,7 @@ class Beamline(ComponentBase):
         beamline_actions = HWR.beamline.beamline_actions
 
         if getattr(beamline_actions, "pydantic_model", None):
-            for cmd_name in beamline_actions.exported_attributes.keys():
+            for cmd_name in beamline_actions.exported_attributes:
                 cmd_object = beamline_actions.get_annotated_command(cmd_name)
 
                 actions.append(

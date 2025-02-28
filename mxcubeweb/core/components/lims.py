@@ -197,12 +197,13 @@ class Lims(ComponentBase):
             self.app.usermanager.signout()
             return False
 
-        if HWR.beamline.lims.is_user_login_type() and "Commissioning" in session.title:
-            if hasattr(HWR.beamline.session, "set_in_commissioning"):
-                HWR.beamline.session.set_in_commissioning(self.get_proposal_info())
-                logging.getLogger("MX3.HWR").info(
-                    "[LIMS] Commissioning proposal flag set."
-                )
+        if (
+            HWR.beamline.lims.is_user_login_type()
+            and "Commissioning" in session.title
+            and hasattr(HWR.beamline.session, "set_in_commissioning")
+        ):
+            HWR.beamline.session.set_in_commissioning(self.get_proposal_info())
+            logging.getLogger("MX3.HWR").info("[LIMS] Commissioning proposal flag set.")
 
         if HWR.beamline.session.session_id != HWR.beamline.lims.get_session_id():
             # ruff: noqa: G004

@@ -53,10 +53,7 @@ class SampleChanger(ComponentBase):
         for s in samples_list:
             if not s.is_present():
                 continue
-            if s.has_been_loaded():
-                state = COLLECTED
-            else:
-                state = UNCOLLECTED
+            state = COLLECTED if s.has_been_loaded() else UNCOLLECTED
             sample_dm = s.get_id() or ""
             coords = s.get_coords()
             sample_data = {
@@ -207,9 +204,10 @@ class SampleChanger(ComponentBase):
                 )
                 logging.getLogger("user_level_log").info(msg)
 
-                if not sc.get_loaded_sample():
-                    res = sc.load(sample["sampleID"], wait=True)
-                elif sc.get_loaded_sample().get_address() != sample["location"]:
+                if (
+                    not sc.get_loaded_sample()
+                    or sc.get_loaded_sample().get_address() != sample["location"]
+                ):
                     res = sc.load(sample["sampleID"], wait=True)
 
                 if (
@@ -264,7 +262,7 @@ class SampleChanger(ComponentBase):
         try:
             signals.sc_unload(sample["location"])
 
-            if not sample["location"] == "Manual":
+            if sample["location"] != "Manual":
                 HWR.beamline.sample_changer.unload(sample["location"], wait=False)
             else:
                 self.set_current_sample(None)

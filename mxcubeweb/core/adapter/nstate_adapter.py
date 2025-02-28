@@ -22,10 +22,7 @@ class NStateAdapter(ActuatorAdapterBase):
         ho.connect("stateChanged", self.state_change)
 
     def _value_change(self, value):
-        if isinstance(value, Enum):
-            v = value.name
-        else:
-            v = value
+        v = value.name if isinstance(value, Enum) else value
 
         self.value_change(v)
 

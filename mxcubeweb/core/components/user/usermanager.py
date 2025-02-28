@@ -1,3 +1,4 @@
+import contextlib
 import datetime
 import json
 import logging
@@ -186,9 +187,8 @@ class BaseUserManager(ComponentBase):
         return "access_token" not in res
 
     def handle_sso_logout(self):
-        if current_user.is_anonymous:
-            if self.sso_token_expired():
-                self.signout()
+        if current_user.is_anonymous and self.sso_token_expired():
+            self.signout()
 
     def login(self, login_id: str, password: str, sso_data: dict = {}):
         try:
@@ -258,10 +258,8 @@ class BaseUserManager(ComponentBase):
         # sure that the is_anonymous has the correct value.
         # Update operator calls lims.select_session that raises an exception if
         # there are no valid LIMS sessions.
-        try:
+        with contextlib.suppress(Exception):
             self.update_operator()
-        except Exception:
-            pass
 
         login_type = "User" if HWR.beamline.lims.is_user_login_type() else "Proposal"
 

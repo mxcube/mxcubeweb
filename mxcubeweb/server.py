@@ -119,9 +119,8 @@ class Server:
         Server.flask.register_blueprint(bp)
 
         for key, function in Server.flask.view_functions.items():
-            if key.startswith(bp.name):
-                if not hasattr(function, "tags"):
-                    function.tags = [bp.name.title().replace("_", " ")]
+            if key.startswith(bp.name) and not hasattr(function, "tags"):
+                function.tags = [bp.name.title().replace("_", " ")]
 
     @staticmethod
     def register_routes(mxcube):

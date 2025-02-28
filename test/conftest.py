@@ -24,6 +24,8 @@ sys.path.append(MXCUBE_ROOT)
 sys.path.append("./")
 
 
+import contextlib
+
 from mxcubecore import HardwareRepository
 
 from mxcubeweb import build_server_and_config
@@ -33,10 +35,8 @@ _SIO_TEST_CLIENT = None
 
 @pytest.fixture
 def client():
-    try:
+    with contextlib.suppress(FileNotFoundError):
         os.remove("/tmp/mxcube-test-user.db")
-    except FileNotFoundError:
-        pass
 
     global _SIO_TEST_CLIENT
 
@@ -91,10 +91,8 @@ def client():
 
     client.get("/mxcube/api/v0.1/login/signout/")
 
-    try:
+    with contextlib.suppress(FileNotFoundError):
         os.remove("/tmp/mxcube-test-user.db")
-    except FileNotFoundError:
-        pass
 
 
 @pytest.fixture

@@ -123,7 +123,7 @@ def add_adapter_routes(app, server, bp):
 
         exported_methods = adapter._exported_methods()
 
-        for cmd_name in exported_methods.keys():
+        for cmd_name in exported_methods:
             create_route(app, server, bp, adapter, _id, cmd_name)
 
 

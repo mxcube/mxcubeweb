@@ -51,9 +51,7 @@ class HttpStreamer:
             )
 
     def _new_frame_received(self, img, width, height, *args, **kwargs):
-        if isinstance(img, str):
-            img = img
-        elif isinstance(img, bytes):
+        if isinstance(img, str | bytes):
             img = img
         else:
             rawdata = img.bits().asstring(img.numBytes())
