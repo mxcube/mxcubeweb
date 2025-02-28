@@ -12,12 +12,12 @@ def import_component(config, package="", module=""):
     _module = "mxcubeweb.core"
 
     if package:
-        _module = ".".join([_module, package])
+        _module = f"{_module}.{package}"
 
     if not module:
         module = config.class_name.lower()
 
-    _module = ".".join([_module, module])
+    _module = f"{_module}.{module}"
     mod = importlib.import_module(_module)
     _cls = getattr(mod, config.class_name)
 

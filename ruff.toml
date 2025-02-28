@@ -134,7 +134,6 @@ select = [
     "PERF401",
 ]
 "mxcubeweb/core/components/component_base.py" = [
-    "FLY002",
     "G004",
 ]
 "mxcubeweb/core/components/harvester.py" = [
