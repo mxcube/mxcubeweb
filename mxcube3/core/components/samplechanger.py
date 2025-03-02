@@ -23,6 +23,9 @@ class SampleChanger(ComponentBase):
         """Initialize hwobj signals."""
         HWR.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
         HWR.beamline.sample_changer.connect("statusChanged", signals.sc_status_changed)
+
+        HWR.beamline.sample_changer.connect("sampleLN2levelChanged", signals.sc_sampleLN2Level_changed)
+
         HWR.beamline.sample_changer.connect(
             "isCollisionSafe", signals.is_collision_safe
         )
@@ -419,15 +422,17 @@ class SampleChanger(ComponentBase):
 
         # flex status
         try:
-            status = 'READY'
+            status = HWR.beamline.sample_changer.get_status()
+            logging.getLogger('HWR').debug('run get_initial_state() SC, status = ' + str(status))
         except Exception:
-            status = 'READY'
+            status = "OFFLINE"
 
         # sample pool LN2 LEVEL
         try:
-            sample_pool_LN2_level = 80
+            sample_pool_LN2_level = HWR.beamline.sample_changer.get_sample_pool_LN2_level()
+            logging.getLogger('HWR').debug('run get_initial_state() SC, sample_pool_LN2_level = ' + str(sample_pool_LN2_level))
         except Exception:
-            sample_pool_LN2_level = 80
+            sample_pool_LN2_level = "OFFLINE"
 
         initial_state = {
             "state": state,

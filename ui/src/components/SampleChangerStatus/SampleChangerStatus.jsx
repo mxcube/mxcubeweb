@@ -48,10 +48,10 @@ export default class SampleChangerStatus extends React.Component {
     const {showOvelay} = this.state;
     let msgBgStyle = 'warning';
 
-    if (this.props.data === 'READY') {
+    if (this.props.data === 'Ready') {
       msgBgStyle = 'info';
     // } else if (this.props.data === 'DISABLED') {
-    } else if (this.props.data !== 'READY') {
+    } else if (this.props.data !== 'Ready') {
       msgBgStyle = 'warning';
     }
 

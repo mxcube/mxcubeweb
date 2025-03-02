@@ -14,6 +14,12 @@ export function setSCStatus(status) {
   return { type: 'SET_SC_STATUS', status };
 }
 
+export function setSCSampleLN2Level(data) {
+  return { type: 'SET_SC_SampleLN2Level', data };
+}
+
+
+
 export function setLoadedSample(data) {
   return { type: 'SET_LOADED_SAMPLE', data };
 }

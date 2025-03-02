@@ -28,6 +28,11 @@ export default (state = INITIAL_STATE, action) => {
     case 'SET_SC_STATUS': {
       return { ...state, status: action.status };
     }
+    case 'SET_SC_SampleLN2Level':{
+      console.log('data in reducer of SET_SC_SampleLN2Level')
+      console.log(action.data)
+      return {...state,sampleLN2Level:action.data}
+    }
 
     case 'SET_SC_GLOBAL_STATE': {
       return {
