@@ -10,6 +10,10 @@ export function setSCState(state) {
   return { type: 'SET_SC_STATE', state };
 }
 
+export function setSCStatus(status) {
+  return { type: 'SET_SC_STATUS', status };
+}
+
 export function setLoadedSample(data) {
   return { type: 'SET_LOADED_SAMPLE', data };
 }

@@ -46,6 +46,7 @@ import { doSignOut, getLoginInfo, refreshSession } from './actions/login';
 
 import {
   setSCState,
+  setSCStatus,
   setLoadedSample,
   setSCGlobalState,
   updateSCContents,
@@ -406,6 +407,10 @@ class ServerIO {
 
     this.hwrSocket.on('sc_state', (state) => {
       this.dispatch(setSCState(state));
+    });
+
+    this.hwrSocket.on('sc_status',(status)=>{
+      this.dispatch(setSCStatus(status));
     });
 
     this.hwrSocket.on('loaded_sample_changed', (data) => {

@@ -22,6 +22,7 @@ class SampleChanger(ComponentBase):
 
         """Initialize hwobj signals."""
         HWR.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
+        HWR.beamline.sample_changer.connect("statusChanged", signals.sc_status_changed)
         HWR.beamline.sample_changer.connect(
             "isCollisionSafe", signals.is_collision_safe
         )

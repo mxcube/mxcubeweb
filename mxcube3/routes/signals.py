@@ -121,6 +121,12 @@ def sc_state_changed(*args):
     server.emit("sc_state", state_str, namespace="/hwr")
 
 
+def sc_status_changed(*args):
+    logging.getLogger('HWR').debug('sc_status_changed() in signales, server,emit sc_status')
+    new_status = args[0]
+    print("going to do the sc_status_changed method with new_status: ",new_status)
+    server.emit("sc_status", new_status, namespace="/hwr")
+
 def sc_load(location):
     msg = {
         "signal": "operatingSampleChanger",
