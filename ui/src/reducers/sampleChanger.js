@@ -1,4 +1,4 @@
-const INITIAL_STATE = { contents: {}, state: 'READY', loadedSample: {} };
+const INITIAL_STATE = { contents: {}, state: 'READY',status:'READY', sampleLN2Level:'UNKNOWN',loadedSample: {} };
 
 export default (state = INITIAL_STATE, action) => {
   switch (action.type) {
@@ -9,6 +9,8 @@ export default (state = INITIAL_STATE, action) => {
       return {
         ...state,
         state: action.data.sampleChangerState.state,
+        status: action.data.sampleChangerStatus.status,
+        sampleLN2Level :action.data.sampleLN2Level,
         contents: action.data.sampleChangerContents,
         loadedSample: action.data.loadedSample,
       };

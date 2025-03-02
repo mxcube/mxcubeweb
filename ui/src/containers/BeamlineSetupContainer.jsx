@@ -6,6 +6,8 @@ import PopInput from '../components/PopInput/PopInput';
 import BeamlineActions from './BeamlineActionsContainer';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import SampleChangerSwitch from '../components/SampleChangerSwitch/SampleChangerSwitch';
+import SampleChangeStatus from '../components/SampleChangerStatus/SampleChangerStatus';
+import SamplePoolLN2Level from '../components/SamplePoolLN2Level/SamplePoolLN2Level';
 import DeviceState from '../components/DeviceState/DeviceState';
 import GetSamepleListState from '../components/GetSampleListState/GetSampleListState'
 import LabeledValue from '../components/LabeledValue/LabeledValue';
@@ -152,7 +154,7 @@ class BeamlineSetupContainer extends React.Component {
       components.push(
         <td
         key={`bs-val-${uiprop.label}`}
-        className='pe-3' 
+        className='pe-3'
         style={{
           fontWeight: 'bold',
           border: '0px',
@@ -204,7 +206,7 @@ class BeamlineSetupContainer extends React.Component {
         background: '#FAFAFA',
         borderBottom: '1px solid lightgray',
         paddingBottom: '0em',
-      }} 
+      }}
       className="beamline-status ps-3 pe-3"
       id="bmstatus"
       bg='light'
@@ -268,7 +270,7 @@ class BeamlineSetupContainer extends React.Component {
           <Nav className="me-3">
               {this.createActuatorComponent()}
           </Nav>
-          <Nav className="">
+          <Nav className="me-3">
             <Nav.Item>
              <span className="blstatus-item">
               { this.props.beamline.hardwareObjects.machine_info ?
@@ -281,6 +283,26 @@ class BeamlineSetupContainer extends React.Component {
               </span>
             </Nav.Item>
           </Nav>
+
+          <Nav className="me-3">
+            <Nav.Item>
+              <SampleChangeStatus
+                  labelText="Sample Changer Status"
+                  data = { this.props.sampleChanger.status }
+                  // onSave={ this.props.sendCommand }
+                />
+            </Nav.Item>
+          </Nav>
+
+          <Nav className="">
+            <Nav.Item>
+              <SamplePoolLN2Level
+                  labelText="Sample LN2 Level"
+                  data = { this.props.sampleChanger.sampleLN2Level }
+                />
+            </Nav.Item>
+          </Nav>
+
         </Navbar.Collapse>
       </Navbar>
     );

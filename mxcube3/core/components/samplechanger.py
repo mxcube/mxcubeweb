@@ -409,14 +409,29 @@ class SampleChanger(ComponentBase):
 
         loaded_sample = {"address": address, "barcode": barcode}
 
+        # flex state
         try:
             state = HWR.beamline.sample_changer.get_status().upper() #问题出在这，每次获取，不管当前状态是什么，此处state好像都是ready
             logging.getLogger('HWR').debug('run get_initial_state() SC, state = ' + str(state))
         except Exception:
             state = "OFFLINE"
 
+        # flex status
+        try:
+            status = 'READY'
+        except Exception:
+            status = 'READY'
+
+        # sample pool LN2 LEVEL
+        try:
+            sample_pool_LN2_level = 80
+        except Exception:
+            sample_pool_LN2_level = 80
+
         initial_state = {
             "state": state,
+            "status": status,
+            "sample_pool_LN2_level": sample_pool_LN2_level,
             "loaded_sample": loaded_sample,
             "contents": contents,
             "global_state": {"global_state": global_state, "commands_state": cmdstate},

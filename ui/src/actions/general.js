@@ -274,6 +274,7 @@ export function getInitialState(userInControl) {
           state.sampleChangerState = { state: json.state };
           console.log('sampleChangerInitialState')
           console.log(state)
+          console.log(json)
           return json;
         })
         .then((json) => {
@@ -290,6 +291,14 @@ export function getInitialState(userInControl) {
         })
         .then((json) => {
           state.sampleChangerGlobalState = json.global_state;
+          return json;
+        })
+        .then((json) => {
+          state.sampleChangerStatus = {status:json.status};
+          return json;
+        })
+        .then((json)=>{
+          state.sampleLN2Level = json.sample_pool_LN2_level;
           return json;
         })
         .catch(notify),
