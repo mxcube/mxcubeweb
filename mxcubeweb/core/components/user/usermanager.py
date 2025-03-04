@@ -21,20 +21,21 @@ from mxcubeweb.core.util.networkutils import is_local_host
 
 class BaseUserManager(ComponentBase):
     """Base class for managing user-related operations
-     
-    Operation it manages are: authentication, session management, and Single Sign-On 
-    (SSO) integration. It provides methods to handle user login, logout, session 
+
+    Operation it manages are: authentication, session management, and Single Sign-On
+    (SSO) integration. It provides methods to handle user login, logout, session
     updates, and role assignments. The class also includes functionality to manage
     active users, set operators, and validate SSO tokens. It is designed to be extended
     by more specific user manager implementations.
 
     Attributes:
-        app: The application instance used to access various components and 
+        app: The application instance used to access various components and
             configurations such as the Flask server instance and the configuration
             settings.
-        config: The configuration settings for the user manager, contains information 
+        config: The configuration settings for the user manager, contains information
             such as SSO client ID, client secret, and metadata URI..
     """
+
     def __init__(self, app, config):
         super().__init__(app, config)
         HWR.beamline.lims.connect("sessionsChanged", self.handle_sessions_changed)
@@ -507,14 +508,15 @@ class BaseUserManager(ComponentBase):
 
 
 class UserManager(BaseUserManager):
-    """Class to provide specific implementations for user login and signout operations. 
-    
+    """Class to provide specific implementations for user login and signout operations.
+
     It includes methods to handle login conditions such as checking if the user is
     active, anonymous, in-house, or accessing locally/remotely. The class also ensures
-    that only one user can be logged in at a time and restricts in-house logins 
-    to local hosts. Additionally, it handles Single Sign-On (SSO) logout by making 
+    that only one user can be logged in at a time and restricts in-house logins
+    to local hosts. Additionally, it handles Single Sign-On (SSO) logout by making
     a request to the configured SSO logout URI.
     """
+
     def __init__(self, app, config):
         super().__init__(app, config)
 
@@ -561,7 +563,8 @@ class UserManager(BaseUserManager):
 
         # Only allow in-house log-in from local host
         if self.is_inhouse_user(login_id) and not is_local_host():
-            raise Exception("In-house only allowed from localhost")
+            msg = "In-house only allowed from localhost"
+            raise Exception(msg)
 
         # Only allow local login when remote is disabled
         if not self.app.ALLOW_REMOTE and not is_local_host():
