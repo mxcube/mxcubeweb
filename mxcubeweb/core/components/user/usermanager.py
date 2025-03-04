@@ -29,11 +29,12 @@ class BaseUserManager(ComponentBase):
     by more specific user manager implementations.
 
     Attributes:
-        app: The application instance used to access various components and
-            configurations such as the Flask server instance and the configuration
-            settings.
-        config: The configuration settings for the user manager, contains information
-            such as SSO client ID, client secret, and metadata URI..
+        app: The application instance.
+            It is used to access various components and configurations such as
+            the Flask server instance and the configuration settings.
+        config: The configuration settings for the user manager.
+            It contains information such as SSO client ID, client secret and
+            metadata URI.
     """
 
     def __init__(self, app, config):
@@ -79,13 +80,17 @@ class BaseUserManager(ComponentBase):
         return user
 
     def is_operator(self) -> bool:
-        """Return True if the current_user is an operator."""
+        """Check if current user is an operator.
+
+        Returns:
+            ``True`` if the current_user is an operator.
+        """
         return getattr(current_user, "in_control", False)
 
     def active_logged_in_users(self, exclude_inhouse: bool = False) -> list[User]:
         """List of active and logged in users.
 
-        Attributes:
+        Args:
             exclude_inhouse (bool): exclude inhouse users from the list
         """
         self.update_active_users()
@@ -153,7 +158,7 @@ class BaseUserManager(ComponentBase):
         If no user is currently in control, the first logged in user is set.
         Additionally, proposal is set based on the operator selected_proposal field.
 
-        Attributes:
+        Args:
             new_login: True if method was invoked with new user login.
         """
         if not current_user.is_anonymous:
@@ -196,7 +201,7 @@ class BaseUserManager(ComponentBase):
     def is_inhouse_user(self, user_id: str) -> bool:
         """Check if the ``user_id`` is in the in-house user list.
 
-        Attributes:
+        Args:
             user_id: user id composed from code and number.
 
         Returns:
@@ -248,7 +253,7 @@ class BaseUserManager(ComponentBase):
         data store. If a sample is loaded in sample changer but not mounted,
         mount it and update the smaple list. Try update the operator.
 
-        Attributes:
+        Args:
             login_id: The username.
             password: The password.
         """
@@ -318,7 +323,7 @@ class BaseUserManager(ComponentBase):
     def force_signout_user(self, username: str) -> None:
         """Force signout of the annonymous or non operating user.
 
-        Attributes:
+        Args:
             username: username of the user to be signed out.
         """
         user = self.get_user(username)
@@ -394,7 +399,7 @@ class BaseUserManager(ComponentBase):
     def update_user(self, user: User) -> None:
         """Update user information in datastore.
 
-        Attributes:
+        Args:
             user: User model instance.
         """
         self.app.server.user_datastore.put(user)
@@ -405,7 +410,7 @@ class BaseUserManager(ComponentBase):
 
         Inhouse user has always assigned staff role additionaly.
 
-        Attributes:
+        Args:
             user: username.
         """
         roles = set()
@@ -429,10 +434,10 @@ class BaseUserManager(ComponentBase):
         Assign roles to the user, prevoiusly making sure the roles of 'staff' and
         'incontrol' existis in data store. If not create them also.
 
-        Attributes:
-            user: representation of username (eventually part of it). Also a nickname
-                for new users.
-            password (unused): password.
+        Args:
+            user: representation of username (eventually part of it).
+                Also a nickname for new users.
+            password: password (unused).
             sso_data: dictionary with the lims data to be updated.
 
         Returns:
@@ -481,13 +486,13 @@ class BaseUserManager(ComponentBase):
     def db_set_in_control(self, user: User, control: bool) -> None:
         """Update users (their in_control field) in the datastore.
 
-        If the passed user becomes an operator (control=True), the remaining users'
-        in_control fields are set to False. If passed user stops being an operator,
-        only its in_control field is set to False.
+        If the passed user becomes an operator (``control=True``), the remaining users'
+        in_control fields are set to ``False``. If passed user stops being an operator,
+        only its in_control field is set to ``False``.
 
-        Attributes:
+        Args:
             user: User model instance.
-            control: the user becomes an operator (Ture) or not (False).
+            control: the user becomes an operator (``True``) or not (``False``).
         """
         user_datastore = self.app.server.user_datastore
 
@@ -526,7 +531,7 @@ class UserManager(BaseUserManager):
     def _login(self, login_id: str, password: str) -> LimsSessionManager:
         """Check loging conditions such as: active, anonymous, inhouse, local/remote.
 
-        Attributes:
+        Args:
             login_id: username
             password: password
 
