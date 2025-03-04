@@ -186,6 +186,22 @@ def init_route(app, server, url_prefix):
 
         return resp
 
+
+
+    @bp.route("/save_centring_pos", methods=["POST"])
+    @server.require_control
+    @server.restrict
+    def save_centring_pos():
+        print('get in save_centring_pos')
+        app.beamline.diffractometer_save_centring_pos()
+        resp = jsonify(
+            None
+        )
+        resp.status_code = 200
+
+        return resp
+
+
     @bp.route("/delete", methods=["POST"])
     @server.require_control
     @server.restrict

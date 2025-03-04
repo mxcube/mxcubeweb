@@ -474,7 +474,12 @@ const QuickMountTest =(props) =>{
           <Row>
             <Col xs={3}>step 1:</Col>
 
-            <Col>step 2: （click only when robot not in freeze position）</Col>
+            <Col >
+              step 2:
+              <span style={{color:'red'}}>
+              （click only when robot not in freeze position）
+              </span>
+            </Col>
 
           </Row>
           <Row>
@@ -577,7 +582,7 @@ const QuickMountTest =(props) =>{
       
             step 5:
             <br/>
-            <Button type="button" disabled={sc_state==='READY'?false:true} onClick={updateTaskDataOfTaskForm} className="button-admit">update</Button>
+            <Button type="button" onClick={updateTaskDataOfTaskForm} className="button-admit">update</Button>
             {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">Collect</Button> */}
             {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button> */}
             {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 4 images</Button> */}

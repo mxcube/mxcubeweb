@@ -325,6 +325,16 @@ class Beamline(ComponentBase):
 
         HWR.beamline.diffractometer.set_phase(phase)
 
+
+    def diffractometer_save_centring_pos(self):
+        try:
+            HWR.beamline.diffractometer.wait_device_ready(30)
+        except Exception:
+            logging.getLogger("MX3.HWR").warning("Diffractometer not ready")
+
+        HWR.beamline.diffractometer.save_centring_positions()
+
+
     def set_aperture(self, pos):
         beam = HWR.beamline.beam
         msg = "Changing beam size to: %s" % pos

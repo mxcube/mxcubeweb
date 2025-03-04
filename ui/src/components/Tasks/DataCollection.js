@@ -99,6 +99,11 @@ class DataCollection extends React.Component {
           </ButtonToolbar>
           <ButtonToolbar>
             <Button
+              onClick={this.props.sendSaveCentringPos}
+            >
+              save centring position
+            </Button>
+            <Button
               className='me-3 ms-3'
               size="sm"
               variant="success"

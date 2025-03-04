@@ -92,6 +92,23 @@ export function sendAddQueueItem(items) {
   });
 }
 
+
+export function sendSaveCentringPos(){
+  return function(){
+    fetch('mxcube/api/v0.1/queue/save_centring_pos',{
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: null,
+    });
+  }
+}
+
+
+
 export function addSamplesToQueue(sampleDataList) {
   // console.log("sampleDataList in addSamplesToQueue")
   // console.log(sampleDataList)

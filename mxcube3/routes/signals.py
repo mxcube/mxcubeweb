@@ -128,7 +128,7 @@ def sc_status_changed(*args):
     server.emit("sc_status", new_status, namespace="/hwr")
 
 def sc_sampleLN2Level_changed(*args):
-    logging.getLogger('HWR').debug('sc_sampleLN2Level_changed() in signales, server,emit sc_sampleLN2Level')
+    # logging.getLogger('HWR').debug('sc_sampleLN2Level_changed() in signales, server,emit sc_sampleLN2Level')
     new_sampleLN2Level = args[0]
     print("going to do the sc_sampleLN2Level_changed method with new_sampleLN2Level: ", new_sampleLN2Level)
     server.emit("sc_sampleLN2Level", new_sampleLN2Level, namespace="/hwr")

@@ -26,6 +26,7 @@ import {
   updateTask,
   addSamplesToQueue,
   addSampleAndMount,
+  sendSaveCentringPos,
 } from '../actions/queue';
 
 import { addSamplesToList } from '../actions/sampleGrid';
@@ -142,6 +143,7 @@ class TaskContainer extends React.Component {
           resetTaskParameters={this.props.resetTaskParameters}
           defaultParameters={this.props.defaultParameters}
           taskResult={this.props.taskResult}
+          sendSaveCentringPos = {this.props.sendSaveCentringPos}
         />
       );
     }
@@ -331,6 +333,7 @@ function mapDispatchToProps(dispatch) {
     addSamplesToList: bindActionCreators(addSamplesToList, dispatch),
     addSamplesToQueue: bindActionCreators(addSamplesToQueue, dispatch),
     addSampleAndMount: bindActionCreators(addSampleAndMount, dispatch),
+    sendSaveCentringPos : bindActionCreators(sendSaveCentringPos,dispatch)
   };
 }
 
