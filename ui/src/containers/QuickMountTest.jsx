@@ -76,6 +76,10 @@ const validate = (values,props)=>{
     const puckNumRegex = /^\d{1,2}$/;
     if(!puckNumRegex.test(values.puck_num)){
       errors.puck_num = 'Must be like 1 or 12'
+    }else{
+      if (values.puck_num<1 || values.puck_num>37){
+        errors.puck_num = 'Must between 0 ~ 37'
+      }
     }
   }
 
@@ -85,9 +89,14 @@ const validate = (values,props)=>{
   }else{
     // console.log('pin_num')
     // console.log(values.pin_num)
-    const pinNumRegex = /^\d{2}$/;
+    const pinNumRegex = /^\d{1,2}$/;
     if(!pinNumRegex.test(values.pin_num)){
-      errors.pin_num = 'Must be like 01'
+      errors.pin_num = 'Must be like 1 or 12'
+    }
+    else{
+      if(values.pin_num<1 || values.pin_num>16){
+        errors.pin_num = 'Must between 0 ~ 16'
+      }
     }
   }
 
@@ -362,7 +371,18 @@ const QuickMountTest =(props) =>{
         const samples = []
         // console.log('Submitted values:', values);
         const puck_num_input = values['puck_num']
-        const pin_num_input = values['pin_num']
+        let pin_num_input = values['pin_num']
+
+        const pinNumRegex_if_XX = /^\d{2}$/;
+
+        if (!pinNumRegex_if_XX.test(pin_num_input)){
+          pin_num_input = '0' + pin_num_input
+
+        }
+
+
+
+
         const sampleID_input = puck_num_input+':'+pin_num_input
         // console.log(sampleID_input)
 
