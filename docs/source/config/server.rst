@@ -81,6 +81,15 @@ List of origins that are allowed to connect to this server.
 This list is passed via ``cors_allowed_origins`` parameter to the `SocketIO <https://flask-socketio.readthedocs.io/en/latest/api.html#flask_socketio.SocketIO>`_ class constructor.
 Note that if this list is too restrictive, the front-end will fail to create a SocketIO connection to the back-end.
 
+For most cases, the default behavior,
+which is provided by setting this value to an empty list ``[]``,
+is good enough.
+Indeed it disallows any cross-site requests,
+but of course it still allows same-site requests.
+For MXCuBE-Web, there is very likely no need for cross-site requests.
+Allowing cross-site requests can be a source of security issues.
+
+
 ``CERT``
 ~~~~~~~~
 

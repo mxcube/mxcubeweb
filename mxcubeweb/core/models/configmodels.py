@@ -16,7 +16,7 @@ class FlaskConfigModel(BaseModel):
         description="Flask secret key",
     )
     DEBUG: bool = Field(False, description="")
-    ALLOWED_CORS_ORIGINS: list[str] = Field(["*"], description="")
+    ALLOWED_CORS_ORIGINS: list[str] = Field([], description="")
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
     SECURITY_TRACKABLE: bool = Field(True, description="")
     USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
