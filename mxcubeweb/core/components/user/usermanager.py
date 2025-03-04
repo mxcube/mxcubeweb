@@ -109,7 +109,7 @@ class BaseUserManager(ComponentBase):
     def update_active_users(self) -> None:
         """Check if any user have been inactive for longer than session lifetime.
 
-        If so, deactivate the user in datastore and emit the relvant signals 
+        If so, deactivate the user in datastore and emit the relvant signals
         ``userChanged`` and ``observersChanged`` to the client.
         """
         for _u in User.query.all():
@@ -132,10 +132,10 @@ class BaseUserManager(ComponentBase):
         self.app.server.emit("observersChanged", namespace="/hwr")
 
     def update_operator(self, new_login: bool = False) -> None:
-        """
-        Set the operator based on the logged in users. If no user is currently
-        in control, the first logged in user is set. Additionally, proposal
-        is set based on the operator selected_proposal field.
+        """Sets the operator based on the logged in users.
+
+        If no user is currently in control, the first logged in user is set.
+        Additionally, proposal is set based on the operator selected_proposal field.
 
         Attributes:
             new_login: True if method was invoked with new user login.
@@ -293,7 +293,7 @@ class BaseUserManager(ComponentBase):
 
     def is_authenticated(self) -> bool:
         """Check if the current user is authenticated.
-        
+
         Returns:
             ``True`` if the current user is authenticated.
         """
@@ -317,7 +317,7 @@ class BaseUserManager(ComponentBase):
     def login_info(self) -> dict:
         """Get the login information to be displayed in the application.
 
-        Login information to be displayed in the application such as: 
+        Login information to be displayed in the application such as:
         * synchrotron and beamline names
         * user infromation
         * proposals list
