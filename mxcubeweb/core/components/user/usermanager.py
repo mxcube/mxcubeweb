@@ -256,6 +256,7 @@ class BaseUserManager(ComponentBase):
         Args:
             login_id: The username.
             password: The password.
+            sso_data: Dictionary containing information from the SSO service used.
         """
         try:
             self._login(login_id, password)
@@ -438,7 +439,7 @@ class BaseUserManager(ComponentBase):
             user: representation of username (eventually part of it).
                 Also a nickname for new users.
             password: password (unused).
-            sso_data: dictionary with the lims data to be updated.
+            sso_data: dictionary containing information from the SSO service used.
 
         Returns:
             User model instance existing in or added to datastore.
