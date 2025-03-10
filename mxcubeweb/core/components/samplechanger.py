@@ -42,13 +42,21 @@ class SampleChanger(ComponentBase):
             )
 
     def get_sample_list(self):
-        samples_list = HWR.beamline.sample_changer.get_sample_list()
+        samples_list = (
+            HWR.beamline.sample_changer.get_sample_list()
+            if HWR.beamline.sample_changer
+            else []
+        )
         samples = {}
         samplesByCoords = {}
         order = []
         current_sample = {}
 
-        loaded_sample = HWR.beamline.sample_changer.get_loaded_sample()
+        loaded_sample = (
+            HWR.beamline.sample_changer.get_loaded_sample()
+            if HWR.beamline.sample_changer
+            else None
+        )
 
         for s in samples_list:
             if not s.is_present():
