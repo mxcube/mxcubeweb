@@ -255,6 +255,7 @@ class AdapterBase:
 
     def emit_ho_value_changed(self, value: Any):
         # print("adapter_base - emit_ho_value_changed: ", self._name, " - ", value)
+        return
         self.app.server.emit(
             "hardware_object_value_changed",
             {
