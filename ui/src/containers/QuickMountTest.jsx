@@ -429,6 +429,21 @@ const QuickMountTest =(props) =>{
           }
         )
       }
+      else if(sampleData.location === 'Manual'){
+        initialize(
+          {
+            ...initialValues,
+            num_images : num_images_init,
+            resolution_value:resolution_state.value,
+            exp_time:exp_time,
+            osc_range : osc_range,
+            sub_directory: `${groupFolder}${sampleData.defaultSubDir}`,
+            prefix: sampleData.defaultPrefix,
+            puck_num :'1',
+            pin_num :'01',
+          }
+        )
+      }
       else{
         // console.log("the sampleData is :")
         // console.log(sampleData)
