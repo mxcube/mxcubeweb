@@ -146,12 +146,15 @@ class SampleView(ComponentBase):
         self._click_count += 1
 
     def centring_remove_current_point(self):
+        print("get in centring_remove_current_point() in sampleview.py")
         if self._centring_point_id:
             HWR.beamline.sample_view.delete_shape(self._centring_point_id)
             self._emit_shapes_updated()
             self._centring_point_id = None
 
     def centring_add_current_point(self, *args):
+        print("get in centring_add_current_point() in sampleview.py")
+
         shape = HWR.beamline.sample_view.get_shape(self._centring_point_id)
 
         # There is no current centered point shape when the centring is done
@@ -174,6 +177,13 @@ class SampleView(ComponentBase):
             self._centring_point_id = None
 
     def centring_update_current_point(self, motor_positions, x, y):
+        """
+        更新white point function
+        """
+        print("get in centring_update_current_point() in sampleview.py")
+        # print("the x,y in centring_update_current_point(): ",x,y)
+        # print("the motor_positions in centring_update_current_point(): ",motor_positions)
+
         point = HWR.beamline.sample_view.get_shape(self._centring_point_id)
 
         if point:
@@ -185,7 +195,6 @@ class SampleView(ComponentBase):
             point.state = "TMP"
             point.selected = True
             self._centring_point_id = point.id
-
         self._emit_shapes_updated()
 
     def wait_for_centring_finishes(self, *args, **kwargs):
@@ -193,7 +202,7 @@ class SampleView(ComponentBase):
         Executed when a centring is finished. It updates the temporary
         centred point.
         """
-
+        print("get in wait_for_centring_finishes() in sampleview.py")
         try:
             centring_status = args[1]
         except IndexError:
@@ -214,11 +223,13 @@ class SampleView(ComponentBase):
             (x, y) = HWR.beamline.diffractometer.motor_positions_to_screen(
                 motor_positions
             )
+            print("")
 
-            self.centring_update_current_point(motor_positions, x, y)
+            self.centring_update_current_point(motor_positions, x, y)       # 此处出现point
             HWR.beamline.diffractometer.emit("stateChanged", (True,))
 
             if self.app.AUTO_MOUNT_SAMPLE:
+                print("app.AUTO_MOUNT_SAMPLE is True")
                 HWR.beamline.diffractometer.accept_centring()
 
     def init_signals(self):

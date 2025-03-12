@@ -308,6 +308,25 @@ export function sendAcceptCentring() {
   };
 }
 
+export function generatePointInScreenCenter() {
+  return function (dispatch) {
+    fetch('mxcube/api/v0.1/sampleview/generatepoint', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+    }).then((response) => {
+      if (response.status >= 400) {
+        throw new Error(`Error while  generate point`);
+      }
+      dispatch(videoMessageOverlay(false, ''));
+    });
+  };
+}
+
+
 export function sendGoToBeam(x, y) {
   return function () {
     fetch('/mxcube/api/v0.1/sampleview/movetobeam', {

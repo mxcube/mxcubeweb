@@ -139,7 +139,7 @@ def init_route(app, server, url_prefix):
         Update cell result data.
             :parameter shape_data: dict with result info (cell number, result value)
             :response Content-type: application/json, response status.
-            :statuscode: 200: no error
+            :statuscode: 200: no errorimport * as SampleViewActions from '../actions/sampleview';
             :statuscode: 409: error
         """
         params = request.get_json()
@@ -422,6 +422,25 @@ def init_route(app, server, url_prefix):
         app.sample_view.move_to_beam(pos["x"], pos["y"])
 
         return Response(status=200)
+
+
+    @bp.route("/generatepoint", methods=["PUT"])
+    @server.require_control
+    @server.restrict
+    def generate_point_in_screen_center():
+        print("get in generate_point_in_screen_center()")
+
+        MD2 = HWR.beamline.diffractometer
+        MD2.save_centring_positions()
+
+        MD2.emitCentringSuccessfulWithoutActualCentring()
+
+        return Response(status=200)
+
+
+
+
+
 
     @bp.route("/centring/centring_method", methods=["PUT"])
     @server.require_control
