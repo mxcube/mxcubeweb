@@ -42,6 +42,10 @@ class DataCollection extends React.Component {
   }
 
   addToQueue(runNow, params) {
+    console.log("runNow in addToQueue: ")
+    console.log(runNow)
+    console.log("params in addToQueue: ")
+    console.log(params)
     const parameters = {
       ...params,
       type: 'DataCollection',

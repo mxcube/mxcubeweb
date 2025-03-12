@@ -139,7 +139,7 @@ def init_route(app, server, url_prefix):
         Update cell result data.
             :parameter shape_data: dict with result info (cell number, result value)
             :response Content-type: application/json, response status.
-            :statuscode: 200: no errorimport * as SampleViewActions from '../actions/sampleview';
+            :statuscode: 200: no error
             :statuscode: 409: error
         """
         params = request.get_json()

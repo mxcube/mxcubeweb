@@ -467,6 +467,7 @@ export default class SampleImage extends React.Component {
       }
     } else {
       // Individual object clicked
+      console.log("Individual object clicked")
       this.canvas.forEachObject((obj) => {
         if (
           !objectFound &&
@@ -513,7 +514,10 @@ export default class SampleImage extends React.Component {
       this.canvas.discardActiveObject();
     }
 
-    showContextMenu(true, ctxMenuObj, e.offsetX, e.offsetY);
+    console.log("ctxMenuObj in SampleImage.jsx, which you clicked to show the ContextMenu")
+    console.log(ctxMenuObj)
+
+    showContextMenu(true, ctxMenuObj, e.offsetX, e.offsetY);//此处右键点击出菜单？
   }
 
   leftClick(option) {

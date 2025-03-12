@@ -162,6 +162,7 @@ class TaskContainer extends React.Component {
           resetTaskParameters={this.props.resetTaskParameters}
           defaultParameters={this.props.defaultParameters}
           taskResult={this.props.taskResult}
+          sendSaveCentringPos = {this.props.sendSaveCentringPos}
         />
       );
     }
