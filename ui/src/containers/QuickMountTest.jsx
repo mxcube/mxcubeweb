@@ -555,7 +555,7 @@ const QuickMountTest =(props) =>{
         let shape_id = ''
         if (Object.keys(shapes).length!==0 ){
           console.log('shapes is not {}')
-
+          
           for (const key in shapes){
             lastValue=shapes[key];
           }
@@ -606,13 +606,12 @@ const QuickMountTest =(props) =>{
         console.log("shapes")
         console.log(shapes)
         console.log("Object.keys(shapes).length")
-        console.log(Object.keys(shapes).length)        shape:'',
-
+        console.log(Object.keys(shapes).length)
         let lastValue =0
         let shape_id = ''
         if (Object.keys(shapes).length!==0 ){
           console.log('shapes is not {}')
-
+          
           for (const key in shapes){
             lastValue=shapes[key];
           }
@@ -652,7 +651,7 @@ const QuickMountTest =(props) =>{
       })() //这里一对空阔号代表真实被调用，不加不会被调用
     }
 
-
+ 
 
     const addToQueue=(runNow,params) =>{
       console.log("runNow in addToQueue: ")
@@ -667,7 +666,7 @@ const QuickMountTest =(props) =>{
         mesh: false,
         // shape: this.props.pointID
       };
-
+    
       // Form gives us all parameter values in strings so we need to transform numbers back
       const stringFields = [
         'shutterless',
@@ -682,14 +681,14 @@ const QuickMountTest =(props) =>{
         'label',
         'helical'
       ];
-
+    
       addTask1(parameters, stringFields, runNow);
     }
 
     function addTask1(params, stringFields, runNow){
       console.log("get in not action addTask")
       const parameters = { ...params };
-
+  
       for (const key in parameters) {
         if (
           parameters.hasOwnProperty(key) &&
@@ -699,32 +698,32 @@ const QuickMountTest =(props) =>{
           parameters[key] = Number(parameters[key]);
         }
       }
-
+  
       if (sampleIds.constructor === Array) {
         dispatch(addTask(sampleIds, parameters, runNow));
       } else {
-
+  
         if (taskData.queueID === null) {
           dispatch(addTask([sampleIds], parameters, runNow));
         } else {
           let taskIndex = -1;
-
+  
           for (const task of sampleList[sampleIds].tasks) {
             if (task.queueID === taskData.queueID) {
               taskIndex = sampleList[sampleIds].tasks.indexOf(task);
               break;
             }
           }
-
+  
           dispatch(updateTask(sampleIds, taskIndex, parameters, runNow))
         }
       }
-
+  
       dispatch(updateDefaultParameters(params))
     }
-
-
-
+  
+    
+ 
 
     return (
         <>
