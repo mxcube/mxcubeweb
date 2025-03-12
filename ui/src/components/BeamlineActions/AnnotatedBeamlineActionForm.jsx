@@ -1,17 +1,21 @@
 import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Button } from 'react-bootstrap';
 import JSForm from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
 import styles from './BeamlineActions.module.css';
+import { stopBeamlineAction } from '../../actions/beamlineActions';
+import { RUNNING } from '../../constants';
 
 export default function AnnotatedBeamlineActionForm(props) {
-  const {
-    actionId,
-    actionSchema,
-    isActionRunning,
-    handleStopAction,
-    handleStartAction,
-  } = props;
+  const { handleStartAction } = props;
+  const dispatch = useDispatch();
+  const currentAction = useSelector(
+    (state) => state.beamline.currentBeamlineAction,
+  );
+
+  const isActionRunning = currentAction.state === RUNNING;
+  const actionId = currentAction.name;
 
   return (
     <Row className="py-2">
@@ -20,7 +24,7 @@ export default function AnnotatedBeamlineActionForm(props) {
           <JSForm
             liveValidate
             validator={validator}
-            schema={JSON.parse(actionSchema)}
+            schema={JSON.parse(currentAction.schema)}
             onSubmit={({ formData }) => {
               handleStartAction(actionId, formData);
             }}
@@ -30,7 +34,7 @@ export default function AnnotatedBeamlineActionForm(props) {
                 className={styles.submitButton}
                 variant="danger"
                 onClick={() => {
-                  handleStopAction(actionId);
+                  dispatch(stopBeamlineAction(actionId));
                 }}
               >
                 Abort

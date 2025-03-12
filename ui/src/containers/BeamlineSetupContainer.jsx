@@ -172,7 +172,7 @@ function BeamlineSetupContainer(props) {
         <Nav className="d-flex me-auto">
           <Nav.Item className="justify-content-start">
             <BeamlineCamera cameraSetup={uiproperties.camera_setup} />
-            <BeamlineActions actionsList={beamline.beamlineActionsList} />
+            <BeamlineActions />
           </Nav.Item>
         </Nav>
         <Nav className="me-auto my-2 my-lg-0">

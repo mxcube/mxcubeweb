@@ -1,22 +1,25 @@
 import React, { Fragment } from 'react';
 import { Row, Col, Button, Form } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
-import { setArgumentValue } from '../../actions/beamlineActions';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  setArgumentValue,
+  stopBeamlineAction,
+} from '../../actions/beamlineActions';
+import { RUNNING } from '../../constants';
 
 export default function BeamlineActionForm(props) {
-  const {
-    actionId,
-    isActionRunning,
-    actionArguments,
-    handleStopAction,
-    handleStartAction,
-  } = props;
-
+  const { handleStartAction } = props;
   const dispatch = useDispatch();
+  const currentAction = useSelector(
+    (state) => state.beamline.currentBeamlineAction,
+  );
+
+  const isActionRunning = currentAction.state === RUNNING;
+  const actionId = currentAction.name;
 
   return (
     <Row>
-      {actionArguments.map((arg, i) => (
+      {currentAction.arguments.map((arg, i) => (
         <Fragment key={arg.name}>
           <Col className="mt-2" xs={1} style={{ whiteSpace: 'nowrap' }}>
             {arg.name}
@@ -39,7 +42,7 @@ export default function BeamlineActionForm(props) {
           <Button
             variant="danger"
             onClick={() => {
-              handleStopAction(actionId);
+              dispatch(stopBeamlineAction(actionId));
             }}
           >
             Abort

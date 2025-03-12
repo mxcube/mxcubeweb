@@ -6,24 +6,27 @@ import {
   twoStateActuatorIsActive,
   TWO_STATE_ACTUATOR,
 } from '../../constants';
-import { showActionOutput } from '../../actions/beamlineActions';
-import { useDispatch } from 'react-redux';
+import {
+  showActionOutput,
+  stopBeamlineAction,
+} from '../../actions/beamlineActions';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function BeamlineActionControl(props) {
-  const {
-    actionId,
-    actionArguments,
-    handleStartAction,
-    handleStopAction,
-    state,
-    disabled,
-    type,
-    data,
-  } = props;
+  const { actionId, actionArguments, state, type, data, handleStartAction } =
+    props;
   let variant = state === RUNNING ? 'danger' : 'primary';
   let label = state === RUNNING ? 'Stop' : 'Run';
   const showOutput = type !== TWO_STATE_ACTUATOR;
   const dispatch = useDispatch();
+  const currentActionName = useSelector(
+    (state) => state.beamline.currentBeamlineAction.name,
+  );
+  const currentActionState = useSelector(
+    (state) => state.beamline.currentBeamlineAction.state,
+  );
+  const disabled =
+    currentActionName !== actionId && currentActionState === RUNNING;
 
   if (type === 'INOUT') {
     label = String(data).toUpperCase();
@@ -33,7 +36,7 @@ export default function BeamlineActionControl(props) {
   return (
     <ButtonToolbar>
       <ButtonGroup className="d-flex flex-row" aria-label="First group">
-        {actionArguments.length === 0 ? (
+        {actionArguments.length === 0 && (
           <Button
             size="sm"
             className="me-1"
@@ -41,16 +44,14 @@ export default function BeamlineActionControl(props) {
             disabled={disabled}
             onClick={
               state !== RUNNING
-                ? () => handleStartAction(actionId, showOutput)
-                : () => handleStopAction(actionId)
+                ? () => handleStartAction(actionId, {}, showOutput)
+                : () => dispatch(stopBeamlineAction(actionId))
             }
           >
             {label}
           </Button>
-        ) : (
-          ''
         )}
-        {showOutput ? (
+        {showOutput && (
           <Button
             variant="outline-secondary"
             disabled={disabled}
@@ -59,8 +60,6 @@ export default function BeamlineActionControl(props) {
           >
             <BiLinkExternal />
           </Button>
-        ) : (
-          ''
         )}
       </ButtonGroup>
     </ButtonToolbar>
