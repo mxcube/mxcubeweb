@@ -14,8 +14,6 @@ PROJECT_PACKAGE_METADATA = importlib.metadata.metadata(PROJECT_PACKAGE_NAME)
 
 # This is necessary to for the `autoflask` directive to get access to the routes
 server, _ = mxcubeweb.build_server_and_config(test=True, argv=[])
-# This is to avoid `Server.kill_processes`, that makes the build return non-zero
-server.flask.testing = True
 
 
 # -- General configuration ------------------------------------------------

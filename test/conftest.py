@@ -4,11 +4,13 @@ from gevent import monkey
 
 monkey.patch_all(thread=False)
 
+import atexit
 import copy
 import json
 import os
 import sys
 
+import psutil
 import pytest
 from input_parameters import (
     test_sample_1,
@@ -33,6 +35,34 @@ from mxcubeweb import build_server_and_config
 _SIO_TEST_CLIENT = None
 
 
+def noop_register(*args, **kwargs):
+    pass
+
+
+@pytest.fixture(autouse=True)
+def no_atexit_handlers(monkeypatch):
+    # Mock out atexit.register so no handlers are registered during tests
+    monkeypatch.setattr(atexit, "register", noop_register)
+
+
+@pytest.fixture(autouse=True)
+def cleanup_subprocesses():
+    """Fixture to clean up child processes after each test."""
+    parent_pid = os.getpid()
+
+    yield
+
+    parent_process = psutil.Process(parent_pid)
+
+    for child in parent_process.children(recursive=True):
+        if child.is_running():
+            child.terminate()
+            try:
+                child.wait(timeout=1)
+            except psutil.TimeoutExpired:
+                child.kill()
+
+
 @pytest.fixture
 def client():
     with contextlib.suppress(FileNotFoundError):
@@ -43,7 +73,6 @@ def client():
     HardwareRepository.uninit_hardware_repository()
     argv = []
     server, _ = build_server_and_config(test=True, argv=argv)
-    server.flask.config["TESTING"] = True
 
     client = server.flask.test_client()
 

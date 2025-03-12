@@ -49,8 +49,7 @@ pydantic = ">=2.8.2,<2.9.0"
 PyDispatcher = "^2.0.6"
 pytz = "^2022.6"
 tzlocal = "^4.2"
-mxcubecore =  ">=1.198.0"
-mxcube-video-streamer = ">=1.7.0"
+mxcubecore =  ">=1.248.0"
 bcrypt = "^4.0.1"
 authlib = "^1.3.0"
 
@@ -58,6 +57,7 @@ authlib = "^1.3.0"
 pre-commit = "^4.1.0"
 pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
+psutil = "^5.9.4"
 
 [tool.poetry.group.docs.dependencies]
 furo = "^2023.9.10"

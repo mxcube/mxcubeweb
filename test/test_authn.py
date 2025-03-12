@@ -42,7 +42,6 @@ def server(request, login_type):
 
     argv = []
     server_, _ = mxcubeweb.build_server_and_config(test=True, argv=argv)
-    server_.flask.config["TESTING"] = True
     # For the tests we override the configured value of the session lifetime
     # with a much smaller value, so that tests do not need to wait as long.
     server_.flask.permanent_session_lifetime = SESSION_LIFETIME
