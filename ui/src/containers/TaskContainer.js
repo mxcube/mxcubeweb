@@ -50,6 +50,7 @@ class TaskContainer extends React.Component {
   }
 
   addTask(params, stringFields, runNow) {
+    console.log("get in not action addTask")
     const parameters = { ...params };
 
     for (const key in parameters) {

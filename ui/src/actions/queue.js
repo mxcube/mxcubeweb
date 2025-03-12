@@ -505,14 +505,22 @@ export function addDiffractionPlanAction(tasks) {
 }
 
 export function addTask(sampleIDs, parameters, runNow) {
+
   return function (dispatch, getState) {
+    console.log("sampleIDs")
+    console.log(sampleIDs)
+    console.log("parameters")
+    console.log(parameters)
     const state = getState();
     const samples = [];
     let shapes = [];
-
+    console.log("typeof parameters.shape")
+    console.log(typeof parameters.shape)
     if (typeof parameters.shape === 'object') {
+      console.log("typeof parameters.shape === 'object'")
       shapes = Object.values(parameters.shape);
     } else {
+      console.log("typeof parameters.shape !== 'object")
       shapes.push(parameters.shape);
     }
 
@@ -532,6 +540,8 @@ export function addTask(sampleIDs, parameters, runNow) {
 
         // If a task is created on a shape, save shape if not already saved before
         if (parameters.shape !== -1 && parameters.shape !== undefined) {
+          console.log("task.parameters.shape")
+          console.log(task.parameters.shape)
           if (state.shapes.shapes[task.parameters.shape].state === 'TMP') {
             dispatch(
               sendUpdateShapes([{ id: task.parameters.shape, state: 'SAVED' }])
@@ -562,7 +572,7 @@ export function addTask(sampleIDs, parameters, runNow) {
         samples.push(sample);
       });
     });
-
+    console.log("before dispatch(queueLoading)")
     dispatch(queueLoading(true));
 
     sendAddQueueItem(samples)

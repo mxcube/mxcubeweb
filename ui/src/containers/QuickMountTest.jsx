@@ -8,11 +8,13 @@ import QuickGetSampleListTest from './QuickGetSampleListTest'
 import QuickSCCommandTest from './QuickSCCommandTest';
 import {selectSamplesAction} from '../actions/sampleGrid'
 import * as QueueGUIActions from '../actions/queueGUI';
-import {updateTaskData} from '../actions/taskForm'
+import {updateTaskData,updateDefaultParameters} from '../actions/taskForm'
 
 
 // import { Button, ButtonToolbar } from 'react-bootstrap';
 import {
+  addTask,
+  updateTask,
   sendClearQueue,
   deleteSamplesFromQueue,
   setEnabledSample,
@@ -28,6 +30,7 @@ import {
 } from 'react-bootstrap';
 
 import './QuickMountTest.css'
+import { object } from "underscore";
 
 
 const everpolate = require('everpolate');
@@ -43,7 +46,7 @@ const validate = (values,props)=>{
 
   // 准备工作_resolution 验证 (由validate.js源代码改写而来)
   const currEnergy = Number.parseFloat(props.beamline.hardwareObjects.energy.value);
-  const currRes = Number.parseFloat(values.resolution_value);
+  const currRes = Number.parseFloat(values.resolution);
   console.log('values.energy and values.resolution in validate() in Quickountest.jsx')
   console.log(currEnergy,currRes)
 
@@ -104,10 +107,10 @@ const validate = (values,props)=>{
 
   // 验证subdirectory
   const subdirRegex = /^[-\w\-\/\_\{\}]+$/;
-  if(values.sub_directory===''){
-    errors.sub_directory = emptyField;
-  }else if (!subdirRegex.test(values.sub_directory)){
-    errors.sub_directory = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
+  if(values.subdir===''){
+    errors.subdir = emptyField;
+  }else if (!subdirRegex.test(values.subdir)){
+    errors.subdir = 'Invalid character in path, only alphanumerical characters and -, _, : allowed';
   }
 
 
@@ -175,12 +178,12 @@ const validate = (values,props)=>{
   // 验证resolution,其实不需要正则表达式判断数字，上面已经强转类型了,若不是数字直接是NaN，也会报错
   // const resRegex = /(^[1-9]\d*\.？\d*)|(^0\.\d*[1-9])$/;
   const resRegex = /(^[1-9]\d*\.?\d*)$|(^0\.\d*[1-9])$/;
-  if (values.resolution_value === '') {
-    errors.resolution_value = emptyField;
-  }else if(!resRegex.test(values.resolution_value)){
-    errors.resolution_value = 'Must be numbers'
+  if (values.resolution === '') {
+    errors.resolution = emptyField;
+  }else if(!resRegex.test(values.resolution)){
+    errors.resolution = 'Must be numbers'
   }else if(!(currRes >= resMin && currRes <= resMax)) {
-    errors.resolution_value = 'Entered Resolution outside working range';
+    errors.resolution = 'Entered Resolution outside working range';
   }
 
 
@@ -209,13 +212,22 @@ const initialValues={
   pin_num:'01',
   osc_range:'',
   exp_time:'',
-  exp_time_test:'',
+  // exp_time_test:'',
   num_images:'',
-  num_images_test:'',
-  resolution_value : '',
-  sub_directory:'',
+  // num_images_test:'',
+  resolution : '',
+  subdir:'',
   prefix:'',
+  beam_size : '',
+  cell_count:'none',
+  label:'Data Collection',
+  name: 'datacollection',
+  numCols:0,
+  numRows:0,
+  shape:'',
+  type:'DataCollection',
 }
+
 
 
 
@@ -255,7 +267,7 @@ const QuickMountTest =(props) =>{
         loadSample,
         unloadSample
       } = SampleChangerActions;
-    
+
     const {
       generatePointInScreenCenter,
     } = SampleViewActions;
@@ -274,8 +286,9 @@ const QuickMountTest =(props) =>{
     const osc_range = useSelector((state)=>state.taskForm.defaultParameters.datacollection.acq_parameters.osc_range)
     const num_images = useSelector((state)=>state.taskForm.defaultParameters.datacollection.acq_parameters.num_images)
     const num_images_test = useSelector((state)=>state.taskForm.defaultParameters.datacollectiontest.acq_parameters.num_images)
+    const osc_start = useSelector((state=>state.beamline.hardwareObjects["diffractometer.phi"].value))
 
-    // const sub_directory = useSelector((state)=>state.taskForm.taskData.parameters.subdir)
+    // const subdir = useSelector((state)=>state.taskForm.taskData.parameters.subdir)
     // const prefix = useSelector((state)=>state.taskForm.taskData.parameters.prefix)
 
 
@@ -288,6 +301,13 @@ const QuickMountTest =(props) =>{
 
     const sampleIds = useSelector((state)=>state.taskForm.sampleIds)
     const taskData = useSelector((state)=>state.taskForm.taskData)
+    const default_datacollection_acq_para = useSelector((state) => state.taskForm.defaultParameters.datacollection.acq_parameters)
+
+    const beam_size = useSelector((state)=>state.sampleview.currentAperture)
+    const shapes = useSelector((state)=>state.shapes.shapes)
+
+
+
 
 
 
@@ -362,15 +382,38 @@ const QuickMountTest =(props) =>{
       // sampleData 的获取方式和SampleViewContainer.js一样
       const sampleData = sampleList[sampleID_input]
 
-      props.change('sub_directory',`${groupFolder}${sampleData.defaultSubDir}`)
+      props.change('subdir',`${groupFolder}${sampleData.defaultSubDir}`)
       props.change('prefix',sampleData.defaultPrefix)
 
 
     }
 
 
-    const generatePoint  =()=>{
-      dispatch(generatePointInScreenCenter())
+    const generatePoint  =async()=>{
+      try{
+        await dispatch(generatePointInScreenCenter())
+      }catch (error){
+        console.log.error('generatePoint failed: ',error)
+      }
+    }
+
+    const generatePoint_and_update_taskData  =async()=>{
+      console.log("shapes")
+      console.log(shapes)
+
+      try{
+        await dispatch(generatePointInScreenCenter())
+        console.log("generatePoint succeed")
+        console.log('wait a little time to update shapes')
+        setTimeout(()=>{
+
+          updateTaskDataOfTaskForm()
+        },1000)
+
+
+      }catch (error){
+        console.log.error('generatePoint failed: ',error)
+      }
     }
 
     const mount = () => {
@@ -429,11 +472,13 @@ const QuickMountTest =(props) =>{
           {
             ...initialValues,
             num_images : num_images_init,
-            resolution_value:resolution_state.value,
+            resolution:resolution_state.value,
             exp_time:exp_time,
             osc_range : osc_range,
-            sub_directory : 'wait_to_mount',
+            subdir : 'wait_to_mount',
             prefix    : 'wait_to_mount',
+            osc_start : osc_start,
+            beam_size : beam_size,
 
           }
         )
@@ -443,13 +488,15 @@ const QuickMountTest =(props) =>{
           {
             ...initialValues,
             num_images : num_images_init,
-            resolution_value:resolution_state.value,
+            resolution:resolution_state.value,
             exp_time:exp_time,
             osc_range : osc_range,
-            sub_directory: `${groupFolder}${sampleData.defaultSubDir}`,
+            subdir: `${groupFolder}${sampleData.defaultSubDir}`,
             prefix: sampleData.defaultPrefix,
             puck_num :'1',
             pin_num :'01',
+            osc_start : osc_start,
+            beam_size : beam_size,
           }
         )
       }
@@ -469,13 +516,15 @@ const QuickMountTest =(props) =>{
           {
             ...initialValues,
             num_images : num_images_init,
-            resolution_value:resolution_state.value,
+            resolution:resolution_state.value,
             exp_time:exp_time,
             osc_range : osc_range,
-            sub_directory: `${groupFolder}${sampleData.defaultSubDir}`,
+            subdir: `${groupFolder}${sampleData.defaultSubDir}`,
             prefix: sampleData.defaultPrefix,
             puck_num :puck_num_changed,
             pin_num :pin_num_changed,
+            osc_start : osc_start,
+            beam_size : beam_size,
           }
         )
         // reset()    //reset也是一个重置函数，但此处不用
@@ -493,25 +542,189 @@ const QuickMountTest =(props) =>{
         console.log('sampleIds')
         console.log(sampleIds)
         // console.log('taskData,typeof(taskData.parameters)')
-        // console.log(taskData.parameters)
-        // console.log(typeof(taskData.parameters))        
+        console.log("taskData.parameters")
+        console.log(taskData.parameters)
+        if (!taskData.parameters){
+            console.log("taskData.parameters is undefined")
+        }
+        console.log("shapes")
+        console.log(shapes)
+        console.log("Object.keys(shapes).length")
+        console.log(Object.keys(shapes).length)
+        let lastValue =0
+        let shape_id = ''
+        if (Object.keys(shapes).length!==0 ){
+          console.log('shapes is not {}')
+
+          for (const key in shapes){
+            lastValue=shapes[key];
+          }
+          console.log(lastValue)
+        }else{
+          console.log('shapes is {}')
+        }
+        if (lastValue!==0){
+          shape_id = lastValue.id
+        }
         const taskData_about_change = {
           parameters:{
+            ...default_datacollection_acq_para,
             ...taskData.parameters,
-            subdir :  values['sub_directory'],
+            subdir :  values['subdir'],
             prefix : values['prefix'],
             osc_range : values['osc_range'],
             num_images : values['num_images'],
             exp_time : values['exp_time'],
-            resolution : values['resolution_value'],
+            resolution : values['resolution'],
+            osc_start : osc_start,
+            beam_size : beam_size,
+            cell_count:'none',
+            label:'Data Collection',
+            name: 'datacollection',
+            numCols:0,
+            numRows:0,
+            shape:shape_id,
+            type:'DataCollection',
           }
         }
-
-
         dispatch(updateTaskData(sampleIds,taskData_about_change))
 
       })() //这里一对空阔号代表真实被调用，不加不会被调用
     }
+
+
+    const updateTaskDataOfTaskForm_and_datacollect = () =>{
+      handleSubmit((values)=>{
+        console.log('sampleIds')
+        console.log(sampleIds)
+        // console.log('taskData,typeof(taskData.parameters)')
+        console.log("taskData.parameters")
+        console.log(taskData.parameters)
+        if (!taskData.parameters){
+            console.log("taskData.parameters is undefined")
+        }
+        console.log("shapes")
+        console.log(shapes)
+        console.log("Object.keys(shapes).length")
+        console.log(Object.keys(shapes).length)        shape:'',
+
+        let lastValue =0
+        let shape_id = ''
+        if (Object.keys(shapes).length!==0 ){
+          console.log('shapes is not {}')
+
+          for (const key in shapes){
+            lastValue=shapes[key];
+          }
+          console.log(lastValue)
+        }else{
+          console.log('shapes is {}')
+        }
+        if (lastValue!==0){
+          shape_id = lastValue.id
+        }
+        const taskData_about_change = {
+          parameters:{
+            ...default_datacollection_acq_para,
+            ...taskData.parameters,
+            subdir :  values['subdir'],
+            prefix : values['prefix'],
+            osc_range : values['osc_range'],
+            num_images : values['num_images'],
+            exp_time : values['exp_time'],
+            resolution : values['resolution'],
+            osc_start : osc_start,
+            beam_size : beam_size,
+            cell_count:'none',
+            label:'Data Collection',
+            name: 'datacollection',
+            numCols:0,
+            numRows:0,
+            shape:shape_id,
+            type:'DataCollection',
+          }
+        }
+        dispatch(updateTaskData(sampleIds,taskData_about_change))
+        if(shape_id!==''){
+          addToQueue(true,taskData_about_change.parameters)
+        }
+
+      })() //这里一对空阔号代表真实被调用，不加不会被调用
+    }
+
+
+
+    const addToQueue=(runNow,params) =>{
+      console.log("runNow in addToQueue: ")
+      console.log(runNow)
+      console.log("params in addToQueue: ")
+      console.log(params)
+      const parameters = {
+        ...params,
+        type: 'DataCollection',
+        label: 'Data Collection',
+        helical: false,
+        mesh: false,
+        // shape: this.props.pointID
+      };
+
+      // Form gives us all parameter values in strings so we need to transform numbers back
+      const stringFields = [
+        'shutterless',
+        'inverse_beam',
+        'centringMethod',
+        'detector_mode',
+        'space_group',
+        'prefix',
+        'subdir',
+        'type',
+        'shape',
+        'label',
+        'helical'
+      ];
+
+      addTask1(parameters, stringFields, runNow);
+    }
+
+    function addTask1(params, stringFields, runNow){
+      console.log("get in not action addTask")
+      const parameters = { ...params };
+
+      for (const key in parameters) {
+        if (
+          parameters.hasOwnProperty(key) &&
+          !stringFields.includes(key) &&
+          parameters[key]
+        ) {
+          parameters[key] = Number(parameters[key]);
+        }
+      }
+
+      if (sampleIds.constructor === Array) {
+        dispatch(addTask(sampleIds, parameters, runNow));
+      } else {
+
+        if (taskData.queueID === null) {
+          dispatch(addTask([sampleIds], parameters, runNow));
+        } else {
+          let taskIndex = -1;
+
+          for (const task of sampleList[sampleIds].tasks) {
+            if (task.queueID === taskData.queueID) {
+              taskIndex = sampleList[sampleIds].tasks.indexOf(task);
+              break;
+            }
+          }
+
+          dispatch(updateTask(sampleIds, taskIndex, parameters, runNow))
+        }
+      }
+
+      dispatch(updateDefaultParameters(params))
+    }
+
+
+
 
     return (
         <>
@@ -577,10 +790,10 @@ const QuickMountTest =(props) =>{
 
             <Row>
               <Col xs={3}>
-                <label htmlFor="sub_directory">Subdirectory :</label>
+                <label htmlFor="subdir">Subdirectory :</label>
               </Col>
               <Col >
-                <Field name="sub_directory" component={renderField} type="text" inputStyle={{width:'500px'}}/>
+                <Field name="subdir" component={renderField} type="text" inputStyle={{width:'500px'}}/>
               </Col>
 
             </Row>
@@ -616,19 +829,19 @@ const QuickMountTest =(props) =>{
                 <Field name="exp_time" component={renderField} type="text" inputStyle={{width:'170px'}}/>
               </Col>
               <Col xs={2}>
-                <label htmlFor="resolution_value">Resolution:</label>
+                <label htmlFor="resolution">Resolution:</label>
               </Col>
               <Col>
-                <Field name="resolution_value" component={renderField} type="text" inputStyle={{width:'170px'}} value='1.38'/>
+                <Field name="resolution" component={renderField} type="text" inputStyle={{width:'170px'}} value='1.38'/>
               </Col>
             </Row>
 
-      
+
             step 5:
             <br/>
             <Button type="button" onClick={updateTaskDataOfTaskForm} className="button-admit">update</Button>
             <Button type="button" onClick={generatePoint} className="button-admit">generate point</Button>
-            {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">Collect</Button> */}
+            <Button type="button" onClick={updateTaskDataOfTaskForm_and_datacollect} className="button-admit">Collect</Button>
             {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button> */}
             {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 4 images</Button> */}
             <br/>
@@ -638,6 +851,7 @@ const QuickMountTest =(props) =>{
             <br/>
 
           </Form>
+
 
 
           <Col xs={3}>
@@ -668,18 +882,20 @@ const mapStateToProps=(state)=>{
   return {
 
     initialValues:{
+      // ...state.taskForm.defaultParameters.datacollection.acq_parameters,
       ...initialValues,
-      // 还没上样，没有taskData/aprameter，但此组件在还没上样时就要被渲染，因此不能像下面这样去判断
+      // 没有进行过收集，没有taskData/parameter，但此组件在还没上样时就要被渲染，因此不能像下面这样去判断
       // resolution_value: (state.taskForm.taskData.parameters.resolution
       //   ? state.taskForm.taskData.parameters.resolution
       //   : state.beamline.hardwareObjects.resolution.value),
-      resolution_value:state.beamline.hardwareObjects.resolution.value,
+      resolution:state.beamline.hardwareObjects.resolution.value,
       exp_time : state.taskForm.defaultParameters.datacollection.acq_parameters.exp_time,
       // exp_time_test : state.taskForm.defaultParameters.datacollectiontest.acq_parameters.exp_time,
       osc_range : state.taskForm.defaultParameters.datacollection.acq_parameters.osc_range,
       num_images : state.taskForm.defaultParameters.datacollection.acq_parameters.num_images,
       // num_images_test : state.taskForm.defaultParameters.datacollectiontest.acq_parameters.num_images,
-
+      osc_start : state.beamline.hardwareObjects["diffractometer.phi"].value,
+      beam_size : state.sampleview.currentAperture,
     },
     beamline: state.beamline,
     acqParametersLimits: limits,

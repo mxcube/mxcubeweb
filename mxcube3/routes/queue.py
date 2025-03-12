@@ -140,6 +140,7 @@ def init_route(app, server, url_prefix):
         :statuscode: 200, no error
                     409, queue entry could not be executed
         """
+        print("receive execute request with sid, tindex: ",sid,tindex)
         try:
             app.queue.execute_entry_with_id(sid, tindex)
         except Exception:
@@ -159,6 +160,7 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def queue_add_item():
         tasks = request.get_json()
+        print("receive /queue request, with task as parameter： ",tasks)
 
         queue = app.queue.queue_add_item(tasks)
         sample_list = app.lims.sample_list_get(current_queue=queue)
