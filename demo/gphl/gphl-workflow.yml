@@ -99,6 +99,7 @@ settings:
     # (which may override this value)
     # Any other true value reads from auto_acq_parameters below
     # automation_mode: TEST_FROM_FILE
+    # automation_mode: MASSIF-1
 
     # Default parameters for fully automated strategies
     # Multiple acquisitions in order - characterisation then main
@@ -126,7 +127,7 @@ settings:
       resolution: 1.5
       snapshot_count: 2
       wedge_width: 15.0
-      strategy: full
+      strategy: advanced
       repetition_count: 1
       # strategy_options:
       # # Program options passed directly to stratcal - not needed normally
@@ -216,14 +217,14 @@ workflows:
           Single wavelength data acquisition for native data collection
           Includes initial characterisation and complete collection.
           Variants:
-          full: 2-4 sweeps, ca. 600-1000 degrees, best possible data.
-          quick:  1-2 sweeps, 360-400 degrees, quick and cusp-free
+          advanced: 2-4 sweeps, ca. 600-1000 degrees, best possible data.
+          basic:  1-2 sweeps, 360-400 degrees, basic and cusp-free
           minimal: 1 sweep of 180+ degrees, 1-2 centrings.
         wf_selection: mxexpt
         variants:
-          - full
+          - advanced
           - minimal
-          - quick
+          - basic
           - ultralong
         options:
           # Filename pattern name for normal data collections
@@ -237,15 +238,15 @@ workflows:
         strategy_type: phasing
         wf_selection: mxexpt
         variants:
-          - full
-          - quick
+          - advanced
+          - basic
         documentation: |
-          Single wavelength SAD data acquisition, full strategy.
+          Single wavelength SAD data acquisition, advanced strategy.
           Aligned on even symetry axes or inverse beam.
           Includes initial characterisation and complete collection
           Variants:
-            full: up to 540deg, three orientations
-            quick: up to 360deg, two orientations
+            advanced: up to 540deg, three orientations
+            basic: up to 360deg, two orientations
         options:
           # Filename pattern name for normal data collections
           pattern: interleaved
@@ -258,8 +259,8 @@ workflows:
         strategy_type: phasing
         wf_selection: mxexpt
         variants:
-          - quick
-          - full
+          - basic
+          - advanced
         beam_energy_tags:
           - Energy_1
           - Energy_2
@@ -270,12 +271,12 @@ workflows:
         # So the default ('gs') is a no-op
         interleave_order: gsb
         documentation: |
-          Two wavelength MAD data acquisition, full strategy.
+          Two wavelength MAD data acquisition, advanced strategy.
           Aligned on even symetry axes or inverse beam.
           Includes initial characterisation and complete collection
           Variants:
-          full: up to 540deg, three orientations for each wavelength
-          quick: up to 360deg, two orientations for each wavelength
+          advanced: up to 540deg, three orientations for each wavelength
+          basic: up to 360deg, two orientations for each wavelength
         options:
           # Filename pattern name for normal data collections
           pattern: interleaved
@@ -288,8 +289,8 @@ workflows:
         strategy_type: phasing
         wf_selection: mxexpt
         variants:
-          - quick
-          - full
+          - basic
+          - advanced
         beam_energy_tags:
           - Energy_1
           - Energy_2
@@ -301,12 +302,12 @@ workflows:
         # So the default ('gs') is a no-op
         interleave_order: gsb
         documentation: |
-          Three wavelength MAD data acquisition, full strategy.
+          Three wavelength MAD data acquisition, advanced strategy.
           Aligned on even symetry axes or inverse beam.
           Includes initial characterisation and complete collection
           Variants:
-          full: up to 540deg, three orientations for each wwavelngth
-          quick: up to 360deg, two orientations for each wwavelngth
+          advanced: up to 540deg, three orientations for each wwavelngth
+          basic: up to 360deg, two orientations for each wwavelngth
         options:
           # Filename pattern name for normal data collections
           pattern: interleaved
@@ -337,7 +338,7 @@ workflows:
           strategy_type: diffractcal
           wf_selection: diffractcal
           variants:
-            - full
+            - advanced
             - short
           documentation: |
             Diffractometer calibration.
@@ -347,7 +348,7 @@ workflows:
             Long data collection and processing, requiring a high-quality,
             high-symmetry crystal of precisely known cell parameters.
             Variants:
-            full: 22 60-deg sweeps, 11 orientations
+            advanced: 22 60-deg sweeps, 11 orientations
             short: 6 60-deg sweeps, 3 orientations
           options:
             # wfprefix: Dcalib2_
@@ -373,7 +374,7 @@ workflows:
           strategy_type: transcal
           wf_selection: transcal
           variants:
-            - full
+            - advanced
           documentation: |
             Translational calibration.
             Designed for use by beamline personnel.
