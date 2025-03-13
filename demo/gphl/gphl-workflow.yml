@@ -7,10 +7,10 @@ settings:
   # Controls for MXCuBE UI and behaviour
   # Use configured multitrigger collection, default: false, any value is true
   # use_multitrigger: true
-  # Use advanced_mode for adidtional UI options. Default is false, any value is true
-  advanced_mode: true
+  # Use advanced_mode for additional UI options. Default is false, any value is true
+  # advanced_mode: true
   # Maximum allowed value of Chi, for strategy calculation
-  # maximum_chi is automticaly reduced to match kappa motor limits.
+  # maximum_chi is automatically reduced to match kappa motor limits.
   maximum_chi: 48.0
   # default values for image width popup; may be overridden by the workflow
   # The first value is the default; values are sorted before use
@@ -23,7 +23,7 @@ settings:
   # used to compare kappa and phi to decide if orientations needs separate centring
   angular_tolerance: 1.0
   # Characterisation strategies popup.
-  # names refer to stategies in  strategylib.nml
+  # names refer to strategies in  strategylib.nml
   characterisation_strategies:
     - Char_6_5_multitrigger
     - Char_4_by_10
@@ -75,14 +75,14 @@ settings:
     recentring_mode: sweep
     # Parameters to control proposed total dose budget
     # The proposed budget is calculated so that radiation damage is predicted
-    # to reduce the intensity at the highest expected redolution to this percentage
+    # to reduce the intensity at the highest expected resolution to this percentage
     # after the end of the experiment (i.e. value 25 means final intensity
     # at the highest resolution is 25% of the starting intensity
     # The formula assumes an increase in B factor of 1 A^2/MGy
     # The formula used is dose_budget =
     #     2 * resolution**2 * log(100. / decay_limit) / relative_sensitivity
     decay_limit: 25
-    # exposure time (s). NB automticaly reset to be within limits for detector
+    # exposure time (s). NB automtically reset to be within limits for detector
     exposure_time: 0.01
     # Default use known cell parameters as forced starting point for processing
     use_cell_for_processing: true
@@ -150,14 +150,14 @@ settings:
   # Note that irrelevant properties are simply ignored.-->
   workflow_properties:
 
-    # If set, run after-acquisition processing in detatched mode
+    # If set, run after-acquisition processing in detached mode
     co.gphl.wf.process.detach: true
 
     # Set to false to switch off pre-start checks for directory existence
     # in cases where the directories are created after the workflow starts
     # Checks for data directory tree
     co.gphl.wf.blRootCheck: false
-    # Chcks for data processing directory tree
+    # Checks for data processing directory tree
     # co.gphl.wf.procRootCheck: false
 
     # Parameters to individual applications
@@ -188,7 +188,7 @@ settings:
 # wdir: Workflow working directory
 #        Set automatically to Session.get_process_directory()
 #        see gphl_subdir in gphl-setup.xml
-# persistname: Workflow persistence file is named persistnam>.xml
+# persistname: Workflow persistence file is named persistname.xml
 #        Set in gph-setup.xml
 # gphl_subdir is not a workflow option. It is set in gphl-setup.xml
 workflows:
@@ -274,8 +274,8 @@ workflows:
           Aligned on even symetry axes or inverse beam.
           Includes initial characterisation and complete collection
           Variants:
-          full: up to 540deg, three orientations for each wwavelngth
-          quick: up to 360deg, two orientations for each wwavelngth
+          full: up to 540deg, three orientations for each wavelength
+          quick: up to 360deg, two orientations for each wavelength
         options:
           # Filename pattern name for normal data collections
           pattern: interleaved
@@ -324,7 +324,7 @@ workflows:
         # NB you must set EITHER wfprefix OR samplesubdir (or both)
         # wfprefix is the enactment fixed file prefix
         #        wfprefix: gphl_wf_
-        # Include sample filename prefix as subdirextory in enactment directory path
+        # Include sample filename prefix as subdirectory in enactment directory path
         # Any
         samplesubdir: null
         # # directory paths are:
@@ -378,7 +378,7 @@ workflows:
             Translational calibration.
             Designed for use by beamline personnel.
             Calibrates centring motors to allow prediction of centring positions
-            Consists of mulltiple centrings, requiring a glass or tungsten tip
+            Consists of multiple centrings, requiring a glass or tungsten tip
           options:
             # file: File containing settings of rotation axes for calibration
             # The name is the relative path from the gphl_beamline_config directory
