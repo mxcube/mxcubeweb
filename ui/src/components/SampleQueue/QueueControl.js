@@ -131,9 +131,10 @@ export default class QueueControl extends React.Component {
         const proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} - ` : '';
 
         nextSample = [{
-          text: `Next Sample (${proteinAcronym}${sampleName})`,
+          // text: `Next Sample (${proteinAcronym}${sampleName})`,
+          text: `do not click`,
           class: 'btn-outline-secondary',
-          action: this.nextSample,
+          // action: this.nextSample,
           key: 2
         }];
       }

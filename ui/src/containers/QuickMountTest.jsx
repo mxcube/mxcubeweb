@@ -659,6 +659,70 @@ const QuickMountTest =(props) =>{
       })() //这里一对空阔号代表真实被调用，不加不会被调用
     }
 
+    const updateTaskDataOfTaskForm_and_datacollect_test = () =>{
+      handleSubmit((values)=>{
+        console.log('sampleIds')
+        console.log(sampleIds)
+        // console.log('taskData,typeof(taskData.parameters)')
+        console.log("taskData.parameters")
+        console.log(taskData.parameters)
+        if (!taskData.parameters){
+            console.log("taskData.parameters is undefined")
+        }
+        console.log("shapes")
+        console.log(shapes)
+        console.log("Object.keys(shapes).length")
+        console.log(Object.keys(shapes).length)
+        let lastValue =0
+        let shape_id = ''
+        if (Object.keys(shapes).length!==0 ){
+          console.log('shapes is not {}')
+
+          for (const key in shapes){
+            lastValue=shapes[key];
+          }
+          console.log("lastValue")
+          console.log(typeof(lastValue))
+          console.log(lastValue)
+        }else{
+          console.log('shapes is {}')
+        }
+        if (lastValue!==0){
+          shape_id = lastValue.id
+        }
+        const taskData_about_change = {
+          parameters:{
+            ...default_datacollection_acq_para,
+            ...taskData.parameters,
+            subdir :  values['subdir'] + 'test',
+            prefix : values['prefix'],
+            osc_range : values['osc_range'],
+            num_images : values['num_images'],
+            exp_time : values['exp_time'],
+            resolution : values['resolution'],
+            osc_start : osc_start,
+            beam_size : beam_size,
+            cell_count:'none',
+            label:'Data Collection',
+            name: 'datacollection',
+            numCols:0,
+            numRows:0,
+            shape:shape_id,
+            type:'DataCollection',
+          }
+        }
+        dispatch(updateTaskData(sampleIds,taskData_about_change))
+
+        let sampleID_in_array = []
+        sampleID_in_array.push(current.sampleID)
+        dispatch(updateSampleID(sampleID_in_array))
+
+        if(shape_id!==''){
+          addToQueue(true,taskData_about_change.parameters)
+        }
+
+      })() //这里一对空阔号代表真实被调用，不加不会被调用
+    }
 
 
     const addToQueue=(runNow,params) =>{
@@ -850,10 +914,11 @@ const QuickMountTest =(props) =>{
 
             step 5:
             <br/>
-            <Button type="button" onClick={updateTaskDataOfTaskForm} className="button-admit">update</Button>
+            {/* <Button type="button" onClick={updateTaskDataOfTaskForm} className="button-admit">update</Button> */}
             <Button type="button" onClick={generatePoint} className="button-admit">generate point</Button>
+            <Button type="button" onClick={updateTaskDataOfTaskForm_and_datacollect_test} className="button-admit">test</Button>
             <Button type="button" onClick={updateTaskDataOfTaskForm_and_datacollect} className="button-admit">Collect</Button>
-            {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button> */}
+
             {/* <Button type="buttocurrentn" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 4 images</Button> */}
             <br/>
             <br/>
