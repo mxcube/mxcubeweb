@@ -839,8 +839,8 @@ const QuickMountTest =(props) =>{
             step 5:
             <br/>
             <Button type="button" onClick={updateTaskDataOfTaskForm} className="button-admit">update</Button>
-            <Button type="button" onClick={generatePoint} className="button-admit">generate point</Button>
-            <Button type="button" onClick={updateTaskDataOfTaskForm_and_datacollect} className="button-admit">Collect</Button>
+            {/* <Button type="button" onClick={generatePoint} className="button-admit">generate point</Button> */}
+            {/* <Button type="button" onClick={updateTaskDataOfTaskForm_and_datacollect} className="button-admit">Collect</Button> */}
             {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button> */}
             {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 4 images</Button> */}
             <br/>
