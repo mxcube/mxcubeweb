@@ -8,7 +8,7 @@ import QuickGetSampleListTest from './QuickGetSampleListTest'
 import QuickSCCommandTest from './QuickSCCommandTest';
 import {selectSamplesAction} from '../actions/sampleGrid'
 import * as QueueGUIActions from '../actions/queueGUI';
-import {updateTaskData,updateDefaultParameters} from '../actions/taskForm'
+import {updateTaskData,updateDefaultParameters,updateSampleQueueID,updateSampleID} from '../actions/taskForm'
 
 
 // import { Button, ButtonToolbar } from 'react-bootstrap';
@@ -310,7 +310,6 @@ const QuickMountTest =(props) =>{
 
 
 
-
     const mountAndSwitchTab =(sampleID)=>{
       const sampleData = sampleList[sampleID]
       dispatch(loadSample(sampleData));   //这里前端就会判断，要上样样品和当前样品是否不同
@@ -398,6 +397,8 @@ const QuickMountTest =(props) =>{
     }
 
     const generatePoint_and_update_taskData  =async()=>{
+      //set timeout seems not worked,
+      // still not figure out how to do the generatePoint frst and update_taskData_and_datacollection by one step
       console.log("shapes")
       console.log(shapes)
 
@@ -555,7 +556,7 @@ const QuickMountTest =(props) =>{
         let shape_id = ''
         if (Object.keys(shapes).length!==0 ){
           console.log('shapes is not {}')
-          
+
           for (const key in shapes){
             lastValue=shapes[key];
           }
@@ -611,10 +612,12 @@ const QuickMountTest =(props) =>{
         let shape_id = ''
         if (Object.keys(shapes).length!==0 ){
           console.log('shapes is not {}')
-          
+
           for (const key in shapes){
             lastValue=shapes[key];
           }
+          console.log("lastValue")
+          console.log(typeof(lastValue))
           console.log(lastValue)
         }else{
           console.log('shapes is {}')
@@ -644,6 +647,11 @@ const QuickMountTest =(props) =>{
           }
         }
         dispatch(updateTaskData(sampleIds,taskData_about_change))
+
+        let sampleID_in_array = []
+        sampleID_in_array.push(current.sampleID)
+        dispatch(updateSampleID(sampleID_in_array))
+
         if(shape_id!==''){
           addToQueue(true,taskData_about_change.parameters)
         }
@@ -651,7 +659,7 @@ const QuickMountTest =(props) =>{
       })() //这里一对空阔号代表真实被调用，不加不会被调用
     }
 
- 
+
 
     const addToQueue=(runNow,params) =>{
       console.log("runNow in addToQueue: ")
@@ -666,7 +674,7 @@ const QuickMountTest =(props) =>{
         mesh: false,
         // shape: this.props.pointID
       };
-    
+
       // Form gives us all parameter values in strings so we need to transform numbers back
       const stringFields = [
         'shutterless',
@@ -681,14 +689,14 @@ const QuickMountTest =(props) =>{
         'label',
         'helical'
       ];
-    
+
       addTask1(parameters, stringFields, runNow);
     }
 
     function addTask1(params, stringFields, runNow){
       console.log("get in not action addTask")
       const parameters = { ...params };
-  
+
       for (const key in parameters) {
         if (
           parameters.hasOwnProperty(key) &&
@@ -698,32 +706,36 @@ const QuickMountTest =(props) =>{
           parameters[key] = Number(parameters[key]);
         }
       }
-  
+
       if (sampleIds.constructor === Array) {
+        console.log('sampleIds.constructor === Array')
         dispatch(addTask(sampleIds, parameters, runNow));
       } else {
-  
+        console.log('sampleIds.constructor !== Array')
         if (taskData.queueID === null) {
+          console.log('taskData.queueID === null')
           dispatch(addTask([sampleIds], parameters, runNow));
         } else {
+          console.log('taskData.queueID !== null')
           let taskIndex = -1;
-  
+
           for (const task of sampleList[sampleIds].tasks) {
             if (task.queueID === taskData.queueID) {
+              console.log(task.queueID === taskData.queueID)
               taskIndex = sampleList[sampleIds].tasks.indexOf(task);
               break;
             }
           }
-  
+
           dispatch(updateTask(sampleIds, taskIndex, parameters, runNow))
         }
       }
-  
+
       dispatch(updateDefaultParameters(params))
     }
-  
-    
- 
+
+
+
 
     return (
         <>
@@ -839,10 +851,10 @@ const QuickMountTest =(props) =>{
             step 5:
             <br/>
             <Button type="button" onClick={updateTaskDataOfTaskForm} className="button-admit">update</Button>
-            {/* <Button type="button" onClick={generatePoint} className="button-admit">generate point</Button> */}
-            {/* <Button type="button" onClick={updateTaskDataOfTaskForm_and_datacollect} className="button-admit">Collect</Button> */}
+            <Button type="button" onClick={generatePoint} className="button-admit">generate point</Button>
+            <Button type="button" onClick={updateTaskDataOfTaskForm_and_datacollect} className="button-admit">Collect</Button>
             {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 1 image</Button> */}
-            {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 4 images</Button> */}
+            {/* <Button type="buttocurrentn" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">test 4 images</Button> */}
             <br/>
             <br/>
             <Button type="button"  onClick={()=>resetToDefaults('test')} className="button-reset-default">Default value (test)</Button>

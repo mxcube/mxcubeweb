@@ -25,6 +25,24 @@ export function showTaskForm(
   };
 }
 
+export function updateSampleID(
+  sampleQueueID = [],
+){
+  return {
+    type : 'UPDATE_SAMPLEIDS',
+    sampleIDs : sampleQueueID,
+  };
+}
+
+
+// export function updateSampleQueueID(
+//   sampleQueueID = -1
+// ){
+//   return function(dispatch){
+//     dispatch(updateSampleID(sampleQueueID))
+//   }
+// }
+
 export function updateTaskData(
   sampleQueueID = [],
   taskData = {},

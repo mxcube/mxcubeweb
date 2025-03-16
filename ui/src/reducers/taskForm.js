@@ -26,6 +26,12 @@ export default (state = initialState, action) => {
         pointID: action.pointID,
       };
     }
+    case 'UPDATE_SAMPLEIDS':{
+      return{
+        ...state,
+        sampleIds: action.sampleIDs,
+      };
+    }
     case 'ADD_TASKS': {
       let type = action.tasks[0].type.toLowerCase();
       if (action.tasks[0].parameters.helical) {
