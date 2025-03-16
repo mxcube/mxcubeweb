@@ -8,7 +8,7 @@ import * as QueueActions from '../actions/queue';
 import * as QueueGUIActions from '../actions/queueGUI';
 import * as SampleViewActions from '../actions/sampleview';
 import * as SampleChangerActions from '../actions/sampleChanger';
-import { showTaskForm } from '../actions/taskForm';
+import { showTaskForm ,updateSampleID} from '../actions/taskForm';
 import { Nav } from 'react-bootstrap';
 import { showDialog } from '../actions/general';
 
@@ -37,7 +37,8 @@ function mapStateToProps(state) {
     plotsData: state.beamline.plotsData,
     plotsInfo: state.beamline.plotsInfo,
     selectedShapes: state.sampleview.selectedShapes,
-    shapes: state.shapes
+    shapes: state.shapes,
+    sc_state: state.sampleChanger.state
   };
 }
 
@@ -50,7 +51,8 @@ function mapDispatchToProps(dispatch) {
     sampleChangerActions: bindActionCreators(SampleChangerActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
-    beamlineActions: bindActionCreators(BeamlineActions, dispatch)
+    beamlineActions: bindActionCreators(BeamlineActions, dispatch),
+    updateSampleID: bindActionCreators(updateSampleID,dispatch)
   };
 }
 
@@ -81,7 +83,9 @@ class SampleQueueContainer extends React.Component {
       loading,
       autoMountNext,
       autoAddDiffPlan,
-      centringMethod
+      centringMethod,
+      sc_state,
+      updateSampleID
     } = this.props;
     const {
       sendToggleCheckBox,
@@ -233,6 +237,8 @@ class SampleQueueContainer extends React.Component {
               queueStatus={queueStatus}
               showList={showList}
               sendPrepareForNewSample={sendPrepareForNewSample}
+              sc_state={sc_state}
+              updateSampleID={updateSampleID}
             />
             <div className="queue-messages">
               <div className="queue-messages-title">

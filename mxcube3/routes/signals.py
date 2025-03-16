@@ -216,6 +216,16 @@ def set_current_sample(sample_id):
     sample = {"sampleID": sample_id}
     server.emit("set_current_sample", sample, namespace="/hwr")
 
+def update_sampleID(sample_id):
+    if not sample_id:
+        sample_id = ""
+    else:
+        sample_id=[sample_id]
+    sample_id = {"sampleID":sample_id}
+
+    print("sample_id in upate_sampleID: ",sample_id)
+    server.emit("update_sampleID",sample_id, namespace="/hwr")
+
 
 def sc_contents_update():
     server.emit("sc_contents_update")

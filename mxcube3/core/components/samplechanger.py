@@ -192,8 +192,10 @@ class SampleChanger(ComponentBase):
         logging.getLogger("MX3.HWR").info(msg)
 
         from mxcube3.routes.signals import set_current_sample
+        from mxcube3.routes.signals import update_sampleID
 
         set_current_sample(sample_id)
+        update_sampleID(sample_id)
 
     def get_current_sample(self):
         sample_id = self.app.CURRENTLY_MOUNTED_SAMPLE

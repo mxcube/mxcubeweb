@@ -53,6 +53,9 @@ import {
   updateSCContents,
 } from './actions/sampleChanger';
 
+import {updateSampleID} from './actions/taskForm'
+
+
 import { setEnergyScanResult } from './actions/taskResults';
 
 import { CLICK_CENTRING } from './constants';
@@ -424,6 +427,10 @@ class ServerIO {
 
     this.hwrSocket.on('set_current_sample', (sample) => {
       this.dispatch(setCurrentSample(sample.sampleID));
+    });
+
+    this.hwrSocket.on('update_sampleID', (sample) => {
+      this.dispatch(updateSampleID(sample.sampleID));
     });
 
     this.hwrSocket.on('sc_maintenance_update', (data) => {

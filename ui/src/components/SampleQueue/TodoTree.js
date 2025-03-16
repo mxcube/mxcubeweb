@@ -86,6 +86,7 @@ export default class TodoTree extends React.Component {
                       variant='outline-secondary'
                       size="sm"
                       onClick={() => this.mountAndSwitchTab(sampleData)}
+                      disabled={this.props.sc_state==='READY'?false:true}
                     >
                       Mount
                     </Button>
