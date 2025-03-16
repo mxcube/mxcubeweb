@@ -8,7 +8,7 @@ import QuickGetSampleListTest from './QuickGetSampleListTest'
 import QuickSCCommandTest from './QuickSCCommandTest';
 import {selectSamplesAction} from '../actions/sampleGrid'
 import * as QueueGUIActions from '../actions/queueGUI';
-import {updateTaskData,updateDefaultParameters,updateSampleQueueID,updateSampleID} from '../actions/taskForm'
+import {updateTaskData,updateDefaultParameters,updateSampleID} from '../actions/taskForm'
 
 
 // import { Button, ButtonToolbar } from 'react-bootstrap';

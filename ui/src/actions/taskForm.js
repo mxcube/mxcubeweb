@@ -35,14 +35,6 @@ export function updateSampleID(
 }
 
 
-// export function updateSampleQueueID(
-//   sampleQueueID = -1
-// ){
-//   return function(dispatch){
-//     dispatch(updateSampleID(sampleQueueID))
-//   }
-// }
-
 export function updateTaskData(
   sampleQueueID = [],
   taskData = {},
