@@ -6,6 +6,7 @@ import { MdClose } from 'react-icons/md';
 
 import styles from './beamlineCamera.module.css';
 import pip from './picture_in_picture.svg';
+import { useSelector } from 'react-redux';
 
 function handleImageClick(url, width, height) {
   window.open(
@@ -16,8 +17,10 @@ function handleImageClick(url, width, height) {
   );
 }
 
-export default function BeamlineCamera(props) {
-  const { cameraSetup } = props;
+export default function BeamlineCamera() {
+  const cameraComponents = useSelector(
+    (state) => state.uiproperties?.camera_setup?.components,
+  );
 
   const [showVideoModal, setShowVideoModal] = useState({});
 
@@ -27,7 +30,7 @@ export default function BeamlineCamera(props) {
 
   function renderVideo() {
     const DraggableElements = [];
-    cameraSetup.components.forEach((camera, vIndex) => {
+    cameraComponents.forEach((camera, vIndex) => {
       DraggableElements.push(
         showVideoModal[vIndex] ? (
           <div
@@ -91,7 +94,7 @@ export default function BeamlineCamera(props) {
     return DraggableElements;
   }
 
-  if (!cameraSetup || cameraSetup.components.length <= 0) {
+  if (!cameraComponents || cameraComponents.length <= 0) {
     return null;
   }
 
@@ -113,14 +116,14 @@ export default function BeamlineCamera(props) {
           Beamline Cameras
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          {cameraSetup.components.map((camera, cIndex) => [
+          {cameraComponents.map((camera, cIndex) => [
             <Dropdown.Item
               key={`ddVideo_${camera.label}`}
               onClick={() => handleShowVideoCard(cIndex, true)}
             >
               {camera.label} <i className="fas fa-video" />
             </Dropdown.Item>,
-            cameraSetup.components.length > cIndex + 1 && <Dropdown.Divider />,
+            cameraComponents.length > cIndex + 1 && <Dropdown.Divider />,
           ])}
         </Dropdown.Menu>
       </Dropdown>

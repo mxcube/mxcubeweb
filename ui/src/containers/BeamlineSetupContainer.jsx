@@ -1,6 +1,5 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Navbar, Nav, Table, Popover } from 'react-bootstrap';
 import { find, filter } from 'lodash';
 
@@ -16,18 +15,18 @@ import { setAttribute } from '../actions/beamline';
 import { sendCommand } from '../actions/sampleChanger';
 import { stopBeamlineAction } from '../actions/beamlineActions';
 
-function BeamlineSetupContainer(props) {
-  const {
-    beamline,
-    sampleChanger,
-    uiproperties,
-    setAttribute,
-    stopBeamlineAction,
-    sendCommand,
-  } = props;
+function BeamlineSetupContainer() {
+  const dispatch = useDispatch();
+  const beamlineProperties = useSelector(
+    (state) => state.uiproperties?.beamline_setup?.components,
+  );
+  const hardwareObjects = useSelector(
+    (state) => state.beamline.hardwareObjects,
+  );
+  const sampleChangerState = useSelector((state) => state.sampleChanger.state);
 
   function renderBeamstopAlignmentOverlay() {
-    const motor = beamline.hardwareObjects['diffractometer.beamstop_distance'];
+    const motor = hardwareObjects['diffractometer.beamstop_distance'];
 
     if (!motor) {
       return null;
@@ -51,26 +50,26 @@ function BeamlineSetupContainer(props) {
   function renderActuatorComponent() {
     const acts = [];
 
-    if ('beamline_setup' in uiproperties) {
-      const blsetup_properties = uiproperties.beamline_setup.components;
-
-      for (const key in beamline.hardwareObjects) {
-        if (beamline.hardwareObjects[key] !== undefined) {
-          const uiprop = find(blsetup_properties, { attribute: key });
+    if (beamlineProperties) {
+      for (const key in hardwareObjects) {
+        if (hardwareObjects[key] !== undefined) {
+          const uiprop = find(beamlineProperties, { attribute: key });
 
           if (uiprop !== undefined && uiprop.value_type === 'NSTATE') {
             if (uiprop.label === 'Beamstop') {
               acts.push(
                 <Nav.Item key={key} className="ms-3">
                   <InOutSwitch
-                    openText={beamline.hardwareObjects[key].commands[0]}
-                    offText={beamline.hardwareObjects[key].commands[1]}
-                    openValue={beamline.hardwareObjects[key].commands[0]}
-                    offValue={beamline.hardwareObjects[key].commands[1]}
+                    openText={hardwareObjects[key].commands[0]}
+                    offText={hardwareObjects[key].commands[1]}
+                    openValue={hardwareObjects[key].commands[0]}
+                    offValue={hardwareObjects[key].commands[1]}
                     labelText={uiprop.label}
                     pkey={key}
-                    value={beamline.hardwareObjects[key].value}
-                    onSave={setAttribute}
+                    value={hardwareObjects[key].value}
+                    onSave={(name, value) =>
+                      dispatch(setAttribute(name, value))
+                    }
                     optionsOverlay={renderBeamstopAlignmentOverlay()}
                   />
                 </Nav.Item>,
@@ -79,14 +78,16 @@ function BeamlineSetupContainer(props) {
               acts.push(
                 <Nav.Item key={key} className="ms-3">
                   <InOutSwitch
-                    openText={beamline.hardwareObjects[key].commands[0]}
-                    offText={beamline.hardwareObjects[key].commands[1]}
-                    openValue={beamline.hardwareObjects[key].commands[0]}
-                    offValue={beamline.hardwareObjects[key].commands[1]}
+                    openText={hardwareObjects[key].commands[0]}
+                    offText={hardwareObjects[key].commands[1]}
+                    openValue={hardwareObjects[key].commands[0]}
+                    offValue={hardwareObjects[key].commands[1]}
                     labelText={uiprop.label}
                     pkey={key}
-                    value={beamline.hardwareObjects[key].value}
-                    onSave={setAttribute}
+                    value={hardwareObjects[key].value}
+                    onSave={(name, value) =>
+                      dispatch(setAttribute(name, value))
+                    }
                   />
                 </Nav.Item>,
               );
@@ -102,7 +103,7 @@ function BeamlineSetupContainer(props) {
               <Nav.Item key={key} className="ms-3">
                 <DeviceState
                   labelText={uiprop.label}
-                  data={beamline.hardwareObjects[key].state}
+                  data={hardwareObjects[key].state}
                 />
               </Nav.Item>,
             );
@@ -117,7 +118,7 @@ function BeamlineSetupContainer(props) {
     const components = [];
 
     for (const uiprop of uiprop_list) {
-      const beamline_attribute = beamline.hardwareObjects[uiprop.attribute];
+      const beamline_attribute = hardwareObjects[uiprop.attribute];
 
       components.push(
         <td
@@ -142,8 +143,8 @@ function BeamlineSetupContainer(props) {
             format={uiprop.format}
             precision={uiprop.precision}
             suffix={uiprop.suffix}
-            onSave={(value) => setAttribute(uiprop.attribute, value)}
-            onCancel={() => stopBeamlineAction(uiprop.attribute)}
+            onSave={(value) => dispatch(setAttribute(uiprop.attribute, value))}
+            onCancel={() => dispatch(stopBeamlineAction(uiprop.attribute))}
           />
         </td>,
       );
@@ -152,13 +153,12 @@ function BeamlineSetupContainer(props) {
     return components;
   }
 
-  if (!('beamline_setup' in uiproperties)) {
+  if (!beamlineProperties) {
     return null;
   }
 
-  const uiprops = uiproperties.beamline_setup.components;
   const uiprop_list = filter(
-    uiprops,
+    beamlineProperties,
     (o) =>
       o.value_type === 'MOTOR' ||
       o.value_type === 'ACTUATOR' ||
@@ -171,7 +171,7 @@ function BeamlineSetupContainer(props) {
       <Navbar.Collapse id="basic-navbar-nav">
         <Nav className="d-flex me-auto">
           <Nav.Item className="justify-content-start">
-            <BeamlineCamera cameraSetup={uiproperties.camera_setup} />
+            <BeamlineCamera />
             <BeamlineActions />
           </Nav.Item>
         </Nav>
@@ -217,15 +217,15 @@ function BeamlineSetupContainer(props) {
               openValue="PowerOn"
               offValue="PowerOff"
               labelText="Sample Changer"
-              value={sampleChanger.state}
-              onSave={sendCommand}
+              value={sampleChangerState}
+              onSave={(cmdparts, args) => dispatch(sendCommand(cmdparts, args))}
             />
           </Nav.Item>
           {renderActuatorComponent()}
           <Nav.Item className="ms-3">
             <span className="blstatus-item">
-              {beamline.hardwareObjects.machine_info && (
-                <MachInfo info={beamline.hardwareObjects.machine_info.value} />
+              {hardwareObjects.machine_info && (
+                <MachInfo info={hardwareObjects.machine_info.value} />
               )}
             </span>
           </Nav.Item>
@@ -235,23 +235,4 @@ function BeamlineSetupContainer(props) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    uiproperties: state.uiproperties,
-    beamline: state.beamline,
-    sampleChanger: state.sampleChanger,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    setAttribute: bindActionCreators(setAttribute, dispatch),
-    sendCommand: bindActionCreators(sendCommand, dispatch),
-    stopBeamlineAction: bindActionCreators(stopBeamlineAction, dispatch),
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(BeamlineSetupContainer);
+export default BeamlineSetupContainer;
