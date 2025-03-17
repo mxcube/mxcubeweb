@@ -1,4 +1,3 @@
-import { combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import login from './login';
 import queue from './queue';
@@ -21,7 +20,7 @@ import taskResult from './taskResult';
 import uiproperties from './uiproperties';
 import waitDialog from './waitDialog';
 
-const mxcubeReducer = combineReducers({
+const rootReducer = {
   login,
   queue,
   uiproperties,
@@ -43,10 +42,6 @@ const mxcubeReducer = combineReducers({
   taskResult,
   form: formReducer,
   waitDialog,
-});
-
-const rootReducer = (state, action) => {
-  return mxcubeReducer(state, action);
 };
 
 export default rootReducer;

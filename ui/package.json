@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
-    "@redux-devtools/extension": "3.3.0",
+    "@reduxjs/toolkit": "2.6.1",
     "@rjsf/core": "5.13.1",
     "@rjsf/utils": "5.13.1",
     "@rjsf/validator-ajv8": "5.13.1",
@@ -50,7 +50,6 @@
     "redux": "4.1.2",
     "redux-form": "^8.3.10",
     "redux-logger": "3.0.6",
-    "redux-thunk": "^2.4.2",
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.8.1",
     "wretch": "2.7.0"
