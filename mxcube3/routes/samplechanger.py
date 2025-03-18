@@ -76,6 +76,24 @@ def init_route(app, server, url_prefix):
 
         return resp
 
+    @bp.route("/mountplatesample", methods=["POST"])
+    @server.require_control
+    @server.restrict
+    def mount_plate_sample():
+        resp = Response(status=200)
+
+        try:
+            resp = jsonify(HWR.beamline.plate_manipulator.do_startMovePlateToLocation(request.get_json()))
+        except Exception as ex:
+            resp = (
+                "Cannot load plate sample",
+                409,
+                {"Content-Type": "application/json", "message": str(ex)},
+            )
+
+        return resp
+
+
     @bp.route("/unmount", methods=["POST"])
     @server.require_control
     @server.restrict

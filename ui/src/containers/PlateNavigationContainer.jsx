@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { Button, Table } from 'react-bootstrap';
 import './PlateNavigationContainer.css';
+import { loadPlateSample } from '../actions/plateManiuplator';
+import { useDispatch} from "react-redux";
 
 const PlateNavigationContainer = () => {
     const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
     const cols = 12;
     // 使用一个字符串来记录当前选中按钮的标识，初始为 null 表示没有选中的按钮
     const [selectedButton, setSelectedButton] = useState(null);
+    const dispatch = useDispatch();
 
     const handleButtonClick = (rowIndex, colIndex) => {
         // 生成当前按钮的唯一标识
@@ -15,6 +18,8 @@ const PlateNavigationContainer = () => {
         console.log(buttonId)
         // 更新选中按钮的标识
         setSelectedButton(buttonId);
+        dispatch(loadPlateSample(buttonId))
+
     };
 
     const renderTable = () => {
