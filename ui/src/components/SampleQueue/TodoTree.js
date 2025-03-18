@@ -2,8 +2,10 @@ import React from 'react';
 import './app.css';
 import { ListGroup, Form, Button } from 'react-bootstrap';
 import { QUEUE_RUNNING } from '../../constants';
+import { connect } from 'react-redux';
 
-export default class TodoTree extends React.Component {
+// export default class TodoTree extends React.Component {
+class TodoTree extends React.Component {
   constructor(props) {
     super(props);
     this.setSearchWord = this.setSearchWord.bind(this);
@@ -85,8 +87,8 @@ export default class TodoTree extends React.Component {
                     <Button
                       variant='outline-secondary'
                       size="sm"
+                      disabled={this.props.scState==='READY'?false:true}
                       onClick={() => this.mountAndSwitchTab(sampleData)}
-                      disabled={this.props.sc_state==='READY'?false:true}
                     >
                       Mount
                     </Button>
@@ -100,3 +102,17 @@ export default class TodoTree extends React.Component {
     );
   }
 }
+
+
+
+function mapStateToProps(state) {
+  return {
+    scState: state.sampleChanger.state,
+  };
+}
+
+
+
+export default connect(
+  mapStateToProps,
+)(TodoTree);
