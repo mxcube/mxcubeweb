@@ -47,6 +47,9 @@ class MXNavbar extends React.Component {
               <LinkContainer className="me-4" to="/equipment">
                 <Nav.Item className="nav-link">Equipment</Nav.Item>
               </LinkContainer>
+              <LinkContainer className="me-4" to="/plate">
+                <Nav.Item className="nav-link">Plate</Nav.Item>
+              </LinkContainer>
               <LinkContainer to="/logging">
                 <Nav.Item className="nav-link">System log</Nav.Item>
               </LinkContainer>

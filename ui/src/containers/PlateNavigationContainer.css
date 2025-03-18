@@ -1,0 +1,28 @@
+.plate-navi-table-container {
+    width: 700px; 
+    height: 300px; 
+    overflow: auto; 
+}
+
+.plate-navi-table-container table {
+    width: 100%;
+    height: 100%;
+    table-layout: fixed; 
+}
+
+.plate-navi-table-container td {
+    padding: 2px; /* 减少单元格内边距 */
+    text-align: center;
+}
+
+.plate-navi-table-container button {
+    width: 100%;
+    height: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding: 0.25rem 0.5rem; /* 减少按钮内边距 */
+    font-size: 0.75rem; /* 减小按钮字体大小 */
+    line-height: 1.5;
+    border-radius: 0.2rem;
+}

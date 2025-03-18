@@ -8,6 +8,7 @@ import LoginContainer from '../containers/LoginContainer';
 import SampleViewContainer from '../containers/SampleViewContainer';
 import SampleListViewContainer from '../containers/SampleListViewContainer';
 import EquipmentContainer from '../containers/EquipmentContainer';
+import PlateContainer from '../containers/PlateContainer';
 import LoggerContainer from '../containers/LoggerContainer';
 import RemoteAccessContainer from '../containers/RemoteAccessContainer';
 import HelpContainer from '../containers/HelpContainer';
@@ -54,6 +55,7 @@ class App extends React.Component {
               <Route path="samplegrid" element={<SampleListViewContainer />} />
               <Route path="datacollection" element={<SampleViewContainer />} />
               <Route path="equipment" element={<EquipmentContainer />} />
+              <Route path="plate" element={<PlateContainer />} />
               <Route path="logging" element={<LoggerContainer />} />
               <Route path="remoteaccess" element={<RemoteAccessContainer />} />
               <Route path="help" element={<HelpContainer />} />
