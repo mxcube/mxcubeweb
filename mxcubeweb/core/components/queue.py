@@ -707,7 +707,7 @@ class Queue(ComponentBase):
         Retrieves the model and the queue entry for the model node with id <id>
 
         :param int _id: Node id of node to retrieve
-        :returns: The tuple model, entry
+        :returns: The tuple model, entry or the root node and QueueManger if _id is None
         :rtype: Tuple
         """
         if _id is None:
