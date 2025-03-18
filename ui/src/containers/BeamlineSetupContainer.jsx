@@ -8,6 +8,7 @@ import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import SampleChangerSwitch from '../components/SampleChangerSwitch/SampleChangerSwitch';
 import SampleChangeStatus from '../components/SampleChangerStatus/SampleChangerStatus';
 import SamplePoolLN2Level from '../components/SamplePoolLN2Level/SamplePoolLN2Level';
+import PlateModeSwitch from '../components/PlateModeSwitch/PlateModeSwitch';
 import DeviceState from '../components/DeviceState/DeviceState';
 import GetSamepleListState from '../components/GetSampleListState/GetSampleListState'
 import LabeledValue from '../components/LabeledValue/LabeledValue';
@@ -293,6 +294,16 @@ class BeamlineSetupContainer extends React.Component {
                 />
             </Nav.Item>
           </Nav>
+          <Nav className="me-3">
+            <Nav.Item>
+              <PlateModeSwitch
+                  labelText="Plate Mode"
+                  data = { this.props.sampleChanger.plateMode }
+                  onSave={ this.props.sendCommand }
+                />
+            </Nav.Item>
+          </Nav>
+
 
           <Nav className="">
             <Nav.Item>

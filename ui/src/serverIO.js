@@ -48,6 +48,7 @@ import {
   setSCState,
   setSCStatus,
   setSCSampleLN2Level,
+  setPlateMode,
   setLoadedSample,
   setSCGlobalState,
   updateSCContents,
@@ -419,6 +420,10 @@ class ServerIO {
 
     this.hwrSocket.on('sc_sampleLN2Level',(sc_sampleLN2Level)=>{
       this.dispatch(setSCSampleLN2Level(sc_sampleLN2Level));
+    });
+
+    this.hwrSocket.on('plate_mode',(plateMode)=>{
+      this.dispatch(setPlateMode(plateMode));
     });
 
     this.hwrSocket.on('loaded_sample_changed', (data) => {

@@ -18,6 +18,9 @@ export function setSCSampleLN2Level(data) {
   return { type: 'SET_SC_SampleLN2Level', data };
 }
 
+export function setPlateMode(plateMode) {
+  return { type: 'SET_PLATE_MODE', plateMode };
+}
 
 
 export function setLoadedSample(data) {

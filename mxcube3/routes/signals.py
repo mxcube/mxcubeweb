@@ -133,6 +133,10 @@ def sc_sampleLN2Level_changed(*args):
     print("going to do the sc_sampleLN2Level_changed method with new_sampleLN2Level: ", new_sampleLN2Level)
     server.emit("sc_sampleLN2Level", new_sampleLN2Level, namespace="/hwr")
 
+def plate_mode_changed(*args):
+    new_plate_mode = args[0]
+    print("going to do the plate_mode_changed method with new_plate_mode: ",new_plate_mode)
+    server.emit("plate_mode",new_plate_mode,namespace="/hwr")
 
 def sc_load(location):
     msg = {

@@ -23,6 +23,7 @@ class SampleChanger(ComponentBase):
         """Initialize hwobj signals."""
         HWR.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
         HWR.beamline.sample_changer.connect("statusChanged", signals.sc_status_changed)
+        HWR.beamline.sample_changer.connect("plateModeChanged", signals.plate_mode_changed)
 
         HWR.beamline.sample_changer.connect("sampleLN2levelChanged", signals.sc_sampleLN2Level_changed)
 
@@ -436,6 +437,15 @@ class SampleChanger(ComponentBase):
         except Exception:
             sample_pool_LN2_level = "OFFLINE"
 
+        # if it is plate mode
+        try:
+            plate_mode = HWR.beamline.plate_manipulator.get_if_plate_mode()
+            plate_mode = str(plate_mode)
+        except Exception:
+            plate_mode = 'OFFLINE'
+
+
+
         initial_state = {
             "state": state,
             "status": status,
@@ -446,6 +456,8 @@ class SampleChanger(ComponentBase):
             "cmds": {"cmds": cmds},
             "msg": msg,
             "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),
+            # "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),      #源码通过md2判断
+            "plate_mode":plate_mode
         }
 
         return initial_state

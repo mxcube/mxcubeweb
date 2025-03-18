@@ -10,6 +10,7 @@ export default (state = INITIAL_STATE, action) => {
         ...state,
         state: action.data.sampleChangerState.state,
         status: action.data.sampleChangerStatus.status,
+        plateMode: action.data.plateMode,
         sampleLN2Level :action.data.sampleLN2Level,
         contents: action.data.sampleChangerContents,
         loadedSample: action.data.loadedSample,
@@ -33,7 +34,9 @@ export default (state = INITIAL_STATE, action) => {
       console.log(action.data)
       return {...state,sampleLN2Level:action.data}
     }
-
+    case 'SET_PLATE_MODE':{
+      return { ...state, plateMode:action.plateMode };
+    }
     case 'SET_SC_GLOBAL_STATE': {
       return {
         ...state,

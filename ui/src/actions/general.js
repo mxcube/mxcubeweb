@@ -298,6 +298,10 @@ export function getInitialState(userInControl) {
           return json;
         })
         .then((json)=>{
+          state.plateMode = json.plate_mode;
+          return json;
+        })
+        .then((json)=>{
           state.sampleLN2Level = json.sample_pool_LN2_level;
           return json;
         })
