@@ -525,7 +525,6 @@ const PlateQuickMount =(props) =>{
             <br/>
 
             {/* 下面是收集的具体参数 */}
-            step 4:
 
 
             <Row>
@@ -577,7 +576,6 @@ const PlateQuickMount =(props) =>{
             </Row>
 
       
-            step 5:
             <br/>
             <Button type="button" onClick={updateTaskDataOfTaskForm} className="button-admit">update</Button>
             {/* <Button type="button" disabled={sc_state==='READY'?false:true} onClick={null} className="button-admit">Collect</Button> */}
