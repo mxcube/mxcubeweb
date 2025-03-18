@@ -16,6 +16,7 @@ import UserMessage from '../components/Notify/UserMessage';
 import loader from '../img/loader.gif';
 import * as BeamlineActions from '../actions/beamline';
 import PlateNavigationContainer from './PlateNavigationContainer';
+import PlateQuickMount from './PlateQuickMount';
 
 function mapStateToProps(state) {
   return {
@@ -140,6 +141,7 @@ class SampleQueueContainer extends React.Component {
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
         {/* <div>wait to add components</div> */}
         <PlateNavigationContainer />
+        <PlateQuickMount />
         <QueueControl
           ref="queueContainer"
           historyLength={history.length}
