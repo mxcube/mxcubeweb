@@ -1,56 +1,259 @@
-import React, { useState } from 'react';
-import { Button, Table } from 'react-bootstrap';
-import './PlateNavigationContainer.css';
+import React from 'react';
+import { bindActionCreators } from 'redux';
+import { connect } from 'react-redux';
+import CurrentTree from '../components/SampleQueue/CurrentTree';
+import TodoTree from '../components/SampleQueue/TodoTree';
+import QueueControl from '../components/SampleQueue/QueueControl';
+import * as QueueActions from '../actions/queue';
+import * as QueueGUIActions from '../actions/queueGUI';
+import * as SampleViewActions from '../actions/sampleview';
+import * as SampleChangerActions from '../actions/sampleChanger';
+import { showTaskForm } from '../actions/taskForm';
+import { Nav } from 'react-bootstrap';
+import { showDialog } from '../actions/general';
 
-const PlateNavigationContainer = () => {
-    const rows = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
-    const cols = 12;
-    // 使用一个字符串来记录当前选中按钮的标识，初始为 null 表示没有选中的按钮
-    const [selectedButton, setSelectedButton] = useState(null);
+import UserMessage from '../components/Notify/UserMessage';
+import loader from '../img/loader.gif';
+import * as BeamlineActions from '../actions/beamline';
+import PlateNavigationContainer from './PlateNavigationContainer';
+import PlateQuickMount from './PlateQuickMount';
 
-    const handleButtonClick = (rowIndex, colIndex) => {
-        // 生成当前按钮的唯一标识
-        const buttonId = `${rowIndex + 1}:${colIndex + 1}`;
-        console.log('buttonId')
-        console.log(buttonId)
-        // 更新选中按钮的标识
-        setSelectedButton(buttonId);
-    };
+function mapStateToProps(state) {
+  return {
+    searchString: state.queueGUI.searchString,
+    current: state.queue.current,
+    visibleList: state.queueGUI.visibleList,
+    queueStatus: state.queue.queueStatus,
+    queue: state.queue.queue,
+    autoMountNext: state.queue.autoMountNext,
+    autoAddDiffPlan: state.queue.autoAddDiffPlan,
+    centringMethod: state.queue.centringMethod,
+    sampleList: state.sampleGrid.sampleList,
+    sampleOrder: state.sampleGrid.order,
+    checked: state.queue.checked,
+    rootPath: state.login.rootPath,
+    displayData: state.queueGUI.displayData,
+    loading: state.queueGUI.loading,
+    logRecords: state.logger.logRecords,
+    plotsData: state.beamline.plotsData,
+    plotsInfo: state.beamline.plotsInfo,
+    selectedShapes: state.sampleview.selectedShapes,
+    shapes: state.shapes
+  };
+}
 
-    const renderTable = () => {
-        return rows.map((row, rowIndex) => (
-            <tr key={rowIndex}>
-                {Array.from({ length: cols }).map((_, colIndex) => {
-                    const buttonId = `${rowIndex + 1}:${colIndex + 1}`;
-                    const isSelected = selectedButton === buttonId;
-                    return (
-                        <td key={colIndex}>
-                            <Button
-                                variant={isSelected ? 'primary' : 'outline-secondary'}
-                                onClick={() => handleButtonClick(rowIndex, colIndex)}
-                            >
-                                {row}-{colIndex+1}
-                            </Button>
-                        </td>
-                    );
-                })}
-            </tr>
-        ));
-    };
+
+function mapDispatchToProps(dispatch) {
+  return {
+    queueActions: bindActionCreators(QueueActions, dispatch),
+    queueGUIActions: bindActionCreators(QueueGUIActions, dispatch),
+    sampleViewActions: bindActionCreators(SampleViewActions, dispatch),
+    sampleChangerActions: bindActionCreators(SampleChangerActions, dispatch),
+    showForm: bindActionCreators(showTaskForm, dispatch),
+    showDialog: bindActionCreators(showDialog, dispatch),
+    beamlineActions: bindActionCreators(BeamlineActions, dispatch)
+  };
+}
+
+class SampleQueueContainer extends React.Component {
+
+  constructor(props) {
+    super(props);
+    this.handleSelect = this.handleSelect.bind(this);
+  }
+
+  handleSelect(selectedKey) {
+    this.props.queueGUIActions.showList(selectedKey);
+  }
+
+
+  render() {
+    const {
+      checked,
+      current,
+      sampleOrder,
+      queue,
+      sampleList,
+      showForm,
+      queueStatus,
+      rootPath,
+      displayData,
+      visibleList,
+      loading,
+      autoMountNext,
+      autoAddDiffPlan,
+      centringMethod
+    } = this.props;
+    const {
+      sendToggleCheckBox,
+      sendPauseQueue,
+      sendUnpauseQueue,
+      sendStopQueue,
+      changeTaskOrderAction,
+      deleteTask,
+      addTask,
+      moveTask,
+      setAutoMountSample,
+      setAutoAddDiffPlan,
+      sendRunSample,
+      sendSetCentringMethod,
+      setEnabledSample
+    } = this.props.queueActions;
+    const {
+      collapseItem,
+      showConfirmCollectDialog,
+      selectItem,
+      showList
+    } = this.props.queueGUIActions;
+    const {
+      sendPrepareForNewSample
+    } = this.props.beamlineActions;
+    const {
+      loadSample,
+      unloadSample
+    } = this.props.sampleChangerActions;
+
+    // go through the queue, check if sample has been collected or not
+    // to make todo and history lists
+    const todo = [];
+    const history = [];
+
+    for (const key of sampleOrder) {
+      if (queue.includes(key)) {
+        const sample = sampleList[key];
+
+        if (sample.sampleID !== current.sampleID && sample.checked) {
+          todo.push(sample.sampleID);
+        }
+      }
+    }
+
+    let sampleName = '';
+    let proteinAcronym = '';
+
+    if (current.sampleID) {
+      const sampleData = sampleList[current.sampleID] || {};
+      sampleName = sampleData.sampleName ? sampleData.sampleName : '';
+      proteinAcronym = sampleData.proteinAcronym ? `${sampleData.proteinAcronym} -` : '';
+    }
 
     return (
-        <>
-            <div>
-                <b>Navigation:</b>
+      <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
+        {/* <div>wait to add components</div> */}
+        <PlateNavigationContainer />
+        <PlateQuickMount />
+        <QueueControl
+          ref="queueContainer"
+          historyLength={history.length}
+          queueLength={queue.length}
+          queue={queue}
+          setEnabledSample={setEnabledSample}
+          todoLength={todo.length}
+          queueStatus={queueStatus}
+          runQueue={showConfirmCollectDialog}
+          stopQueue={sendStopQueue}
+          pause={sendPauseQueue}
+          unpause={sendUnpauseQueue}
+          setAutoMountSample={setAutoMountSample}
+          autoMountNext={autoMountNext}
+          setAutoAddDiffPlan={setAutoAddDiffPlan}
+          autoAddDiffPlan={autoAddDiffPlan}
+          mounted={current.sampleID}
+          runSample={sendRunSample}
+          sendSetCentringMethod={sendSetCentringMethod}
+          centringMethod={centringMethod}
+          todoList={todo}
+          sampleList={sampleList}
+          sendUnmountSample={unloadSample}
+        />
+        <div className="m-tree queue-body">
+          <Nav
+            variant="tabs"
+            fill
+            justify
+            defaultActiveKey="current"
+            activeKey={visibleList}
+            onSelect={this.handleSelect}
+          >
+            <Nav.Item>
+              <Nav.Link eventKey='current'>
+                <b>
+                  { current.sampleID ? `Sample: ${proteinAcronym} ${sampleName}` : 'Current'}
+                </b>
+              </Nav.Link>
+            </Nav.Item>
+            <Nav.Item>
+              <Nav.Link eventKey='todo'>
+                <b>Queued Samples ({todo.length})</b>
+              </Nav.Link>
+            </Nav.Item>
+          </Nav>
+          {loading ?
+            <div className="center-in-box" style={{ zIndex: '1000' }}>
+              <img src={loader} className="img-responsive" alt="" />
             </div>
-            <div className="container mt-1 plate-navi-table-container">
-                <Table bordered>
-                    <tbody>{renderTable()}</tbody>
-                </Table>
+            : null
+          }
+            <CurrentTree
+              changeOrder={changeTaskOrderAction}
+              show={visibleList === 'current'}
+              mounted={current.sampleID}
+              queue={queue}
+              sampleList={sampleList}
+              toggleCheckBox={sendToggleCheckBox}
+              checked={checked}
+              deleteTask={deleteTask}
+              pause={sendPauseQueue}
+              unpause={sendUnpauseQueue}
+              stop={sendStopQueue}
+              showForm={showForm}
+              unmount={unloadSample}
+              queueStatus={queueStatus}
+              rootPath={rootPath}
+              collapseItem={collapseItem}
+              selectItem={selectItem}
+              displayData={displayData}
+              runSample={sendRunSample}
+              todoList={todo}
+              moveTask={moveTask}
+              addTask={addTask}
+              plotsData={this.props.plotsData}
+              plotsInfo={this.props.plotsInfo}
+              shapes={this.props.shapes}
+              showDialog={this.props.showDialog}
+            />
+            sampleQueueContainer
+            <TodoTree
+              show={visibleList === 'todo'}
+              list={todo}
+              queue={queue}
+              sampleList={sampleList}
+              collapseItem={collapseItem}
+              displayData={displayData}
+              mount={loadSample}
+              showForm={showForm}
+              queueStatus={queueStatus}
+              showList={showList}
+              sendPrepareForNewSample={sendPrepareForNewSample}
+            />
+            <div className="queue-messages">
+              <div className="queue-messages-title">
+                <span style={{ marginRight: '7px' }} className="fas fa-lg fa-info-circle" />
+                 Log messages:
+              </div>
+              <UserMessage
+                messages={this.props.logRecords}
+                target="user_level_log"
+              />
             </div>
-            <div></div>
-        </>
+          </div>
+          SampleQueueContainer end
+      </div>
     );
-};
+  }
+}
 
-export default PlateNavigationContainer;
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(SampleQueueContainer);
