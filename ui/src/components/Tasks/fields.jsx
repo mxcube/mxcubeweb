@@ -67,7 +67,8 @@ export function resetLastUsedParameters(formObj) {
 export function toFixed(state, hoName, parameterName = null) {
   const withTaskData =
     state.taskForm.sampleIds.constructor !== Array ||
-    state.queue.rememberParametersBetweenSamples;
+    (state.queue.rememberParametersBetweenSamples &&
+      !state.beamline.hardwareObjects[hoName].readonly);
 
   const pname = parameterName !== null ? parameterName : hoName;
 
