@@ -3,29 +3,24 @@ import { Badge } from 'react-bootstrap';
 
 import styles from './deviceState.module.css';
 
-export default class DeviceState extends React.Component {
-  render() {
-    let msgBgStyle = 'warning';
+function DeviceState(props) {
+  const { labelText, data } = props;
+  const msgBgStyle = data === 'READY' ? 'info' : 'warning';
 
-    if (this.props.data === 'READY') {
-      msgBgStyle = 'info';
-    }
-
-    return (
-      <div className={styles.deviceState}>
+  return (
+    <div className={styles.deviceState}>
+      {labelText && (
         <Badge className={styles.labelStyle} bg="secondary">
-          {this.props.labelText}
+          {labelText}
         </Badge>
+      )}
+      {data && (
         <Badge className={styles.msgLabelStyle} bg={msgBgStyle}>
-          {this.props.data}
+          {data}
         </Badge>
-      </div>
-    );
-  }
+      )}
+    </div>
+  );
 }
 
-DeviceState.defaultProps = {
-  labelText: '',
-  pkey: undefined,
-  data: 'UNKNOWN',
-};
+export default DeviceState;
