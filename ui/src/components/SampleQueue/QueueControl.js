@@ -65,9 +65,9 @@ export default class QueueControl extends React.Component {
         ],
         LastSample: [
           {
-            text: 'Unmount',
+            text: 'do not click',
             class: 'btn-primary',
-            action: this.nextSample,
+            // action: this.nextSample,
             key: 1
           },
         ]
