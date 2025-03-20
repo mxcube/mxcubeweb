@@ -305,6 +305,7 @@ const QuickMountTest =(props) =>{
 
     const beam_size = useSelector((state)=>state.sampleview.currentAperture)
     const shapes = useSelector((state)=>state.shapes.shapes)
+    const current_energy = useSelector((state)=>state.beamline.hardwareObjects.energy.value)
 
 
 
@@ -635,6 +636,7 @@ const QuickMountTest =(props) =>{
             num_images : values['num_images'],
             exp_time : values['exp_time'],
             resolution : values['resolution'],
+            energy:current_energy,
             osc_start : osc_start,
             beam_size : beam_size,
             cell_count:'none',
@@ -700,6 +702,7 @@ const QuickMountTest =(props) =>{
             num_images : values['num_images'],
             exp_time : values['exp_time'],
             resolution : values['resolution'],
+            energy:current_energy,
             osc_start : osc_start,
             beam_size : beam_size,
             cell_count:'none',
