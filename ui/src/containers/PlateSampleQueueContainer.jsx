@@ -141,7 +141,6 @@ class SampleQueueContainer extends React.Component {
       <div style={ { display: 'flex', flexDirection: 'column', width: '100%' } }>
         {/* <div>wait to add components</div> */}
         <PlateNavigationContainer />
-        <PlateQuickMount />
         <QueueControl
           ref="queueContainer"
           historyLength={history.length}

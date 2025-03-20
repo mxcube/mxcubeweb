@@ -121,6 +121,7 @@ class SampleChanger(ComponentBase):
         self.app.lims.sample_list_set(sample_list)
 
         if current_sample:
+            # print("set_current_sample in get sample list")
             self.set_current_sample(current_sample["sampleID"])
 
     def get_sc_contents(self):
@@ -188,6 +189,7 @@ class SampleChanger(ComponentBase):
         return self.app.SC_CONTENTS["FROM_LOCATION"].get(loc, {})
 
     def set_current_sample(self, sample_id):
+        print("set_current_sample sample_id: ",sample_id,"。")
         self.app.CURRENTLY_MOUNTED_SAMPLE = sample_id
         msg = "[SC] Setting currenly mounted sample to %s" % sample_id
         logging.getLogger("MX3.HWR").info(msg)
