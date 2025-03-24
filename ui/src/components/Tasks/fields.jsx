@@ -66,12 +66,10 @@ export function resetLastUsedParameters(formObj) {
 
 export function toFixed(state, hoName, parameterName = null) {
   //
-  // Check if 'remembered' value for this field will be used.
+  //  Use 'remembered' value if:
   //
-  // Don't use 'remembered' value if:
-  //  - dealing with multiple samples
-  //  - 'remember parameters between samples' option is disabled
-  //  - the field is marked as read-only
+  //  - we are dealing with a single sample
+  //  - 'remember parameters between samples' option is enabled AND the field is not marked as read-only
   //
   const withTaskData =
     !Array.isArray(state.taskForm.sampleIds) ||
