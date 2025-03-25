@@ -105,7 +105,7 @@ def ws_valid_login_only(f):
 
 def send_mail(_from, to, subject, content):
     smtp = smtplib.SMTP("smtp", smtplib.SMTP_PORT)
-    date = email.Utils.formatdate(localtime=True)
+    date = email.utils.formatdate(localtime=True)
 
     msg = MIMEText(content)
     msg["Subject"] = subject
