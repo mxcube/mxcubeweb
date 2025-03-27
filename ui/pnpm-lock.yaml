@@ -4190,7 +4190,7 @@ snapshots:
 
   '@swc/helpers@0.4.14':
     dependencies:
-      tslib: 2.5.2
+      tslib: 2.6.3
 
   '@swc/types@0.1.18':
     dependencies:
@@ -6985,7 +6985,7 @@ snapshots:
 
   rxjs@7.8.1:
     dependencies:
-      tslib: 2.5.2
+      tslib: 2.6.3
 
   rxjs@7.8.2:
     dependencies:
