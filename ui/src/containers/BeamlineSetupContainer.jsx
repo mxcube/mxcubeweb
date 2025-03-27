@@ -46,7 +46,6 @@ function BeamlineSetupContainer() {
     );
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   function renderActuatorComponent() {
     const acts = [];
 
@@ -56,6 +55,7 @@ function BeamlineSetupContainer() {
           const uiprop = find(beamlineProperties, { attribute: key });
 
           if (uiprop !== undefined && uiprop.value_type === 'NSTATE') {
+            // eslint-disable-next-line max-depth
             if (uiprop.label === 'Beamstop') {
               acts.push(
                 <Nav.Item key={key} className="ms-3">

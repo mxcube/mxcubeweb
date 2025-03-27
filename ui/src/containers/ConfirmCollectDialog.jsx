@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -311,7 +310,7 @@ export class ConfirmCollectDialog extends React.Component {
                 const sampleName = `${sample.sampleName} - ${sample.proteinAcronym}`;
 
                 if (task.type === 'Interleaved') {
-                  parameters = task.parameters.wedges[0].parameters; // eslint-disable-line prefer-destructuring
+                  parameters = task.parameters.wedges[0].parameters;
                 }
 
                 return (

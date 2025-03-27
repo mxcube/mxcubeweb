@@ -1,5 +1,5 @@
 /* eslint-disable react/no-array-index-key */
-/* eslint-disable react/jsx-handler-names */
+
 import React from 'react';
 import './app.css';
 import { ListGroup, Form, Button } from 'react-bootstrap';

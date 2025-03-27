@@ -1,4 +1,3 @@
-/* eslint-disable unicorn/prefer-query-selector */
 import React, { useState, useEffect, useCallback } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -58,8 +57,7 @@ function removeExtraDecimal(value, type) {
   if (value !== undefined) {
     const valueString = value.toString();
     if (
-      valueString.slice(valueString.indexOf('.') + 1, valueString.length)
-        .length > 4 &&
+      valueString.slice(valueString.indexOf('.') + 1).length > 4 &&
       type === 'number'
     ) {
       return Number(value.toFixed(4));
@@ -246,8 +244,7 @@ function GphlWorkflowParametersDialog(props) {
         onSubmit={(e) => handleSubmit(e)}
       >
         {ui_schema
-          ? // eslint-disable-next-line sonarjs/cognitive-complexity
-            ui_schema['ui:order'].map((rowKey) => (
+          ? ui_schema['ui:order'].map((rowKey) => (
               <Row key={rowKey} className={`${styles.gphlFormRowBox}`}>
                 <div
                   className={`${validatedIndexingTable ? styles[rowKey] : ''} ${

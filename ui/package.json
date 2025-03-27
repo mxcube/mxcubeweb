@@ -14,7 +14,7 @@
     "format": "pnpm prettier --write",
     "fix": "pnpm eslint --fix",
     "prettier": "prettier . --cache --check",
-    "eslint": "eslint \"**/*.{js,jsx}\"",
+    "eslint": "eslint",
     "e2e": "cypress run --e2e --browser firefox",
     "cypress": "cypress open --e2e --browser firefox"
   },
@@ -55,7 +55,7 @@
     "wretch": "2.7.0"
   },
   "devDependencies": {
-    "@babel/preset-react": "7.24.7",
+    "@esrf/eslint-config": "1.0.3",
     "@testing-library/cypress": "10.0.1",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.5",
@@ -66,20 +66,11 @@
     "@vitejs/plugin-react-swc": "3.8.0",
     "cypress": "13.13.2",
     "cypress-terminal-report": "6.1.2",
-    "eslint": "8.42.0",
-    "eslint-config-galex": "4.5.2",
+    "eslint": "9.23.0",
     "prettier": "3.0.0",
     "prop-types": "15.8.1",
     "vite": "6.2.3",
     "vite-plugin-eslint": "1.8.1",
     "wait-on": "8.0.3"
-  },
-  "pnpm": {
-    "peerDependencyRules": {
-      "allowedVersions": {
-        "@phenomnomnominal/tsquery>typescript": "5.x",
-        "eslint-plugin-etc>typescript": "5.x"
-      }
-    }
   }
 }

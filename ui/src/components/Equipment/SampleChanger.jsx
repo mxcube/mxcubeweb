@@ -44,7 +44,7 @@ function renderSampleChangerTreeNode(props) {
   return (
     <div key={props.label}>
       <li className={styles.treeLi}>
-        <input // eslint-disable-line jsx-a11y/control-has-associated-label
+        <input
           type="checkbox"
           className={styles.treeNode}
           id={inputId}
@@ -63,7 +63,6 @@ function renderSampleChangerTreeNode(props) {
       </li>
 
       <Menu id={`${props.label}`}>
-        {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
         <li role="heading" aria-level="2" className="dropdown-header">
           <b>Container {props.label}</b>
         </li>

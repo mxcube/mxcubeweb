@@ -1,5 +1,5 @@
 import { showErrorPanel } from './general';
-import { clearCurrentSample } from './queue'; // eslint-disable-line import/no-cycle
+import { clearCurrentSample } from './queue';
 import {
   fetchLoadedSample,
   fetchSampleChangerContents,

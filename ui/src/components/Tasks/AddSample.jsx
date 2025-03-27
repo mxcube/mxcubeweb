@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 import { hideTaskParametersForm } from '../../actions/taskForm';
 
 const REQUIRED_MSG = 'This field is required';
-const PATTERN = /^[\w+:-]*$/u;
+const PATTERN = /^[\w+\-:]*$/u;
 const PATTERN_MSG = 'Characters allowed: A-Z a-z 0-9 _+:-';
 
 function getSampleData(params) {

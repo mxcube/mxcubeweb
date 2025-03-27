@@ -35,7 +35,6 @@ function TaskContainer() {
     (state) => state.beamline.energyScanElements,
   );
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   function doAddTask(params, stringFields, runNow) {
     const parameters = { ...params };
 
@@ -69,7 +68,6 @@ function TaskContainer() {
   if (shapes !== undefined) {
     Object.keys(shapes).forEach((key) => {
       const shape = shapes[key];
-      // eslint-disable-next-line sonarjs/no-small-switch
       switch (shape.t) {
         case 'L': {
           lines[shape.id] = shape;

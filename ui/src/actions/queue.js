@@ -1,7 +1,7 @@
 import { showErrorPanel } from './general';
-import { mountSample } from './sampleChanger'; // eslint-disable-line import/no-cycle
+import { mountSample } from './sampleChanger';
 import { abortCentring, updateShapes } from './sampleview';
-import { selectSamplesAction, clearSampleGrid } from './sampleGrid'; // eslint-disable-line import/no-cycle
+import { selectSamplesAction, clearSampleGrid } from './sampleGrid';
 import { TASK_UNCOLLECTED } from '../constants';
 import {
   fetchQueueState,

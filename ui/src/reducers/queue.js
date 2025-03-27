@@ -14,8 +14,8 @@ const INITIAL_STATE = {
   groupFolder: '',
 };
 
+// eslint-disable-next-line complexity
 function queueReducer(state = INITIAL_STATE, action = {}) {
-  // eslint-disable-next-line sonarjs/max-switch-cases
   switch (action.type) {
     case 'SET_QUEUE': {
       return { ...state, queue: action.sampleOrder };

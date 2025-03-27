@@ -29,8 +29,8 @@ const INITIAL_STATE = {
   selectedShapes: [],
 };
 
+// eslint-disable-next-line complexity
 function sampleViewReducer(state = INITIAL_STATE, action = {}) {
-  // eslint-disable-next-line sonarjs/max-switch-cases
   switch (action.type) {
     case 'TOOGLE_CINEMA': {
       return { ...state, cinema: !state.cinema };

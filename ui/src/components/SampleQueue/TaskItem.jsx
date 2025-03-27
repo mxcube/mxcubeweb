@@ -2,8 +2,6 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/no-unused-state */
 
-/* eslint-disable react/jsx-handler-names */
-/* eslint-disable sonarjs/no-duplicate-string */
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ProgressBar, Button, Collapse, Table } from 'react-bootstrap';

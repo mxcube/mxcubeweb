@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { createPortal } from 'react-dom';
 import { Dropdown } from 'react-bootstrap';
@@ -21,7 +20,6 @@ export default class ContextMenu extends React.Component {
     this.menuOptions = this.menuOptions.bind(this);
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   menuOptions() {
     const generalTaskNames = Object.keys(
       this.props.taskForm.defaultParameters,
@@ -255,10 +253,8 @@ export default class ContextMenu extends React.Component {
         {
           text: 'Go to Beam',
           action: () => {
-            {
-              const { sampleViewX, sampleViewY } = this.props;
-              this.props.sampleViewActions.moveToBeam(sampleViewX, sampleViewY);
-            }
+            const { sampleViewX, sampleViewY } = this.props;
+            this.props.sampleViewActions.moveToBeam(sampleViewX, sampleViewY);
           },
           key: 1,
         },

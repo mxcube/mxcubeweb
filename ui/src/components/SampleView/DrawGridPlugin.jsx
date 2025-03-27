@@ -61,7 +61,7 @@ const MeshGridResult = fabric.util.createClass(fabric.Object, {
       for (let y = 0; y < this.cellRows; y += 1) {
         for (let x = 0; x < this.cellColumns; x += 1) {
           ctx.beginPath();
-          ctx.fillStyle = this.fillingMatrix[x][y];
+          ctx.fillStyle = this.fillingMatrix[x][y]; // eslint-disable-line no-param-reassign
           ctx.fillRect(
             xOffset + x * this.cellTW,
             yOffset + y * this.cellTH,
@@ -83,7 +83,7 @@ const MeshGridResult = fabric.util.createClass(fabric.Object, {
       for (let y = 0; y < this.cellRows; y += 1) {
         for (let x = 0; x < this.cellColumns; x += 1) {
           ctx.beginPath();
-          ctx.fillStyle = this.fillingMatrix[x][y];
+          ctx.fillStyle = this.fillingMatrix[x][y]; // eslint-disable-line no-param-reassign
           ctx.ellipse(
             xOffset + x * this.cellTW,
             yOffset + y * this.cellTH,
@@ -494,7 +494,6 @@ export default class DrawGridPlugin {
    * @param {GridData} gd
    * @return {Object} {shapeGroup, gridData}
    */
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   shapeFromGridData(gd) {
     const gridData = { ...gd };
     let [left, top] = gd.screenCoord;
@@ -558,6 +557,7 @@ export default class DrawGridPlugin {
           );
 
           for (let nw = 0; nw < gridData.numCols; nw++) {
+            // eslint-disable-next-line max-depth
             for (let nh = 0; nh < gridData.numRows; nh++) {
               const cellCount = this.countCells(
                 gridData.cellCountFun,
@@ -567,6 +567,7 @@ export default class DrawGridPlugin {
                 gridData.numCols,
               );
 
+              // eslint-disable-next-line max-depth
               if (this.include_cell_labels) {
                 shapes.push(
                   new fabric.Text(cellCount, {

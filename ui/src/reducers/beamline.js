@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 import { RUNNING, HW_STATE } from '../constants';
 
 // The different states a beamline attribute can assume.
@@ -148,11 +147,10 @@ export const INITIAL_STATE = {
   energyScanElements: [],
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
+// eslint-disable-next-line complexity
 function beamlineReducer(state = INITIAL_STATE, action = {}) {
   let data = {};
 
-  // eslint-disable-next-line sonarjs/max-switch-cases
   switch (action.type) {
     case 'BL_ATTR_GET_ALL': {
       return { ...state, ...action.data };

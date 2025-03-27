@@ -1,6 +1,5 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable react/no-unused-state */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import React from 'react';
 import { Row, Col, Form, Button, Card } from 'react-bootstrap';
 import { Menu, Item, Separator, contextMenu } from 'react-contexify';
@@ -36,7 +35,6 @@ function _GridData(fabricObject) {
 function ChipContextMenu(props) {
   return (
     <Menu id="chip-context-menu">
-      {/* eslint-disable-next-line jsx-a11y/prefer-tag-over-role */}
       <li role="heading" aria-level="2" className="dropdown-header">
         <b>Chip</b>
       </li>

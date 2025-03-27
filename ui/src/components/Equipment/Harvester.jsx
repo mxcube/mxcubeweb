@@ -3,7 +3,7 @@ import { Card, Button, Badge } from 'react-bootstrap';
 import { contextMenu, Menu, Item, Separator } from 'react-contexify';
 import { FcRefresh, FcUpload, FcCollect } from 'react-icons/fc';
 
-import CopyToClipboard from '../../components/CopyToClipboard/CopyToClipboard.jsx';
+import CopyToClipboard from '../CopyToClipboard/CopyToClipboard.jsx';
 import ImageViewer from '../ImageViewer/ImageViewer.jsx';
 
 import styles from './equipment.module.css';

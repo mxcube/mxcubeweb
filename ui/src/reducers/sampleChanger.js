@@ -1,4 +1,3 @@
-/* eslint-disable sonarjs/no-duplicate-string */
 const INITIAL_STATE = {
   contents: {},
   state: 'READY',

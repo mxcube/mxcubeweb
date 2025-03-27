@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { Field } from 'redux-form';
 import { Row, Col, Form, Button } from 'react-bootstrap';
@@ -92,7 +91,7 @@ export function toFixed(state, hoName, parameterName = null) {
   for (const group of Object.values(state.uiproperties)) {
     for (const component of group.components) {
       if (component.attribute === hoName) {
-        precision = component.precision; // eslint-disable-line prefer-destructuring
+        precision = component.precision;
         break;
       }
     }
@@ -368,4 +367,3 @@ export class CollapsableRows extends React.Component {
     );
   }
 }
-/* eslint-enable react/no-set-state */

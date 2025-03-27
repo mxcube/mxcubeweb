@@ -109,7 +109,8 @@ class NewSampleIsaraView extends React.Component {
     const lineStep = this.sampleChangerRadius * 0.28;
     if (drawingPosition.nbColumn === 1 || drawingPosition.nbColumn === 3) {
       return drawingPosition.line * lineStep + minY + 30;
-    } else if (drawingPosition.nbColumn === 0) {
+    }
+    if (drawingPosition.nbColumn === 0) {
       return -1;
     }
     return drawingPosition.line * lineStep + minY;

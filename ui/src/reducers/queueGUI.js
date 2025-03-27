@@ -10,7 +10,6 @@ const INITIAL_STATE = {
   showConfirmCollectDialog: false,
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
 function queueGUIReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'redux-form/CHANGE': {

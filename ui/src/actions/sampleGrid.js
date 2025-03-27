@@ -1,5 +1,5 @@
 import { showErrorPanel } from './general';
-import { setQueue } from './queue'; // eslint-disable-line import/no-cycle
+import { setQueue } from './queue';
 import { fetchSamplesList, sendSyncWithCrims } from '../api/sampleChanger';
 import { fetchLimsSamples } from '../api/lims';
 import { hideWaitDialog, showWaitDialog } from './waitDialog';

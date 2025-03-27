@@ -1,5 +1,5 @@
 /* eslint-disable react/no-unused-state */
-/* eslint-disable react/jsx-handler-names */
+
 import React from 'react';
 import './app.css';
 import { Menu, Item, contextMenu } from 'react-contexify';

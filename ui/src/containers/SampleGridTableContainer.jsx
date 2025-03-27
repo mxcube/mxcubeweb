@@ -1,6 +1,4 @@
 /* eslint-disable react/no-array-index-key */
-/* eslint-disable react/jsx-handler-names */
-/* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
 import withNavigate from '../components/withNavigate';
 import { bindActionCreators } from 'redux';
@@ -251,7 +249,6 @@ class SampleGridTableContainer extends React.Component {
     const selected = this.getSamplesList()
       .filter((sampleItem) => {
         // `sampleItem.key` may include a column (:), so we can't use `querySelector`
-        // eslint-disable-next-line unicorn/prefer-query-selector
         const sampleElement = document.getElementById(sampleItem.key);
         return this.checkForOverlap(selectionRubberBand, sampleElement);
       })
@@ -271,7 +268,6 @@ class SampleGridTableContainer extends React.Component {
    * @param {MouseEvent} e
    */
   onKeyDown(e) {
-    // eslint-disable-next-line sonarjs/no-small-switch
     switch (e.key) {
       case 'Escape': {
         this.props.selectSamples(Object.keys(this.props.sampleList), false);
@@ -386,7 +382,6 @@ class SampleGridTableContainer extends React.Component {
     return [allCellSample, allCellSampleCheck];
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   getSampleListFilteredByCellPuck(cell, puck) {
     const allCellSample = [];
     const allCellSampleCheck = [];
@@ -408,7 +403,8 @@ class SampleGridTableContainer extends React.Component {
           }
         });
       return [allCellSample, allCellSampleCheck];
-    } else if (puck !== null) {
+    }
+    if (puck !== null) {
       Object.values(this.props.sampleList)
         .filter(
           (sample) =>
@@ -753,7 +749,6 @@ class SampleGridTableContainer extends React.Component {
     return null;
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   renderSampleTable(colsm) {
     const scContent = this.props.sampleChanger.contents;
 
@@ -972,7 +967,6 @@ class SampleGridTableContainer extends React.Component {
     return null;
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   renderSampleTableSingleCell(colsm) {
     const scContent = this.props.sampleChanger.contents;
     const nbpuck = [];
@@ -1255,10 +1249,8 @@ class SampleGridTableContainer extends React.Component {
   renderSampleChangerDrawing() {
     if (this.props.type.includes('CATS')) {
       return <SampleIsaraView cellSampleList={this.getSampleListBydCell} />;
-    } else if (
-      this.props.type.includes('FLEX') ||
-      this.props.type.includes('Moc')
-    ) {
+    }
+    if (this.props.type.includes('FLEX') || this.props.type.includes('Moc')) {
       return <SampleFlexView cellSampleList={this.getSampleListBydCell} />;
     }
     return null;

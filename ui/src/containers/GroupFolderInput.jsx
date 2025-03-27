@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -16,7 +15,6 @@ class GroupFolderInput extends React.Component {
 
   setGroupFolderInput() {
     this.setState({ validationState: 'success' });
-    /* eslint-enable react/no-set-state */
     this.props.setGroupFolder(this.inputValue.value);
   }
 
@@ -27,7 +25,6 @@ class GroupFolderInput extends React.Component {
 
   inputOnChangeHandler() {
     this.setState({ validationState: 'warning' });
-    /* eslint-enable react/no-set-state */
   }
 
   render() {

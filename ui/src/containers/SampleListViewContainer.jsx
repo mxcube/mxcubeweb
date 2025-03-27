@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
 import React from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
@@ -204,7 +203,6 @@ class SampleListViewContainer extends React.Component {
    * @property {Object} selected
    * @property {Object} sampleList
    */
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   showTaskForm(formName, extraParams = {}) {
     let prefix = '';
     const path = '';

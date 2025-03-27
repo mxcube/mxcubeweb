@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/control-has-associated-label */
-/* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
 import { HW_STATE } from '../../constants';
 import {
@@ -21,7 +19,6 @@ const { fabric } = window;
 fabric.Group.prototype.hasControls = false;
 fabric.Group.prototype.hasBorders = false;
 
-// eslint-disable-next-line react/no-unsafe
 export default class SampleImage extends React.Component {
   constructor(props) {
     super(props);
@@ -101,6 +98,7 @@ export default class SampleImage extends React.Component {
     this.initJSMpeg();
   }
 
+  // eslint-disable-next-line react/no-unsafe
   UNSAFE_componentWillReceiveProps(nextProps) {
     const { width, cinema } = this.props;
     if (
@@ -362,7 +360,6 @@ export default class SampleImage extends React.Component {
     document.querySelector('#insideWrapper').style.height = `${h}px`;
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   rightClick(e) {
     e.preventDefault();
 
@@ -511,7 +508,6 @@ export default class SampleImage extends React.Component {
     );
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   leftClick(option) {
     this.canvas.selection = true; // Enable group selection
     let objectFound = false;
@@ -580,7 +576,6 @@ export default class SampleImage extends React.Component {
     }
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   wheel(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -759,7 +754,6 @@ export default class SampleImage extends React.Component {
     if (this.props.videoMessageOverlay.show) {
       result = (
         <div
-          // eslint-disable-next-line react/no-danger
           dangerouslySetInnerHTML={{
             __html: this.props.videoMessageOverlay.msg,
           }}

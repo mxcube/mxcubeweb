@@ -36,9 +36,8 @@ const INITIAL_STATE = {
   },
 };
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
+// eslint-disable-next-line complexity
 function sampleGridReducer(state = INITIAL_STATE, action = {}) {
-  // eslint-disable-next-line sonarjs/max-switch-cases
   switch (action.type) {
     case 'SET_QUEUE': {
       return {
@@ -246,6 +245,7 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
         const { originID } = task;
         // first we find which char task is the origin
 
+        /* eslint-disable no-param-reassign */
         sampleList[task.sampleID].tasks.forEach((tt) => {
           if (tt.queueID === originID && tt.type === 'Characterisation') {
             tt.diffractionPlanID = task.queueID;
@@ -268,6 +268,7 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
     case 'PLOT_END': {
       const sampleList = { ...state.sampleList };
 
+      /* eslint-disable no-param-reassign */
       Object.keys(sampleList).forEach((sampleId) => {
         sampleList[sampleId].tasks.forEach((tt) => {
           if (tt.queueID === action.id && tt.type === action.dataType) {

@@ -1,5 +1,3 @@
-/* eslint-disable react/jsx-handler-names */
-/* eslint-disable sonarjs/no-duplicate-string */
 import React from 'react';
 import './app.css';
 import { Button, Navbar, Nav } from 'react-bootstrap';
@@ -132,7 +130,6 @@ export default class QueueControl extends React.Component {
     );
   }
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   render() {
     let nextSample = [];
     let queueOptions = [];

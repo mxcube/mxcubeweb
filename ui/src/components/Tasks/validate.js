@@ -1,7 +1,7 @@
 const INVALID_CHAR_MSG =
   'Invalid character in path, only alphanumerical characters and -, _, : allowed';
 
-// eslint-disable-next-line sonarjs/cognitive-complexity
+// eslint-disable-next-line complexity
 function validate(values, props) {
   const errors = {};
   if (!props.beamline.hardwareObjects) {
@@ -13,7 +13,7 @@ function validate(values, props) {
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
 
-  const validFname = /^[-_#{}[\]\w]+$/u.test(props.filename);
+  const validFname = /^[\w#\-[\]{}]+$/u.test(props.filename);
 
   const emptyField = 'field is empty';
 
@@ -21,7 +21,7 @@ function validate(values, props) {
     errors.prefix = INVALID_CHAR_MSG;
   }
 
-  if (props.subdir && !/^[-{}/\w]+$/u.test(props.subdir)) {
+  if (props.subdir && !/^[\w\-/{}]+$/u.test(props.subdir)) {
     errors.subdir = INVALID_CHAR_MSG;
   }
 
@@ -31,7 +31,7 @@ function validate(values, props) {
 
   if (
     props.experimentName !== undefined &&
-    !/^[-{}/\w]+$/u.test(props.experimentName)
+    !/^[\w\-/{}]+$/u.test(props.experimentName)
   ) {
     errors.experimentName = INVALID_CHAR_MSG;
   }

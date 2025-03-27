@@ -353,7 +353,6 @@ export default function PlateManipulator(props) {
     </div>
   );
 
-  // eslint-disable-next-line sonarjs/cognitive-complexity
   const renderPlateGrid = () => (
     <div className={styles.plate} style={{ paddingTop: '5px' }}>
       <div

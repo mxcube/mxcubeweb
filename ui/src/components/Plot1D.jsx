@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import Dygraph from 'dygraphs';
 import 'dygraphs/dist/dygraph.min.css';
 
-// eslint-disable-next-line react/no-unsafe
 class Plot1D extends React.Component {
   constructor(props) {
     super(props);
@@ -21,6 +20,7 @@ class Plot1D extends React.Component {
     }
   }
 
+  // eslint-disable-next-line react/no-unsafe
   UNSAFE_componentWillReceiveProps(nextProps) {
     if (this.props.autoNext) {
       if (this.state.plotId !== null) {
@@ -44,6 +44,7 @@ class Plot1D extends React.Component {
     }
   }
 
+  // eslint-disable-next-line react/no-unsafe
   UNSAFE_componentWillUpdate(nextProps, nextState) {
     const { plotId } = nextState;
     if (plotId) {
