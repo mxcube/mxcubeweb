@@ -16,21 +16,24 @@ import { BsSquare, BsCheck2Square } from 'react-icons/bs';
 import './SampleGridTable.css';
 import TooltipTrigger from '../TooltipTrigger';
 
-export class SampleGridTableItem extends React.Component {
-  constructor(props) {
-    super(props);
-    this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
-    this.handleItemClick = this.handleItemClick.bind(this);
-    this.sampleInformation = this.sampleInformation.bind(this);
-  }
+export default function SampleGridTableItem(props) {
+  const {
+    itemKey = '',
+    sampleData = {},
+    queueOrder = [],
+    // selected = false,
+    current = false,
+    picked = false,
+    pickButtonOnClickHandler = undefined,
+  } = props;
 
-  pickButtonOnClick(e) {
-    if (this.props.pickButtonOnClickHandler) {
-      this.props.pickButtonOnClickHandler(e, this.props.sampleData.sampleID);
+  function pickButtonOnClick(e) {
+    if (pickButtonOnClickHandler) {
+      pickButtonOnClickHandler(e, sampleData.sampleID);
     }
   }
 
-  itemControls() {
+  function itemControls() {
     return (
       <div className="samples-item-controls-container">
         <TooltipTrigger
@@ -40,14 +43,14 @@ export class SampleGridTableItem extends React.Component {
         >
           <Button
             variant="link"
-            disabled={this.props.current && this.props.picked}
+            disabled={current && picked}
             className="samples-grid-table-item-button"
             onClick={(e) => {
-              this.pickButtonOnClick(e);
+              pickButtonOnClick(e);
             }}
           >
             <i>
-              {this.props.picked ? (
+              {picked ? (
                 <BsCheck2Square size="1em" />
               ) : (
                 <BsSquare size="0.9em" />
@@ -59,31 +62,31 @@ export class SampleGridTableItem extends React.Component {
     );
   }
 
-  seqId() {
-    const showId = this.props.picked ? '' : 'none';
+  function seqId() {
+    const showId = picked ? '' : 'none';
     return (
       <div>
         <div style={{ display: showId }} className="new-queue-order">
-          {this.props.queueOrder}
+          {queueOrder}
         </div>
       </div>
     );
   }
 
-  sampleDisplayName() {
-    let name = this.props.sampleData.proteinAcronym || '';
+  function sampleDisplayName() {
+    let name = sampleData.proteinAcronym || '';
 
-    if (this.props.sampleData.sampleName && name) {
-      name += ` - ${this.props.sampleData.sampleName}`;
+    if (sampleData.sampleName && name) {
+      name += ` - ${sampleData.sampleName}`;
     } else {
-      name = this.props.sampleData.sampleName || '';
+      name = sampleData.sampleName || '';
     }
 
     return name;
   }
 
-  sampleInformation() {
-    const { sampleData } = this.props;
+  function sampleInformation() {
+    const { sampleData } = props;
     const limsData = (
       <div>
         <div className="row">
@@ -125,100 +128,82 @@ export class SampleGridTableItem extends React.Component {
     );
   }
 
-  handleItemClick(e) {
-    if (this.props.onClick) {
-      this.props.onClick(e, this.props.sampleData.sampleID);
-    }
+  // function handleItemClick(e) {
+  //   // if (onClick) {
+  //   //   onClick(e, sampleData.sampleID);
+  //   // }
+  // }
+
+  function currentSampleText() {
+    return current ? '(MOUNTED)' : '';
   }
 
-  currentSampleText() {
-    return this.props.current ? '(MOUNTED)' : '';
-  }
+  const classes = cx('samples-grid-table-item', {
+    'samples-grid-table-item-to-be-collected': picked,
+    'samples-grid-table-item-collected': isCollected(sampleData),
+  });
 
-  render() {
-    const classes = cx('samples-grid-table-item', {
-      'samples-grid-table-item-to-be-collected': this.props.picked,
-      'samples-grid-table-item-collected': isCollected(this.props.sampleData),
-    });
+  const scLocationClasses = cx('sc_location', 'label', 'label-default', {
+    'label-custom-success': sampleData.loadable === true,
+  });
 
-    const scLocationClasses = cx('sc_location', 'label', 'label-default', {
-      'label-custom-success': this.props.sampleData.loadable === true,
-    });
-
-    const limsLink = this.props.sampleData.limsLink || '#';
-    return (
-      <ListGroup
-        variant="flush"
-        id={this.props.sampleData.sampleID}
-        ref={(ref) => {
-          this.sampleItem = ref;
-        }}
-        onClick={this.handleItemClick}
-      >
-        <ListGroup.Item className={classes}>
-          <div className="samples-grid-table-item-top d-flex">
-            {this.itemControls()}
-            <div>
-              <OverlayTrigger
-                placement="right"
-                overlay={
-                  <Popover id={this.sampleDisplayName()}>
-                    <Popover.Header className="d-flex">
-                      <div>
-                        <b className="samples-grid-table-item-name-pt">
-                          {this.sampleDisplayName()}
-                        </b>
-                      </div>
-                    </Popover.Header>
-                    <Popover.Body>{this.sampleInformation()}</Popover.Body>
-                  </Popover>
-                }
+  const limsLink = sampleData.limsLink || '#';
+  return (
+    <ListGroup
+      key={itemKey}
+      variant="flush"
+      id={sampleData.sampleID}
+      // onClick={handleItemClick}
+    >
+      <ListGroup.Item className={classes}>
+        <div className="samples-grid-table-item-top d-flex">
+          {itemControls()}
+          <div>
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Popover id={sampleDisplayName()}>
+                  <Popover.Header className="d-flex">
+                    <div>
+                      <b className="samples-grid-table-item-name-pt">
+                        {sampleDisplayName()}
+                      </b>
+                    </div>
+                  </Popover.Header>
+                  <Popover.Body>{sampleInformation()}</Popover.Body>
+                </Popover>
+              }
+            >
+              <Badge
+                href={limsLink}
+                target="_blank"
+                bg="light"
+                text="primary"
+                className="samples-grid-table-item-name-protein-acronym ms-1 mt-2"
+                data-type="text"
+                data-pk="1"
+                data-url="/post"
+                data-title="Enter protein acronym"
               >
-                <Badge
-                  href={limsLink}
-                  target="_blank"
-                  bg="light"
-                  text="primary"
-                  ref={(ref) => {
-                    this.pacronym = ref;
-                  }}
-                  className="samples-grid-table-item-name-protein-acronym ms-1 mt-2"
-                  data-type="text"
-                  data-pk="1"
-                  data-url="/post"
-                  data-title="Enter protein acronym"
-                >
-                  {this.sampleDisplayName()}
-                </Badge>
-              </OverlayTrigger>
-              <div
-                style={{ pointerEvents: 'none' }}
-                className={`ps-1 pe-1 ${scLocationClasses}`}
-              >
-                {this.props.sampleData.location} {this.currentSampleText()}
-              </div>
+                {sampleDisplayName()}
+              </Badge>
+            </OverlayTrigger>
+            <div
+              style={{ pointerEvents: 'none' }}
+              className={`ps-1 pe-1 ${scLocationClasses}`}
+            >
+              {sampleData.location} {currentSampleText()}
             </div>
-            <CopyToClipboard
-              text={this.sampleDisplayName()}
-              tittle="Sample Name"
-              id={`copy_${this.sampleDisplayName()}`}
-            />
-            {this.seqId()}
           </div>
-          {this.props.children}
-        </ListGroup.Item>
-      </ListGroup>
-    );
-  }
+          <CopyToClipboard
+            text={sampleDisplayName()}
+            tittle="Sample Name"
+            id={`copy_${sampleDisplayName()}`}
+          />
+          {seqId()}
+        </div>
+        {props.children}
+      </ListGroup.Item>
+    </ListGroup>
+  );
 }
-
-SampleGridTableItem.defaultProps = {
-  itemKey: '',
-  sampleData: {},
-  queueOrder: [],
-  selected: false,
-  current: false,
-  picked: false,
-  allowedDirections: [],
-  pickButtonOnClickHandler: undefined,
-};

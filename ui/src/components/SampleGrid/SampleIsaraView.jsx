@@ -4,7 +4,7 @@ import { Col } from 'react-bootstrap';
 
 import { BsChevronUp, BsChevronDown } from 'react-icons/bs';
 
-import { filterAction } from '../actions/sampleGrid';
+import { filterAction } from '../../actions/sampleGrid';
 
 class NewSampleIsaraView extends React.Component {
   constructor(props) {
