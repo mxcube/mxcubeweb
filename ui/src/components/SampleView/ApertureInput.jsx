@@ -10,8 +10,9 @@ function ApertureInput() {
 
   const value = useSelector((state) => state.sampleview.currentAperture);
   const options = useSelector((state) => state.sampleview.apertureList);
-  const state = useSelector(
-    (state) => state.beamline.hardwareObjects['beam.aperture']?.state,
+  const isBusy = useSelector(
+    (state) =>
+      state.beamline.hardwareObjects['beam.aperture']?.state === 'BUSY',
   );
 
   return (
@@ -19,7 +20,7 @@ function ApertureInput() {
       id="ApertureInput"
       className={styles.select}
       value={value}
-      data-busy={state === 'BUSY' || undefined}
+      data-busy={isBusy || undefined}
       onChange={(evt) => {
         dispatch(changeAperture(evt.target.value));
       }}

@@ -11,9 +11,11 @@ const ZOOM_HWO_ID = 'diffractometer.zoom';
 function ZoomControl() {
   const dispatch = useDispatch();
 
-  const { state, value, commands } = useSelector(
+  const zoomObj = useSelector(
     (state) => state.beamline.hardwareObjects[ZOOM_HWO_ID],
   );
+
+  const { state, value, commands } = zoomObj;
 
   return (
     <OverlayTrigger

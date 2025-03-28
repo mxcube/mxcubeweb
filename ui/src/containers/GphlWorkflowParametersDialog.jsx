@@ -72,7 +72,7 @@ function GphlWorkflowParametersDialog(props) {
     show,
     updatedFormData,
     handleHide,
-    updateGphlWorkflowParameters,
+    updateGphlWorkflowParameters, // eslint-disable-line no-shadow
     resetUpdatedGphlWParameters,
     fetchUpdated,
   } = props;

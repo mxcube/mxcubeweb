@@ -17,9 +17,9 @@ export default function BeamlineActionDialog(props) {
     (state) => state.beamline.currentBeamlineAction,
   );
 
-  const handleOnHide = () => {
+  function handleOnHide() {
     dispatch(hideActionOutput(currentAction.name));
-  };
+  }
 
   const isActionRunning = currentAction.state === RUNNING;
 

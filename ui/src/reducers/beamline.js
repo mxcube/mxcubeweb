@@ -149,8 +149,6 @@ export const INITIAL_STATE = {
 
 // eslint-disable-next-line complexity
 function beamlineReducer(state = INITIAL_STATE, action = {}) {
-  let data = {};
-
   switch (action.type) {
     case 'BL_ATTR_GET_ALL': {
       return { ...state, ...action.data };
@@ -219,7 +217,7 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
       };
     }
     case 'BL_UPDATE_HARDWARE_OBJECT_STATE': {
-      data = { ...state };
+      const data = { ...state };
       data.hardwareObjects[action.data.name].state = action.data.state;
       return data;
     }

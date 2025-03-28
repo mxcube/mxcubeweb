@@ -8,7 +8,7 @@ import ImageViewer from '../ImageViewer/ImageViewer.jsx';
 
 import styles from './equipment.module.css';
 
-const sampleStateBackground = (key) => {
+function sampleStateBackground(key) {
   switch (key) {
     case 'ready_to_execute': {
       return 'success';
@@ -26,7 +26,7 @@ const sampleStateBackground = (key) => {
       return 'info';
     }
   }
-};
+}
 
 export default function Harvester(props) {
   function showContextMenu(event, id) {
@@ -48,29 +48,31 @@ export default function Harvester(props) {
     });
   }
 
-  const harvestCrystal = (UUID) => {
+  function harvestCrystal(UUID) {
     props.harvestCrystal(UUID);
-  };
+  }
 
-  const harvestAndLoadCrystal = (UUID) => {
+  function harvestAndLoadCrystal(UUID) {
     props.harvestAndLoadCrystal(UUID);
-  };
+  }
 
-  const renderCrystalMenu = (key) => (
-    <Menu id={key}>
-      <Item onClick={() => harvestCrystal(key)}>
-        <span>
-          harvest Crystal <FcCollect />
-        </span>
-      </Item>
-      <Separator />
-      <Item onClick={() => harvestAndLoadCrystal(key)}>
-        <span>
-          <FcCollect /> harvest & Load Sample <FcUpload />
-        </span>
-      </Item>
-    </Menu>
-  );
+  function renderCrystalMenu(key) {
+    return (
+      <Menu id={key}>
+        <Item onClick={() => harvestCrystal(key)}>
+          <span>
+            harvest Crystal <FcCollect />
+          </span>
+        </Item>
+        <Separator />
+        <Item onClick={() => harvestAndLoadCrystal(key)}>
+          <span>
+            <FcCollect /> harvest & Load Sample <FcUpload />
+          </span>
+        </Item>
+      </Menu>
+    );
+  }
 
   const crystalUUID = props.contents.harvester_crystal_list;
 

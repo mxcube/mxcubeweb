@@ -643,7 +643,7 @@ class SampleGridTableContainer extends React.Component {
 
   renderPuckSampleItems(puck, sampleNumber) {
     const sample = Object.values(this.props.sampleList).find(
-      (sample) => sample.location === `${puck}:${sampleNumber}`,
+      (s) => s.location === `${puck}:${sampleNumber}`,
     );
     if (sample === undefined) {
       return null;

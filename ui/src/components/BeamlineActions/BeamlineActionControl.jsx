@@ -13,18 +13,27 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function BeamlineActionControl(props) {
-  const { actionId, actionArguments, state, type, data, handleStartAction } =
-    props;
-  let variant = state === RUNNING ? 'danger' : 'primary';
-  let label = state === RUNNING ? 'Stop' : 'Run';
+  const {
+    actionId,
+    actionArguments,
+    state: objState,
+    type,
+    data,
+    handleStartAction,
+  } = props;
+
+  let variant = objState === RUNNING ? 'danger' : 'primary';
+  let label = objState === RUNNING ? 'Stop' : 'Run';
   const showOutput = type !== TWO_STATE_ACTUATOR;
   const dispatch = useDispatch();
+
   const currentActionName = useSelector(
     (state) => state.beamline.currentBeamlineAction.name,
   );
   const currentActionState = useSelector(
     (state) => state.beamline.currentBeamlineAction.state,
   );
+
   const disabled =
     currentActionName !== actionId && currentActionState === RUNNING;
 
@@ -43,7 +52,7 @@ export default function BeamlineActionControl(props) {
             variant={variant}
             disabled={disabled}
             onClick={
-              state !== RUNNING
+              objState !== RUNNING
                 ? () => handleStartAction(actionId, {}, showOutput)
                 : () => dispatch(stopBeamlineAction(actionId))
             }

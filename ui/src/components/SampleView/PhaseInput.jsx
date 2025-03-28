@@ -10,8 +10,8 @@ function PhaseInput() {
 
   const value = useSelector((state) => state.sampleview.currentPhase);
   const options = useSelector((state) => state.sampleview.phaseList);
-  const state = useSelector(
-    (state) => state.beamline.hardwareObjects.diffractometer?.state,
+  const isBusy = useSelector(
+    (state) => state.beamline.hardwareObjects.diffractometer?.state === 'BUSY',
   );
 
   return (
@@ -19,7 +19,7 @@ function PhaseInput() {
       id="PhaseInput"
       className={styles.select}
       value={value}
-      data-busy={state === 'BUSY' || undefined}
+      data-busy={isBusy || undefined}
       onChange={(evt) => {
         if (evt.target.value !== 'Unknown') {
           dispatch(changeCurrentPhase(evt.target.value));

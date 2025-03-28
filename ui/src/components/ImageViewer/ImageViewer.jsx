@@ -77,33 +77,33 @@ function GalleryModal(props) {
 
 export default function ImageViewer(props) {
   const [showModal, setShowModal] = useState('');
-  const [url, setUrl] = useState('');
+  const [imgUrl, setImgUrl] = useState('');
 
   function openModal(url) {
     setShowModal(true);
-    setUrl(url);
+    setImgUrl(url);
   }
 
   function closeModal() {
     setShowModal(false);
-    setUrl('');
+    setImgUrl('');
   }
 
   return props.galleryView ? (
     <div className="container-fluid gallery-container">
       <div className="row">
-        {props.imgUrls.map((imgUrl) => {
+        {props.imgUrls.map((url) => {
           return (
-            <div key={imgUrl} className="col-sm-6 col-md-3 col-xl-2">
+            <div key={url} className="col-sm-6 col-md-3 col-xl-2">
               <div className={styles.gallery_card}>
                 <GalleryImage
                   className={styles.gallery_thumbnail}
-                  src={imgUrl}
+                  src={url}
                   alt={props.imgAlt}
                 />
                 <span
                   className={`${styles.viewer_icon_open} fa fa-expand`}
-                  onClick={() => openModal(imgUrl)}
+                  onClick={() => openModal(url)}
                 />
               </div>
             </div>
@@ -113,7 +113,7 @@ export default function ImageViewer(props) {
       <GalleryModal
         isOpen={showModal}
         handleClose={closeModal}
-        src={url}
+        src={imgUrl}
         imgTargetX={props.imgTargetX}
         imgTargetY={props.imgTargetY}
         imageName={props.imageName}
@@ -135,7 +135,7 @@ export default function ImageViewer(props) {
       <GalleryModal
         isOpen={showModal}
         handleClose={closeModal}
-        src={url}
+        src={imgUrl}
         imgTargetX={props.imgTargetX}
         imgTargetY={props.imgTargetY}
         imageName={props.imageName}

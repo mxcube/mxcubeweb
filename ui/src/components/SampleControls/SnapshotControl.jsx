@@ -20,7 +20,7 @@ function SnapshotControl(props) {
       : 'no-sample';
   });
 
-  const imageRatio = useSelector((state) => {
+  const ratio = useSelector((state) => {
     const { sourceScale, imageRatio } = state.sampleview;
     return sourceScale * imageRatio;
   });
@@ -28,7 +28,7 @@ function SnapshotControl(props) {
   const takeSnapshot = useCallback(async () => {
     const img = document.querySelector('#sample-img');
     const fimg = new fabric.Image(img);
-    fimg.scale(imageRatio);
+    fimg.scale(ratio);
 
     canvas.setBackgroundImage(fimg);
     canvas.renderAll();
@@ -47,7 +47,7 @@ function SnapshotControl(props) {
       filename,
       window.URL.createObjectURL(new Blob([processedImgBlob])),
     );
-  }, [canvas, currentSampleName, imageRatio, proposal]);
+  }, [canvas, currentSampleName, ratio, proposal]);
 
   useEffect(() => {
     // Allow server to trigger snapshots (cf. `serverIO`)

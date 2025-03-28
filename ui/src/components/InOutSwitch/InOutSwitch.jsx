@@ -24,12 +24,12 @@ export default function InOutSwitch(props) {
     overlayPlacement,
   } = props;
 
-  function handleSwitch(value) {
+  function handleSwitch(val) {
     if (onSave !== undefined) {
       if (pkey === undefined) {
-        onSave(value);
+        onSave(val);
       } else {
-        onSave(pkey, value);
+        onSave(pkey, val);
       }
     }
   }

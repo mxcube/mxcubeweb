@@ -8,8 +8,6 @@ const config = defineConfig([
   ...createConfig(opts),
   {
     rules: {
-      'func-style': 'off',
-      'no-shadow': 'off',
       'no-unused-vars': 'off',
       'prefer-destructuring': 'off',
       'jsx-a11y/anchor-is-valid': 'off',

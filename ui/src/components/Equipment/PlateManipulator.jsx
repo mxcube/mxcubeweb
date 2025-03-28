@@ -180,11 +180,13 @@ export default function PlateManipulator(props) {
     }
   }
 
-  const crimsImg = (imgUrl, name) => (
-    <div className={styles.plateDesc}>
-      <img className={styles.plateTooltip} src={imgUrl} alt={name} />
-    </div>
-  );
+  function crimsImg(imgUrl, name) {
+    return (
+      <div className={styles.plateDesc}>
+        <img className={styles.plateTooltip} src={imgUrl} alt={name} />
+      </div>
+    );
+  }
 
   const crystalForSelectedWell = getCrystalAddressByDrop(
     selectedRow,
@@ -197,8 +199,8 @@ export default function PlateManipulator(props) {
     (_, i) => i + 1,
   );
 
-  const renderWellPlateInner = (comp, x, y, x1, y1, d) =>
-    _numberOfDrops.map((drop) => (
+  function renderWellPlateInner(comp, x, y, x1, y1, d) {
+    return _numberOfDrops.map((drop) => (
       <Button
         variant="light"
         as={comp}
@@ -253,6 +255,7 @@ export default function PlateManipulator(props) {
         </text>
       </Button>
     ));
+  }
 
   let dropPosy = 0;
   if (plate.name === 'Crystal QuickX') {
@@ -263,358 +266,362 @@ export default function PlateManipulator(props) {
     dropPosy = 70;
   }
 
-  const renderWellPlate = () => (
-    <div
-      className={styles.plate}
-      style={{ display: 'grid', paddingTop: '5px' }}
-    >
-      <div className={styles.plateDesc} style={{ display: 'grid' }}>
-        <div>Currently loaded :{loadedSample.address}</div>
-        <Menu id={`drop-${selectedDrop}-tr`}>
-          <Item
-            onClick={() => {
-              loadSample(selectedDrop);
-            }}
-          >
-            Move to drop {selectedDrop}
-          </Item>
-          {crystalForSelectedWell?.shelf === selectedDrop && (
-            <>
-              <Separator />
-              <Item
-                onClick={() =>
-                  sendCommand(
-                    'moveToCrystalPosition',
-                    crystalForSelectedWell.crystal_uuid,
-                  )
-                }
-              >
-                Move to Crystal Position
-              </Item>
-            </>
-          )}
-        </Menu>
-        {crystalForSelectedWell?.shelf === selectedDrop &&
-          crimsImg(
-            crystalForSelectedWell.image_url,
-            crystalForSelectedWell.sample,
-          )}
-        {plate.name === 'ChipX' ? (
-          <div
-            style={{
-              display: 'grid',
-              gridTemplateColumns: `repeat(${4}, ${Math.floor(100 / 4)}%)`,
-              gridTemplateRows: `repeat(${5}, 1fr)`,
-              width: 240,
-              height: 240,
-              marginTop: 15,
-              border: '1px solid #888888',
-              padding: '15px 0 10px 20px',
-              transform: `rotate(${plate.rotation})`,
-            }}
-          >
-            {renderWellPlateInner('svg', 0, 0, 5, 15, 0)}
-          </div>
-        ) : (
-          <svg
-            id="wellPlateRef"
-            className={styles.single_well}
-            width={plate.name.includes('InSitu-1') ? 220 : 240}
-            height={240}
-            transform={`rotate(${plate.rotation})`}
-          >
-            {plate.wellOption.map((wo, idx) => (
-              <rect
-                key={`wellplate-${wo.color}`}
-                width={
-                  (120 * plate.wellOption.length) / (idx + 1) -
-                  (plate.name.includes('InSitu-1') ? 20 : 0)
-                }
-                height={225}
-                x={0}
-                style={{
-                  fill: wo.color,
-                  strokeWidth: '1',
-                  stroke: strokeColor,
-                }}
-              />
-            ))}
-            {renderWellPlateInner(
-              'g',
-              120 * plate.wellOption.length - 75,
-              235,
-              120 * plate.wellOption.length - 60,
-              258,
-              dropPosy,
-            )}
-          </svg>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderPlateGrid = () => (
-    <div className={styles.plate} style={{ paddingTop: '5px' }}>
+  function renderWellPlate() {
+    return (
       <div
-        className={styles.colHeader}
-        style={{
-          display: 'grid',
-          gridTemplateColumns: `repeat(${nbcols}, 1fr)`,
-          marginLeft: 25,
-        }}
+        className={styles.plate}
+        style={{ display: 'grid', paddingTop: '5px' }}
       >
-        {plate.colTitle.map((col) => (
-          <span
-            key={`col-${col}`}
-            style={{
-              textAlign: 'center',
-              width: plate.wellWidth,
-              height: 25,
-            }}
-          >
-            {col}
-          </span>
-        ))}
-      </div>
-      <div style={{ display: 'flex' }}>
-        {/* Plate header Row */}
-        <div
-          className={styles.rowHeader}
-          style={{
-            display: 'grid',
-            height: '230px',
-            gridTemplateRows: `repeat(${nbrows}, 1fr)`,
-          }}
-        >
-          {plate.rowTitle.map((row) => (
-            <span
-              key={`row-${row}`}
-              className={styles.rowlist}
-              style={{
-                marginRight: 10,
-                marginTop: 2,
-                height: plate.wellHeight,
+        <div className={styles.plateDesc} style={{ display: 'grid' }}>
+          <div>Currently loaded :{loadedSample.address}</div>
+          <Menu id={`drop-${selectedDrop}-tr`}>
+            <Item
+              onClick={() => {
+                loadSample(selectedDrop);
               }}
             >
-              {row}
+              Move to drop {selectedDrop}
+            </Item>
+            {crystalForSelectedWell?.shelf === selectedDrop && (
+              <>
+                <Separator />
+                <Item
+                  onClick={() =>
+                    sendCommand(
+                      'moveToCrystalPosition',
+                      crystalForSelectedWell.crystal_uuid,
+                    )
+                  }
+                >
+                  Move to Crystal Position
+                </Item>
+              </>
+            )}
+          </Menu>
+          {crystalForSelectedWell?.shelf === selectedDrop &&
+            crimsImg(
+              crystalForSelectedWell.image_url,
+              crystalForSelectedWell.sample,
+            )}
+          {plate.name === 'ChipX' ? (
+            <div
+              style={{
+                display: 'grid',
+                gridTemplateColumns: `repeat(${4}, ${Math.floor(100 / 4)}%)`,
+                gridTemplateRows: `repeat(${5}, 1fr)`,
+                width: 240,
+                height: 240,
+                marginTop: 15,
+                border: '1px solid #888888',
+                padding: '15px 0 10px 20px',
+                transform: `rotate(${plate.rotation})`,
+              }}
+            >
+              {renderWellPlateInner('svg', 0, 0, 5, 15, 0)}
+            </div>
+          ) : (
+            <svg
+              id="wellPlateRef"
+              className={styles.single_well}
+              width={plate.name.includes('InSitu-1') ? 220 : 240}
+              height={240}
+              transform={`rotate(${plate.rotation})`}
+            >
+              {plate.wellOption.map((wo, idx) => (
+                <rect
+                  key={`wellplate-${wo.color}`}
+                  width={
+                    (120 * plate.wellOption.length) / (idx + 1) -
+                    (plate.name.includes('InSitu-1') ? 20 : 0)
+                  }
+                  height={225}
+                  x={0}
+                  style={{
+                    fill: wo.color,
+                    strokeWidth: '1',
+                    stroke: strokeColor,
+                  }}
+                />
+              ))}
+              {renderWellPlateInner(
+                'g',
+                120 * plate.wellOption.length - 75,
+                235,
+                120 * plate.wellOption.length - 60,
+                258,
+                dropPosy,
+              )}
+            </svg>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  function renderPlateGrid() {
+    return (
+      <div className={styles.plate} style={{ paddingTop: '5px' }}>
+        <div
+          className={styles.colHeader}
+          style={{
+            display: 'grid',
+            gridTemplateColumns: `repeat(${nbcols}, 1fr)`,
+            marginLeft: 25,
+          }}
+        >
+          {plate.colTitle.map((col) => (
+            <span
+              key={`col-${col}`}
+              style={{
+                textAlign: 'center',
+                width: plate.wellWidth,
+                height: 25,
+              }}
+            >
+              {col}
             </span>
           ))}
         </div>
-        {plate.name !== 'ChipX' ? (
+        <div style={{ display: 'flex' }}>
+          {/* Plate header Row */}
           <div
+            className={styles.rowHeader}
             style={{
-              width: '400px',
               display: 'grid',
-              gridTemplateColumns: `repeat(${nbcols}, 1fr)`,
-            }}
-          >
-            {plate.rowTitle.map((row, rowIdx) =>
-              plate.colTitle.map((col, colIdx) => {
-                let cell = null;
-                const crystal = getCrystalAddress(row, col);
-                if (contents.children !== null) {
-                  if (plate.type === 'square') {
-                    cell = (
-                      <div
-                        onContextMenu={(e) =>
-                          showContextMenu(e, `wls${row}${col}`)
-                        }
-                        key={`cell-${row}${col}`}
-                      >
-                        <svg
-                          className={styles.single_well}
-                          width={plate.wellWidth}
-                          height={plate.wellHeight}
-                          strokeWidth={
-                            `${row}${col}` === `${selectedRow}${selectedCol}`
-                              ? '2'
-                              : '1'
-                          }
-                          stroke={
-                            `${row}${col}` === `${selectedRow}${selectedCol}`
-                              ? '#0177fdad'
-                              : strokeColor
-                          }
-                          onDoubleClick={() => {
-                            initLoadSample(rowIdx, colIdx, row, col);
-                          }}
-                          onClick={() => {
-                            selectWell(row, col);
-                          }}
-                          onContextMenu={() => {
-                            selectWell(row, col);
-                          }}
-                        >
-                          <rect
-                            width={plate.wellWidth}
-                            height={plate.wellHeight}
-                            x={0}
-                            style={{
-                              fill: crystal !== null ? '#81c784' : '#eeeeee',
-                            }}
-                          />
-                          <rect
-                            width={plate.wellWidth / 2}
-                            height={plate.wellHeight}
-                            x={1}
-                            style={{
-                              fill:
-                                `${row}${col}:${loadedDrop}-0` ===
-                                loadedSample.address
-                                  ? '#e57373'
-                                  : '#e0e0e0',
-                            }}
-                          />
-                        </svg>
-                        <Menu
-                          id={`wls${row}${col}`}
-                          className={styles.context_menu_provider}
-                        >
-                          <li className="dropdown-header">
-                            <b>
-                              Well {row}
-                              {col} :{loadedDrop}
-                            </b>
-                          </li>
-                          <Separator />
-                          <Item
-                            onClick={() => {
-                              initLoadSample(rowIdx, colIdx, row, col);
-                            }}
-                          >
-                            Move to this Well
-                          </Item>
-                          {crystal !== null && (
-                            <>
-                              <Separator />
-                              <b>Crystal Info : </b>
-                              <ul>
-                                <li>Sample : {crystal.sample}</li>
-                                <li>Drop : {crystal.shelf}</li>
-                              </ul>
-                            </>
-                          )}
-                        </Menu>
-                      </div>
-                    );
-                  } else {
-                    cell = 'Not Implemented';
-                  }
-                }
-                return cell;
-              }),
-            )}
-          </div>
-        ) : (
-          <div
-            className="grid"
-            style={{
               height: '230px',
-              display: 'grid',
-              gridTemplateColumns: `repeat(${nbcols}, 1fr)`,
+              gridTemplateRows: `repeat(${nbrows}, 1fr)`,
             }}
           >
-            {plate.rowTitle.map((row, rowIdx) =>
-              plate.colTitle.map((col, colIdx) => {
-                let cell = null;
-                const crystal = getCrystalAddress(row, col);
-                if (contents.children !== null) {
-                  if (plate.type === 'square') {
-                    cell = (
-                      <div
-                        onContextMenu={(e) =>
-                          showContextMenu(e, `wlw${row}${col}`)
-                        }
-                        key={`cell-${row}${col}`}
-                      >
-                        <svg
-                          className={styles.single_well}
-                          width={plate.wellWidth}
-                          height={plate.wellHeight}
-                          strokeWidth={
-                            `${row}${col}` === `${selectedRow}${selectedCol}`
-                              ? '2'
-                              : '1'
+            {plate.rowTitle.map((row) => (
+              <span
+                key={`row-${row}`}
+                className={styles.rowlist}
+                style={{
+                  marginRight: 10,
+                  marginTop: 2,
+                  height: plate.wellHeight,
+                }}
+              >
+                {row}
+              </span>
+            ))}
+          </div>
+          {plate.name !== 'ChipX' ? (
+            <div
+              style={{
+                width: '400px',
+                display: 'grid',
+                gridTemplateColumns: `repeat(${nbcols}, 1fr)`,
+              }}
+            >
+              {plate.rowTitle.map((row, rowIdx) =>
+                plate.colTitle.map((col, colIdx) => {
+                  let cell = null;
+                  const crystal = getCrystalAddress(row, col);
+                  if (contents.children !== null) {
+                    if (plate.type === 'square') {
+                      cell = (
+                        <div
+                          onContextMenu={(e) =>
+                            showContextMenu(e, `wls${row}${col}`)
                           }
-                          stroke={
-                            `${row}${col}` === `${selectedRow}${selectedCol}`
-                              ? '#0177fdad'
-                              : strokeColor
-                          }
-                          onDoubleClick={() => {
-                            initLoadSample(rowIdx, colIdx, row, col);
-                          }}
-                          onClick={() => {
-                            selectWell(row, col);
-                          }}
-                          onContextMenu={() => {
-                            selectWell(row, col);
-                          }}
+                          key={`cell-${row}${col}`}
                         >
-                          <rect
+                          <svg
+                            className={styles.single_well}
                             width={plate.wellWidth}
                             height={plate.wellHeight}
-                            x={0}
-                            style={{
-                              fill:
-                                `${row}${col}:${loadedDrop}-0` ===
-                                loadedSample.address
-                                  ? '#e57373'
-                                  : '#e0e0e0',
-                            }}
-                          />
-                          <rect
-                            width={plate.wellWidth - 20}
-                            height={plate.wellHeight - 20}
-                            x={10}
-                            y={10}
-                            style={{
-                              fill: crystal !== null ? '#81c784' : '#eeeeee',
-                            }}
-                          />
-                        </svg>
-                        <Menu
-                          id={`wlw${row}${col}`}
-                          className={styles.context_menu_provider}
-                        >
-                          <li className="dropdown-header">
-                            <b>
-                              Well {row} {col} :{loadedDrop}
-                            </b>
-                          </li>
-                          <Separator />
-                          <Item
-                            onClick={() => {
+                            strokeWidth={
+                              `${row}${col}` === `${selectedRow}${selectedCol}`
+                                ? '2'
+                                : '1'
+                            }
+                            stroke={
+                              `${row}${col}` === `${selectedRow}${selectedCol}`
+                                ? '#0177fdad'
+                                : strokeColor
+                            }
+                            onDoubleClick={() => {
                               initLoadSample(rowIdx, colIdx, row, col);
                             }}
+                            onClick={() => {
+                              selectWell(row, col);
+                            }}
+                            onContextMenu={() => {
+                              selectWell(row, col);
+                            }}
                           >
-                            Move to this Well
-                          </Item>
-                          {crystal !== null && (
-                            <>
-                              <Separator />
-                              <b>Crystal Info : </b>
-                              <ul>
-                                <li>Sample : {crystal.sample}</li>
-                                <li>Drop : {crystal.shelf}</li>
-                              </ul>
-                            </>
-                          )}
-                        </Menu>
-                      </div>
-                    );
-                  } else {
-                    cell = 'Not Implemented';
+                            <rect
+                              width={plate.wellWidth}
+                              height={plate.wellHeight}
+                              x={0}
+                              style={{
+                                fill: crystal !== null ? '#81c784' : '#eeeeee',
+                              }}
+                            />
+                            <rect
+                              width={plate.wellWidth / 2}
+                              height={plate.wellHeight}
+                              x={1}
+                              style={{
+                                fill:
+                                  `${row}${col}:${loadedDrop}-0` ===
+                                  loadedSample.address
+                                    ? '#e57373'
+                                    : '#e0e0e0',
+                              }}
+                            />
+                          </svg>
+                          <Menu
+                            id={`wls${row}${col}`}
+                            className={styles.context_menu_provider}
+                          >
+                            <li className="dropdown-header">
+                              <b>
+                                Well {row}
+                                {col} :{loadedDrop}
+                              </b>
+                            </li>
+                            <Separator />
+                            <Item
+                              onClick={() => {
+                                initLoadSample(rowIdx, colIdx, row, col);
+                              }}
+                            >
+                              Move to this Well
+                            </Item>
+                            {crystal !== null && (
+                              <>
+                                <Separator />
+                                <b>Crystal Info : </b>
+                                <ul>
+                                  <li>Sample : {crystal.sample}</li>
+                                  <li>Drop : {crystal.shelf}</li>
+                                </ul>
+                              </>
+                            )}
+                          </Menu>
+                        </div>
+                      );
+                    } else {
+                      cell = 'Not Implemented';
+                    }
                   }
-                }
-                return cell;
-              }),
-            )}
-          </div>
-        )}
+                  return cell;
+                }),
+              )}
+            </div>
+          ) : (
+            <div
+              className="grid"
+              style={{
+                height: '230px',
+                display: 'grid',
+                gridTemplateColumns: `repeat(${nbcols}, 1fr)`,
+              }}
+            >
+              {plate.rowTitle.map((row, rowIdx) =>
+                plate.colTitle.map((col, colIdx) => {
+                  let cell = null;
+                  const crystal = getCrystalAddress(row, col);
+                  if (contents.children !== null) {
+                    if (plate.type === 'square') {
+                      cell = (
+                        <div
+                          onContextMenu={(e) =>
+                            showContextMenu(e, `wlw${row}${col}`)
+                          }
+                          key={`cell-${row}${col}`}
+                        >
+                          <svg
+                            className={styles.single_well}
+                            width={plate.wellWidth}
+                            height={plate.wellHeight}
+                            strokeWidth={
+                              `${row}${col}` === `${selectedRow}${selectedCol}`
+                                ? '2'
+                                : '1'
+                            }
+                            stroke={
+                              `${row}${col}` === `${selectedRow}${selectedCol}`
+                                ? '#0177fdad'
+                                : strokeColor
+                            }
+                            onDoubleClick={() => {
+                              initLoadSample(rowIdx, colIdx, row, col);
+                            }}
+                            onClick={() => {
+                              selectWell(row, col);
+                            }}
+                            onContextMenu={() => {
+                              selectWell(row, col);
+                            }}
+                          >
+                            <rect
+                              width={plate.wellWidth}
+                              height={plate.wellHeight}
+                              x={0}
+                              style={{
+                                fill:
+                                  `${row}${col}:${loadedDrop}-0` ===
+                                  loadedSample.address
+                                    ? '#e57373'
+                                    : '#e0e0e0',
+                              }}
+                            />
+                            <rect
+                              width={plate.wellWidth - 20}
+                              height={plate.wellHeight - 20}
+                              x={10}
+                              y={10}
+                              style={{
+                                fill: crystal !== null ? '#81c784' : '#eeeeee',
+                              }}
+                            />
+                          </svg>
+                          <Menu
+                            id={`wlw${row}${col}`}
+                            className={styles.context_menu_provider}
+                          >
+                            <li className="dropdown-header">
+                              <b>
+                                Well {row} {col} :{loadedDrop}
+                              </b>
+                            </li>
+                            <Separator />
+                            <Item
+                              onClick={() => {
+                                initLoadSample(rowIdx, colIdx, row, col);
+                              }}
+                            >
+                              Move to this Well
+                            </Item>
+                            {crystal !== null && (
+                              <>
+                                <Separator />
+                                <b>Crystal Info : </b>
+                                <ul>
+                                  <li>Sample : {crystal.sample}</li>
+                                  <li>Drop : {crystal.shelf}</li>
+                                </ul>
+                              </>
+                            )}
+                          </Menu>
+                        </div>
+                      );
+                    } else {
+                      cell = 'Not Implemented';
+                    }
+                  }
+                  return cell;
+                }),
+              )}
+            </div>
+          )}
+        </div>
       </div>
-    </div>
-  );
+    );
+  }
 
   let cplate_label = '';
   if (global_state.plate_info && global_state.plate_info.plate_label) {
@@ -625,56 +632,58 @@ export default function PlateManipulator(props) {
     cssDisable = { cursor: 'wait', pointerEvents: 'none', opacity: '0.5' };
   }
 
-  const renderPlate = () => (
-    <Row
-      className="mt-4"
-      title={state === 'MOVING' ? 'Plate Moving, can not send commande' : ''}
-    >
-      <Col className="ms-3">
-        <ButtonToolbar className="ms-4">
-          {!inPopover && (
-            <div className="me-4">
-              <b>{cplate_label}</b>
-            </div>
-          )}
-          <TooltipTrigger
-            id="refresh-tooltip"
-            tooltipContent="Refresh if plate location not updated"
-          >
-            <Button size="sm" variant="outline-info" onClick={refreshClicked}>
-              <MdSync size="1.5em" /> Refresh
-            </Button>
-          </TooltipTrigger>
-          <span style={{ marginLeft: '1.5em' }} />
-          <TooltipTrigger
-            id="sync-samples-tooltip"
-            tooltipContent="Synchronise sample list with CRIMS"
-          >
-            <Button
-              size="sm"
-              variant="outline-success"
-              onClick={syncSamplesCrims}
+  function renderPlate() {
+    return (
+      <Row
+        className="mt-4"
+        title={state === 'MOVING' ? 'Plate Moving, can not send commande' : ''}
+      >
+        <Col className="ms-3">
+          <ButtonToolbar className="ms-4">
+            {!inPopover && (
+              <div className="me-4">
+                <b>{cplate_label}</b>
+              </div>
+            )}
+            <TooltipTrigger
+              id="refresh-tooltip"
+              tooltipContent="Refresh if plate location not updated"
             >
-              <MdSync size="1.5em" /> CRIMS
-            </Button>
-          </TooltipTrigger>
-        </ButtonToolbar>
-      </Col>
-      <div className={styles.plate_div} style={cssDisable}>
-        <div className={styles.plate_grid}>{renderPlateGrid()}</div>
-        <div>
-          <div className={styles.plate_info}>
-            <Button variant="outline-secondary" style={{ float: 'right' }}>
-              <span className={styles.is_loaded_info}>loaded</span>
-              <span className={styles.has_crystal_info}>Crystal</span>
-              <span className={styles.empty_well_info}>Empty</span>
-            </Button>
+              <Button size="sm" variant="outline-info" onClick={refreshClicked}>
+                <MdSync size="1.5em" /> Refresh
+              </Button>
+            </TooltipTrigger>
+            <span style={{ marginLeft: '1.5em' }} />
+            <TooltipTrigger
+              id="sync-samples-tooltip"
+              tooltipContent="Synchronise sample list with CRIMS"
+            >
+              <Button
+                size="sm"
+                variant="outline-success"
+                onClick={syncSamplesCrims}
+              >
+                <MdSync size="1.5em" /> CRIMS
+              </Button>
+            </TooltipTrigger>
+          </ButtonToolbar>
+        </Col>
+        <div className={styles.plate_div} style={cssDisable}>
+          <div className={styles.plate_grid}>{renderPlateGrid()}</div>
+          <div>
+            <div className={styles.plate_info}>
+              <Button variant="outline-secondary" style={{ float: 'right' }}>
+                <span className={styles.is_loaded_info}>loaded</span>
+                <span className={styles.has_crystal_info}>Crystal</span>
+                <span className={styles.empty_well_info}>Empty</span>
+              </Button>
+            </div>
+            {renderWellPlate()}
           </div>
-          {renderWellPlate()}
         </div>
-      </div>
-    </Row>
-  );
+      </Row>
+    );
+  }
 
   if (!inPopover) {
     return renderPlate();

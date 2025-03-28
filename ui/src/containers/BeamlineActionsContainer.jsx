@@ -16,8 +16,8 @@ function BeamlineActionsContainer() {
 
   const [plotIdByAction, setPlotIdByAction] = useState({});
 
-  const startAction = (cmdName, params = {}, showOutput = true) => {
-    const cmd = actionsList.find((cmd) => cmd.name === cmdName);
+  function startAction(cmdName, params = {}, showOutput = true) {
+    const cmd = actionsList.find((action) => action.name === cmdName);
     if (!cmd) {
       return;
     }
@@ -33,7 +33,7 @@ function BeamlineActionsContainer() {
     }
 
     dispatch(startBeamlineAction(cmdName, params, showOutput));
-  };
+  }
 
   const newPlotDisplayed = useCallback(
     (plotId) => {

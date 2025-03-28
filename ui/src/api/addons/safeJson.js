@@ -13,16 +13,18 @@ function safeJsonMiddleware(state) {
   };
 }
 
-const safeJson = () => ({
-  beforeRequest(wretch, _, state) {
-    return wretch.middlewares([safeJsonMiddleware(state)]);
-  },
-  resolver: {
-    safeJson() {
-      this._sharedState.safeJson = true;
-      return this.json();
+function safeJson() {
+  return {
+    beforeRequest(wretch, _, state) {
+      return wretch.middlewares([safeJsonMiddleware(state)]);
     },
-  },
-});
+    resolver: {
+      safeJson() {
+        this._sharedState.safeJson = true;
+        return this.json();
+      },
+    },
+  };
+}
 
 export default safeJson;

@@ -1,4 +1,4 @@
-const warn = (values, props) => {
+function warn(values, props) {
   const warnings = {};
   if (!props.beamline.hardwareObjects) {
     // for some reason redux-form is loaded before the initial status
@@ -62,6 +62,6 @@ const warn = (values, props) => {
   }
 
   return warnings;
-};
+}
 
 export default warn;

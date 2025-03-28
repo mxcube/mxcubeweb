@@ -86,9 +86,9 @@ export function logoutUser(username) {
   };
 }
 
-export function respondToControlRequest(giveControl = true, message = '') {
+export function respondToControlRequest(giveCtrl = true, message = '') {
   return async (dispatch) => {
-    await sendRespondToControlRequest(giveControl, message);
+    await sendRespondToControlRequest(giveCtrl, message);
     dispatch(getLoginInfo());
     dispatch(getRaState());
   };
