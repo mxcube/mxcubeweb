@@ -1,10 +1,11 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Button } from 'react-bootstrap';
 import JSForm from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
-import styles from './BeamlineActions.module.css';
+import { Button, Col, Row } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { stopBeamlineAction } from '../../actions/beamlineActions';
 import { RUNNING } from '../../constants';
+import styles from './BeamlineActions.module.css';
 
 export default function AnnotatedBeamlineActionForm(props) {
   const { handleStartAction } = props;

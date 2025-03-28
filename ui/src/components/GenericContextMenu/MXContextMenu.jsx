@@ -1,7 +1,7 @@
+import './MXContextMenu.css';
+
 import React from 'react';
 import { Dropdown } from 'react-bootstrap';
-
-import './MXContextMenu.css';
 
 export default class MXContextMenu extends React.Component {
   constructor(props) {

@@ -1,8 +1,8 @@
-import { RUNNING } from '../constants';
 import {
   sendAbortBeamlineAction,
   sendRunBeamlineAction,
 } from '../api/beamline';
+import { RUNNING } from '../constants';
 
 export function addUserMessage(data) {
   return {

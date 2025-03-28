@@ -3,10 +3,9 @@ import { Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 
 import MotorInput from '../MotorInput/MotorInput';
-import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
-
-import styles from './MotorControls.module.css';
 import motorInputStyles from '../MotorInput/MotorInput.module.css';
+import TwoAxisTranslationControl from '../MotorInput/TwoAxisTranslationControl';
+import styles from './MotorControls.module.css';
 
 function MotorControls() {
   const [showAll, setShowAll] = useState(false);

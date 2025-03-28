@@ -1,6 +1,7 @@
 import { Fragment } from 'react';
-import { Row, Col, Button, Form } from 'react-bootstrap';
+import { Button, Col, Form, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+
 import {
   setArgumentValue,
   stopBeamlineAction,

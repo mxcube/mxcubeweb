@@ -5,6 +5,7 @@ import {
   Popover,
   Spinner,
 } from 'react-bootstrap';
+
 import styles from './inOutStyle.module.css';
 
 export default function InOutSwitch(props) {

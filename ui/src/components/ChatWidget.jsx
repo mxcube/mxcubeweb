@@ -1,10 +1,4 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  incChatMessageCount,
-  resetChatMessageCount,
-} from '../actions/remoteAccess';
-import { fetchChatMessages, sendChatMessage } from '../api/remoteAccess';
 import {
   addResponseMessage,
   addUserMessage,
@@ -12,6 +6,13 @@ import {
   Widget,
 } from 'react-chat-widget';
 import Draggable from 'react-draggable';
+import { useDispatch, useSelector } from 'react-redux';
+
+import {
+  incChatMessageCount,
+  resetChatMessageCount,
+} from '../actions/remoteAccess';
+import { fetchChatMessages, sendChatMessage } from '../api/remoteAccess';
 import { store } from '../store';
 
 function ChatWidget() {

@@ -1,6 +1,7 @@
-import { useRef, useEffect, useState } from 'react';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { useEffect, useRef, useState } from 'react';
 import { Modal } from 'react-bootstrap';
+import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
+
 import styles from './imageViewer.module.css';
 
 function GalleryImage(props) {

@@ -1,20 +1,19 @@
 /* eslint-disable promise/prefer-await-to-then */
 import { fetchBeamInfo, fetchBeamlineSetup } from '../api/beamline';
+import { fetchDetectorInfo } from '../api/detector';
 import { fetchDiffractometerInfo } from '../api/diffractometer';
+import { fetchHarvesterInitialState } from '../api/harvester';
+import { sendSelectProposal } from '../api/lims';
 import { fetchLogMessages } from '../api/log';
-import { fetchApplicationSettings, fetchUIProperties } from '../api/main';
-import { fetchAvailableWorkflows } from '../api/workflow';
-import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
-
-import { showErrorPanel, applicationFetched } from './general';
 import { sendSignOut } from '../api/login';
 import { fetchLoginInfo, sendLogIn } from '../api/loginBase';
-import { fetchDetectorInfo } from '../api/detector';
-import { fetchSampleChangerInitialState } from '../api/sampleChanger';
-import { fetchHarvesterInitialState } from '../api/harvester';
-import { fetchImageData, fetchShapes } from '../api/sampleview';
+import { fetchApplicationSettings, fetchUIProperties } from '../api/main';
+import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 import { fetchRemoteAccessState } from '../api/remoteAccess';
-import { sendSelectProposal } from '../api/lims';
+import { fetchSampleChangerInitialState } from '../api/sampleChanger';
+import { fetchImageData, fetchShapes } from '../api/sampleview';
+import { fetchAvailableWorkflows } from '../api/workflow';
+import { applicationFetched, showErrorPanel } from './general';
 
 export function setLoginInfo(loginInfo) {
   return {

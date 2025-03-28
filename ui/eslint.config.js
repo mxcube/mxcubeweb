@@ -17,7 +17,6 @@ const config = defineConfig([
       'react/no-multi-comp': 'off',
       'react/no-unused-class-component-methods': 'off',
       'react/prop-types': 'off',
-      'simple-import-sort/imports': 'off',
       'unicorn/prefer-global-this': 'off',
 
       /* Default is "avoid", but there are lots of complicated `switch` statements,

@@ -1,11 +1,10 @@
 import { Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { sendCommand } from '../../actions/sampleChanger';
+import ActionButton from './ActionButton';
 import ActionField from './ActionField';
 import ActionGroup from './ActionGroup';
-import ActionButton from './ActionButton';
-
-import { sendCommand } from '../../actions/sampleChanger';
 import styles from './equipment.module.css';
 
 function PlateManipulatorMaintenance() {

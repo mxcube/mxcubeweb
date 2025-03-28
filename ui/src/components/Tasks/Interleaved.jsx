@@ -1,17 +1,18 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { reduxForm, formValueSelector } from 'redux-form';
-import { DraggableModal } from '../DraggableModal';
 import {
-  Modal,
   Button,
-  Form,
-  Row,
-  Col,
   ButtonToolbar,
+  Col,
+  Form,
+  Modal,
+  Row,
   Table,
 } from 'react-bootstrap';
-import { FieldsHeader, StaticField, InputField } from './fields';
+import { connect } from 'react-redux';
+import { formValueSelector, reduxForm } from 'redux-form';
+
+import { DraggableModal } from '../DraggableModal';
+import { FieldsHeader, InputField, StaticField } from './fields';
 
 const wedgeColorTable = {
   0: 'rgba(175,238,238, 0.1)',

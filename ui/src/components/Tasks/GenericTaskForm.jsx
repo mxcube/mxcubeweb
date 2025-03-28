@@ -1,23 +1,24 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { reduxForm, formValueSelector } from 'redux-form';
-import { Modal, Button, Form, Row, Col, ButtonToolbar } from 'react-bootstrap';
-import { DraggableModal } from '../DraggableModal';
-import validate from './validate';
-import warn from './warning';
-import JSForm from '@rjsf/core';
-import validator from '@rjsf/validator-ajv8';
 import './style.css';
 
+import JSForm from '@rjsf/core';
+import validator from '@rjsf/validator-ajv8';
+import React from 'react';
+import { Button, ButtonToolbar, Col, Form, Modal, Row } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { formValueSelector, reduxForm } from 'redux-form';
+
+import { sendUpdateDependentFields } from '../../api/queue';
+import { DraggableModal } from '../DraggableModal';
 import {
   FieldsHeader,
-  StaticField,
   InputField,
-  saveToLastUsedParameters,
   resetLastUsedParameters,
+  saveToLastUsedParameters,
+  StaticField,
   toFixed,
 } from './fields';
-import { sendUpdateDependentFields } from '../../api/queue';
+import validate from './validate';
+import warn from './warning';
 
 class GenericTaskForm extends React.Component {
   constructor(props) {

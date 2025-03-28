@@ -1,4 +1,4 @@
-import { RUNNING, HW_STATE } from '../constants';
+import { HW_STATE, RUNNING } from '../constants';
 
 // The different states a beamline attribute can assume.
 export const STATE = {

@@ -1,21 +1,19 @@
 /* eslint-disable react/no-unused-state */
 import React from 'react';
+import { Dropdown, Form } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Form, Dropdown } from 'react-bootstrap';
-
-import { AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../constants';
-
-import GroupFolderInput from './GroupFolderInput.jsx';
-import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
 import {
+  setAutoAddDiffPlan,
+  setAutoMountSample,
   setCentringMethod,
   setGroupFolder,
   setQueueSettings,
-  setAutoAddDiffPlan,
-  setAutoMountSample,
 } from '../actions/queue';
+import { AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../constants';
+import GroupFolderInput from './GroupFolderInput.jsx';
+import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
 class QueueSettings extends React.Component {
   constructor(props) {

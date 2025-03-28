@@ -1,9 +1,10 @@
-import { useState, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useCallback, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { startBeamlineAction } from '../actions/beamlineActions';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
 import BeamlineActionDialog from '../components/BeamlineActions/BeamlineActionDialog';
-import { startBeamlineAction } from '../actions/beamlineActions';
 
 function BeamlineActionsContainer() {
   const dispatch = useDispatch();

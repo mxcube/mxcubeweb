@@ -1,7 +1,7 @@
+import { fetchLimsSamples } from '../api/lims';
+import { fetchSamplesList, sendSyncWithCrims } from '../api/sampleChanger';
 import { showErrorPanel } from './general';
 import { setQueue } from './queue';
-import { fetchSamplesList, sendSyncWithCrims } from '../api/sampleChanger';
-import { fetchLimsSamples } from '../api/lims';
 import { hideWaitDialog, showWaitDialog } from './waitDialog';
 
 export function updateSampleList(sampleList, order) {

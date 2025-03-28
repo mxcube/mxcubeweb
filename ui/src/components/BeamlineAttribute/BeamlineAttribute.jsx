@@ -1,9 +1,9 @@
 import { useRef } from 'react';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
-import BeamlineAttributeForm from './BeamlineAttributeForm';
-import styles from './BeamlineAttribute.module.css';
 import { HW_STATE } from '../../constants';
+import styles from './BeamlineAttribute.module.css';
+import BeamlineAttributeForm from './BeamlineAttributeForm';
 
 function BeamlineAttribute(props) {
   const { attribute, format, precision = 1, suffix, onSave, onCancel } = props;

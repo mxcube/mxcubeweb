@@ -1,55 +1,42 @@
 /* eslint-disable react/no-array-index-key */
-import React from 'react';
-import withNavigate from '../components/withNavigate';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import { Row, Col, Table, Button, Dropdown } from 'react-bootstrap';
-
-import LazyLoad, { forceVisible } from 'react-lazyload';
-import Collapsible from 'react-collapsible';
-
-import { MdRemove, MdFlare, Md360 } from 'react-icons/md';
-import {
-  BsSquare,
-  BsCheck2Square,
-  BsDashSquare,
-  BsChevronUp,
-  BsChevronDown,
-} from 'react-icons/bs';
-
-import { BiMenu } from 'react-icons/bi';
-
-import MXContextMenu from '../components/GenericContextMenu/MXContextMenu';
-
-import cx from 'classnames';
-
-import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-import { QUEUE_STOPPED, QUEUE_RUNNING, isCollected } from '../constants';
-
+import cx from 'classnames';
+import React from 'react';
+import { Button, Col, Dropdown, Row, Table } from 'react-bootstrap';
+import Collapsible from 'react-collapsible';
+import { BiMenu } from 'react-icons/bi';
 import {
-  toggleMovableAction,
-  selectSamplesAction,
-  showGenericContextMenu,
-} from '../actions/sampleGrid';
-
-import { deleteTask } from '../actions/queue';
-
-import { unmountSample, mountSample } from '../actions/sampleChanger';
-
-import { showTaskForm } from '../actions/taskForm';
+  BsCheck2Square,
+  BsChevronDown,
+  BsChevronUp,
+  BsDashSquare,
+  BsSquare,
+} from 'react-icons/bs';
+import { Md360, MdFlare, MdRemove } from 'react-icons/md';
+import LazyLoad, { forceVisible } from 'react-lazyload';
+import { connect } from 'react-redux';
+import Slider from 'react-slick';
+import { bindActionCreators } from 'redux';
 
 import { showDialog } from '../actions/general';
-
-import SampleFlexView from './SampleFlexView';
-import SampleIsaraView from './SampleIsaraView';
-
+import { deleteTask } from '../actions/queue';
+import { mountSample, unmountSample } from '../actions/sampleChanger';
+import {
+  selectSamplesAction,
+  showGenericContextMenu,
+  toggleMovableAction,
+} from '../actions/sampleGrid';
+import { showTaskForm } from '../actions/taskForm';
+import MXContextMenu from '../components/GenericContextMenu/MXContextMenu';
 import { SampleGridTableItem } from '../components/SampleGrid/SampleGridTableItem';
-
 import { TaskItem } from '../components/SampleGrid/TaskItem';
 import TooltipTrigger from '../components/TooltipTrigger';
+import withNavigate from '../components/withNavigate';
+import { isCollected, QUEUE_RUNNING, QUEUE_STOPPED } from '../constants';
+import SampleFlexView from './SampleFlexView';
+import SampleIsaraView from './SampleIsaraView';
 
 const SETTINGS = {
   dots: false,

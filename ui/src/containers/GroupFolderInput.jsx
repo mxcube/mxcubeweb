@@ -1,7 +1,8 @@
 import React from 'react';
+import { Button, Form } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { Form, Button } from 'react-bootstrap';
+
 import { setGroupFolder } from '../actions/queue';
 
 class GroupFolderInput extends React.Component {

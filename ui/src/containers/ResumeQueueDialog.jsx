@@ -1,5 +1,6 @@
+import { Button, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Button } from 'react-bootstrap';
+
 import { showResumeQueueDialog } from '../actions/queueGUI';
 
 function ResumeQueueDialog() {

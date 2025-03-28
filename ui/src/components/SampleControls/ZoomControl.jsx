@@ -1,8 +1,8 @@
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { HW_STATE } from '../../constants';
 import { setAttribute } from '../../actions/beamline';
+import { HW_STATE } from '../../constants';
 import styles from './SampleControls.module.css';
 
 const ZOOM_HWO_ID = 'diffractometer.zoom';

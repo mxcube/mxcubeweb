@@ -1,8 +1,9 @@
 /* eslint-disable react/no-array-index-key */
+import './app.css';
 
 import React from 'react';
-import './app.css';
-import { ListGroup, Form, Button } from 'react-bootstrap';
+import { Button, Form, ListGroup } from 'react-bootstrap';
+
 import { QUEUE_RUNNING } from '../../constants';
 
 export default class TodoTree extends React.Component {

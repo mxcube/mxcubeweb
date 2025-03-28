@@ -1,70 +1,64 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
-import { connect } from 'socket.io-client';
 import { addResponseMessage } from 'react-chat-widget';
-import { addLogRecord } from './actions/logger';
-import {
-  setShapes,
-  saveMotorPosition,
-  updateMotorState,
-  setBeamInfo,
-  startClickCentringAction,
-  updateShapesAction,
-  setPixelsPerMm,
-  videoMessageOverlay,
-  setCurrentPhase,
-} from './actions/sampleview';
+import { connect } from 'socket.io-client';
+
 import {
   updateBeamlineHardwareObjectAction,
-  updateBeamlineHardwareObjectValueAction,
   updateBeamlineHardwareObjectAttributeAction,
+  updateBeamlineHardwareObjectValueAction,
 } from './actions/beamline';
 import {
-  setActionState,
   addUserMessage,
   newPlot,
   plotData,
   plotEnd,
+  setActionState,
 } from './actions/beamlineActions';
-import {
-  setStatus,
-  addTaskResultAction,
-  updateTaskLimsData,
-  addTaskAction,
-  stopQueue,
-  setCurrentSample,
-  addDiffractionPlanAction,
-  setSampleAttribute,
-  getQueue,
-} from './actions/queue';
-import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
 import { showConnectionLostDialog } from './actions/general';
-
-import {
-  showWorkflowParametersDialog,
-  showGphlWorkflowParametersDialog,
-  updateGphlWorkflowParametersDialog,
-} from './actions/workflow';
-
-import { getRaState, incChatMessageCount } from './actions/remoteAccess';
-
-import { signOut, getLoginInfo } from './actions/login';
-
-import {
-  setSCState,
-  setLoadedSample,
-  setSCGlobalState,
-} from './actions/sampleChanger';
-
 import {
   setHarvesterState,
   updateHarvesterContents,
 } from './actions/harvester';
-
+import { addLogRecord } from './actions/logger';
+import { getLoginInfo, signOut } from './actions/login';
+import {
+  addDiffractionPlanAction,
+  addTaskAction,
+  addTaskResultAction,
+  getQueue,
+  setCurrentSample,
+  setSampleAttribute,
+  setStatus,
+  stopQueue,
+  updateTaskLimsData,
+} from './actions/queue';
+import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
+import { getRaState, incChatMessageCount } from './actions/remoteAccess';
+import {
+  setLoadedSample,
+  setSCGlobalState,
+  setSCState,
+} from './actions/sampleChanger';
+import {
+  saveMotorPosition,
+  setBeamInfo,
+  setCurrentPhase,
+  setPixelsPerMm,
+  setShapes,
+  startClickCentringAction,
+  updateMotorState,
+  updateShapesAction,
+  videoMessageOverlay,
+} from './actions/sampleview';
 import { setEnergyScanResult } from './actions/taskResults';
-
+import { hideWaitDialog, showWaitDialog } from './actions/waitDialog';
+import {
+  showGphlWorkflowParametersDialog,
+  showWorkflowParametersDialog,
+  updateGphlWorkflowParametersDialog,
+} from './actions/workflow';
 import { CLICK_CENTRING } from './constants';
 import { store } from './store';
-import { hideWaitDialog, showWaitDialog } from './actions/waitDialog';
 
 const { dispatch } = store;
 

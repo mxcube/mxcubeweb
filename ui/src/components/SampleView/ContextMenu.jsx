@@ -1,6 +1,7 @@
 import React from 'react';
-import { createPortal } from 'react-dom';
 import { Dropdown } from 'react-bootstrap';
+import { createPortal } from 'react-dom';
+
 import { getLastUsedParameters } from '../Tasks/fields';
 
 const BESPOKE_TASK_NAMES = new Set([

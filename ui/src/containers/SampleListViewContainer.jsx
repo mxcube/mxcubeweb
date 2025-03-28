@@ -1,58 +1,49 @@
+import '../components/SampleGrid/SampleGridTable.css';
+
 import React from 'react';
-import { bindActionCreators } from 'redux';
-import { connect } from 'react-redux';
-import ReactDOM from 'react-dom';
-import withNavigate from '../components/withNavigate.jsx';
-import loader from '../img/loader.gif';
-
 import {
-  Container,
-  Card,
-  Row,
-  Col,
-  Form,
   Button,
-  DropdownButton,
-  InputGroup,
+  Card,
+  Col,
+  Container,
   Dropdown,
+  DropdownButton,
+  Form,
+  InputGroup,
+  Row,
 } from 'react-bootstrap';
-
-import { MdGridView } from 'react-icons/md';
-
+import ReactDOM from 'react-dom';
 import { LuSettings2 } from 'react-icons/lu';
+import { MdGridView } from 'react-icons/md';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
-import { QUEUE_RUNNING, isCollected, hasLimsData } from '../constants';
-
+import { showConfirmClearQueueDialog } from '../actions/general';
 import {
-  getSamplesList,
-  setViewModeAction,
-  syncSamples,
-  syncWithCrims,
-  filterAction,
-  selectSamplesAction,
-  showGenericContextMenu,
-} from '../actions/sampleGrid';
-
-import {
-  deleteSamplesFromQueue,
-  setEnabledSample,
   addSamplesToQueue,
-  stopQueue,
+  deleteSamplesFromQueue,
   deleteTask,
   deleteTaskList,
+  setEnabledSample,
+  stopQueue,
 } from '../actions/queue';
-
 import { showConfirmCollectDialog } from '../actions/queueGUI';
-import { showConfirmClearQueueDialog } from '../actions/general';
-
+import {
+  filterAction,
+  getSamplesList,
+  selectSamplesAction,
+  setViewModeAction,
+  showGenericContextMenu,
+  syncSamples,
+  syncWithCrims,
+} from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
-
-import SampleGridTableContainer from './SampleGridTableContainer';
-
-import QueueSettings from './QueueSettings.jsx';
-
-import '../components/SampleGrid/SampleGridTable.css';
 import TooltipTrigger from '../components/TooltipTrigger.jsx';
+import withNavigate from '../components/withNavigate.jsx';
+import { hasLimsData, isCollected, QUEUE_RUNNING } from '../constants';
+import loader from '../img/loader.gif';
+import QueueSettings from './QueueSettings.jsx';
+import SampleGridTableContainer from './SampleGridTableContainer';
 
 class SampleListViewContainer extends React.Component {
   constructor(props) {

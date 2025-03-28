@@ -1,19 +1,20 @@
-import React from 'react';
-import { HW_STATE } from '../../constants';
-import {
-  makePoints,
-  makeTwoDPoints,
-  makeLines,
-  makeImageOverlay,
-  makeCentringHorizontalLine,
-  makeCentringVerticalLine,
-} from './shapes';
-import DrawGridPlugin from './DrawGridPlugin';
-import SampleControls from '../SampleControls/SampleControls';
-import GridForm from './GridForm';
 import 'fabric';
 
+import React from 'react';
+
+import { HW_STATE } from '../../constants';
+import SampleControls from '../SampleControls/SampleControls';
+import DrawGridPlugin from './DrawGridPlugin';
+import GridForm from './GridForm';
 import { JSMpeg } from './jsmpeg.min.js';
+import {
+  makeCentringHorizontalLine,
+  makeCentringVerticalLine,
+  makeImageOverlay,
+  makeLines,
+  makePoints,
+  makeTwoDPoints,
+} from './shapes';
 
 const { fabric } = window;
 fabric.Group.prototype.hasControls = false;

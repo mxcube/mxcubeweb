@@ -3,14 +3,15 @@
 
 /* eslint-disable react/no-array-index-key */
 
-import { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ProgressBar, Button, Collapse, Table } from 'react-bootstrap';
+import { Component } from 'react';
+import { Button, Collapse, ProgressBar, Table } from 'react-bootstrap';
+
 import {
-  TASK_UNCOLLECTED,
-  TASK_COLLECTED,
   TASK_COLLECT_FAILED,
+  TASK_COLLECTED,
   TASK_RUNNING,
+  TASK_UNCOLLECTED,
 } from '../../constants';
 import TooltipTrigger from '../TooltipTrigger';
 

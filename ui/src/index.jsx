@@ -1,14 +1,14 @@
 import 'bootstrap/dist/css/bootstrap.css';
 import './main.css';
+import '@fortawesome/fontawesome-free/css/all.min.css';
+import 'react-contexify/ReactContexify.css';
 
 import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import App from './components/App';
-import { store } from './store';
-import DefaultErrorBoundary from './containers/DefaultErrorBoundary';
 
-import '@fortawesome/fontawesome-free/css/all.min.css';
-import 'react-contexify/ReactContexify.css';
+import App from './components/App';
+import DefaultErrorBoundary from './containers/DefaultErrorBoundary';
+import { store } from './store';
 
 function Root() {
   return (

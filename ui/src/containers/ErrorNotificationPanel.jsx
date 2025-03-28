@@ -1,5 +1,6 @@
+import { Alert, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Alert } from 'react-bootstrap';
+
 import { showErrorPanel } from '../actions/general';
 
 function ErrorNotificationPanel() {

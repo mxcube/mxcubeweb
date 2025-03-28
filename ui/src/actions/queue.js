@@ -1,8 +1,3 @@
-import { showErrorPanel } from './general';
-import { mountSample } from './sampleChanger';
-import { abortCentring, updateShapes } from './sampleview';
-import { selectSamplesAction, clearSampleGrid } from './sampleGrid';
-import { TASK_UNCOLLECTED } from '../constants';
 import {
   fetchQueueState,
   sendAddQueueItem,
@@ -24,6 +19,11 @@ import {
   sendUpdateQueueItem,
 } from '../api/queue';
 import { sendSetCentringMethod } from '../api/sampleview';
+import { TASK_UNCOLLECTED } from '../constants';
+import { showErrorPanel } from './general';
+import { mountSample } from './sampleChanger';
+import { clearSampleGrid, selectSamplesAction } from './sampleGrid';
+import { abortCentring, updateShapes } from './sampleview';
 
 export function queueLoading(loading) {
   return { type: 'QUEUE_LOADING', loading };

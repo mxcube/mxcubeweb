@@ -1,20 +1,20 @@
-import { showErrorPanel } from './general';
 import {
   sendUpdateAperture,
   sendUpdateCurrentPhase,
 } from '../api/diffractometer';
 import {
+  sendAbortCentring,
+  sendAcceptCentring,
   sendAddOrUpdateShapes,
   sendDeleteShape,
+  sendMoveToBeam,
+  sendMoveToPoint,
+  sendRecordCentringClick,
   sendRotateToShape,
   sendSetVideoSize,
-  sendRecordCentringClick,
-  sendAcceptCentring,
-  sendMoveToBeam,
   sendStartClickCentring,
-  sendAbortCentring,
-  sendMoveToPoint,
 } from '../api/sampleview';
+import { showErrorPanel } from './general';
 
 export function setMotorMoving(name, status) {
   return { type: 'SET_MOTOR_MOVING', name, status };

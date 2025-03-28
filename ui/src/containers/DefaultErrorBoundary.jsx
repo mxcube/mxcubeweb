@@ -1,8 +1,8 @@
+import { Button } from 'react-bootstrap';
 import { ErrorBoundary } from 'react-error-boundary';
+import { useDispatch } from 'react-redux';
 
 import { logFrontEndTraceBack } from '../actions/beamline';
-import { Button } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
 
 function DefaultErrorBoundary(props) {
   const { children } = props;

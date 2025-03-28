@@ -1,6 +1,6 @@
 import {
-  saveToLastUsedParameters,
   getLastUsedParameters,
+  saveToLastUsedParameters,
 } from '../components/Tasks/fields';
 
 const INITIAL_STATE = {

@@ -1,15 +1,14 @@
-import { useState, useEffect, useCallback } from 'react';
-import { bindActionCreators } from 'redux';
+import { useCallback, useEffect, useState } from 'react';
+import { Button, Col, Form, Modal, Row, Stack, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { Modal, Row, Col, Form, Table, Button, Stack } from 'react-bootstrap';
-
-import styles from './WorkflowParametersDialog.module.css';
+import { bindActionCreators } from 'redux';
 
 import {
   showGphlWorkflowParametersDialog,
   updateGphlWorkflowParameters,
   updateGphlWorkflowParametersDialog,
 } from '../actions/workflow';
+import styles from './WorkflowParametersDialog.module.css';
 
 const uiOptions = 'ui:options';
 

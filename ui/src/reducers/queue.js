@@ -1,6 +1,7 @@
 import update from 'immutability-helper';
-import { QUEUE_STOPPED, CLICK_CENTRING } from '../constants';
+
 import { clearAllLastUsedParameters } from '../components/Tasks/fields';
+import { CLICK_CENTRING, QUEUE_STOPPED } from '../constants';
 
 const INITIAL_STATE = {
   queue: [],

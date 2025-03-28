@@ -1,12 +1,11 @@
 import { useState } from 'react';
-import { Button, Dropdown, Card, Stack } from 'react-bootstrap';
+import { Button, Card, Dropdown, Stack } from 'react-bootstrap';
 import Draggable from 'react-draggable';
-
 import { MdClose } from 'react-icons/md';
+import { useSelector } from 'react-redux';
 
 import styles from './beamlineCamera.module.css';
 import pip from './picture_in_picture.svg';
-import { useSelector } from 'react-redux';
 
 function handleImageClick(url, width, height) {
   window.open(

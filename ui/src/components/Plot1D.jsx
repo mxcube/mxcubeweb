@@ -1,7 +1,8 @@
+import 'dygraphs/dist/dygraph.min.css';
+
+import Dygraph from 'dygraphs';
 import React from 'react';
 import { connect } from 'react-redux';
-import Dygraph from 'dygraphs';
-import 'dygraphs/dist/dygraph.min.css';
 
 class Plot1D extends React.Component {
   static defaultProps = {

@@ -1,8 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Col } from 'react-bootstrap';
-
-import { BsChevronUp, BsChevronDown } from 'react-icons/bs';
+import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
+import { connect } from 'react-redux';
 
 import { filterAction } from '../actions/sampleGrid';
 

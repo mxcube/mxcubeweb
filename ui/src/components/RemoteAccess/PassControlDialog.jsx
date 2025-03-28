@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Button, Form, Alert } from 'react-bootstrap';
-import { respondToControlRequest } from '../../actions/remoteAccess';
+import { Alert, Button, Form, Modal } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { respondToControlRequest } from '../../actions/remoteAccess';
 import { hideWaitDialog } from '../../actions/waitDialog';
 
 function PassControlDialog() {

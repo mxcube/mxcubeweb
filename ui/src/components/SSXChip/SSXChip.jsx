@@ -1,10 +1,11 @@
 /* eslint-disable react/jsx-key */
 /* eslint-disable react/no-unused-state */
-import React from 'react';
-import { Row, Col, Form, Button, Card } from 'react-bootstrap';
-import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 import 'fabric';
 import './ssxchipcontrol.css';
+
+import React from 'react';
+import { Button, Card, Col, Form, Row } from 'react-bootstrap';
+import { contextMenu, Item, Menu, Separator } from 'react-contexify';
 
 import MotorInput from '../MotorInput/MotorInput';
 

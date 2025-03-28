@@ -1,5 +1,6 @@
 /* global Cypress, cy, beforeEach */
 import '@testing-library/cypress/add-commands';
+
 import installLogsCollector from 'cypress-terminal-report/src/installLogsCollector.js';
 
 installLogsCollector();

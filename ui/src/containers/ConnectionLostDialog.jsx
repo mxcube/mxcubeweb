@@ -1,5 +1,5 @@
+import { Button, Modal } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { Modal, Button } from 'react-bootstrap';
 
 export function ConnectionLostDialog() {
   const show = useSelector((state) => state.general.showConnectionLostDialog);

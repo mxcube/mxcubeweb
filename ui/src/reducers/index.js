@@ -1,24 +1,25 @@
 import { reducer as formReducer } from 'redux-form';
+
+import beamline from './beamline';
+import contextMenu from './contextMenu';
+import general from './general';
+import harvester from './harvester';
+import harvesterMaintenance from './harvesterMaintenance';
+import logger from './logger';
 import login from './login';
 import queue from './queue';
 import queueGUI from './queueGUI';
-import sampleGrid from './sampleGrid';
+import remoteAccess from './remoteAccess';
 import sampleChanger from './sampleChanger';
 import sampleChangerMaintenance from './sampleChangerMaintenance';
-import harvester from './harvester';
-import harvesterMaintenance from './harvesterMaintenance';
-import taskForm from './taskForm';
+import sampleGrid from './sampleGrid';
 import sampleview from './sampleview';
-import general from './general';
-import beamline from './beamline';
-import logger from './logger';
-import contextMenu from './contextMenu';
-import remoteAccess from './remoteAccess';
 import shapes from './shapes';
-import workflow from './workflow';
+import taskForm from './taskForm';
 import taskResult from './taskResult';
 import uiproperties from './uiproperties';
 import waitDialog from './waitDialog';
+import workflow from './workflow';
 
 const rootReducer = {
   login,

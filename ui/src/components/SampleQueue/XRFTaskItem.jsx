@@ -1,22 +1,22 @@
 /* eslint-disable react/no-unused-state */
-import { Component } from 'react';
 import PropTypes from 'prop-types';
+import { Component } from 'react';
 import {
-  ProgressBar,
   Button,
   Collapse,
+  Modal,
   OverlayTrigger,
   Popover,
-  Modal,
+  ProgressBar,
 } from 'react-bootstrap';
-import Plot1D from '../Plot1D';
 
 import {
-  TASK_UNCOLLECTED,
-  TASK_COLLECTED,
   TASK_COLLECT_FAILED,
+  TASK_COLLECTED,
   TASK_RUNNING,
+  TASK_UNCOLLECTED,
 } from '../../constants';
+import Plot1D from '../Plot1D';
 
 export default class XRFTaskItem extends Component {
   static propTypes = {

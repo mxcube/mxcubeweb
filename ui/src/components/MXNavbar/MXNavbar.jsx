@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Container, Navbar, Nav } from 'react-bootstrap';
+import { Container, Nav, Navbar } from 'react-bootstrap';
 import { BsList } from 'react-icons/bs';
-import { NavLink, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { NavLink, useLocation } from 'react-router-dom';
+
 import { showProposalsForm, signOut } from '../../actions/login';
 import styles from './MXNavbar.module.css';
 

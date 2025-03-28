@@ -1,7 +1,6 @@
 import { useState } from 'react';
-import { Card, Dropdown, Form, Button, DropdownButton } from 'react-bootstrap';
-
-import { Menu, Item, Separator, contextMenu } from 'react-contexify';
+import { Button, Card, Dropdown, DropdownButton, Form } from 'react-bootstrap';
+import { contextMenu, Item, Menu, Separator } from 'react-contexify';
 
 import styles from './equipment.module.css';
 

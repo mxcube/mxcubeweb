@@ -1,5 +1,5 @@
-import logo from '../../img/mxcube_logo20.png';
 import loadingAnimation from '../../img/loading-animation.gif';
+import logo from '../../img/mxcube_logo20.png';
 import styles from './LoadingScreen.module.css';
 
 function LoadingScreen() {

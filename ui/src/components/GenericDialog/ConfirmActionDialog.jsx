@@ -1,4 +1,4 @@
-import { Modal, Button } from 'react-bootstrap';
+import { Button, Modal } from 'react-bootstrap';
 
 function ConfirmActionDialog(props) {
   const {

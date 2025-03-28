@@ -1,7 +1,7 @@
 import {
-  sendSetAttribute,
   sendExecuteCommand,
   sendPrepareBeamlineForNewSample,
+  sendSetAttribute,
 } from '../api/beamline';
 import { sendLogFrontEndTraceBack } from '../api/log';
 

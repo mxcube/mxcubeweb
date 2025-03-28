@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import { Modal, Button, Tabs, Tab, Form } from 'react-bootstrap';
-import SessionTable from './SessionTable';
+import { Button, Form, Modal, Tab, Tabs } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+
 import {
   hideProposalsForm,
   selectProposal,
   signOut,
 } from '../../actions/login';
-import styles from './SessionTable.module.css';
 import ActionButton from './ActionButton';
+import SessionTable from './SessionTable';
+import styles from './SessionTable.module.css';
 
 function SelectProposal() {
   const dispatch = useDispatch();

@@ -1,4 +1,4 @@
-import { findIndex, setWith, clone } from 'lodash';
+import { clone, findIndex, setWith } from 'lodash';
 
 const INITIAL_STATE = {};
 

@@ -1,18 +1,18 @@
-import React from 'react';
-import { OverlayTrigger, Popover, Badge } from 'react-bootstrap';
-import { LimsResultSummary } from '../Lims/LimsResultSummary';
-
 import './SampleGridTable.css';
+
+import React from 'react';
+import { Badge, OverlayTrigger, Popover } from 'react-bootstrap';
+
 import {
-  TASK_COLLECTED,
-  TASK_UNCOLLECTED,
+  isUnCollected,
   TASK_COLLECT_FAILED,
   TASK_COLLECT_WARNING,
+  TASK_COLLECTED,
   TASK_RUNNING,
-  isUnCollected,
+  TASK_UNCOLLECTED,
 } from '../../constants';
-
 import loader from '../../img/busy-indicator.gif';
+import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 export class TaskItem extends React.Component {
   static defaultProps = {

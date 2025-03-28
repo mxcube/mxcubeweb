@@ -1,8 +1,8 @@
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { useSelector } from 'react-redux';
 
 import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';
 import styles from './SampleControls.module.css';
-import { useSelector } from 'react-redux';
 
 function FocusControl() {
   const focusMotorProps = useSelector((state) =>

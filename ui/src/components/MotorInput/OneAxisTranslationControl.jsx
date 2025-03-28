@@ -1,9 +1,9 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { Button } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
-import BaseMotorInput from './BaseMotorInput';
-import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import { setAttribute } from '../../actions/beamline';
+import { HW_STATE, QUEUE_RUNNING } from '../../constants';
+import BaseMotorInput from './BaseMotorInput';
 import styles from './OneAxisTranslationControl.module.css';
 
 function OneAxisTranslationControl(props) {

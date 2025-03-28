@@ -1,13 +1,14 @@
 /* eslint-disable react/no-unused-state */
+import './app.css';
 
 import React from 'react';
-import './app.css';
-import { Menu, Item, contextMenu } from 'react-contexify';
-import TaskItem from './TaskItem';
-import XRFTaskItem from './XRFTaskItem';
-import EnergyScanTaskItem from './EnergyScanTaskItem';
-import WorkflowTaskItem from './WorkflowTaskItem';
+import { contextMenu, Item, Menu } from 'react-contexify';
+
 import CharacterisationTaskItem from './CharacterisationTaskItem';
+import EnergyScanTaskItem from './EnergyScanTaskItem';
+import TaskItem from './TaskItem';
+import WorkflowTaskItem from './WorkflowTaskItem';
+import XRFTaskItem from './XRFTaskItem';
 
 export default class CurrentTree extends React.Component {
   constructor(props) {

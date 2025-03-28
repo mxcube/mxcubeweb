@@ -1,11 +1,10 @@
-import { Row, Col, Button, OverlayTrigger, Popover } from 'react-bootstrap';
-
-import Collapsible from 'react-collapsible';
-import { BsChevronDown } from 'react-icons/bs';
-import EquipmentState from './EquipmentState';
 import Form from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
+import { Button, Col, OverlayTrigger, Popover, Row } from 'react-bootstrap';
+import Collapsible from 'react-collapsible';
+import { BsChevronDown } from 'react-icons/bs';
 
+import EquipmentState from './EquipmentState';
 import styles from './GenericEquipmentControl.module.css';
 
 export default function GenericEquipmentControl(props) {

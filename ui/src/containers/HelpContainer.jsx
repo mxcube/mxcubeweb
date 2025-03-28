@@ -1,9 +1,8 @@
 import React from 'react';
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { Container, Card, Row, Col, Button, Form } from 'react-bootstrap';
 
 import { sendFeedback } from '../api/login';
-
 import characterisation from '../help_videos/mx3-characterisation.ogv';
 import interleaved from '../help_videos/mx3-interleaved.ogv';
 import mesh from '../help_videos/mx3-mesh.ogv';

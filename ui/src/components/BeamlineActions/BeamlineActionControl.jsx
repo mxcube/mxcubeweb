@@ -1,15 +1,16 @@
 import { Button, ButtonGroup, ButtonToolbar } from 'react-bootstrap';
 import { BiLinkExternal } from 'react-icons/bi';
-import {
-  RUNNING,
-  twoStateActuatorIsActive,
-  TWO_STATE_ACTUATOR,
-} from '../../constants';
+import { useDispatch, useSelector } from 'react-redux';
+
 import {
   showActionOutput,
   stopBeamlineAction,
 } from '../../actions/beamlineActions';
-import { useDispatch, useSelector } from 'react-redux';
+import {
+  RUNNING,
+  TWO_STATE_ACTUATOR,
+  twoStateActuatorIsActive,
+} from '../../constants';
 
 export default function BeamlineActionControl(props) {
   const {

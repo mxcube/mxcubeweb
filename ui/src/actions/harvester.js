@@ -1,14 +1,13 @@
 import {
-  sendRefresh,
-  sendHarvestCrystal,
-  sendHarvestAndLoadCrystal,
-  sendCalibratePin,
-  sendValidateCalibration,
   sendAbortHarvester,
+  sendCalibratePin,
   sendDataCollectionInfoToCrims,
+  sendHarvestAndLoadCrystal,
+  sendHarvestCrystal,
   sendHarvesterCommand,
+  sendRefresh,
+  sendValidateCalibration,
 } from '../api/harvester';
-
 import { showErrorPanel } from './general';
 
 export function setContents(contents) {

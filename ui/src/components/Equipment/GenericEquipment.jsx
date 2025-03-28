@@ -1,6 +1,7 @@
-import { Row, Col } from 'react-bootstrap';
+import { Col, Row } from 'react-bootstrap';
 import Collapsible from 'react-collapsible';
 import { BsChevronDown } from 'react-icons/bs';
+
 import EquipmentState from './EquipmentState';
 import styles from './GenericEquipmentControl.module.css';
 

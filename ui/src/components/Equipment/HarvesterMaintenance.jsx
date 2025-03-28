@@ -1,10 +1,5 @@
-import { Row, Col, Button, Card } from 'react-bootstrap';
+import { Button, Card, Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-
-import ActionGroup from './ActionGroup';
-import ActionButton from './ActionButton';
-import ActionField from './ActionField';
-import InOutSwitch from '../InOutSwitch/InOutSwitch';
 
 import {
   calibratePin,
@@ -12,6 +7,10 @@ import {
   sendDataCollectionToCrims,
   validateCalibration,
 } from '../../actions/harvester';
+import InOutSwitch from '../InOutSwitch/InOutSwitch';
+import ActionButton from './ActionButton';
+import ActionField from './ActionField';
+import ActionGroup from './ActionGroup';
 import styles from './equipment.module.css';
 
 export default function HarvesterMaintenance() {

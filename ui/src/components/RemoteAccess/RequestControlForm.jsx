@@ -1,5 +1,6 @@
+import { Button, Card, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Form, Button, Card } from 'react-bootstrap';
+
 import { requestControl, takeControl } from '../../actions/remoteAccess';
 
 function RequestControlForm() {

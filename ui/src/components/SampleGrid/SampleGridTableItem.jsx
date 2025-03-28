@@ -1,19 +1,18 @@
+import './SampleGridTable.css';
+
+import cx from 'classnames';
 import React from 'react';
 import {
+  Badge,
+  Button,
   ListGroup,
   OverlayTrigger,
   Popover,
-  Badge,
-  Button,
 } from 'react-bootstrap';
-import cx from 'classnames';
+import { BsCheck2Square, BsSquare } from 'react-icons/bs';
 
 import CopyToClipboard from '../../components/CopyToClipboard/CopyToClipboard';
-
 import { isCollected } from '../../constants';
-
-import { BsSquare, BsCheck2Square } from 'react-icons/bs';
-import './SampleGridTable.css';
 import TooltipTrigger from '../TooltipTrigger';
 
 export class SampleGridTableItem extends React.Component {

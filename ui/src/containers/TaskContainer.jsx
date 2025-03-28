@@ -1,18 +1,17 @@
 import { useDispatch, useSelector } from 'react-redux';
-import Characterisation from '../components/Tasks/Characterisation';
-import DataCollection from '../components/Tasks/DataCollection';
-import Helical from '../components/Tasks/Helical';
-import Mesh from '../components/Tasks/Mesh';
-import AddSample from '../components/Tasks/AddSample';
-import Workflow from '../components/Tasks/Workflow';
-import Interleaved from '../components/Tasks/Interleaved';
-import XRFScan from '../components/Tasks/XRFScan';
-import EnergyScan from '../components/Tasks/EnergyScan';
-import GenericTaskForm from '../components/Tasks/GenericTaskForm';
-
-import { hideTaskParametersForm } from '../actions/taskForm';
 
 import { addTask, updateTask } from '../actions/queue';
+import { hideTaskParametersForm } from '../actions/taskForm';
+import AddSample from '../components/Tasks/AddSample';
+import Characterisation from '../components/Tasks/Characterisation';
+import DataCollection from '../components/Tasks/DataCollection';
+import EnergyScan from '../components/Tasks/EnergyScan';
+import GenericTaskForm from '../components/Tasks/GenericTaskForm';
+import Helical from '../components/Tasks/Helical';
+import Interleaved from '../components/Tasks/Interleaved';
+import Mesh from '../components/Tasks/Mesh';
+import Workflow from '../components/Tasks/Workflow';
+import XRFScan from '../components/Tasks/XRFScan';
 
 function TaskContainer() {
   const dispatch = useDispatch();

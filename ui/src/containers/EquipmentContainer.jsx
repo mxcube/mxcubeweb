@@ -1,45 +1,36 @@
+import { Col, Container, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { Container, Row, Col } from 'react-bootstrap';
-
-import {
-  select,
-  mountSample,
-  unmountSample,
-  scan,
-  abort,
-  sendCommand,
-  refresh,
-  selectWell,
-  setPlate,
-  selectDrop,
-} from '../actions/sampleChanger';
-
+import { executeCommand } from '../actions/beamline';
+import { showErrorPanel } from '../actions/general';
 import {
   abort as haAbort,
-  refresh as haRefresh,
-  harvestCrystal,
   harvestAndLoadCrystal,
+  harvestCrystal,
+  refresh as haRefresh,
 } from '../actions/harvester';
-
-import { showErrorPanel } from '../actions/general';
-
+import {
+  abort,
+  mountSample,
+  refresh,
+  scan,
+  select,
+  selectDrop,
+  selectWell,
+  sendCommand,
+  setPlate,
+  unmountSample,
+} from '../actions/sampleChanger';
 import { syncWithCrims } from '../actions/sampleGrid';
-
-import { executeCommand } from '../actions/beamline';
-
-import SampleChanger from '../components/Equipment/SampleChanger';
-import SampleChangerMaintenance from '../components/Equipment/SampleChangerMaintenance';
-
-import PlateManipulator from '../components/Equipment/PlateManipulator';
-import PlateManipulatorMaintenance from '../components/Equipment/PlateManipulatorMaintenance';
-
-import Harvester from '../components/Equipment/Harvester';
-import HarvesterMaintenance from '../components/Equipment/HarvesterMaintenance';
-
 import GenericEquipment from '../components/Equipment/GenericEquipment';
 import GenericEquipmentControl from '../components/Equipment/GenericEquipmentControl';
+import Harvester from '../components/Equipment/Harvester';
+import HarvesterMaintenance from '../components/Equipment/HarvesterMaintenance';
+import PlateManipulator from '../components/Equipment/PlateManipulator';
+import PlateManipulatorMaintenance from '../components/Equipment/PlateManipulatorMaintenance';
+import SampleChanger from '../components/Equipment/SampleChanger';
+import SampleChangerMaintenance from '../components/Equipment/SampleChangerMaintenance';
 
 function EquipmentContainer(props) {
   return (

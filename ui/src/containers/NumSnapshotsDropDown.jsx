@@ -1,5 +1,6 @@
-import { useDispatch, useSelector } from 'react-redux';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { setNumSnapshots } from '../actions/queue';
 
 function NumSnapshotsDropDown(props) {

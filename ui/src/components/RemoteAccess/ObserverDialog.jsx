@@ -1,8 +1,9 @@
 import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Modal, Button, Form } from 'react-bootstrap';
-import { updateNickname } from '../../actions/remoteAccess';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { updateNickname } from '../../actions/remoteAccess';
 
 function ObserverDialog() {
   const dispatch = useDispatch();

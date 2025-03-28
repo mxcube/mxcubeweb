@@ -1,6 +1,6 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Col } from 'react-bootstrap';
+import { connect } from 'react-redux';
 
 import { filterAction } from '../actions/sampleGrid';
 

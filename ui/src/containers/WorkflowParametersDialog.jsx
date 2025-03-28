@@ -1,12 +1,12 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { Modal } from 'react-bootstrap';
 import Form from '@rjsf/core';
 import validator from '@rjsf/validator-ajv8';
+import { Modal } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+
 import {
   showWorkflowParametersDialog,
   submitWorkflowParameters,
 } from '../actions/workflow';
-
 import styles from './WorkflowParametersDialog.module.css';
 
 function WorkflowParametersDialog() {

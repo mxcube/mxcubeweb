@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { Form, InputGroup, Alert, Button } from 'react-bootstrap';
-
+import { Alert, Button, Form, InputGroup } from 'react-bootstrap';
 import { Controller, useForm } from 'react-hook-form';
-
-import logo from '../../img/mxcube_logo20.png';
-import loader from '../../img/loader.gif';
-import styles from './LoginForm.module.css';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { logIn } from '../../actions/login';
+import loader from '../../img/loader.gif';
+import logo from '../../img/mxcube_logo20.png';
+import styles from './LoginForm.module.css';
 
 const SSO_PATH = '/mxcube/api/v0.1/login/ssologin';
 

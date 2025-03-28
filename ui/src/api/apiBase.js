@@ -1,4 +1,5 @@
 import wretch from 'wretch';
+
 import safeJsonAddon from './addons/safeJson';
 
 const baseApi = wretch('/mxcube/api/v0.1')

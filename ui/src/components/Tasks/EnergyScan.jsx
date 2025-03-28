@@ -1,11 +1,12 @@
 import React from 'react';
+import { Button, ButtonToolbar, Form, Modal, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { reduxForm, formValueSelector } from 'redux-form';
+import { formValueSelector, reduxForm } from 'redux-form';
+
 import { DraggableModal } from '../DraggableModal';
-import { Modal, Button, Form, Row, ButtonToolbar } from 'react-bootstrap';
-import validate from './validate';
-import { FieldsHeader, StaticField, InputField, toFixed } from './fields';
 import PeriodicTable from '../PeriodicTable/PeriodicTable';
+import { FieldsHeader, InputField, StaticField, toFixed } from './fields';
+import validate from './validate';
 
 class EnergyScan extends React.Component {
   constructor(props) {

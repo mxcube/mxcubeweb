@@ -1,10 +1,10 @@
 import { useCallback, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
-import { sendTakeSnapshot } from '../../api/sampleview';
-import { download } from './utils';
 
+import { sendTakeSnapshot } from '../../api/sampleview';
 import styles from './SampleControls.module.css';
+import { download } from './utils';
 
 const { fabric } = window;
 

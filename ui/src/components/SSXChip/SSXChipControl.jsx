@@ -1,7 +1,9 @@
-import React from 'react';
 import 'fabric';
-import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import './ssxchipcontrol.css';
+
+import React from 'react';
+import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
+
 import SSXChip from './SSXChip.jsx';
 
 export default class SSXChipControl extends React.Component {

@@ -1,25 +1,24 @@
 import { useEffect } from 'react';
+import { useErrorBoundary } from 'react-error-boundary';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   createBrowserRouter,
-  RouterProvider,
   Navigate,
+  RouterProvider,
 } from 'react-router-dom';
 
-import LoginContainer from '../containers/LoginContainer';
-import SampleViewContainer from '../containers/SampleViewContainer';
-import SampleListViewContainer from '../containers/SampleListViewContainer';
-import EquipmentContainer from '../containers/EquipmentContainer';
-import RemoteAccessContainer from '../containers/RemoteAccessContainer';
-import HelpContainer from '../containers/HelpContainer';
-import Main from './Main';
-import LoadingScreen from './LoadingScreen/LoadingScreen';
-
-import { serverIO } from '../serverIO';
 import { getLoginInfo } from '../actions/login';
-import PrivateOutlet from './PrivateOutlet';
 import { sendRefreshSession } from '../api/login';
-import { useErrorBoundary } from 'react-error-boundary';
+import EquipmentContainer from '../containers/EquipmentContainer';
+import HelpContainer from '../containers/HelpContainer';
+import LoginContainer from '../containers/LoginContainer';
+import RemoteAccessContainer from '../containers/RemoteAccessContainer';
+import SampleListViewContainer from '../containers/SampleListViewContainer';
+import SampleViewContainer from '../containers/SampleViewContainer';
+import { serverIO } from '../serverIO';
+import LoadingScreen from './LoadingScreen/LoadingScreen';
+import Main from './Main';
+import PrivateOutlet from './PrivateOutlet';
 
 const REFRESH_INTERVAL = 9000;
 

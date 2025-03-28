@@ -1,33 +1,31 @@
+import './ConfirmCollectDialog.css';
+
 import React from 'react';
+import {
+  Button,
+  Form,
+  Modal,
+  OverlayTrigger,
+  Popover,
+  Table,
+} from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import {
-  Modal,
-  Button,
-  Table,
-  OverlayTrigger,
-  Popover,
-  Form,
-} from 'react-bootstrap';
-
-import {
-  startQueue,
   runSample,
   setAutoMountSample,
   setCentringMethod,
   setNumSnapshots,
+  startQueue,
 } from '../actions/queue';
-
-import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
 import {
-  TASK_UNCOLLECTED,
   AUTO_LOOP_CENTRING,
   CLICK_CENTRING,
+  TASK_UNCOLLECTED,
 } from '../constants';
-
-import './ConfirmCollectDialog.css';
+import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
 export class ConfirmCollectDialog extends React.Component {
   constructor(props) {

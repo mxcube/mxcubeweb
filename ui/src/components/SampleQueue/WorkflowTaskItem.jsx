@@ -1,14 +1,15 @@
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/no-unused-state */
 
-import { Component } from 'react';
 import PropTypes from 'prop-types';
-import { ProgressBar, Button, Collapse } from 'react-bootstrap';
+import { Component } from 'react';
+import { Button, Collapse, ProgressBar } from 'react-bootstrap';
+
 import {
-  TASK_UNCOLLECTED,
-  TASK_COLLECTED,
   TASK_COLLECT_FAILED,
+  TASK_COLLECTED,
   TASK_RUNNING,
+  TASK_UNCOLLECTED,
 } from '../../constants';
 import TooltipTrigger from '../TooltipTrigger';
 

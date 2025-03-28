@@ -1,5 +1,6 @@
+import { Button, Card, Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Row, Col, Button, Card } from 'react-bootstrap';
+
 import { giveControl, logoutUser } from '../../actions/remoteAccess';
 
 function UserList() {

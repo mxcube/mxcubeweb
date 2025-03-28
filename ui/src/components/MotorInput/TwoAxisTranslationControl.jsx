@@ -1,9 +1,9 @@
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import MotorInput from './MotorInput';
-import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import { setAttribute } from '../../actions/beamline';
+import { HW_STATE, QUEUE_RUNNING } from '../../constants';
+import MotorInput from './MotorInput';
 import styles from './TwoAxisTranslationControl.module.css';
 
 function TwoAxisTranslationControl(props) {

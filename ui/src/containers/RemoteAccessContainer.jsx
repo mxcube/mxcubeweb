@@ -1,4 +1,4 @@
-import { Container, Card, Form, Row, Col } from 'react-bootstrap';
+import { Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {

@@ -1,7 +1,8 @@
-import ConfirmActionDialog from '../GenericDialog/ConfirmActionDialog';
 import { useDispatch, useSelector } from 'react-redux';
-import { clearQueue } from '../../actions/queue';
+
 import { showConfirmClearQueueDialog } from '../../actions/general';
+import { clearQueue } from '../../actions/queue';
+import ConfirmActionDialog from '../GenericDialog/ConfirmActionDialog';
 
 function ClearQueueDialog() {
   const dispatch = useDispatch();

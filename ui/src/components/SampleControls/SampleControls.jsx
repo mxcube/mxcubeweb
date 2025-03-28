@@ -1,13 +1,12 @@
-import SnapshotControl from './SnapshotControl';
-import GridControl from './GridControl';
 import CentringControl from './CentringControl';
 import FocusControl from './FocusControl';
-import ZoomControl from './ZoomControl';
+import GridControl from './GridControl';
 import LightControl from './LightControl';
-import VideoSizeControl from './VideoSizeControl';
-
-import { useShowControl } from './utils';
 import styles from './SampleControls.module.css';
+import SnapshotControl from './SnapshotControl';
+import { useShowControl } from './utils';
+import VideoSizeControl from './VideoSizeControl';
+import ZoomControl from './ZoomControl';
 
 function SampleControls(props) {
   const { canvas } = props;

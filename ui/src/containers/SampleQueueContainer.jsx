@@ -1,22 +1,23 @@
 import React from 'react';
-import { bindActionCreators } from 'redux';
+import { Nav } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import CurrentTree from '../components/SampleQueue/CurrentTree';
-import TodoTree from '../components/SampleQueue/TodoTree';
-import QueueControl from '../components/SampleQueue/QueueControl';
+import { bindActionCreators } from 'redux';
+
+import { prepareBeamlineForNewSample } from '../actions/beamline';
+import { showDialog } from '../actions/general';
 import {
-  toggleCheckBox,
-  pauseQueue,
-  resumeQueue,
-  stopQueue,
+  addTask,
   changeTaskOrderAction,
   deleteTask,
-  addTask,
   moveTask,
-  setAutoMountSample,
-  setAutoAddDiffPlan,
+  pauseQueue,
+  resumeQueue,
   runSample,
+  setAutoAddDiffPlan,
+  setAutoMountSample,
   setEnabledSample,
+  stopQueue,
+  toggleCheckBox,
 } from '../actions/queue';
 import {
   collapseItem,
@@ -24,15 +25,14 @@ import {
   showConfirmCollectDialog,
   showList,
 } from '../actions/queueGUI';
-import { showTaskForm } from '../actions/taskForm';
-import { Nav } from 'react-bootstrap';
-import { showDialog } from '../actions/general';
-import { showWorkflowParametersDialog } from '../actions/workflow';
-
-import UserMessage from '../components/Notify/UserMessage';
-import loader from '../img/loader.gif';
-import { prepareBeamlineForNewSample } from '../actions/beamline';
 import { mountSample, unmountSample } from '../actions/sampleChanger';
+import { showTaskForm } from '../actions/taskForm';
+import { showWorkflowParametersDialog } from '../actions/workflow';
+import UserMessage from '../components/Notify/UserMessage';
+import CurrentTree from '../components/SampleQueue/CurrentTree';
+import QueueControl from '../components/SampleQueue/QueueControl';
+import TodoTree from '../components/SampleQueue/TodoTree';
+import loader from '../img/loader.gif';
 
 class SampleQueueContainer extends React.Component {
   constructor(props) {

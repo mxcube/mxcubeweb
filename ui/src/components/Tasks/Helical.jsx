@@ -1,26 +1,25 @@
 import React from 'react';
+import { Button, ButtonToolbar, Form, Modal, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { reduxForm, formValueSelector } from 'redux-form';
-import { Modal, Button, Form, Row, ButtonToolbar } from 'react-bootstrap';
-import { DraggableModal } from '../DraggableModal';
-import asyncValidate from './asyncValidate';
-import validate from './validate';
-import warn from './warning';
-
-import {
-  FieldsHeader,
-  StaticField,
-  InputField,
-  CheckboxField,
-  SelectField,
-  FieldsRow,
-  CollapsableRows,
-  toFixed,
-  saveToLastUsedParameters,
-  resetLastUsedParameters,
-} from './fields';
+import { formValueSelector, reduxForm } from 'redux-form';
 
 import { SPACE_GROUPS } from '../../constants';
+import { DraggableModal } from '../DraggableModal';
+import asyncValidate from './asyncValidate';
+import {
+  CheckboxField,
+  CollapsableRows,
+  FieldsHeader,
+  FieldsRow,
+  InputField,
+  resetLastUsedParameters,
+  saveToLastUsedParameters,
+  SelectField,
+  StaticField,
+  toFixed,
+} from './fields';
+import validate from './validate';
+import warn from './warning';
 
 class Helical extends React.Component {
   constructor(props) {

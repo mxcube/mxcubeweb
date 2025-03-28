@@ -1,11 +1,10 @@
-import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import './LimsResultDialog.css';
 
-import { LimsResultSummary } from './LimsResultSummary';
+import React from 'react';
+import { Button, Modal } from 'react-bootstrap';
 
 import { TASK_COLLECTED } from '../../constants';
-
-import './LimsResultDialog.css';
+import { LimsResultSummary } from './LimsResultSummary';
 
 export class LimsResultDialog extends React.Component {
   constructor(props) {

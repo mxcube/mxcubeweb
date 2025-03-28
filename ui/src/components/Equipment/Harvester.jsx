@@ -1,11 +1,10 @@
 import React from 'react';
-import { Card, Button, Badge } from 'react-bootstrap';
-import { contextMenu, Menu, Item, Separator } from 'react-contexify';
-import { FcRefresh, FcUpload, FcCollect } from 'react-icons/fc';
+import { Badge, Button, Card } from 'react-bootstrap';
+import { contextMenu, Item, Menu, Separator } from 'react-contexify';
+import { FcCollect, FcRefresh, FcUpload } from 'react-icons/fc';
 
 import CopyToClipboard from '../CopyToClipboard/CopyToClipboard.jsx';
 import ImageViewer from '../ImageViewer/ImageViewer.jsx';
-
 import styles from './equipment.module.css';
 
 function sampleStateBackground(key) {

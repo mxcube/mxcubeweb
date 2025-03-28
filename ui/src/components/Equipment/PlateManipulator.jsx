@@ -1,17 +1,17 @@
 import { useEffect } from 'react';
 import {
-  Row,
-  Col,
   Button,
   ButtonToolbar,
+  Col,
   OverlayTrigger,
   Popover,
+  Row,
 } from 'react-bootstrap';
-import { contextMenu, Menu, Item, Separator } from 'react-contexify';
-
+import { contextMenu, Item, Menu, Separator } from 'react-contexify';
 import { MdSync } from 'react-icons/md';
-import styles from './equipment.module.css';
+
 import TooltipTrigger from '../TooltipTrigger';
+import styles from './equipment.module.css';
 
 const strokeColor = 'rgb(136, 136, 136)';
 

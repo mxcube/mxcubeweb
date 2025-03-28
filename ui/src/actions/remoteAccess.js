@@ -5,11 +5,11 @@ import {
   sendLogoutUser,
   sendRequestControl,
   sendRespondToControlRequest,
+  sendSetAllMessagesRead,
   sendTakeControl,
   sendUpdateAllowRemote,
   sendUpdateNickname,
   sendUpdateTimeoutGivesControl,
-  sendSetAllMessagesRead,
 } from '../api/remoteAccess';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';

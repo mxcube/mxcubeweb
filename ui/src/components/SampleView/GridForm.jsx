@@ -1,9 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import { Row, Col, Form, Button, Table } from 'react-bootstrap';
-import Draggable from 'react-draggable';
-
 import './SampleView.css';
+
+import { useEffect, useRef, useState } from 'react';
+import { Button, Col, Form, Row, Table } from 'react-bootstrap';
+import Draggable from 'react-draggable';
 import { useSelector } from 'react-redux';
+
 import TooltipTrigger from '../TooltipTrigger';
 
 function handleContextMenu(e) {

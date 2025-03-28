@@ -1,9 +1,9 @@
-import React from 'react';
-import { Field } from 'redux-form';
-import { Row, Col, Form, Button } from 'react-bootstrap';
-import { TiWarning, TiTimes } from 'react-icons/ti';
-
 import './style.css';
+
+import React from 'react';
+import { Button, Col, Form, Row } from 'react-bootstrap';
+import { TiTimes, TiWarning } from 'react-icons/ti';
+import { Field } from 'redux-form';
 
 export function getLastUsedParameters(type, newParams) {
   const lastParameters = localStorage.getItem(`last${type}Parameters`);

@@ -1,8 +1,8 @@
 /* eslint-disable promise/prefer-await-to-then */
 import React from 'react';
 
-import { isUnCollected, taskHasLimsData } from '../../constants';
 import { fetchLimsResults } from '../../api/lims';
+import { isUnCollected, taskHasLimsData } from '../../constants';
 
 export class LimsResultSummary extends React.Component {
   componentDidMount() {

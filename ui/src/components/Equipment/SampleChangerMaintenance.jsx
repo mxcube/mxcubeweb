@@ -1,9 +1,9 @@
 import { Card } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import ActionGroup from './ActionGroup';
-import ActionButton from './ActionButton';
 import { sendCommand } from '../../actions/sampleChanger';
+import ActionButton from './ActionButton';
+import ActionGroup from './ActionGroup';
 import styles from './equipment.module.css';
 
 function SampleChangerMaintenance() {

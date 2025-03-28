@@ -1,11 +1,12 @@
 import { useEffect } from 'react';
+import { Button, ButtonToolbar, Col, Form, Modal, Row } from 'react-bootstrap';
+import { useForm } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
-import { Modal, ButtonToolbar, Button, Form, Row, Col } from 'react-bootstrap';
-import { addSamplesToList } from '../../actions/sampleGrid';
+import { useLocation } from 'react-router-dom';
+
 import { addSampleAndMount, addSamplesToQueue } from '../../actions/queue';
 import { showList } from '../../actions/queueGUI';
-import { useLocation } from 'react-router-dom';
-import { useForm } from 'react-hook-form';
+import { addSamplesToList } from '../../actions/sampleGrid';
 import { hideTaskParametersForm } from '../../actions/taskForm';
 
 const REQUIRED_MSG = 'This field is required';

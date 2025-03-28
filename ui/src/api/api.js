@@ -1,7 +1,7 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
+import { store } from '../store';
 import baseApi from './apiBase';
 import { fetchLoginInfo } from './loginBase';
-import { store } from '../store';
 
 const api = baseApi
   .options({ credendials: 'include' })

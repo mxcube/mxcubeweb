@@ -1,13 +1,14 @@
-import React from 'react';
 import './app.css';
-import { Button, Navbar, Nav } from 'react-bootstrap';
-import {
-  QUEUE_RUNNING,
-  QUEUE_PAUSED,
-  QUEUE_STOPPED,
-  QUEUE_STARTED,
-} from '../../constants';
 
+import React from 'react';
+import { Button, Nav, Navbar } from 'react-bootstrap';
+
+import {
+  QUEUE_PAUSED,
+  QUEUE_RUNNING,
+  QUEUE_STARTED,
+  QUEUE_STOPPED,
+} from '../../constants';
 import QueueSettings from '../../containers/QueueSettings';
 import loader from '../../img/busy-indicator.gif';
 

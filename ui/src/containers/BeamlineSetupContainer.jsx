@@ -1,18 +1,17 @@
+import { filter, find } from 'lodash';
+import { Nav, Navbar, Popover, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { Navbar, Nav, Table, Popover } from 'react-bootstrap';
-import { find, filter } from 'lodash';
-
-import BeamlineAttribute from '../components/BeamlineAttribute/BeamlineAttribute';
-import BeamlineActions from './BeamlineActionsContainer';
-import BeamlineCamera from '../components/BeamlineCamera/BeamlineCamera';
-import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
-import DeviceState from '../components/DeviceState/DeviceState';
-import MachInfo from '../components/MachInfo/MachInfo';
-import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
 
 import { setAttribute } from '../actions/beamline';
-import { sendCommand } from '../actions/sampleChanger';
 import { stopBeamlineAction } from '../actions/beamlineActions';
+import { sendCommand } from '../actions/sampleChanger';
+import BeamlineAttribute from '../components/BeamlineAttribute/BeamlineAttribute';
+import BeamlineCamera from '../components/BeamlineCamera/BeamlineCamera';
+import DeviceState from '../components/DeviceState/DeviceState';
+import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
+import MachInfo from '../components/MachInfo/MachInfo';
+import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
+import BeamlineActions from './BeamlineActionsContainer';
 
 function BeamlineSetupContainer() {
   const dispatch = useDispatch();

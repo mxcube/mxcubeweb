@@ -1,11 +1,12 @@
+import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { hideActionOutput } from '../../actions/beamlineActions';
-import { Row, Col, Modal, Button, Card } from 'react-bootstrap';
-import Plot1D from '../Plot1D';
+import { RUNNING } from '../../constants';
 import { DraggableModal } from '../DraggableModal';
+import Plot1D from '../Plot1D';
 import AnnotatedBeamlineActionForm from './AnnotatedBeamlineActionForm';
 import BeamlineActionForm from './BeamlineActionForm';
-import { RUNNING } from '../../constants';
 
 const DEFAULT_DIALOG_POSITION = { x: -100, y: 100 };
 

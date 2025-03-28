@@ -1,5 +1,5 @@
 import React from 'react';
-import { OverlayTrigger, Popover, Badge, Row, Col } from 'react-bootstrap';
+import { Badge, Col, OverlayTrigger, Popover, Row } from 'react-bootstrap';
 
 import styles from './machineInfoStyle.module.css';
 

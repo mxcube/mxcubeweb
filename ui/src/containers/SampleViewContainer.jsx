@@ -1,41 +1,41 @@
+import '../components/SampleView/SampleView.css';
+
 import { Component } from 'react';
-import { bindActionCreators } from 'redux';
+import { Col, Container, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { Row, Col, Container } from 'react-bootstrap';
-import SampleImage from '../components/SampleView/SampleImage';
-import MotorControls from '../components/SampleView/MotorControls';
-import PhaseInput from '../components/SampleView/PhaseInput';
-import ApertureInput from '../components/SampleView/ApertureInput';
-import SSXChipControl from '../components/SSXChip/SSXChipControl';
-import PlateManipulator from '../components/Equipment/PlateManipulator';
-import ContextMenu from '../components/SampleView/ContextMenu';
-import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
-import { showErrorPanel, displayImage } from '../actions/general';
-import { updateTask } from '../actions/queue';
-import { showTaskForm } from '../actions/taskForm';
-import BeamlineSetupContainer from './BeamlineSetupContainer';
-import SampleQueueContainer from './SampleQueueContainer';
-import { QUEUE_RUNNING } from '../constants';
-import DefaultErrorBoundary from './DefaultErrorBoundary';
-import { syncWithCrims } from '../actions/sampleGrid';
-import {
-  mountSample,
-  refresh,
-  selectWell,
-  setPlate,
-  selectDrop,
-  sendCommand,
-} from '../actions/sampleChanger';
+import { bindActionCreators } from 'redux';
 
 import {
   executeCommand,
   logFrontEndTraceBack,
   setAttribute,
 } from '../actions/beamline';
-
-import '../components/SampleView/SampleView.css';
-import styles from './SampleViewContainer.module.css';
+import { displayImage, showErrorPanel } from '../actions/general';
+import { updateTask } from '../actions/queue';
+import {
+  mountSample,
+  refresh,
+  selectDrop,
+  selectWell,
+  sendCommand,
+  setPlate,
+} from '../actions/sampleChanger';
+import { syncWithCrims } from '../actions/sampleGrid';
+import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
+import { showTaskForm } from '../actions/taskForm';
+import PlateManipulator from '../components/Equipment/PlateManipulator';
 import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
+import ApertureInput from '../components/SampleView/ApertureInput';
+import ContextMenu from '../components/SampleView/ContextMenu';
+import MotorControls from '../components/SampleView/MotorControls';
+import PhaseInput from '../components/SampleView/PhaseInput';
+import SampleImage from '../components/SampleView/SampleImage';
+import SSXChipControl from '../components/SSXChip/SSXChipControl';
+import { QUEUE_RUNNING } from '../constants';
+import BeamlineSetupContainer from './BeamlineSetupContainer';
+import DefaultErrorBoundary from './DefaultErrorBoundary';
+import SampleQueueContainer from './SampleQueueContainer';
+import styles from './SampleViewContainer.module.css';
 
 class SampleViewContainer extends Component {
   constructor(props) {

@@ -1,9 +1,10 @@
+import { Button, ButtonToolbar, Modal, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { reduxForm, Form, formValueSelector } from 'redux-form';
+import { Form, formValueSelector, reduxForm } from 'redux-form';
+
 import { DraggableModal } from '../DraggableModal';
-import { Modal, Button, Row, ButtonToolbar } from 'react-bootstrap';
+import { InputField, SelectField, StaticField } from './fields';
 import validate from './validate';
-import { StaticField, InputField, SelectField } from './fields';
 
 function Workflow(props) {
   const isGphlWorkflow = props.wfpath === 'Gphl';
