@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { hideActionOutput } from '../../actions/beamlineActions';
 import { Row, Col, Modal, Button, Card } from 'react-bootstrap';

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Dropdown } from 'react-bootstrap';
 import BeamlineActionControl from '../components/BeamlineActions/BeamlineActionControl';
@@ -62,7 +62,7 @@ function BeamlineActionsContainer() {
           Beamline Actions
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          {actionsList.map((cmd, i) => {
+          {actionsList.map((cmd) => {
             const cmdName = cmd.name;
 
             return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Row, Col, Form, Button, Table } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 
@@ -203,7 +203,7 @@ export default function GridForm(props) {
   return (
     <Draggable
       position={position}
-      onDrag={(e, data) => setPosition({ x: data.x, y: data.y })}
+      onDrag={(_e, data) => setPosition({ x: data.x, y: data.y })}
       cancel="form"
     >
       <Row className="gridform" ref={draggableRef}>

@@ -11,7 +11,7 @@ export default class SSXChipControl extends React.Component {
     this.handleAddGrid = this.handleAddGrid.bind(this);
   }
 
-  handleAddTask(triggerEvent, event, props, data) {
+  handleAddTask(triggerEvent) {
     const { currentSampleID, sampleData, defaultParameters } = this.props;
     const sid = -1;
 

@@ -1,4 +1,3 @@
-import React from 'react';
 import ConfirmActionDialog from '../GenericDialog/ConfirmActionDialog';
 import { useDispatch, useSelector } from 'react-redux';
 import { clearQueue } from '../../actions/queue';

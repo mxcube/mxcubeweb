@@ -1,4 +1,3 @@
-import React from 'react';
 import { Row, Col, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 import Collapsible from 'react-collapsible';
@@ -26,7 +25,7 @@ export default function GenericEquipmentControl(props) {
         <div>
           <Form
             validator={validator}
-            onSubmit={(formData, e) => handleRunCommand(key, formData.formData)}
+            onSubmit={(formData) => handleRunCommand(key, formData.formData)}
             disabled={equipment.state !== 'READY'}
             schema={schema}
           >
@@ -45,7 +44,7 @@ export default function GenericEquipmentControl(props) {
           className="mt-3"
           variant="outline-secondary"
           type="submit"
-          onClick={(e) => handleRunCommand(key, {})}
+          onClick={() => handleRunCommand(key, {})}
         >
           <b>Run {key}</b>
         </Button>

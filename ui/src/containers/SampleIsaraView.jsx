@@ -52,7 +52,7 @@ class NewSampleIsaraView extends React.Component {
     );
   }
 
-  getContainerCoordinates(cell, position) {
+  getContainerCoordinates(_cell, position) {
     const r = this.sampleChangerRadius / 8;
     const x = this.getX(position) + 10;
     const y = this.getY(position) + 10;

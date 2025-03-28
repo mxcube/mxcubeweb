@@ -1,4 +1,3 @@
-import React from 'react';
 import { Row, Col } from 'react-bootstrap';
 import Collapsible from 'react-collapsible';
 import { BsChevronDown } from 'react-icons/bs';

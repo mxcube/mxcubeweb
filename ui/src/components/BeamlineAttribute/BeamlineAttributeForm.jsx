@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import { Button, ButtonToolbar, Form } from 'react-bootstrap';
 import { TiTick, TiTimes } from 'react-icons/ti';
 

@@ -3,7 +3,7 @@
 
 /* eslint-disable react/no-array-index-key */
 
-import React, { Component } from 'react';
+import { Component } from 'react';
 import PropTypes from 'prop-types';
 import { ProgressBar, Button, Collapse, Table } from 'react-bootstrap';
 import {
@@ -37,7 +37,7 @@ export default class TaskItem extends Component {
     };
   }
 
-  getResult(state, data) {
+  getResult(_state, data) {
     if (this.props.data.state !== TASK_COLLECTED) {
       return <span />;
     }

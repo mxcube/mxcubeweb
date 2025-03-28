@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Dropdown, DropdownButton } from 'react-bootstrap';
 import { setNumSnapshots } from '../actions/queue';

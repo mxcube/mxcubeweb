@@ -1,5 +1,3 @@
-import React from 'react';
-
 import SnapshotControl from './SnapshotControl';
 import GridControl from './GridControl';
 import CentringControl from './CentringControl';

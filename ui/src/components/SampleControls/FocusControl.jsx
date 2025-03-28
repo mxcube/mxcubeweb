@@ -1,4 +1,3 @@
-import React from 'react';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 import OneAxisTranslationControl from '../MotorInput/OneAxisTranslationControl';

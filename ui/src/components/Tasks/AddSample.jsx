@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { Modal, ButtonToolbar, Button, Form, Row, Col } from 'react-bootstrap';
 import { addSamplesToList } from '../../actions/sampleGrid';

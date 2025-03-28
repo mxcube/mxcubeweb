@@ -8,7 +8,6 @@ const config = defineConfig([
   ...createConfig(opts),
   {
     rules: {
-      'no-unused-vars': 'off',
       'prefer-destructuring': 'off',
       'jsx-a11y/anchor-is-valid': 'off',
       'jsx-a11y/control-has-associated-label': 'off',

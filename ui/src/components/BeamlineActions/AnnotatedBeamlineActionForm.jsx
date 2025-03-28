@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Button } from 'react-bootstrap';
 import JSForm from '@rjsf/core';

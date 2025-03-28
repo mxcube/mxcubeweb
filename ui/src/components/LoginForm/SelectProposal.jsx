@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, Button, Tabs, Tab, Form } from 'react-bootstrap';
 import SessionTable from './SessionTable';
 import { useDispatch, useSelector } from 'react-redux';

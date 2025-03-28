@@ -454,7 +454,7 @@ class ServerIO {
       console.error('loggingSocket connection error:', error.message); // eslint-disable-line no-console
     });
 
-    this.loggingSocket.on('disconnect', (reason) => {
+    this.loggingSocket.on('disconnect', () => {
       console.log('loggingSocket disconnected!'); // eslint-disable-line no-console
     });
 

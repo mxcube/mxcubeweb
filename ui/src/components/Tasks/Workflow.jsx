@@ -1,4 +1,3 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, Form, formValueSelector } from 'redux-form';
 import { DraggableModal } from '../DraggableModal';

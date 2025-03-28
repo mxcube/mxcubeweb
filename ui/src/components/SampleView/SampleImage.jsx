@@ -193,7 +193,7 @@ export default class SampleImage extends React.Component {
     this.drawGridPlugin.onCellMouseOver(options, this.canvas);
   }
 
-  onMouseUp(e) {
+  onMouseUp() {
     this.drawGridPlugin.endDrawing();
   }
 

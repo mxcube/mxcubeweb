@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './UserMessage.module.css';
 
 export default function UserMessage(props) {

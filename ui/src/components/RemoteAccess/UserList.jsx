@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Button, Card } from 'react-bootstrap';
 import { giveControl, logoutUser } from '../../actions/remoteAccess';

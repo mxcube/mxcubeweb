@@ -102,7 +102,7 @@ export default class CurrentTree extends React.Component {
     }
   }
 
-  taskHeaderOnContextMenuHandler(e, index) {
+  taskHeaderOnContextMenuHandler(_e, index) {
     this.setState({ showContextMenu: true, taskIndex: index });
   }
 

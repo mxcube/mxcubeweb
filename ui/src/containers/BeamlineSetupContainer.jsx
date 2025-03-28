@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Navbar, Nav, Table, Popover } from 'react-bootstrap';
 import { find, filter } from 'lodash';

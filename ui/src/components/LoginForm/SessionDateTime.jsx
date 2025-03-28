@@ -1,4 +1,3 @@
-import React from 'react';
 import styles from './SessionTable.module.css';
 
 function SessionDateTime(props) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Container, Navbar, Nav } from 'react-bootstrap';
 import { BsList } from 'react-icons/bs';
 import { NavLink, useLocation } from 'react-router-dom';

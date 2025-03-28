@@ -1,4 +1,3 @@
-import React from 'react';
 import { ButtonGroup, Card } from 'react-bootstrap';
 
 function ActionGroup(props) {

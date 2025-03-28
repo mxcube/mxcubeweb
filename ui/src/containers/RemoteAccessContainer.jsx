@@ -1,4 +1,3 @@
-import React from 'react';
 import { Container, Card, Form, Row, Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 

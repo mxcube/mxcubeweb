@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
 
 import BeamlineAttributeForm from './BeamlineAttributeForm';

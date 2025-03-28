@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Card, Dropdown, Form, Button, DropdownButton } from 'react-bootstrap';
 
 import { Menu, Item, Separator, contextMenu } from 'react-contexify';

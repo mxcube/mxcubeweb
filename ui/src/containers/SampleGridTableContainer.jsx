@@ -762,7 +762,7 @@ class SampleGridTableContainer extends React.Component {
         this.props.filterOptions.cellFilter.toLowerCase() === ''
       ) {
         const nbpuck = [];
-        cell.children.forEach((puck, puckidx) => {
+        cell.children.forEach((_, puckidx) => {
           if (
             this.getSampleListFilteredByCellPuck(
               Number(cell.name),

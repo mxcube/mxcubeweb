@@ -107,7 +107,7 @@ export function makeLine(
   });
 }
 
-export function makeArrow(line, col, select, id, hover = 'crosshair') {
+export function makeArrow(line, col, _select, _id, hover = 'crosshair') {
   const dist = Math.hypot(line.x1 - line.x2, line.y1 - line.y2);
   const angledeg =
     (Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180) / Math.PI;
@@ -134,7 +134,7 @@ export function makeArrow(line, col, select, id, hover = 'crosshair') {
   });
 }
 
-export function makeAnchor(line, col, select, id, hover = 'crosshair') {
+export function makeAnchor(line, col, _select, _id, hover = 'crosshair') {
   const angledeg =
     (Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180) / Math.PI;
   return new fabric.Rect({
@@ -219,7 +219,7 @@ export function makeCross(x, y, imageRatio, width, height) {
   ];
 }
 
-export function makeCentringVerticalLine(x, y, imageRatio, height) {
+export function makeCentringVerticalLine(x, _y, imageRatio, height) {
   return makeLine(
     x * imageRatio,
     0,
@@ -231,7 +231,7 @@ export function makeCentringVerticalLine(x, y, imageRatio, height) {
   );
 }
 
-export function makeCentringHorizontalLine(x, y, imageRatio, width) {
+export function makeCentringHorizontalLine(_x, y, imageRatio, width) {
   return makeLine(
     0,
     y * imageRatio,

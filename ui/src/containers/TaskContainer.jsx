@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import Characterisation from '../components/Tasks/Characterisation';
 import DataCollection from '../components/Tasks/DataCollection';

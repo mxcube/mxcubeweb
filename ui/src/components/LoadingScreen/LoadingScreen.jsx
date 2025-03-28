@@ -1,4 +1,3 @@
-import React from 'react';
 import logo from '../../img/mxcube_logo20.png';
 import loadingAnimation from '../../img/loading-animation.gif';
 import styles from './LoadingScreen.module.css';

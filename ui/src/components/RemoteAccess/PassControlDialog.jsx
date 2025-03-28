@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Modal, Button, Form, Alert } from 'react-bootstrap';
 import { respondToControlRequest } from '../../actions/remoteAccess';

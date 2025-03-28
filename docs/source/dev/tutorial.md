@@ -213,7 +213,6 @@ First, we need to create the React component.
 Create the new file `mxcubeweb/ui/src/components/SampleView/HumidityInput.js`:
 
 ```jsx
-import React from 'react';
 import '../MotorInput/motor.css';
 import '../input.css';
 import cx from 'classnames';
@@ -312,7 +311,6 @@ This shows how to create and use a minimal component.
 Don't pay too much attention to the functionality.
 
 ```jsx
-import React from 'react';
 import { Button } from 'react-bootstrap';
 
 function NewComponent(props) {

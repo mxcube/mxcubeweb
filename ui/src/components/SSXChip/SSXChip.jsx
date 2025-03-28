@@ -394,14 +394,14 @@ export default class SSXChip extends React.Component {
       }
     });
 
-    this.fc.on('selection:created', ({ selected, target }) => {
+    this.fc.on('selection:created', () => {
       if (this.fc.getActiveObject()) {
         this.fc.getActiveObject().lockMovementY = true;
         this.fc.getActiveObject().lockMovementX = true;
       }
     });
 
-    this.fc.on('selection:updated', ({ selected, target }) => {
+    this.fc.on('selection:updated', () => {
       if (this.fc.getActiveObject()) {
         this.fc.getActiveObject().lockMovementY = true;
         this.fc.getActiveObject().lockMovementX = true;
@@ -502,7 +502,7 @@ export default class SSXChip extends React.Component {
       this.freeFormCanvas.renderAll();
     });
 
-    this.freeFormCanvas.on('mouse:up', (evnt) => {
+    this.freeFormCanvas.on('mouse:up', () => {
       if (this.isDown) {
         this.isDown = false;
         this.props.onAddGrid(_GridData(this.freeFormCanvas.getActiveObject()));

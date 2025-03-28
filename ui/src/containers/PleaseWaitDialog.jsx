@@ -1,4 +1,3 @@
-import React from 'react';
 import { Modal, ProgressBar, Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { hideWaitDialog } from '../actions/waitDialog';

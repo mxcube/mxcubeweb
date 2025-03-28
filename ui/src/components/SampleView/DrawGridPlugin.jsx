@@ -381,7 +381,7 @@ export default class DrawGridPlugin {
     }
   }
 
-  heatMapColorForValue(gd, value) {
+  heatMapColorForValue(_gd, value) {
     let dataFill = `rgba(${Number.parseInt(value[0], 10)}, ${Number.parseInt(
       value[1],
       10,
@@ -390,7 +390,7 @@ export default class DrawGridPlugin {
     return dataFill;
   }
 
-  initializeCellFilling(gd, col, row) {
+  initializeCellFilling(_gd, col, row) {
     const level = this.overlayLevel || 0.2;
     const fill = `rgba(0, 0, 200, ${level})`;
     return Array.from({ length: col }).map(() =>
@@ -865,7 +865,7 @@ export default class DrawGridPlugin {
   /**
    * zig-zag indexing of cells (see countCells for doc)
    */
-  zigZagCellCount(currentRow, currentCol, numRows, numCols) {
+  zigZagCellCount(currentRow, currentCol, _numRows, numCols) {
     let cellCount = currentRow * numCols + (currentCol + 1);
 
     if (currentRow % 2 !== 0) {
@@ -878,7 +878,7 @@ export default class DrawGridPlugin {
   /**
    * left-to-right indexing of cells (see countCells for doc)
    */
-  leftRightCellCount(currentRow, currentCol, numRows, numCols) {
+  leftRightCellCount(currentRow, currentCol, _numRows, numCols) {
     return currentRow + 1 + currentCol * numCols;
   }
 

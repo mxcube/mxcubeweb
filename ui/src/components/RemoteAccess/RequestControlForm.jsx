@@ -1,4 +1,3 @@
-import React from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Form, Button, Card } from 'react-bootstrap';
 import { requestControl, takeControl } from '../../actions/remoteAccess';
