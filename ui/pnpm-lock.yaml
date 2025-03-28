@@ -112,8 +112,8 @@ importers:
         version: 2.7.0
     devDependencies:
       '@esrf/eslint-config':
-        specifier: 1.0.3
-        version: 1.0.3(@typescript-eslint/parser@8.28.0(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2))(@typescript-eslint/utils@8.28.0(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2)
+        specifier: 1.0.5
+        version: 1.0.5(@typescript-eslint/parser@8.28.0(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2))(@typescript-eslint/utils@8.28.0(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2)
       '@testing-library/cypress':
         specifier: 10.0.1
         version: 10.0.1(cypress@13.13.2)
@@ -401,8 +401,8 @@ packages:
     resolution: {integrity: sha512-JubJ5B2pJ4k4yGxaNLdbjrnk9d/iDz6/q8wOilpIowd6PJPgaxCuHBnBszq7Ce2TyMrywm5r4PnKm6V3iiZF+g==}
     engines: {node: ^18.18.0 || ^20.9.0 || >=21.1.0}
 
-  '@esrf/eslint-config@1.0.3':
-    resolution: {integrity: sha512-NIP240c69ph9H6p7LixAu+qFWxXUKzeOKoLnsVCR673knmvz9xOsKhoyYjt59/+eo+o8RF8WexZ9fJpo+tDamQ==}
+  '@esrf/eslint-config@1.0.5':
+    resolution: {integrity: sha512-sEHRdVRtEor7nKWLRtFVdltIY3+fHw2yMVlqcMwibifD0Mtt8gkLL5cNCnZjjZtBtpBI4BfPZMJTYjYytpKejg==}
     peerDependencies:
       eslint: 9.23.x
       typescript: '>=5'
@@ -3863,7 +3863,7 @@ snapshots:
       '@eslint/core': 0.12.0
       levn: 0.4.1
 
-  '@esrf/eslint-config@1.0.3(@typescript-eslint/parser@8.28.0(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2))(@typescript-eslint/utils@8.28.0(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2)':
+  '@esrf/eslint-config@1.0.5(@typescript-eslint/parser@8.28.0(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2))(@typescript-eslint/utils@8.28.0(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2)':
     dependencies:
       '@stylistic/eslint-plugin-js': 4.2.0(eslint@9.23.0(jiti@1.21.7))
       '@vitest/eslint-plugin': 1.1.38(@typescript-eslint/utils@8.28.0(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.23.0(jiti@1.21.7))(typescript@5.8.2)

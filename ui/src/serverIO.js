@@ -1,5 +1,5 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
-import io from 'socket.io-client';
+import { connect } from 'socket.io-client';
 import { addResponseMessage } from 'react-chat-widget';
 import { addLogRecord } from './actions/logger';
 import {
@@ -92,7 +92,7 @@ class ServerIO {
   }
 
   connectHwr() {
-    this.hwrSocket = io.connect(`/hwr`);
+    this.hwrSocket = connect(`/hwr`);
 
     this.hwrSocket.on('connect', () => {
       console.log('hwrSocket connected!'); // eslint-disable-line no-console
@@ -444,7 +444,7 @@ class ServerIO {
   }
 
   connectLogging() {
-    this.loggingSocket = io.connect(`/logging`);
+    this.loggingSocket = connect(`/logging`);
 
     this.loggingSocket.on('connect', () => {
       console.log('loggingSocket connected!'); // eslint-disable-line no-console

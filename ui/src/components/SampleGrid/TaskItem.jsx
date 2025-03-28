@@ -15,6 +15,11 @@ import {
 import loader from '../../img/busy-indicator.gif';
 
 export class TaskItem extends React.Component {
+  static defaultProps = {
+    taskData: {},
+    taskIndex: '',
+  };
+
   constructor(props) {
     super(props);
     this.taskItemOnClick = this.taskItemOnClick.bind(this);
@@ -292,8 +297,3 @@ export class TaskItem extends React.Component {
     );
   }
 }
-
-TaskItem.defaultProps = {
-  taskData: {},
-  taskIndex: '',
-};

@@ -108,7 +108,7 @@ export function makeLine(
 }
 
 export function makeArrow(line, col, select, id, hover = 'crosshair') {
-  const dist = Math.sqrt((line.x1 - line.x2) ** 2 + (line.y1 - line.y2) ** 2);
+  const dist = Math.hypot(line.x1 - line.x2, line.y1 - line.y2);
   const angledeg =
     (Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180) / Math.PI;
   const deltaX = dist * 0.99 * Math.cos((angledeg * Math.PI) / 180);
@@ -258,7 +258,7 @@ export function makeBeam(posX, posY, sizeX, sizeY, shape) {
 export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
   const a = (p1.x - p2.x) / ppMm[0];
   const b = (p1.y - p2.y) / ppMm[1];
-  const length = Number.parseInt(Math.sqrt(a * a + b * b) * 1000, 10);
+  const length = Number.parseInt(Math.hypot(a, b) * 1000, 10);
   return [
     makeLine(p1.x * iR, p1.y * iR, p2.x * iR, p2.y * iR, color, width, false),
     makeText(p2.x * iR, p2.y * iR, 14, color, `${length} µm`),

@@ -84,6 +84,35 @@ export default class SSXChip extends React.Component {
     this.origY = 0;
   }
 
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeyDown);
+    const currentChipLayout =
+      this.props.chipLayoutList[this.props.currentLayoutName];
+    const holderType = currentChipLayout.holder_type;
+
+    if (holderType === 'KNOWN_GEOMETRY') {
+      this.initChipCanvas();
+    } else if (holderType === 'FREE_GEOMETRY') {
+      this.initFoilCanvas();
+    }
+  }
+
+  componentDidUpdate() {
+    const currentChipLayout =
+      this.props.chipLayoutList[this.props.currentLayoutName];
+    const holderType = currentChipLayout.holder_type;
+
+    if (holderType === 'KNOWN_GEOMETRY') {
+      this.initChipCanvas();
+    } else if (holderType === 'FREE_GEOMETRY') {
+      this.initFoilCanvas();
+    }
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeyDown);
+  }
+
   handleKeyDown(event) {
     if ([8, 46].includes(event.which)) {
       this.freeFormCanvas.remove(this.freeFormCanvas.getActiveObject());
@@ -295,10 +324,6 @@ export default class SSXChip extends React.Component {
     return objects;
   }
 
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeyDown);
-  }
-
   initChipCanvas() {
     const currentChipLayout =
       this.props.chipLayoutList[this.props.currentLayoutName];
@@ -503,31 +528,6 @@ export default class SSXChip extends React.Component {
     });
 
     this.freeFormCanvas.renderAll();
-  }
-
-  componentDidMount() {
-    document.addEventListener('keydown', this.handleKeyDown);
-    const currentChipLayout =
-      this.props.chipLayoutList[this.props.currentLayoutName];
-    const holderType = currentChipLayout.holder_type;
-
-    if (holderType === 'KNOWN_GEOMETRY') {
-      this.initChipCanvas();
-    } else if (holderType === 'FREE_GEOMETRY') {
-      this.initFoilCanvas();
-    }
-  }
-
-  componentDidUpdate() {
-    const currentChipLayout =
-      this.props.chipLayoutList[this.props.currentLayoutName];
-    const holderType = currentChipLayout.holder_type;
-
-    if (holderType === 'KNOWN_GEOMETRY') {
-      this.initChipCanvas();
-    } else if (holderType === 'FREE_GEOMETRY') {
-      this.initFoilCanvas();
-    }
   }
 
   renderChipInterface() {

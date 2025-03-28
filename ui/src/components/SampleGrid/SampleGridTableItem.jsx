@@ -17,6 +17,17 @@ import './SampleGridTable.css';
 import TooltipTrigger from '../TooltipTrigger';
 
 export class SampleGridTableItem extends React.Component {
+  static defaultProps = {
+    itemKey: '',
+    sampleData: {},
+    queueOrder: [],
+    selected: false,
+    current: false,
+    picked: false,
+    allowedDirections: [],
+    pickButtonOnClickHandler: undefined,
+  };
+
   constructor(props) {
     super(props);
     this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
@@ -211,14 +222,3 @@ export class SampleGridTableItem extends React.Component {
     );
   }
 }
-
-SampleGridTableItem.defaultProps = {
-  itemKey: '',
-  sampleData: {},
-  queueOrder: [],
-  selected: false,
-  current: false,
-  picked: false,
-  allowedDirections: [],
-  pickButtonOnClickHandler: undefined,
-};

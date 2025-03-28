@@ -4,6 +4,14 @@ import Dygraph from 'dygraphs';
 import 'dygraphs/dist/dygraph.min.css';
 
 class Plot1D extends React.Component {
+  static defaultProps = {
+    autoNext: true,
+    plotId: null,
+    displayedPlotCallback: null,
+    saved: false,
+    data: null,
+  };
+
   constructor(props) {
     super(props);
 
@@ -105,14 +113,6 @@ class Plot1D extends React.Component {
     );
   }
 }
-
-Plot1D.defaultProps = {
-  autoNext: true,
-  plotId: null,
-  displayedPlotCallback: null,
-  saved: false,
-  data: null,
-};
 
 function mapStateToProps(state) {
   return {
