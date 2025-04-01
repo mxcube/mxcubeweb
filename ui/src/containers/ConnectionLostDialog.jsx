@@ -16,7 +16,7 @@ export function ConnectionLostDialog() {
         the page.
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={() => window.location.reload(true)}> Reload </Button>
+        <Button onClick={() => globalThis.location.reload(true)}>Reload</Button>
       </Modal.Footer>
     </Modal>
   );

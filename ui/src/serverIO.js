@@ -384,7 +384,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('take_xtal_snapshot', (cb) => {
-      cb(window.takeSnapshot());
+      cb(globalThis.takeSnapshot());
     });
 
     this.hwrSocket.on('beamline_action', (data) => {

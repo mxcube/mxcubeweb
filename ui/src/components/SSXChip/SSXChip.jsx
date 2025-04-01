@@ -9,7 +9,7 @@ import { contextMenu, Item, Menu, Separator } from 'react-contexify';
 
 import MotorInput from '../MotorInput/MotorInput';
 
-const { fabric } = window;
+const { fabric } = globalThis;
 
 function _GridData(fabricObject) {
   return {

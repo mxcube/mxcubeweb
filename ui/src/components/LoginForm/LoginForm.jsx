@@ -43,7 +43,7 @@ function LoginForm() {
 
   async function handleSubmit(data) {
     if (useSSO) {
-      window.location.assign(SSO_PATH);
+      globalThis.location.assign(SSO_PATH);
       return;
     }
 

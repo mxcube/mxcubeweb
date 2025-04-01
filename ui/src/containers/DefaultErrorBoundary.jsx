@@ -21,7 +21,7 @@ function DefaultErrorBoundary(props) {
             Reloading the page might fix the issue. If it remains, please
             contact support.
           </p>
-          <Button onClick={() => window.location.reload()}>Reload</Button>
+          <Button onClick={() => globalThis.location.reload()}>Reload</Button>
         </div>
       )}
       onError={(_, { componentStack }) => {

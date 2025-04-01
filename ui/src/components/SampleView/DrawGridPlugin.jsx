@@ -2,7 +2,7 @@ import 'fabric';
 
 const TAU = Math.PI * 2;
 
-const { fabric } = window;
+const { fabric } = globalThis;
 
 /**
  * Based on cell width and height in pixels,

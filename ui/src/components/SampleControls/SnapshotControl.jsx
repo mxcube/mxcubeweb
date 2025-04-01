@@ -6,7 +6,7 @@ import { sendTakeSnapshot } from '../../api/sampleview';
 import styles from './SampleControls.module.css';
 import { download } from './utils';
 
-const { fabric } = window;
+const { fabric } = globalThis;
 
 function SnapshotControl(props) {
   const { canvas } = props;
@@ -45,13 +45,13 @@ function SnapshotControl(props) {
     const processedImgBlob = await sendTakeSnapshot(imgDataURI);
     download(
       filename,
-      window.URL.createObjectURL(new Blob([processedImgBlob])),
+      globalThis.URL.createObjectURL(new Blob([processedImgBlob])),
     );
   }, [canvas, currentSampleName, ratio, proposal]);
 
   useEffect(() => {
     // Allow server to trigger snapshots (cf. `serverIO`)
-    window.takeSnapshot = takeSnapshot;
+    globalThis.takeSnapshot = takeSnapshot;
   }, [takeSnapshot]);
 
   return (

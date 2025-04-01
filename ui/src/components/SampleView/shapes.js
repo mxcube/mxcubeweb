@@ -1,6 +1,6 @@
 import 'fabric';
 
-const { fabric } = window;
+const { fabric } = globalThis;
 
 export function makeRectangle(posX, posY, sizeX, sizeY, color) {
   return new fabric.Rect({

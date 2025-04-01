@@ -132,7 +132,7 @@ export function setVideoSize(width, height) {
       sourceScale: json.scale,
     });
 
-    window.initJSMpeg();
+    globalThis.initJSMpeg();
   };
 }
 

@@ -16,7 +16,7 @@ import {
   makeTwoDPoints,
 } from './shapes';
 
-const { fabric } = window;
+const { fabric } = globalThis;
 fabric.Group.prototype.hasControls = false;
 fabric.Group.prototype.hasBorders = false;
 
@@ -95,7 +95,7 @@ export default class SampleImage extends React.Component {
     document.addEventListener('keydown', this.keyDown, false);
     document.addEventListener('keyup', this.keyUp, false);
 
-    window.initJSMpeg = this.initJSMpeg;
+    globalThis.initJSMpeg = this.initJSMpeg;
     this.initJSMpeg();
   }
 
@@ -152,7 +152,7 @@ export default class SampleImage extends React.Component {
     imageOverlay.removeEventListener('wheel', this.wheel);
     imageOverlay.removeEventListener('dblclick', this.goToBeam);
 
-    window.initJSMpeg = null;
+    globalThis.initJSMpeg = null;
   }
 
   onMouseMove(options) {
