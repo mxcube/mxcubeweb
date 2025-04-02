@@ -46,6 +46,9 @@ const SETTINGS = {
   slidesToScroll: 6,
 };
 
+const CELL_MENU_ID = 'samples-grid-table-context-menu-cell';
+const PUCK_MENU_ID = 'samples-grid-table-context-menu-puck';
+
 class SampleGridTableContainer extends React.Component {
   constructor(props) {
     super(props);
@@ -484,7 +487,6 @@ class SampleGridTableContainer extends React.Component {
   }
 
   renderSampleItemCollapsibleHeaderActions(cell) {
-    const cellMenuID = 'samples-grid-table-context-menu-cell';
     return (
       <div className="sample-items-collapsible-header-actions">
         <b className="me-2 mt-1">
@@ -495,7 +497,7 @@ class SampleGridTableContainer extends React.Component {
           title="Cell Options"
           className="samples-grid-table-context-menu-icon"
           onClick={(e) => {
-            this.displayPuckCellContextMenu(e, cellMenuID, cell, null);
+            this.displayPuckCellContextMenu(e, CELL_MENU_ID, cell, null);
           }}
         >
           <BiMenu size="1.5em" />
@@ -816,8 +818,6 @@ class SampleGridTableContainer extends React.Component {
                               idxth + 1,
                             )[0].length > 0
                           ) {
-                            const puckMenuID =
-                              'samples-grid-table-context-menu-puck';
                             return (
                               <th
                                 key={`${cell.name}-th-${puck.name}`}
@@ -849,7 +849,7 @@ class SampleGridTableContainer extends React.Component {
                                   onClick={(e) => {
                                     this.displayPuckCellContextMenu(
                                       e,
-                                      puckMenuID,
+                                      PUCK_MENU_ID,
                                       Number(cell.name),
                                       idxth + 1,
                                     );
@@ -911,7 +911,6 @@ class SampleGridTableContainer extends React.Component {
       Number(this.props.filterOptions.puckFilter) === Number(puck.name) ||
       this.props.filterOptions.puckFilter.toLowerCase() === ''
     ) {
-      const puckMenuID = 'samples-grid-table-context-menu-puck';
       return (
         <th
           key={`${puck.name}-th`}
@@ -940,7 +939,7 @@ class SampleGridTableContainer extends React.Component {
             onClick={(e) => {
               this.displayPuckCellContextMenu(
                 e,
-                puckMenuID,
+                PUCK_MENU_ID,
                 1,
                 Number(puck.name),
               );
@@ -1201,7 +1200,7 @@ class SampleGridTableContainer extends React.Component {
 
         break;
       }
-      case 'samples-grid-table-context-menu-cell': {
+      case CELL_MENU_ID: {
         menu = (
           <>
             <Dropdown.Header>Cell Actions</Dropdown.Header>
@@ -1211,7 +1210,7 @@ class SampleGridTableContainer extends React.Component {
 
         break;
       }
-      case 'samples-grid-table-context-menu-puck': {
+      case PUCK_MENU_ID: {
         menu = (
           <>
             <Dropdown.Header>Puck Actions</Dropdown.Header>
