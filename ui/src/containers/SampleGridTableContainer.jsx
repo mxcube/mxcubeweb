@@ -1256,40 +1256,28 @@ class SampleGridTableContainer extends React.Component {
             {this.renderContextMenu(this.props.contextMenu.id)}
           </MXContextMenu>
         ) : null}
-        {this.props.viewMode.mode === 'Graphical View' ? (
-          <Row
-            className="samples-grid-table"
-            onMouseDown={this.onMouseDown}
-            onMouseUp={this.onMouseUp}
-            onMouseMove={this.onMouseMove}
-            xs="auto"
-          >
-            <div className="selection-rubber-band" id="selectionRubberBand" />
-            {this.renderManualSamples()}
-            {this.renderSampleChangerDrawing()}
-            {this.renderManualSamples()}
-            {this.isSingleCell()
-              ? this.renderSampleTableSingleCell(10)
-              : this.renderSampleTable(9)}
-          </Row>
-        ) : (
-          <Row
-            className="samples-grid-table"
-            onMouseDown={this.onMouseDown}
-            onMouseUp={this.onMouseUp}
-            onMouseMove={this.onMouseMove}
-            xs="auto"
-            ref={(ref) => {
-              this.containerRef = ref;
-            }}
-          >
-            <div className="selection-rubber-band" id="selectionRubberBand" />
-            {this.renderManualSamples()}
-            {this.isSingleCell()
-              ? this.renderSampleTableSingleCell(2)
-              : this.renderSampleTable(6)}
-          </Row>
-        )}
+        <Row
+          className="samples-grid-table justify-content-center"
+          onMouseDown={this.onMouseDown}
+          onMouseUp={this.onMouseUp}
+          onMouseMove={this.onMouseMove}
+          xs="auto"
+        >
+          <div className="selection-rubber-band" id="selectionRubberBand" />
+          {this.renderManualSamples()}
+          {this.props.viewMode.mode === 'Graphical View' ? (
+            <>
+              {this.renderSampleChangerDrawing()}
+              {this.isSingleCell()
+                ? this.renderSampleTableSingleCell(10)
+                : this.renderSampleTable(true)}
+            </>
+          ) : this.isSingleCell() ? (
+            this.renderSampleTableSingleCell(2)
+          ) : (
+            this.renderSampleTable(6)
+          )}
+        </Row>
       </div>
     );
   }
