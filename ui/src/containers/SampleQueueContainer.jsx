@@ -192,7 +192,7 @@ class SampleQueueContainer extends React.Component {
               Log messages:
             </div>
             <div className="queue-messages-body">
-              <UserMessage messages={this.props.logRecords} />
+              <UserMessage />
             </div>
           </div>
         </div>
@@ -217,7 +217,6 @@ function mapStateToProps(state) {
     rootPath: state.login.rootPath,
     displayData: state.queueGUI.displayData,
     loading: state.queueGUI.loading,
-    logRecords: state.logger.logRecords,
     plotsData: state.beamline.plotsData,
     plotsInfo: state.beamline.plotsInfo,
     selectedShapes: state.sampleview.selectedShapes,

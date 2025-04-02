@@ -1,19 +1,16 @@
+import { useSelector } from 'react-redux';
+
 import styles from './UserMessage.module.css';
 
-export default function UserMessage(props) {
-  const { messages } = props;
+export default function UserMessage() {
+  const messages = useSelector((state) => state.logger.logRecords);
 
-  function renderMessages() {
-    const msg = [];
-
-    for (const [idx, message] of messages.entries()) {
-      const messageClass = `${styles.message} ${styles[message.severity]}`;
-
-      msg.push(
+  return (
+    <div id="usermessages" className={styles.messageBody}>
+      {[...messages].reverse().map((message) => (
         <div
-          key={`${message.id}-${idx}`}
-          ref={message.id}
-          className={messageClass}
+          key={`${message.timestamp}`}
+          className={`${styles.message} ${styles[message.severity]}`}
         >
           {message.severity === 'INFO' ? (
             <span className="fas fa-lg fa-check-circle" />
@@ -23,14 +20,8 @@ export default function UserMessage(props) {
           <span className={styles.messageText}>
             {`[${message.timestamp.slice(11, 19)}]: ${message.message}`}
           </span>
-        </div>,
-      );
-    }
-    return msg;
-  }
-  return (
-    <div id="usermessages" className={styles.messageBody}>
-      {renderMessages()}
+        </div>
+      ))}
     </div>
   );
 }
