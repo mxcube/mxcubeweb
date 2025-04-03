@@ -870,7 +870,7 @@ class SampleListViewContainer extends React.Component {
                     variant="outline-secondary"
                     id="dropdown-basic"
                   >
-                    <MdGridView size="1em" /> View Mode
+                    <MdGridView size="1em" /> {this.props.viewMode.mode}
                   </Dropdown.Toggle>
                   <Dropdown.Menu>
                     {this.props.viewMode.options.map((option) => (
