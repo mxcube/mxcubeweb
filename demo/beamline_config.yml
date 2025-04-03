@@ -64,6 +64,7 @@ objects:
   - offline_processing: auto_processing.xml
   - online_processing: parallel_processing.xml
   - characterisation: characterisation.xml
+  - argus: argus.xml
 
   # - beam_realign: # Skipped - optional
 
