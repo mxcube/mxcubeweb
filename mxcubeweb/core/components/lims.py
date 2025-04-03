@@ -245,7 +245,8 @@ class Lims(ComponentBase):
         if hasattr(HWR.beamline.session, "prepare_directories"):
             try:
                 logging.getLogger("MX3.HWR").info(
-                    "[LIMS] Creating data directories for proposal %s%s" % session.code,
+                    "[LIMS] Creating data directories for proposal %s%s",
+                    session.code,
                     session.number,
                 )
                 raise "To be implemented for those using prepare_directories"
