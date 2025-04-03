@@ -1233,16 +1233,27 @@ class SampleGridTableContainer extends React.Component {
   }
 
   renderSampleChangerDrawing() {
-    if (this.props.type.includes('CATS')) {
+    if (this.props.type.includes('CATS') || this.isSingleCell()) {
       return <SampleIsaraView cellSampleList={this.getSampleListBydCell} />;
     }
-    if (this.props.type.includes('FLEX') || this.props.type.includes('Moc')) {
-      return <SampleFlexView cellSampleList={this.getSampleListBydCell} />;
+    if (this.props.type.includes('FLEX')) {
+      return (
+        <SampleFlexView
+          displayPuckCellContextMenu={this.displayPuckCellContextMenu}
+          cellMenuID={CELL_MENU_ID}
+          puckMenuID={PUCK_MENU_ID}
+          type={this.props.type}
+        />
+      );
     }
     return null;
   }
 
   render() {
+    if (Object.values(this.props.sampleList).length === 0) {
+      return null;
+    }
+
     return (
       <div>
         {this.props.contextMenu.show ? (
@@ -1257,7 +1268,7 @@ class SampleGridTableContainer extends React.Component {
           </MXContextMenu>
         ) : null}
         <Row
-          className="samples-grid-table justify-content-center"
+          className="samples-grid-table"
           onMouseDown={this.onMouseDown}
           onMouseUp={this.onMouseUp}
           onMouseMove={this.onMouseMove}
