@@ -1,5 +1,5 @@
 .video {
-  position: absolute;
+  position: relative;
   display: grid;
   text-align: center;
   align-items: center;

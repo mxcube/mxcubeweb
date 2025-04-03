@@ -60,6 +60,11 @@ objects:
   - xray_centring: xray_centring2.yaml
   - xml_rpc_server: xml_rpc_server.yaml
 
+  # Video streaming:
+  # When Argus is used, make sure to set MXCUBE_STARTS_VIDEO_STREAM
+  # to false in mxcube-web/server.yaml
+  # - argus: argus.yaml
+
   # Analysis:
   - offline_processing: auto_processing.yaml
   - online_processing: parallel_processing.yaml

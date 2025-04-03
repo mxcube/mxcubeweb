@@ -1,3 +1,25 @@
 <Object class="Argus" role="argus">
+    <grpc_url>localhost:50051</grpc_url>
     <exports>["stop_process", "start_process", "manage_process", "change_settings"]</exports>
+    <streams>
+        <stream>
+            <name>MainStream</name>
+            <create>true</create>
+            <uri>videotest</uri>
+            <port>7072</port>
+            <main>true</main>
+        </stream>
+        <stream>
+            <name>HutchCamera1</name>
+            <create>true</create>
+            <uri>test</uri>
+            <port>7071</port>
+        </stream>
+    </streams>
+    <multi_views>
+        <view>
+            <name>MultiSteams</name>
+            <streams>["MainStream", "HutchCamera1"]</streams>
+        </view>
+    </multi_views>
 </Object>

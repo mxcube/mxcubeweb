@@ -1,0 +1,23 @@
+%YAML 1.2
+---
+class: Argus.Argus
+configuration:
+  grpc_url: localhost:50051
+  exports: '["stop_process", "start_process", "manage_process", "change_settings"]'
+  streams:
+    stream:
+      - name: "MainStream"
+        create: true
+        uri: "videotest"
+        port: 7072
+        main: true
+      - name: "Stream1"
+        create: true
+        uri: "test"
+        port: 7071
+  multi_views:
+    view:
+      - name: "MultiStreams"
+        streams:
+          - "Stream1"
+          - "MainStream"

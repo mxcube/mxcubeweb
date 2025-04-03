@@ -1,17 +1,10 @@
 import { useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 
 import { JSMpeg } from './jsmpeg.min.js';
 import styles from './VideoPlayer.module.css';
 
-export default function VideoPlayer() {
-  const width = useSelector((state) => state.sampleview.width);
-  const height = useSelector((state) => state.sampleview.height);
-  const format = useSelector((state) => state.sampleview.videoFormat);
-  const source = useSelector((state) => {
-    const { videoURL, videoHash } = state.sampleview;
-    return videoURL ? `${videoURL}/${videoHash}` : undefined;
-  });
+export default function VideoPlayer(props) {
+  const { width, height, format, source } = props;
 
   const canvasRef = useRef(null);
 

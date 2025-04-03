@@ -1,54 +1,60 @@
 import { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { setVideoSource } from '../../actions/sampleview.js';
 import { JSMpeg } from '../SampleView/jsmpeg.min.js';
 import styles from './StreamMonitors.module.css';
 
-function updatePlayers(prevPlayers, cameras) {
-  let new_players = {};
-  // remove all JSMpeg players from streams that have been removed
-  if (prevPlayers) {
-    new_players = Object.fromEntries(
-      Object.entries(prevPlayers).filter(([key]) => {
-        if (!Object.keys(cameras).includes(key)) {
-          prevPlayers[key].destroy();
-          return false;
-        }
-        return true;
-      }),
-    );
-  }
-
-  // add players for new streams
-  Object.keys(cameras).forEach((key) => {
-    if (prevPlayers && !prevPlayers[key]) {
-      const curr_canv = document.querySelector(`#${key}-canv`);
-      const url = `ws://localhost:7000/ws/${key}`;
-      new_players[key] = new JSMpeg.Player(url, {
-        canvas: curr_canv,
-        decodeFirstFrame: true,
-        preserveDrawingBuffer: false,
-        protocols: [],
-      });
-      new_players[key].stop();
-      curr_canv.src = url;
-    }
-  });
-
-  return new_players;
-}
-
 export function StreamMonitors(props) {
-  const { handleSourceSwitch, numberOfShownMonitors = 3 } = props;
+  const { numberOfShownMonitors = 3 } = props;
   const [players, setPlayers] = useState({});
   const [currentMonitor, setCurrentMonitor] = useState(0);
   const cameras = useSelector(
     (state) => state.beamline.hardwareObjects.argus?.attributes?.camera_streams,
   );
+  const dispatch = useDispatch();
+  const streamProxyUrl = useSelector(
+    (state) =>
+      state.beamline.hardwareObjects.argus?.attributes?.stream_proxy_url,
+  );
 
   useEffect(() => {
+    function updatePlayers(prevPlayers) {
+      let new_players = {};
+      // remove all JSMpeg players from streams that have been removed
+      if (prevPlayers) {
+        new_players = Object.fromEntries(
+          Object.entries(prevPlayers).filter(([key]) => {
+            if (!Object.keys(cameras).includes(key)) {
+              prevPlayers[key].destroy();
+              return false;
+            }
+            return true;
+          }),
+        );
+      }
+
+      // add players for new streams
+      Object.keys(cameras).forEach((key) => {
+        if (prevPlayers && !prevPlayers[key]) {
+          const curr_canv = document.querySelector(`#${key}-canv`);
+          const url = `${streamProxyUrl}/${key}`;
+          new_players[key] = new JSMpeg.Player(url, {
+            canvas: curr_canv,
+            decodeFirstFrame: true,
+            preserveDrawingBuffer: false,
+            protocols: [],
+          });
+          new_players[key].stop();
+          curr_canv.src = url;
+        }
+      });
+
+      return new_players;
+    }
+
     if (cameras) {
-      setPlayers((prevPlayers) => updatePlayers(prevPlayers, cameras));
+      setPlayers((prevPlayers) => updatePlayers(prevPlayers));
 
       setCurrentMonitor((prevMonitor) =>
         Math.max(
@@ -57,7 +63,7 @@ export function StreamMonitors(props) {
         ),
       );
     }
-  }, [cameras, numberOfShownMonitors]);
+  }, [cameras, numberOfShownMonitors, streamProxyUrl]);
 
   useEffect(() => {
     if (!cameras) {
@@ -92,6 +98,7 @@ export function StreamMonitors(props) {
       {cameras && Object.entries(cameras).length > numberOfShownMonitors ? (
         <button
           type="button"
+          aria-label="Previous Streams"
           style={{ border: 'none', background: 'none', width: '4%' }}
           onClick={() => {
             setCurrentMonitor((prevCurrent) => Math.max(0, prevCurrent - 1));
@@ -105,13 +112,15 @@ export function StreamMonitors(props) {
       ) : null}
       {cameras
         ? Object.entries(cameras).map((stream) => {
-            const key = stream.slice(0, -1)[0];
-            const url = `ws://localhost:7000/ws/${stream.slice(0, -1)}`;
+            const [...withoutLast] = stream.slice(0, -1);
+            const [key] = withoutLast;
             return (
               <button
                 key={`${key}-button`}
                 id={`${key}-button`}
-                onClick={() => handleSourceSwitch(url)}
+                onClick={() =>
+                  dispatch(setVideoSource(streamProxyUrl, stream.slice(0, -1)))
+                }
                 onMouseEnter={() => {
                   if (players && players[key]) {
                     players[key].play();
@@ -144,6 +153,7 @@ export function StreamMonitors(props) {
       {cameras && Object.entries(cameras).length > numberOfShownMonitors ? (
         <button
           type="button"
+          aria-label="Next Streams"
           style={{ border: 'none', background: 'none', width: '4%' }}
           onClick={() =>
             setCurrentMonitor((prevCurrent) =>

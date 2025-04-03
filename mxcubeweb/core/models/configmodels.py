@@ -279,6 +279,15 @@ class MXCUBEAppConfigModel(BaseModel):
     ui_properties: dict[str, UIPropertiesModel] = {}
 
 
+class ArgusConfigModel(BaseModel):
+    STREAM_PROXY_URL: str = Field(
+        "ws://localhost:7000/ws", description="WebSocket URL for the Argus stream proxy"
+    )
+    USE_ARGUS: bool = Field(
+        False, description="Set to True to use Argus for video streaming"
+    )
+
+
 class BraggyConfigModel(BaseModel):
     BRAGGY_URL: str = Field("", description="Base URL for braggy server")
     USE_BRAGGY: bool = Field(
@@ -290,6 +299,7 @@ class AppConfigModel(BaseModel):
     server: FlaskConfigModel
     mxcube: MXCUBEAppConfigModel
     sso: SSOConfigModel | None = None
+    argus: ArgusConfigModel | None = None
     braggy: BraggyConfigModel | None = None
 
 

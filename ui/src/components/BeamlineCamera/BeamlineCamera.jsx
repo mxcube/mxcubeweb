@@ -11,6 +11,10 @@ export default function BeamlineCamera() {
   const argusStreams = useSelector(
     (state) => state.beamline.hardwareObjects.argus?.attributes?.camera_streams,
   );
+  const streamProxyUrl = useSelector(
+    (state) =>
+      state.beamline.hardwareObjects.argus?.attributes?.stream_proxy_url,
+  );
 
   const [showVideoModal, setShowVideoModal] = useState({});
   const [cameras, setCameras] = useState(cameraComponents);
@@ -28,7 +32,7 @@ export default function BeamlineCamera() {
           height: 1280,
           width: 960,
           label: key,
-          url: `ws://localhost:7000/ws/${key}`,
+          url: `${streamProxyUrl}/${key}`,
         };
       });
       if (cameraComponents && cameraComponents.length > 0) {
@@ -37,7 +41,7 @@ export default function BeamlineCamera() {
         setCameras(argusCameras);
       }
     }
-  }, [argusStreams, cameraComponents]);
+  }, [argusStreams, cameraComponents, streamProxyUrl]);
 
   if (!cameras || cameras.length <= 0) {
     return null;

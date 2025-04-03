@@ -62,7 +62,14 @@ export default function ArgusForm(props) {
     }));
   }
 
+  if (!argus?.attributes) {
+    return null;
+  }
+
   const { processes_info, last_response } = argus.attributes;
+  if (!last_response || !processes_info) {
+    return null;
+  }
   const { status, error_message } = last_response;
   const capitalizedStatus = status ? `${capitalize(status)} !` : '';
 

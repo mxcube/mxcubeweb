@@ -1,10 +1,10 @@
 import { useSelector } from 'react-redux';
 
-export function useShowControl(name) {
+export function useShowControl() {
   return useSelector((state) =>
-    state.uiproperties.sample_view_video_controls.components.some(
-      (c) => c.id === name && c.show,
-    ),
+    state.uiproperties.sample_view_video_controls.components
+      .filter((c) => c.show)
+      .map((c) => c.id),
   );
 }
 

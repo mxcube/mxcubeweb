@@ -12,6 +12,7 @@ from pydantic import (
 
 from mxcubeweb.core.models.configmodels import (
     AppConfigModel,
+    ArgusConfigModel,
     BraggyConfigModel,
     FlaskConfigModel,
     MXCUBEAppConfigModel,
@@ -120,6 +121,7 @@ class Config:
     flask: FlaskConfigModel
     app: MXCUBEAppConfigModel
     sso: SSOConfigModel
+    argus: ArgusConfigModel
     braggy: BraggyConfigModel
 
     def __init__(self, fpath):
@@ -131,6 +133,7 @@ class Config:
         self.app = app_config.mxcube
         self.app.ui_properties = uiprop
         self.sso = app_config.sso
+        self.argus = app_config.argus
         self.braggy = app_config.braggy
 
     def load_config(self, component_name, schema):

@@ -90,6 +90,10 @@ mxcube:
       - username: opid291
         role: staff
 
+argus:
+  USE_ARGUS: false
+  STREAM_PROXY_URL: "ws://localhost:7000/ws"
+
 braggy:
   BRAGGY_URL: ""
   USE_BRAGGY: false

@@ -9,6 +9,7 @@ import {
 
 import { getLoginInfo } from '../actions/login';
 import { sendRefreshSession } from '../api/login';
+import CamerasContainer from '../containers/CamerasContainer';
 import EquipmentContainer from '../containers/EquipmentContainer';
 import HelpContainer from '../containers/HelpContainer';
 import LoginContainer from '../containers/LoginContainer';
@@ -44,6 +45,10 @@ const router = createBrowserRouter([
           {
             path: 'equipment',
             element: <EquipmentContainer />,
+          },
+          {
+            path: 'cameras',
+            element: <CamerasContainer />,
           },
           {
             path: 'remoteaccess',

@@ -146,6 +146,9 @@ export function getInitialState() {
       fetchApplicationSettings()
         .then((general) => ({ general }))
         .catch(notify),
+      fetchValue('argus', 'argus')
+        .then((argus) => ({ argus }))
+        .catch(notify),
     ]);
 
     const { user } = getState().login;
