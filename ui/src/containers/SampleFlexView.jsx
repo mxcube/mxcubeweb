@@ -1,156 +1,231 @@
-import React from 'react';
+import { useEffect } from 'react';
 import { Col } from 'react-bootstrap';
-import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { filterAction } from '../actions/sampleGrid';
 
-class NewSampleFlexView extends React.Component {
-  constructor(props) {
-    super(props);
+export default function SampleFlexView(props) {
+  const {
+    displayPuckCellContextMenu,
+    cellMenuID,
+    puckMenuID,
+    type = 'FLEX HCD',
+  } = props;
 
-    this.renderCircle = this.renderCircle.bind(this);
-    this.isCellSelected = this.isCellSelected.bind(this);
-  }
+  const filterOptions = useSelector((state) => state.sampleGrid.filterOptions);
+  const scContent = useSelector((state) => state.sampleChanger.contents);
 
-  componentDidMount() {
-    document.addEventListener('keydown', this.onKeyDown, false);
-  }
+  const numberOfCell = scContent.children.length; // Number of cells/slices
 
-  onClickCell(event, idx, disabled) {
-    if (!disabled) {
-      this.props.filter({ cellFilter: `${idx + 1}` });
-    }
+  const dispatch = useDispatch();
+
+  function handleClickOnCellPuck(event, cellID, puckID) {
+    dispatch(
+      filterAction({ cellFilter: `${cellID}`, puckFilter: `${puckID}` }),
+    );
     event.stopPropagation();
   }
 
-  isCellSelected(cell) {
-    let isCellSelected = false;
-    if (Number(this.props.filterOptions.cellFilter) === cell) {
-      isCellSelected = true;
-    }
-    return isCellSelected;
+  function isCellSelected(cellID) {
+    return Number(filterOptions.cellFilter) === cellID;
   }
 
-  renderCircle(nbCell, idx, isCellSelected) {
-    const cellOrder = [8, 7, 6, 5, 4, 3, 2, 1];
-    const percentage = (100 / nbCell) * cellOrder[idx];
-    const circumference = 2 * Math.PI * 5; // 2*pi*rayon
-    const strokeDash = (percentage * circumference) / 100;
+  function isPuckSelected(cellID, puckID) {
+    return (
+      Number(filterOptions.cellFilter) === cellID &&
+      Number(filterOptions.puckFilter) === puckID
+    );
+  }
 
-    const angle = 2 * Math.PI * (strokeDash / circumference);
+  useEffect(() => {
+    if (filterOptions.cellFilter === '') {
+      dispatch(filterAction({ cellFilter: `${1}`, puckFilter: '' }));
+    }
+  }, [filterOptions.cellFilter, dispatch]);
 
-    const strokeDashArray = `${strokeDash} ${circumference}`;
-    const rgbColorList = [
-      '#e8ebee',
-      '#cdced1',
-      '#e8ebee',
-      '#cdced1',
-      '#e8ebee',
-      '#cdced1',
-      '#e8ebee',
-      '#cdced1',
-    ];
+  async function handleDisplayPuckCellContextMenu(e, menuID, cellID, puckID) {
+    e.preventDefault();
+    await handleClickOnCellPuck(e, cellID, puckID === null ? '' : puckID);
+    displayPuckCellContextMenu(e, menuID, cellID, puckID);
+    e.stopPropagation();
+  }
 
-    const disableClasse =
-      this.props.cellSampleList(idx + 1)[0].length > 0
-        ? 'has-sample'
-        : 'empty-cell';
+  function getCellSlicePath(idxCell, radius = 8, centerX = 10, centerY = 10) {
+    // Calculate start and end angles for each slice
+    const angleStart = (idxCell * 360) / numberOfCell;
+    const angleEnd = ((idxCell + 1) * 360) / numberOfCell;
 
-    const disabled = this.props.cellSampleList(idx + 1)[0].length <= 0;
+    // Convert angles to radians
+    const startX = centerX + radius * Math.cos((angleStart * Math.PI) / 180);
+    const startY = centerY + radius * Math.sin((angleStart * Math.PI) / 180);
+    const endX = centerX + radius * Math.cos((angleEnd * Math.PI) / 180);
+    const endY = centerY + radius * Math.sin((angleEnd * Math.PI) / 180);
+
+    // Create each Cell like a pie slice path (triangle shape)
+    return `M${centerX},${centerY} L${startX},${startY} A${radius},${radius} 0 0,1 ${endX},${endY} Z`;
+  }
+
+  function getCirclesInSlice(idxCell, centerX = 10, centerY = 10) {
+    // numberOfPuck: Number of pucks/circles inside each slice/Cell
+    const numberOfPuck = scContent.children[idxCell].children.length;
+
+    const angle = ((idxCell + 0.5) * 360) / numberOfCell; // Middle of the slice
+    const angleRad = (angle * Math.PI) / 180; // Convert angles to radians
+
+    const baseRadius = 3.5; // Inner spacing
+    const rowSpacing = 3; // Distance between rows
+
+    const positions = [];
+
+    const cellID = idxCell + 1;
+
+    if (numberOfPuck === 1) {
+      positions.push({
+        x: centerX + baseRadius * Math.cos(angleRad),
+        y: centerY + baseRadius * Math.sin(angleRad),
+      });
+    } else if (numberOfPuck === 2) {
+      positions.push(
+        {
+          x: centerX + baseRadius * Math.cos(angleRad),
+          y: centerY + baseRadius * Math.sin(angleRad),
+        },
+        {
+          x: centerX + (baseRadius + rowSpacing) * Math.cos(angleRad),
+          y: centerY + (baseRadius + rowSpacing) * Math.sin(angleRad),
+        },
+      );
+    } else if (numberOfPuck >= 3) {
+      // Dynamic Triangle Grid Formation
+      for (let row = 0; row < Math.ceil(numberOfPuck / 2); row++) {
+        const numCols = row + 1; // First row from center has 1, second has 2, etc.
+        const rowOffset = rowSpacing * row;
+
+        for (
+          let col = 0;
+          col < numCols && positions.length < numberOfPuck;
+          col++
+        ) {
+          const colOffset = (col - (numCols - 1) / 2) * rowSpacing * 0.8;
+          positions.push({
+            x:
+              centerX +
+              (baseRadius + rowOffset) * Math.cos(angleRad) +
+              colOffset * Math.sin(angleRad),
+            y:
+              centerY +
+              (baseRadius + rowOffset) * Math.sin(angleRad) -
+              colOffset * Math.cos(angleRad),
+          });
+        }
+      }
+    }
+
+    return positions.map((pos, idxPuck) => {
+      const puckID = idxPuck + 1;
+
+      return (
+        <g
+          key={`puck_circle${puckID}`}
+          onClick={(e) => handleClickOnCellPuck(e, cellID, puckID)}
+          onContextMenu={(e) =>
+            handleDisplayPuckCellContextMenu(e, puckMenuID, cellID, puckID)
+          }
+          fill={isPuckSelected(cellID, puckID) ? '#015f9d' : '#cdced1'}
+          className="puck_cicle"
+        >
+          <circle
+            key={`circle_${pos.x}_${pos.y}`}
+            cx={pos.x}
+            cy={pos.y}
+            r="0.7"
+            fill={isPuckSelected(cellID, puckID) ? '#015f9d' : '#cdced1'}
+            stroke="#01011ba2"
+            strokeWidth="0.05"
+            className="_cicle"
+          />
+          <text
+            x={pos.x}
+            y={pos.y}
+            fontSize="0.3"
+            textAnchor="middle"
+            dominantBaseline="middle"
+            fill={isPuckSelected(cellID, puckID) ? 'white' : 'black'}
+            className="text_puck_cicle"
+          >
+            Puck {puckID}
+          </text>
+          <title>
+            Cell: {cellID}, Puck : {puckID}
+          </title>
+        </g>
+      );
+    });
+  }
+
+  function getTextPosition(idxCell, radius = 5, centerX = 10, centerY = 10) {
+    // Calculate middle angle of the slice
+    const angle = ((idxCell + 0.5) * 360) / numberOfCell;
+    const angleRad = (angle * Math.PI) / 180;
+
+    // Position text at the center of the cell/pie slice
+    const textX = centerX + radius * Math.cos(angleRad);
+    const textY = centerY + radius * Math.sin(angleRad);
+
+    return { x: textX, y: textY };
+  }
+
+  function getCellSlice(idxCell) {
+    const cellID = idxCell + 1;
+    const color = isCellSelected(cellID) ? '#6cb0f5' : '#cdced1';
+    const { x, y } = getTextPosition(idxCell);
 
     return (
       <g
-        className={`g-cell-cicle ${disableClasse}`}
-        key={`circle-${idx}`}
-        onClick={(e) => {
-          this.onClickCell(e, idx, disabled);
-        }}
-        title="Sample #"
+        key={`Pie_${idxCell}`}
+        onClick={(e) => handleClickOnCellPuck(e, cellID, '')}
+        onContextMenu={(e) =>
+          handleDisplayPuckCellContextMenu(e, cellMenuID, cellID, null)
+        }
+        className="cell_cicle_g"
       >
-        <circle
-          r="5"
-          cx="10"
-          cy="10"
-          key={`circle-${idx}`}
-          id={`tpath${idx}`}
-          className={disabled ? 'cell-cicle-empty' : 'cell-cicle'}
-          stroke={isCellSelected ? '#6cb0f5' : rgbColorList[idx]}
-          strokeWidth="10"
-          strokeDasharray={strokeDashArray}
-          transform="rotate(-90) translate(-20, 0)"
+        {/* Pie Slice */}
+        <path
+          d={getCellSlicePath(idxCell)}
+          fill={color}
+          stroke="white"
+          strokeWidth="0.12"
+          className="cell_cicle"
+        />
+        {/* Circles Inside the Slice (Triangle Grid) */}
+        {getCirclesInSlice(idxCell)}
+        <text
+          x={x}
+          y={y}
+          fontSize="0.2"
+          textAnchor="middle"
+          dominantBaseline="middle"
+          fill="black"
+          className="cell_cicle_text"
         >
-          <title>
-            {this.props.cellSampleList(idx + 1)[0].length > 0
-              ? `${this.props.cellSampleList(idx + 1)[0].length} Samples`
-              : 'Empty'}
-          </title>
-        </circle>
-        <g transform="rotate(-113) translate(-21.5, 0)">
-          <text
-            className="circle-text"
-            x={8 + Math.cos(angle) * 8}
-            y={5 + Math.sin(angle) * 8}
-            fontSize="1"
-            rotate="113"
-          >
-            {idx + 1}
-            <title>
-              {this.props.cellSampleList(idx + 1)[0].length > 0
-                ? `${this.props.cellSampleList(idx + 1)[0].length} Samples`
-                : 'Empty'}
-            </title>
-          </text>
-        </g>
+          Cell {cellID}
+        </text>
+        <title>Cell {cellID}</title>
       </g>
     );
   }
 
-  render() {
-    // this is specific to 8 cells Baskets
-    // will need to update this code to be more generic
-    // for any number of cell
-    const scContent = [1, 2, 3, 4, 5, 6, 7, 8];
-    return (
-      <Col sm={3}>
-        <div className="div-svg-flex">
-          <svg
-            className="svg-flex"
-            height="97%"
-            width="97%"
-            viewBox="0 0 20 20"
-          >
-            <circle className="main-circle-center" r="10" cx="10" cy="10" />
-            {scContent.map((cell, idx) => {
-              return this.renderCircle(
-                scContent.length,
-                idx,
-                this.isCellSelected(cell),
-              );
-            })}
-            <circle className="cell-cicle-center" r="5" cx="10" cy="10" />
-            <text x="10" y="10" fontSize="1" textAnchor="middle" fill="gray">
-              Sample Changer
-            </text>
-          </svg>
-        </div>
-      </Col>
-    );
-  }
+  return (
+    <Col sm={6}>
+      <div className="div-svg-flex">
+        <svg height="100%" width="100%" viewBox="0 1 18 18">
+          {Array.from({ length: numberOfCell }, (_, idx) => getCellSlice(idx))}
+          <circle fill="#6cb0f5" r="2" cx="10" cy="10" />
+          <text x="10" y="10" fontSize="0.5" textAnchor="middle" fill="black">
+            {type}
+          </text>
+        </svg>
+      </div>
+    </Col>
+  );
 }
-
-function mapStateToProps(state) {
-  return {
-    queue: state.queue,
-    selected: state.sampleGrid.selected,
-    sampleList: state.sampleGrid.sampleList,
-    filterOptions: state.sampleGrid.filterOptions,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    filter: (filterOptions) => dispatch(filterAction(filterOptions)),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(NewSampleFlexView);

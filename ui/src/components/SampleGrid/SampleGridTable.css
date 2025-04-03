@@ -281,8 +281,9 @@
   font-weight: bolder;
 }
 
-/* Graphical View / Flex grid css */
+/* Graphical View */
 
+/* ISARA  */
 .div-flex-pie-collapsible {
   width: 95%;
 }
@@ -295,47 +296,30 @@
   fill: #dfd1d9;
 }
 
-.has-sample {
+/* Flex */
+.cell_cicle_g,
+.puck_cicle {
   cursor: pointer;
 }
-.empty-cell {
-  cursor: not-allowed;
-  background: #000000;
-}
 
-.cell-cicle-empty :hover {
+.cell_cicle:hover {
+  paint-order: stroke;
   stroke: #ffffff;
+  stroke-width: 0.09;
 }
 
-.cell-cicle {
-  fill: #015f9d;
-  border: 2px solid #5cb85c;
+.cell_cicle_text:hover {
+  font-weight: bold;
 }
 
-.cell-cicle:hover {
-  stroke: #6cb0f5;
-  stroke-width: 9.5;
-  text-shadow: 0 0 30px #fdec6e;
-  transition: all 0.2s ease-in;
+.puck_cicle:hover > circle {
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 0.09;
 }
 
-.circle-text:hover > .cell-cicle:hover {
-  stroke: #63adf7;
-  text-shadow: 0 0 30px #fdec6e;
-  transition: all 0.2s ease-in;
-}
-
-.cell-cicle-activated {
-  stroke: #fa9f63;
-  stroke-opacity: 90%;
-}
-
-.cell-cicle-center {
-  fill: whitesmoke;
-  stroke: rgb(163, 161, 161);
-  stroke-width: 0.1%;
-}
-
-.circle-text {
-  fill: #273a44;
+.puck_cicle:hover > .text_puck_cicle {
+  paint-order: stroke;
+  fill: #ffffff;
+  stroke-width: 0.01;
 }
