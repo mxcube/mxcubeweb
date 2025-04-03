@@ -1,0 +1,3 @@
+<Object class="Argus" role="argus">
+    <exports>["stop_process", "start_process", "manage_process", "change_settings"]</exports>
+</Object>
