@@ -251,13 +251,44 @@ function GphlWorkflowParametersDialog(props) {
                   } mb-5`}
                 >
                   <div className={`${styles.title} p-2`}>
-                    {ui_schema[rowKey]['ui:title'] ||
-                      schema.properties.indexing_solution?.title ||
-                      null}
+                    {rowKey === 'reffiles'
+                      ? schema.properties.reffiles?.title
+                      : rowKey === 'indexing_solution'
+                      ? schema.properties.indexing_solution?.title
+                      : ui_schema[rowKey]['ui:title']}
                   </div>
                   <Row>
-                    {ui_schema[rowKey]['ui:order'] ? (
-                      ui_schema[rowKey]['ui:order'].map((ColKey) => (
+                    {rowKey === 'indexing_solution' ? (
+                      ui_schema[rowKey]['ui:widget']?.includes('table') &&
+                      renderIndexingTable(
+                        ui_schema[rowKey][uiOptions],
+                        selected,
+                        onSelectRow,
+                      )
+                    ) : rowKey === 'reffiles' ? (
+                      // Specific textarea for "reffiles"
+                      schema.properties.reffiles.type === 'textarea' && (
+                        <Form.Control
+                          name="reffiles"
+                          id="reffiles"
+                          onChange={(e) => handleChange(e)}
+                          data-highlight={
+                            schema.properties.reffiles.highlight || undefined
+                          }
+                          type={schema.properties.reffiles.type}
+                          as="textarea"
+                          required
+                          defaultValue={formState.reffiles}
+                          readOnly={schema.properties.reffiles.readOnly}
+                          disabled={schema.properties.reffiles.readOnly}
+                        />
+                      )
+                    ) : rowKey === '_info' ? (
+                      <pre className="p-2">
+                        {schema.properties[rowKey].default}
+                      </pre>
+                    ) : (
+                      ui_schema[rowKey]['ui:order']?.map((ColKey) => (
                         <Col key={ColKey} sm>
                           {ui_schema[rowKey][ColKey]['ui:order'].map(
                             (fieldKey) => (
@@ -301,6 +332,27 @@ function GphlWorkflowParametersDialog(props) {
                                         ),
                                       )}
                                     </Form.Select>
+                                  ) : // Generic any other textarea
+                                  schema.properties[fieldKey].type ===
+                                    'textarea' ? (
+                                    <Form.Control
+                                      name={fieldKey}
+                                      id={fieldKey}
+                                      onChange={(e) => handleChange(e)}
+                                      data-highlight={
+                                        schema.properties[fieldKey].highlight ||
+                                        undefined
+                                      }
+                                      type={schema.properties[fieldKey].type}
+                                      as="textarea"
+                                      defaultValue={formState[fieldKey]}
+                                      readOnly={
+                                        schema.properties[fieldKey].readOnly
+                                      }
+                                      disabled={
+                                        schema.properties[fieldKey].readOnly
+                                      }
+                                    />
                                   ) : (
                                     <Form.Control
                                       name={fieldKey}
@@ -339,18 +391,6 @@ function GphlWorkflowParametersDialog(props) {
                           )}
                         </Col>
                       ))
-                    ) : ui_schema[rowKey]['ui:widget'] ? (
-                      ui_schema[rowKey]['ui:widget'].includes('table') ? (
-                        renderIndexingTable(
-                          ui_schema[rowKey][uiOptions],
-                          selected,
-                          onSelectRow,
-                        )
-                      ) : null
-                    ) : (
-                      <pre className="p-2">
-                        {schema.properties[rowKey].default}
-                      </pre>
                     )}
                   </Row>
                 </div>
