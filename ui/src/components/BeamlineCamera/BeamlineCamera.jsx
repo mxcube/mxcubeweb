@@ -1,99 +1,45 @@
-import { useState } from 'react';
-import { Button, Card, Dropdown, Stack } from 'react-bootstrap';
-import Draggable from 'react-draggable';
-import { MdClose } from 'react-icons/md';
+import { useEffect, useState } from 'react';
+import { Dropdown } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 
-import styles from './beamlineCamera.module.css';
-import pip from './picture_in_picture.svg';
-
-function handleImageClick(url, width, height) {
-  window.open(
-    url,
-    'webcam',
-    `toolbar=0,location=0,menubar=0,addressbar=0,height=${height},width=${width}`,
-    'popup',
-  );
-}
+import CameraCard from './CameraCard';
 
 export default function BeamlineCamera() {
   const cameraComponents = useSelector(
     (state) => state.uiproperties?.camera_setup?.components,
   );
+  const argusStreams = useSelector(
+    (state) => state.beamline.hardwareObjects.argus?.attributes?.camera_streams,
+  );
 
   const [showVideoModal, setShowVideoModal] = useState({});
+  const [cameras, setCameras] = useState(cameraComponents);
 
   function handleShowVideoCard(key, value) {
     setShowVideoModal({ ...showVideoModal, [key]: value });
   }
 
-  function renderVideo() {
-    const DraggableElements = [];
-    cameraComponents.forEach((camera, vIndex) => {
-      DraggableElements.push(
-        showVideoModal[vIndex] ? (
-          <div
-            key={`draggable-video_${camera.label}`}
-            className="draggableHandle"
-          >
-            <Draggable defaultPosition={{ x: 200, y: 100 + 50 * vIndex }}>
-              <Card className={styles.draggableHandle}>
-                <Card.Header>
-                  <Stack direction="horizontal" gap={3}>
-                    <div className={styles.headerTitle}>{camera.label}</div>
-                    <div className="p-2 ms-auto">
-                      <Button
-                        variant="outline-secondary"
-                        onClick={() =>
-                          handleImageClick(
-                            camera.url,
-                            camera.width,
-                            camera.height,
-                          )
-                        }
-                        size="sm"
-                      >
-                        <img src={pip} alt="PIP Icon" />
-                      </Button>
-                    </div>
-                    <div className="vr" />
-                    <div>
-                      <MdClose
-                        color="red"
-                        onClick={() => handleShowVideoCard(vIndex, false)}
-                        size="1.5em"
-                        className={styles.closeBtn}
-                      />
-                    </div>
-                  </Stack>
-                </Card.Header>
-                <Card.Body>
-                  {camera.format !== 'mp4' ? (
-                    <img
-                      src={camera.url}
-                      alt={camera.label}
-                      width={camera.width}
-                      height={camera.height}
-                    />
-                  ) : (
-                    <video
-                      src={camera.url}
-                      alt={camera.label}
-                      width={camera.width}
-                      height={camera.height}
-                    />
-                  )}
-                </Card.Body>
-              </Card>
-            </Draggable>
-          </div>
-        ) : null,
-      );
-    });
-    return DraggableElements;
-  }
+  useEffect(() => {
+    if (argusStreams) {
+      const argusCameras = Object.keys(argusStreams).map((key) => {
+        return {
+          description: null,
+          format: null,
+          height: 1280,
+          width: 960,
+          label: key,
+          url: `ws://localhost:7000/ws/${key}`,
+        };
+      });
+      if (cameraComponents && cameraComponents.length > 0) {
+        setCameras([...cameraComponents, ...argusCameras]);
+      } else {
+        setCameras(argusCameras);
+      }
+    }
+  }, [argusStreams, cameraComponents]);
 
-  if (!cameraComponents || cameraComponents.length <= 0) {
+  if (!cameras || cameras.length <= 0) {
     return null;
   }
 
@@ -115,18 +61,28 @@ export default function BeamlineCamera() {
           Beamline Cameras
         </Dropdown.Toggle>
         <Dropdown.Menu>
-          {cameraComponents.map((camera, cIndex) => [
+          {cameras.map((camera, cIndex) => [
             <Dropdown.Item
               key={`ddVideo_${camera.label}`}
               onClick={() => handleShowVideoCard(cIndex, true)}
             >
               {camera.label} <i className="fas fa-video" />
             </Dropdown.Item>,
-            cameraComponents.length > cIndex + 1 && <Dropdown.Divider />,
+            cameras.length > cIndex + 1 && <Dropdown.Divider />,
           ])}
         </Dropdown.Menu>
       </Dropdown>
-      {renderVideo()}
+      {cameras.map(
+        (camera, cIndex) =>
+          showVideoModal[cIndex] && (
+            <CameraCard
+              camera={camera}
+              cIndex={cIndex}
+              handleShowVideoCard={handleShowVideoCard}
+              key={`CameraCard_${camera.label}`}
+            />
+          ),
+      )}
     </>
   );
 }
