@@ -20,6 +20,7 @@ import { HW_STATE, QUEUE_RUNNING } from '../../constants.js';
 import { showShapeMenu } from '../../reducers/contextMenu.js';
 import { addDistancePoint, setImageRatio } from '../../reducers/sampleview.js';
 import { selectSelectedShapeIds, setOverlay } from '../../reducers/shapes.js';
+import { StreamSwitch } from '../Argus/StreamSwitch.jsx';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
 import { GridGroup } from './FabricObjects/gridGroup.js';
@@ -884,6 +885,25 @@ class SampleImage extends React.Component {
     this.canvas.requestRenderAll();
   }
 
+  changeSource = (source) => {
+    const canvas = document.querySelector('#sample-img');
+    if (source && canvas) {
+      if (this.player) {
+        this.player.stop();
+        this.player = new JSMpeg.Player(source, {
+          canvas,
+          decodeFirstFrame: false,
+          preserveDrawingBuffer: false,
+          protocols: [],
+          autoplay: true,
+          displayGl: false,
+        });
+        this.player.play();
+      }
+      canvas.src = source;
+    }
+  };
+
   render() {
     this.configureGrid();
     this.updateGridResults();
@@ -929,6 +949,8 @@ class SampleImage extends React.Component {
             )}
           </div>
         </div>
+
+        <StreamSwitch handleSourceSwitch={this.changeSource} />
       </div>
     );
   }
