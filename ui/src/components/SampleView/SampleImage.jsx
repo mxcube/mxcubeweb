@@ -5,6 +5,7 @@ import 'fabric';
 import React from 'react';
 
 import { HW_STATE } from '../../constants';
+import { StreamSwitch } from '../Argus/StreamSwitch.jsx';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
 import GridForm from './GridForm';
@@ -925,6 +926,25 @@ export default class SampleImage extends React.Component {
     this.canvas.requestRenderAll();
   }
 
+  changeSource = (source) => {
+    const canvas = document.querySelector('#sample-img');
+    if (source && canvas) {
+      if (this.player) {
+        this.player.stop();
+        this.player = new JSMpeg.Player(source, {
+          canvas,
+          decodeFirstFrame: false,
+          preserveDrawingBuffer: false,
+          protocols: [],
+          autoplay: true,
+          displayGl: false,
+        });
+        this.player.play();
+      }
+      canvas.src = source;
+    }
+  };
+
   render() {
     this.configureGrid();
     this.updateGridResults();
@@ -956,6 +976,8 @@ export default class SampleImage extends React.Component {
             <canvas id="canvas" className="coveringCanvas" />
           </div>
         </div>
+
+        <StreamSwitch handleSourceSwitch={this.changeSource} />
       </div>
     );
   }
