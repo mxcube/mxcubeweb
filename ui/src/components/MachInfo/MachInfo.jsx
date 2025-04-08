@@ -23,7 +23,7 @@ function MachInfo(props) {
   for (propName in info) {
     if (propName in info) {
       if (propName === 'attention') {
-        continue; // eslint-disable-line no-continue
+        continue;
       }
       propValue = info[propName];
       msg = (
