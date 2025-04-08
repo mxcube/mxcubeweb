@@ -8,7 +8,6 @@ const config = defineConfig([
   ...createConfig(opts),
   {
     rules: {
-      'prefer-destructuring': 'off',
       'jsx-a11y/anchor-is-valid': 'off',
       'jsx-a11y/control-has-associated-label': 'off',
       'promise/always-return': 'off',

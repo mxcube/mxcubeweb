@@ -328,20 +328,16 @@ export default class SSXChip extends React.Component {
   initChipCanvas() {
     const currentChipLayout =
       this.props.chipLayoutList[this.props.currentLayoutName];
-    const chipConfig = currentChipLayout.sections[0];
+    const [chipConfig] = currentChipLayout.sections;
 
     const numRows = chipConfig.number_of_rows;
     const numCols = chipConfig.number_of_collumns;
-    const blockSizeX = chipConfig.block_size[0];
-    const blockSizeY = chipConfig.block_size[0];
+    const [blockSizeX, blockSizeY] = chipConfig.block_size;
     const rowLabels = chipConfig.row_labels;
     const colLabels = chipConfig.column_lables;
 
-    const offset = chipConfig.block_spacing[0];
-    const spacing = chipConfig.block_spacing[0];
-
-    const numTargetsX = chipConfig.targets_per_block[0];
-    const numTargetsY = chipConfig.targets_per_block[1];
+    const [offset, spacing] = chipConfig.block_spacing;
+    const [numTargetsX, numTargetsY] = chipConfig.targets_per_block;
 
     const canvasWidth = numCols * (blockSizeX + spacing) + offset + blockSizeX;
     const canvasHeight = numRows * (blockSizeY + spacing) + offset + blockSizeY;

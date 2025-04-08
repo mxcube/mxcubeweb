@@ -303,13 +303,13 @@ export class ConfirmCollectDialog extends React.Component {
             </thead>
             <tbody id="table-body">
               {tasks.map((task) => {
-                let { parameters } = task;
+                const { parameters } =
+                  task.type === 'Interleaved'
+                    ? task.parameters.wedges[0]
+                    : task;
+
                 const sample = this.props.sampleGrid.sampleList[task.sampleID];
                 const sampleName = `${sample.sampleName} - ${sample.proteinAcronym}`;
-
-                if (task.type === 'Interleaved') {
-                  parameters = task.parameters.wedges[0].parameters;
-                }
 
                 return (
                   <OverlayTrigger

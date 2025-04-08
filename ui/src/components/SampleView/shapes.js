@@ -432,8 +432,7 @@ export function makeImageOverlay(iR, ppMm, bP, bSh, bSi, cCP, dP, canvas) {
     imageOverlay.push(...makeCross(point, iR, canvas.width, canvas.height));
   }
   if (dP.length === 2) {
-    const point1 = dP[0];
-    const point2 = dP[1];
+    const [point1, point2] = dP;
     imageOverlay.push(...makeDistanceLine(point1, point2, iR, ppMm, 'red', 2));
   }
   return imageOverlay;

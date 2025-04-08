@@ -91,8 +91,8 @@ function GphlWorkflowParametersDialog(props) {
       dataDict[key] = removeExtraDecimal(value.default, value.type);
     });
     if (formData.ui_schema.indexing_solution) {
-      const initIndex =
-        formData.ui_schema.indexing_solution[uiOptions].select_cell[0];
+      const [initIndex] =
+        formData.ui_schema.indexing_solution[uiOptions].select_cell;
       setSelected([initIndex]);
       dataDict.indexing_solution =
         formData.ui_schema.indexing_solution[uiOptions].content[0][initIndex];

@@ -230,7 +230,7 @@ export function addShape(shapeData = {}, successCb = null) {
   return async (dispatch) => {
     try {
       const json = await sendAddOrUpdateShapes([shapeData]);
-      const shape = json.shapes[0];
+      const [shape] = json.shapes;
       dispatch(addShapeAction(shape));
 
       if (successCb) {

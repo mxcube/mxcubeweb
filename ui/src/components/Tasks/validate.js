@@ -65,8 +65,7 @@ function validate(values, props) {
   }
 
   if (props.acqParametersLimits.exposure_time) {
-    const exptimemin = props.acqParametersLimits.exposure_time[0];
-    const exptimemax = props.acqParametersLimits.exposure_time[1];
+    const [exptimemin, exptimemax] = props.acqParametersLimits.exposure_time;
     if (
       values.exp_time === '' ||
       Number.parseFloat(values.exp_time, 10) > exptimemax ||
