@@ -93,31 +93,6 @@ export default function SampleListViewContainer() {
     displayTaskForm('AddSample');
   }
 
-  /**
-   * Mapping between a input and a filter option value
-   *
-   * @param {string} id - id of input in DOM
-   * @return {?} the value for the input
-   */
-  function getFilterOptionValue(id) {
-    let value = false;
-
-    const optionMap = {
-      inQueue: filterOptions.inQueue,
-      notInQueue: filterOptions.notInQueue,
-      collected: filterOptions.collected,
-      notCollected: filterOptions.notCollected,
-      limsSamples: filterOptions.limsSamples,
-      text: filterOptions.text,
-      cellFilter: filterOptions.cellFilter,
-      puckFilter: filterOptions.puckFilter,
-    };
-
-    value = optionMap[id];
-
-    return value;
-  }
-
   function getCellFilterOptions() {
     let options = [];
 
@@ -248,9 +223,9 @@ export default function SampleListViewContainer() {
     });
     // first need to remove manual sample from queue
     // because they will be remove from sample List
-    await setEnabledSample(manualSamples, false);
+    await dispatch(setEnabledSample(manualSamples, false));
 
-    getSamplesList();
+    dispatch(getSamplesList());
   }
 
   /**
@@ -380,17 +355,13 @@ export default function SampleListViewContainer() {
    * Applies filter defined by user
    */
   function sampleGridFilter(e) {
-    const optionMap = {
-      cellFilter: { cellFilter: e.target.value },
-      puckFilter: { puckFilter: e.target.value },
-      inQueue: { inQueue: e.target.checked },
-      notInQueue: { notInQueue: e.target.checked },
-      collected: { collected: e.target.checked },
-      notCollected: { notCollected: e.target.checked },
-      limsSamples: { limsSamples: e.target.checked },
-      text: { text: e.target.value.trim() },
-    };
-    dispatch(filterAction(optionMap[e.target.id]));
+    let filterValue = e.target.value.trim();
+    if (e.target.type === 'checkbox') {
+      filterValue = e.target.checked;
+    }
+
+    dispatch(filterAction({ [e.target.id]: filterValue }));
+
     if (Number(e.target.value) > 2) {
       window.scroll({
         top: 1,
@@ -472,10 +443,10 @@ export default function SampleListViewContainer() {
     }
 
     if (samplesToRemove.length > 0) {
-      setEnabledSample(samplesToRemove, false);
+      dispatch(setEnabledSample(samplesToRemove, false));
     }
     if (addSamples && samples.length > 0) {
-      addSamplesToQueue(samples);
+      dispatch(addSamplesToQueue(samples));
     }
   }
 
@@ -492,7 +463,7 @@ export default function SampleListViewContainer() {
         samplesToRemove.push(sampleID);
       }
     }
-    setEnabledSample(samplesToRemove, false);
+    dispatch(setEnabledSample(samplesToRemove, false));
   }
 
   /**
@@ -509,7 +480,7 @@ export default function SampleListViewContainer() {
       }
     }
 
-    deleteSamplesFromQueue(samplesToRemove);
+    dispatch(deleteSamplesFromQueue(samplesToRemove));
   }
 
   /**
@@ -517,7 +488,7 @@ export default function SampleListViewContainer() {
    */
   function removeSelectedTasks() {
     const selectedSamplesID = Object.keys(selected);
-    deleteTaskList(selectedSamplesID);
+    dispatch(deleteTaskList(selectedSamplesID));
   }
 
   /**
@@ -529,7 +500,7 @@ export default function SampleListViewContainer() {
 
   function displayContextMenu(e, contextMenuID) {
     if (queue.queueStatus !== QUEUE_RUNNING) {
-      showGenericContextMenu(true, contextMenuID, e.pageX, e.pageY);
+      dispatch(showGenericContextMenu(true, contextMenuID, e.pageX, e.pageY));
     }
 
     const samplesListKeys = Object.keys(sampleList).filter((key) =>
@@ -566,7 +537,7 @@ export default function SampleListViewContainer() {
    */
   function startCollect() {
     navigate('/datacollection', { replace: true });
-    showConfirmCollectDialog();
+    dispatch(showConfirmCollectDialog());
   }
 
   function getSynchronizationDropDownList() {
@@ -634,7 +605,7 @@ export default function SampleListViewContainer() {
       button = (
         <Button
           variant="danger"
-          onClick={() => stopQueue()}
+          onClick={() => dispatch(stopQueue())}
           style={{ marginLeft: '1em' }}
         >
           <b> Stop queue </b>
@@ -669,7 +640,7 @@ export default function SampleListViewContainer() {
             <Col sm="6">
               <Form.Select
                 id="cellFilter"
-                value={getFilterOptionValue('cellFilter')}
+                value={filterOptions.cellFilter}
                 onChange={sampleGridFilter}
               >
                 {getCellFilterOptions()}
@@ -688,7 +659,7 @@ export default function SampleListViewContainer() {
             <Col sm="6">
               <Form.Select
                 id="puckFilter"
-                value={getFilterOptionValue('puckFilter')}
+                value={filterOptions.puckFilter}
                 onChange={sampleGridFilter}
               >
                 {getPuckFilterOptions()}
@@ -701,7 +672,7 @@ export default function SampleListViewContainer() {
                 type="checkbox"
                 id="inQueue"
                 inline
-                checked={getFilterOptionValue('inQueue')}
+                checked={filterOptions.inQueue}
                 onChange={sampleGridFilter}
                 label="In Queue"
               />
@@ -711,7 +682,7 @@ export default function SampleListViewContainer() {
                 type="checkbox"
                 inline
                 id="notInQueue"
-                checked={getFilterOptionValue('notInQueue')}
+                checked={filterOptions.notInQueue}
                 onChange={sampleGridFilter}
                 label="Not in Queue"
               />
@@ -723,7 +694,7 @@ export default function SampleListViewContainer() {
                 type="checkbox"
                 inline
                 id="collected"
-                checked={getFilterOptionValue('collected')}
+                checked={filterOptions.collected}
                 onChange={sampleGridFilter}
                 label="Collected"
               />
@@ -733,7 +704,7 @@ export default function SampleListViewContainer() {
                 type="checkbox"
                 inline
                 id="notCollected"
-                checked={getFilterOptionValue('notCollected')}
+                checked={filterOptions.notCollected}
                 onChange={() => sampleGridFilter()}
                 label="Not Collected"
               />
@@ -745,7 +716,7 @@ export default function SampleListViewContainer() {
                 type="checkbox"
                 inline
                 id="limsSamples"
-                checked={getFilterOptionValue('limsSamples')}
+                checked={filterOptions.limsSamples}
                 onChange={sampleGridFilter}
                 label="LIMS Samples"
               />
@@ -754,8 +725,8 @@ export default function SampleListViewContainer() {
               <span />
             </Col>
           </Row>
-          <Row className="mt-3 justify-content-end">
-            <Col className="align-self-end">
+          <Row className="mt-3">
+            <Col>
               <Button
                 variant="outline-secondary"
                 style={{ float: 'right' }}
@@ -811,7 +782,7 @@ export default function SampleListViewContainer() {
                 <Button
                   className="nowrap-style"
                   variant="outline-secondary"
-                  onClick={() => showConfirmClearQueueDialog()}
+                  onClick={() => dispatch(showConfirmClearQueueDialog())}
                   disabled={queue.queueStatus === QUEUE_RUNNING}
                 >
                   <i
@@ -860,7 +831,7 @@ export default function SampleListViewContainer() {
                         style={{ borderColor: '#CCC' }}
                         id="text"
                         type="text"
-                        value={getFilterOptionValue('text')}
+                        value={filterOptions.text}
                         onChange={sampleGridFilter}
                       />
                       {innerSearchIcon()}
@@ -868,7 +839,7 @@ export default function SampleListViewContainer() {
                   </Col>
                 </Form.Group>
               </Form>
-              <span style={{ marginLeft: '2em' }} />
+              <span style={{ marginLeft: '1.5em' }} />
               <Button
                 variant="outline-secondary"
                 className="nowrap-style"
