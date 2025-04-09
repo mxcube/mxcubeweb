@@ -86,111 +86,78 @@ export function signOut() {
 
 export function getInitialState() {
   return async (dispatch) => {
-    const state = {};
-
-    const pchains = [
+    const initialStateSlices = await Promise.all([
       fetchUIProperties()
-        .then((json) => {
-          state.uiproperties = json;
-        })
+        .then((uiproperties) => ({ uiproperties }))
         .catch(notify),
       fetchQueueState()
-        .then((json) => {
-          state.queue = json;
-        })
+        .then((queue) => ({ queue }))
         .catch(notify),
       fetchBeamInfo()
-        .then((json) => {
-          state.beamInfo = json;
-        })
+        .then((beamInfo) => ({ beamInfo }))
         .catch(notify),
       fetchBeamlineSetup()
-        .then((json) => {
-          state.beamlineSetup = json;
-          state.datapath = json.path;
-          return json;
-        })
+        .then((beamlineSetup) => ({
+          beamlineSetup,
+          datapath: beamlineSetup.path,
+        }))
         .catch(notify),
       fetchImageData()
-        .then((json) => {
-          state.Camera = json;
-        })
+        .then((Camera) => ({ Camera }))
         .catch(notify),
-      fetchDiffractometerInfo()
-        .then((json) => {
-          Object.assign(state, json);
-        })
-        .catch(notify),
+      fetchDiffractometerInfo().catch(notify),
       fetchDetectorInfo()
-        .then((json) => {
-          state.detector = json;
-        })
+        .then((detector) => ({ detector }))
         .catch(notify),
       fetchAvailableTasks()
-        .then((json) => {
-          state.taskParameters = json;
-        })
+        .then((taskParameters) => ({ taskParameters }))
         .catch(notify),
       fetchShapes()
-        .then((json) => {
-          state.shapes = json.shapes;
-        })
+        .then((json) => ({ shapes: json.shapes }))
         .catch(notify),
       fetchSampleChangerInitialState()
         .then((json) => {
-          const {
-            state: initialState,
-            contents,
-            loaded_sample,
-            cmds,
-            global_state,
-          } = json;
-
-          state.sampleChangerState = { state: initialState };
-          state.sampleChangerContents = contents;
-          state.loadedSample = loaded_sample;
-          state.sampleChangerCommands = cmds;
-          state.sampleChangerGlobalState = global_state;
+          const { state, contents, loaded_sample, cmds, global_state } = json;
+          return {
+            sampleChangerState: { state },
+            sampleChangerContents: contents,
+            loadedSample: loaded_sample,
+            sampleChangerCommands: cmds,
+            sampleChangerGlobalState: global_state,
+          };
         })
         .catch(notify),
       fetchHarvesterInitialState()
         .then((json) => {
-          const { state: initialState, contents, cmds, global_state } = json;
-          state.harvesterState = { state: initialState };
-          state.harvesterContents = contents;
-          state.harvesterCommands = cmds;
-          state.harvesterGlobalState = global_state;
+          const { state, contents, cmds, global_state } = json;
+          return {
+            harvesterState: { state },
+            harvesterContents: contents,
+            harvesterCommands: cmds,
+            harvesterGlobalState: global_state,
+          };
         })
         .catch(notify),
       fetchRemoteAccessState()
-        .then((json) => {
-          state.remoteAccess = json.data;
-        })
+        .then((json) => ({ remoteAccess: json.data }))
         .catch(notify),
       fetchAvailableWorkflows()
-        .then((json) => {
-          state.workflow = json;
-        })
+        .then((workflow) => ({ workflow }))
         .catch(notify),
       fetchLogMessages()
-        .then((json) => {
-          state.logger = json;
-        })
+        .then((logger) => ({ logger }))
         .catch(notify),
       fetchApplicationSettings()
-        .then((json) => {
-          state.general = json;
-        })
+        .then((general) => ({ general }))
         .catch(notify),
-    ];
+    ]);
 
-    await Promise.all(pchains);
-
-    dispatch(setInitialState(state));
+    dispatch(setInitialState(Object.assign({}, ...initialStateSlices)));
     dispatch(applicationFetched(true));
   };
 }
 
 function notify(error) {
   console.error('REQUEST FAILED', error); // eslint-disable-line no-console
+  return {};
 }

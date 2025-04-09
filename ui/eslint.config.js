@@ -10,7 +10,6 @@ const config = defineConfig([
     rules: {
       'jsx-a11y/anchor-is-valid': 'off',
       'jsx-a11y/control-has-associated-label': 'off',
-      'promise/always-return': 'off',
       'react/destructuring-assignment': 'off',
       'react/no-multi-comp': 'off',
       'react/no-unused-class-component-methods': 'off',
