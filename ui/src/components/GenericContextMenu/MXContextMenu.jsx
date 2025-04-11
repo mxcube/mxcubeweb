@@ -1,59 +1,58 @@
-import './MXContextMenu.css';
-
-import React from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
-export default class MXContextMenu extends React.Component {
-  constructor(props) {
-    super(props);
-    this.showContextMenu = this.showContextMenu.bind(this);
-    this.hideContextMenu = this.hideContextMenu.bind(this);
-  }
+import { showGenericContextMenu } from '../../actions/sampleGrid';
+import styles from './MXContextMenu.module.css';
 
-  componentDidMount() {
-    this.showContextMenu(this.props.x, this.props.y);
-    document.addEventListener('click', this.hideContextMenu);
-  }
+export default function MXContextMenu(props) {
+  const { children } = props;
+  const { show, x, y, id } = useSelector(
+    (state) => state.contextMenu.genericContextMenu,
+  );
+  const dispatch = useDispatch();
+  const menuRef = useRef(null);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
 
-  componentWillUnmount() {
-    document.removeEventListener('click', this.hideContextMenu);
-  }
-
-  showContextMenu(x, y) {
-    const contextMenu = document.querySelector('#generic-contextMenu');
-    if (contextMenu) {
+  useEffect(() => {
+    if (show && menuRef.current) {
+      const menu = menuRef.current;
       const windowWidth = document.body.offsetWidth;
-      const menuEndPos = x + contextMenu.offsetWidth;
+      const windowHeight = document.body.offsetHeight;
+      const menuEndXPos = x + menu.offsetWidth;
+      const menuEndYPos = y + menu.offsetHeight;
 
-      let posxoffset = 10;
-      if (menuEndPos > windowWidth) {
-        posxoffset = contextMenu.offsetWidth;
-      }
-      contextMenu.style.top = `${y - 70}px`;
-      contextMenu.style.left = `${x - posxoffset}px`;
-      contextMenu.style.display = 'block';
-      contextMenu.style.transform = 'rotateY(0deg) rotateX(0deg)';
+      const posxoffset = menuEndXPos > windowWidth ? menu.offsetWidth + 10 : 10;
+      const posyoffset =
+        menuEndYPos > windowHeight ? menu.offsetHeight + 70 : 70;
+
+      setPosition({
+        x: x - posxoffset,
+        y: y - posyoffset,
+      });
     }
-  }
+  }, [show, x, y]);
 
-  hideContextMenu() {
-    const ctxMenu = document.querySelector('#generic-contextMenu');
-    if (ctxMenu) {
-      ctxMenu.classList.add('generic-context-menu-close');
+  useEffect(() => {
+    function hideContextMenu() {
+      dispatch(showGenericContextMenu(false, null, 0, 0));
     }
-    this.props.showGenericContextMenu(false, null, 0, 0);
-  }
+    document.addEventListener('click', hideContextMenu);
+    return () => {
+      document.removeEventListener('click', hideContextMenu);
+    };
+  }, [dispatch]);
 
-  render() {
-    return (
-      <Dropdown.Menu
-        className="generic-context-menu"
-        show={this.props.show}
-        id="generic-contextMenu"
-        role="menu"
-      >
-        {this.props.children}
-      </Dropdown.Menu>
-    );
-  }
+  return (
+    <Dropdown.Menu
+      className={styles.genericContextMenu}
+      style={{ top: `${position.y}px`, left: `${position.x}px` }}
+      show={show}
+      id={id}
+      role="menu"
+      ref={menuRef}
+    >
+      {children}
+    </Dropdown.Menu>
+  );
 }

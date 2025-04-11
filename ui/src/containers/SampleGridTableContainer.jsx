@@ -460,7 +460,9 @@ class SampleGridTableContainer extends React.Component {
 
     return (
       <>
-        {puck && <span className="span-container-code"> {puckCode} </span>}
+        {puck ? (
+          <span className="span-container-code"> {puckCode} </span>
+        ) : null}
         <TooltipTrigger
           id="pick-sample-tooltip"
           placement="auto"
@@ -1254,17 +1256,9 @@ class SampleGridTableContainer extends React.Component {
 
     return (
       <div>
-        {this.props.contextMenu.show ? (
-          <MXContextMenu
-            id={this.props.contextMenu.id}
-            show={this.props.contextMenu.show}
-            x={this.props.contextMenu.x}
-            y={this.props.contextMenu.y}
-            showGenericContextMenu={this.props.showGenericContextMenu}
-          >
-            {this.renderContextMenu(this.props.contextMenu.id)}
-          </MXContextMenu>
-        ) : null}
+        <MXContextMenu>
+          {this.renderContextMenu(this.props.contextMenu.id)}
+        </MXContextMenu>
         <Row
           className="samples-grid-table"
           onMouseDown={this.onMouseDown}
