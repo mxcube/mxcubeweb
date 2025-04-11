@@ -9,7 +9,7 @@ export default function UserMessage() {
     <div id="usermessages" className={styles.messageBody}>
       {[...messages].reverse().map((message) => (
         <div
-          key={`${message.timestamp}`}
+          key={`${message.id}`}
           className={`${styles.message} ${styles[message.severity]}`}
         >
           {message.severity === 'INFO' ? (

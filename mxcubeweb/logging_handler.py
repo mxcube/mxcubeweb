@@ -1,4 +1,5 @@
 import logging
+import uuid
 
 
 class MX3LoggingHandler(logging.handlers.BufferingHandler):
@@ -18,6 +19,7 @@ class MX3LoggingHandler(logging.handlers.BufferingHandler):
             record.asctime = logging._defaultFormatter.formatTime(record)
 
         return {
+            "id": str(uuid.uuid4()),
             "message": record.getMessage(),
             "severity": record.levelname,
             "timestamp": record.asctime,
