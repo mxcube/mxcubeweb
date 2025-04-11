@@ -242,18 +242,7 @@ class Lims(ComponentBase):
             )
             self.allow_session(session)
 
-        if hasattr(HWR.beamline.session, "prepare_directories"):
-            try:
-                logging.getLogger("MX3.HWR").info(
-                    "[LIMS] Creating data directories for proposal %s%s",
-                    session.code,
-                    session.number,
-                )
-                HWR.beamline.session.prepare_directories(session)
-            except Exception:
-                logging.getLogger("MX3.HWR").info(
-                    "[LIMS] Error creating data directories, %s" % sys.exc_info()[1]
-                )
+        HWR.beamline.session.prepare_directories(session)
 
         # save selected proposal in users db
         current_user.selected_proposal = session.session_id
