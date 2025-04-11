@@ -79,6 +79,17 @@ export default class ContextMenu extends React.Component {
           key: `${task.name}`,
         });
       }
+
+      if (task.requires.includes('no_shape_2d')) {
+        genericTasks.none.push({
+          text: task.name,
+          action: () =>
+            this.createPointAndShowModal('Generic', {
+              type: tname,
+            }),
+          key: `${task.name}`,
+        });
+      }
     });
 
     Object.values(this.props.workflows).forEach((wf) => {
@@ -438,7 +449,7 @@ export default class ContextMenu extends React.Component {
       sampleViewX,
       sampleViewY,
       'SAVED',
-      (shape) => this.showModal(name, {}, shape, extraParams),
+      (shape) => this.showModal(name, extraParams, shape),
     );
   }
 
