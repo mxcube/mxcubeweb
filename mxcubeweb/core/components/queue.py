@@ -2331,7 +2331,7 @@ class Queue(ComponentBase):
                 "subDirTemplate": "{ACRONYM}/{ACRONYM}-{NAME}",
                 "experiment_type": "",
             },
-            "limits": HWR.beamline.acquisition_limit_values,
+            "limits": HWR.beamline.config.acquisition_limit_values,
             "requires": requires if requires else [],
             "name": display_name if display_name else task_name,
             "queue_entry": task_name,
@@ -2361,7 +2361,7 @@ class Queue(ComponentBase):
     def get_available_tasks(self):
         task_info = {}
 
-        for task, available in HWR.beamline.available_methods.items():
+        for task, available in HWR.beamline.config.available_methods.items():
             if available:
                 task_info[task] = self.get_default_task_parameters(task)
 

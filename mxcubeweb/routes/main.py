@@ -47,13 +47,14 @@ def init_route(app, server, url_prefix):
     @server.restrict
     @server.validate(resp=Response(HTTP_200=AppSettingsModel))
     def mxcube_mode():
+        _blc = HWR.beamline.config
         return jsonify(
             {
                 "mode": app.CONFIG.app.mode,
                 "version": __version__.__version__,
-                "mesh_result_format": HWR.beamline.mesh_result_format,
-                "use_native_mesh": HWR.beamline.use_native_mesh,
-                "enable_2d_points": HWR.beamline.enable_2d_points,
+                "mesh_result_format": _blc.mesh_result_format,
+                "use_native_mesh": _blc.use_native_mesh,
+                "enable_2d_points": _blc.enable_2d_points,
             }
         )
 

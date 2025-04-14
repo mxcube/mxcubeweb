@@ -223,7 +223,7 @@ class SampleView(ComponentBase):
         dm.connect("centringFailed", self.wait_for_centring_finishes)
         dm.connect("centringAccepted", self.centring_add_current_point)
         HWR.beamline.sample_view.connect("newGridResult", self.handle_grid_result)
-        self._click_limit = int(HWR.beamline.click_centring_num_clicks or 3)
+        self._click_limit = int(HWR.beamline.config.click_centring_num_clicks or 3)
 
     def set_image_size(self, width, height):
         HWR.beamline.sample_view.camera.restart_streaming((width, height))
