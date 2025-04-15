@@ -11,7 +11,6 @@ import {
   setAttribute,
 } from '../actions/beamline';
 import { displayImage, showErrorPanel } from '../actions/general';
-import { updateTask } from '../actions/queue';
 import {
   mountSample,
   refresh,
@@ -179,23 +178,7 @@ class SampleViewContainer extends Component {
           <Col sm={6}>
             <DefaultErrorBoundary>
               <ContextMenu
-                {...this.props.contextMenu}
                 getControlAvailability={this.getControlAvailability}
-                sampleViewActions={this.props.sampleViewActions}
-                updateTask={this.props.updateTask}
-                availableMethods={this.props.availableMethods}
-                showForm={this.props.showForm}
-                sampleID={currentSampleID}
-                sampleData={this.props.sampleList[currentSampleID]}
-                defaultParameters={this.props.defaultParameters}
-                workflows={this.props.workflows}
-                savedPointId={this.props.sampleViewState.savedPointId}
-                groupFolder={this.props.groupFolder}
-                clickCentring={this.props.sampleViewState.clickCentring}
-                taskForm={this.props.taskForm}
-                enable2DPoints={this.props.enable2DPoints}
-                enableNativeMesh={this.props.enableNativeMesh}
-                showErrorPanel={this.props.showErrorPanel}
               />
               <SampleImage
                 sampleViewActions={this.props.sampleViewActions}
@@ -244,20 +227,14 @@ function mapStateToProps(state) {
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     hardwareObjects: state.beamline.hardwareObjects,
-    availableMethods: state.beamline.availableMethods,
     defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,
-    workflows: state.workflow.workflows,
     cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
     cellSpacing: state.taskForm.defaultParameters.mesh.cell_spacing,
     remoteAccess: state.remoteAccess,
     uiproperties: state.uiproperties,
-    taskForm: state.taskForm,
     mode: state.general.mode,
-    enable2DPoints: state.general.enable2DPoints,
     meshResultFormat: state.general.meshResultFormat,
-    enableNativeMesh: state.general.useNativeMesh,
-
     sampleChangerContents: state.sampleChanger.contents,
     sampleChangerState: state.sampleChanger.state,
     global_state: state.sampleChangerMaintenance.global_state,
@@ -274,7 +251,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
-    updateTask: bindActionCreators(updateTask, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
     showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),

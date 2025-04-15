@@ -1,7 +1,23 @@
-import React from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { createPortal } from 'react-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { showErrorPanel } from '../../actions/general';
+import { updateTask } from '../../actions/queue';
+import {
+  abortCentring,
+  acceptCentring,
+  add2DPoint,
+  addShape,
+  deleteShape,
+  measureDistance,
+  moveToBeam,
+  moveToPoint,
+  showContextMenu,
+  stopClickCentring,
+  toggleDrawGrid,
+} from '../../actions/sampleview';
+import { showTaskForm } from '../../actions/taskForm';
 import { getLastUsedParameters } from '../Tasks/fields';
 
 const BESPOKE_TASK_NAMES = new Set([
@@ -15,16 +31,32 @@ const BESPOKE_TASK_NAMES = new Set([
   'interleaved',
 ]);
 
-export default class ContextMenu extends React.Component {
-  constructor(props) {
-    super(props);
-    this.menuOptions = this.menuOptions.bind(this);
-  }
+export default function ContextMenu(props) {
+  const { getControlAvailability } = props;
+  const defaultParameters = useSelector(
+    (state) => state.taskForm.defaultParameters,
+  );
+  const workflows = useSelector((state) => state.workflow.workflows);
+  const enableNativeMesh = useSelector((state) => state.general.useNativeMesh);
+  const enable2DPoints = useSelector((state) => state.general.enable2DPoints);
+  const availableMethods = useSelector(
+    (state) => state.beamline.availableMethods,
+  );
+  const sampleID = useSelector((state) => state.queue.currentSampleID);
+  const sampleData = useSelector(
+    (state) => state.sampleGrid.sampleList[sampleID],
+  );
+  const { clickCentring } = useSelector((state) => state.sampleview);
+  const groupFolder = useSelector((state) => state.queue.groupFolder);
+  const contextMenu = useSelector((state) => state.contextMenu);
+  const { sampleViewX, sampleViewY, shape, pageX, pageY, show } = contextMenu;
 
-  menuOptions() {
-    const generalTaskNames = Object.keys(
-      this.props.taskForm.defaultParameters,
-    ).filter((tname) => !BESPOKE_TASK_NAMES.has(tname));
+  const dispatch = useDispatch();
+
+  function menuOptions() {
+    const generalTaskNames = Object.keys(defaultParameters).filter(
+      (tname) => !BESPOKE_TASK_NAMES.has(tname),
+    );
 
     const genericTasks = {
       point: [],
@@ -34,13 +66,13 @@ export default class ContextMenu extends React.Component {
     };
 
     generalTaskNames.forEach((tname) => {
-      const task = this.props.taskForm.defaultParameters[tname];
+      const task = defaultParameters[tname];
 
       if (task.requires.includes('point')) {
         genericTasks.point.push({
           text: task.name,
           action: () =>
-            this.showModal('Generic', {
+            showModal('Generic', {
               type: tname,
             }),
           key: `${task.name}`,
@@ -51,7 +83,7 @@ export default class ContextMenu extends React.Component {
         genericTasks.line.push({
           text: task.name,
           action: () =>
-            this.showModal('Generic', {
+            showModal('Generic', {
               type: tname,
             }),
           key: `${task.name}`,
@@ -62,7 +94,7 @@ export default class ContextMenu extends React.Component {
         genericTasks.grid.push({
           text: task.name,
           action: () =>
-            this.showModal('Generic', {
+            showModal('Generic', {
               type: tname,
             }),
           key: `${task.name}`,
@@ -73,7 +105,7 @@ export default class ContextMenu extends React.Component {
         genericTasks.none.push({
           text: task.name,
           action: () =>
-            this.showModal('Generic', {
+            showModal('Generic', {
               type: tname,
             }),
           key: `${task.name}`,
@@ -84,7 +116,7 @@ export default class ContextMenu extends React.Component {
         genericTasks.none.push({
           text: task.name,
           action: () =>
-            this.createPointAndShowModal('Generic', {
+            createPointAndShowModal('Generic', {
               type: tname,
             }),
           key: `${task.name}`,
@@ -92,37 +124,37 @@ export default class ContextMenu extends React.Component {
       }
     });
 
-    Object.values(this.props.workflows).forEach((wf) => {
+    Object.values(workflows).forEach((wf) => {
       if (wf.requires.includes('point')) {
         if (wf.wfpath === 'Gphl') {
           genericTasks.point.push({
             text: wf.wfname,
-            action: () => this.showModal('GphlWorkflow', wf),
+            action: () => showModal('GphlWorkflow', wf),
             key: `wf-${wf.wfname}`,
           });
         } else {
           genericTasks.point.push({
             text: wf.wfname,
-            action: () => this.showModal('Workflow', wf),
+            action: () => showModal('Workflow', wf),
             key: `wf-${wf.wfname}`,
           });
         }
       } else if (wf.requires.includes('line')) {
         genericTasks.line.push({
           text: wf.wfname,
-          action: () => this.createLine('Workflow', wf),
+          action: () => createLine('Workflow', wf),
           key: `wf-${wf.wfname}`,
         });
       } else if (wf.requires.includes('grid')) {
         genericTasks.grid.push({
           text: wf.wfname,
-          action: () => this.showModal('Workflow', wf),
+          action: () => showModal('Workflow', wf),
           key: `wf-${wf.wfname}`,
         });
       } else {
         genericTasks.none.push({
           text: wf.wfname,
-          action: () => this.showModal('Workflow', wf),
+          action: () => showModal('Workflow', wf),
           key: `wf-${wf.wfname}`,
         });
       }
@@ -132,28 +164,28 @@ export default class ContextMenu extends React.Component {
       SAVED: [
         {
           text: 'Add Datacollection',
-          action: () => this.showModal('DataCollection'),
+          action: () => showModal('DataCollection'),
           key: 'datacollection',
         },
         {
           text: 'Add Characterisation',
-          action: () => this.showModal('Characterisation'),
+          action: () => showModal('Characterisation'),
           key: 'characterisation',
         },
         {
           text: 'Add XRF Scan',
-          action: () => this.showModal('xrf_spectrum'),
+          action: () => showModal('xrf_spectrum'),
           key: 'xrf_spectrum',
         },
         {
           text: 'Add Energy Scan',
-          action: () => this.showModal('energy_scan'),
+          action: () => showModal('energy_scan'),
           key: 'energy_scan',
         },
         {
           text: 'Go to Point',
           action: () => {
-            this.props.sampleViewActions.moveToPoint(this.props.shape.id);
+            dispatch(moveToPoint(shape.id));
           },
           key: 5,
         },
@@ -163,44 +195,44 @@ export default class ContextMenu extends React.Component {
         },
         ...genericTasks.point,
         genericTasks.point.length > 0 ? { text: 'divider', key: 7 } : {},
-        { text: 'Delete Point', action: () => this.removeShape(), key: 8 },
+        { text: 'Delete Point', action: () => removeShape(), key: 8 },
       ],
       TMP: [
         {
           text: 'Add Datacollection',
-          action: () => this.showModal('DataCollection'),
+          action: () => showModal('DataCollection'),
           key: 'datacollection',
         },
         {
           text: 'Add Characterisation',
-          action: () => this.showModal('Characterisation'),
+          action: () => showModal('Characterisation'),
           key: 'characterisation',
         },
         {
           text: 'Add XRF Scan',
-          action: () => this.showModal('xrf_spectrum'),
+          action: () => showModal('xrf_spectrum'),
           key: 'xrf_spectrum',
         },
         {
           text: 'Add Energy Scan',
-          action: () => this.showModal('energy_scan'),
+          action: () => showModal('energy_scan'),
           key: 'energy_scan',
         },
         { text: 'divider', key: 5 },
         ...genericTasks.point,
         genericTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
-        { text: 'Save Point', action: () => this.savePoint(), key: 7 },
-        { text: 'Delete Point', action: () => this.removeShape(), key: 8 },
+        { text: 'Save Point', action: () => savePoint(), key: 7 },
+        { text: 'Delete Point', action: () => removeShape(), key: 8 },
       ],
       GROUP: [
         {
           text: 'Add Datacollections',
-          action: () => this.showModal('DataCollection'),
+          action: () => showModal('DataCollection'),
           key: 'datacollection',
         },
         {
           text: 'Add Characterisations',
-          action: () => this.showModal('Characterisation'),
+          action: () => showModal('Characterisation'),
           key: 'characterisation',
         },
         ...genericTasks.point,
@@ -208,17 +240,17 @@ export default class ContextMenu extends React.Component {
       HELICAL: [
         {
           text: 'Add Datacollections',
-          action: () => this.showModal('DataCollection'),
+          action: () => showModal('DataCollection'),
           key: 'datacollection',
         },
         {
           text: 'Add Characterisations',
-          action: () => this.showModal('Characterisation'),
+          action: () => showModal('Characterisation'),
           key: 'characterisation',
         },
         {
           text: 'Add Helical Scan',
-          action: () => this.createLine('Helical'),
+          action: () => createLine('Helical'),
           key: 'helical',
         },
         ...genericTasks.line,
@@ -226,20 +258,20 @@ export default class ContextMenu extends React.Component {
       LINE: [
         {
           text: 'Add Helical Scan',
-          action: () => this.showModal('Helical'),
+          action: () => showModal('Helical'),
           key: 'helical',
         },
         ...genericTasks.line,
         genericTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
-        { text: 'Delete Line', action: () => this.removeShape(), key: 4 },
+        { text: 'Delete Line', action: () => removeShape(), key: 4 },
       ],
-      GridGroup: [{ text: 'Save Grid', action: () => this.saveGrid(), key: 1 }],
+      GridGroup: [{ text: 'Save Grid', action: () => saveGrid(), key: 1 }],
       GridGroupSaved: [
-        ...(this.props.enableNativeMesh
+        ...(enableNativeMesh
           ? [
               {
                 text: 'Mesh Scan',
-                action: () => this.showModal('Mesh'),
+                action: () => showModal('Mesh'),
                 key: 'mesh_scan',
               },
             ]
@@ -247,62 +279,57 @@ export default class ContextMenu extends React.Component {
         {
           text: 'Centring Point on Cell',
           action: () => {
-            const { cellCenter } = this.props.shape;
-            this.props.sampleViewActions.add2DPoint(
-              cellCenter[0],
-              cellCenter[1],
-              'SAVED',
-            );
+            const { cellCenter } = shape;
+            dispatch(add2DPoint(cellCenter[0], cellCenter[1], 'SAVED'));
           },
           key: 5,
         },
         { text: 'divider', key: 2 },
         ...genericTasks.grid,
         genericTasks.grid.length > 0 ? { text: 'divider', key: 3 } : {},
-        { text: 'Delete', action: () => this.removeShape(), key: 4 },
+        { text: 'Delete', action: () => removeShape(), key: 4 },
       ],
       NONE: [
         {
           text: 'Go to Beam',
           action: () => {
-            const { sampleViewX, sampleViewY } = this.props;
-            this.props.sampleViewActions.moveToBeam(sampleViewX, sampleViewY);
+            dispatch(moveToBeam(sampleViewX, sampleViewY));
           },
           key: 1,
         },
         {
           text: 'Measure Distance',
           action: () => {
-            this.props.sampleViewActions.measureDistance(true);
+            dispatch(measureDistance(true));
           },
           key: 2,
         },
-        this.props.getControlAvailability('draw_grid') && {
+        getControlAvailability('draw_grid') && {
           text: 'Draw Grid',
           action: () => {
-            this.props.sampleViewActions.toggleDrawGrid();
+            dispatch(toggleDrawGrid());
           },
           key: 3,
         },
-        ...(this.props.enable2DPoints
+        ...(enable2DPoints
           ? [
               { text: 'divider', key: 4 },
               {
                 text: 'Data Collection (Limited OSC)',
-                action: () => this.createPointAndShowModal('DataCollection'),
+                action: () => createPointAndShowModal('DataCollection'),
                 key: 5,
               },
               {
                 text: 'Characterisation (1 Image)',
                 action: () =>
-                  this.createPointAndShowModal('Characterisation', {
+                  createPointAndShowModal('Characterisation', {
                     num_imags: 1,
                   }),
                 key: 6,
               },
               {
                 text: 'Create 2D Point',
-                action: () => this.createTwoDPoint(),
+                action: () => createTwoDPoint(),
                 key: 7,
               },
             ]
@@ -312,13 +339,13 @@ export default class ContextMenu extends React.Component {
       ],
     };
 
-    Object.keys(this.props.availableMethods).forEach((key) => {
-      if (!this.props.availableMethods[key]) {
+    Object.keys(availableMethods).forEach((key) => {
+      if (!availableMethods[key]) {
         Object.keys(options).forEach((k) => {
           options[k] = options[k].filter((e) => {
             let res = true;
-            if (Object.keys(this.props.availableMethods).includes(e.key)) {
-              res = this.props.availableMethods[e.key];
+            if (Object.keys(availableMethods).includes(e.key)) {
+              res = availableMethods[e.key];
             }
             return res;
           });
@@ -329,18 +356,18 @@ export default class ContextMenu extends React.Component {
     return options;
   }
 
-  showModal(modalName, extraParams = {}, _shape = null) {
-    const { sampleID, shape, sampleData, defaultParameters } = this.props;
-
-    if (this.props.clickCentring) {
-      this.props.sampleViewActions.stopClickCentring();
-      this.props.sampleViewActions.acceptCentring();
+  function showModal(modalName, extraParams = {}, _shape = null) {
+    if (clickCentring) {
+      dispatch(stopClickCentring());
+      dispatch(acceptCentring());
     }
 
     if (!sampleData) {
-      this.props.showErrorPanel(
-        true,
-        'There is no sample mounted, cannot collect data.',
+      dispatch(
+        showErrorPanel(
+          true,
+          'There is no sample mounted, cannot collect data.',
+        ),
       );
 
       return;
@@ -382,90 +409,78 @@ export default class ContextMenu extends React.Component {
         ]
       : ['none', 0, 0];
 
-    this.props.showForm(
-      modalName,
-      [sampleID],
-      {
-        parameters: {
-          ...params,
-          ...extraParams,
-          prefix: sampleData.defaultPrefix,
-          name,
-          subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
-          cell_count,
-          numRows,
-          numCols,
+    dispatch(
+      showTaskForm(
+        modalName,
+        [sampleID],
+        {
+          parameters: {
+            ...params,
+            ...extraParams,
+            prefix: sampleData.defaultPrefix,
+            name,
+            subdir: `${groupFolder}${sampleData.defaultSubDir}`,
+            cell_count,
+            numRows,
+            numCols,
+          },
+          type,
         },
-        type,
-      },
-      sid,
+        sid,
+      ),
     );
   }
 
-  savePoint() {
-    if (this.props.clickCentring) {
-      this.props.sampleViewActions.stopClickCentring();
+  function savePoint() {
+    if (clickCentring) {
+      dispatch(stopClickCentring());
     }
 
-    this.props.sampleViewActions.acceptCentring();
+    dispatch(acceptCentring());
 
     // associate the newly saved shape to an existing task with -1 shape.
     // Fixes issues when the task is added before a shape
-    const { tasks } = this.props.sampleData;
+    const { tasks } = sampleData;
     if (tasks?.length > 0) {
       tasks.forEach((task) => {
         const { parameters } = task;
         if (parameters.shape === -1) {
-          parameters.shape = this.props.shape.id;
-          this.props.updateTask(
-            this.props.sampleData.sampleID,
-            task.taskIndex,
-            parameters,
-            false,
+          parameters.shape = shape.id;
+          dispatch(
+            updateTask(sampleData.sampleID, task.taskIndex, parameters, false),
           );
         }
       });
     }
   }
 
-  removeShape() {
-    if (this.props.clickCentring) {
-      this.props.sampleViewActions.abortCentring();
+  function removeShape() {
+    if (clickCentring) {
+      dispatch(abortCentring());
     }
 
-    this.props.sampleViewActions.deleteShape(this.props.shape.id);
+    dispatch(deleteShape(shape.id));
   }
 
-  saveGrid() {
-    const { gridData } = this.props.shape;
-    this.props.sampleViewActions.addShape({ t: 'G', ...gridData });
-    this.props.sampleViewActions.toggleDrawGrid();
+  function saveGrid() {
+    const { gridData } = shape;
+    dispatch(addShape({ t: 'G', ...gridData }));
+    dispatch(toggleDrawGrid());
   }
 
-  createPointAndShowModal(name, extraParams = {}) {
-    const { sampleViewX, sampleViewY } = this.props;
-
-    this.props.sampleViewActions.add2DPoint(
-      sampleViewX,
-      sampleViewY,
-      'SAVED',
-      (shape) => this.showModal(name, extraParams, shape),
+  function createPointAndShowModal(name, extraParams = {}) {
+    dispatch(
+      add2DPoint(sampleViewX, sampleViewY, 'SAVED', (shape2D) =>
+        showModal(name, extraParams, shape2D),
+      ),
     );
   }
 
-  createTwoDPoint() {
-    const { sampleViewX, sampleViewY } = this.props;
-
-    this.props.sampleViewActions.add2DPoint(
-      sampleViewX,
-      sampleViewY,
-      'SAVED',
-      null,
-    );
+  function createTwoDPoint() {
+    dispatch(add2DPoint(sampleViewX, sampleViewY, 'SAVED', null));
   }
 
-  createLine(modal, wf = {}) {
-    const { shape } = this.props;
+  function createLine(modal, wf = {}) {
     const sid = shape.id;
 
     const lines = sid.filter((x) => x.match(/L*/u)[0]);
@@ -476,62 +491,49 @@ export default class ContextMenu extends React.Component {
       lines.map((x) => sid.splice(sid.indexOf(x), 1));
     }
 
-    this.props.sampleViewActions.addShape({ t: 'L', refs: shape.id }, (s) => {
-      this.showModal(modal, wf, s);
-    });
-  }
-
-  listOptions(type) {
-    if (type.text === undefined) {
-      return undefined;
-    }
-
-    let el = (
-      <Dropdown.Item key={`${type.key}_${type.text}`} onClick={type.action}>
-        {type.text}
-      </Dropdown.Item>
+    dispatch(
+      addShape({ t: 'L', refs: shape.id }, (s) => {
+        showModal(modal, wf, s);
+      }),
     );
-
-    if (type.text === 'divider') {
-      el = <Dropdown.Divider key={`${type.key}_${type.text}`} />;
-    }
-
-    return el;
   }
 
-  render() {
-    const { pageX, pageY, show } = this.props;
+  const options = menuOptions();
+  const optionsList = shape && sampleID ? options[shape.type] : options.NONE;
 
-    const menuOptions = this.menuOptions();
-    let optionList = [];
-
-    if (this.props.shape && this.props.sampleID) {
-      optionList = menuOptions[this.props.shape.type].map(this.listOptions);
-    } else {
-      optionList = menuOptions.NONE.map(this.listOptions);
-    }
-
-    return createPortal(
-      <Dropdown
-        className="position-absolute"
-        style={{ top: `${pageY}px`, left: `${pageX}px` }}
-        role="menu"
-        show={show}
-        autoClose
-        onToggle={(nextShow) => {
-          if (!nextShow) {
-            // Hide menu when clicking outside or selecting option
-            this.props.sampleViewActions.showContextMenu(false);
-          }
-        }}
+  return createPortal(
+    <Dropdown
+      className="position-absolute"
+      style={{ top: `${pageY}px`, left: `${pageX}px` }}
+      role="menu"
+      show={show}
+      autoClose
+      onToggle={(nextShow) => {
+        if (!nextShow) {
+          // Hide menu when clicking outside or selecting option
+          dispatch(showContextMenu(false));
+        }
+      }}
+    >
+      <Dropdown.Menu
+        rootCloseEvent="mousedown" // faster than `click`
       >
-        <Dropdown.Menu
-          rootCloseEvent="mousedown" // faster than `click`
-        >
-          {optionList}
-        </Dropdown.Menu>
-      </Dropdown>,
-      document.body,
-    );
-  }
+        {optionsList
+          .filter((type) => !!type.text)
+          .map((type) =>
+            type.text === 'divider' ? (
+              <Dropdown.Divider key={`${type.key}_${type.text}`} />
+            ) : (
+              <Dropdown.Item
+                key={`${type.key}_${type.text}`}
+                onClick={type.action}
+              >
+                {type.text}
+              </Dropdown.Item>
+            ),
+          )}
+      </Dropdown.Menu>
+    </Dropdown>,
+    document.body,
+  );
 }
