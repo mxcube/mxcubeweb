@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import './LimsResultDialog.css';
 
 import React from 'react';

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import { Col } from 'react-bootstrap';
 import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
@@ -18,6 +19,7 @@ class NewSampleIsaraView extends React.Component {
     document.addEventListener('keydown', this.onKeyDown, false);
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   onClickCell(event, idx, disabled) {
     if (!disabled) {
       this.props.filter({ cellFilter: `${idx + 1}` });
@@ -33,6 +35,7 @@ class NewSampleIsaraView extends React.Component {
     return isPuckSelected;
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getCollapsibleHeaderOpen(cssClass) {
     return (
       <div className="sample-items-collapsible-header">
@@ -42,6 +45,7 @@ class NewSampleIsaraView extends React.Component {
     );
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getCollapsibleHeaderClose(cssClass) {
     return (
       <div className="sample-items-collapsible-header">

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import { useEffect, useRef, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
@@ -14,6 +15,7 @@ function GalleryImage(props) {
   );
 }
 
+// eslint-disable-next-line react/no-multi-comp
 function GalleryModal(props) {
   const { isOpen, drawTarget } = props;
   const canvasRef = useRef(null);
@@ -76,6 +78,7 @@ function GalleryModal(props) {
   );
 }
 
+// eslint-disable-next-line react/no-multi-comp
 export default function ImageViewer(props) {
   const [showModal, setShowModal] = useState('');
   const [imgUrl, setImgUrl] = useState('');

@@ -1,3 +1,5 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable react/no-multi-comp */
 import './style.css';
 
 import React from 'react';

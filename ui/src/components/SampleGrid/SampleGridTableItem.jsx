@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import './SampleGridTable.css';
 
 import cx from 'classnames';
@@ -161,7 +162,7 @@ export class SampleGridTableItem extends React.Component {
         variant="flush"
         id={this.props.sampleData.sampleID}
         ref={(ref) => {
-          this.sampleItem = ref;
+          this.sampleItem = ref; // eslint-disable-line react/no-unused-class-component-methods
         }}
         onClick={this.handleItemClick}
       >
@@ -190,7 +191,7 @@ export class SampleGridTableItem extends React.Component {
                   bg="light"
                   text="primary"
                   ref={(ref) => {
-                    this.pacronym = ref;
+                    this.pacronym = ref; // eslint-disable-line react/no-unused-class-component-methods
                   }}
                   className="samples-grid-table-item-name-protein-acronym ms-1 mt-2"
                   data-type="text"

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import { Col, Container, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';

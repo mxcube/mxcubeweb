@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import './style.css';
 
 import JSForm from '@rjsf/core';

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import '../components/SampleView/SampleView.css';
 
 import { Component } from 'react';

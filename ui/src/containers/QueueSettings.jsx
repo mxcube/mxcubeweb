@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-unused-state */
 import React from 'react';
 import { Dropdown, Form } from 'react-bootstrap';
@@ -46,6 +47,7 @@ class QueueSettings extends React.Component {
     this.props.setAutoMountSample(e.target.checked);
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   inputOnSelectHandler(e) {
     e.stopPropagation();
     e.nativeEvent.stopImmediatePropagation();

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import 'fabric';
 import './ssxchipcontrol.css';
 

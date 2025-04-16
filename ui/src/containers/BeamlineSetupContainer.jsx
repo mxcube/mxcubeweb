@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { filter, find } from 'lodash';
 import { Nav, Navbar, Popover, Table } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-array-index-key */
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
@@ -257,6 +258,7 @@ class SampleGridTableContainer extends React.Component {
   /**
    * @param {MouseEvent} e
    */
+  // eslint-disable-next-line react/no-unused-class-component-methods
   onKeyDown(e) {
     switch (e.key) {
       case 'Escape': {

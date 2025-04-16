@@ -8,12 +8,7 @@ const config = defineConfig([
   ...createConfig(opts),
   {
     rules: {
-      'jsx-a11y/anchor-is-valid': 'off',
-      'jsx-a11y/control-has-associated-label': 'off',
-      'react/destructuring-assignment': 'off',
-      'react/no-multi-comp': 'off',
-      'react/no-unused-class-component-methods': 'off',
-      'react/prop-types': 'off',
+      'react/prop-types': 'off', // too ambitious; better to switch to TypeScript anyway
 
       /* Default is "avoid", but there are lots of complicated `switch` statements,
        * notably in Redux reducers, which benefit from clear case blocks. */

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import { Badge, Button, Card } from 'react-bootstrap';
 import { contextMenu, Item, Menu, Separator } from 'react-contexify';

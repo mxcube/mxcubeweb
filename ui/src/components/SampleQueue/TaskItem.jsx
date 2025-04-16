@@ -1,3 +1,5 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/no-array-index-key */
 /* eslint-disable react/no-unused-prop-types */
 /* eslint-disable react/no-unused-state */
@@ -88,6 +90,7 @@ export default class TaskItem extends Component {
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   deleteButton() {
     let content = (
       <Button size="sm" onClick={this.deleteTask}>

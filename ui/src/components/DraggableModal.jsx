@@ -11,6 +11,7 @@ function DraggableModalDialog(props) {
   );
 }
 
+// eslint-disable-next-line react/no-multi-comp
 export function DraggableModal(props) {
   const { children } = props;
 

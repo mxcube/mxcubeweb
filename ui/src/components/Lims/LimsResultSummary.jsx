@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable promise/prefer-await-to-then */
 import React from 'react';
 
@@ -71,7 +72,7 @@ export class LimsResultSummary extends React.Component {
       <div
         // ref="limsResultSummary"
         ref={(ref) => {
-          this.limsResultSummary = ref;
+          this.limsResultSummary = ref; // eslint-disable-line react/no-unused-class-component-methods
         }}
         className="lims-result-summary"
         style={style}

@@ -1,3 +1,5 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable react/jsx-key */
 /* eslint-disable react/no-unused-state */
 import 'fabric';
@@ -50,6 +52,7 @@ function ChipContextMenu(props) {
   );
 }
 
+// eslint-disable-next-line react/no-multi-comp
 export default class SSXChip extends React.Component {
   constructor(props) {
     super(props);
@@ -81,8 +84,8 @@ export default class SSXChip extends React.Component {
     // Fix
     this.rect = null;
     this.isDown = false;
-    this.origX = 0;
-    this.origY = 0;
+    this.origX = 0; // eslint-disable-line react/no-unused-class-component-methods
+    this.origY = 0; // eslint-disable-line react/no-unused-class-component-methods
   }
 
   componentDidMount() {
@@ -527,6 +530,7 @@ export default class SSXChip extends React.Component {
     this.freeFormCanvas.renderAll();
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   renderChipInterface() {
     return [
       <div className="chip-canvas-container">

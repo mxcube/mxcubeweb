@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import 'dygraphs/dist/dygraph.min.css';
 
 import Dygraph from 'dygraphs';

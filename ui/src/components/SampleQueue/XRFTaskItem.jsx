@@ -1,3 +1,6 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable jsx-a11y/control-has-associated-label */
+/* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/no-unused-state */
 import PropTypes from 'prop-types';
 import { Component } from 'react';
@@ -71,6 +74,7 @@ export default class XRFTaskItem extends Component {
     );
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getIspybLink(state) {
     if (state !== TASK_COLLECTED) {
       return <span />;
@@ -79,6 +83,7 @@ export default class XRFTaskItem extends Component {
     return <a href={this.props.data.limstResultData}> ISPyB link</a>;
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   getPlot(state) {
     if (state === TASK_UNCOLLECTED) {
       return <span />;
@@ -145,6 +150,7 @@ export default class XRFTaskItem extends Component {
     this.props.deleteTask(this.props.sampleId, this.props.index);
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   deleteButton() {
     let content = (
       <Button size="sm" onClick={this.deleteTask}>

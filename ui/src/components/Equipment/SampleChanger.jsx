@@ -1,3 +1,5 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
 import { Button, Card, Dropdown, DropdownButton, Form } from 'react-bootstrap';
 import { contextMenu, Item, Menu, Separator } from 'react-contexify';
@@ -128,6 +130,7 @@ function SampleChangerTreeItem(props) {
   );
 }
 
+// eslint-disable-next-line react/no-multi-comp
 export default function SampleChanger(props) {
   function scan() {
     props.scan('');

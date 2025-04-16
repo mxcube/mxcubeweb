@@ -4,6 +4,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setNumSnapshots } from '../actions/queue';
 
 function NumSnapshotsDropDown(props) {
+  const { align } = props;
+
   const dispatch = useDispatch();
   const numSnapshots = useSelector((state) => state.queue.numSnapshots);
 
@@ -11,7 +13,7 @@ function NumSnapshotsDropDown(props) {
     <DropdownButton
       id="numSnapshotsDropDown"
       variant="outline-secondary"
-      align={{ sm: props.align }}
+      align={{ sm: align }}
       title={
         <span>
           <i className="fas fa-1x fa-camera" /> &nbsp; Crystal snapshots (

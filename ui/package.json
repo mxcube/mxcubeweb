@@ -14,7 +14,7 @@
     "format": "pnpm prettier --write",
     "fix": "pnpm eslint --fix",
     "prettier": "prettier . --cache --check",
-    "eslint": "eslint",
+    "eslint": "eslint --max-warnings=0",
     "e2e": "cypress run --e2e --browser firefox",
     "cypress": "cypress open --e2e --browser firefox"
   },

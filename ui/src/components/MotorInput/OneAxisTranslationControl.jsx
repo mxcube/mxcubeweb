@@ -7,7 +7,8 @@ import BaseMotorInput from './BaseMotorInput';
 import styles from './OneAxisTranslationControl.module.css';
 
 function OneAxisTranslationControl(props) {
-  const { attribute, step, precision } = props.motorProps;
+  const { motorProps } = props;
+  const { attribute, step, precision } = motorProps;
   const dispatch = useDispatch();
 
   const motor = useSelector(

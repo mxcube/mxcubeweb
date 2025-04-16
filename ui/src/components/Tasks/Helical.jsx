@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import { Button, ButtonToolbar, Form, Modal, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';

@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import { Nav } from 'react-bootstrap';
 import { connect } from 'react-redux';

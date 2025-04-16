@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import './SampleView.css';
 
 import { useEffect, useRef, useState } from 'react';

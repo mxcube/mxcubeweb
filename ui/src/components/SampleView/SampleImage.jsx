@@ -1,3 +1,5 @@
+/* eslint-disable react/destructuring-assignment */
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import 'fabric';
 
 import React from 'react';
@@ -52,11 +54,11 @@ export default class SampleImage extends React.Component {
     this.drawGridPlugin = new DrawGridPlugin();
     this.drawGridPlugin.setGridResultFormat(props.meshResultFormat);
     this._keyPressed = null;
-    this.gridStarted = false;
-    this.girdOrigin = null;
-    this.lineGroup = null;
+    this.gridStarted = false; // eslint-disable-line react/no-unused-class-component-methods
+    this.girdOrigin = null; // eslint-disable-line react/no-unused-class-component-methods
+    this.lineGroup = null; // eslint-disable-line react/no-unused-class-component-methods
     this.player = null;
-    this.centringCross = [];
+    this.centringCross = []; // eslint-disable-line react/no-unused-class-component-methods
     this.removeShapes = this.removeShapes.bind(this);
   }
 
@@ -812,6 +814,7 @@ export default class SampleImage extends React.Component {
     }
   }
 
+  // eslint-disable-next-line react/no-unused-class-component-methods
   preventAction(e) {
     e.preventDefault();
     e.stopPropagation();

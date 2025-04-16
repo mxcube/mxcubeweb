@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 import './app.css';
 
 import React from 'react';
