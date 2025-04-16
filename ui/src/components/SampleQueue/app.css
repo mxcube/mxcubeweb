@@ -6,9 +6,6 @@
 .f-no-select {
   user-select: none;
 }
-.queue-settings .dropdown-menu {
-  margin-left: -250px !important;
-}
 .dropdown-menu > li > span {
   display: block;
   padding: 3px 20px;
