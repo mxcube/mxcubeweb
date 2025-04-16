@@ -1,82 +1,56 @@
-/* eslint-disable react/destructuring-assignment */
-import React from 'react';
+import { useEffect } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useForm } from 'react-hook-form';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { setGroupFolder } from '../actions/queue';
 
-class GroupFolderInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.inputOnChangeHandler = this.inputOnChangeHandler.bind(this);
-    this.setGroupFolderInput = this.setGroupFolderInput.bind(this);
-    this.inputValue = '';
-    this.state = { validationState: 'success' };
+function GroupFolderInput() {
+  const dispatch = useDispatch();
+  const groupFolder = useSelector((state) => state.queue.groupFolder);
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { isDirty },
+  } = useForm({
+    defaultValues: {
+      groupFolder: groupFolder || '',
+    },
+  });
+
+  useEffect(() => {
+    reset({ groupFolder: groupFolder || '' });
+  }, [groupFolder, reset]);
+
+  function onSubmit(data) {
+    dispatch(setGroupFolder(data.groupFolder));
   }
 
-  setGroupFolderInput() {
-    this.setState({ validationState: 'success' });
-    this.props.setGroupFolder(this.inputValue.value);
-  }
-
-  inputOnSelectHandler(e) {
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
-  }
-
-  inputOnChangeHandler() {
-    this.setState({ validationState: 'warning' });
-  }
-
-  render() {
-    return (
-      <span>
-        <Form.Label>Group path :</Form.Label>
-        <br />
-        <Form
-          onSubmit={(e) => {
-            e.preventDefault();
+  return (
+    <Form as="div">
+      <Form.Label>Group path :</Form.Label>
+      <Form.Group className="d-flex">
+        <Form.Control
+          size="sm"
+          {...register('groupFolder')}
+          style={{
+            borderColor: isDirty ? '#ffc107' : undefined,
+            boxShadow: isDirty ? '0 0 0 0.2rem rgba(255,193,7,.25)' : undefined,
           }}
+        />
+        <span style={{ marginRight: '0.5em' }} />
+        <Button
+          variant="outline-secondary"
+          size="sm"
+          onClick={handleSubmit(onSubmit)}
         >
-          <Form.Group
-            className="d-flex"
-            validationState={this.state.validationState}
-          >
-            <Form.Control
-              size="sm"
-              defaultValue={this.props.queue.groupFolder}
-              onSelect={this.inputOnSelectHandler}
-              onChange={this.inputOnChangeHandler}
-              ref={(ref) => {
-                this.inputValue = ref;
-              }}
-            />
-            <span style={{ marginRight: '0.5em' }} />
-            <Button
-              variant="outline-secondary"
-              size="sm"
-              onClick={this.setGroupFolderInput}
-            >
-              Set
-            </Button>
-          </Form.Group>
-        </Form>
-      </span>
-    );
-  }
+          Set
+        </Button>
+      </Form.Group>
+    </Form>
+  );
 }
 
-function mapStateToProps(state) {
-  return {
-    queue: state.queue,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    setGroupFolder: bindActionCreators(setGroupFolder, dispatch),
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(GroupFolderInput);
+export default GroupFolderInput;
