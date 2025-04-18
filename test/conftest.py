@@ -56,9 +56,11 @@ def cleanup_subprocesses():
 
     for child in parent_process.children(recursive=True):
         if child.is_running():
-            child.terminate()
             try:
+                child.terminate()
                 child.wait(timeout=1)
+            except psutil.NoSuchProcess:
+                pass
             except psutil.TimeoutExpired:
                 child.kill()
 
