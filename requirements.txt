@@ -337,9 +337,8 @@ email-validator==2.2.0 ; python_version >= "3.10" and python_version < "3.12" \
 exceptiongroup==1.2.2 ; python_version == "3.10" \
     --hash=sha256:3111b9d131c238bec2f8f516e123e14ba243563fb135d3fe885990585aa7795b \
     --hash=sha256:47c2edf7c6738fafb49fd34290706d1a1a2f4d1c6df275526b62cbb4aa5393cc
-f90nml==1.4.3 ; python_version >= "3.10" and python_version < "3.12" \
-    --hash=sha256:abbc4d3d9691571eda6273e72df0a5b5cd20338699d4e295a11037750dcb7dbe \
-    --hash=sha256:e2f3cd23d821ebcaef66ce406485b35aa08aae0df92c4bece76e227e5bd146e1
+f90nml==1.3.1 ; python_version >= "3.10" and python_version < "3.12" \
+    --hash=sha256:145c1f2c55bad628d225af22fc9bf06347eb0d33e7bae8a05869a68274b8fb2d
 fastapi==0.115.7 ; python_version >= "3.10" and python_version < "3.12" \
     --hash=sha256:0f106da6c01d88a6786b3248fb4d7a940d071f6f488488898ad5d354b25ed015 \
     --hash=sha256:eb6a8c8bf7f26009e8147111ff15b5177a0e19bb4a45bc3486ab14804539d21e
@@ -887,9 +886,9 @@ mock==4.0.3 ; python_version >= "3.10" and python_version < "3.12" \
 mxcube-video-streamer==1.8.2 ; python_version >= "3.10" and python_version < "3.12" \
     --hash=sha256:0de041c5f17148cec4668a7683f39f1064cd5036d6de311de23a29965466bba6 \
     --hash=sha256:356998627e4ecc74b6b764dcd4799be0d85e4d658f10810b877d9af14ac57178
-mxcubecore==1.248.0 ; python_version >= "3.10" and python_version < "3.12" \
-    --hash=sha256:24ffe061a8ded03333a6ef7ad7df37767d8bff86f34036e3b27a2d3bdb0e4fcc \
-    --hash=sha256:88b1356f9dbda328e19901c216b70df6797b1c46018445a33fd05daf59fc01db
+mxcubecore==1.261.0 ; python_version >= "3.10" and python_version < "3.12" \
+    --hash=sha256:20a987fab3dbd3d98cb8f1a36a1083e0bb91c0574f690413bd8203e62c69a99e \
+    --hash=sha256:b0882bbcc7e77cc39531b971878d5b2fa18574a59254875709246ab4d159eac0
 numpy==1.26.4 ; python_version >= "3.10" and python_version < "3.12" \
     --hash=sha256:03a8c78d01d9781b28a6989f6fa1bb2c4f2d51201cf99d3dd875df6fbd96b23b \
     --hash=sha256:08beddf13648eb95f8d867350f6a018a4be2e5ad54c8d8caed89ebca558b2818 \
