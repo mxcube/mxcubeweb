@@ -194,16 +194,16 @@ export function recordCentringClick(x, y) {
 
     const { clicksLeft } = json;
     dispatch(centringClicksLeft(clicksLeft));
-    dispatch(
-      videoMessageOverlay(
-        true,
-        `3-Click Centring: <br />${
-          clicksLeft === 0
-            ? 'Save centring or clicking on screen to restart'
-            : `Clicks left: ${clicksLeft}`
-        }`,
-      ),
-    );
+
+    let msg = '3-Click Centring: <br />';
+    if (clicksLeft === 0) {
+      msg += 'Save centring or clicking on screen to restart';
+    } else if (clicksLeft === -1) {
+      msg += 'Please wait, the centring movement is not completed yet';
+    } else {
+      msg += `Clicks left: ${clicksLeft}`;
+    }
+    dispatch(videoMessageOverlay(true, msg));
   };
 }
 
