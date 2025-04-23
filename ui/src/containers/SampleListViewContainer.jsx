@@ -85,12 +85,12 @@ export default function SampleListViewContainer() {
     displayTaskForm('DataCollection', {});
   }
 
-  function showWorkflowForm() {
-    displayTaskForm('Workflow');
-  }
-
   function showAddSampleForm() {
     displayTaskForm('AddSample');
+  }
+
+  function showWorkflowForm(wf) {
+    displayTaskForm('Workflow', wf);
   }
 
   function getCellFilterOptions() {
@@ -154,8 +154,8 @@ export default function SampleListViewContainer() {
    * Helper function that displays a task form
    *
    * @param {string} formName - [Characterisation, DataCollection, AddSample]
-   * @property {Object} selected
-   * @property {Object} sampleList
+   * @property {Object} selected - List of selected Samples
+   * @property {Object} sampleList - Samples List
    */
   function displayTaskForm(formName, extraParams = {}) {
     let prefix = '';
@@ -446,7 +446,7 @@ export default function SampleListViewContainer() {
       dispatch(setEnabledSample(samplesToRemove, false));
     }
     if (addSamples && samples.length > 0) {
-      dispatch(addSamplesToQueue(samples));
+      handleAddSamplesToQueue(samples);
     }
   }
 
