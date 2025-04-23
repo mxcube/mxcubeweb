@@ -6,6 +6,7 @@ import SampleImage from '../components/SampleView/SampleImage';
 import MotorControl from '../components/SampleView/MotorControl';
 import PhaseInput from '../components/SampleView/PhaseInput';
 import ApertureInput from '../components/SampleView/ApertureInput';
+import REXInput from '../components/SampleView/REXInput'; // new add
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import * as SampleViewActions from '../actions/sampleview';
@@ -117,6 +118,17 @@ class SampleViewContainer extends Component {
       </div>
     );
 
+    const rexControl = (
+      <div>
+        <p className="motor-name">REX Cold Head:</p>
+        <REXInput
+          position={this.props.sampleViewState.rexPosition}
+          state={diffractometerHo.state}
+          sendREXPosition={this.props.sampleViewActions.sendREXPosition}
+        />
+      </div>
+    );
+
     const apertureControl = (
       <div>
         <p className="motor-name">Beam size:</p>
@@ -127,6 +139,8 @@ class SampleViewContainer extends Component {
         />
       </div>
     );
+
+
 
     return (
       <Container fluid>
@@ -145,6 +159,7 @@ class SampleViewContainer extends Component {
             <DefaultErrorBoundary>
               {process.env.REACT_APP_PHASECONTROL==='true' ? phaseControl : null}
               {apertureControl}
+              {rexControl}{/* add REX control */}
               {this.props.mode === 'SSX-CHIP' ?
                 (<SSXChipControl
                   showForm={this.props.showForm}
@@ -236,7 +251,7 @@ class SampleViewContainer extends Component {
 
 function mapStateToProps(state) {
   return {
-    sampleList: state.sampleGrid.sampleList,     
+    sampleList: state.sampleGrid.sampleList,
     current: state.queue.current,
     groupFolder: state.queue.groupFolder,
     queueState: state.queue.queueStatus,

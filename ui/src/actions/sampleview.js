@@ -1,4 +1,6 @@
+import { text } from '@fortawesome/fontawesome-svg-core';
 import fetch from 'isomorphic-fetch';
+import { set } from 'lodash';
 import { showErrorPanel } from './general';
 
 export function setMotorMoving(name, status) {
@@ -751,5 +753,54 @@ export function sendCurrentPhase(phase) {
         dispatch(setCurrentPhase(phase));
       }
     });
+  };
+}
+
+export function setREXPosition(position) {
+  return {
+    type: 'SET_REX_POSITION',
+    payload: position,
+  };
+}
+
+export function sendREXPosition(position) { // new add
+  return function (dispatch) {
+    fetch('/mxcube/api/v0.1/diffractometer/rex_position', {
+      method: 'PUT',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-type': 'application/json',
+      },
+      body: JSON.stringify({ position }),
+    }).then(( response ) => {
+        if (response.status >= 400){
+          throw new Error('Server refused to set REX position')
+        } else {
+          dispatch(setREXPosition(position))
+        }
+      });
+  };
+}
+
+
+
+export function fetchREXPosition(){
+  return function (dispatch) {
+    fetch('/mxcube/api/v0.1/diffractometer/rex_position',{
+      method: 'GET',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+      },
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch(setREXPosition(data.rexPosition));
+      })
+      .catch((error) => {
+        console.error('Fetch REX position error:',error);
+        dispatch(showErrorPanel(true,`Error: ${error.message()}`));
+      });
   };
 }

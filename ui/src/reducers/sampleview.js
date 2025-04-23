@@ -36,6 +36,9 @@ const initialState = {
   beamSize: { x: 0, y: 0 },
   cinema: false,
   phaseList: [],
+  state: 'READY', // new add
+  rexPosition: 'Unknown', // new add
+  rexPositionList: ['CRYO_IN', 'CRYO_BACK', 'PARK', 'HUMIDIFIER'], //new add rex position list
   drawGrid: false,
   gridResultType: 'heatmap',
   videoMessageOverlay: { show: false, msg: '' },
@@ -134,6 +137,15 @@ export default (state = initialState, action) => {
     case 'SET_CURRENT_PHASE': {
       return { ...state, currentPhase: action.phase };
     }
+
+    case 'SET_REX_POSITION': { // new add
+      return { ...state, rexPosition: action.payload };
+    }
+
+    // case 'SEND_REX_POSITION': { // new add
+    //   return { ...state, rexPosition: action.payload };
+    // }
+
     case 'SET_STEP_SIZE': {
       return {
         ...state,
@@ -217,6 +229,9 @@ export default (state = initialState, action) => {
         currentPhase: action.data.currentPhase,
         pixelsPerMm: action.data.Camera.pixelsPerMm,
         sourceScale: action.data.Camera.scale,
+        state: 'READY', // new add
+        rexPosition:action.data.rexPosition || 'Unknown', // new add
+        rexPositionList: action.data.rexPositionList || initialState.rexPositionList, // new add
       };
     }
     default:

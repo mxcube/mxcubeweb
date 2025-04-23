@@ -58,6 +58,74 @@ def init_route(app, server, url_prefix):
         app.beamline.diffractometer_set_phase(phase)
         return Response(status=200)
 
+    @bp.route("/rex_position",methods=["GET"])
+    @server.restrict
+    def get_rex_position():
+        """
+        Retrieve the current REX cold head position.
+            :request Content-type: application/json, example:
+                {'current_rex_position':'Cryo_In'},
+                available positions: [Cryo_In, Cryo_Back, Park, Humidifier]
+            :statuscode: 200: no error
+            :statuscode: 409: error
+        """
+        try:
+            current_position = HWR.beamline.diffractometer.get_cold_head_state()
+            data = {"current_rex_position": current_position}
+            print("-----------------------------------------------------")
+            print(data)
+            print("-----------------------------------------------------")
+            resp = jsonify(data)
+            resp.status_code = 200
+            return resp
+        except Exception as e:
+            resp = jsonify({"message":  f"Failed to get REXposition: {str(e)}"})
+            resp.status_code = 409
+            return resp
+
+    @bp.route("/rex_position", methods=["GET"])
+    @server.restrict
+    def get_rex_position_list():
+        """
+        Retrieve the current REX cold head position.
+            :request Content-type: application/json, example:
+                {'rex_position_list':['Cryo_In', 'Cryo_Back', 'Park', 'Humidifier']},
+            :statuscode: 200: no error
+            :statuscode: 409: error
+        """
+        try:
+            position_list = ['CRYO_IN','CRYO_BACK','PARK','HUMIDIFIER']
+            resp = jsonify({"rex_position_list": position_list})
+            resp.status_code = 200
+            return resp
+        except Exception as e:
+            resp = jsonify({"message": f"Failed to get REX position list: {str(e)}"})
+            resp.status_code = 409
+            return resp
+
+    @bp.route("/rex_position", methods=["PUT"])
+    @server.require_control
+    @server.restrict
+    def set_rex_position():
+        """
+        Set the REX cold head postion.
+            :request Content-type: application/json, an object containing
+                the new position as string, e.g. {'position': 'Cryo_In'}.
+                Available position: [Cryo_In, Cryo_Back, Park, Humidifier]
+            :statuscode: 200: no error
+            :statuscode: 409: error
+        """
+        try:
+            params = request.get_json()
+            position = params["position"].upper()
+            valid_positions = ["CRYO_IN", "CRYO_BACK", "PARK", "HUMIDIFIER"]
+            if position not in valid_positions:
+                return jsonify({"error":f"Invalid position:{position}. Valid positions are {valid_positions}"}), 400
+            HWR.beamline.diffractometer.switch_cold_head(position)
+            return jsonify({"status": "success"}), 200
+        except Exception as e:
+            resp = jsonify({"message": f"Failed to set REX position: {str(e)}"}), 409
+
     @bp.route("/platemode", methods=["GET"])
     @server.restrict
     def md_in_plate_mode():
