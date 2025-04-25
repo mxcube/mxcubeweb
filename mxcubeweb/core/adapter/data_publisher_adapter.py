@@ -1,5 +1,11 @@
 import logging
+from typing import ClassVar
 
+# This needs to be a direct import of DataPublisher otherwise
+# the is instance check fails due to different "import paths" It
+# works because mxcubecore adds mxcubecore.HardwareObjects to
+# sys path in __init__.py
+import DataPublisher
 from mxcubecore.BaseHardwareObjects import HardwareObjectState
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
@@ -7,6 +13,7 @@ from mxcubeweb.core.adapter.adapter_base import AdapterBase
 
 class DataPublisherAdapter(AdapterBase):
     ATTRIBUTES = ["current_data", "all_data", "current"]
+    SUPPORTED_TYPES: ClassVar[list[object]] = [DataPublisher.DataPublisher]
 
     def __init__(self, ho, *args):
         """

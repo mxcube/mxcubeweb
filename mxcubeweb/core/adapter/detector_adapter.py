@@ -1,7 +1,13 @@
+from typing import ClassVar
+
+from mxcubecore.HardwareObjects.abstract import AbstractDetector
+
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
 
 
 class DetectorAdapter(AdapterBase):
+    SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractDetector.AbstractDetector]
+
     def __init__(self, ho, *args):
         """
         Args:

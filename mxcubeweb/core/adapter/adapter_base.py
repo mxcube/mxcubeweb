@@ -3,7 +3,7 @@ import inspect
 import logging
 import traceback
 import typing
-from typing import Any
+from typing import Any, ClassVar
 
 import gevent
 from pydantic.v1 import (
@@ -16,11 +16,14 @@ from mxcubeweb.core.models.adaptermodels import (
     HOActuatorModel,
     HOModel,
 )
-from mxcubeweb.core.util.adapterutils import get_adapter_cls_from_hardware_object
 
 
 class AdapterBase:
     """Hardware Object Adapter Base class"""
+
+    # List of supported HO base classes (or callable for more advanced matching)
+    SUPPORTED_TYPES: ClassVar[list[object]] = []
+    SUBCLASSES = []
 
     ATTRIBUTES = []
     METHODS = []
@@ -40,15 +43,23 @@ class AdapterBase:
         self._unique = True
         self._msg = ""
 
+    @classmethod
+    def can_adapt(cls, ho):
+        return any(isinstance(ho, t) for t in cls.SUPPORTED_TYPES)
+
+    def __init_subclass__(cls, **kwargs):
+        super().__init_subclass__(**kwargs)
+        AdapterBase.SUBCLASSES.append(cls)
+
+    @classmethod
+    def get_resource_handler(cls):
+        return AdapterBase.RESOURCE_HANDLER_DICT.get(cls.__name__, None)
+
     def get_adapter_id(self, ho=None):
         ho = ho if ho else self._ho
         return self.app.mxcubecore._get_adapter_id(ho)
 
-    def _add_adapter(self, attr_name, ho, adapter_cls=None):
-        adapter_cls = (
-            adapter_cls if adapter_cls else get_adapter_cls_from_hardware_object(ho)
-        )
-
+    def _add_adapter(self, attr_name, ho, adapter_cls):
         _id = f"{self.get_adapter_id()}.{attr_name}"
         adapter_instance = adapter_cls(ho, _id, self.app)
         self.app.mxcubecore._add_adapter(_id, adapter_cls, ho, adapter_instance)

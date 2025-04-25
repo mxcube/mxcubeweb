@@ -1,5 +1,11 @@
 import logging
 from enum import Enum
+from typing import ClassVar
+
+from mxcubecore.HardwareObjects.abstract import (
+    AbstractNState,
+    AbstractShutter,
+)
 
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubeweb.core.models.adaptermodels import (
@@ -10,6 +16,11 @@ from mxcubeweb.core.models.adaptermodels import (
 
 
 class NStateAdapter(ActuatorAdapterBase):
+    SUPPORTED_TYPES: ClassVar[list[object]] = [
+        AbstractNState.AbstractNState,
+        AbstractShutter.AbstractShutter,
+    ]
+
     def __init__(self, ho, *args):
         """
         Args:

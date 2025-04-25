@@ -1,9 +1,12 @@
+from typing import ClassVar
+
+from mxcubecore.HardwareObjects.abstract import AbstractActuator
+
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubeweb.core.models.adaptermodels import (
     FloatValueModel,
     HOActuatorValueChangeModel,
 )
-from mxcubeweb.core.util.adapterutils import export
 from mxcubeweb.core.util.networkutils import RateLimited
 
 
@@ -12,6 +15,8 @@ class ActuatorAdapter(ActuatorAdapterBase):
     Adapter for Energy Hardware Object, a web socket is used to communicate
     information on longer running processes.
     """
+
+    SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractActuator.AbstractActuator]
 
     def __init__(self, ho, *args):
         """
@@ -50,7 +55,6 @@ class ActuatorAdapter(ActuatorAdapterBase):
         """
         self._ho.set_value(float(value.value))
 
-    @export
     def _get_value(self) -> FloatValueModel:
         """
         Read the energy.

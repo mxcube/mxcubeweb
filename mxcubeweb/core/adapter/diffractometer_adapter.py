@@ -1,9 +1,21 @@
+from typing import ClassVar
+
+from mxcubecore.HardwareObjects import (
+    GenericDiffractometer,
+    MiniDiff,
+)
+
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
 
 
 class DiffractometerAdapter(AdapterBase):
     ATTRIBUTES = ["head_configuration"]
     METHODS = ["set_chip_layout"]
+
+    SUPPORTED_TYPES: ClassVar[list[object]] = [
+        MiniDiff.MiniDiff,
+        GenericDiffractometer.GenericDiffractometer,
+    ]
 
     def __init__(self, ho, *args):
         """

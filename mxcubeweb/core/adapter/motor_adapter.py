@@ -1,3 +1,7 @@
+from typing import ClassVar
+
+from mxcubecore.HardwareObjects.abstract import AbstractMotor
+
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubeweb.core.models.adaptermodels import (
     FloatValueModel,
@@ -7,6 +11,8 @@ from mxcubeweb.core.util.networkutils import RateLimited
 
 
 class MotorAdapter(ActuatorAdapterBase):
+    SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractMotor.AbstractMotor]
+
     def __init__(self, ho, *args):
         """
         Args:

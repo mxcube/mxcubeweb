@@ -7,7 +7,6 @@ import logging
 import os
 import sys
 import time
-import traceback
 from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
@@ -19,9 +18,8 @@ from mxcubecore import HardwareRepository as HWR
 from mxcubecore import (
     removeLoggingHandlers,
 )
-from mxcubecore.utils.conversion import make_table
 
-from mxcubeweb.core.adapter.adapter_base import AdapterBase
+from mxcubeweb.core.adapter.adapter_manager import HardwareObjectAdapterManager
 from mxcubeweb.core.components.beamline import Beamline
 from mxcubeweb.core.components.chat import Chat
 from mxcubeweb.core.components.component_base import import_component
@@ -32,156 +30,9 @@ from mxcubeweb.core.components.samplechanger import SampleChanger
 from mxcubeweb.core.components.sampleview import SampleView
 from mxcubeweb.core.components.workflow import Workflow
 from mxcubeweb.core.models.configmodels import UIComponentModel
-from mxcubeweb.core.util.adapterutils import get_adapter_cls_from_hardware_object
 from mxcubeweb.logging_handler import MX3LoggingHandler
 
 removeLoggingHandlers()
-
-
-class MXCUBECore:
-    # The HardwareRepository object
-    hwr = None
-
-    # Below, all the HardwareObjects made available through this module,
-    # Initialized by the init function
-
-    # XMLRPCServer
-    actions = None
-    # Plotting
-    plotting = None
-
-    adapter_dict = {}
-
-    @staticmethod
-    def exit_with_error(msg):
-        """
-        Writes the traceback and msg to the log and exits the application
-
-        :param str msg: Additional message to write to log
-
-        """
-        logging.getLogger("HWR").error(traceback.format_exc())
-
-        if msg:
-            logging.getLogger("HWR").error(msg)
-
-        msg = "Could not initialize one or several hardware objects, stopped "
-        msg += "at first error !"
-
-        logging.getLogger("HWR").error(msg)
-        logging.getLogger("HWR").error("Quitting server !")
-        sys.exit(-1)
-
-    @staticmethod
-    def init(app):
-        """
-        Initializes the HardwareRepository with XML files read from hwdir.
-
-        The hwr module must be imported at the very beginning of the application
-        start-up to function correctly.
-
-        This method can however be called later, so that initialization can be
-        done when one wishes.
-
-        :param app: FIXME ???
-
-        :return: None
-        """
-        from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
-
-        fname = os.path.dirname(__file__)
-        HWR.add_hardware_objects_dirs([os.path.join(fname, "HardwareObjects")])
-        # rhfogh 20210916. The change allows (me) simpler configuration handling
-        # and because of changes in init_hardware_repository does not change
-        # current functionality.
-        _hwr = HWR.get_hardware_repository()
-
-        MXCUBECore.hwr = _hwr
-
-        try:
-            MXCUBECore.beamline = BeamlineAdapter(HWR.beamline, MXCUBEApplication)
-            MXCUBECore.adapt_hardware_objects(app)
-        except Exception:
-            msg = "Could not initialize one or several hardware objects, "
-            msg += "stopped at first error ! \n"
-            msg += "Make sure That all devices servers are running \n"
-            msg += "Make sure that the detector software is running \n"
-            MXCUBECore.exit_with_error(msg)
-
-    @staticmethod
-    def _get_object_from_id(_id):
-        if _id in MXCUBECore.adapter_dict:
-            return MXCUBECore.adapter_dict[_id]["adapter"]
-        return None
-
-    @staticmethod
-    def _get_adapter_id(ho):
-        _id = HWR.beamline.get_id(ho)
-
-        return _id.replace(" ", "_").lower()
-
-    @staticmethod
-    def _add_adapter(_id, adapter_cls, ho, adapter_instance):
-        if _id not in MXCUBECore.adapter_dict:
-            MXCUBECore.adapter_dict[_id] = {
-                "id": str(_id),
-                "adapter_cls": adapter_cls.__name__,
-                "ho": ho.name,
-                "adapter": adapter_instance,
-            }
-        else:
-            logging.getLogger("MX3.HWR").warning(
-                f"Skipping {ho.name}, id: {_id} already exists"
-            )
-
-    @staticmethod
-    def get_adapter(_id):
-        return MXCUBECore._get_object_from_id(_id)
-
-    @staticmethod
-    def adapt_hardware_objects(app):
-        hwobject_list = list(MXCUBECore.hwr.hardware_objects)
-
-        for ho_name in hwobject_list:
-            # Go through all hardware objects exposed by mxcubecore
-            # hardware repository set id to username if its defined
-            # use the name otherwise (file name without extension)
-            ho = MXCUBECore.hwr.get_hardware_object(ho_name)
-
-            if not ho:
-                continue
-
-            _id = HWR.beamline.get_id(ho)
-
-            # Try to use the interface exposed by abstract classes in mxcubecore to adapt
-            # the object
-            adapter_cls = get_adapter_cls_from_hardware_object(ho)
-
-            if adapter_cls:
-                try:
-                    adapter_instance = adapter_cls(ho, _id, app)
-                    logging.getLogger("MX3.HWR").info("Added adapter for %s" % _id)
-                except Exception:
-                    logging.getLogger("MX3.HWR").exception(
-                        "Could not add adapter for %s" % _id
-                    )
-                    logging.getLogger("MX3.HWR").info("%s not available" % _id)
-                    adapter_cls = AdapterBase
-                    adapter_instance = AdapterBase(None, _id, app)
-
-                MXCUBECore._add_adapter(_id, adapter_cls, ho, adapter_instance)
-            else:
-                logging.getLogger("MX3.HWR").info("No adapter for %s" % _id)
-
-        print(
-            make_table(
-                ["Beamline attribute (id)", "Adapter", "HO filename"],
-                [
-                    [item["id"], item["adapter_cls"], item["ho"]]
-                    for item in MXCUBECore.adapter_dict.values()
-                ],
-            )
-        )
 
 
 class MXCUBEApplication:
@@ -244,7 +95,7 @@ class MXCUBEApplication:
 
     CONFIG = None
 
-    mxcubecore = MXCUBECore()
+    mxcubecore = None
 
     server = None
 
@@ -276,8 +127,9 @@ class MXCUBEApplication:
         MXCUBEApplication.ALLOW_REMOTE = allow_remote
         MXCUBEApplication.TIMEOUT_GIVES_CONTROL = ra_timeout
         MXCUBEApplication.CONFIG = cfg
+        MXCUBEApplication.mxcubecore = HardwareObjectAdapterManager(MXCUBEApplication)
 
-        MXCUBEApplication.mxcubecore.init(MXCUBEApplication)
+        MXCUBEApplication.mxcubecore.init()
 
         if cfg.app.USE_EXTERNAL_STREAMER:
             MXCUBEApplication.init_sample_video(

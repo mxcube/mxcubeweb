@@ -1,12 +1,17 @@
+from typing import ClassVar
+
+from mxcubecore.HardwareObjects.abstract import AbstractBeam
+
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubeweb.core.models.adaptermodels import (
     HOBeamModel,
     HOBeamValueModel,
 )
-from mxcubeweb.core.util.adapterutils import export
 
 
 class BeamAdapter(ActuatorAdapterBase):
+    SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractBeam.AbstractBeam]
+
     def __init__(self, ho, *args):
         super().__init__(ho, *args)
 
@@ -59,11 +64,9 @@ class BeamAdapter(ActuatorAdapterBase):
 
         return HOBeamValueModel(value=beam_info_dict)
 
-    @export
     def get_size(self) -> HOBeamModel:
         pass
 
-    @export
     def set_size(self, value: HOBeamModel) -> HOBeamModel:
         pass
 
