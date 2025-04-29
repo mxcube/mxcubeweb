@@ -18,17 +18,13 @@ export default function MXContextMenu(props) {
     if (show && menuRef.current) {
       const menu = menuRef.current;
       const windowWidth = document.body.offsetWidth;
-      const windowHeight = document.body.offsetHeight;
       const menuEndXPos = x + menu.offsetWidth;
-      const menuEndYPos = y + menu.offsetHeight;
 
       const posxoffset = menuEndXPos > windowWidth ? menu.offsetWidth + 10 : 10;
-      const posyoffset =
-        menuEndYPos > windowHeight ? menu.offsetHeight + 70 : 70;
 
       setPosition({
         x: x - posxoffset,
-        y: y - posyoffset,
+        y: y - 70,
       });
     }
   }, [show, x, y]);
