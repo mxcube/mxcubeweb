@@ -80,8 +80,13 @@
   padding: 0.3em !important;
 }
 
+.sample-items-col {
+  max-width: 365px;
+}
+
 .samples-grid-table-li {
   min-width: 283px;
+  max-width: 365px;
   margin: auto auto 6px 0;
   z-index: 2 !important;
   list-style-type: none;

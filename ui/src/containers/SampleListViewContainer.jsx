@@ -297,7 +297,13 @@ export default function SampleListViewContainer() {
    *
    * return {boolean} true if item is to be excluded otherwise false
    */
-  function applyFilter(key) {
+  function applyFilter(key, cellID = null, puckID = null) {
+    const { cellFilter, puckFilter } = filterOptions;
+
+    // we either use the store value or  Pass the intended filter parameters manually
+    const cellNo = cellID ?? Number(cellFilter);
+    const puckNo = puckID ?? Number(puckFilter);
+
     const sample = sampleList[key];
     let fi = false;
     if (sample) {
@@ -322,13 +328,13 @@ export default function SampleListViewContainer() {
       );
       // eslint-disable-next-line no-bitwise
       fi &= mutualExclusiveFilterOption(sample, 'limsSamples', '', hasLimsData);
-      if (filterOptions.cellFilter !== '') {
+      if (cellFilter !== '') {
         // eslint-disable-next-line no-bitwise
-        fi &= sample.cell_no === Number(filterOptions.cellFilter);
+        fi &= sample.cell_no === cellNo;
       }
-      if (filterOptions.puckFilter !== '') {
+      if (puckFilter !== '' && puckID !== null) {
         // eslint-disable-next-line no-bitwise
-        fi &= sample.puck_no === Number(filterOptions.puckFilter);
+        fi &= sample.puck_no === puckNo;
       }
     }
 
@@ -798,7 +804,7 @@ export default function SampleListViewContainer() {
                   variant="outline-secondary"
                   id="dropdown-basic"
                 >
-                  <MdGridView size="1em" /> View Mode
+                  <MdGridView size="1em" /> {viewMode.mode}
                 </Dropdown.Toggle>
                 <Dropdown.Menu>
                   {viewMode.options.map((option) => (
