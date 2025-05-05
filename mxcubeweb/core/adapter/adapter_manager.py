@@ -75,18 +75,6 @@ class HardwareObjectAdapterManager:
     def get_adapter(self, _id):
         return self._get_object_from_id(_id)
 
-    def get_match_depth(self, ho, supported_types):
-        # Calculate the lowest index (most specific) of matching type in the MRO
-
-        return min(
-            (
-                ho.__class__.mro().index(t)
-                for t in supported_types
-                if t in ho.__class__.mro()
-            ),
-            default=float("inf"),
-        )
-
     def find_best_adapter(self, ho):
         """
         Rank adapters by the depth of their SUPPORTED_TYPES in the
@@ -94,19 +82,48 @@ class HardwareObjectAdapterManager:
 
         Choose the adapter with the most specific match (deepest class
         in the hierarchy).
+
+        Args:
+            ho: HardwareObject to adapt
+        Returns:
+            The best adapter class for the hardware object
+        Raises:
+            RuntimeError: If multiple adapters suit the hardware object
         """
-        matches = []
+        if ho.__class__ in AdapterBase.SUPPORTED_TYPES_TO_ADAPTERS:
+            return AdapterBase.SUPPORTED_TYPES_TO_ADAPTERS[ho.__class__]
 
-        for adapter_cls in AdapterBase.SUBCLASSES:
-            if "SUPPORTED_TYPES" in adapter_cls.__dict__ and adapter_cls.can_adapt(ho):
-                depth = self.get_match_depth(ho, adapter_cls.SUPPORTED_TYPES)
-                matches.append((depth, adapter_cls))
+        superclasses = [
+            ho_class
+            for ho_class in AdapterBase.SUPPORTED_TYPES_TO_ADAPTERS
+            if issubclass(ho.__class__, ho_class)
+        ]
 
-        if matches:
-            matches.sort(key=lambda x: x[0])
-            return matches[0][1]
+        if len(superclasses) == 0:
+            logging.getLogger("MX3.HWR").warning("No adapter for %s", ho)
+            return None
 
-        return None
+        # filter superclasses to only those that are not subclasses of each other
+        result = [
+            cls
+            for cls in superclasses
+            if not any(
+                issubclass(other_cls, cls)
+                for other_cls in superclasses
+                if cls != other_cls
+            )
+        ]
+
+        if len(result) == 1:
+            return AdapterBase.SUPPORTED_TYPES_TO_ADAPTERS[result[0]]
+
+        msg = (
+            "Multiple adapters found for %s: %s",
+            ho,
+            {", ".join([cls.__name__ for cls in result])},
+        )
+        logging.getLogger("MX3.HWR").error(msg)
+        raise RuntimeError(msg)
 
     def adapt_hardware_objects(self):
         _hwr = HWR.get_hardware_repository()

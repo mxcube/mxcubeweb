@@ -23,7 +23,8 @@ class AdapterBase:
 
     # List of supported HO base classes (or callable for more advanced matching)
     SUPPORTED_TYPES: ClassVar[list[object]] = []
-    SUBCLASSES = []
+    # Dictionary of supported types and their adapters
+    SUPPORTED_TYPES_TO_ADAPTERS = {}
 
     ATTRIBUTES = []
     METHODS = []
@@ -48,8 +49,12 @@ class AdapterBase:
         return any(isinstance(ho, t) for t in cls.SUPPORTED_TYPES)
 
     def __init_subclass__(cls, **kwargs):
+        for ho_class in cls.SUPPORTED_TYPES:
+            if ho_class in AdapterBase.SUPPORTED_TYPES_TO_ADAPTERS:
+                error_msg = ("Adapter for class %s already exists", ho_class.__name__)
+                raise ValueError(error_msg)
+            AdapterBase.SUPPORTED_TYPES_TO_ADAPTERS[ho_class] = cls
         super().__init_subclass__(**kwargs)
-        AdapterBase.SUBCLASSES.append(cls)
 
     @classmethod
     def get_resource_handler(cls):
