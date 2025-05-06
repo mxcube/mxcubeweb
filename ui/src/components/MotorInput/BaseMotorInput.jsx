@@ -19,6 +19,7 @@ function BaseMotorInput(props) {
 
   const [inputValue, setInputValue] = useState(value.toFixed(precision));
   const [isEdited, setEdited] = useState(false);
+  const [isInsideLimits, setInsideLimits] = useState(true);
 
   useEffect(() => {
     setInputValue(value.toFixed(precision));
@@ -52,6 +53,24 @@ function BaseMotorInput(props) {
     }
   }
 
+  function handleBlur() {
+    //
+    // restore widget to display motor's current position,
+    // when focus is lost
+    //
+    setInsideLimits(true);
+    setEdited(false);
+    setInputValue(value.toFixed(precision));
+  }
+
+  function handleChange(evt) {
+    const newValue = evt.target.value;
+
+    setInputValue(newValue);
+    setEdited(true);
+    setInsideLimits(min <= newValue && newValue <= max);
+  }
+
   const isReady = state === HW_STATE.READY;
   const isBusy = state === HW_STATE.BUSY;
   const isWarning = state === HW_STATE.WARNING;
@@ -71,15 +90,14 @@ function BaseMotorInput(props) {
         max={max}
         min={min}
         disabled={disabled || !isReady}
+        data-invalid={!isInsideLimits || undefined}
         data-dirty={isEdited || undefined}
         data-busy={isBusy || undefined}
         data-warning={isWarning || undefined}
         data-fault={isFault || undefined}
         onKeyDown={handleKey}
-        onChange={(evt) => {
-          setInputValue(evt.target.value);
-          setEdited(true);
-        }}
+        onBlur={handleBlur}
+        onChange={handleChange}
       />
       <input type="submit" hidden /> {/* allow submit on Enter */}
     </form>

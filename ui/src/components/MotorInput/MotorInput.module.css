@@ -40,6 +40,10 @@
   background-color: var(--field-dirty--bg) !important;
 }
 
+.valueInput[data-invalid] {
+  background-color: var(--hw-invalid--bg) !important;
+}
+
 .arrows {
   display: flex;
   flex-direction: column;

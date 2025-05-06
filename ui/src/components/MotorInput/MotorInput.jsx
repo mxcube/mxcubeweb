@@ -43,6 +43,8 @@ function MotorInput(props) {
 
       <div className={styles.wrapper}>
         <BaseMotorInput
+          min={motor.limits[0]}
+          max={motor.limits[1]}
           id={id}
           className={styles.valueInput}
           value={value}
