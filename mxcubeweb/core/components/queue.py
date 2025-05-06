@@ -1504,6 +1504,7 @@ class Queue(ComponentBase):
 
         HWR.beamline.queue_model.add_child(sample_model, refgroup_model)
         HWR.beamline.queue_model.add_child(refgroup_model, char_model)
+        refdc_model._node_id = char_model._node_id
         refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
 
         refgroup_entry.set_enabled(True)
