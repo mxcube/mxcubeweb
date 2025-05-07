@@ -43,9 +43,9 @@ export default function SampleFlexView(props) {
     }
   }, [filterOptions.cellFilter, dispatch]);
 
-  async function handleDisplayPuckCellContextMenu(e, menuID, cellID, puckID) {
+  function handleDisplayPuckCellContextMenu(e, menuID, cellID, puckID) {
     e.preventDefault();
-    await handleClickOnCellPuck(e, cellID, puckID === null ? '' : puckID);
+    handleClickOnCellPuck(e, cellID, puckID === null ? '' : puckID);
     displayPuckCellContextMenu(e, menuID, cellID, puckID);
     e.stopPropagation();
   }
