@@ -29,6 +29,7 @@ import {
 } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import MXContextMenu from '../components/GenericContextMenu/MXContextMenu';
+import SampleCircleView from '../components/SampleGrid/SampleCircleView';
 import { SampleGridTableItem } from '../components/SampleGrid/SampleGridTableItem';
 import { TaskItem } from '../components/SampleGrid/TaskItem';
 import TooltipTrigger from '../components/TooltipTrigger';
@@ -967,11 +968,15 @@ export default function SampleGridTableContainer(props) {
   }
 
   function getSampleListAsDrawing() {
-    if (type.includes('CATS')) {
+    const isCATS = type.includes('CATS');
+    const isFLEX = type.includes('FLEX');
+    const isMOCK = type.includes('Mock');
+
+    if (isCATS) {
       return <SampleIsaraView />;
     }
 
-    if (type.includes('FLEX') || type.includes('Moc')) {
+    if (isFLEX) {
       return (
         <SampleFlexView
           displayPuckCellContextMenu={displayPuckCellContextMenu}
@@ -981,6 +986,16 @@ export default function SampleGridTableContainer(props) {
         />
       );
     }
+    if (isSingleCell || isMOCK) {
+      return (
+        <SampleCircleView
+          displayPuckCellContextMenu={displayPuckCellContextMenu}
+          puckMenuID={PUCK_MENU_ID}
+          type={type}
+        />
+      );
+    }
+
     return null;
   }
 
