@@ -707,14 +707,9 @@ class Queue(ComponentBase):
         Retrieves the model and the queue entry for the model node with id <id>
 
         :param int _id: Node id of node to retrieve
-        :returns: The tuple model, entry or the root node and QueueManger if _id is None
+        :returns: The tuple of model and entry
         :rtype: Tuple
         """
-        if _id is None:
-            return (
-                HWR.beamline.queue_model.get_model_root(),
-                HWR.beamline.queue_manager,
-            )
         model = HWR.beamline.queue_model.get_node(int(_id))
         entry = HWR.beamline.queue_manager.get_entry_with_model(model)
         return model, entry
@@ -1504,7 +1499,6 @@ class Queue(ComponentBase):
 
         HWR.beamline.queue_model.add_child(sample_model, refgroup_model)
         HWR.beamline.queue_model.add_child(refgroup_model, char_model)
-        refdc_model._node_id = char_model._node_id
         refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
 
         refgroup_entry.set_enabled(True)
