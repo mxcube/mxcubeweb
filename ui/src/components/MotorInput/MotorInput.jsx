@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { setAttribute } from '../../actions/beamline';
 import { stopBeamlineAction } from '../../actions/beamlineActions';
+import { showErrorPanel } from '../../actions/general';
 import { setMotorStep } from '../../actions/sampleview';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import BaseMotorInput from './BaseMotorInput';
@@ -35,6 +36,14 @@ function MotorInput(props) {
     return null;
   }
 
+  async function handleChange(val) {
+    try {
+      await dispatch(setAttribute(attribute, val));
+    } catch (error) {
+      dispatch(showErrorPanel(true, error.message));
+    }
+  }
+
   return (
     <div className={styles.container}>
       <label className={styles.label} htmlFor={id}>
@@ -52,7 +61,7 @@ function MotorInput(props) {
           precision={precision}
           step={step}
           disabled={disabled}
-          onChange={(val) => dispatch(setAttribute(attribute, val))}
+          onChange={handleChange}
         />
 
         <div className={styles.arrows}>
@@ -61,7 +70,7 @@ function MotorInput(props) {
             className={styles.arrowBtn}
             data-testid={`${id}_up`}
             disabled={!isReady || disabled}
-            onClick={() => dispatch(setAttribute(attribute, value + step))}
+            onClick={() => handleChange(value + step)}
           >
             <i aria-hidden="true" className="fas fa-caret-up" />
           </button>
@@ -70,7 +79,7 @@ function MotorInput(props) {
             className={styles.arrowBtn}
             data-testid={`${id}_down`}
             disabled={!isReady || disabled}
-            onClick={() => dispatch(setAttribute(attribute, value - step))}
+            onClick={() => handleChange(value - step)}
           >
             <i aria-hidden="true" className="fas fa-caret-down" />
           </button>

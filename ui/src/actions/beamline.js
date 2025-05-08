@@ -40,10 +40,10 @@ export function updateBeamlineHardwareObjectStateAction(data) {
 }
 
 export function setAttribute(name, value) {
-  return (_, getState) => {
+  return async (_, getState) => {
     const state = getState();
     const type = state.beamline.hardwareObjects[name].type.toLowerCase();
-    sendSetAttribute(name, type, value);
+    await sendSetAttribute(name, type, value);
   };
 }
 
