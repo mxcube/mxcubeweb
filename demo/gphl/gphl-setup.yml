@@ -1,5 +1,5 @@
+%YAML 1.2
 ---
-
 class: mxcubecore.HardwareObjects.Gphl.GphlWorkflowConnection.GphlWorkflowConnection
 
 configuration:
@@ -42,52 +42,33 @@ configuration:
   # NB Non-absolute file names are interpreted relative to one of the
   # HardwareRepository directories on the lookup path
 
-software_paths:
-  # Mandatory. Directory with workflow config input, e.g. instrumentation.nml
-  gphl_beamline_config: gphl/config_esrf_id30b
+# Software paths that are passed to global phasing workflow as java properties
+# Used to specify locations of alternative executables (wrappers)
+# More (unused) properties are described in the ASTRA workflow documentation
+software_properties:
+  # Location of GPhL .license directory
+  # defaults to GPHL_INSTALLATION
+  # Only needed if you do NOT use the gphl installation wrapper scripts in .../exe :
+  # co.gphl.wf.bdg_licence_dir: "{GPHL_RELEASE}/gphl_release/latest"
 
-    # MANDATORY for CCP4 => $GPHL_CCP4_PATH/bin/ccp4.setup-sh,
-    # unless already sourced in environment
-    GPHL_CCP4_PATH: /alt/rhfogh/Software/CCP4/latest/bin/
+  # MANDATORY pending change in workflow
+  co.gphl.wf.stratcal.bin: "{GPHL_INSTALLATION}/exe/run_stratcal_wrap.py"
 
-    # MANDATORY for XDS => $GPHL_XDS_PATH/xds_par
-    # unless already sourced in environment
-    GPHL_XDS_PATH: /alt/rhfogh/Software/XDS/latest/
+  # OPTIONAL location of alternative executables (wrappers) supported by the workflow
+  # Each has an option (rarely used)  to specify a specific license directory -->
+  # co.gphl.wf.process.bin: {GPHL_WRAPPERS}/scripts/aP_wf_process
+  # co.gphl.wf.process.bdg_licence_dir/fill/me/in
+  # co.gphl.wf.diffractcal.bin: {GPHL_WRAPPERS}/scripts/aP_wf_rotcal
+  # co.gphl.wf.diffractcal.bdg_licence_dir/fill/me/in
+  # co.gphl.wf.simcal_predict.bin: {GPHL_WRAPPERS}/scripts/simcal_predict
+  # co.gphl.wf.simcal_predict.bdg_licence_dir/fill/me/in
+  # co.gphl.wf.transcal.bin: {GPHL_WRAPPERS}/scripts/transcal
+  # co.gphl.wf.transcal.bdg_licence_dir/fill/me/in
+  # co.gphl.wf.recen.bin: {GPHL_WRAPPERS}/scripts/recen
+  # co.gphl.wf.recen.bdg_licence_dir/fill/me/in
 
-    # gphl test samples directory - for collection emulation
-    gphl_test_samples: gphl/test_samples
-
-    # Location of installation for processing queue (if not reachable from BCS computer.
-    # Passed as environmental variable GPHL_PROC_INSTALLATION. Optional
-    # gphl_wf_processing_installation: /users/pkeller/GPhL-ESRF/exe
-
-  # Software paths that are passed to global phasing workflow as java properties
-  # Used to specify locations of alternative executables (wrappers)
-  # More (unused) properties are described in the ASTRA workflow documentation
-  software_properties:
-    # Location of GPhL .license directory
-    # defaults to GPHL_INSTALLATION
-    # Only needed if you do NOT use the gphl installation wrapper scripts in .../exe :
-    # co.gphl.wf.bdg_licence_dir: "{GPHL_RELEASE}/gphl_release/latest"
-
-    # MANDATORY pending change in workflow
-    co.gphl.wf.stratcal.bin: "{GPHL_INSTALLATION}/exe/run_stratcal_wrap.py"
-
-    # OPTIONAL location of alternative executables (wrappers) supported by the workflow
-    # Each has an option (rarely used)  to specify a specific license directory -->
-    # co.gphl.wf.process.bin: {GPHL_WRAPPERS}/scripts/aP_wf_process
-    # co.gphl.wf.process.bdg_licence_dir/fill/me/in
-    # co.gphl.wf.diffractcal.bin: {GPHL_WRAPPERS}/scripts/aP_wf_rotcal
-    # co.gphl.wf.diffractcal.bdg_licence_dir/fill/me/in
-    # co.gphl.wf.simcal_predict.bin: {GPHL_WRAPPERS}/scripts/simcal_predict
-    # co.gphl.wf.simcal_predict.bdg_licence_dir/fill/me/in
-    # co.gphl.wf.transcal.bin: {GPHL_WRAPPERS}/scripts/transcal
-    # co.gphl.wf.transcal.bdg_licence_dir/fill/me/in
-    # co.gphl.wf.recen.bin: {GPHL_WRAPPERS}/scripts/recen
-    # co.gphl.wf.recen.bdg_licence_dir/fill/me/in
-
-    # OPTIONAL. simcal *binary* For Mock collection emulation only. Not used by workflow
-    co.gphl.wf.simcal.bin:
-      /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg/autoPROC/bin/linux64/simcal
-    co.gphl.wf.simcal.bdg_licence_dir:
-      /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg
+  # OPTIONAL. simcal *binary* For Mock collection emulation only. Not used by workflow
+  co.gphl.wf.simcal.bin:
+    /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg/autoPROC/bin/linux64/simcal
+  co.gphl.wf.simcal.bdg_licence_dir:
+    /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg
