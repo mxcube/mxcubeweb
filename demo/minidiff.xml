@@ -1,7 +1,6 @@
 <?xml version="1.0"?>
 <object class="DiffractometerMockup">
   <username>diffractometer</username>
-  <object role="focus" hwrid="./udiff_phix"></object>
   <object role="zoom" hwrid="./udiff_zoom"></object>
   <object role="phi" hwrid="./udiff_omega"></object>
   <object role="phix" hwrid="./udiff_phix"></object>

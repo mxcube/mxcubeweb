@@ -124,19 +124,19 @@ configuration:
         {}
         # Apparently this must be here, but we use all values same as default
 
-    acquisition_limit_values:
-      exposure_time:
-        - 0.02
-        - 1000
-      osc_range:
-        - -10000
-        - 10000
-      number_of_images:
-        - 1
-        - 99999
-      kappa:
-        - -5.0
-        - 240.0
+  acquisition_limit_values:
+    exposure_time:
+      - 0.02
+      - 1000
+    osc_range:
+      - -10000
+      - 10000
+    number_of_images:
+      - 1
+      - 99999
+    kappa:
+      - -5.0
+      - 240.0
 
   available_methods:
     datacollection: true
