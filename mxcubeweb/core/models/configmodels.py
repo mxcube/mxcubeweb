@@ -64,6 +64,7 @@ class UIComponentModel(BaseModel):
     format: str | None
     invert_bg_color: bool | None
 
+
 class _UICameraConfigModel(BaseModel):
     label: str
     url: str
