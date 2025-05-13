@@ -1160,20 +1160,6 @@ files = [
 gevent = "*"
 
 [[package]]
-name = "gipc"
-version = "1.7.0"
-description = "gevent-cooperative child processes and inter-process communication."
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "gipc-1.7.0.tar.gz", hash = "sha256:4e8d20f320fb1e3b07bef511e8ea4774cbe12184e74b5446301c43990ac8dfde"},
-]
-
-[package.dependencies]
-gevent = ">=1.5,<=24.11"
-
-[[package]]
 name = "greenlet"
 version = "3.1.1"
 description = "Lightweight in-process concurrent programming"
@@ -1956,21 +1942,20 @@ websockets = ">=12.0,<13.0"
 
 [[package]]
 name = "mxcubecore"
-version = "1.261.0"
+version = "1.269.0"
 description = "Core libraries for the MXCuBE application"
 optional = false
 python-versions = "<3.12,>=3.10"
 groups = ["main"]
 files = [
-    {file = "mxcubecore-1.261.0-py3-none-any.whl", hash = "sha256:b0882bbcc7e77cc39531b971878d5b2fa18574a59254875709246ab4d159eac0"},
-    {file = "mxcubecore-1.261.0.tar.gz", hash = "sha256:20a987fab3dbd3d98cb8f1a36a1083e0bb91c0574f690413bd8203e62c69a99e"},
+    {file = "mxcubecore-1.269.0-py3-none-any.whl", hash = "sha256:97f6ec4f4fd98cd0cfe6159088749323549ea148a66c89a55b087afa45b2482d"},
+    {file = "mxcubecore-1.269.0.tar.gz", hash = "sha256:0e38d892ddb059f9e90599f9a0d007ae94ca7d95c08454457090782d2ed0da02"},
 ]
 
 [package.dependencies]
 colorama = ">=0.4.6,<0.5.0"
 f90nml = "1.3.1"
 gevent = ">=23.9.1,<24.0.0"
-gipc = ">=1.6.0,<2.0.0"
 greenlet = ">=3.0.3,<4.0.0"
 jsonpickle = ">=2.2.0,<3.0.0"
 jsonschema = ">=4.17.1,<5.0.0"
@@ -3906,4 +3891,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "4af8d679b2590b2f9c209ba44c1b1d405e03ca429b34afcf2555d4aa3ff7d683"
+content-hash = "fd06ca2b2bf556f4170b16aa2b0ffd522f726928426c67005aa4da9b18a7f8fd"
