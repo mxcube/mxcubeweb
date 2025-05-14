@@ -65,11 +65,11 @@ class HardwareObjectAdapterManager:
             self.adapter_dict[_id] = {
                 "id": str(_id),
                 "adapter_cls": adapter_cls.__name__,
-                "ho": ho.name()[1:],
+                "ho": ho.name,
                 "adapter": adapter_instance,
             }
         else:
-            msg = f"Skipping {ho.name()}, id: {_id} already exists"
+            msg = f"Skipping {ho.name}, id: {_id} already exists"
             logging.getLogger("MX3.HWR").warning(msg)
 
     def get_adapter(self, _id):
