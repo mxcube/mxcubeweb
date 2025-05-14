@@ -43,18 +43,16 @@ function warn(values, props) {
   }
 
   const phiPrecision =
-    props.components.find(
-      (el) => el.attribute === 'diffractometer.phi'
-    )?.precision ?? 2;
+    props.components.find((el) => el.attribute === 'diffractometer.phi')
+      ?.precision ?? 2;
 
   if (
     Number.parseFloat(
-      props.beamline.hardwareObjects['diffractometer.phi'].value
-        .toFixed(phiPrecision)
+      props.beamline.hardwareObjects['diffractometer.phi'].value.toFixed(
+        phiPrecision,
+      ),
     ) !==
-    Number.parseFloat(
-      Number.parseFloat(values.osc_start).toFixed(phiPrecision)
-    )
+    Number.parseFloat(Number.parseFloat(values.osc_start).toFixed(phiPrecision))
   ) {
     warnings.osc_start =
       'Entered Oscillation start angle is different from current omega';
