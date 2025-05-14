@@ -53,13 +53,13 @@ def is_local_network(ip, local_domains):
     try:
         private_hostname = socket.gethostbyaddr(ip)[0]
     except (socket.herror, socket.gaierror):
-        logging.getLogger("MX3.HWR").warning(
-            "Failed to resolve the client IP: %s" % ip)
+        logging.getLogger("MX3.HWR").warning("Failed to resolve the client IP: %s" % ip)
         private_hostname = ""
 
-    return private_address == localhost_range or \
-        any(private_hostname and private_hostname.endswith(domain)
-            for domain in local_domains)
+    return private_address == localhost_range or any(
+        private_hostname and private_hostname.endswith(domain)
+        for domain in local_domains
+    )
 
 
 def is_local_host(local_domains):
@@ -77,8 +77,9 @@ def is_local_host(local_domains):
     if remote_address in [None, "None", ""]:
         remote_address = "127.0.0.1"
 
-    return remote_address in localhost_list or \
-        is_local_network(remote_address, local_domains)
+    return remote_address in localhost_list or is_local_network(
+        remote_address, local_domains
+    )
 
 
 def valid_login_only(f):

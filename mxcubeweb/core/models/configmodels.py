@@ -156,7 +156,7 @@ class MXCUBEAppConfigModel(BaseModel):
     LOCAL_DOMAINS: list[str] = Field(
         [],
         description="If the connected client's hostname ends with one of these domains"
-                    ", it will be considered 'local'"
+        ", it will be considered 'local'",
     )
     usermanager: UserManagerConfigModel
     ui_properties: dict[str, UIPropertiesModel] = {}
