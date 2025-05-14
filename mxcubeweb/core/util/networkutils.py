@@ -55,7 +55,7 @@ def is_local_network(ip, local_domains):
     except (socket.herror, socket.gaierror):
         logging.getLogger("MX3.HWR").warning(
             "Failed to resolve the client IP: %s" % ip)
-        private_hostname = ''
+        private_hostname = ""
 
     return private_address == localhost_range or \
         any(private_hostname and private_hostname.endswith(domain)
