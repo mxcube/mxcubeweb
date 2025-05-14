@@ -46,7 +46,7 @@ def remote_addr():
     return str(hdr).split(",")[-1]
 
 
-def is_local_network(ip, local_domains=[]):
+def is_local_network(ip, local_domains):
     localhost = socket.gethostbyname_ex(socket.gethostname())[2][0]
     localhost_range = ".".join(localhost.split(".")[0:2])
     private_address = ".".join(ip.split(".")[0:2])
@@ -58,9 +58,8 @@ def is_local_network(ip, local_domains=[]):
         private_hostname = ''
 
     return private_address == localhost_range or \
-        any(map(lambda domain: private_hostname and
-                               private_hostname.endswith(domain),
-                local_domains))
+        any(private_hostname and private_hostname.endswith(domain)
+            for domain in local_domains)
 
 
 def is_local_host(local_domains):
