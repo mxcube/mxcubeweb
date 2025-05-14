@@ -518,6 +518,7 @@ export default connect((state) => {
     opt_sad: selector(state, 'opt_sad'),
     use_min_dose: selector(state, 'use_min_dose'),
     use_min_time: selector(state, 'use_min_time'),
+    components: state.uiproperties.sample_view.components,
     initialValues: {
       ...parameters,
       beam_size: state.sampleview.currentAperture,

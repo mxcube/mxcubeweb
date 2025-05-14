@@ -42,10 +42,19 @@ function warn(values, props) {
       'Entered transmission is different from current transmission';
   }
 
+  const phiPrecision =
+    props.components.find(
+      (el) => el.attribute === 'diffractometer.phi'
+    )?.precision ?? 2;
+
   if (
     Number.parseFloat(
-      props.beamline.hardwareObjects['diffractometer.phi'].value.toFixed(2),
-    ) !== Number.parseFloat(values.osc_start)
+      props.beamline.hardwareObjects['diffractometer.phi'].value
+        .toFixed(phiPrecision)
+    ) !==
+    Number.parseFloat(
+      Number.parseFloat(values.osc_start).toFixed(phiPrecision)
+    )
   ) {
     warnings.osc_start =
       'Entered Oscillation start angle is different from current omega';
