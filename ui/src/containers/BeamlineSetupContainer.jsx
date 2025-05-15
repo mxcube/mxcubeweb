@@ -63,7 +63,7 @@ function BeamlineSetupContainer() {
                     offText={hardwareObjects[key].commands[1]}
                     openValue={hardwareObjects[key].commands[0]}
                     offValue={hardwareObjects[key].commands[1]}
-                    invertBgColor={uiprop.invert_bg_color}
+                    invertBgColor={uiprop.invert_color_semantics}
                     labelText={uiprop.label}
                     pkey={key}
                     value={hardwareObjects[key].value}
@@ -82,7 +82,7 @@ function BeamlineSetupContainer() {
                     offText={hardwareObjects[key].commands[1]}
                     openValue={hardwareObjects[key].commands[0]}
                     offValue={hardwareObjects[key].commands[1]}
-                    invertBgColor={uiprop.invert_bg_color}
+                    invertBgColor={uiprop.invert_color_semantics}
                     labelText={uiprop.label}
                     pkey={key}
                     value={hardwareObjects[key].value}

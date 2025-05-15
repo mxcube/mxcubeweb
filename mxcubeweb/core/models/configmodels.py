@@ -62,7 +62,7 @@ class UIComponentModel(BaseModel):
     value_type: str | None
     object_type: str | None
     format: str | None
-    invert_bg_color: bool | None
+    invert_color_semantics: bool | None
 
 
 class _UICameraConfigModel(BaseModel):

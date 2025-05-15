@@ -19,7 +19,7 @@ export default function InOutSwitch(props) {
     openValue,
     offValue,
     optionsOverlay,
-    invertBgColor,
+    invertBgColor = false,
     labelText,
     isBtnLabel,
     overlayPlacement,

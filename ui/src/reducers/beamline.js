@@ -26,7 +26,6 @@ export const INITIAL_STATE = {
       state: 'undefined',
       msg: 'UNKNOWN',
       readonly: false,
-      invert_bg_color: false,
     },
     safety_shutter: {
       limits: [0, 1, 1],
@@ -35,7 +34,6 @@ export const INITIAL_STATE = {
       state: 'undefined',
       msg: 'UNKNOWN',
       readonly: false,
-      invert_bg_color: false,
     },
     beamstop: {
       limits: [0, 1, 1],
@@ -44,7 +42,6 @@ export const INITIAL_STATE = {
       state: 'undefined',
       msg: 'UNKNOWN',
       readonly: false,
-      invert_bg_color: false,
     },
     capillary: {
       limits: [0, 1, 1],
