@@ -46,7 +46,24 @@ def remote_addr():
     return str(hdr).split(",")[-1]
 
 
-def is_local_network(ip, local_domains):
+def is_local_network(ip: str, local_domains: list):
+    """
+    Determines whether a given IP address belongs to the local network.
+
+    The function compares the first two octets of the given IP address with the
+    local host's IP address. It also checks if the reverse-resolved hostname of
+    the IP ends with any of the specified local domains.
+
+    Args:
+        ip (str): The IP address to check.
+        local_domains (list): A list of domain suffixes that are considered local
+            (e.g. ['beamline1.site.eu', 'control.site.eu']).
+
+    Returns:
+        bool: True if the IP is in the same network range as the local host
+              (i.e. mxcube server) or its hostname ends with any of the specified
+              local domains; False otherwise.
+    """
     localhost = socket.gethostbyname_ex(socket.gethostname())[2][0]
     localhost_range = ".".join(localhost.split(".")[0:2])
     private_address = ".".join(ip.split(".")[0:2])
@@ -62,7 +79,21 @@ def is_local_network(ip, local_domains):
     )
 
 
-def is_local_host(local_domains):
+def is_local_host(local_domains: list):
+    """
+    Determines whether the remote client making the request is a "local host".
+
+    A client is considered a "local host" if it runs on the same host as the
+    mxcube-server, or if it belongs to the local network. The local network can
+    also be identified by providing a list of domain suffixes considered local.
+
+    Args:
+        local_domains (list): A list of domain suffixes that are considered local
+            (e.g. ['beamline1.site.eu', 'control.site.eu']).
+
+    Returns:
+        bool: True if the client's host is considered a local host; False otherwise.
+    """
     try:
         localhost_list = socket.gethostbyname_ex(socket.gethostname())[2]
     except Exception:
