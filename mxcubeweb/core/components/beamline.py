@@ -167,8 +167,6 @@ class Beamline(ComponentBase):
 
         actions.extend(self.beamline_get_actions())
 
-        data.update({"availableMethods": ho.get_available_methods()})
-
         data.update(
             {
                 "path": HWR.beamline.session.get_base_image_directory(),

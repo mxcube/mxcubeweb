@@ -143,7 +143,6 @@ export const INITIAL_STATE = {
   lastPlotId: null,
   plotsInfo: {},
   plotsData: {},
-  availableMethods: {},
   energyScanElements: [],
 };
 
@@ -283,7 +282,6 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
         //          ...action.data.motorsLimits
         //        },
         beamlineActionsList: [...action.data.beamlineSetup.actionsList],
-        availableMethods: action.data.beamlineSetup.availableMethods,
         energyScanElements: action.data.beamlineSetup.energyScanElements,
       };
     }

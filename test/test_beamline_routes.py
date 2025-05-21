@@ -49,7 +49,6 @@ def test_beamline_get_all_attribute(client):
     assert isinstance(data["actionsList"], list)
     assert isinstance(data["path"], str)
     assert len(data["energyScanElements"]) == 31
-    assert isinstance(data["availableMethods"], dict)
     assert len(actual) == len(expected)
 
 

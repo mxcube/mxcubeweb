@@ -78,14 +78,6 @@ class _BeamlineAdapter:
 
         return {"hardwareObjects": attributes}
 
-    def get_available_methods(self):
-        """
-        Get the available methods.
-        Returns:
-            (list): The methods.
-        """
-        return self._bl.config.available_methods
-
     def get_available_elements(self):
         escan = self._bl.energy_scan
         elements = []

@@ -39,9 +39,7 @@ export default function ContextMenu(props) {
   const workflows = useSelector((state) => state.workflow.workflows);
   const enableNativeMesh = useSelector((state) => state.general.useNativeMesh);
   const enable2DPoints = useSelector((state) => state.general.enable2DPoints);
-  const availableMethods = useSelector(
-    (state) => state.beamline.availableMethods,
-  );
+  const availableMethods = new Set(Object.keys(defaultParameters));
   const sampleID = useSelector((state) => state.queue.currentSampleID);
   const sampleData = useSelector(
     (state) => state.sampleGrid.sampleList[sampleID],
@@ -53,6 +51,7 @@ export default function ContextMenu(props) {
 
   const dispatch = useDispatch();
 
+  // eslint-disable-next-line complexity
   function menuOptions() {
     const generalTaskNames = Object.keys(defaultParameters).filter(
       (tname) => !BESPOKE_TASK_NAMES.has(tname),
@@ -160,28 +159,36 @@ export default function ContextMenu(props) {
       }
     });
 
-    const options = {
+    return {
       SAVED: [
-        {
-          text: 'Add Datacollection',
-          action: () => showModal('DataCollection'),
-          key: 'datacollection',
-        },
-        {
-          text: 'Add Characterisation',
-          action: () => showModal('Characterisation'),
-          key: 'characterisation',
-        },
-        {
-          text: 'Add XRF Scan',
-          action: () => showModal('xrf_spectrum'),
-          key: 'xrf_spectrum',
-        },
-        {
-          text: 'Add Energy Scan',
-          action: () => showModal('energy_scan'),
-          key: 'energy_scan',
-        },
+        availableMethods.has('datacollection')
+          ? {
+              text: 'Add Datacollection',
+              action: () => showModal('DataCollection'),
+              key: 'datacollection',
+            }
+          : {},
+        availableMethods.has('characterisation')
+          ? {
+              text: 'Add Characterisation',
+              action: () => showModal('Characterisation'),
+              key: 'characterisation',
+            }
+          : {},
+        availableMethods.has('xrf_spectrum')
+          ? {
+              text: 'Add XRF Scan',
+              action: () => showModal('xrf_spectrum'),
+              key: 'xrf_spectrum',
+            }
+          : {},
+        availableMethods.has('energy_scan')
+          ? {
+              text: 'Add Energy Scan',
+              action: () => showModal('energy_scan'),
+              key: 'energy_scan',
+            }
+          : {},
         {
           text: 'Go to Point',
           action: () => {
@@ -198,26 +205,34 @@ export default function ContextMenu(props) {
         { text: 'Delete Point', action: () => removeShape(), key: 8 },
       ],
       TMP: [
-        {
-          text: 'Add Datacollection',
-          action: () => showModal('DataCollection'),
-          key: 'datacollection',
-        },
-        {
-          text: 'Add Characterisation',
-          action: () => showModal('Characterisation'),
-          key: 'characterisation',
-        },
-        {
-          text: 'Add XRF Scan',
-          action: () => showModal('xrf_spectrum'),
-          key: 'xrf_spectrum',
-        },
-        {
-          text: 'Add Energy Scan',
-          action: () => showModal('energy_scan'),
-          key: 'energy_scan',
-        },
+        availableMethods.has('datacollection')
+          ? {
+              text: 'Add Datacollection',
+              action: () => showModal('DataCollection'),
+              key: 'datacollection',
+            }
+          : {},
+        availableMethods.has('characterisation')
+          ? {
+              text: 'Add Characterisation',
+              action: () => showModal('Characterisation'),
+              key: 'characterisation',
+            }
+          : {},
+        availableMethods.has('xrf_spectrum')
+          ? {
+              text: 'Add XRF Scan',
+              action: () => showModal('xrf_spectrum'),
+              key: 'xrf_spectrum',
+            }
+          : {},
+        availableMethods.has('energy_scan')
+          ? {
+              text: 'Add Energy Scan',
+              action: () => showModal('energy_scan'),
+              key: 'energy_scan',
+            }
+          : {},
         { text: 'divider', key: 5 },
         ...genericTasks.point,
         genericTasks.point.length > 0 ? { text: 'divider', key: 6 } : {},
@@ -225,57 +240,67 @@ export default function ContextMenu(props) {
         { text: 'Delete Point', action: () => removeShape(), key: 8 },
       ],
       GROUP: [
-        {
-          text: 'Add Datacollections',
-          action: () => showModal('DataCollection'),
-          key: 'datacollection',
-        },
-        {
-          text: 'Add Characterisations',
-          action: () => showModal('Characterisation'),
-          key: 'characterisation',
-        },
+        availableMethods.has('datacollection')
+          ? {
+              text: 'Add Datacollections',
+              action: () => showModal('DataCollection'),
+              key: 'datacollection',
+            }
+          : {},
+        availableMethods.has('characterisation')
+          ? {
+              text: 'Add Characterisations',
+              action: () => showModal('Characterisation'),
+              key: 'characterisation',
+            }
+          : {},
         ...genericTasks.point,
       ],
       HELICAL: [
-        {
-          text: 'Add Datacollections',
-          action: () => showModal('DataCollection'),
-          key: 'datacollection',
-        },
-        {
-          text: 'Add Characterisations',
-          action: () => showModal('Characterisation'),
-          key: 'characterisation',
-        },
-        {
-          text: 'Add Helical Scan',
-          action: () => createLine('Helical'),
-          key: 'helical',
-        },
+        availableMethods.has('datacollection')
+          ? {
+              text: 'Add Datacollections',
+              action: () => showModal('DataCollection'),
+              key: 'datacollection',
+            }
+          : {},
+        availableMethods.has('characterisation')
+          ? {
+              text: 'Add Characterisations',
+              action: () => showModal('Characterisation'),
+              key: 'characterisation',
+            }
+          : {},
+        availableMethods.has('helical')
+          ? {
+              text: 'Add Helical Scan',
+              action: () => createLine('Helical'),
+              key: 'helical',
+            }
+          : {},
         ...genericTasks.line,
       ],
       LINE: [
-        {
-          text: 'Add Helical Scan',
-          action: () => showModal('Helical'),
-          key: 'helical',
-        },
+        availableMethods.has('helical')
+          ? {
+              text: 'Add Helical Scan',
+              action: () => showModal('Helical'),
+              key: 'helical',
+            }
+          : {},
         ...genericTasks.line,
         genericTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
         { text: 'Delete Line', action: () => removeShape(), key: 4 },
       ],
       GridGroup: [{ text: 'Save Grid', action: () => saveGrid(), key: 1 }],
       GridGroupSaved: [
-        ...(enableNativeMesh
-          ? [
-              {
-                text: 'Mesh Scan',
-                action: () => showModal('Mesh'),
-                key: 'mesh_scan',
-              },
-            ]
-          : []),
+        enableNativeMesh
+          ? {
+              text: 'Mesh Scan',
+              action: () => showModal('Mesh'),
+              key: 'mesh_scan',
+            }
+          : {},
         {
           text: 'Centring Point on Cell',
           action: () => {
@@ -314,19 +339,23 @@ export default function ContextMenu(props) {
         ...(enable2DPoints
           ? [
               { text: 'divider', key: 4 },
-              {
-                text: 'Data Collection (Limited OSC)',
-                action: () => createPointAndShowModal('DataCollection'),
-                key: 5,
-              },
-              {
-                text: 'Characterisation (1 Image)',
-                action: () =>
-                  createPointAndShowModal('Characterisation', {
-                    num_imags: 1,
-                  }),
-                key: 6,
-              },
+              availableMethods.has('datacollection')
+                ? {
+                    text: 'Data Collection (Limited OSC)',
+                    action: () => createPointAndShowModal('DataCollection'),
+                    key: 5,
+                  }
+                : {},
+              availableMethods.has('characterisation')
+                ? {
+                    text: 'Characterisation (1 Image)',
+                    action: () =>
+                      createPointAndShowModal('Characterisation', {
+                        num_imags: 1,
+                      }),
+                    key: 6,
+                  }
+                : {},
               {
                 text: 'Create 2D Point',
                 action: () => createTwoDPoint(),
@@ -338,22 +367,6 @@ export default function ContextMenu(props) {
         ...genericTasks.none,
       ],
     };
-
-    Object.keys(availableMethods).forEach((key) => {
-      if (!availableMethods[key]) {
-        Object.keys(options).forEach((k) => {
-          options[k] = options[k].filter((e) => {
-            let res = true;
-            if (Object.keys(availableMethods).includes(e.key)) {
-              res = availableMethods[e.key];
-            }
-            return res;
-          });
-        });
-      }
-    });
-
-    return options;
   }
 
   function showModal(modalName, extraParams = {}, _shape = null) {
