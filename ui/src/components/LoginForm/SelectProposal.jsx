@@ -65,7 +65,7 @@ function SelectProposal() {
         }
       }}
     >
-      <Modal.Header closeButton>
+      <Modal.Header closeButton={showProposalsForm}>
         <Modal.Title>Select a session</Modal.Title>
       </Modal.Header>
       <Modal.Body>
