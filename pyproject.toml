@@ -30,6 +30,9 @@ dynamic = [
     "dependencies",
 ]
 
+[tool.poetry]
+requires-poetry = "2.1.3"  # Keep in sync with `.pre-commit-config.yaml`
+
 [tool.poetry.dependencies]
 Flask = "^3.0.3"
 werkzeug = "^3.0.3"

@@ -48,10 +48,6 @@ it should be possible to approximate the behaviour of installing with Poetry's l
     poetry export --format=requirements.txt > requirements.txt
     ```
 
-    Note that the pre-commit hooks are configured to automatically
-    generate an exported `requirements.txt` file and keep it in sync with `poetry.lock`.
-    So this step could be skipped.
-
 1. Move the `requirements.txt` file to the deployment target system
 
 1. On the deployment system,
