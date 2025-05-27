@@ -18,6 +18,7 @@ import {
   StaticField,
   toFixed,
 } from './fields';
+import styles from './GenericTaskForm.module.css';
 import validate from './validate';
 import warn from './warning';
 
@@ -205,48 +206,53 @@ class GenericTaskForm extends React.Component {
     return s;
   }
 
-  customFieldTemplate(props) {
-    const {
-      id,
-      classNames,
-      label,
-      help,
-      required,
-      rawDescription,
-      description,
-      errors,
-      children,
-    } = props;
+  customFieldTemplate = ({
+    schema,
+    classNames,
+    uiSchema = {},
+    label,
+    rawDescription,
+    children,
+    errors,
+    help,
+    required,
+    id,
+  }) => {
+    if (schema.type === 'object') {
+      return <div className={classNames}>{children}</div>;
+    }
+
+    // Form fields can be displayed in a grid layout, using bootstrap `col-x` classes.
+    const span = uiSchema['ui:options']?.col || 6;
+    const gridClass = `col-${span}`;
     return (
-      <div className={classNames}>
-        {id !== 'root' && (
-          <label htmlFor={id}>
-            {label}
-            {required ? '*' : null}
-            {rawDescription ? ` (${rawDescription})` : null}
-          </label>
-        )}
-        {description}
-        {children}
-        {errors}
-        {help}
+      <div className={`${gridClass} ${classNames}`.trim()}>
+        <div className={styles.fieldTitle}>
+          {label ? (
+            <label htmlFor={id} className={styles.fieldLabel}>
+              {label}
+              {required ? <span className="text-danger">*</span> : null}
+            </label>
+          ) : null}
+          {rawDescription ? (
+            <small className={styles.fieldDescription}>{rawDescription}</small>
+          ) : null}
+        </div>
+
+        <div className={styles.fieldInput}>
+          {children}
+          <small className={styles.fieldHelp}>{help}</small>
+        </div>
+
+        {errors ? <div className={styles.fieldError}>{errors}</div> : null}
       </div>
     );
-  }
+  };
 
   columnsObjectFieldTemplate({ properties, description }) {
     return (
       <div>
-        <div className="row">
-          {properties.map((prop) => {
-            const className = 'col-6 json-schema-form-group-div';
-            return (
-              <div key={prop.content.key} className={className}>
-                {prop.content}
-              </div>
-            );
-          })}
-        </div>
+        <div className="row">{properties.map((prop) => prop.content)}</div>
         {description}
       </div>
     );

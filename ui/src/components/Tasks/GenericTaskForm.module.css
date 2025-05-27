@@ -1,0 +1,32 @@
+.fieldTitle {
+  display: flex;
+  align-items: start;
+  flex-direction: column;
+}
+.fieldTitle .fieldLabel {
+  font-weight: bold;
+  font-size: 1rem;
+  line-height: 1.2;
+  margin-bottom: 0;
+}
+
+.fieldInput {
+  display: flex;
+  flex-direction: column;
+  row-gap: 0.25rem;
+}
+
+.fieldDescription,
+.fieldHelp {
+  font-size: 0.875rem;
+  line-height: 1.25;
+  color: var(--bs-secondary);
+}
+
+.fieldErrors ul {
+  padding-left: 1rem;
+}
+
+.fieldErrors li {
+  line-height: 1.3;
+}
