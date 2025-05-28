@@ -425,7 +425,7 @@ export default function SampleListViewContainer() {
    * @return {boolean} true if sample with sampleID is in queue otherwise false
    */
   function inQueue(sampleID) {
-    return queue.queue.includes(sampleID) && sampleList[sampleID].checked;
+    return queue.queue.includes(sampleID) && sampleList[sampleID]?.checked;
   }
 
   /**
