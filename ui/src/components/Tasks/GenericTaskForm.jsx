@@ -10,6 +10,7 @@ import { formValueSelector, reduxForm } from 'redux-form';
 
 import { sendUpdateDependentFields } from '../../api/queue';
 import { DraggableModal } from '../DraggableModal';
+import CustomFieldTemplate from './CustomFieldTemplate';
 import {
   FieldsHeader,
   InputField,
@@ -18,7 +19,6 @@ import {
   StaticField,
   toFixed,
 } from './fields';
-import styles from './GenericTaskForm.module.css';
 import validate from './validate';
 import warn from './warning';
 
@@ -206,49 +206,6 @@ class GenericTaskForm extends React.Component {
     return s;
   }
 
-  customFieldTemplate = ({
-    schema,
-    classNames,
-    uiSchema = {},
-    label,
-    rawDescription,
-    children,
-    errors,
-    help,
-    required,
-    id,
-  }) => {
-    if (schema.type === 'object') {
-      return <div className={classNames}>{children}</div>;
-    }
-
-    // Form fields can be displayed in a grid layout, using bootstrap `col-x` classes.
-    const span = uiSchema['ui:options']?.col || 6;
-    const gridClass = `col-${span}`;
-    return (
-      <div className={`${gridClass} ${classNames}`.trim()}>
-        <div className={styles.fieldTitle}>
-          {label ? (
-            <label htmlFor={id} className={styles.fieldLabel}>
-              {label}
-              {required ? <span className="text-danger">*</span> : null}
-            </label>
-          ) : null}
-          {rawDescription ? (
-            <small className={styles.fieldDescription}>{rawDescription}</small>
-          ) : null}
-        </div>
-
-        <div className={styles.fieldInput}>
-          {children}
-          <small className={styles.fieldHelp}>{help}</small>
-        </div>
-
-        {errors ? <div className={styles.fieldError}>{errors}</div> : null}
-      </div>
-    );
-  };
-
   columnsObjectFieldTemplate({ properties, description }) {
     return (
       <div>
@@ -352,7 +309,7 @@ class GenericTaskForm extends React.Component {
               }}
               templates={{
                 ObjectFieldTemplate: this.columnsObjectFieldTemplate,
-                FieldTemplate: this.customFieldTemplate,
+                FieldTemplate: CustomFieldTemplate,
               }}
             />
           </div>

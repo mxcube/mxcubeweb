@@ -7,13 +7,18 @@ function TooltipTrigger(props) {
     placement = 'bottom',
     tooltipContent,
     children,
+    inModal = false,
   } = props;
 
   return (
     <OverlayTrigger
       rootClose={rootClose} // ensures whether focus is removed from child (and tooltip closed) when clicking anywhere else
       placement={placement}
-      overlay={<Tooltip id={id}>{tooltipContent}</Tooltip>}
+      overlay={
+        <Tooltip data-tooltip-in-modal={inModal} id={id}>
+          {tooltipContent}
+        </Tooltip>
+      }
     >
       {children}
     </OverlayTrigger>

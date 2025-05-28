@@ -22,3 +22,7 @@
   display: grid;
   grid-template-rows: auto auto auto;
 }
+
+.tooltip[data-tooltip-in-modal='true'] {
+  z-index: 100001; /* Ensures that it is 'above' Bootstrap's model, which has z-index: 10000 */
+}
