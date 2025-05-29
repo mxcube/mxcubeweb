@@ -10,6 +10,7 @@ import { formValueSelector, reduxForm } from 'redux-form';
 
 import { sendUpdateDependentFields } from '../../api/queue';
 import { DraggableModal } from '../DraggableModal';
+import CustomFieldErrorTemplate from './CustomFieldErrorTemplate';
 import CustomFieldTemplate from './CustomFieldTemplate';
 import {
   FieldsHeader,
@@ -302,6 +303,7 @@ class GenericTaskForm extends React.Component {
               validator={validator}
               schema={schema}
               uiSchema={uiSchema}
+              showErrorList={false}
               onChange={({ formData }) => {
                 this.updateFromRemoteValidation(formData);
                 this.saveCurrentJSFormParameters(formData);
@@ -310,6 +312,7 @@ class GenericTaskForm extends React.Component {
               templates={{
                 ObjectFieldTemplate: this.columnsObjectFieldTemplate,
                 FieldTemplate: CustomFieldTemplate,
+                FieldErrorTemplate: CustomFieldErrorTemplate,
               }}
             />
           </div>

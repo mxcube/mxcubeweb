@@ -15,7 +15,7 @@ function TooltipTrigger(props) {
       rootClose={rootClose} // ensures whether focus is removed from child (and tooltip closed) when clicking anywhere else
       placement={placement}
       overlay={
-        <Tooltip data-tooltip-in-modal={inModal} id={id}>
+        <Tooltip data-tooltip-in-modal={inModal || undefined} id={id}>
           {tooltipContent}
         </Tooltip>
       }

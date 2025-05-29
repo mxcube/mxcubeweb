@@ -4,23 +4,9 @@ import TooltipTrigger from '../TooltipTrigger';
 import styles from './CustomFieldTemplate.module.css';
 
 /**
- * @typedef {Object} CustomFieldTemplateProps
- * @property {string} id
- * @property {Object} schema - The JSON schema for the field.
- * @property {string} classNames - CSS classes passed to the field from RJSF.
- * @property {Object} uiSchema - The UI schema for the field.
- * @property {string} label - The label for the field.
- * @property {string} rawDescription - The description for the field (from the UI Schema)
- * @property {React.ReactNode} children - Contains the field input element.
- * @property {React.ReactNode} errors - Contains any validation errors. (<ul> tag)
- * @property {React.ReactNode} help - Contains help text for the field (from UI Schema).
- * @property {boolean} required - Indicates if the field is required.
- */
-
-/**
  * CustomFieldTemplate is a custom field template for React JSON Schema Form (RJSF).
  * It is used to render fields with a specific layout and styling.
- * @param {CustomFieldTemplateProps} props
+ * @param {import('@rjsf/utils').FieldTemplateProps} props
  * @return {JSX.Element} The rendered custom field template.
  */
 export default function CustomFieldTemplate(props) {

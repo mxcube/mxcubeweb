@@ -17,6 +17,10 @@
   row-gap: 0.25rem;
 }
 
+:global(.has-error) .fieldInput input {
+  border-color: var(--bs-danger);
+}
+
 .fieldDescription,
 .fieldHelp {
   font-size: 0.875rem;
@@ -30,4 +34,8 @@
 
 .fieldErrors li {
   line-height: 1.3;
+}
+
+.fieldHelp p {
+  margin-bottom: 0;
 }

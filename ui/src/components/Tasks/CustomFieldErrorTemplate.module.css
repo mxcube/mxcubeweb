@@ -1,0 +1,19 @@
+.fieldErrorContainer {
+  border-left: 2px solid rgba(var(--bs-danger-rgb), 0.5);
+  padding: 0.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+}
+
+.errorMessage {
+  display: flex;
+  align-items: center;
+  color: var(--bs-danger);
+  font-size: 0.875rem;
+}
+
+.errorIcon {
+  margin-right: 0.25rem;
+  color: var(--bs-danger);
+}
