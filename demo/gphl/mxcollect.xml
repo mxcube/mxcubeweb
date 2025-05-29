@@ -2,7 +2,6 @@
 
   <!-- First part must mirror mxcollect.xml -->
   <object href="/minidiff" role="diffractometer"/>
-  <object href="/mxlocal" role="beamline_configuration"/>
   <object href="/lims" role="dbserver"/>
 
   <object href="/energy" role="energy"/>
@@ -10,7 +9,7 @@
   <object href="/detector" role="detector"/>
   <object href="/resolution" role="resolution"/>
 
-  <object href="/mach-info-mockup" role="machine_info"/>
+  <object href="/machine_info" role="machine_info"/>
   <object href="/sc" role="sample_changer"/>
 
   <!--<auto_processing>-->
