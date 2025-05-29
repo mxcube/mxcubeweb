@@ -409,7 +409,7 @@ export default class SampleImage extends React.Component {
           .filter((shape) => this.props.lines[shape.id] !== undefined)
           .map((shape) => shape.id);
 
-        if (threeDpointList.length === 2) {
+        if (threeDpointList.length === 2 || twoDPointList.length === 2) {
           ctxMenuObj = { type: 'HELICAL', id: this.props.selectedShapes };
         } else if (
           threeDpointList.length === 1 &&

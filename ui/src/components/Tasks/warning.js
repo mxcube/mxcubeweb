@@ -58,9 +58,16 @@ function warn(values, props) {
       'Entered Oscillation start angle is different from current omega';
   }
 
+  const shapeID = Array.isArray(props.pointID)
+    ? props.pointID[0]
+    : props.pointID;
+
+  const is2DPoint = shapeID !== -1 && shapeID.includes('2D');
+  // lines property is only present for helical
+  const line = props.lines?.[shapeID];
+  const is2DLine = line && line.refs.some((ref) => ref.includes('2D'));
   if (
-    props.pointID !== -1 &&
-    props.pointID.includes('2D') &&
+    (is2DPoint || is2DLine) &&
     Number.parseFloat(values.osc_range) * Number.parseFloat(values.num_images) >
       5
   ) {

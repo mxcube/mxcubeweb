@@ -278,6 +278,11 @@ export default function ContextMenu(props) {
               key: 'helical',
             }
           : {},
+        {
+          text: 'Add Line',
+          action: () => createLineOnCanvas(shape.id),
+          key: 'create_line',
+        },
         ...genericTasks.line,
       ],
       LINE: [
@@ -442,6 +447,10 @@ export default function ContextMenu(props) {
         sid,
       ),
     );
+  }
+
+  function createLineOnCanvas(refs) {
+    dispatch(addShape({ t: 'L', refs }));
   }
 
   function savePoint() {
