@@ -260,7 +260,7 @@ class BaseUserManager(ComponentBase):
         try:
             self._login(login_id, password)
         except Exception as e:
-            self._signout(sso_data=sso_data)
+            self._signout()
             logging.getLogger("MX3.HWR").error(str(e))
             raise e
         else:
@@ -595,7 +595,7 @@ class UserManager(BaseUserManager):
                     "client_id": self.app.CONFIG.sso.CLIENT_ID,
                     "client_secret": self.app.CONFIG.sso.CLIENT_SECRET,
                     "refresh_token": refresh_token,
-                },, timeout=5)
+                }, timeout=5)
 
 
 class SSOUserManager(BaseUserManager):
