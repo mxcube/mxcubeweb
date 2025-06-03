@@ -1,3 +1,4 @@
+import tempfile
 from gevent import monkey
 
 monkey.patch_all(thread=False)
@@ -126,7 +127,7 @@ def build_server_and_config(test=False, argv=None):
         cfg = Config(config_path)
 
         if test:
-            cfg.flask.USER_DB_PATH = "/tmp/mxcube-test-user.db"
+            cfg.flask.USER_DB_PATH = tempfile.named_temporary_file(delete=False).name
 
         server.init(cmdline_options, cfg)
         mxcube.init(

@@ -1,3 +1,4 @@
+import tempfile
 #
 
 
@@ -25,7 +26,7 @@ CREDENTIALS_1 = {"proposal": "idtest1", "password": "sUpErSaFe"}
 
 SESSION_LIFETIME = 2.0  # seconds
 
-USER_DB_PATH = "/tmp/mxcube-test-user.db"
+USER_DB_PATH = tempfile.named_temporary_file(delete=False).name
 
 
 @pytest.fixture(params=["proposal", "user"])

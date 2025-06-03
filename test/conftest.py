@@ -1,3 +1,4 @@
+import tempfile
 """Helper functions for pytest"""
 
 from gevent import monkey
@@ -68,7 +69,7 @@ def cleanup_subprocesses():
 @pytest.fixture
 def client():
     with contextlib.suppress(FileNotFoundError):
-        os.remove("/tmp/mxcube-test-user.db")
+        os.remove(tempfile.named_temporary_file(delete=False).name)
 
     global _SIO_TEST_CLIENT
 
@@ -123,7 +124,7 @@ def client():
     client.get("/mxcube/api/v0.1/login/signout/")
 
     with contextlib.suppress(FileNotFoundError):
-        os.remove("/tmp/mxcube-test-user.db")
+        os.remove(tempfile.named_temporary_file(delete=False).name)
 
 
 @pytest.fixture
