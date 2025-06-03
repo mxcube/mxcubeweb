@@ -1,5 +1,6 @@
 import json
 import random
+import secrets
 
 from gevent.event import Event
 from mxcubecore import HardwareRepository as HWR
@@ -49,7 +50,7 @@ def test_set_phase(client):
     data = json.loads(resp.data)
     phase_list = data["current_phase"]
 
-    new_phase = phase_list[random.randint(0, len(phase_list) - 1)]
+    new_phase = phase_list[secrets.randbelow(len(phase_list))]
 
     # Set a phase (any in the phase list)
     resp = client.put(
