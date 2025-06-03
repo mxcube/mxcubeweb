@@ -3,7 +3,8 @@ from os.path import (
     isfile,
     join,
 )
-from subprocess import check_output
+from subprocess import check_output # nosec B404
+import shutil
 
 from flask import (
     Blueprint,
@@ -61,7 +62,24 @@ def init_route(app, server, url_prefix):  # noqa: C901
         return jsonify({"Proposal": app.lims.get_proposal_info()})
 
     def run_get_result_script(script_name, url):
-        return check_output(["node", script_name, url], close_fds=True)
+        node_path=shutil.which("node")
+        if node_path is None:
+            raise RuntimeError("Node.js not found in PATH")
+            
+        if not script_name.endswith(".js"):
+            raise ValueError("Script must be JS file")
+        if not os.path.isfile(script_name):
+            raise FileNotFoundError(f"{script_name} not found")
+        if not url.startswith("http://", "https://")):
+            raise ValueError("URL must start with http or https")
+            
+        result= subprocess.run(["node", script_name, url], 
+        check=True,
+        capture_output=True,
+        text=True,
+        close_fds=True
+        )
+        return result.stdout
 
     def result_file_test(prefix):
         return isfile(join(server.flask.template_folder, prefix))
