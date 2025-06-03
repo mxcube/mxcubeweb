@@ -4,7 +4,7 @@ from mxcubeweb.core.models.adaptermodels import (
     HOActuatorValueChangeModel,
 )
 from mxcubeweb.core.util.networkutils import RateLimited
-
+import logging
 
 class WavelengthAdapter(ActuatorAdapterBase):
     """
@@ -23,8 +23,8 @@ class WavelengthAdapter(ActuatorAdapterBase):
         try:
             ho.connect("energyChanged", self._value_change)
             ho.connect("stateChanged", self.state_change)
-        except Exception:
-            pass
+        except Exception as e:
+            logging.getLogger(__name__).warning("Could not connect signal: %s from (wavelength_adapter.py)",e)
 
     @RateLimited(6)
     def _value_change(self, pos, wl, *args, **kwargs):
@@ -45,8 +45,8 @@ class WavelengthAdapter(ActuatorAdapterBase):
         try:
             self._ho.set_wavelength(float(value.value))
             return self.get_value()
-        except Exception:
-            raise
+        except Exception as e:
+            logging.getLogger(__name__).warning("Could not set the wavelength: %s from (wavelength.py)",e)
 
     def _get_value(self) -> FloatValueModel:
         """

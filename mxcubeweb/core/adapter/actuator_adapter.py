@@ -1,5 +1,7 @@
 from typing import ClassVar
 
+import logging
+
 from mxcubecore.HardwareObjects.abstract import AbstractActuator
 
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
@@ -35,8 +37,8 @@ class ActuatorAdapter(ActuatorAdapterBase):
         try:
             ho.connect("valueChanged", self._value_change)
             ho.connect("stateChanged", self.state_change)
-        except Exception:
-            pass
+        except Exception as e:
+            logging.getLogger(__name__).warning("Could not connect signal: %s  from (actuator_adapter.py)",e)
 
     def _value_change(self, *args, **kwargs):
         self._vc(*args, **kwargs)
