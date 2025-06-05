@@ -38,7 +38,8 @@ class ActuatorAdapter(ActuatorAdapterBase):
             ho.connect("valueChanged", self._value_change)
             ho.connect("stateChanged", self.state_change)
         except Exception as e:
-            logging.getLogger(__name__).warning("Could not connect signal: %s  from (actuator_adapter.py)",e)
+            msg = "Could not connect signal for ActuatorAdapter for hardware object: {ho.name}"
+            logging.getLogger("MX3.HWR").exception(msg)
 
     def _value_change(self, *args, **kwargs):
         self._vc(*args, **kwargs)
