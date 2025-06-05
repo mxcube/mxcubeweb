@@ -278,7 +278,6 @@ function GphlWorkflowParametersDialog(props) {
                           }
                           type={schema.properties.reffiles.type}
                           as="textarea"
-                          required
                           defaultValue={formState.reffiles}
                           readOnly={schema.properties.reffiles.readOnly}
                           disabled={schema.properties.reffiles.readOnly}
