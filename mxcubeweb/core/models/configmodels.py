@@ -19,7 +19,9 @@ class FlaskConfigModel(BaseModel):
     ALLOWED_CORS_ORIGINS: list[str] = Field([], description="")
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
     SECURITY_TRACKABLE: bool = Field(True, description="")
-    USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
+    USER_DB_PATH: str = Field("", description="")
+    HOST: str = Field("0.0.0.0", description="Host address to bind to")
+    PORT: int = Field(8081, description="Port to bind to")
     PERMANENT_SESSION_LIFETIME: datetime.timedelta
     CERT_KEY: str = Field("", description="Full path to signed certificate key file")
     CERT_PEM: str = Field("", description="Full path to signed certificate pem file")
