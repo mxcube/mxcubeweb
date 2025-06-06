@@ -9,6 +9,9 @@ server:
   DEBUG: false
 
   ALLOWED_CORS_ORIGINS: []
+  USER_DB_PATH: /tmp/mxcube_users.db
+  HOST: "0.0.0.0"
+  PORT: 8081
 
 sso:
   USE_SSO: false

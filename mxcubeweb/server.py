@@ -1,5 +1,8 @@
+import atexit
 import logging
 import os
+import shutil
+import tempfile
 import traceback
 
 import flask_security
@@ -178,9 +181,11 @@ class Server:
                 cfg.flask.CERT_PEM, cfg.flask.CERT_KEY
             )
         elif cfg.flask.CERT == "ADHOC":
+            tmp_dir = tempfile.mkdtemp()
             ssl_context = werkzeug.serving.load_ssl_context(
-                *werkzeug.serving.make_ssl_devcert("/tmp/")
+                *werkzeug.serving.make_ssl_devcert(tmp_dir)
             )
+            atexit.register(shutil.rmtree, tmp_dir)
         else:
             ssl_context = None
 
@@ -188,8 +193,8 @@ class Server:
             Server.flask_socketio.run(
                 Server.flask,
                 ssl_context=ssl_context,
-                host="0.0.0.0",
-                port=8081,
+                host=cfg.flask.HOST,
+                port=cfg.flask.PORT,
             )
         else:
-            Server.flask_socketio.run(Server.flask, host="0.0.0.0", port=8081)
+            Server.flask_socketio.run(Server.flask, cfg.flask.HOST, port=cfg.flask.PORT)
