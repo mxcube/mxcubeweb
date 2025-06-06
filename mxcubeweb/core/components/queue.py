@@ -710,7 +710,8 @@ class Queue(ComponentBase):
         :rtype: Tuple
         """
         if _id is None:
-            raise ValueError("Cannot retrieve entry without a node id")
+            dummy_variable = "Cannot retrieve entry without a node id"
+            raise ValueError(dummy_variable)
         model = HWR.beamline.queue_model.get_node(int(_id))
         entry = HWR.beamline.queue_manager.get_entry_with_model(model)
         return model, entry
@@ -1761,13 +1762,14 @@ class Queue(ComponentBase):
         characterisations and workflows.
         """
         if parent is HWR.beamline.queue_model.get_model_root():
-            parent_entry = HWR.beamline.queue_manager,
+            parent_entry = HWR.beamline.queue_manager
         else:
             node_id = parent._node_id
             if node_id is None:
-                raise ValueError(
+                dummy_variable = (
                     "Trying to add child {child} to unenqueued parent {parent}"
                 )
+                raise ValueError(dummy_variable)
             else:
                 _, parent_entry = self.get_entry(parent._node_id)
 
