@@ -20,7 +20,7 @@ class FlaskConfigModel(BaseModel):
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
     SECURITY_TRACKABLE: bool = Field(True, description="")
     USER_DB_PATH: str = Field("", description="")
-    HOST: str = Field("0.0.0.0", description="Host address to bind to")
+    HOST: str = Field("127.0.0.1", description="Host address to bind to")
     PORT: int = Field(8081, description="Port to bind to")
     PERMANENT_SESSION_LIFETIME: datetime.timedelta
     CERT_KEY: str = Field("", description="Full path to signed certificate key file")
