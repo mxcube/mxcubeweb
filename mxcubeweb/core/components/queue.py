@@ -1765,13 +1765,13 @@ class Queue(ComponentBase):
             parent_entry = HWR.beamline.queue_manager
         else:
             node_id = parent._node_id
-            if node_id is None:
+            if node_id is not None:
+                _, parent_entry = self.get_entry(parent._node_id)
+            else:
                 dummy_variable = (
                     "Trying to add child {child} to unenqueued parent {parent}"
                 )
                 raise ValueError(dummy_variable)
-            else:
-                _, parent_entry = self.get_entry(parent._node_id)
 
         # Origin is ORIGIN_MX3 if task comes from MXCuBE-3
         if child.get_origin() != ORIGIN_MX3:
