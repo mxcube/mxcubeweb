@@ -1,4 +1,5 @@
 import logging
+import secrets
 
 from flask import (
     Blueprint,
@@ -91,16 +92,16 @@ def init_route(app, server, url_prefix):
         cm = {}
 
         if shape:
-            from random import random
 
             for i in range(1, shape.num_rows * shape.num_cols + 1):
                 hm[i] = [
                     i,
                     [
-                        int(random() * 255),
-                        int(random() * 255),
-                        int(random() * 255),
-                        int(random()),
+                        int(secrets.randbelow(256)),
+                        int(secrets.randbelow(256)),
+                        int(secrets.randbelow(256)),
+                        0, # int(random()) was used in the original code
+                        #but always returns 0
                     ],
                 ]
 
@@ -108,10 +109,10 @@ def init_route(app, server, url_prefix):
                 cm[i] = [
                     i,
                     [
-                        int(random() * 255),
-                        int(random() * 255),
-                        int(random() * 255),
-                        int(random()),
+                        int(secrets.randbelow(256)),
+                        int(secrets.randbelow(256)),
+                        int(secrets.randbelow(256)),
+                        0, # Same as above
                     ],
                 ]
 
