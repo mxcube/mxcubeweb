@@ -2,7 +2,10 @@ from typing import ClassVar
 
 from mxcubecore.HardwareObjects.abstract import AbstractBeam
 
-from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
+from mxcubeweb.core.adapter.adapter_base import (
+    ActuatorAdapterBase,
+    default_resource_handler_config,
+)
 from mxcubeweb.core.models.adaptermodels import (
     HOBeamModel,
     HOBeamValueModel,
@@ -12,8 +15,8 @@ from mxcubeweb.core.models.adaptermodels import (
 class BeamAdapter(ActuatorAdapterBase):
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractBeam.AbstractBeam]
 
-    def __init__(self, ho, *args):
-        super().__init__(ho, *args)
+    def __init__(self, ho, role, app):
+        super().__init__(ho, role, app, default_resource_handler_config)
 
     def limits(self):
         return -1, -1
@@ -32,7 +35,7 @@ class BeamAdapter(ActuatorAdapterBase):
 
         return aperture_list, current_aperture
 
-    def _get_value(self) -> HOBeamValueModel:
+    def get_value(self) -> HOBeamValueModel:
         beam_ho = self._ho
 
         beam_info_dict = {

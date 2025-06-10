@@ -13,6 +13,11 @@ from mxcubeweb.core.models.adaptermodels import (
     NStateModel,
     StrValueModel,
 )
+from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
+
+resource_handler_config = AdapterResourceHandlerConfigModel(
+    commands=["get_value", "set_value"], attributes=["data"]
+)
 
 
 class NStateAdapter(ActuatorAdapterBase):
@@ -21,12 +26,12 @@ class NStateAdapter(ActuatorAdapterBase):
         AbstractShutter.AbstractShutter,
     ]
 
-    def __init__(self, ho, *args):
+    def __init__(self, ho, role, app):
         """
         Args:
             (object): Hardware object.
         """
-        super().__init__(ho, *args)
+        super().__init__(ho, role, app, resource_handler_config)
         self._value_change_model = HOActuatorValueChangeModel
 
         ho.connect("valueChanged", self._value_change)
@@ -53,10 +58,10 @@ class NStateAdapter(ActuatorAdapterBase):
     def commands(self):
         return self._get_valid_states()
 
-    def _set_value(self, value: HOActuatorValueChangeModel):
+    def set_value(self, value: HOActuatorValueChangeModel):
         self._ho.set_value(self._ho.VALUES[value.value])
 
-    def _get_value(self) -> StrValueModel:
+    def get_value(self) -> StrValueModel:
         return StrValueModel(value=self._ho.get_value().name)
 
     def msg(self):

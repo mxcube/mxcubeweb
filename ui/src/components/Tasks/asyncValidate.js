@@ -1,4 +1,4 @@
-import { sendGetAttribute } from '../../api/beamline';
+import { sendGetAttribute } from '../../api/hardware-object';
 
 async function get_resolution_limits_for_energy(energy) {
   const result = await sendGetAttribute(

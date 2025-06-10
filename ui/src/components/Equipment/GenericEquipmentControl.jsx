@@ -11,7 +11,7 @@ export default function GenericEquipmentControl(props) {
   const { equipment, executeCommand } = props;
 
   function handleRunCommand(cmd, formData) {
-    executeCommand(equipment.name, cmd, formData);
+    executeCommand(equipment.type.toLowerCase(), equipment.name, cmd, formData);
   }
 
   function renderParameters(key) {

@@ -5,11 +5,11 @@ class: mxcubecore.HardwareObjects.Gphl.GphlWorkflowConnection.GphlWorkflowConnec
 configuration:
   directory_locations:
     # Directory locations. Can also be used with ${} syntax in this file
-    GPHL_INSTALLATION: /alt/rhfogh/Software/GPhL/gphl_release
+    GPHL_INSTALLATION: /home/rhfogh/Software/GPhL/gphl_release
     # GPHL_INSTALLATION:
-    #   /alt/rhfogh/Software/GPhL/nightly_20230823/Files_workflow_TRUNK_alpha-bdg
+    #   /home/rhfogh/Software/GPhL/nightly_20230823/Files_workflow_TRUNK_alpha-bdg
     # GPHL_INSTALLATION:
-    #   /alt/rhfogh/Software/GPhL/nightly_20230602/Files_workflow_BETA_beta-academic
+    #   /home/rhfogh/Software/GPhL/nightly_20230602/Files_workflow_BETA_beta-academic
 
 
   # If set, run workflow through ssh with selected options
@@ -69,6 +69,6 @@ software_properties:
 
   # OPTIONAL. simcal *binary* For Mock collection emulation only. Not used by workflow
   co.gphl.wf.simcal.bin:
-    /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg/autoPROC/bin/linux64/simcal
+    /home/rhfogh/Software/GPhL/nightly_20250519/Files_workflow_TRUNK_alpha-bdg/autoPROC/bin/linux64/simcal
   co.gphl.wf.simcal.bdg_licence_dir:
-    /alt/rhfogh/Software/GPhL/nightly_20240611/Files_workflow_TRUNK_alpha-bdg
+    /home/rhfogh/Software/GPhL/nightly_20250519/Files_workflow_TRUNK_alpha-bdg

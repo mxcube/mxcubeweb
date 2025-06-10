@@ -217,10 +217,9 @@ class Queue(ComponentBase):
                 where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
                 {'sample': sample, 'idx': index, 'queue_id': node_id}
         """
-        try:
-            node, entry = self.get_entry(node_id)
-        except Exception:
-            return (True, UNCOLLECTED)
+        if node_id is None:
+            return True, UNCOLLECTED
+        node, entry = self.get_entry(node_id)
 
         enabled = node.is_enabled()
         curr_entry = HWR.beamline.queue_manager.get_current_entry()
@@ -707,9 +706,12 @@ class Queue(ComponentBase):
         Retrieves the model and the queue entry for the model node with id <id>
 
         :param int _id: Node id of node to retrieve
-        :returns: The tuple of model and entry
+        :returns: The tuple model, entry or the root node and QueueManger if _id is None
         :rtype: Tuple
         """
+        if _id is None:
+            dummy_variable = "Cannot retrieve entry without a node id"
+            raise ValueError(dummy_variable)
         model = HWR.beamline.queue_model.get_node(int(_id))
         entry = HWR.beamline.queue_manager.get_entry_with_model(model)
         return model, entry
@@ -1759,11 +1761,20 @@ class Queue(ComponentBase):
         added. Handles for instance the addition of reference collections for
         characterisations and workflows.
         """
-        _, parent_entry = self.get_entry(parent._node_id)
-        child_model, _ = self.get_entry(child._node_id)
+        if parent is HWR.beamline.queue_model.get_model_root():
+            parent_entry = HWR.beamline.queue_manager
+        else:
+            node_id = parent._node_id
+            if node_id is not None:
+                _, parent_entry = self.get_entry(parent._node_id)
+            else:
+                dummy_variable = (
+                    "Trying to add child {child} to unenqueued parent {parent}"
+                )
+                raise ValueError(dummy_variable)
 
         # Origin is ORIGIN_MX3 if task comes from MXCuBE-3
-        if child_model.get_origin() != ORIGIN_MX3:
+        if child.get_origin() != ORIGIN_MX3:
             if isinstance(child, qmo.DataCollection):
                 dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
 

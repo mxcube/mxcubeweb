@@ -3208,30 +3208,6 @@ files = [
 ]
 
 [[package]]
-name = "spectree"
-version = "1.2.1"
-description = "generate OpenAPI document and validate request&response with Python annotations."
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "spectree-1.2.1-py3-none-any.whl", hash = "sha256:f8ba5fda47d757c0a930306b65ff0068a6e7fa75971d4e8df0ad3731f05d981d"},
-    {file = "spectree-1.2.1.tar.gz", hash = "sha256:928725142612d5266a51e4e268d936178361585f2771fd4e902c0bd5be033f1f"},
-]
-
-[package.dependencies]
-pydantic = ">=1.2,<3"
-
-[package.extras]
-dev = ["autoflake (>=1.4,<3.0)", "black (>=22.3,<24.0)", "flake8 (>=4,<7)", "isort (>=5.10,<6.0)", "mypy (>=0.971)", "pre-commit", "pytest (>=7.1,<8.0)", "syrupy (>=4.0)", "syrupy (>=4.0.0)"]
-docs = ["Sphinx", "myst-parser", "shibuya"]
-email = ["pydantic[email] (>=1.2,<3)"]
-falcon = ["falcon (>=3.0.0)"]
-flask = ["flask"]
-quart = ["quart"]
-starlette = ["starlette[full]"]
-
-[[package]]
 name = "sphinx"
 version = "7.1.2"
 description = "Python documentation generator"
@@ -3891,4 +3867,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "fd06ca2b2bf556f4170b16aa2b0ffd522f726928426c67005aa4da9b18a7f8fd"
+content-hash = "669ec31c55089077f5d0c804e8cfb6df903ef0c6c96983b9b38ef49016682b93"

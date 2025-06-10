@@ -69,7 +69,7 @@ class _BeamlineAdapter:
 
         for attr_name in self.app.mxcubecore.adapter_dict:
             try:
-                _d = self.app.mxcubecore.get_adapter(attr_name).dict()
+                _d = self.app.mxcubecore.get_adapter(attr_name).data().dict()
             except pydantic.ValidationError:
                 logging.getLogger("MX3.HWR").error(f"Incorrect values in {attr_name}")
                 logging.getLogger("MX3.HWR").exception("")
