@@ -1,3 +1,4 @@
+import logging
 from typing import ClassVar
 
 from mxcubecore.HardwareObjects.abstract import AbstractActuator
@@ -41,7 +42,8 @@ class ActuatorAdapter(ActuatorAdapterBase):
             ho.connect("valueChanged", self._value_change)
             ho.connect("stateChanged", self.state_change)
         except Exception:
-            pass
+            msg = f"Could not connect to valueChanged or stateChanged: {ho.name}"
+            logging.getLogger("MX3.HWR").exception(msg)
 
     def _value_change(self, *args, **kwargs):
         self._vc(*args, **kwargs)

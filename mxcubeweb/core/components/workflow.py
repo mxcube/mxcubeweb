@@ -1,4 +1,5 @@
 import base64
+import logging
 
 from mxcubecore import HardwareRepository as HWR
 
@@ -22,7 +23,8 @@ class Workflow(ComponentBase):
 
                 workflows[wf["wfname"]] = wf
         except Exception:
-            pass
+            msg = "Problem with available workflows or naming/pathing: {wf.name}"
+            logging.getLogger("MX3.HWR").exception(msg)
 
         if getattr(beamline, "gphl_workflow", None):
             # Add Global Phasing workflows if available
