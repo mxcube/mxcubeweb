@@ -1,36 +1,8 @@
 /* eslint-disable react/destructuring-assignment */
-/* eslint-disable promise/prefer-await-to-then */
+
 import React from 'react';
 
-import { fetchLimsResults } from '../../api/lims';
-import { isUnCollected, taskHasLimsData } from '../../constants';
-
 export class LimsResultSummary extends React.Component {
-  componentDidMount() {
-    this.getResults(this.props.taskData);
-  }
-
-  getResults(taskData) {
-    const task = this.props.taskData;
-
-    if (!isUnCollected(task)) {
-      const resultCont = this.resultContainer;
-      resultCont.innerHTML = 'Loading results, please wait ...';
-
-      // eslint-disable-next-line promise/catch-or-return
-      fetchLimsResults(taskData.queueID).then((json) => {
-        if (
-          json.result !== undefined &&
-          json.result !== null &&
-          json.result !== 'undefined' &&
-          json.result !== 'null'
-        ) {
-          resultCont.innerHTML = json.result;
-        }
-      });
-    }
-  }
-
   taskSummary() {
     const task = this.props.taskData;
     const filePath = this.props.taskData.parameters.fullPath;
@@ -65,28 +37,6 @@ export class LimsResultSummary extends React.Component {
   }
 
   render() {
-    const task = this.props.taskData;
-    const style = {}; // resize: 'both', overflow: 'auto' };
-
-    return (
-      <div
-        // ref="limsResultSummary"
-        ref={(ref) => {
-          this.limsResultSummary = ref; // eslint-disable-line react/no-unused-class-component-methods
-        }}
-        className="lims-result-summary"
-        style={style}
-      >
-        {!taskHasLimsData(task) && this.taskSummary()}
-        <div
-          // ref="resultContainer"
-          ref={(ref) => {
-            this.resultContainer = ref;
-          }}
-          className="result-container"
-          style={{ overflow: 'hidden' }}
-        />
-      </div>
-    );
+    return <div className="lims-result-summary">{this.taskSummary()}</div>;
   }
 }

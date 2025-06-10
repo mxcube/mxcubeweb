@@ -299,19 +299,6 @@ select = [
 ]
 "mxcubeweb/routes/lims.py" = [
     "BLE001",
-    "C901",
-    "E501",
-    "FBT003",
-    "G001",
-    "PLR0912",
-    "PLR0915",
-    "PTH113",
-    "PTH118",
-    "RUF100",
-    "S603",
-    "S607",
-    "UP030",
-    "UP032",
 ]
 "mxcubeweb/routes/log.py" = [
     "ARG001",
