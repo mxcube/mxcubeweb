@@ -181,11 +181,9 @@ class Server:
                 cfg.flask.CERT_PEM, cfg.flask.CERT_KEY
             )
         elif cfg.flask.CERT == "ADHOC":
-            tmp_dir = tempfile.mkdtemp()
             ssl_context = werkzeug.serving.load_ssl_context(
-                *werkzeug.serving.make_ssl_devcert(tmp_dir)
+                *werkzeug.serving.make_ssl_devcert("/tmp/")
             )
-            atexit.register(shutil.rmtree, tmp_dir)
         else:
             ssl_context = None
 
