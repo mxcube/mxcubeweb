@@ -19,7 +19,7 @@ class FlaskConfigModel(BaseModel):
     ALLOWED_CORS_ORIGINS: list[str] = Field([], description="")
     SECURITY_PASSWORD_SALT: str = Field("ASALT", description="")
     SECURITY_TRACKABLE: bool = Field(True, description="")
-    USER_DB_PATH: str = Field("", description="")
+    USER_DB_PATH: str = Field("/tmp/mxcube-user.db", description="")
     HOST: str = Field("127.0.0.1", description="Host address to bind to")
     PORT: int = Field(8081, description="Port to bind to")
     PERMANENT_SESSION_LIFETIME: datetime.timedelta
