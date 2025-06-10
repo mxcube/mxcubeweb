@@ -92,7 +92,6 @@ def init_route(app, server, url_prefix):
         cm = {}
 
         if shape:
-
             for i in range(1, shape.num_rows * shape.num_cols + 1):
                 hm[i] = [
                     i,
@@ -100,8 +99,8 @@ def init_route(app, server, url_prefix):
                         int(secrets.randbelow(256)),
                         int(secrets.randbelow(256)),
                         int(secrets.randbelow(256)),
-                        0, # int(random()) was used in the original code
-                        #but always returns 0
+                        0,  # int(random()) was used in the original code
+                        # but always returns 0
                     ],
                 ]
 
@@ -112,7 +111,7 @@ def init_route(app, server, url_prefix):
                         int(secrets.randbelow(256)),
                         int(secrets.randbelow(256)),
                         int(secrets.randbelow(256)),
-                        0, # Same as above
+                        0,  # Same as above
                     ],
                 ]
 
