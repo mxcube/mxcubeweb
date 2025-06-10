@@ -1,8 +1,5 @@
-import atexit
 import logging
 import os
-import shutil
-import tempfile
 import traceback
 
 import flask_security
