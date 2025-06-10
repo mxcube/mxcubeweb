@@ -296,7 +296,7 @@ class Lims(ComponentBase):
                     "FlexHCD",
                     "RoboDiff",
                 ]:
-                    cell = int(math.ceil((basket) / 3.0))
+                    cell = math.ceil((basket) / 3.0)
                     puck = basket - 3 * (cell - 1)
                     sample_info["containerSampleChangerLocation"] = "%d:%d" % (
                         cell,
