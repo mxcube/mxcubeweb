@@ -1,5 +1,4 @@
 from gevent import monkey
-import tempfile
 
 monkey.patch_all(thread=False)
 
@@ -127,8 +126,7 @@ def build_server_and_config(test=False, argv=None):
         cfg = Config(config_path)
 
         if test:
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                cfg.flask.USER_DATABASE_PATH = tmp.name
+            cfg.flask.USER_DB_PATH = "/tmp/mxcube-test-user.db"
 
         server.init(cmdline_options, cfg)
         mxcube.init(
