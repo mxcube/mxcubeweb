@@ -15,7 +15,8 @@ resource_handler_config = AdapterResourceHandlerConfigModel(
     commands=["get_value", "set_value"], attributes=["data"]
 )
 
-logger = logging.getLogger("MX3.HWR")
+hwr_logger = logging.getLogger("MX3.HWR")
+
 
 class ActuatorAdapter(ActuatorAdapterBase):
     """
@@ -44,7 +45,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
             ho.connect("stateChanged", self.state_change)
         except Exception:
             msg = f"Could not connect to valueChanged or stateChanged: {ho.name}"
-            logger.exception(msg)
+            hwr_logger.exception(msg)
 
     def _value_change(self, *args, **kwargs):
         self._vc(*args, **kwargs)

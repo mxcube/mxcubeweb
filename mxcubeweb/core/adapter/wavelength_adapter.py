@@ -9,6 +9,7 @@ from mxcubeweb.core.util.networkutils import RateLimited
 
 logger = logging.getLogger("MX3.HWR")
 
+
 class WavelengthAdapter(ActuatorAdapterBase):
     """
     Adapter for wavelength Hardware Object, a web socket is used communicate
