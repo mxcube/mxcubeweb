@@ -193,8 +193,8 @@ class Server:
             Server.flask_socketio.run(
                 Server.flask,
                 ssl_context=ssl_context,
-                host=cfg.flask.HOST,
-                port=cfg.flask.PORT,
+                host="0.0.0.0",
+                port=8081,
             )
         else:
-            Server.flask_socketio.run(Server.flask, cfg.flask.HOST, port=cfg.flask.PORT)
+            Server.flask_socketio.run(Server.flask, host="0.0.0.0", port=8081)
