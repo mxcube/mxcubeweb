@@ -28,9 +28,9 @@ class FluxAdapter(ActuatorAdapterBase):
             ho.connect("valueChanged", self._value_change)
 
     @RateLimited(6)
-    def _value_change(self, value, **kwargs):
-        value = "{:.2E}".format(Decimal(self._ho.get_value()))
-        self.value_change(value, **kwargs)
+    def _value_change(self,**kwargs):
+        new_value = "{:.2E}".format(Decimal(self._ho.get_value()))
+        self.value_change(new_value, **kwargs)
 
     def set_value(self, value=None):
         """Read only"""
