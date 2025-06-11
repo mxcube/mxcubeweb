@@ -43,7 +43,7 @@ export default function BeamlineActionForm(props) {
           <Button
             variant="danger"
             onClick={() => {
-              dispatch(stopBeamlineAction(actionId));
+              dispatch(stopBeamlineAction('beamline_actions'));
             }}
           >
             Abort

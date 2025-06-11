@@ -1,21 +1,37 @@
 import logging
 from enum import Enum
+from typing import ClassVar
 
-from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
+from mxcubecore.BaseHardwareObjects import HardwareObject
+from mxcubecore.HardwareObjects.BeamlineActions import BeamlineActions
+
+from mxcubeweb.core.adapter.adapter_base import AdapterBase
 from mxcubeweb.core.models.adaptermodels import (
     HOActuatorValueChangeModel,
     NStateModel,
-    StrValueModel,
+)
+from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
+
+resource_handler_config = AdapterResourceHandlerConfigModel(
+    commands=["stop"], attributes=["data"]
 )
 
 
-class BeamlineActionAdapter(ActuatorAdapterBase):
-    def __init__(self, ho, *args, **kwargs):
+class BeamlineActionAdapter(AdapterBase):
+    SUPPORTED_TYPES: ClassVar[list[object]] = [BeamlineActions]
+
+    def __init__(
+        self,
+        ho: HardwareObject,
+        role: str,
+        app,
+        resource_handler_config: AdapterResourceHandlerConfigModel = resource_handler_config,  # noqa: E501
+    ):
         """
         Args:
             (object): Hardware object.
         """
-        super().__init__(ho, *args, **kwargs)
+        super().__init__(ho, role, app, resource_handler_config)
         self._value_change_model = HOActuatorValueChangeModel
 
         ho.connect("valueChanged", self._value_change)
@@ -34,12 +50,6 @@ class BeamlineActionAdapter(ActuatorAdapterBase):
             and attribute.startswith("_") is False
         ]
 
-    def set_value(self, value: HOActuatorValueChangeModel):
-        self._ho.set_value(self._ho.VALUES[value.value])
-
-    def get_value(self) -> StrValueModel:
-        return StrValueModel(value=self._ho.get_value().name)
-
     def msg(self):
         try:
             msg = self._ho.get_value().name
@@ -50,6 +60,13 @@ class BeamlineActionAdapter(ActuatorAdapterBase):
             )
 
         return msg
+
+    def stop(self):
+        """
+        Stop the execution.
+        """
+        for cmd in self._ho.get_commands():
+            self._ho.abort_command(cmd.name())
 
     def data(self) -> NStateModel:
         return NStateModel(**self._dict_repr())

@@ -13,3 +13,7 @@ export function sendSetAttribute(objectId, type, value) {
 export function sendGetAttribute(objectId, type) {
   return endpoint.put({}, `/${type}/${objectId}/get_value`).res();
 }
+
+export function sendStop(objectId, type) {
+  return endpoint.put({}, `/${type}/${objectId}/stop`).res();
+}

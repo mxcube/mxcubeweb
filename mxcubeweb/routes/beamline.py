@@ -19,26 +19,6 @@ def init_route(app, server, url_prefix):
     def beamline_get_all_attributes():
         return jsonify(app.beamline.beamline_get_all_attributes())
 
-    @bp.route("/<name>/abort", methods=["GET"])
-    @server.require_control
-    @server.restrict
-    def beamline_abort_action(name):
-        """
-        Aborts an action in progress.
-
-        :param str name: Owner / Actuator of the process/action to abort
-
-        Replies with status code 200 on success and 500 on exceptions.
-        """
-        try:
-            app.beamline.beamline_abort_action(name)
-        except Exception:
-            logging.getLogger("MX3.HWR").exception("Could not abort %s", name)
-            return make_response(f"Could not abort {escape(name)}", 500)
-        else:
-            logging.getLogger("user_level_log").error("%s, aborted" % name)
-            return make_response("{}", 200)
-
     @bp.route("/<name>/run", methods=["POST"])
     @server.require_control
     @server.restrict

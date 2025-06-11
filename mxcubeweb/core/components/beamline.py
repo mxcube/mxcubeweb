@@ -210,27 +210,6 @@ class Beamline(ComponentBase):
 
         return actions
 
-    def beamline_abort_action(self, name):
-        """
-        Aborts an action in progress.
-
-        :param str name: Owner / Actuator of the process/action to abort
-
-        """
-        beamline_action_names = [
-            cmd.name() for cmd in HWR.beamline.beamline_actions.get_commands()
-        ]
-
-        if name in beamline_action_names:
-            HWR.beamline.beamline_actions.abort_command(name)
-        else:
-            try:
-                ho = HWR.beamline.get_hardware_object(name.lower())
-            except AttributeError:
-                pass
-            else:
-                ho.stop()
-
     def beamline_run_action(self, name, params):
         """
         Starts beamline action with name <name> and passes params as arguments

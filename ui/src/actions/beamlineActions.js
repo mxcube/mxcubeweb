@@ -1,7 +1,5 @@
-import {
-  sendAbortBeamlineAction,
-  sendRunBeamlineAction,
-} from '../api/beamline';
+import { sendRunBeamlineAction } from '../api/beamline';
+import { sendStop } from '../api/hardware-object';
 import { RUNNING } from '../constants';
 
 export function addUserMessage(data) {
@@ -49,8 +47,12 @@ export function startBeamlineAction(cmdName, parameters, showOutput = true) {
   };
 }
 
-export function stopBeamlineAction(cmdName) {
-  return () => sendAbortBeamlineAction(cmdName);
+export function stopBeamlineAction(name) {
+  return async (_, getState) => {
+    const state = getState();
+    const type = state.beamline.hardwareObjects[name].type.toLowerCase();
+    await sendStop(name, type);
+  };
 }
 
 export function newPlot(plotInfo) {

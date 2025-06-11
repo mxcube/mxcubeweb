@@ -34,7 +34,7 @@ export default function AnnotatedBeamlineActionForm(props) {
                 className={styles.submitButton}
                 variant="danger"
                 onClick={() => {
-                  dispatch(stopBeamlineAction(actionId));
+                  dispatch(stopBeamlineAction('beamline_actions'));
                 }}
               >
                 Abort

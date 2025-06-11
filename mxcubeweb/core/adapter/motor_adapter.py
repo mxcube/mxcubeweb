@@ -11,10 +11,7 @@ from mxcubeweb.core.util.networkutils import RateLimited
 
 resource_handler_config = AdapterResourceHandlerConfigModel(
     url_prefix="/mxcube/api/v0.1/motor_test",
-    commands=[
-        "set_value",
-        "get_value",
-    ],
+    commands=["set_value", "get_value", "stop"],
     attributes=["data"],
 )
 

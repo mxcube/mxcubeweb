@@ -16,7 +16,7 @@ from mxcubeweb.core.models.adaptermodels import (
 from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
 
 resource_handler_config = AdapterResourceHandlerConfigModel(
-    commands=["get_value", "set_value"], attributes=["data"]
+    commands=["get_value", "set_value", "stop"], attributes=["data"]
 )
 
 
@@ -63,6 +63,12 @@ class NStateAdapter(ActuatorAdapterBase):
 
     def get_value(self) -> StrValueModel:
         return StrValueModel(value=self._ho.get_value().name)
+
+    def stop(self):
+        """
+        Stop the execution.
+        """
+        self._ho.abort()
 
     def msg(self):
         try:

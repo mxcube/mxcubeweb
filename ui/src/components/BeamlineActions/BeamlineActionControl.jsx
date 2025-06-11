@@ -54,7 +54,7 @@ export default function BeamlineActionControl(props) {
             onClick={
               objState !== RUNNING
                 ? () => handleStartAction(actionId, {}, showOutput)
-                : () => dispatch(stopBeamlineAction(actionId))
+                : () => dispatch(stopBeamlineAction('beamline_actions'))
             }
           >
             {label}
