@@ -30,7 +30,7 @@ export default function SampleCircleView(props) {
 
   function handleDisplayPuckCellContextMenu(e, menuID, puckID) {
     e.preventDefault();
-    handleClickOnCellPuck(e, cellID, puckID === null ? '' : puckID);
+    handleClickOnCellPuck(e, puckID === null ? '' : puckID);
     displayPuckCellContextMenu(e, menuID, cellID, puckID);
     e.stopPropagation();
   }
