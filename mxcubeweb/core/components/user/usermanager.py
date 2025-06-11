@@ -236,7 +236,8 @@ class BaseUserManager(ComponentBase):
                 data={
                     "grant_type": "refresh_token",
                     "refresh_token": current_user.refresh_token,
-                },timeout=5
+                },
+                timeout=5,
             ).json()
         )
 
@@ -596,7 +597,8 @@ class UserManager(BaseUserManager):
                     "client_id": self.app.CONFIG.sso.CLIENT_ID,
                     "client_secret": self.app.CONFIG.sso.CLIENT_SECRET,
                     "refresh_token": refresh_token,
-                },timeout=5
+                },
+                timeout=5,
             )
 
 
