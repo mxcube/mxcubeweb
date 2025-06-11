@@ -239,7 +239,7 @@ class MXCUBEApplication:
                 fpt = open(log_file, "w")
                 fpt.write(" ")
                 fpt.close()
-            os.chmod(log_file, 0o666)
+            os.chmod(log_file, 0o600)
             Path(log_file).touch()
 
             log_file_handler = TimedRotatingFileHandler(
@@ -252,7 +252,7 @@ class MXCUBEApplication:
                 fpt = open(uilog_file, "w")
                 fpt.write(" ")
                 fpt.close()
-            os.chmod(uilog_file, 0o666)
+            os.chmod(uilog_file, 0o600)
             Path(uilog_file).touch()
 
             uilog_file_handler = TimedRotatingFileHandler(
