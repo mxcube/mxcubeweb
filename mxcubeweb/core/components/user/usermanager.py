@@ -17,7 +17,9 @@ from mxcubecore.model.lims_session import LimsSessionManager
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.usermodels import User
 from mxcubeweb.core.util.networkutils import is_local_host
+
 HTTP_REQUESTS_TIMEOUT = 5
+
 
 class BaseUserManager(ComponentBase):
     """Base class for managing user-related operations
