@@ -12,8 +12,8 @@ import { sendUpdateDependentFields } from '../../api/queue';
 import { DraggableModal } from '../DraggableModal';
 import CustomFieldErrorTemplate from './CustomFieldErrorTemplate';
 import CustomFieldTemplate from './CustomFieldTemplate';
+import CustomObjectFieldTemplate from './CustomObjectFieldTemplate';
 import {
-  FieldsHeader,
   InputField,
   resetLastUsedParameters,
   saveToLastUsedParameters,
@@ -207,15 +207,6 @@ class GenericTaskForm extends React.Component {
     return s;
   }
 
-  columnsObjectFieldTemplate({ properties, description }) {
-    return (
-      <div>
-        <div className="row">{properties.map((prop) => prop.content)}</div>
-        {description}
-      </div>
-    );
-  }
-
   updateFromRemoteValidation(formData) {
     // eslint-disable-next-line promise/prefer-await-to-then, promise/catch-or-return
     sendUpdateDependentFields(this.props.taskData.type, formData).then((_d) => {
@@ -296,7 +287,6 @@ class GenericTaskForm extends React.Component {
             </Row>
           </Form>
 
-          <FieldsHeader title="Acquisition" />
           <div className="json-schema-form-container">
             <JSForm
               liveValidate
@@ -310,7 +300,7 @@ class GenericTaskForm extends React.Component {
                 this.jsformData = formData;
               }}
               templates={{
-                ObjectFieldTemplate: this.columnsObjectFieldTemplate,
+                ObjectFieldTemplate: CustomObjectFieldTemplate,
                 FieldTemplate: CustomFieldTemplate,
                 FieldErrorTemplate: CustomFieldErrorTemplate,
               }}
