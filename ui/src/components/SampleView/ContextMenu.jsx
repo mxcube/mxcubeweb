@@ -404,7 +404,9 @@ export default function ContextMenu(props) {
       const containsLine = lines.length > 0;
 
       if (containsPoints && containsLine) {
-        lines.map((x) => sid.splice(sid.indexOf(x), 1));
+        lines.forEach((x) => {
+          sid.splice(sid.indexOf(x), 1);
+        });
       }
     }
 
