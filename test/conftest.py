@@ -4,6 +4,10 @@ from gevent import monkey
 
 monkey.patch_all(thread=False)
 
+
+from pathlib import Path  # noqa: I001
+
+
 import atexit
 import copy
 import json
@@ -25,8 +29,6 @@ MXCUBE_ROOT = os.path.abspath(
 sys.path.append(MXCUBE_ROOT)
 sys.path.append("./")
 
-
-import contextlib
 
 from mxcubecore import HardwareRepository
 
@@ -77,14 +79,11 @@ def cleanup_subprocesses():
 
 @pytest.fixture
 def client():
-    with contextlib.suppress(FileNotFoundError):
-        os.remove("/tmp/mxcube-test-user.db")
-
     global _SIO_TEST_CLIENT
 
     HardwareRepository.uninit_hardware_repository()
     argv = []
-    server, _ = build_server_and_config(test=True, argv=argv)
+    server, cfg = build_server_and_config(test=True, argv=argv)
 
     client = server.flask.test_client()
 
@@ -132,8 +131,9 @@ def client():
 
     client.get("/mxcube/api/v0.1/login/signout/")
 
-    with contextlib.suppress(FileNotFoundError):
-        os.remove("/tmp/mxcube-test-user.db")
+    test_db = Path(cfg.flask.USER_DB_PATH)
+    if test_db.exists():
+        test_db.unlink(missing_ok=True)
 
 
 @pytest.fixture

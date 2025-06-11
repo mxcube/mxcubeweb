@@ -2,6 +2,8 @@ from gevent import monkey
 
 monkey.patch_all(thread=False)
 
+from mxcubeweb.core.models.configmodels import FlaskConfigModel  # noqa: I001 E402
+
 # Disabling E402 (module level import not at top of file)
 # for the lines below as we are monkey patching
 import argparse  # noqa: E402
@@ -124,9 +126,19 @@ def build_server_and_config(test=False, argv=None):
         config_path = HWR.get_hardware_repository().find_in_repository("mxcube-web")
 
         cfg = Config(config_path)
-
+        db_path = (
+            Path(cfg.flask.USER_DB_PATH)
+            if cfg.flask.USER_DB_PATH
+            else Path(FlaskConfigModel.USER_DB_PATH.default)
+        )
+        db_path.parent.mkdir(parents=True, exist_ok=True, mode=0o600)
         if test:
-            cfg.flask.USER_DB_PATH = "/tmp/mxcube-test-user.db"
+            test_db = db_path.parent / "mxcube-test-user.db"
+            cfg.flask.USER_DB_PATH = str(test_db)
+
+            # Clean up existing test database if it exists
+            if test_db.exists():
+                test_db.unlink()
 
         server.init(cmdline_options, cfg)
         mxcube.init(

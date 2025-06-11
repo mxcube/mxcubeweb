@@ -11,6 +11,7 @@ server:
   ALLOWED_CORS_ORIGINS: []
   HOST: "127.0.0.1"
   PORT: 8081
+  USER_DB_PATH: /tmp/mxcube-user.db
 
 sso:
   USE_SSO: false

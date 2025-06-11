@@ -29,7 +29,6 @@ select = [
     "N813",
     "N814",
     "PTH109",
-    "S108",
 ]
 "mxcubeweb/__version__.py" = [
     "I001",
@@ -244,7 +243,6 @@ select = [
     "E501",
     "FBT003",
     "RUF012",
-    "S108",
 ]
 "mxcubeweb/core/models/generic.py" = [
     "E501",
@@ -372,7 +370,6 @@ select = [
     "PTH118",
     "PTH120",
     "PTH123",
-    "S108",
     "UP031",
 ]
 "mxcubeweb/state_storage.py" = [
