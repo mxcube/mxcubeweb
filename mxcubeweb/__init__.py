@@ -1,5 +1,3 @@
-import tempfile
-
 from gevent import monkey
 
 from mxcubeweb.core.models.configmodels import FlaskConfigModel
