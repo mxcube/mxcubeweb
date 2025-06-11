@@ -99,8 +99,7 @@ def init_route(app, server, url_prefix):
                         int(secrets.randbelow(256)),
                         int(secrets.randbelow(256)),
                         int(secrets.randbelow(256)),
-                        0,  # int(random()) was used in the original code
-                        # but always returns 0
+                        0, 
                     ],
                 ]
 
@@ -111,7 +110,7 @@ def init_route(app, server, url_prefix):
                         int(secrets.randbelow(256)),
                         int(secrets.randbelow(256)),
                         int(secrets.randbelow(256)),
-                        0,  # Same as above
+                        0, 
                     ],
                 ]
 
