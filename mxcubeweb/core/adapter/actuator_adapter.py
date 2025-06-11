@@ -1,7 +1,7 @@
 import logging
 from typing import ClassVar
 
-from mxcubecore.HardwareObjects.abstract import AbstractActuator
+from mxcubecore.HardwareObjects.abstract import AbstractActuator, AbstractFlux
 
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubeweb.core.models.adaptermodels import (
@@ -12,7 +12,7 @@ from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
 from mxcubeweb.core.util.networkutils import RateLimited
 
 resource_handler_config = AdapterResourceHandlerConfigModel(
-    commands=["get_value", "set_value"], attributes=["data"]
+    commands=["get_value", "set_value", "stop"], attributes=["data"]
 )
 
 hwr_logger = logging.getLogger("MX3.HWR")
@@ -24,7 +24,10 @@ class ActuatorAdapter(ActuatorAdapterBase):
     information on longer running processes.
     """
 
-    SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractActuator.AbstractActuator]
+    SUPPORTED_TYPES: ClassVar[list[object]] = [
+        AbstractActuator.AbstractActuator,
+        AbstractFlux.AbstractFlux,
+    ]
 
     def __init__(self, ho, role, app, resource_handler_config=resource_handler_config):
         """
