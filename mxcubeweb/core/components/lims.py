@@ -12,9 +12,10 @@ from mxcubeweb.core.components.component_base import ComponentBase
 
 VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 
+
 class NoSessionError(Exception):
     """Raised when no session is selected in LIMS."""
-    pass
+
 
 class Lims(ComponentBase):
     def __init__(self, app, config):
@@ -189,7 +190,8 @@ class Lims(ComponentBase):
         try:
             session = HWR.beamline.lims.set_active_session_by_id(session_id)
             if session is None:
-                raise NoSessionError("No session selected on LIMS")
+                msg = "No session selected on LIMS"
+                raise NoSessionError(msg)
         except BaseException as e:
             import traceback
 
