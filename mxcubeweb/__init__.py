@@ -2,6 +2,8 @@ import tempfile
 
 from gevent import monkey
 
+from mxcubeweb.core.models.configmodels import FlaskConfigModel
+
 monkey.patch_all(thread=False)
 
 # Disabling E402 (module level import not at top of file)
@@ -128,8 +130,8 @@ def build_server_and_config(test=False, argv=None):
         cfg = Config(config_path)
 
         if test:
-            with tempfile.NamedTemporaryFile(delete=False) as tmp:
-                cfg.flask.USER_DB_PATH = tmp.name
+            base_path = FlaskConfigModel.USER_DB_PATH.default.replace(".db", "-test.db")
+            cfg.flask.USER_DB_PATH = base_path
 
         server.init(cmdline_options, cfg)
         mxcube.init(
