@@ -1,6 +1,6 @@
-from gevent import monkey
+import logging
 
-from mxcubeweb.core.models.configmodels import FlaskConfigModel
+from gevent import monkey
 
 monkey.patch_all(thread=False)
 
@@ -116,6 +116,8 @@ def build_server_and_config(test=False, argv=None):
     cmdline_options = parse_args(argv)
 
     try:
+        db_path = Path.home() / ".mxcube" / "tmp"
+        db_path.mkdir(parents=True, exist_ok=True, mode=0o700)
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing the main config files.
@@ -128,8 +130,13 @@ def build_server_and_config(test=False, argv=None):
         cfg = Config(config_path)
 
         if test:
-            base_path = FlaskConfigModel.USER_DB_PATH.default.replace(".db", "-test.db")
-            cfg.flask.USER_DB_PATH = base_path
+            try:
+                default_path = str(db_path / "mxcube-user.db")
+                cfg.flask.USER_DB_PATH = default_path.replace(".db", "-test.db")
+            except AttributeError as e:
+                msg = f"Failed to set test database path: {e}"
+                logging.getLogger(msg)
+                raise
 
         server.init(cmdline_options, cfg)
         mxcube.init(
