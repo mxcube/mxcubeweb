@@ -7,9 +7,9 @@ import { filterAction } from '../../actions/sampleGrid';
 export default function SampleCircleView(props) {
   const { displayPuckCellContextMenu, puckMenuID, type = 'Mockup' } = props;
 
-  const FILTEROPTIONS = useSelector((state) => state.sampleGrid.filterOptions);
+  const filteroptions = useSelector((state) => state.sampleGrid.filterOptions);
 
-  const PUCKS = useSelector((state) => state.sampleChanger.contents.children);
+  const pucks = useSelector((state) => state.sampleChanger.contents.children);
 
   const CELL_ID = 1;
 
@@ -23,10 +23,10 @@ export default function SampleCircleView(props) {
   }
 
   useEffect(() => {
-    if (FILTEROPTIONS.cellFilter === '') {
+    if (filteroptions.cellFilter === '') {
       dispatch(filterAction({ cellFilter: '1', puckFilter: '1' }));
     }
-  }, [FILTEROPTIONS.cellFilter, dispatch]);
+  }, [filteroptions.cellFilter, dispatch]);
 
   function handleDisplayPuckCellContextMenu(e, menuID, puckID) {
     e.preventDefault();
@@ -36,7 +36,7 @@ export default function SampleCircleView(props) {
   }
 
   function getSingleCellAsCircle(centerX, centerY) {
-    const totalPucks = PUCKS.length;
+    const totalPucks = pucks.length;
 
     // Adjust angle range based on puck count
     const useFullCircle = totalPucks >= 8;
@@ -56,15 +56,15 @@ export default function SampleCircleView(props) {
       ? totalPucks
       : Math.max(1, totalPucks - 1);
 
-    return PUCKS.map((_, i) => {
+    return pucks.map((_, i) => {
       const angle = startAngle + (angleRange * i) / angleDivisor;
       const x = centerX + placementRadius * Math.cos(angle);
       const y = centerY + placementRadius * Math.sin(angle);
       const puckID = i + 1;
 
       const isPuckSelected =
-        Number(FILTEROPTIONS.cellFilter) === CELL_ID &&
-        Number(FILTEROPTIONS.puckFilter) === puckID;
+        Number(filteroptions.cellFilter) === CELL_ID &&
+        Number(filteroptions.puckFilter) === puckID;
 
       return (
         <g
