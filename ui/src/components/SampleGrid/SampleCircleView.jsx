@@ -13,10 +13,10 @@ export default function SampleCircleView(props) {
 
   const CELL_ID = 1;
 
-  const DISPATCH = useDispatch();
+  const dispatch = useDispatch();
 
   function handleClickOnPuck(event, puckID) {
-    DISPATCH(
+    dispatch(
       filterAction({ cellFilter: `${CELL_ID}`, puckFilter: `${puckID}` }),
     );
     event.stopPropagation();
@@ -24,9 +24,9 @@ export default function SampleCircleView(props) {
 
   useEffect(() => {
     if (FILTEROPTIONS.cellFilter === '') {
-      DISPATCH(filterAction({ cellFilter: '1', puckFilter: '1' }));
+      dispatch(filterAction({ cellFilter: '1', puckFilter: '1' }));
     }
-  }, [FILTEROPTIONS.cellFilter, DISPATCH]);
+  }, [FILTEROPTIONS.cellFilter, dispatch]);
 
   function handleDisplayPuckCellContextMenu(e, menuID, puckID) {
     e.preventDefault();
