@@ -108,12 +108,12 @@ export class ConfirmCollectDialog extends React.Component {
 
       // Set the width of each collumn in the body to be atleast the width of the
       // corresponding collumn in the header
-      [...tableBody.children].map((tr) =>
+      [...tableBody.children].forEach((tr) => {
         [...tr.children].forEach((td, i) => {
           const _td = td;
           _td.width = headerColWidthArray[i];
-        }),
-      );
+        });
+      });
 
       // Update the header columns so that they match the content of the body
       [...tableHead.children[0].children].forEach((th, i) => {
