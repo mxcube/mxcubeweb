@@ -1,5 +1,7 @@
 """Helper functions for pytest"""
 
+from pathlib import Path
+
 from gevent import monkey
 
 monkey.patch_all(thread=False)
@@ -77,8 +79,11 @@ def cleanup_subprocesses():
 
 @pytest.fixture
 def client():
+    db_path = Path.home() / ".mxcube" / "tmp"
+    test_db = db_path / "mxcube-test-user.db"
+
     with contextlib.suppress(FileNotFoundError):
-        os.remove("/tmp/mxcube-test-user.db")
+        test_db.unlink()
 
     global _SIO_TEST_CLIENT
 

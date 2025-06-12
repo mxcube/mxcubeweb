@@ -131,8 +131,13 @@ def build_server_and_config(test=False, argv=None):
 
         if test:
             try:
-                default_path = str(db_path / "mxcube-user.db")
-                cfg.flask.USER_DB_PATH = default_path.replace(".db", "-test.db")
+                # Use test database path
+                test_db = db_path / "mxcube-test-user.db"
+                cfg.flask.USER_DB_PATH = str(test_db)
+
+                # Clean up existing test database if it exists
+                if test_db.exists():
+                    test_db.unlink()
             except AttributeError as e:
                 msg = f"Failed to set test database path: {e}"
                 logging.getLogger(msg)
