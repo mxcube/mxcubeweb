@@ -7,36 +7,36 @@ import { filterAction } from '../../actions/sampleGrid';
 export default function SampleCircleView(props) {
   const { displayPuckCellContextMenu, puckMenuID, type = 'Mockup' } = props;
 
-  const filterOptions = useSelector((state) => state.sampleGrid.filterOptions);
+  const FILTEROPTIONS = useSelector((state) => state.sampleGrid.filterOptions);
 
-  const pucks = useSelector((state) => state.sampleChanger.contents.children);
+  const PUCKS = useSelector((state) => state.sampleChanger.contents.children);
 
-  const cellID = 1;
+  const CELL_ID = 1;
 
-  const dispatch = useDispatch();
+  const DISPATCH = useDispatch();
 
-  function handleClickOnCellPuck(event, puckID) {
-    dispatch(
-      filterAction({ cellFilter: `${cellID}`, puckFilter: `${puckID}` }),
+  function handleClickOnPuck(event, puckID) {
+    DISPATCH(
+      filterAction({ cellFilter: `${CELL_ID}`, puckFilter: `${puckID}` }),
     );
     event.stopPropagation();
   }
 
   useEffect(() => {
-    if (filterOptions.cellFilter === '') {
-      dispatch(filterAction({ cellFilter: '1', puckFilter: '1' }));
+    if (FILTEROPTIONS.cellFilter === '') {
+      DISPATCH(filterAction({ cellFilter: '1', puckFilter: '1' }));
     }
-  }, [filterOptions.cellFilter, dispatch]);
+  }, [FILTEROPTIONS.cellFilter, DISPATCH]);
 
   function handleDisplayPuckCellContextMenu(e, menuID, puckID) {
     e.preventDefault();
-    handleClickOnCellPuck(e, puckID === null ? '' : puckID);
-    displayPuckCellContextMenu(e, menuID, cellID, puckID);
+    handleClickOnPuck(e, puckID === null ? '' : puckID);
+    displayPuckCellContextMenu(e, menuID, CELL_ID, puckID);
     e.stopPropagation();
   }
 
   function getSingleCellAsCircle(centerX, centerY) {
-    const totalPucks = pucks.length;
+    const totalPucks = PUCKS.length;
 
     // Adjust angle range based on puck count
     const useFullCircle = totalPucks >= 8;
@@ -56,20 +56,20 @@ export default function SampleCircleView(props) {
       ? totalPucks
       : Math.max(1, totalPucks - 1);
 
-    return pucks.map((_, i) => {
+    return PUCKS.map((_, i) => {
       const angle = startAngle + (angleRange * i) / angleDivisor;
       const x = centerX + placementRadius * Math.cos(angle);
       const y = centerY + placementRadius * Math.sin(angle);
       const puckID = i + 1;
 
       const isPuckSelected =
-        Number(filterOptions.cellFilter) === cellID &&
-        Number(filterOptions.puckFilter) === puckID;
+        Number(FILTEROPTIONS.cellFilter) === CELL_ID &&
+        Number(FILTEROPTIONS.puckFilter) === puckID;
 
       return (
         <g
           key={`single_cell_puck_${puckID}`}
-          onClick={(e) => handleClickOnCellPuck(e, puckID)}
+          onClick={(e) => handleClickOnPuck(e, puckID)}
           onContextMenu={(e) =>
             handleDisplayPuckCellContextMenu(e, puckMenuID, puckID)
           }
@@ -94,7 +94,7 @@ export default function SampleCircleView(props) {
             Puck {puckID}
           </text>
           <title>
-            Cell: {cellID}, Puck: {puckID}
+            Cell: {CELL_ID}, Puck: {puckID}
           </title>
         </g>
       );
