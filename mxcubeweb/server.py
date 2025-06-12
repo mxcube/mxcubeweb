@@ -1,8 +1,5 @@
-import atexit
 import logging
 import os
-import shutil
-import tempfile
 import traceback
 
 import flask_security
@@ -181,11 +178,10 @@ class Server:
                 cfg.flask.CERT_PEM, cfg.flask.CERT_KEY
             )
         elif cfg.flask.CERT == "ADHOC":
-            tmp_dir = tempfile.mkdtemp()
+            cert_dir = os.path.dirname(cfg.flask.USER_DB_PATH)
             ssl_context = werkzeug.serving.load_ssl_context(
-                *werkzeug.serving.make_ssl_devcert(tmp_dir)
+                *werkzeug.serving.make_ssl_devcert(cert_dir)
             )
-            atexit.register(shutil.rmtree, tmp_dir)
         else:
             ssl_context = None
 
