@@ -18,7 +18,7 @@ from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.usermodels import User
 from mxcubeweb.core.util.networkutils import is_local_host
 
-HTTP_REQUESTS_TIMEOUT = 5  #: Generic timeout for HTTP requests in seconds
+HTTP_REQUESTS_TIMEOUT = 10  # 5 is Generic timeout for HTTP requests in seconds, 10 to be safe
 
 
 class BaseUserManager(ComponentBase):
