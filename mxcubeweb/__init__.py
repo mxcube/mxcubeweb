@@ -2,6 +2,8 @@ import logging
 
 from gevent import monkey
 
+from mxcubeweb.core.models.configmodels import FlaskConfigModel
+
 monkey.patch_all(thread=False)
 
 # Disabling E402 (module level import not at top of file)
@@ -116,8 +118,6 @@ def build_server_and_config(test=False, argv=None):
     cmdline_options = parse_args(argv)
 
     try:
-        db_path = Path.home() / ".mxcube" / "tmp"
-        db_path.mkdir(parents=True, exist_ok=True, mode=0o700)
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing the main config files.
@@ -128,11 +128,16 @@ def build_server_and_config(test=False, argv=None):
         config_path = HWR.get_hardware_repository().find_in_repository("mxcube-web")
 
         cfg = Config(config_path)
-
+        db_path = (
+            Path(cfg.flask.USER_DB_PATH)
+            if cfg.flask.USER_DB_PATH
+            else Path(FlaskConfigModel.USER_DB_PATH.default)
+        )
+        db_path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
         if test:
             try:
-                # Use test database path
-                test_db = db_path / "mxcube-test-user.db"
+                # Use test database in same directory
+                test_db = db_path.parent / "mxcube-test-user.db"
                 cfg.flask.USER_DB_PATH = str(test_db)
 
                 # Clean up existing test database if it exists
