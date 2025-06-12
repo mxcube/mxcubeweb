@@ -51,7 +51,7 @@ class HttpStreamer:
             )
 
     def _new_frame_received(self, img, width, height, *args, **kwargs):
-        if not isinstance(img, str| bytes):
+        if not isinstance(img, str | bytes):
             rawdata = img.bits().asstring(img.numBytes())
             strbuf = StringIO()
             image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
