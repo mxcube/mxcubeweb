@@ -14,7 +14,6 @@ VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 
 class NoSessionError(Exception):
     """Exception raised when no session is selected in LIMS."""
-    pass
 
 class Lims(ComponentBase):
     def __init__(self, app, config):
