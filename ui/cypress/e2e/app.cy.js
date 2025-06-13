@@ -14,7 +14,9 @@ describe('app', () => {
 
     // Samples list
     cy.findByRole('link', { name: 'Samples' }).click();
-    cy.findByRole('button', { name: 'Get Samples' }).should('be.visible');
+    cy.findByRole('button', { name: 'Add Task to Samples' }).should(
+      'be.visible',
+    );
 
     // Equipment
     cy.findByRole('link', { name: 'Equipment' }).click();
