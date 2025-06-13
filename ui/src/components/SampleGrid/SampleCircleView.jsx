@@ -4,14 +4,14 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { filterAction } from '../../actions/sampleGrid';
 
+const CELL_ID = 1;
+
 export default function SampleCircleView(props) {
   const { displayPuckCellContextMenu, puckMenuID, type = 'Mockup' } = props;
 
-  const filteroptions = useSelector((state) => state.sampleGrid.filterOptions);
+  const filterOptions = useSelector((state) => state.sampleGrid.filterOptions);
 
   const pucks = useSelector((state) => state.sampleChanger.contents.children);
-
-  const CELL_ID = 1;
 
   const dispatch = useDispatch();
 
@@ -23,10 +23,10 @@ export default function SampleCircleView(props) {
   }
 
   useEffect(() => {
-    if (filteroptions.cellFilter === '') {
+    if (filterOptions.cellFilter === '') {
       dispatch(filterAction({ cellFilter: '1', puckFilter: '1' }));
     }
-  }, [filteroptions.cellFilter, dispatch]);
+  }, [filterOptions.cellFilter, dispatch]);
 
   function handleDisplayPuckCellContextMenu(e, menuID, puckID) {
     e.preventDefault();
@@ -63,8 +63,8 @@ export default function SampleCircleView(props) {
       const puckID = i + 1;
 
       const isPuckSelected =
-        Number(filteroptions.cellFilter) === CELL_ID &&
-        Number(filteroptions.puckFilter) === puckID;
+        Number(filterOptions.cellFilter) === CELL_ID &&
+        Number(filterOptions.puckFilter) === puckID;
 
       return (
         <g
