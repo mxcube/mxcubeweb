@@ -63,7 +63,6 @@ select = [
 "mxcubeweb/core/adapter/actuator_adapter.py" = [
     "B904",
     "BLE001",
-    "S110",
     "TRY003",
 ]
 "mxcubeweb/core/adapter/adapter_base.py" = [
@@ -116,7 +115,6 @@ select = [
 "mxcubeweb/core/adapter/wavelength_adapter.py" = [
     "ARG002",
     "BLE001",
-    "S110",
     "TRY003",
     "TRY203",
 ]
@@ -226,7 +224,6 @@ select = [
     "N814",
     "PLR5501",
     "S110",
-    "S113",
     "TRY002",
     "TRY003",
     "TRY201",
@@ -238,7 +235,6 @@ select = [
     "ARG002",
     "BLE001",
     "N814",
-    "S110",
 ]
 "mxcubeweb/core/models/adaptermodels.py" = [
     "FBT003",
@@ -332,12 +328,6 @@ select = [
     "DTZ005",
     "N814",
 ]
-"mxcubeweb/routes/mockups.py" = [
-    "N814",
-    "S311",
-    "SLF001",
-    "TRY002",
-]
 "mxcubeweb/routes/queue.py" = [
     "A005",
     "BLE001",
@@ -395,7 +385,6 @@ select = [
     "PTH118",
     "PTH120",
     "PTH123",
-    "S104",
     "S108",
     "UP031",
 ]
