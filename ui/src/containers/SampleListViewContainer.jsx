@@ -789,12 +789,12 @@ export default function SampleListViewContainer() {
                   className="nowrap-style"
                   variant="outline-secondary"
                   onClick={() => dispatch(showConfirmClearQueueDialog())}
-                  disabled={queue.queueStatus === QUEUE_RUNNING}
+                  disabled={
+                    queue.queueStatus === QUEUE_RUNNING ||
+                    Object.keys(sampleList).length === 0
+                  }
                 >
-                  <i
-                    className="fas fa-minus"
-                    style={{ marginRight: '0.5em' }}
-                  />
+                  <i className="fas fa-trash-alt me-1" />
                   Clear sample list
                 </Button>
               </TooltipTrigger>
