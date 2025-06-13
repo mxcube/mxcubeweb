@@ -73,7 +73,7 @@
   padding-top: 1px; /* tweak vertical alignment of number */
   background-color: #085de6;
   border-radius: 50%;
-  font-family: Helvetica, sans-serif;
+  font-family: Helvetica;
   font-size: 0.75em;
   font-weight: bold;
 }
