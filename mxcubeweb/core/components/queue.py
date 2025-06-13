@@ -1582,6 +1582,9 @@ class Queue(ComponentBase):
             )
 
         full_path, process_path = HWR.beamline.session.get_full_path(
+            # Note that 'experiment_name' field can either be omitted, set to None
+            # or some string value. For cases it is not defined (omitted or None)
+            # the "" will be used for the path generation.
             os.path.join(
                 params.get("subdir", ""), params.get("experiment_name", "") or ""
             ),
