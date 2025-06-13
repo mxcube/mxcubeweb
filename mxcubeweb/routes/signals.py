@@ -13,7 +13,6 @@ from mxcubeweb.app import MXCUBEApplication as mxcube
 from mxcubeweb.core.components.queue import (
     COLLECTED,
     FAILED,
-    READY,
     RUNNING,
     WARNING,
 )
@@ -623,40 +622,6 @@ def beam_changed(*args, **kwargs):
         logging.getLogger("HWR").exception(
             "error sending beam_changed signal: %s" % beam_info_dict
         )
-
-
-def beamline_action_start(name):
-    msg = {"name": name, "state": RUNNING}
-
-    try:
-        server.emit("beamline_action", msg, namespace="/hwr")
-    except Exception:
-        logging.getLogger("HWR").exception(
-            "error sending beamline action message: %s", msg
-        )
-
-
-def beamline_action_done(name, result):
-    try:
-        logging.getLogger("user_level_log").info("Command %s done.", name)
-        msg = {"name": name, "state": READY, "data": result}
-        server.emit("beamline_action", msg, namespace="/hwr")
-    except Exception:
-        logging.getLogger("HWR").exception(
-            "error sending beamline action message: %s", msg
-        )
-
-
-def beamline_action_failed(name):
-    msg = {"name": name, "state": FAILED}
-    try:
-        server.emit("beamline_action", msg, namespace="/hwr")
-    except Exception:
-        logging.getLogger("HWR").exception(
-            "error sending beamline action message: %s", msg
-        )
-    else:
-        logging.getLogger("user_level_log").error("Action %s failed !", name)
 
 
 def new_plot(plot_info):

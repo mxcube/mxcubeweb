@@ -1,5 +1,5 @@
 import { sendPrepareBeamlineForNewSample } from '../api/beamline';
-import { sendExecuteCommand, sendSetAttribute } from '../api/hardware-object';
+import { sendExecuteCommand, sendSetValue } from '../api/hardware-object';
 import { sendLogFrontEndTraceBack } from '../api/log';
 
 // Action types
@@ -40,7 +40,7 @@ export function setAttribute(name, value) {
   return async (_, getState) => {
     const state = getState();
     const type = state.beamline.hardwareObjects[name].type.toLowerCase();
-    await sendSetAttribute(name, type, value);
+    await sendSetValue(name, type, value);
   };
 }
 

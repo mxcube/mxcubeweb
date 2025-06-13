@@ -13,11 +13,3 @@ export function fetchBeamInfo() {
 export function sendPrepareBeamlineForNewSample() {
   return endpoint.put(undefined, '/prepare_beamline').res();
 }
-
-export function sendRunBeamlineAction(name, parameters) {
-  return endpoint.post({ parameters }, `/${name}/run`).res();
-}
-
-export function sendAbortBeamlineAction(name) {
-  return endpoint.get(`/${name}/abort`).res();
-}

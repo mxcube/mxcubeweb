@@ -1,7 +1,7 @@
-import { sendGetAttribute } from '../../api/hardware-object';
+import { sendExecuteCommand } from '../../api/hardware-object';
 
 async function get_resolution_limits_for_energy(energy) {
-  const result = await sendGetAttribute(
+  const result = await sendExecuteCommand(
     'energy',
     'energy',
     'get_resolution_limits_for_energy',

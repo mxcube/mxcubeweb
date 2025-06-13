@@ -75,3 +75,8 @@ class FloatValueModel(BaseModel):
 
 class StrValueModel(BaseModel):
     value: str = Field("", description="Value of actuator (position)")
+
+
+class BeamlineActionInputModel(BaseModel):
+    cmd: str
+    parameters: dict | list

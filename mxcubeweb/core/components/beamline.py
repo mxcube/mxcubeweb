@@ -4,7 +4,6 @@ from mxcubecore import HardwareRepository as HWR
 
 from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcubeweb.core.components.component_base import ComponentBase
-from mxcubeweb.core.components.queue import READY
 
 
 class Beamline(ComponentBase):
@@ -24,33 +23,6 @@ class Beamline(ComponentBase):
         except Exception:
             msg = "error connecting to beamline_adapter/beam_info hardware object "
             msg += "signals"
-            logging.getLogger("MX3.HWR").exception(msg)
-        try:
-            actions = HWR.beamline.beamline_actions
-            if actions is not None:
-                cmds = (
-                    HWR.beamline.beamline_actions.get_commands()
-                    + HWR.beamline.beamline_actions.get_annotated_commands()
-                )
-                for cmd in cmds:
-                    cmd.connect(
-                        "commandBeginWaitReply",
-                        signals.beamline_action_start,
-                    )
-                    cmd.connect(
-                        "commandReplyArrived",
-                        signals.beamline_action_done,
-                    )
-                    cmd.connect(
-                        "commandFailed",
-                        signals.beamline_action_failed,
-                    )
-            else:
-                logging.getLogger("MX3.HWR").error(
-                    "beamline_actions hardware object is not defined"
-                )
-        except Exception:
-            msg = "error connecting to beamline actions hardware object signals"
             logging.getLogger("MX3.HWR").exception(msg)
 
         if HWR.beamline.xrf_spectrum:
@@ -139,34 +111,6 @@ class Beamline(ComponentBase):
         data = ho.dict()
         actions = []
 
-        try:
-            cmds = HWR.beamline.beamline_actions.get_commands()
-        except Exception:
-            cmds = []
-        for cmd in cmds:
-            args = []
-            for arg in cmd.get_arguments():
-                argname = arg[0]
-                argtype = arg[1]
-                args.append({"name": argname, "type": argtype})
-                if argtype == "combo":
-                    args[-1]["items"] = cmd.get_combo_argument_items(argname)
-
-            actions.append(
-                {
-                    "name": cmd.name(),
-                    "username": cmd.name(),
-                    "state": READY,
-                    "arguments": args,
-                    "argument_type": cmd.argument_type,
-                    "messages": [],
-                    "type": cmd.type,
-                    "data": cmd.value(),
-                }
-            )
-
-        actions.extend(self.beamline_get_actions())
-
         data.update(
             {
                 "path": HWR.beamline.session.get_base_image_directory(),
@@ -181,46 +125,6 @@ class Beamline(ComponentBase):
         data.update(self.diffractometer_get_info())
 
         return data
-
-    def beamline_get_actions(self):
-        actions = []
-        beamline_actions = HWR.beamline.beamline_actions
-
-        if getattr(beamline_actions, "pydantic_model", None):
-            for cmd_name in beamline_actions.exported_attributes:
-                cmd_object = beamline_actions.get_annotated_command(cmd_name)
-
-                actions.append(
-                    {
-                        "name": cmd_name,
-                        "username": cmd_object.name(),
-                        "state": READY,
-                        "arguments": beamline_actions.exported_attributes[cmd_name][
-                            "signature"
-                        ],
-                        "argument_type": "JSONSchema",
-                        "schema": beamline_actions.exported_attributes[cmd_name][
-                            "schema"
-                        ],
-                        "messages": [],
-                        "type": "JSONSchema",
-                        "data": "",
-                    }
-                )
-
-        return actions
-
-    def beamline_run_action(self, name, params):
-        """
-        Starts beamline action with name <name> and passes params as arguments
-
-        : param str name: action to run
-        """
-        try:
-            HWR.beamline.beamline_actions.execute_command(name, params)
-        except Exception as ex:
-            msg = "Action cannot run: command '%s' does not exist" % name
-            raise AttributeError(msg) from ex
 
     def get_beam_info(self):
         """

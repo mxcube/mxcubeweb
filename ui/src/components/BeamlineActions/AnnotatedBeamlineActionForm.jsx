@@ -24,7 +24,7 @@ export default function AnnotatedBeamlineActionForm(props) {
           <JSForm
             liveValidate
             validator={validator}
-            schema={JSON.parse(currentAction.schema)}
+            schema={JSON.parse(currentAction.arguments[0].jsonschema)}
             onSubmit={({ formData }) => {
               handleStartAction(actionId, formData);
             }}

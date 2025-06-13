@@ -13,6 +13,7 @@ import { fetchRemoteAccessState } from '../api/remoteAccess';
 import { fetchSampleChangerInitialState } from '../api/sampleChanger';
 import { fetchImageData, fetchShapes } from '../api/sampleview';
 import { fetchAvailableWorkflows } from '../api/workflow';
+import { fetchGetAllActions } from './beamlineActions';
 import { applicationFetched, showErrorPanel } from './general';
 
 export function setLoginInfo(loginInfo) {
@@ -101,6 +102,9 @@ export function getInitialState() {
           beamlineSetup,
           datapath: beamlineSetup.path,
         }))
+        .catch(notify),
+      fetchGetAllActions()
+        .then((actionsList) => actionsList)
         .catch(notify),
       fetchImageData()
         .then((Camera) => ({ Camera }))

@@ -41,8 +41,10 @@ def validate_input_str(input_string: str) -> bool:
     return bool(re.match(pattern, input_string))
 
 
-def assert_pydantic_arguments(func):
-    """Make sure that all the arguments of func are typehinted as pydantic models"""
+def assert_valid_type_arguments(func):
+    """Make sure that all the arguments of func are typehinted as pydantic model,
+    float, int, str or bool
+    """
     annotations = func.__annotations__
 
     # Loop through annotations and validate parameters from the request
@@ -50,9 +52,10 @@ def assert_pydantic_arguments(func):
         if param_name == "return":
             continue
 
-        # Raise RuntimerError If it's not a Pydantic model
-        if not issubclass(param_type, BaseModel):
-            msg = f"Argument {param_name} of {func} are not a pydantic model"
+        # Raise RuntimerError If it's not a Pydantic model, float, int, str or bool
+        if not issubclass(param_type, BaseModel | float | int | str | bool):
+            msg = f"Argument {param_name} of {func} are not a pydantic model, float, \
+                int or str"
             raise TypeError(msg)
 
 
@@ -170,10 +173,11 @@ class AdapterResourceHandler:
             decorators = export["decorators"]
             http_method = export["method"]
 
-            # For the time beeing we enforce the usage of pyndatic models for arguments
-            # to ensure safe vlidation of input. We rely on that those pydantic models
-            # are well specified. We validate the actual data later.
-            self._assert_pydantic_arguments(export)
+            # For the time being we enforce the usage of pydantic models, int, float or
+            # str for arguments to ensure safe validation of input. We rely on that
+            # the pydantic models used are well specified. We validate the actual data
+            # later.
+            self._assert_valid_type_arguments(export)
 
             # Create the api doc before the view functions are created
             self._create_openapi_doc_for_view(route, export)
@@ -292,12 +296,12 @@ class AdapterResourceHandler:
 
         return _view_func
 
-    def _assert_pydantic_arguments(self, export):
+    def _assert_valid_type_arguments(self, export):
         """
         Ensures the method referenced in the export uses Pydantic arguments.
         """
         obj = next(iter(self._adapter_dict.values()))
-        assert_pydantic_arguments(getattr(obj, export["attr"]))
+        assert_valid_type_arguments(getattr(obj, export["attr"]))
 
     def _create_openapi_doc_for_view(self, route, export):
         """
@@ -355,22 +359,30 @@ class AdapterResourceHandler:
         # If it's a Pydantic model, validate it
         if issubclass(param_type, BaseModel):
             try:
+                # We only handle a single argument when using Pydantic models
+                # We handle complex structures by checking if param_data
+                # contains a value or a dictionary.
+                if isinstance(param_data[param_name], dict):
+                    return param_type.parse_obj(param_data[param_name])
+
+                # If its a single value and Pydantic model, pass the entire
+                # Pydantic model
                 return param_type.parse_obj(param_data)
             except ValidationError as e:
                 msg = f"Invalid input for '{param_name}' '{e.errors}'"
                 raise ValueError(msg) from e
 
-        elif isinstance(param_data, int | float | bool):
+        elif isinstance(param_data[param_name], int | float | bool):
             # We consider int, float and bool safe and limits handled
             # by adapter or HardwareObject
-            return param_data
-        elif isinstance(param_data, str):
+            return param_data[param_name]
+        elif isinstance(param_data[param_name], str):
             # We consider str safe if it contains, alpha numerical
             # characters and dot "." and underscore "_"
-            if validate_input_str(param_data):
-                return param_data
+            if validate_input_str(param_data[param_name]):
+                return param_data[param_name]
 
-            msg = f"Invalid string input for '{param_name}'"
+            msg = f"Invalid string input for '{param_data[param_name]}'"
             raise ValueError(msg)
 
         else:
@@ -437,11 +449,16 @@ class AdapterResourceHandler:
             items: The list of commands or properties to add
             http_method: The HTTP method to use, GET, POST, PUT, DELETE
         """
+        if http_method == "GET":
+            decorators = [self._server.restrict]
+        else:
+            decorators = [self._server.require_control, self._server.restrict]
+
         for item in items:
             export = {
                 "attr": item,
                 "method": http_method,
-                "decorators": [self._server.require_control, self._server.restrict],
+                "decorators": decorators,
             }
 
             if not self.is_unique_export(export):

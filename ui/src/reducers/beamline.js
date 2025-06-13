@@ -272,16 +272,11 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
     case 'SET_INITIAL_STATE': {
       return {
         ...INITIAL_STATE,
-        //        motors: { ...INITIAL_STATE.motors, ...action.data.Motors },
         hardwareObjects: {
           ...INITIAL_STATE.actuators,
           ...action.data.beamlineSetup.hardwareObjects,
         },
-        //        motorsLimits: {
-        //          ...INITIAL_STATE.motorsLimits,
-        //          ...action.data.motorsLimits
-        //        },
-        beamlineActionsList: [...action.data.beamlineSetup.actionsList],
+        beamlineActionsList: [...action.data.actions_list],
         energyScanElements: action.data.beamlineSetup.energyScanElements,
       };
     }

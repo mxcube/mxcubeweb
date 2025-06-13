@@ -4,10 +4,7 @@ from flask import (
     Blueprint,
     Response,
     jsonify,
-    make_response,
-    request,
 )
-from markupsafe import escape
 from mxcubecore import HardwareRepository as HWR
 
 
@@ -18,31 +15,6 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def beamline_get_all_attributes():
         return jsonify(app.beamline.beamline_get_all_attributes())
-
-    @bp.route("/<name>/run", methods=["POST"])
-    @server.require_control
-    @server.restrict
-    def beamline_run_action(name):
-        """
-        Starts a beamline action; POST payload is a json-encoded object with
-        'parameters' as a list of parameters
-
-        :param str name: action to run
-
-        Replies with status code 200 on success and 500 on exceptions.
-        """
-        try:
-            params = request.get_json()["parameters"]
-        except Exception:
-            params = []
-
-        try:
-            app.beamline.beamline_run_action(name, params)
-        except Exception:
-            logging.getLogger("MX3.HWR").exception("Cannot run action %s", name)
-            return make_response(f"Cannot run action {escape(name)}", 500)
-        else:
-            return make_response("{}", 200)
 
     @bp.route("/beam/info", methods=["GET"])
     @server.restrict

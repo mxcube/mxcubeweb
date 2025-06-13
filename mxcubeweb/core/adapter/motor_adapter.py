@@ -32,7 +32,7 @@ class MotorAdapter(ActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self.value_change(*args, **kwargs)
 
-    def set_value(self, value: FloatValueModel):
+    def set_value(self, value: float):
         """
         Set the detector distance.
         Args:
@@ -44,7 +44,7 @@ class MotorAdapter(ActuatorAdapterBase):
             RuntimeError: Timeout while setting the value.
             StopItteration: When a value change was interrupted (abort/cancel).
         """
-        self._ho.set_value(float(value.value))
+        self._ho.set_value(float(value))
         return self.get_value()
 
     def get_value(self) -> FloatValueModel:

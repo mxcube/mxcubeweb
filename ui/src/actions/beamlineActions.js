@@ -1,5 +1,8 @@
-import { sendRunBeamlineAction } from '../api/beamline';
-import { sendStop } from '../api/hardware-object';
+import {
+  sendExecuteCommand,
+  sendGetAttribute,
+  sendStop,
+} from '../api/hardware-object';
 import { RUNNING } from '../constants';
 
 export function addUserMessage(data) {
@@ -43,8 +46,19 @@ export function startBeamlineAction(cmdName, parameters, showOutput = true) {
       dispatch(showActionOutput(cmdName));
     }
 
-    sendRunBeamlineAction(cmdName, parameters);
+    sendExecuteCommand('beamlineaction', 'beamline_actions', 'run_action', {
+      cmd: cmdName,
+      parameters,
+    });
   };
+}
+
+export function fetchGetAllActions() {
+  return sendGetAttribute(
+    'beamlineaction',
+    'beamline_actions',
+    'get_all_actions',
+  );
 }
 
 export function stopBeamlineAction(name) {
