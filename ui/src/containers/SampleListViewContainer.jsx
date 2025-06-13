@@ -1,6 +1,7 @@
-import { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   Button,
+  ButtonGroup,
   Card,
   Col,
   Container,
@@ -547,43 +548,62 @@ export default function SampleListViewContainer() {
   }
 
   function getSynchronizationDropDownList() {
-    if (loginData.limsName.length === 1) {
-      return (
+    return (
+      <Dropdown as={ButtonGroup}>
         <TooltipTrigger
           id="sync-samples-tooltip"
-          tooltipContent={`Synchronise sample list with ${loginData.limsName[0].name}`}
+          tooltipContent={`Synchronise sample list with ${loginData.limsName[0].name},
+          and apply filter to only show with LIMS samples`}
         >
           <Button
-            className="nowrap-style"
             variant="outline-secondary"
+            className="nowrap-style"
             onClick={() => handleSyncSamples(loginData.limsName[0].name)}
           >
             <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />
-            Get Samples
+            Get Samples & Sync {loginData.limsName[0].name}
           </Button>
         </TooltipTrigger>
-      );
-    }
-    return (
-      <Dropdown>
-        <Dropdown.Toggle variant="outline-secondary" id="dropdown-lims">
-          <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />{' '}
-          Synchronize with
-        </Dropdown.Toggle>
+        <Dropdown.Toggle
+          split
+          variant="outline-secondary"
+          id="dropdown-split-samples"
+          title="Other LIMS Options"
+        />
         <Dropdown.Menu>
-          {loginData.limsName.map((lims) => (
-            <TooltipTrigger
-              key={lims.name}
-              tooltipContent={`Synchronise sample list with ${lims.name}`}
+          <TooltipTrigger tooltipContent="get samples from sample changer">
+            <Dropdown.Item
+              onClick={() => getSamplesFromSC()}
+              variant="outline-secondary"
+              className="nowrap-style"
             >
-              <Dropdown.Item
-                key={lims.name}
-                onClick={() => handleSyncSamples(lims.name)}
-              >
-                {lims.name}
-              </Dropdown.Item>
-            </TooltipTrigger>
-          ))}
+              Get Samples from SC
+            </Dropdown.Item>
+          </TooltipTrigger>
+          {loginData.limsName.length > 1 && <Dropdown.Divider />}
+          {loginData.limsName.map((lims, lindex) => {
+            if (lindex === 0) {
+              // Skip the first LIMS as it is already included in the button above
+              return null;
+            }
+
+            return (
+              <React.Fragment key={lims.name}>
+                <TooltipTrigger
+                  tooltipContent={`Synchronise sample list with ${lims.name}`}
+                >
+                  <Dropdown.Item
+                    variant="outline-secondary"
+                    className="nowrap-style"
+                    onClick={() => handleSyncSamples(lims.name)}
+                  >
+                    Get Samples & Sync {lims.name}
+                  </Dropdown.Item>
+                </TooltipTrigger>
+                {loginData.limsName.length < lindex && <Dropdown.Divider />}
+              </React.Fragment>
+            );
+          })}
         </Dropdown.Menu>
       </Dropdown>
     );
