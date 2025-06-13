@@ -800,12 +800,17 @@ export default function SampleListViewContainer() {
               </TooltipTrigger>
               <span style={{ marginLeft: '1.5em' }} />
               <Dropdown>
-                <Dropdown.Toggle
-                  variant="outline-secondary"
-                  id="dropdown-basic"
+                <TooltipTrigger
+                  id="sync-samples-tooltip"
+                  tooltipContent="Change Samples List View Mode"
                 >
-                  <MdGridView size="1em" /> {viewMode.mode}
-                </Dropdown.Toggle>
+                  <Dropdown.Toggle
+                    variant="outline-secondary"
+                    id="dropdown-basic"
+                  >
+                    <MdGridView size="1em" /> {viewMode.mode}
+                  </Dropdown.Toggle>
+                </TooltipTrigger>
                 <Dropdown.Menu>
                   {viewMode.options.map((option) => (
                     <Dropdown.Item
