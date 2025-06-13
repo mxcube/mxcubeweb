@@ -14,6 +14,7 @@ import { fetchSampleChangerInitialState } from '../api/sampleChanger';
 import { fetchImageData, fetchShapes } from '../api/sampleview';
 import { fetchAvailableWorkflows } from '../api/workflow';
 import { applicationFetched, showErrorPanel } from './general';
+import { syncSampleListWithLims } from './sampleGrid';
 
 export function setLoginInfo(loginInfo) {
   return {
@@ -85,7 +86,7 @@ export function signOut() {
 }
 
 export function getInitialState() {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     const initialStateSlices = await Promise.all([
       fetchUIProperties()
         .then((uiproperties) => ({ uiproperties }))
@@ -154,6 +155,18 @@ export function getInitialState() {
 
     dispatch(setInitialState(Object.assign({}, ...initialStateSlices)));
     dispatch(applicationFetched(true));
+
+    const state = getState();
+    const { sampleList } = state.sampleGrid;
+    const { loginInfo } = state.login;
+    if (Object.keys(sampleList).length === 0) {
+      // If the sample list is empty, synchronize it with LIMS
+      // Use the first LIMS available as default
+      // This is done here to ensure that the sample list is populated
+      // when the application is initialized
+      // and the user is logged in
+      dispatch(syncSampleListWithLims(loginInfo?.limsName[0]?.name));
+    }
   };
 }
 

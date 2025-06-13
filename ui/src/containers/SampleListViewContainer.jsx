@@ -31,7 +31,7 @@ import {
   selectSamplesAction,
   setViewModeAction,
   showGenericContextMenu,
-  syncSamples,
+  syncSampleListWithLims,
 } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import TooltipTrigger from '../components/TooltipTrigger';
@@ -215,33 +215,22 @@ export default function SampleListViewContainer() {
     }
   }
 
-  async function getSamplesFromSC() {
-    const manualSamples = [];
-    Object.values(sampleList).forEach((sample) => {
-      if (sample.location === 'Manual') {
-        manualSamples.push(sample.sampleID);
-      }
-    });
-    // first need to remove manual sample from queue
-    // because they will be remove from sample List
-    await dispatch(setEnabledSample(manualSamples, false));
-
+  function getSamplesFromSC() {
     dispatch(getSamplesList());
+    sampleGridClearFilter();
   }
 
   /**
    * Synchronises samples with LIMS
-   *
-   * @property {Object} loginData
+   * @param {string} lims - LIMS name to synchronise with
+   * this also automatically filters the sample list to only show samples
+   * that have LIMS data
+   * @see syncSamples
+   * @see filterAction
+   * @see syncSampleListWithLims
    */
-  async function handleSyncSamples(lims) {
-    if (Object.keys(sampleList).length === 0) {
-      await getSamplesFromSC();
-      dispatch(syncSamples(lims));
-    } else {
-      dispatch(syncSamples(lims));
-    }
-    dispatch(filterAction({ limsSamples: true }));
+  function handleSyncSamples(lims) {
+    dispatch(syncSampleListWithLims(lims));
   }
 
   /**

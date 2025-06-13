@@ -80,6 +80,13 @@ export function getSamplesList() {
   };
 }
 
+export function syncSampleListWithLims(lims) {
+  return async (dispatch) => {
+    await dispatch(syncSamples(lims)); // sync samples with LIMS
+    dispatch(filterAction({ limsSamples: true })); // auto filter samples to show only LIMS samples
+  };
+}
+
 export function syncSamples(lims) {
   return async (dispatch) => {
     dispatch(showWaitDialog('Please wait', 'Synchronizing with LIMS', true));
