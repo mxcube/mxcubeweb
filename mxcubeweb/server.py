@@ -106,7 +106,6 @@ class Server:
         from mxcubeweb.routes.log import init_route as init_log_route
         from mxcubeweb.routes.login import init_route as init_login_route
         from mxcubeweb.routes.main import init_route as init_main_route
-        from mxcubeweb.routes.mockups import init_route as init_mockups_route
         from mxcubeweb.routes.queue import init_route as init_queue_route
         from mxcubeweb.routes.ra import init_route as init_ra_route
         from mxcubeweb.routes.samplecentring import init_route as init_sampleview_route
@@ -138,8 +137,6 @@ class Server:
         Server._register_route(init_login_route, mxcube, f"{url_root_prefix}/login")
 
         Server._register_route(init_main_route, mxcube, f"{url_root_prefix}")
-
-        Server._register_route(init_mockups_route, mxcube, f"{url_root_prefix}/mockups")
 
         Server._register_route(init_queue_route, mxcube, f"{url_root_prefix}/queue")
 
