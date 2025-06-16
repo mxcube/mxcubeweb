@@ -89,7 +89,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         server.emit("queue", msg, namespace="/hwr")
         return Response(status=200)
 
-    @bp.route("/clear", methods=["PUT", "GET"])
+    @bp.route("/clear", methods=["PUT"])
     @server.require_control
     @server.restrict
     def queue_clear():
