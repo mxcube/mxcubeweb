@@ -1,6 +1,7 @@
 """Helper functions for pytest"""
 
 import tempfile
+from pathlib import Path
 
 from gevent import monkey
 
@@ -78,7 +79,7 @@ def cleanup_subprocesses():
 @pytest.fixture
 def client():
     with tempfile.TemporaryDirectory(prefix="mxcube-test-") as temp_dir:
-        test_db = temp_dir / "mxcube-test-user.db"
+        test_db = Path(temp_dir) / "mxcube-test-user.db"
 
         if test_db.exists():
             test_db.unlink()
