@@ -1,5 +1,7 @@
 """Helper functions for pytest"""
 
+from pathlib import Path
+
 from gevent import monkey
 
 monkey.patch_all(thread=False)
@@ -79,7 +81,7 @@ def client():
 
     HardwareRepository.uninit_hardware_repository()
     argv = []
-    server, _ = build_server_and_config(test=True, argv=argv)
+    server, cfg = build_server_and_config(test=True, argv=argv)
 
     client = server.flask.test_client()
 
@@ -126,6 +128,10 @@ def client():
     yield client
 
     client.get("/mxcube/api/v0.1/login/signout/")
+    if hasattr(cfg, "test_db_path"):
+        test_db = Path(cfg.test_db_path)
+        if test_db.exists():
+            test_db.unlink(missing_ok=True)
 
 
 @pytest.fixture

@@ -136,9 +136,9 @@ def build_server_and_config(test=False, argv=None):
         db_path.parent.mkdir(parents=True, exist_ok=True, mode=0o600)
         if test:
             try:
-                # Use test database in same directory
                 test_db = db_path.parent / "mxcube-test-user.db"
                 cfg.flask.USER_DB_PATH = str(test_db)
+                cfg.test_db_path = str(test_db)
 
                 # Clean up existing test database if it exists
                 if test_db.exists():
