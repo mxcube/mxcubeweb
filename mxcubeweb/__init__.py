@@ -133,7 +133,7 @@ def build_server_and_config(test=False, argv=None):
             if cfg.flask.USER_DB_PATH
             else Path(FlaskConfigModel.USER_DB_PATH.default)
         )
-        db_path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+        db_path.parent.mkdir(parents=True, exist_ok=True, mode=0o600)
         if test:
             try:
                 # Use test database in same directory
