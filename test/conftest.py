@@ -1,6 +1,6 @@
 """Helper functions for pytest"""
 
-from pathlib import Path
+import tempfile
 
 from gevent import monkey
 
@@ -27,8 +27,6 @@ MXCUBE_ROOT = os.path.abspath(
 sys.path.append(MXCUBE_ROOT)
 sys.path.append("./")
 
-
-import contextlib
 
 from mxcubecore import HardwareRepository
 
@@ -79,66 +77,65 @@ def cleanup_subprocesses():
 
 @pytest.fixture
 def client():
-    db_path = Path.home() / ".mxcube" / "tmp"
-    test_db = db_path / "mxcube-test-user.db"
+    with tempfile.TemporaryDirectory(prefix="mxcube-test-") as temp_dir:
+        test_db = temp_dir / "mxcube-test-user.db"
 
-    with contextlib.suppress(FileNotFoundError):
-        test_db.unlink()
+        if test_db.exists():
+            test_db.unlink()
 
-    global _SIO_TEST_CLIENT
+        global _SIO_TEST_CLIENT
 
-    HardwareRepository.uninit_hardware_repository()
-    argv = []
-    server, _ = build_server_and_config(test=True, argv=argv)
+        HardwareRepository.uninit_hardware_repository()
+        argv = []
+        server, _ = build_server_and_config(test=True, argv=argv)
 
-    client = server.flask.test_client()
+        client = server.flask.test_client()
 
-    data = json.dumps({"proposal": "idtest0", "password": "sUpErSaFe"})
+        data = json.dumps({"proposal": "idtest0", "password": "sUpErSaFe"})
 
-    client.post("/mxcube/api/v0.1/login/", data=data, content_type="application/json")
+        client.post(
+            "/mxcube/api/v0.1/login/", data=data, content_type="application/json"
+        )
 
-    resp = client.post(
-        "/mxcube/api/v0.1/queue/",
-        data=json.dumps([test_sample_1]),
-        content_type="application/json",
-    )
+        resp = client.post(
+            "/mxcube/api/v0.1/queue/",
+            data=json.dumps([test_sample_1]),
+            content_type="application/json",
+        )
 
-    assert resp.status_code == 200
+        assert resp.status_code == 200
 
-    resp = client.post(
-        "/mxcube/api/v0.1/queue/",
-        data=json.dumps([test_sample_5]),
-        content_type="application/json",
-    )
+        resp = client.post(
+            "/mxcube/api/v0.1/queue/",
+            data=json.dumps([test_sample_5]),
+            content_type="application/json",
+        )
 
-    assert resp.status_code == 200
+        assert resp.status_code == 200
 
-    _SIO_TEST_CLIENT = server.flask_socketio.test_client(server)
+        _SIO_TEST_CLIENT = server.flask_socketio.test_client(server)
 
-    resp = client.get("/mxcube/api/v0.1/queue/")
+        resp = client.get("/mxcube/api/v0.1/queue/")
 
-    assert resp.status_code == 200
-    assert json.loads(resp.data).get("1:05")
+        assert resp.status_code == 200
+        assert json.loads(resp.data).get("1:05")
 
-    queue_id = json.loads(resp.data).get("1:05")["queueID"]
-    task_to_add = copy.deepcopy(test_task)
-    task_to_add["queueID"] = queue_id
-    task_to_add["tasks"][0]["sampleQueueID"] = queue_id
+        queue_id = json.loads(resp.data).get("1:05")["queueID"]
+        task_to_add = copy.deepcopy(test_task)
+        task_to_add["queueID"] = queue_id
+        task_to_add["tasks"][0]["sampleQueueID"] = queue_id
 
-    resp = client.post(
-        "/mxcube/api/v0.1/queue/",
-        data=json.dumps([task_to_add]),
-        content_type="application/json",
-    )
+        resp = client.post(
+            "/mxcube/api/v0.1/queue/",
+            data=json.dumps([task_to_add]),
+            content_type="application/json",
+        )
 
-    assert resp.status_code == 200
+        assert resp.status_code == 200
 
-    yield client
+        yield client
 
-    client.get("/mxcube/api/v0.1/login/signout/")
-
-    with contextlib.suppress(FileNotFoundError):
-        os.remove("/tmp/mxcube-test-user.db")
+        client.get("/mxcube/api/v0.1/login/signout/")
 
 
 @pytest.fixture
