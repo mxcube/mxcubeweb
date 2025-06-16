@@ -21,7 +21,7 @@ except PackageNotFoundError:
     try:
         # Python >= 3.11 standard library
         from tomllib import load as load_toml  # pyright: ignore[reportMissingImports]
-    except (ImportError, ModuleNotFoundError):
+    except ImportError:
         # Python <= 3.10 predecessor library
         from tomli import load as load_toml  # pyright: ignore[reportMissingImports]
 
