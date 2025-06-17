@@ -1,6 +1,7 @@
 import logging
 import os
 import traceback
+from pathlib import Path
 
 import flask_security
 import gevent
@@ -175,8 +176,9 @@ class Server:
                 cfg.flask.CERT_PEM, cfg.flask.CERT_KEY
             )
         elif cfg.flask.CERT == "ADHOC":
+            cert_dir = Path(cfg.flask.USER_DB_PATH).parent
             ssl_context = werkzeug.serving.load_ssl_context(
-                *werkzeug.serving.make_ssl_devcert("/tmp/")
+                *werkzeug.serving.make_ssl_devcert(str(cert_dir))
             )
         else:
             ssl_context = None
