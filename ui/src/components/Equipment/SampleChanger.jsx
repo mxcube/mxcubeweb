@@ -214,8 +214,8 @@ export default function SampleChanger(props) {
         >
           <i className="fas fa-qrcode" /> Scan all containers
         </Button>
-        {props.state === 'MOVING' && (
-          <span style={{ marginLeft: '1em' }}>
+        <span style={{ marginLeft: '1em' }}>
+          {props.state === 'MOVING' && (
             <Button
               variant="danger"
               className={styles.abortButton}
@@ -223,8 +223,8 @@ export default function SampleChanger(props) {
             >
               <i className="fas fa-stop" /> Abort
             </Button>
-          </span>
-        )}
+          )}
+        </span>
         {current}
         <div style={{ marginBottom: '1em' }} />
         <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>{nodes}</div>
