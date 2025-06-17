@@ -6,6 +6,8 @@ from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.components.queue import READY
 
+class BeamlineActionError(Exception):
+    """Raised when a beamline action fails to execute."""
 
 class Beamline(ComponentBase):
     def __init__(self, app, config):
@@ -241,7 +243,7 @@ class Beamline(ComponentBase):
             HWR.beamline.beamline_actions.execute_command(name, params)
         except Exception as ex:
             msg = "Action cannot run: command '%s' does not exist" % name
-            raise Exception(msg) from ex
+            raise BeamlineActionError(msg) from ex
 
     def get_beam_info(self):
         """

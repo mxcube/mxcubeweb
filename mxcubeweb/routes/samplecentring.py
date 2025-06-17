@@ -57,7 +57,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
             # Check if send data is a jpeg image
             if "image/jpeg" not in mimetype:
                 msg = "Image type should be jpeg"
-                raise Exception(msg)
+                raise ValueError(msg)
 
             image = HWR.beamline.sample_view.take_snapshot(
                 overlay_data=overlay_data,
