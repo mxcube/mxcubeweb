@@ -20,18 +20,23 @@ from mxcubeweb.core.util.networkutils import is_local_host
 
 HTTP_REQUESTS_TIMEOUT = 10  # Generic timeout for HTTP requests in seconds
 
+
 class UserLoginError(Exception):
     """Base exception for user login related errors."""
+
 
 class AlreadyLoggedInError(UserLoginError):
     """Raised when user tries to login while already logged in."""
 
+
 class InhouseAccessError(UserLoginError):
     """Raised when inhouse user tries to login from non-local host."""
 
+
 class RemoteAccessError(UserLoginError):
     """Raised when remote access is disabled."""
-    
+
+
 class BaseUserManager(ComponentBase):
     """Base class for managing user-related operations
 
@@ -573,7 +578,7 @@ class UserManager(BaseUserManager):
                 self.force_signout_user(login_id)
             else:
                 if current_user.username == login_id:
-                    msg= "You are already logged in"
+                    msg = "You are already logged in"
                     raise AlreadyLoggedInError(msg)
                 msg = (
                     "Login rejected, you are already logged in"

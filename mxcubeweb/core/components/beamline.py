@@ -6,8 +6,10 @@ from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.components.queue import READY
 
+
 class BeamlineActionError(Exception):
     """Raised when a beamline action fails to execute."""
+
 
 class Beamline(ComponentBase):
     def __init__(self, app, config):

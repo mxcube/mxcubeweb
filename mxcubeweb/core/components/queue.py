@@ -38,14 +38,18 @@ READY = 0
 
 ORIGIN_MX3 = "MX3"
 
+
 class QueueError(Exception):
     """Base exception for queue-related errors."""
+
 
 class SampleNotFoundError(QueueError):
     """Raised when a requested sample cannot be found in the queue."""
 
+
 class MethodNotFoundError(QueueError):
     """Raised when a requested method cannot be found for a sample."""
+
 
 class Queue(ComponentBase):
     def __init__(self, app, config):
