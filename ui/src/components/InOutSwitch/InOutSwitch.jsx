@@ -106,7 +106,6 @@ export default function InOutSwitch(props) {
       break;
     }
     case 'UNUSABLE': {
-      msgBgStyle = 'warning';
       btn = (
         <Button
           variant="outline-secondary"
@@ -119,7 +118,6 @@ export default function InOutSwitch(props) {
       break;
     }
     case 'MOVING': {
-      msgBgStyle = 'warning';
       btn = (
         <Spinner animation="border" variant="warning">
           <span className="visually-hidden">MOVING...</span>
