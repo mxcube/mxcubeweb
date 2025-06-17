@@ -39,18 +39,6 @@ READY = 0
 ORIGIN_MX3 = "MX3"
 
 
-class QueueError(Exception):
-    """Base exception for queue-related errors."""
-
-
-class SampleNotFoundError(QueueError):
-    """Raised when a requested sample cannot be found in the queue."""
-
-
-class MethodNotFoundError(QueueError):
-    """Raised when a requested method cannot be found for a sample."""
-
-
 class Queue(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
@@ -2205,7 +2193,7 @@ class Queue(ComponentBase):
         else:
             msg = "[QUEUE] Sample with id %s not in queue, can't update" % sid
             logging.getLogger("MX3.HWR").error(msg)
-            raise QueueError(msg)
+            raise ValueError(msg)
 
     def toggle_node(self, node_id):
         node = HWR.beamline.queue_model.get_node(node_id)
@@ -2410,7 +2398,7 @@ class Queue(ComponentBase):
         if not sample:
             msg = "[QUEUE] sample info could not be retrieved"
             logging.getLogger("MX3.HWR").error(msg)
-            raise SampleNotFoundError(msg)
+            raise KeyError(msg)
         # Find task with queue id method_id
         for task in sample.tasks:
             if task["queueID"] == int(method_id):
@@ -2420,7 +2408,7 @@ class Queue(ComponentBase):
         msg += " the given sample"
         logging.getLogger("MX3.HWR").exception(msg)
 
-        raise MethodNotFoundError(msg)
+        raise ValueError(msg)
 
     def set_group_folder(self, path):
         if path and path[0] in ["/", "."]:
