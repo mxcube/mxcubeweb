@@ -184,7 +184,6 @@ export default function SampleChanger(props) {
   // display some buttons depending on available features
   const nodes = renderTree(props.contents, true);
   let current = '';
-  let abortButton = '';
 
   if (props.loadedSample.address) {
     current = (
@@ -201,16 +200,6 @@ export default function SampleChanger(props) {
     current = <div style={{ marginTop: '1em', marginBottom: '1em' }} />;
   }
 
-  if (props.state === 'MOVING') {
-    abortButton = (
-      <Button variant="danger" className={styles.abortButton} onClick={abort}>
-        <i className="fas fa-stop" /> Abort
-      </Button>
-    );
-  } else {
-    abortButton = '';
-  }
-
   return (
     <Card className="mb-3">
       <Card.Header>Content</Card.Header>
@@ -225,7 +214,17 @@ export default function SampleChanger(props) {
         >
           <i className="fas fa-qrcode" /> Scan all containers
         </Button>
-        <span style={{ marginLeft: '1em' }}>{abortButton}</span>
+        {props.state === 'MOVING' && (
+          <span style={{ marginLeft: '1em' }}>
+            <Button
+              variant="danger"
+              className={styles.abortButton}
+              onClick={abort}
+            >
+              <i className="fas fa-stop" /> Abort
+            </Button>
+          </span>
+        )}
         {current}
         <div style={{ marginBottom: '1em' }} />
         <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>{nodes}</div>
