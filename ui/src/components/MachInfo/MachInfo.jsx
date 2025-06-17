@@ -16,30 +16,26 @@ function MachInfo(props) {
 
   if (info.attention === true) {
     variant = 'danger';
-  } else {
-    variant = 'info';
   }
 
   for (propName in info) {
-    if (propName in info) {
-      if (propName === 'attention') {
-        continue;
-      }
-      propValue = info[propName];
-      msg = (
-        <Row className="mb-2">
-          {' '}
-          <Col sm={3}>{propName}</Col> <Col sm={1}> : </Col>{' '}
-          <Col sm={7}>{propValue}</Col>
-        </Row>
-      );
-      popContent = (
-        <span>
-          {popContent}
-          {msg}
-        </span>
-      );
+    if (propName === 'attention') {
+      continue;
     }
+    propValue = info[propName];
+    msg = (
+      <Row className="mb-2">
+        {' '}
+        <Col sm={3}>{propName}</Col> <Col sm={1}> : </Col>{' '}
+        <Col sm={7}>{propValue}</Col>
+      </Row>
+    );
+    popContent = (
+      <span>
+        {popContent}
+        {msg}
+      </span>
+    );
   }
 
   popContent = <span>{popContent}</span>;
