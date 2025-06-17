@@ -21,22 +21,6 @@ from mxcubeweb.core.util.networkutils import is_local_host
 HTTP_REQUESTS_TIMEOUT = 10  # Generic timeout for HTTP requests in seconds
 
 
-class UserLoginError(Exception):
-    """Base exception for user login related errors."""
-
-
-class AlreadyLoggedInError(UserLoginError):
-    """Raised when user tries to login while already logged in."""
-
-
-class InhouseAccessError(UserLoginError):
-    """Raised when inhouse user tries to login from non-local host."""
-
-
-class RemoteAccessError(UserLoginError):
-    """Raised when remote access is disabled."""
-
-
 class BaseUserManager(ComponentBase):
     """Base class for managing user-related operations
 
@@ -579,23 +563,23 @@ class UserManager(BaseUserManager):
             else:
                 if current_user.username == login_id:
                     msg = "You are already logged in"
-                    raise AlreadyLoggedInError(msg)
+                    raise RuntimeError(msg)
                 msg = (
                     "Login rejected, you are already logged in"
                     " somewhere else\nand Another user is already"
                     " logged in"
                 )
-                raise AlreadyLoggedInError(msg)
+                raise RuntimeError(msg)
 
         # Only allow in-house log-in from local host
         if self.is_inhouse_user(login_id) and not is_local_host(local_domains):
             msg = "In-house only allowed from localhost"
-            raise InhouseAccessError(msg)
+            raise PermissionError(msg)
 
         # Only allow local login when remote is disabled
         if not self.app.ALLOW_REMOTE and not is_local_host(local_domains):
             msg = "Remote access disabled"
-            raise RemoteAccessError(msg)
+            raise ConnectionRefusedError(msg)
 
         return session_manager
 
