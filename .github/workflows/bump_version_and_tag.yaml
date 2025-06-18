@@ -8,6 +8,11 @@ name: Create/Update Tag
     branches:
       - develop
 
+permissions:
+  contents: write
+  packages: write
+  id-token: write
+
 jobs:
   create-version-tag:
     runs-on: ubuntu-latest
