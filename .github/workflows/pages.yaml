@@ -8,6 +8,10 @@ concurrency:
   pull_request: null
   push: null
 
+permissions:
+  contents: read
+  packages: read
+
 jobs:
   "pages-build":
     runs-on: "ubuntu-22.04"
