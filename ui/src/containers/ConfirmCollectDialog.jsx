@@ -1,6 +1,4 @@
 /* eslint-disable react/destructuring-assignment */
-import './ConfirmCollectDialog.css';
-
 import React from 'react';
 import {
   Button,
@@ -26,6 +24,7 @@ import {
   CLICK_CENTRING,
   TASK_UNCOLLECTED,
 } from '../constants';
+import styles from './ConfirmCollectDialog.module.css';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
 export class ConfirmCollectDialog extends React.Component {
@@ -35,26 +34,11 @@ export class ConfirmCollectDialog extends React.Component {
     this.onCancelClick = this.onCancelClick.bind(this);
     this.collectionSummary = this.collectionSummary.bind(this);
     this.taskTable = this.taskTable.bind(this);
-    this.onResize = this.onResize.bind(this);
-    this.resizeTable = this.resizeTable.bind(this);
     this.autoLoopCentringOnClick = this.autoLoopCentringOnClick.bind(this);
     this.autoMountNextOnClick = this.autoMountNextOnClick.bind(this);
     this.collectText = this.collectText.bind(this);
     this.tasksToCollect = this.tasksToCollect.bind(this);
     this.setNumSnapshots = this.setNumSnapshots.bind(this);
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.onResize, false);
-    this.resizeTable();
-  }
-
-  componentDidUpdate() {
-    this.resizeTable();
-  }
-
-  componentWillUnmount() {
-    window.removeEventListener('resize', this.onResize);
   }
 
   onOkClick() {
@@ -66,10 +50,6 @@ export class ConfirmCollectDialog extends React.Component {
 
   onCancelClick() {
     this.props.hide();
-  }
-
-  onResize() {
-    this.resizeTable();
   }
 
   setNumSnapshots(n) {
@@ -86,43 +66,6 @@ export class ConfirmCollectDialog extends React.Component {
 
   autoMountNextOnClick(e) {
     this.props.setAutoMountSample(e.target.checked);
-  }
-
-  /**
-   * The CSS that adds the scroll bar changes the way the table rows are displayed
-   * so we need to recalculate the width of the header and body rows so that they
-   * are aligned properly
-   */
-  resizeTable() {
-    const tableHead = document.querySelector('#table-head');
-    const tableBody = document.querySelector('#table-body');
-
-    if (tableHead && tableBody) {
-      const headerColWidthArray = [...tableHead.children[0].children].map(
-        (td) => td.getBoundingClientRect().width,
-      );
-
-      const bodyColWidthArray = [...tableBody.children[0].children].map(
-        (td) => td.getBoundingClientRect().width,
-      );
-
-      // Set the width of each collumn in the body to be atleast the width of the
-      // corresponding collumn in the header
-      [...tableBody.children].forEach((tr) => {
-        [...tr.children].forEach((td, i) => {
-          const _td = td;
-          _td.width = headerColWidthArray[i];
-        });
-      });
-
-      // Update the header columns so that they match the content of the body
-      [...tableHead.children[0].children].forEach((th, i) => {
-        if (bodyColWidthArray[i] > th.getBoundingClientRect().width) {
-          const _th = th;
-          _th.width = bodyColWidthArray[i];
-        }
-      });
-    }
   }
 
   /**
@@ -195,7 +138,7 @@ export class ConfirmCollectDialog extends React.Component {
 
     if (task.type === 'energy_scan') {
       pover = (
-        <Popover id="collect-confirm-dialog-popover">
+        <Popover className={styles.collectConfirmDialogPopover}>
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -214,7 +157,7 @@ export class ConfirmCollectDialog extends React.Component {
       );
     } else if (task.type === 'xrf_spectrum') {
       pover = (
-        <Popover id="collect-confirm-dialog-popover">
+        <Popover className={styles.collectConfirmDialogPopover}>
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -231,7 +174,7 @@ export class ConfirmCollectDialog extends React.Component {
       );
     } else {
       pover = (
-        <Popover id="collect-confirm-dialog-popover">
+        <Popover className={styles.collectConfirmDialogPopover}>
           <Table striped bordered hover>
             <thead>
               <tr>
@@ -292,9 +235,9 @@ export class ConfirmCollectDialog extends React.Component {
 
     if (summary.numTasks > 0) {
       table = (
-        <div className="scroll">
-          <Table responsive striped bordered hover>
-            <thead id="table-head">
+        <div className={styles.scroll}>
+          <Table responsive bordered hover className={styles.tableStriped}>
+            <thead>
               <tr>
                 <th>Type</th>
                 <th>Sample</th>
@@ -302,7 +245,7 @@ export class ConfirmCollectDialog extends React.Component {
                 <th># Images</th>
               </tr>
             </thead>
-            <tbody id="table-body">
+            <tbody>
               {tasks.map((task) => {
                 const { parameters } =
                   task.type === 'Interleaved'
@@ -315,7 +258,6 @@ export class ConfirmCollectDialog extends React.Component {
                 return (
                   <OverlayTrigger
                     key={task.queueID}
-                    bsClass="collect-confirm-dialog-overlay-trigger"
                     placement="bottom"
                     overlay={this.taskPopover(task)}
                   >
@@ -347,7 +289,7 @@ export class ConfirmCollectDialog extends React.Component {
   render() {
     const autoMountNext = this.props.queue.queue.length > 1;
     return (
-      <Modal dialogClassName="collect-confirm-dialog" show={this.props.show}>
+      <Modal show={this.props.show}>
         <Modal.Header>
           <Modal.Title>Collect Queue ?</Modal.Title>
         </Modal.Header>

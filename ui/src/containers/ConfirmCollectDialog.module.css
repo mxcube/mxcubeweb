@@ -1,15 +1,12 @@
-#collect-confirm-dialog-popover {
+.collectConfirmDialogPopover {
   width: auto;
   max-width: 80%;
 }
 
-.scroll tbody {
+.scroll {
   max-height: 500px;
   overflow-y: auto;
   overflow-x: auto;
-}
-
-.scroll tbody {
 }
 
 .scroll tbody td,
@@ -17,14 +14,14 @@
   white-space: nowrap;
 }
 
-.table-striped > tbody > tr:nth-of-type(odd) {
-  background-color: #fff;
+.tableStriped > tbody > tr:nth-of-type(odd) {
+  background-color: #eaeaea;
 }
 
-.table-striped > tbody > tr:nth-of-type(even) {
+.tableStriped > tbody > tr:nth-of-type(even) {
   background-color: rgba(238, 232, 170, 0.2);
 }
 
-.table-striped > tbody > tr:hover {
+.tableStriped > tbody > tr:hover {
   background-color: #f0f3f5;
 }
