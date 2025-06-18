@@ -117,7 +117,10 @@ class SampleViewContainer extends Component {
             <DefaultErrorBoundary>
               {this.props.enablePhaseControl && (
                 <div className={motorInputStyles.container}>
-                  <label className={motorInputStyles.label} htmlFor="PhaseInput">
+                  <label
+                    className={motorInputStyles.label}
+                    htmlFor="PhaseInput"
+                  >
                     Phase Control
                   </label>
                   <PhaseInput />
