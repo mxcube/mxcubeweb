@@ -47,6 +47,14 @@ jobs:
         with:
           version: "2.1.3"
 
+      - name: "Cache Poetry dependencies"
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pypoetry
+          key: ${{ runner.os }}-poetry-${{ hashFiles('**/poetry.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-poetry-
+
       - name: "Install dependencies with Poetry"
         run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only=docs,main"
 
