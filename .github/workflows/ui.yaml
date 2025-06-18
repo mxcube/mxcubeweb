@@ -10,6 +10,11 @@ name: UI
   pull_request: null
   push: null
 
+permissions:
+  contents: read    # Required for checkout
+  actions: read     # for cache
+  packages: read    # for package access
+
 jobs:
   format:
     name: JS-Format
@@ -83,6 +88,9 @@ jobs:
   e2e:
     name: E2E-Test
     runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write       # for artifact upload
 
     # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
     if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
