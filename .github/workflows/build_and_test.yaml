@@ -5,6 +5,10 @@ name: Python build and test
   pull_request: null
   push: null
 
+permissions:
+  contents: read
+  checks: write   # for test result from pytest
+
 jobs:
   build-linux:
     runs-on: ubuntu-latest
