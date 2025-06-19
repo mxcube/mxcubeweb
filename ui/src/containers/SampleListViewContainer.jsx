@@ -26,7 +26,6 @@ import {
 import { showConfirmCollectDialog } from '../actions/queueGUI';
 import {
   filterAction,
-  getSamplesList,
   selectSamplesAction,
   setViewModeAction,
   showGenericContextMenu,
@@ -214,32 +213,12 @@ export default function SampleListViewContainer() {
     }
   }
 
-  async function getSamplesFromSC() {
-    const manualSamples = [];
-    Object.values(sampleList).forEach((sample) => {
-      if (sample.location === 'Manual') {
-        manualSamples.push(sample.sampleID);
-      }
-    });
-    // first need to remove manual sample from queue
-    // because they will be remove from sample List
-    await dispatch(setEnabledSample(manualSamples, false));
-
-    dispatch(getSamplesList());
-  }
-
   /**
    * Synchronises samples with LIMS
-   *
-   * @property {Object} loginData
+   * @param {string} lims - LIMS name to synchronise with
    */
-  async function handleSyncSamples(lims) {
-    if (Object.keys(sampleList).length === 0) {
-      await getSamplesFromSC();
-      dispatch(syncSamples(lims));
-    } else {
-      dispatch(syncSamples(lims));
-    }
+  function handleSyncSamples(lims) {
+    dispatch(syncSamples(lims));
     dispatch(filterAction({ limsSamples: true }));
   }
 
