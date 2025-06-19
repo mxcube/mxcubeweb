@@ -14,7 +14,7 @@ import {
   plotEnd,
   setActionState,
 } from './actions/beamlineActions';
-import { showConnectionLostDialog } from './actions/general';
+import { showConnectionLostDialog, showErrorPanel } from './actions/general';
 import {
   setHarvesterState,
   updateHarvesterContents,
@@ -455,6 +455,9 @@ class ServerIO {
     this.loggingSocket.on('log_record', (record) => {
       if (record.severity !== 'DEBUG') {
         dispatch(addUserMessage(record));
+      }
+      if (record.severity === 'CRITICAL') {
+        dispatch(showErrorPanel(true, record.message));
       }
       dispatch(addLogRecord(record));
     });
