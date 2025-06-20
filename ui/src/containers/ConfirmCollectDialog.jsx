@@ -1,13 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
-import {
-  Button,
-  Form,
-  Modal,
-  OverlayTrigger,
-  Popover,
-  Table,
-} from 'react-bootstrap';
+import { Button, Form, Modal } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -19,12 +12,12 @@ import {
   startQueue,
 } from '../actions/queue';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
+import TaskTable from '../components/ConfirmCollectDialog/TaskTable.jsx';
 import {
   AUTO_LOOP_CENTRING,
   CLICK_CENTRING,
   TASK_UNCOLLECTED,
 } from '../constants';
-import styles from './ConfirmCollectDialog.module.css';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
 export class ConfirmCollectDialog extends React.Component {
@@ -33,7 +26,6 @@ export class ConfirmCollectDialog extends React.Component {
     this.onOkClick = this.onOkClick.bind(this);
     this.onCancelClick = this.onCancelClick.bind(this);
     this.collectionSummary = this.collectionSummary.bind(this);
-    this.taskTable = this.taskTable.bind(this);
     this.autoLoopCentringOnClick = this.autoLoopCentringOnClick.bind(this);
     this.autoMountNextOnClick = this.autoMountNextOnClick.bind(this);
     this.collectText = this.collectText.bind(this);
@@ -133,159 +125,6 @@ export class ConfirmCollectDialog extends React.Component {
     return text;
   }
 
-  taskPopover(task) {
-    let pover = <span />;
-
-    if (task.type === 'energy_scan') {
-      pover = (
-        <Popover className={styles.collectConfirmDialogPopover}>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Element</th>
-                <th>Edge</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{task.parameters.element}</td>
-                <td>{task.parameters.edge}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Popover>
-      );
-    } else if (task.type === 'xrf_spectrum') {
-      pover = (
-        <Popover className={styles.collectConfirmDialogPopover}>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Integration Time (s)</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{task.parameters.exp_time}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Popover>
-      );
-    } else {
-      pover = (
-        <Popover className={styles.collectConfirmDialogPopover}>
-          <Table striped bordered hover>
-            <thead>
-              <tr>
-                <th>Osc. start</th>
-                <th>Osc. range</th>
-                <th>Exp time</th>
-                <th>Resolution</th>
-                <th>Transmission</th>
-                <th>Energy</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>{task.parameters.osc_start}</td>
-                <td>{task.parameters.osc_range}</td>
-                <td>{task.parameters.exp_time}</td>
-                <td>{task.parameters.resolution}</td>
-                <td>{task.parameters.transmission}</td>
-                <td>{task.parameters.energy}</td>
-              </tr>
-            </tbody>
-          </Table>
-        </Popover>
-      );
-    }
-
-    return pover;
-  }
-
-  /**
-   * Returns the markup for a table containing summary/details for each task
-   * in the queue
-   *
-   * @property {Object} sampleGrid
-   * @property {Object} queue
-   * @return {ReactDomNode} Table Markup
-   */
-  taskTable() {
-    const tasks = this.tasksToCollect();
-    const summary = this.collectionSummary();
-    let table = (
-      <div
-        style={{
-          marginBottom: '1em',
-          borderRadius: '5px',
-          backgroundColor: 'rgba(247, 211, 35, 0.27)',
-          padding: '1em',
-          width: 'auto',
-        }}
-      >
-        No tasks added to any of the samples, you have the possibility to add
-        tasks while the queue is running. <br />
-        The queue is executed sample by sample and will wait until
-        <b> Mount Next Sample </b> is pressed before mounting the next sample{' '}
-        <br />
-      </div>
-    );
-
-    if (summary.numTasks > 0) {
-      table = (
-        <div className={styles.scroll}>
-          <Table responsive bordered hover className={styles.tableStriped}>
-            <thead>
-              <tr>
-                <th>Type</th>
-                <th>Sample</th>
-                <th>Path</th>
-                <th># Images</th>
-              </tr>
-            </thead>
-            <tbody>
-              {tasks.map((task) => {
-                const { parameters } =
-                  task.type === 'Interleaved'
-                    ? task.parameters.wedges[0]
-                    : task;
-
-                const sample = this.props.sampleGrid.sampleList[task.sampleID];
-                const sampleName = `${sample.sampleName} - ${sample.proteinAcronym}`;
-
-                return (
-                  <OverlayTrigger
-                    key={task.queueID}
-                    placement="bottom"
-                    overlay={this.taskPopover(task)}
-                  >
-                    <tr id={task.queueID}>
-                      <td>{task.label}</td>
-                      <td>
-                        {sampleName} ({sample.location})
-                      </td>
-                      <td>
-                        <b style={{ color: '#337ab7' }}>
-                          ...
-                          {parameters.fullPath.split(this.props.login.rootPath)}
-                        </b>
-                      </td>
-                      <td>{parameters.num_images || '-'}</td>
-                    </tr>
-                  </OverlayTrigger>
-                );
-              })}
-            </tbody>
-          </Table>
-        </div>
-      );
-    }
-
-    return table;
-  }
-
   render() {
     const autoMountNext = this.props.queue.queue.length > 1;
     return (
@@ -329,7 +168,7 @@ export class ConfirmCollectDialog extends React.Component {
           <p style={{ color: '#337ab7' }}>
             <b>Data Root: {this.props.login.rootPath}</b>
           </p>
-          {this.taskTable()}
+          <TaskTable tasks={this.tasksToCollect()} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="outline-secondary" onClick={this.onCancelClick}>

@@ -1,6 +1,7 @@
-.collectConfirmDialogPopover {
+.taskPopover {
   width: auto;
   max-width: 80%;
+  z-index: 10000;
 }
 
 .scroll {
@@ -24,4 +25,11 @@
 
 .tableStriped > tbody > tr:hover {
   background-color: #f0f3f5;
+}
+
+.emptyTable {
+  margin-bottom: 1em;
+  border-radius: 5px;
+  background-color: rgba(247, 211, 35, 0.27);
+  padding: 1em;
 }
