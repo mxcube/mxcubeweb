@@ -230,8 +230,10 @@ def centring_started(method, *args):
     if method in [HWR.beamline.diffractometer.C3D_MODE]:
         msg = {"method": qe.CENTRING_METHOD.LOOP}
     elif method in [HWR.beamline.diffractometer.MANUAL3CLICK_MODE]:
-        msg = {"method": qe.CENTRING_METHOD.MANUAL,
-               "method_name": HWR.beamline.diffractometer.MANUAL3CLICK_MODE.lower()}
+        msg = {
+            "method": qe.CENTRING_METHOD.MANUAL,
+            "method_name": HWR.beamline.diffractometer.MANUAL3CLICK_MODE.lower(),
+        }
 
     server.emit("sample_centring", msg, namespace="/hwr")
 
