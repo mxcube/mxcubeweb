@@ -91,6 +91,9 @@ export function toFixed(state, hoName, parameterName = null) {
   let precision = null;
 
   for (const group of Object.values(state.uiproperties)) {
+    if (!group.components) {
+      continue;
+    }
     for (const component of group.components) {
       if (component.attribute === hoName) {
         precision = component.precision;
