@@ -305,7 +305,7 @@ class MXCUBEApplication:
         # (either via config or via mxcubecore.beamline)
 
         for _id, section in MXCUBEApplication.CONFIG.app.ui_properties:
-            if section:
+            if section and hasattr(section, "components"):
                 for component in section.components:
                     # Check that the component, if it's a UIComponentModel, corresponds
                     # to a HardwareObjects that is available and that it can be
