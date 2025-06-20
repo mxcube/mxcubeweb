@@ -159,3 +159,11 @@ camera_setup:
       url: http://localhost:9090/mjpg/video.mjpg?streamprofile=mxcube
       width: 800
       height: 450
+
+session_picker:
+  id: session_picker
+  tabs:
+    active: true
+    scheduled: true
+    other_beamlines: true
+    all_sessions: false

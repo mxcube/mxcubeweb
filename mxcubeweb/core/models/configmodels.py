@@ -108,11 +108,24 @@ class UISampleViewVideoControlsModel(UIPropertiesModel):
     ]
 
 
+class UiSessionPickerTabs(BaseModel):
+    active: bool = True
+    scheduled: bool = True
+    other_beamlines: bool = True
+    all_sessions: bool = False
+
+
+class UISessionPickerModel(BaseModel):
+    id: Literal["session_picker"] = "session_picker"
+    tabs: UiSessionPickerTabs = UiSessionPickerTabs()
+
+
 class UIPropertiesListModel(BaseModel):
     sample_view: UIPropertiesModel
     beamline_setup: UIPropertiesModel
     camera_setup: UICameraConfigModel | None
     sample_view_video_controls: UISampleViewVideoControlsModel | None
+    session_picker: UISessionPickerModel = UISessionPickerModel()
 
 
 class UserManagerUserConfigModel(BaseModel):

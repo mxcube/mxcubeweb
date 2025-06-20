@@ -11,6 +11,12 @@ import ActionButton from './ActionButton';
 import SessionTable from './SessionTable';
 import styles from './SessionTable.module.css';
 
+/**
+ * @typedef {"active"|"scheduled"|"other_beamlines"|"all_sessions"} TabId
+ */
+
+const TAB_PRIORITY = ['scheduled', 'active', 'all_sessions', 'other_beamlines'];
+
 function SelectProposal() {
   const dispatch = useDispatch();
 
@@ -27,6 +33,17 @@ function SelectProposal() {
   const selectedSessionId = selectedSession ? selectedSession.session_id : null;
 
   const [filter, setFilter] = useState('');
+
+  /**
+   * @type {Record<TabId, boolean>}
+   */
+  const showTab = useSelector(
+    (state) => state.uiproperties.session_picker.tabs,
+  );
+
+  const defaultActiveTab =
+    TAB_PRIORITY.find((tabId) => showTab[tabId]) ?? TAB_PRIORITY[0];
+
   const filteredSessions = proposalList.filter(
     ({ title, number, code }) =>
       title.includes(filter) ||
@@ -78,42 +95,65 @@ function SelectProposal() {
           onChange={(evt) => setFilter(evt.target.value)}
         />
 
-        <Tabs id="scheduled-tab" defaultActiveKey="scheduled">
-          <Tab eventKey="active" title={`Active (${scheduledSessions.length})`}>
-            <div className={styles.table}>
-              <SessionTable
-                sessions={scheduledSessions}
-                selectedSessionId={selectedSessionId}
-                onSessionSelected={setSelectedSession}
-              />
-            </div>
-          </Tab>
-          <Tab
-            eventKey="scheduled"
-            title={`Scheduled (${unscheduledSessions.length})`}
-          >
-            <div className={styles.table}>
-              <SessionTable
-                showBeamline
-                sessions={unscheduledSessions}
-                selectedSessionId={selectedSessionId}
-                onSessionSelected={setSelectedSession}
-              />
-            </div>
-          </Tab>
-          <Tab
-            eventKey="other-unscheduled"
-            title={`Other beamlines (${otherBeamlineSessions.length})`}
-          >
-            <div className={styles.table}>
-              <SessionTable
-                showBeamline
-                sessions={otherBeamlineSessions}
-                selectedSessionId={selectedSessionId}
-                onSessionSelected={setSelectedSession}
-              />
-            </div>
-          </Tab>
+        <Tabs id="scheduled-tab" defaultActiveKey={defaultActiveTab}>
+          {showTab.active && (
+            <Tab
+              eventKey="active"
+              title={`Active (${scheduledSessions.length})`}
+            >
+              <div className={styles.table}>
+                <SessionTable
+                  sessions={scheduledSessions}
+                  selectedSessionId={selectedSessionId}
+                  onSessionSelected={setSelectedSession}
+                />
+              </div>
+            </Tab>
+          )}
+          {showTab.scheduled && (
+            <Tab
+              eventKey="scheduled"
+              title={`Scheduled (${unscheduledSessions.length})`}
+            >
+              <div className={styles.table}>
+                <SessionTable
+                  showBeamline
+                  sessions={unscheduledSessions}
+                  selectedSessionId={selectedSessionId}
+                  onSessionSelected={setSelectedSession}
+                />
+              </div>
+            </Tab>
+          )}
+          {showTab.other_beamlines && (
+            <Tab
+              eventKey="other_beamlines"
+              title={`Other beamlines (${otherBeamlineSessions.length})`}
+            >
+              <div className={styles.table}>
+                <SessionTable
+                  showBeamline
+                  sessions={otherBeamlineSessions}
+                  selectedSessionId={selectedSessionId}
+                  onSessionSelected={setSelectedSession}
+                />
+              </div>
+            </Tab>
+          )}
+          {showTab.all_sessions && (
+            <Tab
+              eventKey="all_sessions"
+              title={`All sessions (${proposalList.length})`}
+            >
+              <div className={styles.table}>
+                <SessionTable
+                  sessions={filteredSessions}
+                  selectedSessionId={selectedSessionId}
+                  onSessionSelected={setSelectedSession}
+                />
+              </div>
+            </Tab>
+          )}
         </Tabs>
       </Modal.Body>
       <Modal.Footer>

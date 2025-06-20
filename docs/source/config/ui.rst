@@ -9,6 +9,7 @@ The ``ui.yaml`` contains following sections:
 * sample_view_video_controls_
 * beamline_setup_
 * camera_setup_
+* session_picker_
 
 Each section groups settings for related UI features.
 See below an `example  ui.yaml <ui_yaml_example_>`_ file.
@@ -273,3 +274,25 @@ Below is an example of a UI configuration file ``ui.yaml``, as used by the mocku
 
 .. literalinclude:: ../../../demo/mxcube-web/ui.yaml
    :language: yaml
+
+.. _session_picker:
+
+Configures the "Select session" dialog.
+It controls which of the tabs are shown in the dialog.
+Possible tabs are:
+* "Active"
+* "Scheduled"
+* "Other beamlines"
+* "All"
+
+By default all tabs, except the last one, are shown.
+The section has the following syntax:
+.. code-block:: yaml
+
+    session_picker:
+      id: session_picker
+      tabs:
+        active: <show>
+        scheduled: <show>
+        other_beamlines: <show>
+        all_sessions: <show>
