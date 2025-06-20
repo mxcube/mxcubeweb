@@ -5,7 +5,7 @@ import { toggleCentring } from '../../actions/sampleview';
 import styles from './SampleControls.module.css';
 
 function CentringControl(props) {
-  const { manualCentringName } = props
+  const { manualCentringName } = props;
   const dispatch = useDispatch();
   const isActive = useSelector((state) => state.sampleview.clickCentring);
 
@@ -18,7 +18,9 @@ function CentringControl(props) {
       onClick={() => dispatch(toggleCentring())}
     >
       <i className={`${styles.controlIcon} fas fa-circle-notch`} />
-      <span className={styles.controlLabel}>{`${manualCentringName} centring`}</span>
+      <span
+        className={styles.controlLabel}
+      >{`${manualCentringName} centring`}</span>
     </Button>
   );
 }

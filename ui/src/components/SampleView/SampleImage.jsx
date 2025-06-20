@@ -928,8 +928,10 @@ export default class SampleImage extends React.Component {
   render() {
     this.configureGrid();
     this.updateGridResults();
-    const { components } = this.props.uiproperties.sample_view_video_controls;
-    const manualCentring = components.find((c) => c.id === '3_click_centring');
+    const manualCentring =
+      this.props.uiproperties.sample_view_video_controls.components.find(
+        (c) => c.id === '3_click_centring',
+      );
     const manualCentringName = manualCentring?.label ?? '3-click';
 
     return (
@@ -954,7 +956,10 @@ export default class SampleImage extends React.Component {
             />
             {this.createVideoPlayerContainer(this.props.videoFormat)}
 
-            <SampleControls canvas={this.canvas} manualCentringName={manualCentringName}/>
+            <SampleControls
+              canvas={this.canvas}
+              manualCentringName={manualCentringName}
+            />
             <div>{this.centringMessage()}</div>
 
             <canvas id="canvas" className="coveringCanvas" />

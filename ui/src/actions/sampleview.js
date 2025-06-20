@@ -191,7 +191,10 @@ export function rotateToShape(sid) {
 export function recordCentringClick(x, y) {
   return async (dispatch, getState) => {
     const { uiproperties } = getState();
-    const manualCentring = uiproperties.sample_view_video_controls.components.find((c) => c.id === '3_click_centring');
+    const manualCentring =
+      uiproperties.sample_view_video_controls.components.find(
+        (c) => c.id === '3_click_centring',
+      );
     const manualCentringName = manualCentring?.label ?? '3-click';
 
     const json = await sendRecordCentringClick(x, y);
@@ -199,7 +202,7 @@ export function recordCentringClick(x, y) {
     const { clicksLeft } = json;
     dispatch(centringClicksLeft(clicksLeft));
 
-    let msg = `${manualCentringName} Centring: <br />`
+    let msg = `${manualCentringName} Centring: <br />`;
     if (clicksLeft === 0) {
       msg += 'Save centring or clicking on screen to restart';
     } else if (clicksLeft === -1) {
@@ -307,7 +310,10 @@ export function toggleCentring() {
 export function startClickCentring() {
   return async (dispatch, getState) => {
     const { queue, shapes, uiproperties } = getState();
-    const manualCentring = uiproperties.sample_view_video_controls.components.find((c) => c.id === '3_click_centring');
+    const manualCentring =
+      uiproperties.sample_view_video_controls.components.find(
+        (c) => c.id === '3_click_centring',
+      );
     const manualCentringName = manualCentring?.label ?? '3-click';
 
     dispatch(clearSelectedShapes());
