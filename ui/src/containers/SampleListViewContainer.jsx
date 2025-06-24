@@ -33,7 +33,7 @@ import {
 } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import TooltipTrigger from '../components/TooltipTrigger';
-import { hasLimsData, isCollected, QUEUE_RUNNING } from '../constants';
+import { isCollected, QUEUE_RUNNING } from '../constants';
 import loader from '../img/loader.gif';
 import QueueSettings from './QueueSettings';
 import SampleGridTableContainer from './SampleGridTableContainer';
@@ -219,7 +219,6 @@ export default function SampleListViewContainer() {
    */
   function handleSyncSamples(lims) {
     dispatch(syncSamples(lims));
-    dispatch(filterAction({ limsSamples: true }));
   }
 
   /**
@@ -305,8 +304,6 @@ export default function SampleListViewContainer() {
         'notCollected',
         isCollected,
       );
-      // eslint-disable-next-line no-bitwise
-      fi &= mutualExclusiveFilterOption(sample, 'limsSamples', '', hasLimsData);
       if (cellFilter !== '') {
         // eslint-disable-next-line no-bitwise
         fi &= sample.cell_no === cellNo;
@@ -329,7 +326,6 @@ export default function SampleListViewContainer() {
       filterOptions.notInQueue ||
       filterOptions.collected ||
       filterOptions.notCollected ||
-      filterOptions.limsSamples ||
       filterOptions.text.length > 0 ||
       filterOptions.cellFilter !== '' ||
       filterOptions.puckFilter !== ''
@@ -366,7 +362,6 @@ export default function SampleListViewContainer() {
         notInQueue: false,
         collected: false,
         notCollected: false,
-        limsSamples: false,
         text: '',
         cellFilter: '',
         puckFilter: '',
@@ -693,21 +688,6 @@ export default function SampleListViewContainer() {
                 onChange={() => sampleGridFilter()}
                 label="Not Collected"
               />
-            </Col>
-          </Row>
-          <Row className="mb-2">
-            <Col xs={9}>
-              <Form.Check
-                type="checkbox"
-                inline
-                id="limsSamples"
-                checked={filterOptions.limsSamples}
-                onChange={sampleGridFilter}
-                label="LIMS Samples"
-              />
-            </Col>
-            <Col xs={3}>
-              <span />
             </Col>
           </Row>
           <Row className="mt-3">
