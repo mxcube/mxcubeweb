@@ -14,8 +14,6 @@ import {
   pauseQueue,
   resumeQueue,
   runSample,
-  setAutoAddDiffPlan,
-  setAutoMountSample,
   setEnabledSample,
   stopQueue,
   toggleCheckBox,
@@ -54,19 +52,14 @@ class SampleQueueContainer extends React.Component {
       sampleList,
       showForm,
       queueStatus,
-      rootPath,
       displayData,
       visibleList,
       loading,
-      autoMountNext,
-      autoAddDiffPlan,
-      centringMethod,
     } = this.props;
 
     // go through the queue, check if sample has been collected or not
-    // to make todo and history lists
+    // to make todo lists
     const todo = [];
-    const history = [];
 
     for (const key of sampleOrder) {
       if (queue.includes(key)) {
@@ -92,24 +85,15 @@ class SampleQueueContainer extends React.Component {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
         <QueueControl
-          historyLength={history.length}
-          queueLength={queue.length}
           queue={queue}
           setEnabledSample={this.props.setEnabledSample}
-          todoLength={todo.length}
           queueStatus={queueStatus}
           startQueue={this.props.showConfirmCollectDialog}
           stopQueue={this.props.stopQueue}
           pauseQueue={this.props.pauseQueue}
           resumeQueue={this.props.resumeQueue}
-          setAutoMountSample={this.props.setAutoMountSample}
-          autoMountNext={autoMountNext}
-          setAutoAddDiffPlan={this.props.setAutoAddDiffPlan}
-          autoAddDiffPlan={autoAddDiffPlan}
           mounted={currentSampleID}
           runSample={this.props.runSample}
-          centringMethod={centringMethod}
-          todoList={todo}
           sampleList={sampleList}
           unmountSample={this.props.unmountSample}
         />
@@ -147,20 +131,14 @@ class SampleQueueContainer extends React.Component {
             changeOrder={this.props.changeTaskOrderAction}
             show={visibleList === 'current'}
             mounted={currentSampleID}
-            queue={queue}
             sampleList={sampleList}
             toggleCheckBox={this.props.toggleCheckBox}
             checked={checked}
             deleteTask={this.props.deleteTask}
             showForm={showForm}
-            unmount={this.props.unmountSample}
-            queueStatus={queueStatus}
-            rootPath={rootPath}
             collapseItem={this.props.collapseItem}
             selectItem={this.props.selectItem}
             displayData={displayData}
-            runSample={this.props.runSample}
-            todoList={todo}
             moveTask={this.props.moveTask}
             addTask={this.props.addTask}
             plotsData={this.props.plotsData}
@@ -174,10 +152,7 @@ class SampleQueueContainer extends React.Component {
           <TodoTree
             show={visibleList === 'todo'}
             list={todo}
-            queue={queue}
             sampleList={sampleList}
-            collapseItem={this.props.collapseItem}
-            displayData={displayData}
             mount={this.props.mountSample}
             showForm={showForm}
             queueStatus={queueStatus}
@@ -209,13 +184,9 @@ function mapStateToProps(state) {
     visibleList: state.queueGUI.visibleList,
     queueStatus: state.queue.queueStatus,
     queue: state.queue.queue,
-    autoMountNext: state.queue.autoMountNext,
-    autoAddDiffPlan: state.queue.autoAddDiffPlan,
-    centringMethod: state.queue.centringMethod,
     sampleList: state.sampleGrid.sampleList,
     sampleOrder: state.sampleGrid.order,
     checked: state.queue.checked,
-    rootPath: state.login.rootPath,
     displayData: state.queueGUI.displayData,
     loading: state.queueGUI.loading,
     plotsData: state.beamline.plotsData,
@@ -236,8 +207,6 @@ function mapDispatchToProps(dispatch) {
     deleteTask: bindActionCreators(deleteTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
     moveTask: bindActionCreators(moveTask, dispatch),
-    setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
-    setAutoAddDiffPlan: bindActionCreators(setAutoAddDiffPlan, dispatch),
     runSample: bindActionCreators(runSample, dispatch),
     setEnabledSample: bindActionCreators(setEnabledSample, dispatch),
 
