@@ -1,15 +1,16 @@
 import logging
 
 from flask import (
-    Blueprint,
     Response,
     jsonify,
     request,
 )
 
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
+
 
 def init_route(app, server, url_prefix):
-    bp = Blueprint("lims", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("lims", __name__, url_prefix=url_prefix)
 
     @bp.route("/synch_samples", methods=["POST"])
     @server.restrict

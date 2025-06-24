@@ -1,7 +1,6 @@
 import json
 
 from flask import (
-    Blueprint,
     Response,
     jsonify,
     request,
@@ -9,11 +8,12 @@ from flask import (
 from mxcubecore import HardwareRepository as HWR
 
 from mxcubeweb.core.models.generic import SimpleNameValue
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
 
 
 # Disabling C901 function is too complex (19)
 def init_route(app, server, url_prefix):  # noqa: C901
-    bp = Blueprint("queue", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("queue", __name__, url_prefix=url_prefix)
 
     @bp.route("/start", methods=["PUT"])
     @server.require_control

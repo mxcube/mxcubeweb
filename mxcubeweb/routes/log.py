@@ -2,17 +2,17 @@ import json
 import logging
 
 from flask import (
-    Blueprint,
     jsonify,
     make_response,
     request,
 )
 
 from mxcubeweb import logging_handler
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
 
 
 def init_route(app, server, url_prefix):
-    bp = Blueprint("log", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("log", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["GET"])
     @server.restrict

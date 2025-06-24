@@ -1,16 +1,17 @@
 import io
 
 from flask import (
-    Blueprint,
     Response,
     jsonify,
     request,
     send_file,
 )
 
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
+
 
 def init_route(app, server, url_prefix):
-    bp = Blueprint("workflow", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("workflow", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["GET"])
     @server.restrict

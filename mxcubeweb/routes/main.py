@@ -5,17 +5,17 @@ from datetime import datetime
 
 import flask_login
 from flask import (
-    Blueprint,
     jsonify,
     request,
 )
 from mxcubecore import HardwareRepository as HWR
 
 from mxcubeweb import __version__
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
 
 
 def init_route(app, server, url_prefix):
-    bp = Blueprint("main", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("main", __name__, url_prefix=url_prefix)
 
     @server.route("/samplegrid")
     @server.route("/datacollection")

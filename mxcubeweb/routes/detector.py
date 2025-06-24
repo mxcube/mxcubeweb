@@ -1,12 +1,13 @@
 from flask import (
-    Blueprint,
     jsonify,
     request,
 )
 
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
+
 
 def init_route(app, server, url_prefix):
-    bp = Blueprint("detector", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("detector", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["GET"])
     @server.restrict

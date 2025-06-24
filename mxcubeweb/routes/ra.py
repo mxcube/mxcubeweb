@@ -1,6 +1,5 @@
 import gevent
 from flask import (
-    Blueprint,
     Response,
     copy_current_request_context,
     jsonify,
@@ -9,12 +8,14 @@ from flask import (
 )
 from flask_login import current_user
 
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
+
 DISCONNECT_HANDLED = True
 
 
 # Disabling C901 function is too complex (19)
 def init_route(app, server, url_prefix):  # noqa: C901
-    bp = Blueprint("remote_access", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("remote_access", __name__, url_prefix=url_prefix)
 
     @bp.route("/request_control", methods=["POST"])
     @server.restrict

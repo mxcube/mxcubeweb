@@ -5,13 +5,14 @@ from collections.abc import Callable
 from functools import reduce
 from typing import ClassVar
 
-from flask import Blueprint, Response, jsonify, request
+from flask import Response, jsonify, request
 from pydantic.v1 import (
     BaseModel,
     ValidationError,
 )
 
 from mxcubeweb.core.server.openapidoc import OpenAPISpec
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
 
 
 def valid_object_id(object_id: str) -> bool:
@@ -139,7 +140,7 @@ class AdapterResourceHandler:
             commands: List of command names to export.
             attributes: List of attribute names to export.
         """
-        self._bp = Blueprint(name, name, url_prefix=url_prefix)
+        self._bp = RateLimitedBlueprint(name, name, url_prefix=url_prefix)
         self._adapter_dict = adapter_dict
         self._server = app.server  # Store the server object to access its decorators
         self._app = app

@@ -1,7 +1,6 @@
 import logging
 
 from flask import (
-    Blueprint,
     jsonify,
     make_response,
     redirect,
@@ -11,11 +10,12 @@ from flask import (
 )
 from flask_login import current_user
 
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
 from mxcubeweb.core.util import networkutils
 
 
 def init_route(app, server, url_prefix):
-    bp = Blueprint("login", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("login", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["POST"])
     def login():

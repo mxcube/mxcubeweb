@@ -1,16 +1,17 @@
 import json
 
 from flask import (
-    Blueprint,
     Response,
     jsonify,
     request,
 )
 from mxcubecore import HardwareRepository as HWR
 
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
+
 
 def init_route(app, server, url_prefix):
-    bp = Blueprint("diffractometer", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("diffractometer", __name__, url_prefix=url_prefix)
 
     @bp.route("/phase", methods=["GET"])
     @server.restrict

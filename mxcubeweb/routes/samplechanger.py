@@ -1,7 +1,6 @@
 import logging
 
 from flask import (
-    Blueprint,
     Response,
     jsonify,
     request,
@@ -9,10 +8,12 @@ from flask import (
 from markupsafe import escape
 from mxcubecore import HardwareRepository as HWR
 
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
+
 
 # Disabling C901 function is too complex (19)
 def init_route(app, server, url_prefix):  # noqa: C901
-    bp = Blueprint("sample_changer", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("sample_changer", __name__, url_prefix=url_prefix)
 
     @bp.route("/samples_list", methods=["GET"])
     @server.restrict

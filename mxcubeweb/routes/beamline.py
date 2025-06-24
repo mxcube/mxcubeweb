@@ -1,15 +1,16 @@
 import logging
 
 from flask import (
-    Blueprint,
     Response,
     jsonify,
 )
 from mxcubecore import HardwareRepository as HWR
 
+from mxcubeweb.core.server.ratelimited_blueprint import RateLimitedBlueprint
+
 
 def init_route(app, server, url_prefix):
-    bp = Blueprint("beamline", __name__, url_prefix=url_prefix)
+    bp = RateLimitedBlueprint("beamline", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["GET"])
     @server.restrict
