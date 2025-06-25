@@ -8,6 +8,7 @@ const INITIAL_STATE = {
   showConnectionLostDialog: false,
   showConfirmClearQueueDialog: false,
   mode: 'OSC',
+  useGetSamplesFromSC: true,
   serverVersion: '3',
   applicationFetched: false,
 };
@@ -40,6 +41,7 @@ function generalReducer(state = INITIAL_STATE, action = {}) {
       return {
         ...state,
         mode: action.data.general.mode,
+        useGetSamplesFromSC: action.data.general.use_get_samples_from_sc,
         serverVersion: action.data.general.version,
         enable2DPoints: action.data.general.enable_2d_points,
         meshResultFormat: action.data.general.mesh_result_format,

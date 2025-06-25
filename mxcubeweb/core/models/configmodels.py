@@ -169,6 +169,12 @@ class MXCUBEAppConfigModel(BaseModel):
             "True to use video stream produced by external software, false otherwise"
         ),
     )
+    USE_GET_SAMPLES_FROM_SC: bool = Field(
+        True,
+        description=(
+            "True to acticvate or be able to get samples from the sample changer, false otherwise"
+        ),
+    )
     mode: ModeEnum = Field(
         ModeEnum.OSC, description="MXCuBE mode OSC, SSX-CHIP or SSX-INJECTOR"
     )

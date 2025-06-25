@@ -1,6 +1,7 @@
 import { useCallback, useEffect } from 'react';
 import {
   Button,
+  ButtonGroup,
   Card,
   Col,
   Container,
@@ -27,6 +28,7 @@ import { showConfirmCollectDialog } from '../actions/queueGUI';
 import {
   filterAction,
   getLimsSamples,
+  getSamplesList,
   selectSamplesAction,
   setViewModeAction,
   showGenericContextMenu,
@@ -55,6 +57,10 @@ export default function SampleListViewContainer() {
   const sampleChanger = useSelector((state) => state.sampleChanger);
   const sampleChangerType = useSelector((state) =>
     state.sampleChanger.contents ? state.sampleChanger.contents.name : 'Mockup',
+  );
+
+  const showGetSamplesFromSC = useSelector(
+    (state) => state.general.useGetSamplesFromSC,
   );
 
   const handleSetViewMode = useCallback(
@@ -211,6 +217,13 @@ export default function SampleListViewContainer() {
         );
       }
     }
+  }
+
+  /**
+   * Fetches samples from the SampleChanger
+   */
+  function getSamplesFromSC() {
+    dispatch(getSamplesList());
   }
 
   /**
@@ -521,40 +534,54 @@ export default function SampleListViewContainer() {
   }
 
   function getSynchronizationDropDownList() {
-    if (loginData.limsName.length === 1) {
-      return (
+    return (
+      <Dropdown as={ButtonGroup}>
         <TooltipTrigger
           id="sync-samples-tooltip"
-          tooltipContent={`Synchronise sample list with ${loginData.limsName[0].name}`}
+          tooltipContent={`Synchronise sample list with ${loginData.limsName[0]?.name},
+          and apply filter to only show with LIMS samples`}
         >
           <Button
-            className="nowrap-style"
             variant="outline-secondary"
+            className="nowrap-style"
             onClick={() => handleGetLimsSamples(loginData.limsName[0].name)}
           >
             <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />
             Get Samples
           </Button>
         </TooltipTrigger>
-      );
-    }
-    return (
-      <Dropdown>
-        <Dropdown.Toggle variant="outline-secondary" id="dropdown-lims">
-          <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />{' '}
-          Synchronize with
-        </Dropdown.Toggle>
+        {/* Show the dropdown toggle only if there are multiple LIMS
+        or if the option to get samples from SC is enabled */}
+        {(loginData.limsName.length > 1 || showGetSamplesFromSC) && (
+          <Dropdown.Toggle
+            split
+            variant="outline-secondary"
+            id="dropdown-split-samples"
+            title="Other LIMS Options"
+          />
+        )}
+
         <Dropdown.Menu>
-          {loginData.limsName.map((lims) => (
+          {showGetSamplesFromSC && (
+            <TooltipTrigger tooltipContent="get samples from sample changer">
+              <Dropdown.Item
+                onClick={getSamplesFromSC}
+                variant="outline-secondary"
+                className="nowrap-style"
+              >
+                Get Samples from SC
+              </Dropdown.Item>
+            </TooltipTrigger>
+          )}
+          {/* Skip the first LIMS as it is already included in the button above */}
+          {loginData.limsName.slice(1).map((lims, _) => (
             <TooltipTrigger
-              key={lims.name}
+              key={`sync-samples-${lims.name}`}
+              id={`sync-samples-${lims.name}`}
               tooltipContent={`Synchronise sample list with ${lims.name}`}
             >
-              <Dropdown.Item
-                key={lims.name}
-                onClick={() => handleGetLimsSamples(lims.name)}
-              >
-                {lims.name}
+              <Dropdown.Item onClick={() => handleGetLimsSamples(lims.name)}>
+                Get Samples & Sync {lims.name}
               </Dropdown.Item>
             </TooltipTrigger>
           ))}
