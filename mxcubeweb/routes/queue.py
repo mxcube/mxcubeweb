@@ -249,18 +249,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
 
         return Response(status=200)
 
-    @bp.route("/sample-order", methods=["POST"])
-    @server.require_control
-    @server.restrict
-    def queue_set_sample_order():
-        sample_order = request.get_json().get("sampleOrder", [])
-        app.queue.set_sample_order(sample_order)
-        server.emit(
-            "queue", {"Signal": "update", "message": "observers"}, namespace="/hwr"
-        )
-
-        return Response(status=200)
-
     @bp.route("/<sample_id>", methods=["PUT"])
     @server.require_control
     @server.restrict
