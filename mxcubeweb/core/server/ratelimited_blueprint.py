@@ -31,16 +31,24 @@ class RateLimitedBlueprint(Blueprint):
     - rate_period: period duration in seconds.
     """
 
-    def __init__(self, *args, rate_limit=60, rate_period=60, **kwargs):
+    _test_mode = False
+
+    def __init__(self, *args, rate_limit=60, rate_period=60, test=False, **kwargs):
         super().__init__(*args, **kwargs)
         self._rate_limit = rate_limit
         self._rate_period = rate_period
-        self.before_request(self._apply_rate_limit)
+        self._testing = test
+
+        if not self._testing:
+            self.before_request(self._apply_rate_limit)
 
     def _apply_rate_limit(self):
         """
         Runs before each request; returns 429 if rate limit exceeded.
         """
+        if self._testing:
+            return None
+
         identifier = _get_user_identifier()
         now = time.time()
         window_start = now - self._rate_period
@@ -64,3 +72,14 @@ class RateLimitedBlueprint(Blueprint):
                 _request_times[key] = times
 
         return None
+
+    @classmethod
+    def enable_test_mode(cls):
+        """Disable rate limiting for testing"""
+        cls._test_mode = True
+
+    @classmethod
+    def clear_state(cls):
+        """Clear rate limiter state"""
+        with _request_times_lock:
+            _request_times.clear()

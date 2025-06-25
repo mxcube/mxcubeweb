@@ -2,6 +2,10 @@
 
 from gevent import monkey
 
+from mxcubeweb.core.server.ratelimited_blueprint import (
+    RateLimitedBlueprint,
+)
+
 monkey.patch_all(thread=False)
 
 
@@ -77,6 +81,15 @@ def cleanup_subprocesses():
                 child.kill()
 
 
+@pytest.fixture(autouse=True)
+def setup_rate_limiter():
+    """Configure rate limiter for tests"""
+    RateLimitedBlueprint.enable_test_mode()
+    RateLimitedBlueprint.clear_state()
+    yield
+    RateLimitedBlueprint.clear_state()
+
+
 @pytest.fixture
 def client():
     global _SIO_TEST_CLIENT
@@ -84,6 +97,10 @@ def client():
     HardwareRepository.uninit_hardware_repository()
     argv = []
     server, cfg = build_server_and_config(test=True, argv=argv)
+
+    for blueprint in server.flask.blueprints.values():
+        if isinstance(blueprint, RateLimitedBlueprint):
+            RateLimitedBlueprint.enable_test_mode()
 
     client = server.flask.test_client()
 
