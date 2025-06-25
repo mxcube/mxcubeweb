@@ -8,7 +8,6 @@ from input_parameters import (
     default_mesh_params,
     default_xrf_parameters,
     test_edit_task,
-    test_sample_6,
     test_task,
 )
 
@@ -321,29 +320,6 @@ def test_queue_move_task_item_fail(client):
 
     assert resp.status_code == 200
     assert json.loads(resp.data).get("1:05")["tasks"][2]["parameters"]["kappa"] == 180
-
-
-def test_queue_set_sample_order(client):
-    """Test if we can set the sample order in the queue."""
-    sample_to_add = test_sample_6
-    resp = client.post(
-        "/mxcube/api/v0.1/queue/",
-        data=json.dumps([sample_to_add]),
-        content_type="application/json",
-    )
-    assert resp.status_code == 200
-
-    new_sample_order = {"sampleOrder": ["1:01", "1:06", "1:05"]}
-    resp = client.post(
-        "/mxcube/api/v0.1/queue/sample-order",
-        data=json.dumps(new_sample_order),
-        content_type="application/json",
-    )
-    assert resp.status_code == 200
-
-    resp = client.get("/mxcube/api/v0.1/queue/")
-    assert resp.status_code == 200
-    assert json.loads(resp.data).get("sample_order")[1] == "1:06"
 
 
 def assert_and_remove_keys_with_random_value(parameters):

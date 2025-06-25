@@ -819,29 +819,6 @@ class Queue(ComponentBase):
 
         logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
 
-    def set_sample_order(self, order):
-        """
-        Set the sample order of the queue
-        :param list sample_order: List of sample ids
-        """
-        current_queue = self.queue_to_dict()
-        sid_list = [sid for sid in order if current_queue.get(sid, False)]
-
-        if sid_list:
-            queue_id_list = [current_queue[sid]["queueID"] for sid in sid_list]
-            model_entry_list = [self.get_entry(qid) for qid in queue_id_list]
-            model_list = [model_entry[0] for model_entry in model_entry_list]
-            entry_list = [model_entry[1] for model_entry in model_entry_list]
-
-            # Set the order in the queue model
-            HWR.beamline.queue_model.get_model_root()._children = model_list
-            # Set queue entry order
-            HWR.beamline.queue_manager._queue_entry_list = entry_list
-
-        self.app.lims.sample_list_set_order(order)
-
-        logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
-
     def queue_add_item(self, item_list):
         """
         Adds the queue items in item_list to the queue. The items in the list can

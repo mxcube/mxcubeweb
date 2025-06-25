@@ -20,17 +20,6 @@ test_sample_5 = {
     "type": "Sample",
 }
 
-test_sample_6 = {
-    "code": "matr1_6",
-    "checked": True,
-    "sampleName": "Sample-106",
-    "sampleID": "1:06",
-    "tasks": [],
-    "location": "1:6",
-    "defaultPrefix": "local-user",
-    "type": "Sample",
-}
-
 test_task = {
     "checked": True,
     "code": "matr1_5",
