@@ -80,7 +80,7 @@ export function getSamplesList() {
   };
 }
 
-export function syncSamples(lims) {
+export function getLimsSamples(lims) {
   return async (dispatch) => {
     dispatch(showWaitDialog('Please wait', 'Synchronizing with LIMS', true));
 
@@ -92,7 +92,7 @@ export function syncSamples(lims) {
       dispatch(
         showErrorPanel(
           true,
-          `Synchronization with LIMS failed ${error.response.headers.get(
+          `Error while getting LIMS samples ${error.response.headers.get(
             'message',
           )}`,
         ),

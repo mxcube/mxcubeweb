@@ -11,16 +11,16 @@ from flask import (
 def init_route(app, server, url_prefix):
     bp = Blueprint("lims", __name__, url_prefix=url_prefix)
 
-    @bp.route("/synch_samples", methods=["POST"])
+    @bp.route("/lims_samples", methods=["GET"])
     @server.restrict
-    def proposal_samples():
+    def get_proposal_samples():
         try:
-            lims_name = request.get_json().get("lims", None)
-            res = jsonify(app.lims.synch_with_lims(lims_name))
+            lims_name = request.args.get("lims")
+            res = jsonify(app.lims.get_lims_samples(lims_name))
         except Exception:
-            logging.getLogger("MX3.HWR").exception("Could not synchronize with Lims")
+            logging.getLogger("MX3.HWR").exception("Could not get Lims samples")
             res = (
-                "Could not synchronize with LIMS",
+                "Could not get Lims samples",
                 409,
                 {
                     "Content-Type": "application/json",

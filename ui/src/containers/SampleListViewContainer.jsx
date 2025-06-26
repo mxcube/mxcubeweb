@@ -26,10 +26,10 @@ import {
 import { showConfirmCollectDialog } from '../actions/queueGUI';
 import {
   filterAction,
+  getLimsSamples,
   selectSamplesAction,
   setViewModeAction,
   showGenericContextMenu,
-  syncSamples,
 } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import TooltipTrigger from '../components/TooltipTrigger';
@@ -217,8 +217,8 @@ export default function SampleListViewContainer() {
    * Synchronises samples with LIMS
    * @param {string} lims - LIMS name to synchronise with
    */
-  function handleSyncSamples(lims) {
-    dispatch(syncSamples(lims));
+  function handleGetLimsSamples(lims) {
+    dispatch(getLimsSamples(lims));
   }
 
   /**
@@ -530,7 +530,7 @@ export default function SampleListViewContainer() {
           <Button
             className="nowrap-style"
             variant="outline-secondary"
-            onClick={() => handleSyncSamples(loginData.limsName[0].name)}
+            onClick={() => handleGetLimsSamples(loginData.limsName[0].name)}
           >
             <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />
             Get Samples
@@ -552,7 +552,7 @@ export default function SampleListViewContainer() {
             >
               <Dropdown.Item
                 key={lims.name}
-                onClick={() => handleSyncSamples(lims.name)}
+                onClick={() => handleGetLimsSamples(lims.name)}
               >
                 {lims.name}
               </Dropdown.Item>

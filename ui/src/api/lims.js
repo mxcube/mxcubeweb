@@ -3,7 +3,9 @@ import api from './api';
 const endpoint = api.url('/lims');
 
 export function fetchLimsSamples(lims) {
-  return endpoint.post({ lims }, '/synch_samples').safeJson();
+  return endpoint
+    .get(`/lims_samples?lims=${encodeURIComponent(lims)}`)
+    .safeJson();
 }
 
 export function fetchLimsResults(qid) {

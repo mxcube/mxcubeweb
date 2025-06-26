@@ -323,3 +323,32 @@ class Lims(ComponentBase):
                 self.sample_list_sync_sample(sample_info)
 
         return self.sample_list_get()
+
+    def get_lims_samples(self, lims_name: str) -> dict:
+        """
+        Gets samples from LIMS and filters to include only LIMS-linked entries.
+
+        This method synchronizes the sample list with the specified LIMS,
+        filters for entries that have a `limsID`, and sets the new sample list
+        accordingly.
+
+        Args: Name of the LIMS system to synchronize with.
+
+        Returns: The updated sample list with only LIMS samples.
+        """
+        self.synch_with_lims(lims_name)
+        new_sample_list = {"sampleList": {}, "sampleOrder": []}
+
+        try:
+            for loc, data in self.app.SAMPLE_LIST.get("sampleList", {}).items():
+                if data.get("limsID"):
+                    new_sample_list["sampleList"][loc] = data
+                    new_sample_list["sampleOrder"].append(loc)
+        except Exception:
+            logging.getLogger("MX3.HWR").exception(
+                "Error while filtering LIMS samples for '%s':", lims_name
+            )
+            return {"sampleList": {}, "sampleOrder": []}
+
+        self.sample_list_set(new_sample_list)
+        return self.app.SAMPLE_LIST
