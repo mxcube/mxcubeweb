@@ -23,6 +23,7 @@ from mxcubeweb.core.models.usermodels import (
     User,
 )
 from mxcubeweb.core.server.csp import CSPMiddleware
+from mxcubeweb.core.server.limiter import init_limiter
 from mxcubeweb.core.server.resource_handler import AdapterResourceHandlerFactory
 from mxcubeweb.core.util import networkutils
 
@@ -35,6 +36,7 @@ class Server:
     user_datastore = None
     db_session = None
     flask_socketio = None
+    limiter = None
 
     def __init__(self):
         msg = "Server is to be used as a pure static class, don't instantiate."
@@ -58,6 +60,7 @@ class Server:
         )
         Server.flask.wsgi_app = ProxyFix(Server.flask.wsgi_app)
         Server.flask.config.from_object(cfg.flask)
+
         Server.flask.register_error_handler(Exception, Server.exception_handler)
 
         if cfg.flask.CSP_ENABLED:
@@ -83,6 +86,8 @@ class Server:
             cors_allowed_origins=cfg.flask.ALLOWED_CORS_ORIGINS,
         )
         Server.flask_socketio.init_app(Server.flask)
+
+        Server.limiter = init_limiter(Server.flask)
 
         # the following test prevents Flask from initializing twice
         # (because of the Reloader)

@@ -37,6 +37,11 @@ class FlaskConfigModel(BaseModel):
         "NONE",
         description="One of the strings ['SIGNED', 'ADHOC', NONE]",
     )
+    # Rate limiter configuration
+    RATE_LIMITER_ENABLED: bool = True
+    RATELIMIT_DEFAULT: str = "2000 per day;500 per hour"
+    RATELIMIT_STORAGE_URI: str = "memory://"
+    RATELIMIT_HEADERS_ENABLED: bool = True
 
     CSP_ENABLED: bool = True
     CSP_POLICY: dict[str, list[str]] = {}

@@ -134,6 +134,8 @@ def build_server_and_config(test=False, argv=None):
         )
         db_path.parent.mkdir(parents=True, exist_ok=True, mode=0o600)
         if test:
+            cfg.flask.RATE_LIMITER_ENABLED = False
+
             test_db = db_path.parent / "mxcube-test-user.db"
             cfg.flask.USER_DB_PATH = str(test_db)
 
