@@ -22,6 +22,7 @@ from mxcubeweb.core.models.usermodels import (
     Role,
     User,
 )
+from mxcubeweb.core.server.limiter import init_limiter
 from mxcubeweb.core.server.resource_handler import AdapterResourceHandlerFactory
 from mxcubeweb.core.util import networkutils
 
@@ -34,6 +35,7 @@ class Server:
     user_datastore = None
     db_session = None
     flask_socketio = None
+    limiter = None
 
     def __init__(self):
         msg = "Server is to be used as a pure static class, don't instantiate."
@@ -71,6 +73,8 @@ class Server:
             cors_allowed_origins=cfg.flask.ALLOWED_CORS_ORIGINS,
         )
         Server.flask_socketio.init_app(Server.flask)
+
+        Server.limiter = init_limiter(Server.flask)
 
         # the following test prevents Flask from initializing twice
         # (because of the Reloader)
