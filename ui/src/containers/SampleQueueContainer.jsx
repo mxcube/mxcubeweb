@@ -11,20 +11,10 @@ import {
   changeTaskOrderAction,
   deleteTask,
   moveTask,
-  pauseQueue,
-  resumeQueue,
-  runSample,
-  setEnabledSample,
-  stopQueue,
   toggleCheckBox,
 } from '../actions/queue';
-import {
-  collapseItem,
-  selectItem,
-  showConfirmCollectDialog,
-  showList,
-} from '../actions/queueGUI';
-import { mountSample, unmountSample } from '../actions/sampleChanger';
+import { collapseItem, selectItem, showList } from '../actions/queueGUI';
+import { mountSample } from '../actions/sampleChanger';
 import { showTaskForm } from '../actions/taskForm';
 import { showWorkflowParametersDialog } from '../actions/workflow';
 import UserMessage from '../components/Notify/UserMessage';
@@ -84,19 +74,7 @@ class SampleQueueContainer extends React.Component {
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
-        <QueueControl
-          queue={queue}
-          setEnabledSample={this.props.setEnabledSample}
-          queueStatus={queueStatus}
-          startQueue={this.props.showConfirmCollectDialog}
-          stopQueue={this.props.stopQueue}
-          pauseQueue={this.props.pauseQueue}
-          resumeQueue={this.props.resumeQueue}
-          mounted={currentSampleID}
-          runSample={this.props.runSample}
-          sampleList={sampleList}
-          unmountSample={this.props.unmountSample}
-        />
+        <QueueControl />
         <div className="m-tree queue-body">
           <Nav
             variant="tabs"
@@ -200,15 +178,10 @@ function mapDispatchToProps(dispatch) {
   return {
     // Queue actions
     toggleCheckBox: bindActionCreators(toggleCheckBox, dispatch),
-    pauseQueue: bindActionCreators(pauseQueue, dispatch),
-    resumeQueue: bindActionCreators(resumeQueue, dispatch),
-    stopQueue: bindActionCreators(stopQueue, dispatch),
     changeTaskOrderAction: bindActionCreators(changeTaskOrderAction, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
     moveTask: bindActionCreators(moveTask, dispatch),
-    runSample: bindActionCreators(runSample, dispatch),
-    setEnabledSample: bindActionCreators(setEnabledSample, dispatch),
 
     // Workflow action
     showWorkflowParametersDialog: bindActionCreators(
@@ -218,16 +191,11 @@ function mapDispatchToProps(dispatch) {
 
     // Queue GUI actions
     collapseItem: bindActionCreators(collapseItem, dispatch),
-    showConfirmCollectDialog: bindActionCreators(
-      showConfirmCollectDialog,
-      dispatch,
-    ),
     selectItem: bindActionCreators(selectItem, dispatch),
     showList: bindActionCreators(showList, dispatch),
 
     // Sample changer actions
     mountSample: bindActionCreators(mountSample, dispatch),
-    unmountSample: bindActionCreators(unmountSample, dispatch),
 
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),

@@ -3,7 +3,6 @@
 // are not used within the same file. So disable eslint for this
 // section
 
-export const QUEUE_STARTED = 'QueueStarted';
 export const QUEUE_RUNNING = 'QueueRunning';
 export const QUEUE_STOPPED = 'QueueStopped';
 export const QUEUE_PAUSED = 'QueuePaused';
