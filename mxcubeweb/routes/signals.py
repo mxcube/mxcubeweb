@@ -2,7 +2,6 @@ import contextlib
 import json
 import logging
 
-from flask import Response
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import queue_entry as qe
 from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
@@ -34,13 +33,6 @@ def last_queue_node():
 
     return res
 
-
-beam_signals = [
-    "beamPosChanged",
-    "beamInfoChanged",
-    "valueChanged",
-    "stateChanged",
-]
 
 centringSignals = [
     "centringInvalid",
@@ -581,39 +573,6 @@ def xrf_task_progress(taskId, progress):
 
 def motor_position_callback(movable):
     server.emit("motor_position", movable, namespace="/hwr")
-
-
-def beam_changed(*args, **kwargs):
-    beam_info = HWR.beamline.beam
-
-    if beam_info is None:
-        logging.getLogger("HWR").error("beamInfo is not defined")
-        # TODO fix error
-        return Response(status=409)
-
-    beam_info_dict = {
-        "position": [],
-        "shape": "",
-        "size_x": 0,
-        "size_y": 0,
-        "label": "",
-    }
-    _beam = beam_info.get_value()
-    beam_info_dict.update(
-        {
-            "position": beam_info.get_beam_position_on_screen(),
-            "size_x": _beam[0],
-            "size_y": _beam[1],
-            "shape": _beam[2].value,
-            "label": _beam[3],
-        }
-    )
-    try:
-        server.emit("beam_changed", {"data": beam_info_dict}, namespace="/hwr")
-    except Exception:
-        logging.getLogger("HWR").exception(
-            "error sending beam_changed signal: %s" % beam_info_dict
-        )
 
 
 def new_plot(plot_info):

@@ -13,18 +13,6 @@ class Beamline(ComponentBase):
     def init_signals(self):
         from mxcubeweb.routes import signals
 
-        try:
-            beamInfo = HWR.beamline.beam
-            if beamInfo is not None:
-                for sig in signals.beam_signals:
-                    beamInfo.connect(beamInfo, sig, signals.beam_changed)
-            else:
-                logging.getLogger("MX3.HWR").error("beam_info is not defined")
-        except Exception:
-            msg = "error connecting to beamline_adapter/beam_info hardware object "
-            msg += "signals"
-            logging.getLogger("MX3.HWR").exception(msg)
-
         if HWR.beamline.xrf_spectrum:
             HWR.beamline.xrf_spectrum.connect(
                 HWR.beamline.xrf_spectrum,

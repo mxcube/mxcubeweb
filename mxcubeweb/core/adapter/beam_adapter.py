@@ -18,6 +18,22 @@ class BeamAdapter(ActuatorAdapterBase):
     def __init__(self, ho, role, app):
         super().__init__(ho, role, app, default_resource_handler_config)
 
+        for sig in [
+            "beamPosChanged",
+            "beamInfoChanged",
+            "valueChanged",
+            "stateChanged",
+        ]:
+            ho.connect(ho, sig, self._beam_changed)
+
+    def _beam_changed(self, *args, **kwargs):  # noqa: ARG002
+        """
+        Callback method for beam position and info changes.
+        """
+        self.app.server.emit(
+            "beam_changed", {"data": self.get_value().dict()["value"]}, namespace="/hwr"
+        )
+
     def limits(self):
         return -1, -1
 
@@ -36,25 +52,22 @@ class BeamAdapter(ActuatorAdapterBase):
         return aperture_list, current_aperture
 
     def get_value(self) -> HOBeamValueModel:
-        beam_ho = self._ho
-
         beam_info_dict = {
             "position": [],
             "shape": "",
             "size_x": 0,
             "size_y": 0,
         }
-        sx, sy, shape, _label = beam_ho.get_value()
+        sx, sy, shape, _label = self._ho.get_value()
 
-        if beam_ho is not None:
-            beam_info_dict.update(
-                {
-                    "position": beam_ho.get_beam_position_on_screen(),
-                    "size_x": sx,
-                    "size_y": sy,
-                    "shape": shape.value,
-                }
-            )
+        beam_info_dict.update(
+            {
+                "position": self._ho.get_beam_position_on_screen(),
+                "size_x": sx,
+                "size_y": sy,
+                "shape": shape.value,
+            }
+        )
 
         aperture_list, current_aperture = self._get_aperture()
 
