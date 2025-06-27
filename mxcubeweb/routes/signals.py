@@ -91,14 +91,6 @@ def handle_auto_mount_next(entry):
             logging.getLogger("user_level_log").info(msg)
 
 
-def diffractometer_phase_changed(*args):
-    data = {"msg": "Diffractometer phase changed", "phase": args}
-    logging.getLogger("user_level_log").info(
-        "Diffractometer phase changed to %s" % args
-    )
-    server.emit("diff_phase_changed", data, namespace="/hwr")
-
-
 def harvester_state_changed(*args):
     new_state = args[0]
     state_str = HarvesterState.STATE_DESC.get(new_state, "Unknown").upper()

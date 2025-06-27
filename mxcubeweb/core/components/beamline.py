@@ -32,16 +32,6 @@ class Beamline(ComponentBase):
                 signals.xrf_task_progress,
             )
 
-    def diffractometer_init_signals(self):
-        """
-        Connect all the relevant hwobj signals with the corresponding
-        callback method.
-        """
-        from mxcubeweb.routes import signals
-
-        diffractometer = HWR.beamline.diffractometer
-        diffractometer.connect("phaseChanged", signals.diffractometer_phase_changed)
-
     def get_aperture(self):
         """
         Returns list of apertures and the one currently used.
