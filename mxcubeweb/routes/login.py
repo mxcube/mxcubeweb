@@ -11,7 +11,6 @@ from flask import (
 )
 from flask_login import current_user
 
-from mxcubeweb.core.server.rate_limit import conditional_rate_limit
 from mxcubeweb.core.util import networkutils
 
 
@@ -19,7 +18,7 @@ def init_route(app, server, url_prefix):
     bp = Blueprint("login", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["POST"])
-    @conditional_rate_limit(server, "5 per minute")
+    @server.limiter.limit("5 per minute")
     def login():
         """
         Login into mxcube application.

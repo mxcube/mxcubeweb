@@ -143,6 +143,7 @@ jobs:
 
       - name: Start MXCuBE-Web server
         run: |
+          export MXCUBEWEB_TEST_MODE=1
           ${MAMBA_EXE} run --name mxcubeweb mxcubeweb-server -r ./demo/ --static-folder $(pwd)/ui/build/ -L debug &
           ${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui exec wait-on http://127.0.0.1:8081
 

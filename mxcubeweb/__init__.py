@@ -134,14 +134,15 @@ def build_server_and_config(test=False, argv=None):
         )
         db_path.parent.mkdir(parents=True, exist_ok=True, mode=0o600)
         if test:
-            cfg.flask.RATE_LIMITER_ENABLED = False
-
             test_db = db_path.parent / "mxcube-test-user.db"
             cfg.flask.USER_DB_PATH = str(test_db)
 
             # Clean up existing test database if it exists
             if test_db.exists():
                 test_db.unlink()
+
+        if test or os.environ.get("MXCUBEWEB_TEST_MODE") == "1":
+            cfg.flask.RATE_LIMITER_ENABLED = False
 
         server.init(cmdline_options, cfg)
         mxcube.init(
