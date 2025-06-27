@@ -1150,9 +1150,7 @@ class Queue(ComponentBase):
         model.path_template.set_from_dict(params)
         model.path_template.base_prefix = params["prefix"]
         model.path_template.num_files = 0
-        model.path_template.precision = "0" + str(
-            HWR.beamline.session["file_info"].get_property("precision", 4)
-        )
+        model.path_template.precision = "0" + str(qmo.PathTemplate.precision)
 
         self.app.lims.apply_template(params, sample_model, model.path_template)
 
@@ -1253,9 +1251,7 @@ class Queue(ComponentBase):
 
         model.path_template.set_from_dict(params)
         model.path_template.suffix = ftype
-        model.path_template.precision = "0" + str(
-            HWR.beamline.session["file_info"].get_property("precision", 4)
-        )
+        model.path_template.precision = "0" + str(qmo.PathTemplate.precision)
 
         if params["prefix"]:
             model.path_template.base_prefix = params["prefix"]
@@ -1298,9 +1294,7 @@ class Queue(ComponentBase):
 
         model.path_template.set_from_dict(params)
         model.path_template.suffix = ftype
-        model.path_template.precision = "0" + str(
-            HWR.beamline.session["file_info"].get_property("precision", 4)
-        )
+        model.path_template.precision = "0" + str(qmo.PathTemplate.precision)
 
         if params["prefix"]:
             model.path_template.base_prefix = params["prefix"]
@@ -1547,9 +1541,7 @@ class Queue(ComponentBase):
         acq.path_template.start_num = params["first_image"]
         acq.path_template.num_files = params["num_images"]
         acq.path_template.suffix = ftype
-        acq.path_template.precision = "0" + str(
-            HWR.beamline.session["file_info"].get_property("precision", 4)
-        )
+        acq.path_template.precision = "0" + str(qmo.PathTemplate.precision)
 
         if params["prefix"]:
             acq.path_template.base_prefix = params["prefix"]
