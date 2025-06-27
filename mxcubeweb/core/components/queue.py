@@ -1081,9 +1081,9 @@ class Queue(ComponentBase):
                 grid.width,
                 grid.height,
             )
-            mesh_center = HWR.beamline.default_acquisition_parameters["mesh"].get(
-                "mesh_center", "top-left"
-            )
+            mesh_center = HWR.beamline.get_default_acquisition_parameters(
+                "mesh"
+            ).mesh_center
             if mesh_center == "top-left":
                 acq.acquisition_parameters.centred_position = (
                     grid.get_centred_positions()[0]
