@@ -39,7 +39,7 @@ class FlaskConfigModel(BaseModel):
     )
     # Rate limiter configuration
     RATE_LIMITER_ENABLED: bool = True
-    RATELIMIT_DEFAULT: str = "2000 per day;500 per hour"
+    RATELIMIT_DEFAULT: str = "150000 per day;6000 per hour"
     RATELIMIT_STORAGE_URI: str = "memory://"
     RATELIMIT_HEADERS_ENABLED: bool = True
 

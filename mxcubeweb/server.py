@@ -87,7 +87,10 @@ class Server:
         )
         Server.flask_socketio.init_app(Server.flask)
 
-        Server.limiter = init_limiter(Server.flask)
+        if cfg.flask.RATE_LIMITER_ENABLED:
+            Server.limiter = init_limiter(Server.flask)
+        else:
+            Server.limiter = None
 
         # the following test prevents Flask from initializing twice
         # (because of the Reloader)

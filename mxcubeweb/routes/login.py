@@ -18,7 +18,6 @@ def init_route(app, server, url_prefix):
     bp = Blueprint("login", __name__, url_prefix=url_prefix)
 
     @bp.route("/", methods=["POST"])
-    @server.limiter.limit("5 per minute")
     def login():
         """
         Login into mxcube application.
