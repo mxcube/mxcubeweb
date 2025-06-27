@@ -1,14 +1,9 @@
-/* eslint-disable react/destructuring-assignment */
-import React from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
-import { connect } from 'react-redux';
-import { bindActionCreators } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  runSample,
   setAutoMountSample,
   setCentringMethod,
-  setNumSnapshots,
   startQueue,
 } from '../actions/queue';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
@@ -20,193 +15,128 @@ import {
 } from '../constants';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
-export class ConfirmCollectDialog extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onOkClick = this.onOkClick.bind(this);
-    this.onCancelClick = this.onCancelClick.bind(this);
-    this.collectionSummary = this.collectionSummary.bind(this);
-    this.autoLoopCentringOnClick = this.autoLoopCentringOnClick.bind(this);
-    this.autoMountNextOnClick = this.autoMountNextOnClick.bind(this);
-    this.collectText = this.collectText.bind(this);
-    this.tasksToCollect = this.tasksToCollect.bind(this);
-    this.setNumSnapshots = this.setNumSnapshots.bind(this);
+export default function ConfirmCollectDialog() {
+  const dispatch = useDispatch();
+
+  const currentSampleID = useSelector((state) => state.queue.currentSampleID);
+  const queue = useSelector((state) => state.queue.queue);
+  const autoMountNext = useSelector((state) => state.queue.autoMountNext);
+  const sampleList = useSelector((state) => state.sampleGrid.sampleList);
+  const show = useSelector((state) => state.queueGUI.showConfirmCollectDialog);
+  const centringMethod = useSelector((state) => state.queue.centringMethod);
+  const rootPath = useSelector((state) => state.login.rootPath);
+
+  function onOkClick() {
+    const sample = currentSampleID || queue[0];
+    dispatch(startQueue(autoMountNext, sample));
+    dispatch(showConfirmCollectDialog(false));
   }
 
-  onOkClick() {
-    const sample =
-      this.props.queue.currentSampleID || this.props.queue.queue[0];
-    this.props.startQueue(this.props.queue.autoMountNext, sample);
-    this.props.hide();
+  function onCancelClick() {
+    dispatch(showConfirmCollectDialog(false));
   }
 
-  onCancelClick() {
-    this.props.hide();
+  function autoLoopCentringOnClick(e) {
+    dispatch(
+      setCentringMethod(e.target.checked ? AUTO_LOOP_CENTRING : CLICK_CENTRING),
+    );
   }
 
-  setNumSnapshots(n) {
-    this.props.setNumSnapshots(n);
-  }
-
-  autoLoopCentringOnClick(e) {
-    if (e.target.checked) {
-      this.props.setCentringMethod(AUTO_LOOP_CENTRING);
-    } else {
-      this.props.setCentringMethod(CLICK_CENTRING);
-    }
-  }
-
-  autoMountNextOnClick(e) {
-    this.props.setAutoMountSample(e.target.checked);
+  function autoMountNextOnClick(e) {
+    dispatch(setAutoMountSample(e.target.checked));
   }
 
   /**
    * Returns tasks to collect
    *
-   * @property {Object} sampleGrid
-   * @property {Object} queue
    * @return {Array} {tasks}
    */
-  tasksToCollect() {
+  function tasksToCollect() {
     // Flat array of all tasks
-    let { queue } = this.props.queue;
+    let samplesToDisplay = queue;
 
     // Making the dialog a bit more intuitive, only display the tasks for the
-    // sample to be colleted when autoMountNtext is false
-    if (!this.props.queue.autoMountNext) {
-      const sampleID =
-        this.props.queue.currentSampleID || this.props.queue.queue[0];
+    // sample to be colleted when autoMountNext is false
+    if (!autoMountNext) {
+      const sampleID = currentSampleID || queue[0];
 
       if (sampleID) {
-        queue = [sampleID];
+        samplesToDisplay = [sampleID];
       }
     }
 
-    const tasks = Object.values(queue)
-      .map((sampleID) => this.props.sampleGrid.sampleList[sampleID] || {})
+    const tasks = Object.values(samplesToDisplay)
+      .map((sampleID) => sampleList[sampleID] || {})
       .flatMap((sample) => sample.tasks || {});
 
     return tasks.filter((task) => task.state === TASK_UNCOLLECTED);
   }
 
-  /**
-   * Returns collection summary, total number of samples and tasks in the queue
-   *
-   * @property {Object} sampleGrid
-   * @property {Object} queue
-   * @return {Object} {numSaples, numTasks}
-   */
-  collectionSummary() {
-    let numSamples = this.props.queue.queue.length;
-    const numTasks = this.tasksToCollect().length;
+  function collectText(numTasks) {
+    const numSamples =
+      !autoMountNext && (currentSampleID || queue[0]) ? 1 : queue.length;
 
-    if (
-      !this.props.queue.autoMountNext &&
-      (this.props.queue.currentSampleID || this.props.queue.queue[0])
-    ) {
-      numSamples = 1;
-    }
+    let text =
+      numTasks === 0
+        ? `Collecting ${numSamples} samples`
+        : `Collecting ${numTasks} tasks on ${numSamples} samples`;
 
-    return { numSamples, numTasks };
-  }
-
-  collectText() {
-    const summary = this.collectionSummary();
-    let text = `Collecting ${summary.numTasks} tasks on ${summary.numSamples} samples`;
-
-    if (summary.numTasks === 0) {
-      text = `Collecting ${summary.numSamples} samples`;
-    }
-
-    if (!this.props.queue.autoMountNext && this.props.queue.queue.length > 1) {
+    if (!autoMountNext && queue.length > 1) {
       text += ', NOT auto mounting next sample';
     }
 
     return text;
   }
 
-  render() {
-    const autoMountNext = this.props.queue.queue.length > 1;
-    return (
-      <Modal show={this.props.show}>
-        <Modal.Header>
-          <Modal.Title>Collect Queue ?</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>
-            <b>{this.collectText()}</b>
-          </p>
-          <div>
-            <span>
+  const tasks = tasksToCollect();
+
+  return (
+    <Modal show={show}>
+      <Modal.Header>
+        <Modal.Title>Collect Queue ?</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>
+          <b>{collectText(tasks.length)}</b>
+        </p>
+        <div>
+          <span>
+            <Form.Check
+              className="mb-2"
+              type="checkbox"
+              defaultChecked={centringMethod === AUTO_LOOP_CENTRING}
+              onClick={autoLoopCentringOnClick}
+              id="auto-lopp-centring"
+              label="Auto loop centring"
+            />
+            {queue.length > 1 && (
               <Form.Check
                 className="mb-2"
                 type="checkbox"
-                defaultChecked={
-                  this.props.queue.centringMethod === AUTO_LOOP_CENTRING
-                }
-                onClick={this.autoLoopCentringOnClick}
-                id="auto-lopp-centring"
-                label="Auto loop centring"
+                id="auto-mount-next"
+                defaultChecked={autoMountNext}
+                onClick={autoMountNextOnClick}
+                label="Auto mount next sample"
               />
-              {autoMountNext ? (
-                <Form.Check
-                  className="mb-2"
-                  type="checkbox"
-                  id="auto-mount-next"
-                  defaultChecked={this.props.queue.autoMountNext}
-                  onClick={this.autoMountNextOnClick}
-                  label="Auto mount next sample"
-                />
-              ) : (
-                <span />
-              )}
-              <NumSnapshotsDropDown align="start" />
-            </span>
-          </div>
+            )}
+            <NumSnapshotsDropDown align="start" />
+          </span>
+        </div>
 
-          <br />
-          <p style={{ color: '#337ab7' }}>
-            <b>Data Root: {this.props.login.rootPath}</b>
-          </p>
-          <TaskTable tasks={this.tasksToCollect()} />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="outline-secondary" onClick={this.onCancelClick}>
-            Cancel
-          </Button>
-          <Button variant="success" onClick={this.onOkClick}>
-            Collect
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
+        <br />
+        <p style={{ color: '#337ab7' }}>
+          <b>Data Root: {rootPath}</b>
+        </p>
+        <TaskTable tasks={tasks} />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="outline-secondary" onClick={onCancelClick}>
+          Cancel
+        </Button>
+        <Button variant="success" onClick={onOkClick}>
+          Collect
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 }
-
-function mapStateToProps(state) {
-  return {
-    show: state.queueGUI.showConfirmCollectDialog,
-    queue: state.queue,
-    sampleGrid: state.sampleGrid,
-    login: state.login,
-  };
-}
-
-function mapDispatchToProps(dispatch) {
-  return {
-    hide: bindActionCreators(
-      showConfirmCollectDialog.bind(null, false),
-      dispatch,
-    ),
-    startQueue: bindActionCreators(startQueue, dispatch),
-    runSample: bindActionCreators(runSample, dispatch),
-    setAutoMountSample: bindActionCreators(setAutoMountSample, dispatch),
-    setCentringMethod: bindActionCreators(setCentringMethod, dispatch),
-    setNumSnapshots: bindActionCreators(setNumSnapshots, dispatch),
-  };
-}
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ConfirmCollectDialog);
