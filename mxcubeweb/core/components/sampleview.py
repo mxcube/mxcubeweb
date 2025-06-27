@@ -374,7 +374,7 @@ class SampleView(ComponentBase):
 
     def start_manual_centring(self):
         """
-        Start 3 click centring procedure.
+        Start N-click centring procedure.
             :statuscode: 200: no error
             :statuscode: 409: error
         """
@@ -384,8 +384,10 @@ class SampleView(ComponentBase):
                     "Aborting current centring ..."
                 )
                 HWR.beamline.diffractometer.cancel_centring_method(reject=True)
-
-            logging.getLogger("user_level_log").info("Centring using 3-click centring")
+            msg = "Centring using %s-click centring"
+            logging.getLogger("user_level_log").info(
+                msg, HWR.beamline.config.click_centring_num_clicks
+            )
 
             HWR.beamline.diffractometer.start_centring_method(
                 HWR.beamline.diffractometer.MANUAL3CLICK_MODE

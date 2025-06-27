@@ -243,7 +243,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def centre_3_click():
         """
-        Start 3 click centring procedure.
+        Start N-click centring procedure.
             :statuscode: 200: no error
             :statuscode: 409: error
         """
@@ -251,7 +251,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
         try:
             data = app.sample_view.start_manual_centring()
         except Exception:
-            logging.getLogger("MX3.HWR").exception("Could not start 3 click centring")
+            msg = "Could not start %s click centring"
+            logging.getLogger("MX3.HWR").exception(
+                msg, HWR.beamline.config.click_centring_num_clicks
+            )
             resp = (
                 "Could not move motor",
                 409,
@@ -280,7 +283,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def click():
         """
-        The 3-click method needs the input from the user, a running 3click centring
+        The N-click method needs the input from the user, a running Nclick centring
         procedure must be set before
 
         :request Content-type: application/json, integer positions of the clicks,

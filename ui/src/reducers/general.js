@@ -46,6 +46,7 @@ function generalReducer(state = INITIAL_STATE, action = {}) {
         enable2DPoints: action.data.general.enable_2d_points,
         meshResultFormat: action.data.general.mesh_result_format,
         useNativeMesh: action.data.general.use_native_mesh,
+        clickCentringNumClicks: action.data.general.click_centring_num_clicks,
       };
     }
     case 'APPLICATION_FETCHED': {

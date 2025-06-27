@@ -25,13 +25,16 @@ class AppSettingsModel(BaseModel):
             "be dis-activated to not clash with i.e workflow mesh,"
         ),
     )
-
     enable_2d_points: bool = Field(
         True,
         description=(
             " Enable features to work with points in the plane, called2D-points,"
             " (none centred positions)"
         ),
+    )
+    click_centring_num_clicks: int = Field(
+        3,
+        description="Number of clicks used for the manual click centring",
     )
 
     class Config:

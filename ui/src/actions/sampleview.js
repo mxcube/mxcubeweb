@@ -189,13 +189,14 @@ export function rotateToShape(sid) {
 }
 
 export function recordCentringClick(x, y) {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const { general } = getState();
     const json = await sendRecordCentringClick(x, y);
 
     const { clicksLeft } = json;
     dispatch(centringClicksLeft(clicksLeft));
 
-    let msg = '3-Click Centring: <br />';
+    let msg = `${general.clickCentringNumClicks}-Click Centring: <br />`;
     if (clicksLeft === 0) {
       msg += 'Save centring or clicking on screen to restart';
     } else if (clicksLeft === -1) {
@@ -302,8 +303,7 @@ export function toggleCentring() {
 
 export function startClickCentring() {
   return async (dispatch, getState) => {
-    const { queue, shapes } = getState();
-
+    const { queue, shapes, general } = getState();
     dispatch(clearSelectedShapes());
     dispatch(unselectShapes(shapes));
 
@@ -318,7 +318,7 @@ export function startClickCentring() {
     dispatch(startClickCentringAction());
     dispatch(centringClicksLeft(clicksLeft));
 
-    const msg = `3-Click Centring: <br />${
+    const msg = `${general.clickCentringNumClicks}-Click Centring: <br />${
       clicksLeft === 0
         ? 'Save centring or clicking on screen to restart'
         : `Clicks left: ${clicksLeft}`
