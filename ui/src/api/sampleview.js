@@ -31,7 +31,7 @@ export function sendSetCentringMethod(centringMethod) {
 }
 
 export function sendStartClickCentring() {
-  return endpoint.put(undefined, '/centring/start3click').safeJson();
+  return endpoint.put(undefined, '/centring/start_click_centring').safeJson();
 }
 
 export function sendRecordCentringClick(x, y) {

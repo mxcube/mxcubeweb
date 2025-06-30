@@ -238,12 +238,12 @@ def init_route(app, server, url_prefix):  # noqa: C901
         app.sample_view.start_auto_centring()
         return Response(status=200)
 
-    @bp.route("/centring/start3click", methods=["PUT"])
+    @bp.route("/centring/start_click_centring", methods=["PUT"])
     @server.require_control
     @server.restrict
-    def centre_3_click():
+    def centre_click():
         """
-        Start N-click centring procedure.
+        Start Click centring procedure.
             :statuscode: 200: no error
             :statuscode: 409: error
         """
@@ -283,7 +283,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def click():
         """
-        The N-click method needs the input from the user, a running Nclick centring
+        The click method needs the input from the user, a running click centring
         procedure must be set before
 
         :request Content-type: application/json, integer positions of the clicks,

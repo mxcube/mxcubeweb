@@ -15,7 +15,7 @@ function SampleControls(props) {
     <div className={styles.controls}>
       {useShowControl('snapshot') && <SnapshotControl canvas={canvas} />}
       {useShowControl('draw_grid') && <GridControl />}
-      {useShowControl('3_click_centring') && <CentringControl />}
+      {useShowControl('click_centring') && <CentringControl />}
       {useShowControl('focus') && <FocusControl />}
       {useShowControl('zoom') && <ZoomControl />}
       {useShowControl('backlight') && (
