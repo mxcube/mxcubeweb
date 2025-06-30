@@ -83,6 +83,7 @@ def client():
 
     HardwareRepository.uninit_hardware_repository()
     argv = []
+
     server, cfg = build_server_and_config(test=True, argv=argv)
 
     client = server.flask.test_client()
