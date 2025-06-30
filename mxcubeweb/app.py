@@ -194,31 +194,11 @@ class MXCUBEApplication:
         Connects the signal handlers defined in routes/signals.py to the
         corresponding signals/events
         """
-        try:
-            MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
-        except Exception:
-            sys.excepthook(*sys.exc_info())
-
-        try:
-            MXCUBEApplication.sample_view.init_signals()
-        except Exception:
-            sys.excepthook(*sys.exc_info())
-
-        try:
-            MXCUBEApplication.sample_changer.init_signals()
-        except Exception:
-            sys.excepthook(*sys.exc_info())
-
-        try:
-            MXCUBEApplication.beamline.init_signals()
-            MXCUBEApplication.beamline.diffractometer_init_signals()
-        except Exception:
-            sys.excepthook(*sys.exc_info())
-
-        try:
-            MXCUBEApplication.harvester.init_signals()
-        except Exception:
-            sys.excepthook(*sys.exc_info())
+        MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
+        MXCUBEApplication.sample_view.init_signals()
+        MXCUBEApplication.sample_changer.init_signals()
+        MXCUBEApplication.beamline.init_signals()
+        MXCUBEApplication.harvester.init_signals()
 
     @staticmethod
     def init_logging(log_file, log_level, enabled_logger_list):
