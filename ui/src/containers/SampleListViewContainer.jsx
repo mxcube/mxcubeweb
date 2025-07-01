@@ -547,7 +547,7 @@ export default function SampleListViewContainer() {
             onClick={() => handleGetLimsSamples(loginData.limsName[0].name)}
           >
             <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />
-            Get Samples
+            Get samples from {loginData.limsName[0].name}
           </Button>
         </TooltipTrigger>
         {/* Show the dropdown toggle only if there are multiple LIMS
@@ -569,7 +569,7 @@ export default function SampleListViewContainer() {
                 variant="outline-secondary"
                 className="nowrap-style"
               >
-                Get Samples from SC
+                Get samples from SC
               </Dropdown.Item>
             </TooltipTrigger>
           )}
@@ -581,7 +581,7 @@ export default function SampleListViewContainer() {
               tooltipContent={`Synchronise sample list with ${lims.name}`}
             >
               <Dropdown.Item onClick={() => handleGetLimsSamples(lims.name)}>
-                Get Samples & Sync {lims.name}
+                Get samples from {lims.name}
               </Dropdown.Item>
             </TooltipTrigger>
           ))}
