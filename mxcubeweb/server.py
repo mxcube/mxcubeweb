@@ -22,6 +22,7 @@ from mxcubeweb.core.models.usermodels import (
     Role,
     User,
 )
+from mxcubeweb.core.server.csp import CSPMiddleware
 from mxcubeweb.core.server.resource_handler import AdapterResourceHandlerFactory
 from mxcubeweb.core.util import networkutils
 
@@ -58,6 +59,17 @@ class Server:
         Server.flask.wsgi_app = ProxyFix(Server.flask.wsgi_app)
         Server.flask.config.from_object(cfg.flask)
         Server.flask.register_error_handler(Exception, Server.exception_handler)
+
+        if cfg.flask.CSP_ENABLED:
+            Server.flask.wsgi_app = CSPMiddleware(
+                Server.flask.wsgi_app,
+                {
+                    "CSP_ENABLED": cfg.flask.CSP_ENABLED,
+                    "CSP_POLICY": cfg.flask.CSP_POLICY,
+                    "CSP_REPORT_ONLY": cfg.flask.CSP_REPORT_ONLY,
+                    "CSP_REPORT_URI": cfg.flask.CSP_REPORT_URI,
+                },
+            )
 
         db_session = init_db(cfg.flask.USER_DB_PATH)
         Server.user_datastore = UserDatastore(
@@ -98,6 +110,7 @@ class Server:
         )
 
         from mxcubeweb.routes.beamline import init_route as init_beamline_route
+        from mxcubeweb.routes.csp_report import init_route as init_csp_route
         from mxcubeweb.routes.detector import init_route as init_detector_route
         from mxcubeweb.routes.diffractometer import (
             init_route as init_diffractometer_route,
@@ -120,6 +133,7 @@ class Server:
         Server._register_route(
             init_beamline_route, mxcube, f"{url_root_prefix}/beamline"
         )
+        Server._register_route(init_csp_route, mxcube, f"{url_root_prefix}/csp")
 
         Server._register_route(
             init_detector_route, mxcube, f"{url_root_prefix}/detector"

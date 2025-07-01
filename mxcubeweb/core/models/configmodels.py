@@ -38,6 +38,30 @@ class FlaskConfigModel(BaseModel):
         description="One of the strings ['SIGNED', 'ADHOC', NONE]",
     )
 
+    CSP_ENABLED: bool = True
+    CSP_POLICY: dict[str, list[str]] = Field(
+        {
+            "default-src": ["'self'"],
+            "script-src": ["'self'", "'unsafe-inline'", "'unsafe-eval'"],
+            "style-src": ["'self'", "'unsafe-inline'"],
+            "img-src": ["'self'", "data:", "blob:"],
+            "font-src": ["'self'"],
+            "connect-src": ["'self'", "wss:", "ws:"],
+            "frame-src": ["'self'"],
+            "object-src": ["'none'"],
+            "base-uri": ["'self'"],
+            "form-action": ["'self'"],
+        },
+        description="Content Security Policy directives",
+    )
+    CSP_REPORT_ONLY: bool = Field(
+        False,
+        description="Set to True to enable report-only mode (won't block content)",
+    )
+    CSP_REPORT_URI: str = Field(
+        "", description="URI for CSP violation reports (empty to disable reporting)"
+    )
+
 
 class SSOConfigModel(BaseModel):
     USE_SSO: bool = Field(False, description="Set to True to use SSO")
