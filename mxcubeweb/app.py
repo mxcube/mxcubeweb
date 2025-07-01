@@ -211,7 +211,6 @@ class MXCUBEApplication:
 
         try:
             MXCUBEApplication.beamline.init_signals()
-            MXCUBEApplication.beamline.diffractometer_init_signals()
         except Exception:
             sys.excepthook(*sys.exc_info())
 
