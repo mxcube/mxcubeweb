@@ -114,7 +114,7 @@ class OpenAPISpec:
         """Adds response schema to OpenAPI documentation."""
 
         open_api_path = to_openapi_path(prefix + route)
-        schema_name = model.__name__ if model else None
+        schema_name = model.__name__ if isinstance(model, BaseModel) else None
 
         if schema_name:
             if schema_name not in self._openapi_spec["components"]["schemas"]:

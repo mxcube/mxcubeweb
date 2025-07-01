@@ -411,7 +411,7 @@ class AdapterResourceHandler:
                 # If the result has __dict__ attribute (e.g., an object), convert to
                 # dict
                 result = result.__dict__
-            elif isinstance(result, str | int | float | bool | list):
+            elif isinstance(result, str | int | float | bool | list | tuple):
                 # If it's already a simple type, no conversion needed
                 result = {"return": result}
             else:
