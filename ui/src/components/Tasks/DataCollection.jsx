@@ -57,7 +57,7 @@ class DataCollection extends React.Component {
       'shutterless',
       'inverse_beam',
       'centringMethod',
-      'detector_mode',
+      'detector_roi_mode',
       'space_group',
       'prefix',
       'subdir',
@@ -283,13 +283,15 @@ class DataCollection extends React.Component {
                 <InputField propName="kappa" type="number" label="Kappa" />
                 <InputField propName="kappa_phi" type="number" label="Phi" />
               </FieldsRow>
-              <FieldsRow>
-                <SelectField
-                  propName="detector_mode"
-                  label="Detector mode"
-                  list={['0', 'C18', 'C12', 'C2']}
-                />
-              </FieldsRow>
+              {this.props.initialValues?.detector_mode_list?.length !== 0 ? (
+                <FieldsRow>
+                  <SelectField
+                    propName="detector_roi_mode"
+                    label="Detector mode"
+                    list={this.props.initialValues.detector_mode_list}
+                  />
+                </FieldsRow>
+              ) : null}
             </CollapsableRows>
           </Form>
 

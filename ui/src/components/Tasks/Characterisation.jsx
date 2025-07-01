@@ -51,7 +51,7 @@ class Characterisation extends React.Component {
 
     const stringFields = [
       'centringMethod',
-      'detector_mode',
+      'detector_roi_mode',
       'account_rad_damage',
       'opt_sad',
       'space_group',
@@ -173,11 +173,13 @@ class Characterisation extends React.Component {
                 <InputField propName="kappa_phi" type="number" label="Phi" />
               </FieldsRow>
               <FieldsRow>
-                <SelectField
-                  propName="detector_mode"
-                  label="Detector mode"
-                  list={['0', 'C18', 'C12', 'C2']}
-                />
+                {this.props.initialValues?.detector_mode_list?.length !== 0 ? (
+                  <SelectField
+                    propName="detector_roi_mode"
+                    label="Detector mode"
+                    list={this.props.initialValues.detector_mode_list}
+                  />
+                ) : null}
                 <InputField propName="overlap" label="Overlap" />
               </FieldsRow>
             </CollapsableRows>

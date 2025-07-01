@@ -64,7 +64,7 @@ class Mesh extends React.Component {
       'shutterless',
       'inverse_beam',
       'centringMethod',
-      'detector_mode',
+      'detector_roi_mode',
       'space_group',
       'prefix',
       'subdir',
@@ -184,11 +184,13 @@ class Mesh extends React.Component {
                   label="Beam size"
                   list={this.props.apertureList}
                 />
-                <SelectField
-                  propName="detector_mode"
-                  label="Detector mode"
-                  list={['0', 'C18', 'C2']}
-                />
+                {this.props.initialValues?.detector_mode_list?.length !== 0 ? (
+                  <SelectField
+                    propName="detector_roi_mode"
+                    label="Detector mode"
+                    list={this.props.initialValues.detector_mode_list}
+                  />
+                ) : null}
               </FieldsRow>
               <FieldsRow>
                 <CheckboxField propName="shutterless" label="Shutterless" />

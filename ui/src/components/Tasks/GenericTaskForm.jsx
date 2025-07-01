@@ -72,7 +72,7 @@ class GenericTaskForm extends React.Component {
       'shutterless',
       'inverse_beam',
       'centringMethod',
-      'detector_mode',
+      'detector_roi_mode',
       'space_group',
       'prefix',
       'subdir',
