@@ -13,6 +13,38 @@ server:
   PORT: 8081
   USER_DB_PATH: /tmp/mxcube-user.db
 
+  CSP_ENABLED: true
+  CSP_POLICY:
+    default-src:
+      - "'self'"
+    script-src:
+      - "'self'"
+      - "'unsafe-inline'"
+      - "'unsafe-eval'"
+    style-src:
+      - "'self'"
+      - "'unsafe-inline'"
+    img-src:
+      - "'self'"
+      - "data:"
+      - "blob:"
+    font-src:
+      - "'self'"
+    connect-src:
+      - "'self'"
+      - "wss:"
+      - "ws:"
+    frame-src:
+      - "'self'"
+    object-src:
+      - "'none'"
+    base-uri:
+      - "'self'"
+    form-action:
+      - "'self'"
+  CSP_REPORT_ONLY: false
+  CSP_REPORT_URI: ""
+
 sso:
   USE_SSO: false
   ISSUER: https://websso.[site].[com]/realms/[site]/
