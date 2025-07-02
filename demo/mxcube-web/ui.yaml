@@ -3,6 +3,15 @@
 sample_view:
   id: sample_view
   components:
+    - attribute: phase_control
+      label: Phase Control
+    - attribute: beam_size
+      label: Beam size
+
+
+sample_view_motors:
+  id: sample_view_motors
+  components:
     - label: Omega
       attribute: diffractometer.phi
       role: omega

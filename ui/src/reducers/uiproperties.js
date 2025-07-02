@@ -11,13 +11,13 @@ function uiPropertiesReducer(state = INITIAL_STATE, action = {}) {
      * We make an exception here until motor steps can be updated on the server. */
     case 'SET_MOTOR_STEP': {
       const idx = findIndex(
-        state.sample_view.components,
+        state.sample_view_motors.components,
         (o) => o.role === action.role,
       );
 
       return setWith(
         clone(state),
-        `sample_view.components[${idx}].step`,
+        `sample_view_motors.components[${idx}].step`,
         action.value,
         clone,
       );

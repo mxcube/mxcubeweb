@@ -11,7 +11,7 @@ function MotorControls() {
   const [showAll, setShowAll] = useState(false);
 
   const motorsProps = useSelector((state) =>
-    state.uiproperties.sample_view.components.filter(
+    state.uiproperties.sample_view_motors.components.filter(
       ({ value_type }) => value_type === 'MOTOR',
     ),
   );

@@ -583,7 +583,7 @@ export default class SampleImage extends React.Component {
     e.preventDefault();
     e.stopPropagation();
     const { hardwareObjects, uiproperties, setAttribute } = this.props;
-    const { components } = uiproperties.sample_view;
+    const { components } = uiproperties.sample_view_motors;
     const keyPressed = this._keyPressed;
 
     const omegaProps = components.find((c) => c.role === 'omega');

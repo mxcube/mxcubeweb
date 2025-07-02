@@ -390,7 +390,7 @@ export default connect((state) => {
     filename: fname,
     acqParametersLimits: limits,
     beamline: state.beamline,
-    components: state.uiproperties.sample_view.components,
+    components: state.uiproperties.sample_view_motors.components,
     initialValues: {
       ...parameters,
       beam_size: state.sampleview.currentAperture,

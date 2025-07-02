@@ -363,7 +363,7 @@ export default connect((state) => {
     schema,
     uiSchema,
     beamline: state.beamline,
-    components: state.uiproperties.sample_view.components,
+    components: state.uiproperties.sample_view_motors.components,
     initialValues: {
       ...state.taskForm.taskData.parameters,
       type,

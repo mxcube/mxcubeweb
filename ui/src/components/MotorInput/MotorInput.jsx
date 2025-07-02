@@ -15,7 +15,9 @@ function MotorInput(props) {
   const dispatch = useDispatch();
 
   const { attribute, label, precision, step, suffix } = useSelector((state) =>
-    state.uiproperties.sample_view.components.find((el) => el.role === role),
+    state.uiproperties.sample_view_motors.components.find(
+      (el) => el.role === role,
+    ),
   );
 
   const motor = useSelector(

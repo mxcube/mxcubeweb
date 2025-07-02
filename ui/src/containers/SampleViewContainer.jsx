@@ -55,7 +55,7 @@ class SampleViewContainer extends Component {
   render() {
     const { uiproperties } = this.props;
 
-    if (!('sample_view' in uiproperties)) {
+    if (!('sample_view_motors' in uiproperties)) {
       return null;
     }
 
@@ -63,6 +63,12 @@ class SampleViewContainer extends Component {
     const { currentSampleID } = this.props;
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
+    const phase_control = uiproperties.sample_view?.components?.find(
+      (c) => c.attribute === 'phase_control',
+    );
+    const beam_size = uiproperties?.sample_view?.components.find(
+      (c) => c.attribute === 'beam_size',
+    );
 
     if (this.props.shapes !== undefined) {
       Object.keys(this.props.shapes).forEach((key) => {
@@ -115,22 +121,28 @@ class SampleViewContainer extends Component {
         <Row className="gx-3 mt-2 pt-1">
           <Col sm={2} xxl={1} className={styles.controllers}>
             <DefaultErrorBoundary>
-              <div className={motorInputStyles.container}>
-                <label className={motorInputStyles.label} htmlFor="PhaseInput">
-                  Phase Control
-                </label>
-                <PhaseInput />
-              </div>
-
-              <div className={motorInputStyles.container}>
-                <label
-                  className={motorInputStyles.label}
-                  htmlFor="ApertureInput"
-                >
-                  Beam size
-                </label>
-                <ApertureInput />
-              </div>
+              {phase_control !== undefined && (
+                <div className={motorInputStyles.container}>
+                  <label
+                    className={motorInputStyles.label}
+                    htmlFor="PhaseInput"
+                  >
+                    {phase_control.label}
+                  </label>
+                  <PhaseInput />
+                </div>
+              )}
+              {beam_size !== undefined && (
+                <div className={motorInputStyles.container}>
+                  <label
+                    className={motorInputStyles.label}
+                    htmlFor="ApertureInput"
+                  >
+                    {beam_size.label}
+                  </label>
+                  <ApertureInput />
+                </div>
+              )}
 
               {this.props.mode === 'SSX-CHIP' && (
                 <SSXChipControl
@@ -140,7 +152,7 @@ class SampleViewContainer extends Component {
                   defaultParameters={this.props.defaultParameters}
                   groupFolder={this.props.groupFolder}
                   hardwareObjects={this.props.hardwareObjects}
-                  uiproperties={uiproperties.sample_view}
+                  uiproperties={uiproperties.sample_view_motors}
                   sampleViewActions={this.props.sampleViewActions}
                   grids={grids}
                   selectedGrids={selectedGrids}

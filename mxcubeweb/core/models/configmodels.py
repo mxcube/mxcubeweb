@@ -113,6 +113,11 @@ class UICameraConfigModel(UIPropertiesModel):
     components: list[_UICameraConfigModel]
 
 
+class UISampleViewMotorsModel(UIPropertiesModel):
+    id: str
+    components: list[UIComponentModel]
+
+
 class UISampleViewVideoControlsModel(UIPropertiesModel):
     # It is important to keep the Union elements in that order; from the more specific to the more general.
     components: list[
@@ -133,9 +138,10 @@ class UISessionPickerModel(BaseModel):
 
 
 class UIPropertiesListModel(BaseModel):
-    sample_view: UIPropertiesModel
+    sample_view: UIPropertiesModel | None
     beamline_setup: UIPropertiesModel
     camera_setup: UICameraConfigModel | None
+    sample_view_motors: UISampleViewMotorsModel
     sample_view_video_controls: UISampleViewVideoControlsModel | None
     session_picker: UISessionPickerModel = UISessionPickerModel()
 

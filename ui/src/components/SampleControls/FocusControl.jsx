@@ -6,7 +6,9 @@ import styles from './SampleControls.module.css';
 
 function FocusControl() {
   const focusMotorProps = useSelector((state) =>
-    state.uiproperties.sample_view.components.find((c) => c.role === 'focus'),
+    state.uiproperties.sample_view_motors.components.find(
+      (c) => c.role === 'focus',
+    ),
   );
 
   return (
