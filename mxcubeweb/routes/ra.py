@@ -135,6 +135,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
             "observers": [_u.todict() for _u in app.usermanager.get_observers()],
             "allowRemote": app.ALLOW_REMOTE,
             "timeoutGivesControl": app.TIMEOUT_GIVES_CONTROL,
+            "operator": app.usermanager.get_operator().todict(),
         }
 
         return jsonify(data=data)

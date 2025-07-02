@@ -14,18 +14,20 @@ function RemoteAccessContainer() {
   const remoteAccess = useSelector((state) => state.remoteAccess);
   const inControl = useSelector((state) => state.login.user.inControl);
 
+  const colSize = inControl ? 6 : 4;
+
   return (
     <Container fluid className="mt-4">
       <Row sm={12} className="d-flex">
         {!inControl && (
-          <Col sm={4} className="col-xs-4">
+          <Col sm={colSize} className="col-xs-4">
             <RequestControlForm />
           </Col>
         )}
-        <Col sm={4} className="mb-3">
+        <Col sm={colSize} className="mb-3">
           <UserList />
         </Col>
-        <Col sm={4}>
+        <Col sm={colSize}>
           <Card className="mb-3">
             <Card.Header>Options</Card.Header>
             <Card.Body>

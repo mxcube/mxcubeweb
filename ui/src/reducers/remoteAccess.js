@@ -15,6 +15,7 @@ function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
         observers: action.data.observers,
         allowRemote: action.data.allowRemote,
         timeoutGivesControl: action.data.timeoutGivesControl,
+        operator: action.data.operator,
       };
     }
     case 'SET_MASTER': {
@@ -45,6 +46,7 @@ function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
         sid: action.data.remoteAccess.sid,
         allowRemote: action.data.remoteAccess.allowRemote,
         timeoutGivesControl: action.data.remoteAccess.timeoutGivesControl,
+        operator: action.data.remoteAccess.operator,
       };
     }
     default: {
