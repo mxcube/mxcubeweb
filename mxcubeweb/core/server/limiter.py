@@ -1,3 +1,5 @@
+import logging
+
 from flask import jsonify
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
@@ -5,6 +7,7 @@ from flask_limiter.util import get_remote_address
 
 def rate_limit_error_handler(e):
     """Handler for rate limit errors"""
+    logging.warning("Rate limit exceeded: %s", e.description)
     return jsonify({"error": "Too many requests", "message": str(e.description)}), 429
 
 
