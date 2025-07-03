@@ -29,22 +29,24 @@ function UserList() {
             </Col>
           )}
         </Row>
-        <Row key={operator.username} className="mt-3">
-          <Col sm={columnSize}>
-            <span style={{ lineHeight: '24px' }}>
-              <span style={{ fontWeight: 'bold' }}>In Control </span>
-              {user.inControl && (
-                <span style={{ fontWeight: 'bold', fontStyle: 'italic' }}>
-                  (You){' '}
-                </span>
-              )}
-              - {operator.nickname || <em>Not provided</em>}
-            </span>
-          </Col>
-          <Col sm={columnSize}>
-            <span style={{ lineHeight: '24px' }}>{operator.ip}</span>
-          </Col>
-        </Row>
+        {operator && (
+          <Row key={operator.username} className="mt-3">
+            <Col sm={columnSize}>
+              <span style={{ lineHeight: '24px' }}>
+                <span style={{ fontWeight: 'bold' }}>In Control </span>
+                {user.inControl && (
+                  <span style={{ fontWeight: 'bold', fontStyle: 'italic' }}>
+                    (You){' '}
+                  </span>
+                )}
+                - {operator.nickname || <em>Not provided</em>}
+              </span>
+            </Col>
+            <Col sm={columnSize}>
+              <span style={{ lineHeight: '24px' }}>{operator.ip}</span>
+            </Col>
+          </Row>
+        )}
         {observers.map((observer) => (
           <Row key={observer.username} className="mt-3">
             <Col sm={columnSize}>
