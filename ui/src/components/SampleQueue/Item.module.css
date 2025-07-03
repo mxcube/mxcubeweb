@@ -1,0 +1,24 @@
+.nodeSample {
+  font-size: 1em;
+  margin-bottom: 1rem;
+  background-color: white;
+}
+
+.taskHead {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background-color: #f9f9f9;
+}
+
+.taskHead p {
+  margin: 0;
+}
+
+.taskHead:hover {
+  background-color: #eaeaea;
+}
+
+.nodeName {
+  margin-left: 4px;
+  cursor: pointer;
+}

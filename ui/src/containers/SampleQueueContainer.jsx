@@ -14,7 +14,6 @@ import {
   toggleCheckBox,
 } from '../actions/queue';
 import { collapseItem, selectItem, showList } from '../actions/queueGUI';
-import { mountSample } from '../actions/sampleChanger';
 import { showTaskForm } from '../actions/taskForm';
 import { showWorkflowParametersDialog } from '../actions/workflow';
 import UserMessage from '../components/Notify/UserMessage';
@@ -131,10 +130,8 @@ class SampleQueueContainer extends React.Component {
             show={visibleList === 'todo'}
             list={todo}
             sampleList={sampleList}
-            mount={this.props.mountSample}
             showForm={showForm}
             queueStatus={queueStatus}
-            showList={this.props.showList}
             prepareBeamlineForNewSample={this.props.prepareBeamlineForNewSample}
           />
           <div className="queue-messages">
@@ -193,9 +190,6 @@ function mapDispatchToProps(dispatch) {
     collapseItem: bindActionCreators(collapseItem, dispatch),
     selectItem: bindActionCreators(selectItem, dispatch),
     showList: bindActionCreators(showList, dispatch),
-
-    // Sample changer actions
-    mountSample: bindActionCreators(mountSample, dispatch),
 
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),

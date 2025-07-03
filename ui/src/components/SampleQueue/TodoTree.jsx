@@ -1,18 +1,18 @@
 /* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/no-array-index-key */
+
 import './app.css';
 
 import React from 'react';
 import { Button, Form, ListGroup } from 'react-bootstrap';
 
 import { QUEUE_RUNNING } from '../../constants';
+import TodoItem from './TodoItem';
 
 export default class TodoTree extends React.Component {
   constructor(props) {
     super(props);
     this.setSearchWord = this.setSearchWord.bind(this);
     this.showAddSampleForm = this.showAddSampleForm.bind(this);
-    this.mountAndSwitchTab = this.mountAndSwitchTab.bind(this);
     this.state = { searchWord: '' };
   }
 
@@ -23,11 +23,6 @@ export default class TodoTree extends React.Component {
   showAddSampleForm() {
     this.props.prepareBeamlineForNewSample();
     this.props.showForm('AddSample');
-  }
-
-  mountAndSwitchTab(sampleData) {
-    this.props.mount(sampleData);
-    this.props.showList('current');
   }
 
   filter(list, searchWord) {
@@ -69,33 +64,9 @@ export default class TodoTree extends React.Component {
           </div>
         </ListGroup.Item>
         <ListGroup.Item className="d-flex list-body">
-          {list.map((key, id) => {
+          {list.map((key) => {
             const sampleData = this.props.sampleList[key];
-            const sampleName = sampleData.sampleName || '';
-            const proteinAcronym = sampleData.proteinAcronym
-              ? `${sampleData.proteinAcronym} -`
-              : '';
-
-            return (
-              <div key={id} className="node node-sample">
-                <div className="task-head">
-                  <div className="d-flex node-name">
-                    <p className="pt-1 me-auto">
-                      <b>{`${sampleData.sampleID} `}</b>
-                      {`${proteinAcronym} ${sampleName}`}
-                    </p>
-
-                    <Button
-                      variant="outline-secondary"
-                      size="sm"
-                      onClick={() => this.mountAndSwitchTab(sampleData)}
-                    >
-                      Mount
-                    </Button>
-                  </div>
-                </div>
-              </div>
-            );
+            return <TodoItem sampleData={sampleData} key={`Sample ${key}`} />;
           })}
         </ListGroup.Item>
       </ListGroup>
