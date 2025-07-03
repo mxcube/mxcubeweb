@@ -1,7 +1,6 @@
 import logging
 import math
 import re
-import sys
 
 from flask_login import current_user
 from mxcubecore import HardwareRepository as HWR
@@ -189,18 +188,12 @@ class Lims(ComponentBase):
         # Selecting the active session in the LIMS object
         try:
             session = HWR.beamline.lims.set_active_session_by_id(session_id)
-            if session is None:
-                msg = "No session selected on LIMS"
-                raise NoSessionError(msg)
-        except BaseException as e:
-            import traceback
-
-            traceback.print_exc(file=sys.stdout)
-            logging.getLogger("MX3.HWR").info(
-                "No session candidate. Force signout. e=%s" % str(e)
+        except Exception as exc:
+            logging.getLogger("MX3.HWR").exception(
+                "No session candidate. Force signout."
             )
             self.app.usermanager.signout()
-            return False
+            raise NoSessionError from exc
 
         if (
             HWR.beamline.lims.is_user_login_type()
