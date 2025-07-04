@@ -43,7 +43,7 @@ server:
     form-action:
       - "'self'"
   CSP_REPORT_ONLY: false
-  CSP_REPORT_URI: ""
+  CSP_REPORT_URI: "/mxcube/api/v0.1/csp/report"
 
 sso:
   USE_SSO: false
