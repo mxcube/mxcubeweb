@@ -79,6 +79,7 @@ def parse_args(argv):
             "user_logger",
             "queue_logger",
             "mx3_ui_logger",
+            "csp_logger",
         ],
     )
 

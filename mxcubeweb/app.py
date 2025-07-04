@@ -249,6 +249,7 @@ class MXCUBEApplication:
             "user_logger": logging.getLogger("user_level_log"),
             "queue_logger": logging.getLogger("queue_exec"),
             "mx3_ui_logger": logging.getLogger("MX3.UI"),
+            "csp_logger": logging.getLogger("csp"),
         }
 
         stdout_log_handler = StreamHandler(sys.stdout)

@@ -11,13 +11,6 @@ def init_route(_mxcube_app, _server, url_prefix):
     bp = Blueprint("csp", __name__, url_prefix=url_prefix)
 
     csp_logger = logging.getLogger("csp")
-    if not csp_logger.handlers:
-        handler = logging.StreamHandler()
-        handler.setFormatter(
-            logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-        )
-        csp_logger.addHandler(handler)
-        csp_logger.setLevel(logging.WARNING)
 
     @bp.route("/report", methods=["POST"])
     def csp_report():
