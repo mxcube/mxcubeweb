@@ -239,16 +239,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
 
         return Response(status=200)
 
-    @bp.route("/<sid>/<ti1>/<ti2>/move", methods=["POST"])
-    @server.require_control
-    def queue_move_task_item(sid, ti1, ti2):
-        app.queue.move_task_entry(sid, int(ti1), int(ti2))
-        server.emit(
-            "queue", {"Signal": "update", "message": "observers"}, namespace="/hwr"
-        )
-
-        return Response(status=200)
-
     @bp.route("/<sample_id>", methods=["PUT"])
     @server.require_control
     @server.restrict

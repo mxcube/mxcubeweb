@@ -25,7 +25,6 @@ export default class XRFTaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    moveCard: PropTypes.func.isRequired, // eslint-disable-line react/no-unused-prop-types
   };
 
   constructor(props) {

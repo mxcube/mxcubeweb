@@ -280,17 +280,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, sampleList };
     }
-    case 'CHANGE_TASK_ORDER': {
-      const sampleList = { ...state.sampleList };
-
-      const task = sampleList[action.sampleId].tasks[action.oldIndex];
-      const tempTask = sampleList[action.sampleId].tasks[action.newIndex];
-
-      sampleList[action.sampleId].tasks[action.newIndex] = task;
-      sampleList[action.sampleId].tasks[action.oldIndex] = tempTask;
-
-      return { ...state, sampleList };
-    }
     case 'SET_CURRENT_SAMPLE': {
       const sampleList = { ...state.sampleList };
 

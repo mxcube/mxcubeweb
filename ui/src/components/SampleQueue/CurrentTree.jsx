@@ -14,7 +14,6 @@ import XRFTaskItem from './XRFTaskItem';
 export default class CurrentTree extends React.Component {
   constructor(props) {
     super(props);
-    this.moveCard = this.moveCard.bind(this);
     this.taskHeaderOnClickHandler = this.taskHeaderOnClickHandler.bind(this);
     this.taskHeaderOnContextMenuHandler =
       this.taskHeaderOnContextMenuHandler.bind(this);
@@ -87,14 +86,6 @@ export default class CurrentTree extends React.Component {
     }
   }
 
-  moveCard(dragIndex, hoverIndex) {
-    this.props.changeOrder(
-      this.props.sampleList[this.props.mounted],
-      dragIndex,
-      hoverIndex,
-    );
-  }
-
   taskHeaderOnClickHandler(e, index) {
     const task = this.props.sampleList[this.props.mounted].tasks[index];
     if (!e.ctrlKey) {
@@ -162,7 +153,6 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    moveCard={this.moveCard}
                     deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
@@ -177,7 +167,6 @@ export default class CurrentTree extends React.Component {
                     }
                     show={displayData.collapsed}
                     progress={displayData.progress}
-                    moveTask={this.props.moveTask}
                     showForm={this.props.showForm}
                     shapes={this.props.shapes}
                     showDialog={this.props.showDialog}
@@ -197,7 +186,6 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    moveCard={this.moveCard}
                     deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
@@ -212,7 +200,6 @@ export default class CurrentTree extends React.Component {
                     }
                     show={displayData.collapsed}
                     progress={displayData.progress}
-                    moveTask={this.props.moveTask}
                     showForm={this.props.showForm}
                     plotsData={this.props.plotsData}
                     plotsInfo={this.props.plotsInfo}
@@ -230,7 +217,6 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    moveCard={this.moveCard}
                     deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
@@ -245,7 +231,6 @@ export default class CurrentTree extends React.Component {
                     }
                     show={displayData.collapsed}
                     progress={displayData.progress}
-                    moveTask={this.props.moveTask}
                     showForm={this.props.showForm}
                     shapes={this.props.shapes}
                     showDialog={this.props.showDialog}
@@ -262,7 +247,6 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    moveCard={this.moveCard}
                     deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
@@ -277,7 +261,6 @@ export default class CurrentTree extends React.Component {
                     }
                     show={displayData.collapsed}
                     progress={displayData.progress}
-                    moveTask={this.props.moveTask}
                     showForm={this.props.showForm}
                     addTask={this.props.addTask}
                     shapes={this.props.shapes}
@@ -295,7 +278,6 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    moveCard={this.moveCard}
                     deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
@@ -310,7 +292,6 @@ export default class CurrentTree extends React.Component {
                     }
                     show={displayData.collapsed}
                     progress={displayData.progress}
-                    moveTask={this.props.moveTask}
                     showForm={this.props.showForm}
                     shapes={this.props.shapes}
                     showDialog={this.props.showDialog}

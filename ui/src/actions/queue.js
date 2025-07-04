@@ -3,7 +3,6 @@ import {
   sendAddQueueItem,
   sendClearQueue,
   sendDeleteQueueItem,
-  sendMoveTask,
   sendPauseQueue,
   sendResumeQueue,
   sendRunSample,
@@ -142,25 +141,6 @@ export function setStatus(queueState) {
 
 export function setState(queueState) {
   return { type: 'QUEUE_STATE', queueState };
-}
-
-export function changeTaskOrderAction(sampleId, oldIndex, newIndex) {
-  return { type: 'CHANGE_TASK_ORDER', sampleId, oldIndex, newIndex };
-}
-
-export function moveTask(sampleID, oldIndex, newIndex) {
-  return async (dispatch) => {
-    dispatch(queueLoading(true));
-
-    try {
-      await sendMoveTask(sampleID, oldIndex, newIndex);
-    } catch {
-      dispatch(changeTaskOrderAction(sampleID, newIndex, oldIndex));
-      dispatch(showErrorPanel(true, 'Could not move task'));
-    }
-
-    dispatch(queueLoading(false));
-  };
 }
 
 export function toggleChecked(sampleID, index) {

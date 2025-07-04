@@ -19,7 +19,6 @@ export default class WorkflowTaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    moveCard: PropTypes.func.isRequired,
   };
 
   constructor(props) {

@@ -6,13 +6,7 @@ import { bindActionCreators } from 'redux';
 
 import { prepareBeamlineForNewSample } from '../actions/beamline';
 import { showDialog } from '../actions/general';
-import {
-  addTask,
-  changeTaskOrderAction,
-  deleteTask,
-  moveTask,
-  toggleCheckBox,
-} from '../actions/queue';
+import { addTask, deleteTask, toggleCheckBox } from '../actions/queue';
 import { collapseItem, selectItem, showList } from '../actions/queueGUI';
 import { showTaskForm } from '../actions/taskForm';
 import { showWorkflowParametersDialog } from '../actions/workflow';
@@ -105,7 +99,6 @@ class SampleQueueContainer extends React.Component {
             </div>
           ) : null}
           <CurrentTree
-            changeOrder={this.props.changeTaskOrderAction}
             show={visibleList === 'current'}
             mounted={currentSampleID}
             sampleList={sampleList}
@@ -116,7 +109,6 @@ class SampleQueueContainer extends React.Component {
             collapseItem={this.props.collapseItem}
             selectItem={this.props.selectItem}
             displayData={displayData}
-            moveTask={this.props.moveTask}
             addTask={this.props.addTask}
             plotsData={this.props.plotsData}
             plotsInfo={this.props.plotsInfo}
@@ -175,10 +167,8 @@ function mapDispatchToProps(dispatch) {
   return {
     // Queue actions
     toggleCheckBox: bindActionCreators(toggleCheckBox, dispatch),
-    changeTaskOrderAction: bindActionCreators(changeTaskOrderAction, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
-    moveTask: bindActionCreators(moveTask, dispatch),
 
     // Workflow action
     showWorkflowParametersDialog: bindActionCreators(

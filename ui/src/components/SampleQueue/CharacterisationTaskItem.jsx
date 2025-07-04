@@ -21,7 +21,6 @@ export default class TaskItem extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     index: PropTypes.number.isRequired,
-    moveCard: PropTypes.func.isRequired,
   };
 
   constructor(props) {
