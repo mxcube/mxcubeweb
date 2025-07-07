@@ -1,21 +1,16 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/no-unused-prop-types */
-/* eslint-disable react/no-unused-state */
 
 /* eslint-disable react/no-array-index-key */
 
 import PropTypes from 'prop-types';
 import { Component } from 'react';
-import { Button, Collapse, ProgressBar, Table } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
 
-import {
-  TASK_COLLECT_FAILED,
-  TASK_COLLECTED,
-  TASK_RUNNING,
-  TASK_UNCOLLECTED,
-} from '../../constants';
+import { TASK_COLLECTED } from '../../constants';
 import TooltipTrigger from '../TooltipTrigger';
+import TaskItemContainer from './TaskItemContainer';
 
 export default class TaskItem extends Component {
   static propTypes = {
@@ -26,17 +21,9 @@ export default class TaskItem extends Component {
   constructor(props) {
     super(props);
     this.showForm = this.showForm.bind(this);
-    this.deleteTask = this.deleteTask.bind(this);
-    this.toggleChecked = this.toggleChecked.bind(this);
-    this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
-    this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
     this.getResult = this.getResult.bind(this);
     this.showDiffPlan = this.showDiffPlan.bind(this);
     this.pointIDString = this.pointIDString.bind(this);
-    this.state = {
-      overInput: false,
-      selected: false,
-    };
   }
 
   getResult(_state, data) {
@@ -110,38 +97,6 @@ export default class TaskItem extends Component {
         this.props.addTask([sampleId], pars, false);
       });
     }
-  }
-
-  toggleChecked() {
-    this.props.toggleChecked(this.props.sampleId, this.props.index);
-  }
-
-  taskHeaderOnClick(e) {
-    this.props.taskHeaderOnClickHandler(e, this.props.index);
-  }
-
-  taskHeaderOnContextMenu(e) {
-    this.props.taskHeaderOnContextMenuHandler(e, this.props.index);
-  }
-
-  deleteTask(e) {
-    e.stopPropagation();
-    this.props.deleteTask(this.props.sampleId, this.props.index);
-  }
-
-  // eslint-disable-next-line react/no-unused-class-component-methods
-  deleteButton() {
-    let content = (
-      <Button size="sm" onClick={this.deleteTask}>
-        Delete
-      </Button>
-    );
-
-    if (this.props.state !== TASK_UNCOLLECTED) {
-      content = <span> </span>;
-    }
-
-    return content;
   }
 
   showForm() {
@@ -233,184 +188,113 @@ export default class TaskItem extends Component {
     );
   }
 
-  progressBar() {
-    const { state } = this.props;
-    let pbarBsStyle = 'info';
-
-    switch (state) {
-      case TASK_RUNNING: {
-        pbarBsStyle = 'info';
-
-        break;
-      }
-      case TASK_COLLECTED: {
-        pbarBsStyle = 'success';
-
-        break;
-      }
-      case TASK_COLLECT_FAILED: {
-        pbarBsStyle = 'danger';
-
-        break;
-      }
-      // No default
-    }
-
-    return (
-      <span style={{ width: '150px', right: '60px', position: 'absolute' }}>
-        <ProgressBar
-          variant={pbarBsStyle}
-          striped
-          style={{ marginBottom: 0, height: '18px' }}
-          min={0}
-          max={1}
-          animated={this.props.progress < 1}
-          label={`${(this.props.progress * 100).toPrecision(3)} %`}
-          now={this.props.progress}
-        />
-      </span>
-    );
-  }
-
   render() {
-    const { state, data, show } = this.props;
+    const {
+      data,
+      deleteTask,
+      progress,
+      sampleId,
+      selected,
+      show,
+      showContextMenu,
+      state,
+      taskHeaderOnClickHandler,
+      taskHeaderOnContextMenuHandler,
+    } = this.props;
     const wedges =
       data.type === 'Interleaved' ? data.parameters.wedges : [data];
 
-    const delTaskCSS = {
-      display: 'flex',
-      marginLeft: 'auto',
-      alignItems: 'center',
-      paddingLeft: '10px',
-      paddingRight: '10px',
-      color: '#d9534f',
-      cursor: 'pointer',
-    };
-
-    let taskCSS = this.props.selected
-      ? 'task-head task-head-selected'
-      : 'task-head';
-
-    taskCSS += ' uncollected';
-
-    if (state === TASK_RUNNING) {
-      taskCSS += ' running';
-    } else if (state === TASK_COLLECTED && data.diffractionPlan.length > 0) {
-      taskCSS += ' success';
-    } else if (
-      state === TASK_COLLECTED &&
-      data.diffractionPlan.length === undefined
-    ) {
-      taskCSS += ' warning';
-    } else if (state === TASK_COLLECT_FAILED) {
-      taskCSS += ' error';
-    }
-
     return (
-      <div className="node node-sample">
-        <div
-          onContextMenu={(e) =>
-            this.props.showContextMenu(e, 'currentSampleQueueContextMenu')
-          }
-          id="currentSampleQueueContextMenu"
-        >
-          <div
-            onClick={this.taskHeaderOnClick}
-            onContextMenu={this.taskHeaderOnContextMenu}
-          >
-            <div className={taskCSS} style={{ display: 'flex' }}>
-              <b>
-                <span className="node-name" style={{ display: 'flex' }}>
-                  {this.pointIDString(wedges)} {data.label}
-                  {state === TASK_RUNNING && this.progressBar()}
-                </span>
-              </b>
-              {state === TASK_UNCOLLECTED && (
-                <i
-                  className="fas fa-times"
-                  onClick={this.deleteTask}
-                  style={delTaskCSS}
-                />
-              )}
-            </div>
-          </div>
-          <Collapse in={Boolean(show)}>
-            <div className="task-body">
-              {wedges.map((wedge, i) => {
-                const padding = i > 0 ? '1em' : '0em';
-                return (
-                  <div key={`wedge-${i}`}>
-                    <div
-                      style={{
-                        borderLeft: '1px solid #DDD',
-                        borderRight: '1px solid #DDD',
-                        paddingTop: padding,
+      <TaskItemContainer
+        dataLabel={data.label}
+        deleteTask={deleteTask}
+        diffractionPlanLength={data.diffractionPlan.length}
+        index={this.props.index}
+        pointIDString={this.pointIDString(wedges)}
+        progress={progress}
+        sampleId={sampleId}
+        selected={selected}
+        show={show}
+        showContextMenu={showContextMenu}
+        specialTaskCSS="Characterisation"
+        state={state}
+        taskHeaderOnClickHandler={taskHeaderOnClickHandler}
+        taskHeaderOnContextMenuHandler={taskHeaderOnContextMenuHandler}
+      >
+        <div className="task-body">
+          {wedges.map((wedge, i) => {
+            const padding = i > 0 ? '1em' : '0em';
+            return (
+              <div key={`wedge-${i}`}>
+                <div
+                  style={{
+                    borderLeft: '1px solid #DDD',
+                    borderRight: '1px solid #DDD',
+                    paddingTop: padding,
+                  }}
+                >
+                  <div
+                    style={{
+                      borderTop: '1px solid #DDD',
+                      padding: '0.5em',
+                      display: 'flex',
+                      justifyContent: 'space-around',
+                      alignItems: 'center',
+                    }}
+                  >
+                    <b>Path:</b>
+                    {this.wedgePath(wedge)}
+                    <Button
+                      variant="outline-secondary"
+                      style={{ width: '3em' }}
+                      title="Copy path"
+                      onClick={() => {
+                        navigator.clipboard.writeText(
+                          `${wedge.parameters.path}`,
+                        );
                       }}
                     >
-                      <div
-                        style={{
-                          borderTop: '1px solid #DDD',
-                          padding: '0.5em',
-                          display: 'flex',
-                          justifyContent: 'space-around',
-                          alignItems: 'center',
-                        }}
-                      >
-                        <b>Path:</b>
-                        {this.wedgePath(wedge)}
-                        <Button
-                          variant="outline-secondary"
-                          style={{ width: '3em' }}
-                          title="Copy path"
-                          onClick={() => {
-                            navigator.clipboard.writeText(
-                              `${wedge.parameters.path}`,
-                            );
-                          }}
-                        >
-                          <i
-                            style={{ marginLeft: 0 }}
-                            className="fa fa-copy"
-                            aria-hidden="true"
-                          />
-                        </Button>
-                      </div>
-                    </div>
-                    <Table
-                      striped
-                      bordered
-                      hover
-                      onClick={this.showForm}
-                      style={{ fontSize: 'smaller', marginBottom: 0 }}
-                      className="task-parameters-table"
-                    >
-                      <thead>
-                        <tr>
-                          <th>Start &deg; </th>
-                          <th>Osc. &deg; </th>
-                          <th>t (s)</th>
-                          <th># Img</th>
-                          <th>T (%)</th>
-                          <th>Res. (&Aring;)</th>
-                          <th>E (keV)</th>
-                          {wedge.parameters.kappa_phi !== null && (
-                            <th>&phi; &deg;</th>
-                          )}
-                          {wedge.parameters.kappa !== null && (
-                            <th>&kappa; &deg;</th>
-                          )}
-                        </tr>
-                      </thead>
-                      <tbody>{this.wedgeParameters(wedge)}</tbody>
-                    </Table>
-                    {this.getResult(state, data)}
+                      <i
+                        style={{ marginLeft: 0 }}
+                        className="fa fa-copy"
+                        aria-hidden="true"
+                      />
+                    </Button>
                   </div>
-                );
-              })}
-            </div>
-          </Collapse>
+                </div>
+                <Table
+                  striped
+                  bordered
+                  hover
+                  onClick={this.showForm}
+                  style={{ fontSize: 'smaller', marginBottom: 0 }}
+                  className="task-parameters-table"
+                >
+                  <thead>
+                    <tr>
+                      <th>Start &deg; </th>
+                      <th>Osc. &deg; </th>
+                      <th>t (s)</th>
+                      <th># Img</th>
+                      <th>T (%)</th>
+                      <th>Res. (&Aring;)</th>
+                      <th>E (keV)</th>
+                      {wedge.parameters.kappa_phi !== null && (
+                        <th>&phi; &deg;</th>
+                      )}
+                      {wedge.parameters.kappa !== null && (
+                        <th>&kappa; &deg;</th>
+                      )}
+                    </tr>
+                  </thead>
+                  <tbody>{this.wedgeParameters(wedge)}</tbody>
+                </Table>
+                {this.getResult(state, data)}
+              </div>
+            );
+          })}
         </div>
-      </div>
+      </TaskItemContainer>
     );
   }
 }

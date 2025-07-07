@@ -157,7 +157,6 @@ export default class CurrentTree extends React.Component {
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
                     checked={this.props.checked}
-                    toggleChecked={this.props.toggleCheckBox}
                     taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                     taskHeaderOnContextMenuHandler={
                       this.taskHeaderOnContextMenuHandler
@@ -190,7 +189,6 @@ export default class CurrentTree extends React.Component {
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
                     checked={this.props.checked}
-                    toggleChecked={this.props.toggleCheckBox}
                     taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                     taskHeaderOnContextMenuHandler={
                       this.taskHeaderOnContextMenuHandler
@@ -221,7 +219,6 @@ export default class CurrentTree extends React.Component {
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
                     checked={this.props.checked}
-                    toggleChecked={this.props.toggleCheckBox}
                     taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                     taskHeaderOnContextMenuHandler={
                       this.taskHeaderOnContextMenuHandler
@@ -251,7 +248,6 @@ export default class CurrentTree extends React.Component {
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
                     checked={this.props.checked}
-                    toggleChecked={this.props.toggleCheckBox}
                     taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                     taskHeaderOnContextMenuHandler={
                       this.taskHeaderOnContextMenuHandler
@@ -282,7 +278,6 @@ export default class CurrentTree extends React.Component {
                     sampleId={sampleData.sampleID}
                     selected={displayData.selected}
                     checked={this.props.checked}
-                    toggleChecked={this.props.toggleCheckBox}
                     taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
                     taskHeaderOnContextMenuHandler={
                       this.taskHeaderOnContextMenuHandler
