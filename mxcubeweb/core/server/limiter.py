@@ -5,10 +5,15 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 
 
-def rate_limit_error_handler(e):
+def rate_limit_error_handler(_):
     """Handler for rate limit errors"""
-    logging.warning("Rate limit exceeded: %s", e.description)
-    return jsonify({"error": "Too many requests", "message": str(e.description)}), 429
+    logging.warning("Rate limit exceeded")
+    return jsonify(
+        {
+            "error": "Too many requests",
+            "message": "Allowed number or requests reached. Try again later.",
+        }
+    ), 429
 
 
 def init_limiter(app):

@@ -1,5 +1,4 @@
 import json
-from unittest.mock import MagicMock
 
 import pytest
 from flask import Flask, jsonify
@@ -41,16 +40,13 @@ def test_rate_limiter_initialization():
 
 def test_rate_limit_error_handler(limiter_app):
     """Test the rate limit error handler directly"""
-    mock_error = MagicMock()
-    mock_error.description = "Rate limit exceeded: 100 per minute"
-
     with limiter_app.app_context():
-        response, status_code = rate_limit_error_handler(mock_error)
+        response, status_code = rate_limit_error_handler(Exception())
         data = json.loads(response.data)
 
         assert status_code == 429
         assert data["error"] == "Too many requests"
-        assert data["message"] == "Rate limit exceeded: 100 per minute"
+        assert data["message"] == "Allowed number or requests reached. Try again later."
 
 
 def test_rate_limiter_enforcement(limiter_app):
@@ -68,3 +64,4 @@ def test_rate_limiter_enforcement(limiter_app):
     assert "error" in data
     assert data["error"] == "Too many requests"
     assert "message" in data
+    assert data["message"] == "Allowed number or requests reached. Try again later."
