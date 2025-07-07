@@ -30,11 +30,29 @@ class CSPMiddleware:
         return self.app(environ, _start_response)
 
     def _build_policy_string(self) -> str:
-        parts = []
+        # CSP keywords that need to be quoted
+        csp_keywords = {
+            "self",
+            "unsafe-inline",
+            "unsafe-eval",
+            "none",
+            "strict-dynamic",
+            "unsafe-hashes",
+            "report-sample",
+            "wasm-unsafe-eval",
+            "script",
+        }
 
+        def quote_if_keyword(source):
+            if source in csp_keywords:
+                return f"'{source}'"
+            return source
+
+        parts = []
         for directive, sources in self.policy.items():
             if sources:
-                parts.append(f"{directive} {' '.join(sources)}")
+                quoted_sources = [quote_if_keyword(s) for s in sources]
+                parts.append(f"{directive} {' '.join(quoted_sources)}")
 
         if self.report_uri:
             parts.append(f"report-uri {self.report_uri}")
