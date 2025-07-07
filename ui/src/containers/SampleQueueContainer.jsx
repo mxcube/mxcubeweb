@@ -4,7 +4,6 @@ import { Nav } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import { prepareBeamlineForNewSample } from '../actions/beamline';
 import { showDialog } from '../actions/general';
 import { addTask, deleteTask, toggleCheckBox } from '../actions/queue';
 import { collapseItem, selectItem, showList } from '../actions/queueGUI';
@@ -34,7 +33,6 @@ class SampleQueueContainer extends React.Component {
       queue,
       sampleList,
       showForm,
-      queueStatus,
       displayData,
       visibleList,
       loading,
@@ -118,14 +116,7 @@ class SampleQueueContainer extends React.Component {
               this.props.showWorkflowParametersDialog
             }
           />
-          <TodoTree
-            show={visibleList === 'todo'}
-            list={todo}
-            sampleList={sampleList}
-            showForm={showForm}
-            queueStatus={queueStatus}
-            prepareBeamlineForNewSample={this.props.prepareBeamlineForNewSample}
-          />
+          {visibleList === 'todo' && <TodoTree list={todo} />}
           <div className="queue-messages">
             <div className="queue-messages-title">
               <span
@@ -149,7 +140,6 @@ function mapStateToProps(state) {
     searchString: state.queueGUI.searchString,
     currentSampleID: state.queue.currentSampleID,
     visibleList: state.queueGUI.visibleList,
-    queueStatus: state.queue.queueStatus,
     queue: state.queue.queue,
     sampleList: state.sampleGrid.sampleList,
     sampleOrder: state.sampleGrid.order,
@@ -183,10 +173,6 @@ function mapDispatchToProps(dispatch) {
 
     showForm: bindActionCreators(showTaskForm, dispatch),
     showDialog: bindActionCreators(showDialog, dispatch),
-    prepareBeamlineForNewSample: bindActionCreators(
-      prepareBeamlineForNewSample,
-      dispatch,
-    ),
   };
 }
 
