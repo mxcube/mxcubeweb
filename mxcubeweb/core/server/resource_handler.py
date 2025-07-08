@@ -62,7 +62,7 @@ def assert_valid_type_arguments(func):
 log = logging.getLogger("MX3.HWR")
 
 
-class AdapterResourceHandlerFactory:
+class ResourceHandlerFactory:
     _handlers: ClassVar[dict] = {}
 
     @classmethod
@@ -70,11 +70,12 @@ class AdapterResourceHandlerFactory:
         cls,
         name: str,
         url_prefix: str,
-        adapter_dict: dict[str, object],
+        handler_dict: dict[str, object],
         app: object,
         exports: list[dict[str, str]],
         commands: list[str],
         attributes: list[str],
+        handler_type="adapter",
     ) -> object:
         """
         Return existing handler if it exists, otherwise create and register a new one.
@@ -82,8 +83,13 @@ class AdapterResourceHandlerFactory:
         if name in cls._handlers:
             return cls._handlers[name]
 
-        handler = AdapterResourceHandler(
-            name, url_prefix, adapter_dict, app, exports, commands, attributes
+        if handler_type == "component":
+            resource_handler_cls = ComponentResourceHandler
+        else:
+            resource_handler_cls = AdapterResourceHandler
+
+        handler = resource_handler_cls(
+            name, url_prefix, handler_dict, app, exports, commands, attributes
         )
         cls._handlers[name] = handler
         return handler
@@ -114,14 +120,14 @@ class AdapterResourceHandlerFactory:
             rh.register_blueprint(flask_server)
 
 
-class AdapterResourceHandler:
+class ResourceHandler:
     openapi_spec = OpenAPISpec("docs", "/apidocs", "1.0.0", "MXCuBE Adapter API")
 
     def __init__(  # noqa: PLR0913
         self,
         name: str,
         url_prefix: str,
-        adapter_dict: dict[str, object],
+        handler_dict: dict[str, object],
         app: object,
         exports: list[dict[str, str]],
         commands: list[str],
@@ -133,14 +139,14 @@ class AdapterResourceHandler:
         Args:
             name: Name of the blueprint.
             url_prefix: URL prefix for the blueprint.
-            adapter_dict: Dictionary mapping object IDs to adapter objects.
+            handler_dict: Dictionary mapping object IDs to adapter objects.
             app: mxcube app object, providing acccess to mxcubecore and server
             exports: Predefined list of exported commands/attributes.
             commands: List of command names to export.
             attributes: List of attribute names to export.
         """
         self._bp = Blueprint(name, name, url_prefix=url_prefix)
-        self._adapter_dict = adapter_dict
+        self._handler_dict = handler_dict
         self._server = app.server  # Store the server object to access its decorators
         self._app = app
         self._url_prefix = url_prefix
@@ -167,12 +173,7 @@ class AdapterResourceHandler:
         Creates Flask routes dynamically for each exported command or attribute.
         """
         for export in self._exports:
-            route = (  # Dynamic route: /<object_id>/set_value
-                f"/<string:object_id>/{export['attr']}"
-            )
-            decorators = export["decorators"]
-            http_method = export["method"]
-
+            route = self._get_handler_object_route(export)
             # For the time being we enforce the usage of pydantic models, int, float or
             # str for arguments to ensure safe validation of input. We rely on that
             # the pydantic models used are well specified. We validate the actual data
@@ -186,13 +187,13 @@ class AdapterResourceHandler:
             view_func = self._create_view_func(export)
 
             # Apply decorators to the view function
-            view_func = self._apply_decorators(view_func, decorators)
+            view_func = self._apply_decorators(view_func, export["decorators"])
 
             # Register route
             self._bp.add_url_rule(
                 route,
                 view_func=view_func,
-                methods=[http_method],
+                methods=[export["method"]],
                 endpoint=export["attr"],
             )
             msg = (
@@ -215,7 +216,7 @@ class AdapterResourceHandler:
         """
         return reduce(lambda f, decorator: decorator(f), decorators, view_func)
 
-    def _create_view_func(self, export: dict[str, str]) -> Callable:  # noqa: C901
+    def _create_view_func(self, export: dict[str, str]) -> Callable:
         """
         Creates a Flask view function for handling requests dynamically.
 
@@ -227,80 +228,63 @@ class AdapterResourceHandler:
             Callable: The view function.
         """
 
-        def _view_func(object_id: str, *args, **kwargs) -> any:  # noqa: ARG001
-            # Validate object id
-            if not valid_object_id(object_id):
-                msg = f"Invalid object id '{object_id}'"
-                log.error(msg)
-                return jsonify({"error": msg}), 400
+    def _validate_params_and_call_handler_func(
+        self,
+        export: dict[str, str],
+        handler_obj: object,
+    ) -> dict | Response:
+        """
+        Validates parameters from the request and calls the handler function.
+        Args:
+            export: Export definition with method, attr, and decorators.
+            handler_obj: The handler object to call.
+        Returns:
+            The result of the handler function call or an error response.
+        """
 
-            # Check if the object_id exists in the adapter_dict
-            obj = self._app.mxcubecore.get_adapter(object_id)
+        # Get the method and its annotations
+        handler_func = getattr(handler_obj, export["attr"])
+        annotations = handler_func.__annotations__
+        http_method = export["method"]
 
-            if not obj:
-                msg = f"Object '{object_id}' not found"
-                log.error(msg)
-                return jsonify({"error": msg}), 404
+        # Prepare data for all required arguments
+        validated_data = {}
+        param_data = self._extract_param_data(http_method)
 
-            # We ensure that the object has the desired method
-            if not hasattr(obj, export["attr"]):
+        # Validate parameters from the request
+        for param_name, param_type in annotations.items():
+            if param_name == "return":  # Skip the return annotation
+                continue
+
+            try:
+                if param_data is not None:
+                    validated_data[param_name] = self._validate_param_data(
+                        param_name, param_type, param_data
+                    )
+            except (ValueError, TypeError) as ex:
+                log.error(str(ex))  # noqa: TRY400
+                msg = f"Invalid input for '{param_name}'"
                 return (
-                    jsonify(
-                        {
-                            "error": (
-                                f"Method '{export['attr']}' not found on object"
-                                f" '{object_id}'"
-                            )
-                        }
-                    ),
-                    404,
+                    jsonify({"error": msg}),
+                    400,
                 )
 
-            # Get the method and its annotations
-            view_func = getattr(obj, export["attr"])
-            annotations = view_func.__annotations__
-            http_method = export["method"]
-
-            # Prepare data for all required arguments
-            validated_data = {}
-            param_data = self._extract_param_data(http_method)
-
-            # Validate parameters from the request
-            for param_name, param_type in annotations.items():
-                if param_name == "return":  # Skip the return annotation
-                    continue
-
-                try:
-                    if param_data is not None:
-                        validated_data[param_name] = self._validate_param_data(
-                            param_name, param_type, param_data
-                        )
-                except (ValueError, TypeError) as ex:
-                    log.error(str(ex))  # noqa: TRY400
-                    msg = f"Invalid input for '{param_name}'"
-                    return (
-                        jsonify({"error": msg}),
-                        400,
-                    )
-
-            # Call the view function with validated data
-            try:
-                result = view_func(**validated_data)
-            except Exception:
-                msg = "Exception raised when calling view function"
-                log.exception(msg)
-                return jsonify({"error": msg}), 500
-            else:
-                # Handle and serialize the result
-                return self._handle_view_result(result)
-
-        return _view_func
+        # Call the view function with validated data
+        try:
+            result = handler_func(**validated_data)
+        except Exception:
+            msg = "Exception raised when calling view function"
+            log.exception(msg)
+            return jsonify({"error": msg}), 500
+        else:
+            # Handle and serialize the result
+            return self._handle_view_result(result)
 
     def _assert_valid_type_arguments(self, export):
         """
         Ensures the method referenced in the export uses Pydantic arguments.
         """
-        obj = next(iter(self._adapter_dict.values()))
+        obj = next(iter(self._handler_dict.values()))
         assert_valid_type_arguments(getattr(obj, export["attr"]))
 
     def _create_openapi_doc_for_view(self, route, export):
@@ -310,7 +294,7 @@ class AdapterResourceHandler:
         # Get the first adapter object, the signature are all the same (same class) so
         # any will do for documentation purpose
         http_method = export["method"]
-        obj = next(iter(self._adapter_dict.values()))
+        obj = next(iter(self._handler_dict.values()))
         view_func = getattr(obj, export["attr"])
         annotations = view_func.__annotations__
 
@@ -511,3 +495,142 @@ class AdapterResourceHandler:
             f"Blueprint '{self._bp.name}' ({self._url_prefix}) registered with server."
         )
         log.debug(msg)
+
+
+class ComponentResourceHandler(ResourceHandler):
+    """
+    AdapterResourceHandler is a Flask resource handler that dynamically creates routes
+    for hardware objects based on their attributes and methods.
+    It supports GET and PUT requests for attributes and commands respectively.
+    """
+
+    def __init__(  # noqa: PLR0913
+        self,
+        name: str,
+        url_prefix: str,
+        handler_dict: dict[str, object],
+        app: object,
+        exports: list[dict[str, str]],
+        commands: list[str],
+        attributes: list[str],
+    ) -> None:
+        super().__init__(
+            name, url_prefix, handler_dict, app, exports, commands, attributes
+        )
+
+    def _get_handler_object_route(self, export) -> str:
+        """
+        Returns the base route for the resource handler.
+        """
+        return f"{export['url']}"
+
+    def _create_view_func(self, export: dict[str, str]) -> Callable:
+        """
+        Creates a Flask view function for handling requests dynamically.
+
+        Args:
+            route (str): URL route.
+            export (dict): Export definition with method, attr, and decorators.
+
+        Returns:
+            Callable: The view function.
+        """
+
+        def _view_func(*args, **kwargs) -> any:  # noqa: ARG001
+            # Get component from handler_dict, there is only one handler object for
+            # components
+            component_obj = next(iter(self._handler_dict.values()))
+            component_name = next(iter(self._handler_dict.keys()))
+
+            # We ensure that the component has the desired method
+            if not hasattr(component_obj, export["attr"]):
+                return (
+                    jsonify(
+                        {
+                            "error": (
+                                f"Method '{export['attr']}' not found on object"
+                                f" '{component_name}'"
+                            )
+                        }
+                    ),
+                    404,
+                )
+
+            return self._validate_params_and_call_handler_func(export, component_obj)
+
+        return _view_func
+
+
+class AdapterResourceHandler(ResourceHandler):
+    """
+    AdapterResourceHandler is a Flask resource handler that dynamically creates routes
+    for hardware objects based on their attributes and methods.
+    It supports GET and PUT requests for attributes and commands respectively.
+    """
+
+    def __init__(  # noqa: PLR0913
+        self,
+        name: str,
+        url_prefix: str,
+        handler_dict: dict[str, object],
+        app: object,
+        exports: list[dict[str, str]],
+        commands: list[str],
+        attributes: list[str],
+    ) -> None:
+        super().__init__(
+            name, url_prefix, handler_dict, app, exports, commands, attributes
+        )
+
+    def _get_handler_object_route(self, export) -> str:
+        """
+        Returns the base route for the resource handler.
+        """
+        # Dynamic route for handler object with id object_id, i.e:
+        # /<object_id>/set_value
+        return f"/<string:object_id>/{export['attr']}"
+
+    def _create_view_func(self, export: dict[str, str]) -> Callable:
+        """
+        Creates a Flask view function for handling requests dynamically.
+
+        Args:
+            route (str): URL route.
+            export (dict): Export definition with method, attr, and decorators.
+
+        Returns:
+            Callable: The view function.
+        """
+
+        def _view_func(object_id: str, *args, **kwargs) -> any:  # noqa: ARG001
+            # Validate object id
+            if not valid_object_id(object_id):
+                msg = f"Invalid object id '{object_id}'"
+                log.error(msg)
+                return jsonify({"error": msg}), 400
+
+            # Check if the object_id exists in the handler_dict
+            obj = self._app.mxcubecore.get_adapter(object_id)
+
+            if not obj:
+                msg = f"Object '{object_id}' not found"
+                log.error(msg)
+                return jsonify({"error": msg}), 404
+
+            # We ensure that the object has the desired method
+            if not hasattr(obj, export["attr"]):
+                return (
+                    jsonify(
+                        {
+                            "error": (
+                                f"Method '{export['attr']}' not found on object"
+                                f" '{object_id}'"
+                            )
+                        }
+                    ),
+                    404,
+                )
+
+            return self._validate_params_and_call_handler_func(export, obj)
+
+        return _view_func

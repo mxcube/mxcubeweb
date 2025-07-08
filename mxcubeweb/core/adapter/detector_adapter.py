@@ -3,9 +3,9 @@ from typing import ClassVar
 from mxcubecore.HardwareObjects.abstract import AbstractDetector
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
-from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
-resource_handler_config = AdapterResourceHandlerConfigModel(
+resource_handler_config = ResourceHandlerConfigModel(
     name="detector_test",
     url_prefix="/mxcube/api/v0.1/detectortest",
     attributes=["data"],

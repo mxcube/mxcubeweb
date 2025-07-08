@@ -29,9 +29,10 @@ from mxcubeweb.core.components.queue import Queue
 from mxcubeweb.core.components.samplechanger import SampleChanger
 from mxcubeweb.core.components.sampleview import SampleView
 from mxcubeweb.core.components.workflow import Workflow
+from mxcubeweb.core.components.log import Log
 from mxcubeweb.core.models.configmodels import UIComponentModel
 from mxcubeweb.logging_handler import MX3LoggingHandler
-from mxcubeweb.core.server.resource_handler import AdapterResourceHandlerFactory
+from mxcubeweb.core.server.resource_handler import ResourceHandlerFactory
 
 removeLoggingHandlers()
 
@@ -131,7 +132,7 @@ class MXCUBEApplication:
         # re-initializes the application for each test, we thus
         # need to remove all AdapterResourceHandlers from the
         # factory.
-        AdapterResourceHandlerFactory.unregister_all()
+        ResourceHandlerFactory.unregister_all()
 
         logging.getLogger("MX3.HWR").info("Starting MXCuBE-Web...")
         MXCUBEApplication.server = server
@@ -165,6 +166,7 @@ class MXCUBEApplication:
         MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, {})
         MXCUBEApplication.workflow = Workflow(MXCUBEApplication, {})
         MXCUBEApplication.harvester = Harvester(MXCUBEApplication, {})
+        MXCUBEApplication.log = Log(MXCUBEApplication, {})
 
         MXCUBEApplication.init_signal_handlers()
         # Install server-side UI state storage

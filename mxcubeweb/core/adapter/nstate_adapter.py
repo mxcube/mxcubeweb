@@ -13,9 +13,9 @@ from mxcubeweb.core.models.adaptermodels import (
     NStateModel,
     StrValueModel,
 )
-from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
-resource_handler_config = AdapterResourceHandlerConfigModel(
+resource_handler_config = ResourceHandlerConfigModel(
     commands=["get_value", "set_value", "stop"], attributes=["data"]
 )
 

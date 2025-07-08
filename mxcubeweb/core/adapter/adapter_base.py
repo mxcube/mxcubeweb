@@ -16,12 +16,12 @@ from mxcubeweb.core.models.adaptermodels import (
     HOActuatorModel,
     HOModel,
 )
-from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 from mxcubeweb.core.server.resource_handler import (
-    AdapterResourceHandlerFactory,
+    ResourceHandlerFactory,
 )
 
-default_resource_handler_config = AdapterResourceHandlerConfigModel(
+default_resource_handler_config = ResourceHandlerConfigModel(
     commands=[
         "set_value",
         "get_value",
@@ -67,10 +67,10 @@ class AdapterBase:
             self.ADAPTER_DICT[cls_name][ho.name] = self
 
         if resource_handler_config:
-            AdapterResourceHandlerFactory.create_or_get(
+            ResourceHandlerFactory.create_or_get(
                 name=cls_name,
                 url_prefix="/mxcube/api/v0.1/hwobj/" + self._type.lower(),
-                adapter_dict=self.ADAPTER_DICT[cls_name],
+                handler_dict=self.ADAPTER_DICT[cls_name],
                 app=self.app,
                 exports=resource_handler_config.exports,
                 commands=resource_handler_config.commands,
@@ -251,7 +251,7 @@ class AdapterBase:
         # been explicitly configured to be exported
         configured_exported = self._ho.exported_attributes.keys()
 
-        rh = AdapterResourceHandlerFactory.get_handler(self.__class__.__name__.lower())
+        rh = ResourceHandlerFactory.get_handler(self.__class__.__name__.lower())
 
         if rh:
             for export in rh.commands:

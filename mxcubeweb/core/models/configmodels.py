@@ -5,10 +5,7 @@ from typing import (
     Literal,
 )
 
-from pydantic.v1 import (
-    BaseModel,
-    Field,
-)
+from pydantic.v1 import BaseModel, Field
 
 
 class FlaskConfigModel(BaseModel):
@@ -208,7 +205,7 @@ class AppConfigModel(BaseModel):
     sso: SSOConfigModel | None
 
 
-class AdapterResourceHandlerConfigModel(BaseModel):
+class ResourceHandlerConfigModel(BaseModel):
     """
     Used to define  which adapter properties and methods that are
     exported over HTTP. An endpoint for each method and/or property
@@ -255,7 +252,7 @@ class AdapterResourceHandlerConfigModel(BaseModel):
     """
 
     url_prefix: str = Field("", description="URL prefix")
-    exports: list[dict[str, str]] = Field(
+    exports: list[dict[str, str | list]] = Field(
         [],
         description=(
             "List of dictionaires specifying each of the exported attributes or"

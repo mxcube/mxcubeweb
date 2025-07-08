@@ -24,7 +24,7 @@ from mxcubeweb.core.models.usermodels import (
 )
 from mxcubeweb.core.server.csp import CSPMiddleware
 from mxcubeweb.core.server.limiter import init_limiter
-from mxcubeweb.core.server.resource_handler import AdapterResourceHandlerFactory
+from mxcubeweb.core.server.resource_handler import ResourceHandlerFactory
 from mxcubeweb.core.util import networkutils
 
 
@@ -125,7 +125,6 @@ class Server:
         )
         from mxcubeweb.routes.harvester import init_route as init_harvester_route
         from mxcubeweb.routes.lims import init_route as init_lims_route
-        from mxcubeweb.routes.log import init_route as init_log_route
         from mxcubeweb.routes.login import init_route as init_login_route
         from mxcubeweb.routes.main import init_route as init_main_route
         from mxcubeweb.routes.queue import init_route as init_queue_route
@@ -155,8 +154,6 @@ class Server:
 
         Server._register_route(init_lims_route, mxcube, f"{url_root_prefix}/lims")
 
-        Server._register_route(init_log_route, mxcube, f"{url_root_prefix}/log")
-
         Server._register_route(init_login_route, mxcube, f"{url_root_prefix}/login")
 
         Server._register_route(init_main_route, mxcube, f"{url_root_prefix}")
@@ -164,6 +161,10 @@ class Server:
         Server._register_route(init_queue_route, mxcube, f"{url_root_prefix}/queue")
 
         Server._register_route(init_ra_route, mxcube, f"{url_root_prefix}/ra")
+
+        Server._register_route(
+            init_workflow_route, mxcube, f"{url_root_prefix}/workflow"
+        )
 
         Server._register_route(
             init_sampleview_route,
@@ -178,14 +179,10 @@ class Server:
         )
 
         Server._register_route(
-            init_workflow_route, mxcube, f"{url_root_prefix}/workflow"
-        )
-
-        Server._register_route(
             init_harvester_route, mxcube, f"{url_root_prefix}/harvester"
         )
 
-        AdapterResourceHandlerFactory.register_with_server(Server.flask)
+        ResourceHandlerFactory.register_with_server(Server.flask)
 
     @staticmethod
     def emit(*args, **kwargs):

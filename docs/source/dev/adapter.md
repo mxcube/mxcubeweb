@@ -147,9 +147,9 @@ This generates:
 Below is an example of how to define a resource handler configuration for a `MotorAdapter`:
 
 ```python
-from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
-resource_handler_config = AdapterResourceHandlerConfigModel(
+resource_handler_config = ResourceHandlerConfigModel(
     commands=[
         "set_value",
         "get_value",

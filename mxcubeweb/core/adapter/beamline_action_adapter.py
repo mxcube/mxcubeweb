@@ -19,9 +19,9 @@ from mxcubeweb.core.models.adaptermodels import (
     HOActuatorValueChangeModel,
     NStateModel,
 )
-from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
-resource_handler_config = AdapterResourceHandlerConfigModel(
+resource_handler_config = ResourceHandlerConfigModel(
     commands=["stop", "run_action"], attributes=["data", "get_all_actions"]
 )
 
@@ -62,7 +62,7 @@ class BeamlineActionAdapter(AdapterBase):
         ho: HardwareObject,
         role: str,
         app,
-        resource_handler_config: AdapterResourceHandlerConfigModel = resource_handler_config,  # noqa: E501
+        resource_handler_config: ResourceHandlerConfigModel = resource_handler_config,
     ):
         """
         Args:

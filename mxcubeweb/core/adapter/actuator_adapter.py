@@ -8,10 +8,10 @@ from mxcubeweb.core.models.adaptermodels import (
     FloatValueModel,
     HOActuatorValueChangeModel,
 )
-from mxcubeweb.core.models.configmodels import AdapterResourceHandlerConfigModel
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 from mxcubeweb.core.util.networkutils import RateLimited
 
-resource_handler_config = AdapterResourceHandlerConfigModel(
+resource_handler_config = ResourceHandlerConfigModel(
     commands=["get_value", "set_value", "stop"], attributes=["data"]
 )
 
