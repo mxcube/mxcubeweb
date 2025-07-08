@@ -21,8 +21,8 @@ importers:
         specifier: 5.13.1
         version: 5.13.1(react@17.0.2)
       '@rjsf/validator-ajv8':
-        specifier: 5.13.1
-        version: 5.13.1(@rjsf/utils@5.13.1(react@17.0.2))
+        specifier: 5.24.11
+        version: 5.24.11(@rjsf/utils@5.13.1(react@17.0.2))
       bootstrap:
         specifier: 5.2.3
         version: 5.2.3(@popperjs/core@2.11.8)
@@ -544,11 +544,11 @@ packages:
     peerDependencies:
       react: ^16.14.0 || >=17
 
-  '@rjsf/validator-ajv8@5.13.1':
-    resolution: {integrity: sha512-obDkzRoQAodIlPFjM6Dv6cyTJ/fJNlV5NtyiHczz+tbxa0V1Rtm82UIVA5WgGX4o113cnFriGz+S3ipYvxI7kA==}
+  '@rjsf/validator-ajv8@5.24.11':
+    resolution: {integrity: sha512-x6pZojVPVFB1bVk3e8GvStyDXJN8ufa3Aoz4wx+UJRSdh7J4Iud+jaATPxyrjhLIuxsQhUy7ed39/4iP+YYZ/Q==}
     engines: {node: '>=14'}
     peerDependencies:
-      '@rjsf/utils': ^5.12.x
+      '@rjsf/utils': ^5.24.x
 
   '@rollup/pluginutils@4.2.1':
     resolution: {integrity: sha512-iKnFXr7NkdZAIHiIWE+BX5ULi/ucVFYWD6TbAV+rZctiRTY2PL6tsIKhoIOaoskiWAkgu+VsbXgUVDNLHf+InQ==}
@@ -4091,7 +4091,7 @@ snapshots:
       react: 17.0.2
       react-is: 18.2.0
 
-  '@rjsf/validator-ajv8@5.13.1(@rjsf/utils@5.13.1(react@17.0.2))':
+  '@rjsf/validator-ajv8@5.24.11(@rjsf/utils@5.13.1(react@17.0.2))':
     dependencies:
       '@rjsf/utils': 5.13.1(react@17.0.2)
       ajv: 8.12.0
