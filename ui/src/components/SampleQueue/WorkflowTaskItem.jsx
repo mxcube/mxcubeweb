@@ -108,7 +108,6 @@ export default class WorkflowTaskItem extends Component {
         selected={selected}
         show={show}
         showContextMenu={showContextMenu}
-        specialTaskCSS="Characterisation"
         state={state}
         taskHeaderOnClickHandler={taskHeaderOnClickHandler}
         taskHeaderOnContextMenuHandler={taskHeaderOnContextMenuHandler}
