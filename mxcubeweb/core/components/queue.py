@@ -1381,7 +1381,7 @@ class Queue(ComponentBase):
 
         return dc_model, dc_entry
 
-    def _create_xrf(self):
+    def _create_xrf(self, sample_model):
         """
         Creates a XRFSpectrum model.
 
@@ -1389,7 +1389,7 @@ class Queue(ComponentBase):
         :returns: The tuple (model, entry)
         :rtype: Tuple
         """
-        xrf_model = qmo.XRFSpectrum()
+        xrf_model = qmo.XRFSpectrum(sample=sample_model)
         xrf_model.set_origin(ORIGIN_MX3)
         xrf_entry = qe.XrfSpectrumQueueEntry(Mock(), xrf_model)
 
@@ -1648,7 +1648,7 @@ class Queue(ComponentBase):
         :rtype: int
         """
         sample_model, sample_entry = self.get_entry(node_id)
-        xrf_model, xrf_entry = self._create_xrf()
+        xrf_model, xrf_entry = self._create_xrf(sample_model)
         self.set_xrf_params(xrf_model, xrf_entry, task, sample_model)
 
         group_model = qmo.TaskGroup()
