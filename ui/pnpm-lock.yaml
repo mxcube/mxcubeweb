@@ -16,13 +16,13 @@ importers:
         version: 2.6.1(react-redux@7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)
       '@rjsf/core':
         specifier: 5.13.1
-        version: 5.13.1(@rjsf/utils@5.13.1(react@17.0.2))(react@17.0.2)
+        version: 5.13.1(@rjsf/utils@5.24.11(react@17.0.2))(react@17.0.2)
       '@rjsf/utils':
-        specifier: 5.13.1
-        version: 5.13.1(react@17.0.2)
+        specifier: 5.24.11
+        version: 5.24.11(react@17.0.2)
       '@rjsf/validator-ajv8':
         specifier: 5.24.11
-        version: 5.24.11(@rjsf/utils@5.13.1(react@17.0.2))
+        version: 5.24.11(@rjsf/utils@5.24.11(react@17.0.2))
       bootstrap:
         specifier: 5.2.3
         version: 5.2.3(@popperjs/core@2.11.8)
@@ -538,8 +538,8 @@ packages:
       '@rjsf/utils': ^5.12.x
       react: ^16.14.0 || >=17
 
-  '@rjsf/utils@5.13.1':
-    resolution: {integrity: sha512-PBNuSQ1MX0pU1j1oip1pG3I295TTX0RN44HPMLJGnL2rG9sxkccuFqg8v7VgMCSp5zp+kGOKClPKctsKw+LYCA==}
+  '@rjsf/utils@5.24.11':
+    resolution: {integrity: sha512-2OyQM4Eum67jr4GJly6eflZhD8qoWkl7brCvCZ10z+pW6dgsGEusqRvTioK0L7thWJ5LwbJ2i4SFqJjiChZGxA==}
     engines: {node: '>=14'}
     peerDependencies:
       react: ^16.14.0 || >=17
@@ -4072,9 +4072,9 @@ snapshots:
       uncontrollable: 8.0.4(react@17.0.2)
       warning: 4.0.3
 
-  '@rjsf/core@5.13.1(@rjsf/utils@5.13.1(react@17.0.2))(react@17.0.2)':
+  '@rjsf/core@5.13.1(@rjsf/utils@5.24.11(react@17.0.2))(react@17.0.2)':
     dependencies:
-      '@rjsf/utils': 5.13.1(react@17.0.2)
+      '@rjsf/utils': 5.24.11(react@17.0.2)
       lodash: 4.17.21
       lodash-es: 4.17.21
       markdown-to-jsx: 7.5.0(react@17.0.2)
@@ -4082,7 +4082,7 @@ snapshots:
       prop-types: 15.8.1
       react: 17.0.2
 
-  '@rjsf/utils@5.13.1(react@17.0.2)':
+  '@rjsf/utils@5.24.11(react@17.0.2)':
     dependencies:
       json-schema-merge-allof: 0.8.1
       jsonpointer: 5.0.1
@@ -4091,9 +4091,9 @@ snapshots:
       react: 17.0.2
       react-is: 18.2.0
 
-  '@rjsf/validator-ajv8@5.24.11(@rjsf/utils@5.13.1(react@17.0.2))':
+  '@rjsf/validator-ajv8@5.24.11(@rjsf/utils@5.24.11(react@17.0.2))':
     dependencies:
-      '@rjsf/utils': 5.13.1(react@17.0.2)
+      '@rjsf/utils': 5.24.11(react@17.0.2)
       ajv: 8.12.0
       ajv-formats: 2.1.1(ajv@8.12.0)
       lodash: 4.17.21
