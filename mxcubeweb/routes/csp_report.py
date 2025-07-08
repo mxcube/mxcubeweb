@@ -1,3 +1,4 @@
+import json
 import logging
 
 from flask import Blueprint, jsonify, request
@@ -15,7 +16,9 @@ def init_route(_mxcube_app, _server, url_prefix):
     @bp.route("/report", methods=["POST"])
     def csp_report():
         """Endpoint to collect CSP violation reports"""
-        report = request.get_json()
+
+        report = json.loads(request.get_data())
+
         csp_logger.warning("CSP Violation: %s", report.get("csp-report", {}))
         return jsonify({"status": "report received"}), 204
 
