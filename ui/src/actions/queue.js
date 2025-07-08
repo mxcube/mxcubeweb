@@ -14,7 +14,6 @@ import {
   sendSetQueueSettings,
   sendStartQueue,
   sendStopQueue,
-  sendToggleCheckBox,
   sendUpdateQueueItem,
 } from '../api/queue';
 import { sendSetCentringMethod } from '../api/sampleview';
@@ -141,10 +140,6 @@ export function setStatus(queueState) {
 
 export function setState(queueState) {
   return { type: 'QUEUE_STATE', queueState };
-}
-
-export function toggleChecked(sampleID, index) {
-  return { type: 'TOGGLE_CHECKED', sampleID, index };
 }
 
 export function startQueue(autoMountNext = true, sid = -1) {
@@ -418,13 +413,6 @@ export function addTaskResultAction(
 
 export function updateTaskLimsData(sampleID, taskIndex, limsResultData) {
   return { type: 'UPDATE_TASK_LIMS_DATA', sampleID, taskIndex, limsResultData };
-}
-
-export function toggleCheckBox(data, index) {
-  return async (dispatch) => {
-    await sendToggleCheckBox(data.queueID);
-    dispatch(toggleChecked(data.sampleID, index));
-  };
 }
 
 export function deleteSamplesFromQueue(sampleIDList) {

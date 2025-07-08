@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { showDialog } from '../actions/general';
-import { addTask, deleteTask, toggleCheckBox } from '../actions/queue';
+import { addTask, deleteTask } from '../actions/queue';
 import { collapseItem, selectItem, showList } from '../actions/queueGUI';
 import { showTaskForm } from '../actions/taskForm';
 import { showWorkflowParametersDialog } from '../actions/workflow';
@@ -100,7 +100,6 @@ class SampleQueueContainer extends React.Component {
             show={visibleList === 'current'}
             mounted={currentSampleID}
             sampleList={sampleList}
-            toggleCheckBox={this.props.toggleCheckBox}
             checked={checked}
             deleteTask={this.props.deleteTask}
             showForm={showForm}
@@ -156,7 +155,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     // Queue actions
-    toggleCheckBox: bindActionCreators(toggleCheckBox, dispatch),
     deleteTask: bindActionCreators(deleteTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
 

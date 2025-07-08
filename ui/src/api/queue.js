@@ -50,10 +50,6 @@ export function sendRunSample(sampleID, taskIndex) {
   return endpoint.put(undefined, `/${sampleID}/${taskIndex}/execute`).res();
 }
 
-export function sendToggleCheckBox(queueID) {
-  return endpoint.put(undefined, `/${queueID}/toggle`).res();
-}
-
 export function sendSetAutoMountSample(automount) {
   return endpoint.post({ automount }, '/automount').safeJson();
 }

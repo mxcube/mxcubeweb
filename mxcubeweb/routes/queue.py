@@ -265,19 +265,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
         except Exception:
             return Response(status=409)
 
-    @bp.route("/<node_id>/toggle", methods=["PUT"])
-    @server.require_control
-    @server.restrict
-    def toggle_node(node_id):
-        """
-        Toggle a sample or a method checked status
-            :parameter id: node identifier, integer
-            :statuscode: 200: no error
-            :statuscode: 409: node could not be toggled
-        """
-        app.queue.toggle_node(int(node_id))
-        return Response(status=200)
-
     @bp.route("/available_tasks", methods=["GET"])
     @server.restrict
     def get_avilable_tasks():
