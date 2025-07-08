@@ -199,7 +199,7 @@ jobs:
 
       - name: Install UI dependencies and update lockfile
         if: steps.pkgchange.outputs.changed == 'true'
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install --no-frozen-lockfile"
 
       - name: Auto-commit updated lockfile if needed
         if: steps.pkgchange.outputs.changed == 'true'
@@ -209,5 +209,5 @@ jobs:
           if [[ -n $(git status --porcelain ui/pnpm-lock.yaml) ]]; then
             git add ui/pnpm-lock.yaml
             git commit -m "ci: update pnpm-lock.yaml to match package.json [auto]"
-            git push
+            git push origin HEAD:${GITHUB_HEAD_REF}
           fi
