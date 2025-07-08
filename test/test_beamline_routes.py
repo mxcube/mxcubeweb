@@ -15,7 +15,6 @@ def test_beamline_get_all_attribute(client):
         "beam",
         "beam.aperture",
         "cryo",
-        "data_publisher",
         "detector",
         "detector.detector_distance",
         "diffractometer",
