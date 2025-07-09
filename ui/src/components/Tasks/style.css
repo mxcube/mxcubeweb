@@ -1,0 +1,28 @@
+.form-label-StaticField:hover {
+  overflow-x: auto;
+}
+
+.form-label-StaticField {
+  white-space: nowrap;
+  overflow-x: hidden;
+}
+
+.col-form-label {
+  margin-right: 10px !important;
+}
+
+.json-schema-form-container .rjsf #root__title {
+  display: none;
+}
+
+.json-schema-form-container .rjsf [type='submit'] {
+  display: none;
+}
+.form-group .field:not(.field-object) {
+  display: grid;
+  grid-template-rows: min-content min-content 1fr;
+}
+
+.tooltip[data-tooltip-in-modal] {
+  z-index: 100001; /* Ensures that it is 'above' Bootstrap's model, which has z-index: 10000 */
+}

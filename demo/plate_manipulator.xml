@@ -1,0 +1,49 @@
+<object class="PlateManipulatorMockup">
+  <!-- <equipment class = "PlateManipulator"> -->
+
+  <username>Sample Changer</username>
+  <!-- <command type="exporter" name="MoveToDrop">startMovePlateToShelf</command>
+  <command type="exporter" name="MoveToXtalPointing">startMoveToCrystalPosition</command>
+  <command type="exporter" name="startMovePlateToLocation">startMovePlateToLocation</command>
+  <command type="exporter" name="getOmegaMotorDynamicScanLimits">getOmegaMotorDynamicScanLimits</command>
+  <command type="exporter" name="AbortCurrentAction">abort</command>
+  <channel type="exporter" name="State">State</channel>
+  <channel type="exporter" name="PlateLocation">PlateLocation</channel> -->
+
+  <!-- <channel type="exporter" name="GetPlateConfig">PlateTopology</channel> -->
+
+  <!-- <channel type="exporter" name="DropLocation">DropLocation</channel>
+  <channel type="exporter" name="CurrentPhase">CurrentPhase</channel>  -->
+
+  <plateLabel>Crystal Direct</plateLabel>
+  <numCols>12</numCols>
+  <numRows>8</numRows>
+  <numDrops>3</numDrops>
+  <referencePosX>0.65</referencePosX>
+
+
+  <!-- <plateLabel>ChipX</plateLabel>
+  <numCols>1</numCols>
+  <numRows>2</numRows>
+  <numDrops>20</numDrops>
+  <referencePosX>0.65</referencePosX> -->
+
+  <!-- <plateLabel>Mitegen InSitu-1</plateLabel>
+  <numCols>12</numCols>
+  <numRows>8</numRows>
+  <numDrops>3</numDrops>
+  <referencePosX>0.65</referencePosX> -->
+
+  <!-- <plateLabel>Crystal QuickX</plateLabel>
+  <numCols>12</numCols>
+  <numRows>8</numRows>
+  <numDrops>2</numDrops>
+  <referencePosX>0.65</referencePosX> -->
+
+  <useUpdateTimer>False</useUpdateTimer>
+
+  <crimsWsRoot>https://htxlab.embl.org/pins/api/plates/</crimsWsRoot>
+  <crimsUserAgent>Mozilla/5.0 (Windows NT 6.1; Win64; x64)</crimsUserAgent>
+  <PlateBarcode>CD032401</PlateBarcode>
+  <harvesterKey></harvesterKey>
+</object>

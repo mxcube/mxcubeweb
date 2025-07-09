@@ -1,0 +1,9 @@
+.select {
+  background-color: var(--hw-ready--bg) !important;
+  transition: background-color 100ms ease-in;
+}
+
+.select[data-busy] {
+  background-color: var(--hw-busy--bg) !important;
+  font-weight: 600;
+}

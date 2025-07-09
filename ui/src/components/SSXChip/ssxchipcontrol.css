@@ -1,0 +1,14 @@
+.chip-title {
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip-detial-canvas-container {
+  display: inline-block;
+}
+
+.chip-canvas-container {
+  display: inline-block;
+}

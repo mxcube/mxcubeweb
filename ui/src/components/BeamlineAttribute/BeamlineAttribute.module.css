@@ -1,0 +1,32 @@
+.value {
+  display: inline-flex;
+  padding: 0.375rem 0.25rem;
+  white-space: nowrap;
+}
+
+.valueBtn {
+  composes: value;
+  font-weight: inherit;
+  text-decoration: none;
+}
+
+.valueBtn[data-busy] {
+  background-color: var(--hw-busy--bg);
+  color: inherit;
+}
+
+.valueBtn:hover,
+.valueBtn:focus-visible {
+  text-decoration: underline dotted;
+}
+
+.valueBtn:focus-visible {
+  outline: auto !important;
+  outline-offset: -2px;
+}
+
+.input {
+  width: 8em;
+  height: 36px;
+  appearance: auto !important;
+}

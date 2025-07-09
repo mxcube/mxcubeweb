@@ -1,0 +1,43 @@
+.root {
+  display: inline-grid;
+  gap: 0.25rem;
+  grid-template-areas:
+    '. up .'
+    'left settings right'
+    '. down .';
+}
+
+.btn {
+  width: 2.625em;
+  height: 2.625em;
+  padding: 0;
+}
+
+.btn:first-child {
+  grid-area: up;
+}
+
+.btn:nth-child(2) {
+  grid-area: left;
+}
+
+.btn:nth-child(3) {
+  grid-area: settings;
+}
+
+.btn:nth-child(4) {
+  grid-area: right;
+}
+
+.btn:nth-child(5) {
+  grid-area: down;
+}
+
+.btnIcon {
+  font-size: 1.5em;
+  line-height: 1.5 !important; /* fix FontAwesome style order */
+}
+
+.btn:nth-child(3) > .btnIcon {
+  font-size: 1.25em;
+}

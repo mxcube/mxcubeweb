@@ -1,0 +1,31 @@
+.machine-msg-attention {
+  font-size: 12px;
+  font-style: italic;
+  color: red;
+}
+
+.machine-msg-normal {
+  font-size: 12px;
+  font-style: italic;
+  color: black;
+}
+
+.machineInfo {
+  width: 7em;
+}
+
+.machineLabel {
+  border-radius: 0%;
+  display: block;
+  margin-bottom: 3px;
+}
+
+.msgLabelStyle {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 0%;
+  display: block;
+  font-size: 100%;
+  color: black;
+  margin-bottom: 3px;
+}

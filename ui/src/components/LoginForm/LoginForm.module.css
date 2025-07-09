@@ -1,0 +1,45 @@
+.box {
+  align-self: center;
+  display: flex;
+  flex-direction: column;
+  max-width: 400px;
+  margin: -10vh auto 0; /* centred with slight vertical offset to feel more centred */
+  padding: 50px 60px;
+  background-color: #f7f7f7;
+  box-shadow: 0 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.title {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 2rem;
+  background-color: #868686;
+  font-size: 2em;
+  font-weight: bold;
+  color: transparent;
+  text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.4);
+  background-clip: text;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader {
+  margin-right: 0.5rem;
+  margin-left: -25px;
+  width: 25px;
+}
+
+.errorMsg {
+  margin-bottom: 0;
+  padding: 0.5rem 0;
+}
+
+.fieldset {
+  display: flex;
+  flex-direction: column;
+}

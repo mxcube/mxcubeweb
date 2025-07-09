@@ -1,0 +1,5 @@
+<object class ="ShutterMockup">
+    <actuator_name>safety_shutter</actuator_name>
+    <username>SafetyShutter</username>
+    <values>{"OPEN": "open", "CLOSED": "closed"}</values>
+</object>

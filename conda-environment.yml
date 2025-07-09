@@ -1,0 +1,36 @@
+%YAML 1.2
+---
+
+
+name: mxcubeweb
+
+channels:
+  - conda-forge
+
+dependencies:
+
+  # Runtime dependencies
+  # ====================
+
+  - ffmpeg  # Not directly used by mxcube, but necessary for the video-streamer
+  - python >=3.10,<3.12  # Make sure it matches `pyproject.toml`
+
+  # `openldap` is necessary for `python-ldap` but can not be installed by pip or Poetry.
+  # Note also that on PyPI `python-ldap` is only available as *sdist*, not as *wheel*,
+  # and that installing it requires a compilation step.
+  # The `openldap` Conda package should provide enough for this compilation step
+  # (header files and things like this), but the C compiler itself.
+  # Make sure that a C compiler is available on the system,
+  # as it is NOT provided as a dependency in this Conda environment file.
+  - openldap
+
+
+  # Development dependencies
+  # ========================
+
+  - nodejs ==18.*|20.*  # Make sure it matches `ui/package.json`
+  - pnpm ==9.*  # Make sure it matches `ui/package.json`
+  - poetry ==2.1.3  # Make sure it matches `.pre-commit-config.yaml` and `poetry.lock`
+
+
+...

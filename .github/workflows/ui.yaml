@@ -1,0 +1,193 @@
+---
+# yamllint disable rule:line-length
+
+# Pin micromamba version to `1.5.10-0` because of following issue:
+# https://github.com/mamba-org/setup-micromamba/issues/225
+
+name: UI
+
+"on":
+  pull_request: null
+  push: null
+
+permissions:
+  contents: read    # Required for checkout
+  actions: read     # for cache
+  packages: read    # for package access
+
+jobs:
+  format:
+    name: JS-Format
+    runs-on: ubuntu-latest
+
+    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Conda environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          micromamba-version: 1.5.10-0
+          environment-file: conda-environment.yml
+          cache-environment: true
+          post-cleanup: "all"
+
+      - name: Cache UI dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/setup-pnpm/node_modules/.bin/store
+            ~/.cache/Cypress
+          key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-
+
+      - name: Install UI dependencies
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
+
+      - name: Run Prettier
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui prettier"
+
+  lint:
+    name: JS-Lint
+    runs-on: ubuntu-latest
+
+    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Conda environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          micromamba-version: 1.5.10-0
+          environment-file: conda-environment.yml
+          cache-environment: true
+          post-cleanup: "all"
+
+      - name: Cache UI dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/setup-pnpm/node_modules/.bin/store
+            ~/.cache/Cypress
+          key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-
+
+      - name: Install UI dependencies
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
+
+      - name: Run ESLint
+        # fail on warnings
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui eslint --max-warnings=0"
+
+  e2e:
+    name: E2E-Test
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write       # for artifact upload
+
+    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Conda environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          micromamba-version: 1.5.10-0
+          environment-file: conda-environment.yml
+          cache-environment: true
+          post-cleanup: "all"
+
+      - name: Install MXCuBE
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only main"
+
+      - name: Cache UI dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/setup-pnpm/node_modules/.bin/store
+            ~/.cache/Cypress
+          key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-
+
+      - name: Install UI dependencies
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
+
+      - name: Build UI
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui build"
+
+      - name: Start MXCuBE-Web server
+        run: |
+          ${MAMBA_EXE} run --name mxcubeweb mxcubeweb-server -r ./demo/ --static-folder $(pwd)/ui/build/ -L debug &
+          ${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui exec wait-on http://127.0.0.1:8081
+
+      - name: Run Cypress
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui e2e"
+        env:
+          CYPRESS_BASE_URL: http://127.0.0.1:8081
+
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: debug
+          retention-days: 3
+          path: |
+            ui/cypress/debug
+            debug
+
+  sync-lockfile:
+    name: Sync pnpm-lock.yaml for Snyk PRs
+    if: contains(github.event.pull_request.title, '[Snyk]')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout PR branch
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20
+
+      - name: Install PNPM v9
+        run: npm install -g pnpm@9
+
+      - name: Update pnpm-lock.yaml
+        run: pnpm --prefix ui install --no-frozen-lockfile
+
+      - name: Commit changes (amend previous commit if lockfile updated)
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add ui/pnpm-lock.yaml
+          if ! git diff --quiet --staged; then
+            git commit --amend --no-edit
+            git push --force
+          fi

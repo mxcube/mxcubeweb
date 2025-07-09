@@ -1,0 +1,3 @@
+<object class="DiffractometerBeamlineAction">
+  <object href="/MiniDiff.xml" role="diffractometer"/>
+</object>

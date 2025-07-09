@@ -1,0 +1,87 @@
+---
+name: "Pages"
+
+concurrency:
+  group: "pages"
+
+"on":
+  pull_request: null
+  push: null
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  "pages-build":
+    runs-on: "ubuntu-22.04"
+
+    services:
+      # The Redis server is necessary to run the app,
+      # which is necessary to get the Flask routes with `autoflask` directives
+      redis:
+        image: "redis"
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - "6379:6379/tcp"
+
+    steps:
+      - name: "Checkout"
+        uses: "actions/checkout@v4"
+        with:
+          # With shallow clone the "Last updated" timestamp can not get computed
+          # See "Caveats" at https://pypi.org/project/sphinx-last-updated-by-git
+          fetch-depth: 0
+
+      # Use micromamba instead of conda for better performance
+      # Pin micromamba version because of following issue:
+      # https://github.com/mamba-org/setup-micromamba/issues/225
+      - name: "Setup conda environment with micromamba"
+        uses: "mamba-org/setup-micromamba@v2"
+        with:
+          environment-file: "conda-environment.yml"
+          micromamba-version: 1.5.10-0
+
+      - name: "Install dependencies with Poetry"
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only=docs,main"
+
+      - name: "Build documentation with Sphinx"
+        run: "${MAMBA_EXE} run --name mxcubeweb make --directory=./docs/ html"
+
+      - name: "Upload artifact for GitHub Pages"
+        # This could potentially be run only when we intent to deploy...
+        # ...but it can be useful to have the artifact for debugging
+        # if: "github.ref_name == github.event.repository.default_branch"
+        uses: "actions/upload-pages-artifact@v3"
+        with:
+          path: "docs/build/html"
+
+  "pages-deploy":
+    if: "github.ref_name == github.event.repository.default_branch"
+
+    environment:
+      name: "github-pages"
+      url: "${{ steps.deployment.outputs.page_url }}"
+
+    needs:
+      - "pages-build"
+
+    permissions:
+      pages: "write"
+      id-token: "write"
+
+    runs-on: "ubuntu-22.04"
+
+    steps:
+      - name: "Setup GitHub Pages"
+        uses: "actions/configure-pages@v5"
+
+      - name: "Deploy to GitHub Pages"
+        id: "deployment"
+        uses: "actions/deploy-pages@v4"
+
+...  # EOF

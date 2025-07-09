@@ -1,0 +1,74 @@
+[project]
+name = "mxcubeweb"
+version = "4.432.0"
+license = "LGPL-3.0-or-later"
+description = "MXCuBE Web user interface"
+authors = [
+    {name = "The MXCuBE collaboration", email = "mxcube@esrf.fr"},
+]
+maintainers = [
+    {name = "The MXCuBE collaboration", email = "mxcube@esrf.fr"},
+]
+readme = "README.md"
+urls.homepage = "https://github.com/mxcube/mxcubeweb"
+urls.repository = "https://github.com/mxcube/mxcubeweb"
+urls.documentation = "https://mxcubeweb.readthedocs.io/"
+keywords = ["mxcube", "mxcube3", "mxcubeweb"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "Intended Audience :: End Users/Desktop",
+    "Natural Language :: English",
+    "Topic :: Scientific/Engineering",
+]
+requires-python = ">=3.10,<3.12"
+scripts.mxcubeweb-server = 'mxcubeweb:main'
+dynamic = [
+    # For the time being: keep using Poetry-specific notation for this field,
+    # but there does not seem to be anything blocking migration to standard notation.
+    "dependencies",
+]
+
+[tool.poetry]
+requires-poetry = "2.1.3"  # Keep in sync with `.pre-commit-config.yaml`
+
+[tool.poetry.dependencies]
+Flask = "^3.0.3"
+werkzeug = "^3.0.3"
+Flask-SocketIO = "^5.3.6"
+flask-sqlalchemy = "^3.1.1"
+Flask-Security-Too = "^5.4.3"
+argon2_cffi = "^23.1.0"
+flask-login = "^0.6.3"
+gevent-websocket = "0.10.1"
+mock = "^4.0.3"
+"ruamel.yaml" = "^0.17.21"
+scandir = "^1.10.0"
+redis = "^4.3.5"
+jsonschema = "^4.17.1"
+pydantic = ">=2.8.2,<2.9.0"
+PyDispatcher = "^2.0.6"
+pytz = "^2022.6"
+tzlocal = "^4.2"
+mxcubecore =  ">=1.269.0"
+bcrypt = "^4.0.1"
+authlib = "^1.3.0"
+flask-limiter = "^3.12"
+
+[tool.poetry.group.dev.dependencies]
+pre-commit = "^4.1.0"
+pytest = "^8.3.4"
+pytest-cov = "^6.0.0"
+psutil = "^5.9.4"
+
+[tool.poetry.group.docs.dependencies]
+furo = "^2023.9.10"
+myst-parser = "^2.0.0"
+sphinx = "<7.2"
+sphinx-last-updated-by-git = "^0.3.7"
+sphinxcontrib-httpdomain = "^1.8.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

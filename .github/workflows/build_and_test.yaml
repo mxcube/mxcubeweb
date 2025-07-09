@@ -1,0 +1,66 @@
+---
+name: Python build and test
+
+"on":
+  pull_request: null
+  push: null
+
+permissions:
+  contents: read
+  checks: write   # for test result from pytest
+
+jobs:
+  build-linux:
+    runs-on: ubuntu-latest
+    strategy:
+      max-parallel: 5
+      matrix:
+        python-version: ["3.10", "3.11"]
+
+    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
+    # yamllint disable-line rule:line-length
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    # Service containers to run with `container-job`
+    services:
+      # Label used to access the service container
+      redis:
+        # Docker Hub image
+        image: redis
+        # Set health checks to wait until redis has started
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps port 6379 on service container to the host
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      # Pin micromamba version because of following issue:
+      # https://github.com/mamba-org/setup-micromamba/issues/225
+      - name: Set up Conda environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          create-args: >-
+            python=${{ matrix.python-version }}
+          micromamba-version: 1.5.10-0
+          environment-file: conda-environment.yml
+          cache-environment: true
+          post-cleanup: "all"
+
+      - name: Install MXCuBE
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry install"
+
+      - name: Linting & Code Quality
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry run pre-commit run --all-files"
+
+      - name: Test with pytest
+        run: "${MAMBA_EXE} run --name mxcubeweb poetry run pytest"

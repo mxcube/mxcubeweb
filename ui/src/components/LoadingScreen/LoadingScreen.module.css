@@ -1,0 +1,16 @@
+.root {
+  flex: 1 1 0%;
+  align-self: center;
+  margin-top: -10vh; /* slight vertical offset to feel more centred */
+  text-align: center;
+}
+
+.logo {
+  opacity: 0.7;
+}
+
+.message {
+  margin-top: 0.75rem;
+  margin-bottom: 0.25rem;
+  font-size: 1.75em;
+}

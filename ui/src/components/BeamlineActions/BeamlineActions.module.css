@@ -1,0 +1,16 @@
+.formContainer :global(.rjsf) legend {
+  display: none;
+}
+
+.formContainer :global(.rjsf) :global(.control-label) {
+  display: inline;
+}
+
+.formContainer :global(.rjsf) :global(.field-description) {
+  display: inline;
+  margin-left: 0.5em;
+}
+
+.submitButton {
+  margin-top: 1em;
+}

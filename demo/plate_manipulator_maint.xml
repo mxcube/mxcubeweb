@@ -1,0 +1,3 @@
+<object class="PlateManipulatorMaintenance">
+  <object hwrid="/plate_manipulator" role="sample_changer"/>
+</object>

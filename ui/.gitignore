@@ -1,0 +1,13 @@
+# dependencies
+/node_modules/
+
+# testing
+/coverage/
+/cypress/debug/
+
+# production
+/build/
+
+# environment
+/.env.local
+/.env.*.local

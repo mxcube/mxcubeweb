@@ -1,0 +1,174 @@
+from gevent import monkey
+
+monkey.patch_all(thread=False)
+
+from mxcubeweb.core.models.configmodels import FlaskConfigModel  # noqa: I001 E402
+
+# Disabling E402 (module level import not at top of file)
+# for the lines below as we are monkey patching
+import argparse  # noqa: E402
+import os  # noqa: E402
+import sys  # noqa: E402
+import traceback  # noqa: E402
+from pathlib import Path  # noqa: E402
+from unittest import mock  # noqa: E402
+
+from mxcubecore import HardwareRepository as HWR  # noqa: E402
+
+from mxcubeweb.app import MXCUBEApplication as mxcube  # noqa: E402
+from mxcubeweb.config import Config  # noqa: E402
+from mxcubeweb.server import Server as server  # noqa: E402
+
+sys.modules["Qub"] = mock.Mock()
+sys.modules["Qub.CTools"] = mock.Mock()
+
+
+def parse_args(argv):
+    # by default load the 'demo' mocked beamline
+    hwr_directory = str(Path(Path(__file__).parents[1], "demo"))
+
+    opt_parser = argparse.ArgumentParser(
+        description="mxcube-web Backend server command line utility."
+    )
+
+    opt_parser.add_argument(
+        "-r",
+        "--repository",
+        dest="hwr_directory",
+        help="Hardware Repository XML files path",
+        default=hwr_directory,
+    )
+
+    opt_parser.add_argument(
+        "-s",
+        "--static-folder",
+        dest="static_folder",
+        help="Static folder",
+        default=f"{os.getcwd()}ui/build",
+    )
+
+    opt_parser.add_argument(
+        "-l",
+        "--log-file",
+        dest="log_file",
+        help="Log file name",
+        default="",
+    )
+
+    opt_parser.add_argument(
+        "-L",
+        "--log-level",
+        dest="log_level",
+        help="Log level for all loggers ",
+        default="",
+    )
+
+    opt_parser.add_argument(
+        "-el",
+        "--enabled-loggers",
+        dest="enabled_logger_list",
+        help=(
+            "Which loggers to use, default is to use all loggers"
+            " ([exception_logger, hwr_logger, mx3_hwr_logger,"
+            " user_logger, queue_logger])"
+        ),
+        default=[
+            "exception_logger",
+            "hwr_logger",
+            "mx3_hwr_logger",
+            "user_logger",
+            "queue_logger",
+            "mx3_ui_logger",
+            "csp_logger",
+        ],
+    )
+
+    opt_parser.add_argument(
+        "-w",
+        "--ra",
+        action="store_true",
+        dest="allow_remote",
+        help="Enable remote access",
+        default=False,
+    )
+
+    opt_parser.add_argument(
+        "-t",
+        "--ra-timeout",
+        action="store_true",
+        dest="ra_timeout",
+        help="Timeout gives control",
+        default=False,
+    )
+
+    opt_parser.add_argument(
+        "--export-yaml-config",
+        dest="yaml_export_directory",
+        type=Path,
+        help="write YAML configuration to specified path",
+    )
+
+    # If `argv` is `None`, then `argparse.ArgumentParser.parse_args`
+    # will know to read from `sys.argv` instead.
+    return opt_parser.parse_args(argv)
+
+
+def build_server_and_config(test=False, argv=None):
+    cmdline_options = parse_args(argv)
+
+    try:
+        # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
+        # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
+        # without continuously editing the main config files.
+        # Note that the machinery was all there in the core already. rhfogh.
+        HWR.init_hardware_repository(
+            cmdline_options.hwr_directory, cmdline_options.yaml_export_directory
+        )
+        config_path = HWR.get_hardware_repository().find_in_repository("mxcube-web")
+
+        cfg = Config(config_path)
+        db_path = (
+            Path(cfg.flask.USER_DB_PATH)
+            if cfg.flask.USER_DB_PATH
+            else Path(FlaskConfigModel.USER_DB_PATH.default)
+        )
+        db_path.parent.mkdir(parents=True, exist_ok=True, mode=0o600)
+        if test:
+            cfg.flask.RATE_LIMITER_ENABLED = False
+
+            test_db = db_path.parent / "mxcube-test-user.db"
+            cfg.flask.USER_DB_PATH = str(test_db)
+
+            # Clean up existing test database if it exists
+            if test_db.exists():
+                test_db.unlink()
+
+        server.init(cmdline_options, cfg)
+        mxcube.init(
+            server,
+            cmdline_options.allow_remote,
+            cmdline_options.ra_timeout,
+            cmdline_options.log_file,
+            cmdline_options.log_level,
+            cmdline_options.enabled_logger_list,
+            cfg,
+        )
+
+        server.register_routes(mxcube)
+    except Exception:
+        traceback.print_exc()
+        raise
+
+    return server, cfg
+
+
+def main():
+    server, cfg = build_server_and_config()
+    if server and cfg:
+        server.run(cfg)
+        return 0
+    return 1
+
+
+if __name__ == "__main__":
+    sys.exit(main())

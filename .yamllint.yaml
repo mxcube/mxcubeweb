@@ -1,0 +1,38 @@
+---
+
+extends: default
+
+ignore: |
+  ui/pnpm-lock.yaml
+
+rules:
+  indentation:
+    spaces: 2
+
+  # Match line length to the one set by `black` the Python formatter
+  line-length:
+    max: 88
+
+  # octal values must start with 0o, numbers may not start with e.g. 01
+  # It is simpler, and costs nothing, to disallow values like `010`
+  # except as quoted strings
+  octal-values:
+    forbid-implicit-octal: true
+
+  # This bans implicit nulls, nulls must be explicit.
+  empty-values: enable
+
+  # With these settings, and `%YAML 1.2` in the file header, we have :
+  #
+  #  Booleans: true, false
+  #  None: null, Null, NULL
+  #  not-a-number: .NaN, .NAN, .nan
+  #  Infinity:  .Inf, .INF, .inf
+  #  Strings: On, ON, Off, OFF, YES, Yes, NO, No
+  #  Disallowed if not quoted: True, TRUE, False, FALSE
+  #
+  # Setting `truthy: disabled` would allow the disabled values, as Booleans
+  #
+  # If desired, you could ban unquoted infinity and not-a-number by
+  # float-values: forbind-int: true
+  # float-values: forbind-nan: true

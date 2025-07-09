@@ -1,0 +1,8 @@
+.showAllBtn {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.5rem;
+  min-width: 155px;
+  white-space: nowrap;
+  text-align: left;
+}

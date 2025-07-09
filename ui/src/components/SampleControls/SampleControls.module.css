@@ -1,0 +1,122 @@
+.controls {
+  display: flex;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 500;
+  transform: translateX(-50%);
+  background-color: rgba(34, 34, 34, 0.8);
+  border-radius: 0 0 0.25rem 0.25rem;
+}
+
+.controlWrapper {
+  position: relative;
+}
+
+.controlBtn {
+  padding-top: 0.5rem;
+  background-color: transparent !important;
+  border: 0 !important;
+  color: #33beff;
+  font-weight: bold;
+  transition-duration: 0.1s;
+  white-space: nowrap;
+}
+
+.controls > .controlWrapper,
+.controls > .controlBtn {
+  min-width: 60px;
+}
+
+@media (max-width: 1400px) {
+  .controls > .controlWrapper {
+    max-width: 60px;
+  }
+}
+
+.controlBtn:focus-visible,
+.controlBtn:hover {
+  color: #97deff;
+}
+
+.controlBtn:global(.active),
+.controlBtn:global(.active) + .lightArrowBtn {
+  color: orange;
+}
+
+.controlBtn:global(.active):hover,
+.controlBtn:global(.active) + .lightArrowBtn:hover {
+  color: #ffba39;
+}
+
+.controlBtn:global(.active):active,
+.controlBtn:global(.active) + .lightArrowBtn:active {
+  color: orange;
+}
+
+.dropdownBtn,
+.popoverBtn,
+.lightBtn,
+.lightArrowBtn {
+  composes: controlBtn;
+}
+
+.dropdownBtn::after {
+  content: none;
+}
+
+.popoverBtn[aria-describedby],
+.dropdownBtn[aria-expanded='true'],
+.lightBtn[aria-describedby] + .lightArrowBtn {
+  color: var(--bs-btn-active-color) !important;
+}
+
+.lightArrowBtn {
+  position: absolute;
+  top: 2px;
+  left: 55%;
+  padding-left: 4px;
+}
+
+.controlLabel {
+  display: block;
+  font-size: 11px;
+}
+
+.controlIcon {
+  font-size: 25px;
+}
+
+.dropdownIcon {
+  margin-top: 6px;
+  margin-left: 4px;
+  margin-right: -3px;
+  vertical-align: top;
+}
+
+.lightBtn .controlIcon {
+  transform: translateX(-35%);
+}
+
+.popover {
+  --bs-popover-bg: rgba(34, 34, 34, 0.8);
+}
+
+.dropdownMenu {
+  --bs-dropdown-bg: rgba(34, 34, 34, 0.8);
+  --bs-dropdown-color: white;
+  --bs-dropdown-link-color: white;
+  --bs-dropdown-link-active-bg: transparent;
+  --bs-dropdown-link-active-color: white;
+  --bs-dropdown-link-hover-bg: #212529;
+  --bs-dropdown-link-hover-color: white;
+  top: 6px !important;
+}
+
+.dropdownItem:global(.active) {
+  font-weight: bold;
+}
+
+.dropdownItem:global(.active):hover {
+  background-color: var(--bs-dropdown-link-hover-bg);
+}

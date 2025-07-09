@@ -1,0 +1,15 @@
+<object class="MultiCollectMockup">
+  <num_snapshots>0</num_snapshots>
+
+  <auto_processing>
+      <program>
+      <executable>not_existing_executable_1</executable>
+      <event>after</event>
+    </program>
+    <program>
+      <executable>not_existing_executable_2</executable>
+      <event>image</event>
+    </program>
+    </auto_processing>
+
+</object>

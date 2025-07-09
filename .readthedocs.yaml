@@ -1,0 +1,46 @@
+---
+
+
+# .readthedocs.yaml
+# Read the Docs configuration file
+# See https://docs.readthedocs.io/en/stable/config-file/v2.html for details
+
+
+version: 2
+
+build:
+
+  os: ubuntu-22.04
+
+  tools:
+    python: mambaforge-22.9
+
+  commands:
+
+    # With shallow clone the "Last updated" timestamps can not get computed
+    # See "Caveats" at <https://pypi.org/project/sphinx-last-updated-by-git/>
+    - git fetch --unshallow || true
+
+    # Create a Conda environment with only the dependencies necessary to build the docs:
+    # * we skip `ffmpeg` on purpose as it is not necessary to build the docs
+    # * `openldap` is necessary to build `python-ldap`
+    # * we use the lowest supported Python, we assume later versions can build as well
+    # See `conda-environment.yml` for more details.
+    - >-
+      mamba create --name=mxcubeweb
+      openldap
+      poetry=2.1.3
+      python=3.10
+
+    - >-
+      mamba run --name=mxcubeweb
+      poetry install --only=docs,main
+
+    - >-
+      mamba run --name mxcubeweb
+      python -m sphinx -T -E -b html -d _build/doctrees -c docs
+      docs/source
+      ${READTHEDOCS_OUTPUT}/html
+
+
+...  # EOF

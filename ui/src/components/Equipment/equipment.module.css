@@ -1,0 +1,170 @@
+.treeNode {
+  display: none;
+}
+
+.treeNode ~ ul {
+  display: none;
+}
+
+.treeNode:checked ~ ul {
+  display: block;
+}
+
+.treeNodeLabel {
+  font-weight: normal;
+  cursor: pointer;
+  margin: 0;
+}
+
+.treeNodeLabel:hover {
+  font-weight: bold;
+  color: hsl(208, 56%, 35%);
+}
+
+.treeUl {
+  background-color: #fff;
+  cursor: pointer;
+}
+
+.treeLi {
+  width: 200px;
+  display: block;
+  padding-top: 0.2em;
+  padding-left: 0.2em;
+}
+
+.sampleLabel:hover {
+  background-clip: content-box;
+  background-color: #d9edf7;
+}
+
+.custom-btn-color {
+  color: hsl(0, 0%, 50%) !important;
+}
+
+.custom-btn-color:hover {
+  color: hsl(0, 0%, 0%) !important;
+}
+
+.scMessage {
+  background-color: white;
+  color: blue;
+  font-weight: bold;
+  font-size: 16px;
+  text-align: center;
+}
+
+.abortButton {
+  background-color: #ffdddd;
+  font-weight: bold;
+}
+
+.actionHeader {
+  background-color: #eeeeee;
+  text-align: center;
+}
+
+/* Plate Manipulator*/
+.plate_div {
+  height: '55vh';
+  margin: 20px;
+  display: flex;
+}
+
+.plate_grid {
+  margin-right: 50px;
+  display: flex;
+}
+
+.has_crystal_info {
+  border-right: 10px solid #81c784;
+  padding-right: 5px;
+  margin-right: 12px;
+}
+
+.is_loaded_info {
+  border-right: 10px solid #e57373;
+  padding-right: 5px;
+  margin-right: 12px;
+}
+
+.empty_well_info {
+  border-right: 10px solid #e0e0e0;
+  padding-right: 5px;
+}
+
+.plate_info {
+  position: relative;
+  bottom: 20%;
+}
+
+.single_well {
+  cursor: crosshair;
+}
+
+.innerPlate {
+  width: 30px;
+  height: 30px;
+  padding: 5%;
+}
+
+.context_menu_provider {
+  z-index: 1070;
+}
+
+.plateTooltip {
+  visibility: hidden;
+  white-space: nowrap;
+  border: 1px solid #96aebe8e;
+  color: rgb(12, 13, 22);
+  text-align: center;
+  border-radius: 6px;
+  position: absolute;
+  font-size: 12px;
+  bottom: 75%;
+  left: 50%;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.plateTooltip::after {
+  content: '';
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  border-width: 5px;
+  border-style: solid;
+  border-color: transparent transparent #0122388e transparent;
+}
+
+.plateDesc:focus {
+  background: #57a80b !important;
+}
+
+.plateDesc:hover .plateTooltip {
+  background: white;
+  visibility: visible;
+  opacity: 1;
+}
+
+.ha_grid_container {
+  display: grid;
+  grid-template-rows: repeat(auto-fit, auto);
+  /* grid-template-columns: minmax(100px, max-content) repeat(auto-fill, 100px) 20%; */
+  grid-template-columns: repeat(auto-fit, 14%);
+  overflow: hidden;
+}
+
+.ha_grid_item {
+  background-color: #f5eeeeb7 !important;
+  border: 1px solid #cec7c76c;
+  font-size: 15px;
+  text-align: center;
+  margin-right: 15px;
+  margin-bottom: 16px;
+}
+
+.crystal_uuid_caption {
+  color: gray;
+  margin-bottom: 10px;
+}

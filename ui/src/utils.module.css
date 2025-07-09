@@ -1,0 +1,34 @@
+/**
+ * Base utility classes for CSS modules.
+ * DO NOT import this file in React components.
+ *
+ * .myBtn {
+ *   composes: btnClean from '../../utils.module.css';
+ * }
+ */
+
+.btnClean {
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+  line-height: inherit;
+  text-align: left;
+  white-space: normal;
+  cursor: pointer;
+}
+
+.btnClean:disabled,
+.btnClean[aria-disabled='true'] {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.numInputClean {
+  appearance: textfield;
+}
+
+.numInputClean::-webkit-inner-spin-button,
+.numInputClean::-webkit-outer-spin-button {
+  appearance: none;
+}

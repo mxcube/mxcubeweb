@@ -1,0 +1,9 @@
+%YAML 1.2
+---
+class: MotorMockup.MotorMockup
+configuration:
+  GUIstep: 0.01
+  exporter_address: 130.235.94.124:9001
+  motor_name: CentringY
+  unit: 1e-05
+  username: sampy
