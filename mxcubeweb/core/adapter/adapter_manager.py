@@ -57,8 +57,7 @@ class HardwareObjectAdapterManager:
         return self.adapter_dict.get(_id, {}).get("adapter")
 
     def _get_adapter_id(self, ho):
-        _id = HWR.beamline.get_id(ho)
-        return _id.replace(" ", "_").lower()
+        return ho.id.replace(" ", "_").lower()
 
     def _add_adapter(self, _id, adapter_cls, ho, adapter_instance):
         if _id not in self.adapter_dict:
@@ -133,7 +132,7 @@ class HardwareObjectAdapterManager:
             if not ho:
                 continue
 
-            _id = HWR.beamline.get_id(ho)
+            _id = ho.id
             adapter_cls = self.find_best_adapter(ho)
 
             if adapter_cls:
