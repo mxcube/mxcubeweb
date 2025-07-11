@@ -10,15 +10,63 @@
   background-color: #f9f9f9;
 }
 
-.taskHead p {
-  margin: 0;
-}
-
 .taskHead:hover {
   background-color: #eaeaea;
+}
+
+.taskHeadSelected {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ddd;
+  background-color: #adcbda;
+}
+.taskHeadSelected:hover {
+  background-color: #98b2bf !important;
+}
+
+.taskHead p,
+.taskHeadSelected p {
+  margin: 0;
 }
 
 .nodeName {
   margin-left: 4px;
   cursor: pointer;
+}
+
+.taskBody {
+  margin: 0;
+  padding: 0;
+}
+.taskBody label {
+  font-weight: bold;
+}
+.taskBody button {
+  font-weight: bold;
+  width: 33%;
+}
+
+.taskParametersTable {
+  padding: 0px;
+  margin: 0px;
+  font-size: smaller;
+}
+.taskParametersTable > thead {
+  color: #636363;
+}
+
+.taskRunning {
+  background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0) 5%);
+  background-color: rgba(66, 138, 202, 0.8) !important;
+}
+.taskSuccess {
+  background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0) 5%);
+  background-color: rgba(150, 198, 29, 0.52) !important;
+}
+.taskWarning {
+  background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0) 5%);
+  background-color: rgba(255, 212, 0, 0.39) !important;
+}
+.taskError {
+  background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0) 5%);
+  background-color: rgba(217, 83, 79, 0.56) !important;
 }

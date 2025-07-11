@@ -7,6 +7,7 @@ import {
   TASK_RUNNING,
   TASK_UNCOLLECTED,
 } from '../../constants';
+import styles from './Item.module.css';
 
 export default class TaskItemContainer extends Component {
   constructor(props) {
@@ -56,12 +57,12 @@ export default class TaskItemContainer extends Component {
       cursor: 'pointer',
     };
 
-    let taskCSS = selected ? 'task-head task-head-selected' : 'task-head';
+    let taskCSS = selected ? styles.taskHeadSelected : styles.taskHead;
     let pbarBsStyle = 'info';
 
     switch (state) {
       case TASK_RUNNING: {
-        taskCSS += ' running';
+        taskCSS += ` ${styles.taskRunning}`;
         pbarBsStyle = 'info';
         break;
       }
@@ -71,14 +72,14 @@ export default class TaskItemContainer extends Component {
           specialTaskCSS === 'Characterisation' &&
           diffractionPlanLength === undefined
         ) {
-          taskCSS += ' warning';
+          taskCSS += ` ${styles.taskWarning}`;
           break;
         }
-        taskCSS += ' success';
+        taskCSS += ` ${styles.taskSuccess}`;
         break;
       }
       case TASK_COLLECT_FAILED: {
-        taskCSS += ' error';
+        taskCSS += ` ${styles.taskError}`;
         pbarBsStyle = 'danger';
         break;
       }
@@ -86,7 +87,7 @@ export default class TaskItemContainer extends Component {
     }
 
     return (
-      <div className="node node-sample">
+      <div className={styles.nodeSample}>
         <div
           onContextMenu={(e) =>
             showContextMenu(e, 'currentSampleQueueContextMenu')

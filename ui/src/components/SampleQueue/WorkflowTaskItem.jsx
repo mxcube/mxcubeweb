@@ -8,6 +8,7 @@ import { Button } from 'react-bootstrap';
 
 import { TASK_COLLECTED } from '../../constants';
 import TooltipTrigger from '../TooltipTrigger';
+import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 export default class WorkflowTaskItem extends Component {
@@ -112,7 +113,7 @@ export default class WorkflowTaskItem extends Component {
         taskHeaderOnClickHandler={taskHeaderOnClickHandler}
         taskHeaderOnContextMenuHandler={taskHeaderOnContextMenuHandler}
       >
-        <div className="task-body">
+        <div className={styles.taskBody}>
           <div>
             <div style={{ border: '1px solid #DDD' }}>
               <div

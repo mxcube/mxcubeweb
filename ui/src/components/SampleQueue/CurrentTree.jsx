@@ -1,13 +1,12 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable react/no-unused-state */
-import './app.css';
-
 import React from 'react';
 import { contextMenu, Item, Menu } from 'react-contexify';
 
 import CharacterisationTaskItem from './CharacterisationTaskItem';
 import EnergyScanTaskItem from './EnergyScanTaskItem';
 import TaskItem from './TaskItem';
+import styles from './Tree.module.css';
 import WorkflowTaskItem from './WorkflowTaskItem';
 import XRFTaskItem from './XRFTaskItem';
 
@@ -139,7 +138,7 @@ export default class CurrentTree extends React.Component {
     }
     return (
       <div>
-        <div style={{ top: '6%', height: '69%' }} className="list-body">
+        <div style={{ top: '6%', height: '69%' }} className={styles.listBody}>
           {sampleTasks.map((taskData, i) => {
             let task = null;
             const displayData = this.props.displayData[taskData.queueID] || {};

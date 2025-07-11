@@ -8,6 +8,7 @@ import { Component } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import { TASK_COLLECTED } from '../../constants';
+import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 export default class EnergyScanTaskItem extends Component {
@@ -129,7 +130,7 @@ export default class EnergyScanTaskItem extends Component {
         taskHeaderOnClickHandler={taskHeaderOnClickHandler}
         taskHeaderOnContextMenuHandler={taskHeaderOnContextMenuHandler}
       >
-        <div className="task-body">
+        <div className={styles.taskBody}>
           <div>
             <div style={{ border: '1px solid #DDD' }}>
               <div style={{ padding: '0.5em' }} onClick={this.showForm}>

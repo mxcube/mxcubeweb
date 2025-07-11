@@ -9,6 +9,7 @@ import { Button, Table } from 'react-bootstrap';
 
 import { TASK_COLLECTED } from '../../constants';
 import TooltipTrigger from '../TooltipTrigger';
+import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 export default class TaskItem extends Component {
@@ -194,7 +195,7 @@ export default class TaskItem extends Component {
         taskHeaderOnClickHandler={taskHeaderOnClickHandler}
         taskHeaderOnContextMenuHandler={taskHeaderOnContextMenuHandler}
       >
-        <div className="task-body">
+        <div className={styles.taskBody}>
           {wedges.map((wedge, i) => {
             const padding = i > 0 ? '1em' : '0em';
             return (
@@ -241,7 +242,7 @@ export default class TaskItem extends Component {
                   hover
                   onClick={this.showForm}
                   style={{ fontSize: 'smaller', marginBottom: 0 }}
-                  className="task-parameters-table"
+                  className={styles.taskParametersTable}
                 >
                   <thead>
                     <tr>

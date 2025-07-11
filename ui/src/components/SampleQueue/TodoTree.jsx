@@ -1,5 +1,3 @@
-import './app.css';
-
 import { useState } from 'react';
 import { Button, Form, ListGroup } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,6 +6,7 @@ import { prepareBeamlineForNewSample } from '../../actions/beamline';
 import { showTaskForm } from '../../actions/taskForm';
 import { QUEUE_RUNNING } from '../../constants';
 import TodoItem from './TodoItem';
+import styles from './Tree.module.css';
 
 export default function TodoTree(props) {
   const { list } = props;
@@ -31,7 +30,7 @@ export default function TodoTree(props) {
   return (
     <ListGroup variant="flush">
       <ListGroup.Item
-        className="d-flex list-head"
+        className={`d-flex ${styles.listHead}`}
         style={{ borderBottom: 'none' }}
       >
         <Form className="me-auto">
@@ -54,7 +53,7 @@ export default function TodoTree(props) {
           </Button>
         </div>
       </ListGroup.Item>
-      <ListGroup.Item className="d-flex list-body">
+      <ListGroup.Item className={`d-flex ${styles.listBody}`}>
         {current_list.map((key) => {
           const sampleData = sampleList[key];
           return <TodoItem sampleData={sampleData} key={`Sample ${key}`} />;

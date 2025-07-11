@@ -14,6 +14,7 @@ import CurrentTree from '../components/SampleQueue/CurrentTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
 import TodoTree from '../components/SampleQueue/TodoTree';
 import loader from '../img/loader.gif';
+import styles from './SampleQueueContainer.module.css';
 
 class SampleQueueContainer extends React.Component {
   constructor(props) {
@@ -64,9 +65,9 @@ class SampleQueueContainer extends React.Component {
     }
 
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', width: '100%' }}>
+      <div className={styles.container}>
         <QueueControl />
-        <div className="m-tree queue-body">
+        <div className={styles.queueBody}>
           <Nav
             variant="tabs"
             fill
@@ -74,10 +75,10 @@ class SampleQueueContainer extends React.Component {
             defaultActiveKey="current"
             activeKey={visibleList}
             onSelect={this.handleSelect}
-            className="queue-nav"
+            className={styles.queueNav}
           >
             <Nav.Item>
-              <Nav.Link eventKey="current" className="queue-nav-link">
+              <Nav.Link eventKey="current" className={styles.queueNavLink}>
                 <b>
                   {currentSampleID
                     ? `Sample: ${proteinAcronym} ${sampleName}`
@@ -86,13 +87,13 @@ class SampleQueueContainer extends React.Component {
               </Nav.Link>
             </Nav.Item>
             <Nav.Item>
-              <Nav.Link eventKey="todo" className="queue-nav-link">
+              <Nav.Link eventKey="todo" className={styles.queueNavLink}>
                 <b>Queued Samples ({todo.length})</b>
               </Nav.Link>
             </Nav.Item>
           </Nav>
           {loading ? (
-            <div className="center-in-box" style={{ zIndex: '1000' }}>
+            <div className={styles.centerInBox} style={{ zIndex: '1000' }}>
               <img src={loader} className="img-responsive" width="100" alt="" />
             </div>
           ) : null}
@@ -116,15 +117,15 @@ class SampleQueueContainer extends React.Component {
             }
           />
           {visibleList === 'todo' && <TodoTree list={todo} />}
-          <div className="queue-messages">
-            <div className="queue-messages-title">
+          <div className={styles.queueMessages}>
+            <div className={styles.queueMessagesTitle}>
               <span
                 style={{ marginRight: '7px' }}
                 className="fas fa-lg fa-info-circle"
               />
               Log messages:
             </div>
-            <div className="queue-messages-body">
+            <div className={styles.queueMessagesBody}>
               <UserMessage />
             </div>
           </div>
