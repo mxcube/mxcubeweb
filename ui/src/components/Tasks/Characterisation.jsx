@@ -127,6 +127,9 @@ class Characterisation extends React.Component {
                 list={[1, 2, 4]}
               />
               <InputField
+                disabled={
+                  this.props.beamline.hardwareObjects.transmission.readonly
+                }
                 propName="transmission"
                 type="number"
                 label="Transmission"

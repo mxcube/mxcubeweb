@@ -142,6 +142,9 @@ class Helical extends React.Component {
                 label="Exposure time (s)"
               />
               <InputField
+                disabled={
+                  this.props.beamline.hardwareObjects.transmission.readonly
+                }
                 propName="transmission"
                 type="number"
                 label="Transmission"

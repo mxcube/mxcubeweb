@@ -152,6 +152,9 @@ class Mesh extends React.Component {
                 label="Exposure time per image(s)"
               />
               <InputField
+                disabled={
+                  this.props.beamline.hardwareObjects.transmission.readonly
+                }
                 propName="transmission"
                 type="number"
                 label="Transmission"
