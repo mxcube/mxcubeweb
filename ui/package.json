@@ -52,7 +52,7 @@
     "redux-logger": "3.0.6",
     "slick-carousel": "^1.8.1",
     "socket.io-client": "^4.8.1",
-    "wretch": "2.7.0"
+    "wretch": "2.11.0"
   },
   "devDependencies": {
     "@esrf/eslint-config": "1.1.5",
