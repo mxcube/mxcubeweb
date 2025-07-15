@@ -5,8 +5,6 @@ name: Bandit and SonarQube
 "on":
   pull_request: null
   push: null
-  schedule:
-    - cron: '30 7 * * 3'
   workflow_dispatch: null
 
 permissions:
@@ -19,14 +17,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+
+      - name: Generate Bandit skips from Ruff
+        id: bandit_skips
+        run: |
+          pip install ruff jq
+          SKIPS=$(ruff rule --all --output-format json \
+            | jq -r '.[] | select(.code | test("^S[0-9]{3}$")) | .code' \
+            | sed 's/S/B/' \
+            | paste -sd, -)
+          echo "skips=$SKIPS" >> $GITHUB_OUTPUT
+
       - name: Bandit Scan
-        uses: shundor/python-bandit-scan@ab1d87dfccc5a0ffab88be3aaac6ffe35c10d6cd   # yamllint disable rule:line-length
+        uses: shundor/python-bandit-scan@ab1d87dfccc5a0ffab88be3aaac6ffe35c10d6cd
         with:
           exit_zero: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           excluded_paths: ./test/
           level: MEDIUM
           confidence: HIGH
+          skips: ${{ steps.bandit_skips.outputs.skips }}
 
       - name: Upload SARIF file to GitHub
         uses: github/codeql-action/upload-sarif@v3
