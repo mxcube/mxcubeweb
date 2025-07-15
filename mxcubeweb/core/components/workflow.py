@@ -1,4 +1,3 @@
-import base64
 import logging
 
 from mxcubecore import HardwareRepository as HWR
@@ -39,33 +38,3 @@ class Workflow(ComponentBase):
 
     def update_gphl_parameters(self, params):
         HWR.beamline.emit(params["signal"], params["instruction"], params["data"])
-
-    def get_mesh_result(self, gid, _type="heatmap"):
-        base64data = HWR.beamline.sample_view.get_grid_data(gid)
-        base64data = base64data if base64data else ""
-
-        return base64.b64decode(base64data)
-
-    def test_workflow_dialog(self, wf):
-        return {
-            "properties": {
-                "name": {
-                    "title": "Task name",
-                    "type": "string",
-                    "minLength": 2,
-                },
-                "description": {
-                    "title": "Description",
-                    "type": "string",
-                    "widget": "textarea",
-                },
-                "dueTo": {
-                    "title": "Due to",
-                    "type": "string",
-                    "widget": "compatible-datetime",
-                    "format": "date-time",
-                },
-            },
-            "required": ["name"],
-            "dialogName": "Trouble shooting !",
-        }
