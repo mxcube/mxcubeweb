@@ -30,7 +30,7 @@ export default function TodoTree(props) {
   return (
     <ListGroup variant="flush">
       <ListGroup.Item
-        className={`d-flex ${styles.listHead}`}
+        className={styles.listHead}
         style={{ borderBottom: 'none' }}
       >
         <Form className="me-auto">
@@ -53,7 +53,7 @@ export default function TodoTree(props) {
           </Button>
         </div>
       </ListGroup.Item>
-      <ListGroup.Item className={`d-flex ${styles.listBody}`}>
+      <ListGroup.Item className={styles.listBody}>
         {current_list.map((key) => {
           const sampleData = sampleList[key];
           return <TodoItem sampleData={sampleData} key={`Sample ${key}`} />;

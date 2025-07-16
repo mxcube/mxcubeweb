@@ -33,14 +33,7 @@ export default class XRFTaskItem extends Component {
       : '';
 
     return (
-      <div
-        style={{
-          borderLeft: '1px solid #DDD',
-          borderRight: '1px solid #DDD',
-          borderBottom: '1px solid #DDD',
-          padding: '0.5em',
-        }}
-      >
+      <div className={styles.resultBody}>
         <a href={link} target="_blank" rel="noreferrer">
           {' '}
           View Results in ISPyB

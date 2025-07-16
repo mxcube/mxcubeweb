@@ -9,6 +9,12 @@ import {
 } from '../../constants';
 import styles from './Item.module.css';
 
+const stateBasedStyles = {
+  [TASK_RUNNING]: styles.taskRunning,
+  [TASK_COLLECTED]: styles.taskSuccess,
+  [TASK_COLLECT_FAILED]: styles.taskError,
+};
+
 export default class TaskItemContainer extends Component {
   constructor(props) {
     super(props);
@@ -37,54 +43,19 @@ export default class TaskItemContainer extends Component {
     const {
       children,
       dataLabel,
-      diffractionPlanLength = undefined,
       pointIDString,
       progress,
       selected,
       show,
       showContextMenu,
-      specialTaskCSS = '',
+      warningTaskCSS = false,
       state,
     } = this.props;
 
-    const delTaskCSS = {
-      display: 'flex',
-      marginLeft: 'auto',
-      alignItems: 'center',
-      paddingLeft: '10px',
-      paddingRight: '10px',
-      color: '#d9534f',
-      cursor: 'pointer',
-    };
-
     let taskCSS = selected ? styles.taskHeadSelected : styles.taskHead;
-    let pbarBsStyle = 'info';
-
-    switch (state) {
-      case TASK_RUNNING: {
-        taskCSS += ` ${styles.taskRunning}`;
-        pbarBsStyle = 'info';
-        break;
-      }
-      case TASK_COLLECTED: {
-        pbarBsStyle = 'success';
-        if (
-          specialTaskCSS === 'Characterisation' &&
-          diffractionPlanLength === undefined
-        ) {
-          taskCSS += ` ${styles.taskWarning}`;
-          break;
-        }
-        taskCSS += ` ${styles.taskSuccess}`;
-        break;
-      }
-      case TASK_COLLECT_FAILED: {
-        taskCSS += ` ${styles.taskError}`;
-        pbarBsStyle = 'danger';
-        break;
-      }
-      // No default
-    }
+    taskCSS += ` ${
+      warningTaskCSS ? styles.taskWarning : stateBasedStyles[state] || ''
+    }`;
 
     return (
       <div className={styles.nodeSample}>
@@ -99,36 +70,26 @@ export default class TaskItemContainer extends Component {
             onContextMenu={this.taskHeaderOnContextMenu}
           >
             <div className={taskCSS} style={{ display: 'flex' }}>
-              <b>
-                <span className="node-name" style={{ display: 'flex' }}>
-                  {pointIDString} {dataLabel}
-                  {state === TASK_RUNNING && (
-                    <span
-                      style={{
-                        width: '150px',
-                        right: '60px',
-                        position: 'absolute',
-                      }}
-                    >
-                      <ProgressBar
-                        variant={pbarBsStyle}
-                        striped
-                        style={{ marginBottom: 0, height: '18px' }}
-                        min={0}
-                        max={1}
-                        animated={progress < 1}
-                        label={`${(progress * 100).toPrecision(3)} %`}
-                        now={progress}
-                      />
-                    </span>
-                  )}
-                </span>
-              </b>
+              <span className={styles.nodeName} style={{ fontWeight: 'bold' }}>
+                {pointIDString} {dataLabel}
+              </span>
+              {state === TASK_RUNNING && (
+                <ProgressBar
+                  variant="info"
+                  striped
+                  className={styles.progressBar}
+                  min={0}
+                  max={1}
+                  animated={progress < 1}
+                  label={`${(progress * 100).toPrecision(3)} %`}
+                  now={progress}
+                />
+              )}
+
               {state === TASK_UNCOLLECTED && (
                 <i
-                  className="fas fa-times"
+                  className={`fas fa-times ${styles.delTask}`}
                   onClick={this.deleteTask}
-                  style={delTaskCSS}
                 />
               )}
             </div>
