@@ -31,6 +31,7 @@
 .nodeName {
   margin-left: 4px;
   cursor: pointer;
+  display: flex;
 }
 
 .taskBody {
@@ -69,4 +70,38 @@
 .taskError {
   background: linear-gradient(to bottom, #ffffff 0%, rgba(255, 255, 255, 0) 5%);
   background-color: rgba(217, 83, 79, 0.56) !important;
+}
+
+.resultBody {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 0.5em;
+}
+
+.dataPath {
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-top: 1px solid #ddd;
+  padding: 0.5em;
+  display: flex;
+  justify-content: space-around;
+  align-items: 'center';
+}
+
+.delTask {
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  padding-left: 10px;
+  padding-right: 10px;
+  color: #d9534f;
+  cursor: pointer;
+}
+
+.progressBar {
+  height: 18px;
+  width: 150px;
+  right: 60px;
+  margin-left: 10px;
 }

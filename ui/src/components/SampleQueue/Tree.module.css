@@ -1,6 +1,7 @@
 .listHead {
   padding: 1rem 1rem;
   border: 0;
+  display: flex;
 }
 .listBody {
   padding: 0.5rem 1rem;

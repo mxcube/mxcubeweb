@@ -33,14 +33,7 @@ export default class WorkflowTaskItem extends Component {
       : '';
 
     return (
-      <div
-        style={{
-          borderLeft: '1px solid #DDD',
-          borderRight: '1px solid #DDD',
-          borderBottom: '1px solid #DDD',
-          padding: '0.5em',
-        }}
-      >
+      <div className={styles.resultBody}>
         <a href={link} target="_blank" rel="noreferrer">
           {' '}
           View Results in ISPyB
@@ -115,45 +108,31 @@ export default class WorkflowTaskItem extends Component {
       >
         <div className={styles.taskBody}>
           <div>
-            <div style={{ border: '1px solid #DDD' }}>
-              <div
-                style={{
-                  borderTop: '1px solid #DDD',
-                  padding: '0.5em',
-                  display: 'flex',
-                  justifyContent: 'space-around',
-                  alignItems: 'center',
+            <div className={styles.dataPath}>
+              <b>Path:</b>
+              {this.path(parameters)}
+              <Button
+                variant="outline-secondary"
+                style={{ width: '3em' }}
+                title="Copy path"
+                onClick={() => {
+                  navigator.clipboard.writeText(`${parameters.path}`);
                 }}
               >
-                <b>Path:</b>
-                {this.path(parameters)}
-                <Button
-                  variant="outline-secondary"
-                  style={{ width: '3em' }}
-                  title="Copy path"
-                  onClick={() => {
-                    navigator.clipboard.writeText(`${parameters.path}`);
-                  }}
-                >
-                  <i
-                    style={{ marginLeft: 0 }}
-                    className="fa fa-copy"
-                    aria-hidden="true"
-                  />
-                </Button>
-                <Button
-                  variant="outline-secondary"
-                  style={{ width: '3em' }}
-                  title="Open parameters dialog"
-                  onClick={() =>
-                    this.props.showWorkflowParametersDialog(null, true)
-                  }
-                >
-                  <i aria-hidden="true" className="fa fa-sliders-h" />
-                </Button>
-              </div>
-              {this.getResult(state)}
+                <i className="fa fa-copy" aria-hidden="true" />
+              </Button>
+              <Button
+                variant="outline-secondary"
+                style={{ width: '3em' }}
+                title="Open parameters dialog"
+                onClick={() =>
+                  this.props.showWorkflowParametersDialog(null, true)
+                }
+              >
+                <i aria-hidden="true" className="fa fa-sliders-h" />
+              </Button>
             </div>
+            {this.getResult(state)}
           </div>
         </div>
       </TaskItemContainer>

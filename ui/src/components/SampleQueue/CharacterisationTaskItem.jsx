@@ -32,18 +32,7 @@ export default class TaskItem extends Component {
       return <span />;
     }
 
-    return (
-      <div
-        style={{
-          borderLeft: '1px solid #DDD',
-          borderRight: '1px solid #DDD',
-          borderBottom: '1px solid #DDD',
-          padding: '0.5em',
-        }}
-      >
-        {this.getDiffPlan(data)}
-      </div>
-    );
+    return <div className={styles.resultBody}>{this.getDiffPlan(data)}</div>;
   }
 
   getDiffPlan(data) {
@@ -217,58 +206,42 @@ export default class TaskItem extends Component {
         selected={selected}
         show={show}
         showContextMenu={showContextMenu}
-        specialTaskCSS="Characterisation"
+        warningTaskCSS={
+          state === TASK_COLLECTED && data.diffractionPlan.length === undefined
+        } // this is a special prop for emitting a warning signal if the task is collected but has no diffraction plan
         state={state}
         taskHeaderOnClickHandler={taskHeaderOnClickHandler}
         taskHeaderOnContextMenuHandler={taskHeaderOnContextMenuHandler}
       >
         <div className={styles.taskBody}>
           {wedges.map((wedge, i) => {
-            const padding = i > 0 ? '1em' : '0em';
+            const padding = i > 0 ? '1.5em' : '0.5em';
             return (
               <div key={`wedge-${i}`}>
                 <div
+                  className={styles.dataPath}
                   style={{
-                    borderLeft: '1px solid #DDD',
-                    borderRight: '1px solid #DDD',
                     paddingTop: padding,
                   }}
                 >
-                  <div
-                    style={{
-                      borderTop: '1px solid #DDD',
-                      padding: '0.5em',
-                      display: 'flex',
-                      justifyContent: 'space-around',
-                      alignItems: 'center',
+                  <b>Path:</b>
+                  {this.wedgePath(wedge)}
+                  <Button
+                    variant="outline-secondary"
+                    style={{ width: '3em' }}
+                    title="Copy path"
+                    onClick={() => {
+                      navigator.clipboard.writeText(`${wedge.parameters.path}`);
                     }}
                   >
-                    <b>Path:</b>
-                    {this.wedgePath(wedge)}
-                    <Button
-                      variant="outline-secondary"
-                      style={{ width: '3em' }}
-                      title="Copy path"
-                      onClick={() => {
-                        navigator.clipboard.writeText(
-                          `${wedge.parameters.path}`,
-                        );
-                      }}
-                    >
-                      <i
-                        style={{ marginLeft: 0 }}
-                        className="fa fa-copy"
-                        aria-hidden="true"
-                      />
-                    </Button>
-                  </div>
+                    <i className="fa fa-copy" aria-hidden="true" />
+                  </Button>
                 </div>
                 <Table
                   striped
                   bordered
                   hover
                   onClick={this.showForm}
-                  style={{ fontSize: 'smaller', marginBottom: 0 }}
                   className={styles.taskParametersTable}
                 >
                   <thead>

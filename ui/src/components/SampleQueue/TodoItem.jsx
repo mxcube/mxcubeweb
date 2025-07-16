@@ -22,7 +22,7 @@ export default function TodoItem({ sampleData }) {
   return (
     <div className={styles.nodeSample}>
       <div className={styles.taskHead}>
-        <div className={`d-flex ${styles.nodeName}`}>
+        <div className={styles.nodeName}>
           <p className="pt-1 me-auto">
             <b>{`${sampleID} `}</b>
             {`${proteinAcronym} ${sampleName}`}
