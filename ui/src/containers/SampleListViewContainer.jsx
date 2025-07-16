@@ -746,7 +746,7 @@ export default function SampleListViewContainer() {
         >
           <img
             src={loader}
-            className="img-centerd img-responsive"
+            className="img-centerd img-fluid"
             width="150"
             alt=""
           />

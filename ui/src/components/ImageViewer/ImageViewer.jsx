@@ -127,7 +127,7 @@ export default function ImageViewer(props) {
     <div>
       <div className={styles.gallery_card}>
         <GalleryImage
-          className={`${styles.gallery_thumbnail} img-responsive`}
+          className={`${styles.gallery_thumbnail} img-fluid`}
           src={props.imgUrl}
           alt={props.imgAlt}
         />
