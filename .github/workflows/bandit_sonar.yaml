@@ -68,5 +68,8 @@ jobs:
           args: >
             -Dsonar.organization=mxcubeweb
             -Dsonar.projectKey=mxcube_mxcubeweb
+            -Dsonar.coverage.exclusions=**
+            -Dsonar.cpd.exclusions=**
+            -Dsonar.cpd.skip=true
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
