@@ -132,7 +132,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
             {
               ...state.sampleList[action.sampleID].tasks[action.taskIndex],
               checked: false,
-              limsResultData: action.limsResultData,
               state: action.state,
             },
             ...state.sampleList[action.sampleID].tasks.slice(
@@ -154,10 +153,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
               0,
               action.taskIndex,
             ),
-            {
-              ...state.sampleList[action.sampleID].tasks[action.taskIndex],
-              limsResultData: action.limsResultData,
-            },
             ...state.sampleList[action.sampleID].tasks.slice(
               action.taskIndex + 1,
             ),

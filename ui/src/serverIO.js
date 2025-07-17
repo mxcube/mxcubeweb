@@ -174,13 +174,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('update_task_lims_data', (record) => {
-      dispatch(
-        updateTaskLimsData(
-          record.sample,
-          record.taskIndex,
-          record.limsResultData,
-        ),
-      );
+      dispatch(updateTaskLimsData(record.sample, record.taskIndex));
     });
 
     this.hwrSocket.on('task', (record, callback) => {
@@ -209,7 +203,6 @@ class ServerIO {
             record.taskIndex,
             record.state,
             record.progress,
-            record.limsResultData,
             record.queueID,
           ),
         );

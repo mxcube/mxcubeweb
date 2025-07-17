@@ -5,14 +5,12 @@ import React from 'react';
 import { Badge, OverlayTrigger, Popover } from 'react-bootstrap';
 
 import {
-  isUnCollected,
   TASK_COLLECT_FAILED,
   TASK_COLLECT_WARNING,
   TASK_COLLECTED,
   TASK_RUNNING,
   TASK_UNCOLLECTED,
 } from '../../constants';
-import loader from '../../img/busy-indicator.gif';
 import { LimsResultSummary } from '../Lims/LimsResultSummary';
 
 export class TaskItem extends React.Component {
@@ -30,7 +28,6 @@ export class TaskItem extends React.Component {
     this.summary = this.summary.bind(this);
     this.title = this.title.bind(this);
     this.stateClass = this.stateClass.bind(this);
-    this.result = this.result.bind(this);
   }
 
   tagName() {
@@ -100,108 +97,6 @@ export class TaskItem extends React.Component {
         </div>
       </div>
     );
-  }
-
-  result() {
-    const task = this.props.taskData;
-    let content = <div />;
-    let lImageUrl = '';
-    let fImageUrl = '';
-    let qIndUrl = '';
-
-    const r = task.limsResultData;
-
-    if (
-      !isUnCollected(task) &&
-      task.limsResultData &&
-      Object.keys(task.limsResultData).length > 0
-    ) {
-      if (task.limsResultData.firstImageId) {
-        fImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
-        fImageUrl += task.limsResultData.firstImageId.toString();
-      }
-
-      if (task.limsResultData.lastImageId) {
-        lImageUrl = '/mxcube/api/v0.1/lims/dc/thumbnail/';
-        lImageUrl += task.limsResultData.lastImageId.toString();
-      }
-
-      if (task.limsResultData.dataCollectionId) {
-        qIndUrl = '/mxcube/api/v0.1/lims/quality_indicator_plot/';
-        qIndUrl += task.limsResultData.dataCollectionId.toString();
-      }
-
-      const sFlux = Number.parseInt(r.flux, 10) / 10 ** 9;
-      const eFlux = Number.parseInt(r.flux_end, 10) / 10 ** 9;
-
-      content = (
-        <div>
-          <div
-            className="row"
-            style={{
-              paddingLeft: '1em',
-              paddingTop: '1em',
-              paddingBottom: '0.2em',
-            }}
-          >
-            <b>Status: {r.runStatus}</b>
-          </div>
-
-          <div className="row">
-            <span className="col-sm-3">Resolution at collect</span>
-            <span className="col-sm-3">{`${r.resolution || '-'} Å`}</span>
-            <span className="col-sm-3">Resolution at corner:</span>
-            <span className="col-sm-3">{`${
-              r.resolutionAtCorner || '-'
-            } Å`}</span>
-          </div>
-
-          <div className="row">
-            <span className="col-sm-3">Wavelength</span>
-            <span className="col-sm-3">{`${r.wavelength || '-'} Å`}</span>
-            <span className="col-sm-3"> </span>
-            <span className="col-sm-3"> </span>
-          </div>
-
-          <div className="row" style={{ paddingTop: '1em' }}>
-            <span className="col-sm-2">Start time:</span>
-            <span className="col-sm-4">{r.startTime || '-'}</span>
-            <span className="col-sm-2">End time</span>
-            <span className="col-sm-4">{r.endTime || '-'}</span>
-          </div>
-
-          <div className="row">
-            <span className="col-sm-2">Flux at start:</span>
-            <span className="col-sm-4">{sFlux || '-'} ph/s</span>
-            <span className="col-sm-2">Flux at end</span>
-            <span className="col-sm-4">{eFlux || '-'} ph/s</span>
-          </div>
-
-          <div className="row" style={{ paddingTop: '0.5em' }}>
-            <span className="col-sm-4">
-              <b>Quality Indictor: </b>
-              <img alt="First" src={qIndUrl} width="90%" />
-            </span>
-            <span className="col-sm-4">
-              <b>First image: </b>
-              <img alt="First" src={fImageUrl} width="90%" />
-            </span>
-            <span className="col-sm-4">
-              <b>Last image: </b>
-              <img alt="Last" src={lImageUrl} width="90%" />
-            </span>
-          </div>
-        </div>
-      );
-    } else if (!isUnCollected(task)) {
-      content = (
-        <span>
-          <img src={loader} alt="" /> Fetching data, please wait
-        </span>
-      );
-    }
-
-    return content;
   }
 
   title() {
