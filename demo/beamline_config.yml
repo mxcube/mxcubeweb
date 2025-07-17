@@ -103,9 +103,9 @@ configuration:
       disable_processing: false  # Not really needed (default is already false)
       # NB 'compression' not added as apparently never used
 
-      helical:
-        # Defaults for helical scan. Missing values are taken from default
-        number_of_images: 100
+    helical:
+      # Defaults for helical scan. Missing values are taken from default
+      number_of_images: 100
 
     characterisation:
       # Defaults for characterisation. Missing values are taken from default
