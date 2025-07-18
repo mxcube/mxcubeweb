@@ -30,7 +30,6 @@ import {
   setSampleAttribute,
   setStatus,
   stopQueue,
-  updateTaskLimsData,
 } from './actions/queue';
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
 import { getRaState, incChatMessageCount } from './actions/remoteAccess';
@@ -171,10 +170,6 @@ class ServerIO {
 
     this.hwrSocket.on('energy_scan_result', (data) => {
       dispatch(setEnergyScanResult(data.pk, data.ip, data.rm));
-    });
-
-    this.hwrSocket.on('update_task_lims_data', (record) => {
-      dispatch(updateTaskLimsData(record.sample, record.taskIndex));
     });
 
     this.hwrSocket.on('task', (record, callback) => {

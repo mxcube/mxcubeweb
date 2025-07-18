@@ -143,25 +143,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, sampleList };
     }
-    case 'UPDATE_TASK_LIMS_DATA': {
-      const sampleList = {
-        ...state.sampleList,
-        [action.sampleID]: {
-          ...state.sampleList[action.sampleID],
-          tasks: [
-            ...state.sampleList[action.sampleID].tasks.slice(
-              0,
-              action.taskIndex,
-            ),
-            ...state.sampleList[action.sampleID].tasks.slice(
-              action.taskIndex + 1,
-            ),
-          ],
-        },
-      };
-
-      return { ...state, sampleList };
-    }
     case 'ADD_TASKS': {
       const sampleList = { ...state.sampleList };
       action.tasks.forEach((t) => {

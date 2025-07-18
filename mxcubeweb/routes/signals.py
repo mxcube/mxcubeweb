@@ -234,17 +234,6 @@ def get_task_state(entry):
     }
 
 
-def update_task_result(entry):
-    node_index = mxcube.queue.node_index(entry.get_data_model())
-
-    msg = {
-        "sample": node_index["sample"],
-        "taskIndex": node_index["idx"],
-    }
-
-    server.emit("update_task_lims_data", msg, namespace="/hwr")
-
-
 def queue_execution_entry_started(entry, message=None):
     handle_auto_mount_next(entry)
 

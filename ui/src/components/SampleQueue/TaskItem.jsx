@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { Button, Table } from 'react-bootstrap';
 
-import { TASK_COLLECTED } from '../../constants';
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
@@ -21,36 +20,8 @@ export default class TaskItem extends Component {
   constructor(props) {
     super(props);
     this.showForm = this.showForm.bind(this);
-    this.getResult = this.getResult.bind(this);
     this.pointIDString = this.pointIDString.bind(this);
     this.wedgeParameters = this.wedgeParameters.bind(this);
-  }
-
-  getResult(state) {
-    if (state !== TASK_COLLECTED) {
-      return (
-        <div>
-          <span />
-        </div>
-      );
-    }
-    return (
-      <div className={styles.resultBody}>
-        <a
-          href="#"
-          onClick={() =>
-            this.props.showDialog(
-              true,
-              'LIMS_RESULT_DIALOG',
-              'Lims Results',
-              this.props.data,
-            )
-          }
-        >
-          View Results
-        </a>
-      </div>
-    );
   }
 
   showForm() {
@@ -243,7 +214,6 @@ export default class TaskItem extends Component {
                   </thead>
                   <tbody>{this.wedgeParameters(wedge)}</tbody>
                 </Table>
-                {this.getResult(state)}
               </div>
             );
           })}

@@ -409,10 +409,6 @@ export function addTaskResultAction(
   };
 }
 
-export function updateTaskLimsData(sampleID, taskIndex) {
-  return { type: 'UPDATE_TASK_LIMS_DATA', sampleID, taskIndex };
-}
-
 export function deleteSamplesFromQueue(sampleIDList) {
   return async (dispatch) => {
     dispatch(queueLoading(true));
