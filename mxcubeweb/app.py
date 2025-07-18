@@ -10,6 +10,7 @@ import time
 from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
+import graypy
 
 from mxcubecore import (
     ColorFormatter,
@@ -257,10 +258,14 @@ class MXCUBEApplication:
         stdout_log_handler = StreamHandler(sys.stdout)
         stdout_log_handler.setFormatter(console_formatter)
 
+        gelf_handler = graypy.GELFUDPHandler("graylog-dau.esrf.fr", 12210)
+        gelf_handler.setLevel(log_level)
+
         for logger_name, logger in _loggers.items():
             if logger_name in enabled_logger_list:
                 logger.addHandler(custom_log_handler)
                 logger.addHandler(stdout_log_handler)
+                logger.addHandler(gelf_handler)
                 logger.setLevel(log_level)
 
                 if log_file and "mx3_ui" in logger_name:

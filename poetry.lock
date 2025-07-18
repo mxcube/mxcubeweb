@@ -1214,6 +1214,22 @@ files = [
 gevent = "*"
 
 [[package]]
+name = "graypy"
+version = "2.1.0"
+description = "Python logging handlers that send messages in the Graylog Extended Log Format (GELF)."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "graypy-2.1.0-py2.py3-none-any.whl", hash = "sha256:5df0102ed52fdaa24dd579bc1e4904480c2c9bbb98917a0b3241ecf510c94207"},
+    {file = "graypy-2.1.0.tar.gz", hash = "sha256:fd8dc4a721de1278576d92db10ac015e99b4e480cf1b18892e79429fd9236e16"},
+]
+
+[package.extras]
+amqp = ["amqplib (==1.0.2)"]
+docs = ["sphinx (>=2.1.2,<3.0.0)", "sphinx-autodoc-typehints (>=1.6.0,<2.0.0)", "sphinx-rtd-theme (>=0.4.3,<1.0.0)"]
+
+[[package]]
 name = "greenlet"
 version = "3.1.1"
 description = "Lightweight in-process concurrent programming"
@@ -4075,4 +4091,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "44e5f582871dedb0529c1aa0aab6c659f3f43bd9f279d66b13384a3e26aeba78"
+content-hash = "47a85b14797222d5aea227e7488e5754eb7b406ce30d4f67a74aba290ccafd7d"
