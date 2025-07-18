@@ -42,7 +42,7 @@
     "react-hook-form": "7.45.0",
     "react-icons": "^4.9.0",
     "react-lazyload": "^3.2.0",
-    "react-redux": "7.2.6",
+    "react-redux": "7.2.9",
     "react-router": "^6.19.0",
     "react-router-dom": "^6.19.0",
     "react-slick": "^0.29.0",
