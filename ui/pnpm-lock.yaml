@@ -13,7 +13,7 @@ importers:
         version: 5.15.4
       '@reduxjs/toolkit':
         specifier: 2.6.1
-        version: 2.6.1(react-redux@7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)
+        version: 2.6.1(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)
       '@rjsf/core':
         specifier: 5.13.1
         version: 5.13.1(@rjsf/utils@5.13.1(react@17.0.2))(react@17.0.2)
@@ -78,8 +78,8 @@ importers:
         specifier: ^3.2.0
         version: 3.2.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       react-redux:
-        specifier: 7.2.6
-        version: 7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        specifier: 7.2.9
+        version: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       react-router:
         specifier: ^6.19.0
         version: 6.19.0(react@17.0.2)
@@ -97,7 +97,7 @@ importers:
         version: 4.1.2
       redux-form:
         specifier: ^8.3.10
-        version: 8.3.10(immutable@4.3.7)(react-redux@7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.1.2)
+        version: 8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.1.2)
       redux-logger:
         specifier: 3.0.6
         version: 3.0.6
@@ -2908,10 +2908,10 @@ packages:
   react-lifecycles-compat@3.0.4:
     resolution: {integrity: sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==}
 
-  react-redux@7.2.6:
-    resolution: {integrity: sha512-10RPdsz0UUrRL1NZE0ejTkucnclYSgXp5q+tB5SWx2qeG2ZJQJyymgAhwKy73yiL/13btfB6fPr+rgbMAaZIAQ==}
+  react-redux@7.2.9:
+    resolution: {integrity: sha512-Gx4L3uM182jEEayZfRbI/G11ZpYdNAnBs70lFVMNdHJI76XYtR+7m0MN+eAs7UHBPhWXcnFPaS+9owSCJQHNpQ==}
     peerDependencies:
-      react: ^16.8.3 || ^17
+      react: ^16.8.3 || ^17 || ^18
       react-dom: '*'
       react-native: '*'
     peerDependenciesMeta:
@@ -4025,7 +4025,7 @@ snapshots:
       '@swc/helpers': 0.4.14
       react: 17.0.2
 
-  '@reduxjs/toolkit@2.6.1(react-redux@7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)':
+  '@reduxjs/toolkit@2.6.1(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)':
     dependencies:
       immer: 10.1.1
       redux: 5.0.1
@@ -4033,7 +4033,7 @@ snapshots:
       reselect: 5.1.1
     optionalDependencies:
       react: 17.0.2
-      react-redux: 7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
 
   '@remix-run/router@1.12.0': {}
 
@@ -6755,7 +6755,7 @@ snapshots:
       markdown-it-sup: 1.0.0
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
-      react-redux: 7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       redux: 4.1.2
     transitivePeerDependencies:
       - react-native
@@ -6817,9 +6817,9 @@ snapshots:
 
   react-lifecycles-compat@3.0.4: {}
 
-  react-redux@7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
     dependencies:
-      '@babel/runtime': 7.22.3
+      '@babel/runtime': 7.25.0
       '@types/react-redux': 7.1.33
       hoist-non-react-statics: 3.3.2
       loose-envify: 1.4.0
@@ -6901,7 +6901,7 @@ snapshots:
       indent-string: 4.0.0
       strip-indent: 3.0.0
 
-  redux-form@8.3.10(immutable@4.3.7)(react-redux@7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.1.2):
+  redux-form@8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.1.2):
     dependencies:
       '@babel/runtime': 7.25.0
       es6-error: 4.1.1
@@ -6912,7 +6912,7 @@ snapshots:
       prop-types: 15.8.1
       react: 17.0.2
       react-is: 16.13.1
-      react-redux: 7.2.6(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       redux: 4.1.2
     optionalDependencies:
       immutable: 4.3.7
