@@ -173,13 +173,13 @@ class Characterisation extends React.Component {
                 <InputField propName="kappa_phi" type="number" label="Phi" />
               </FieldsRow>
               <FieldsRow>
-                {this.props.initialValues?.detector_mode_list?.length !== 0 ? (
+                {this.props.initialValues.detector_mode_list.length > 0 && (
                   <SelectField
                     propName="detector_roi_mode"
                     label="Detector mode"
                     list={this.props.initialValues.detector_mode_list}
                   />
-                ) : null}
+                )}
                 <InputField propName="overlap" label="Overlap" />
               </FieldsRow>
             </CollapsableRows>
