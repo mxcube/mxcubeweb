@@ -93,11 +93,11 @@ importers:
         specifier: 3.3.0
         version: 3.3.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       redux:
-        specifier: 4.1.2
-        version: 4.1.2
+        specifier: 4.2.1
+        version: 4.2.1
       redux-form:
         specifier: ^8.3.10
-        version: 8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.1.2)
+        version: 8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.2.1)
       redux-logger:
         specifier: 3.0.6
         version: 3.0.6
@@ -2996,8 +2996,8 @@ packages:
     peerDependencies:
       redux: ^5.0.0
 
-  redux@4.1.2:
-    resolution: {integrity: sha512-SH8PglcebESbd/shgf6mii6EIoRM0zrQyjcuQ+ojmfxjTtE0z9Y8pa62iA/OJ58qjP6j27uyW4kUF4jl/jd6sw==}
+  redux@4.2.1:
+    resolution: {integrity: sha512-LAUYz4lc+Do8/g7aeRa8JkyDErK6ekstQaqWQrNRW//MY1TvCEpMtpTWvlQ+FPbWCx+Xixu/6SHt5N0HR+SB4w==}
 
   redux@5.0.1:
     resolution: {integrity: sha512-M9/ELqF6fy8FwmkpnF0S3YKOqMyoWJ4+CS5Efg2ct3oY9daQvd/Pc71FpGZsVsbl3Cpb+IIcjBDUnnyBdQbq4w==}
@@ -4337,7 +4337,7 @@ snapshots:
       '@types/hoist-non-react-statics': 3.3.1
       '@types/react': 18.3.3
       hoist-non-react-statics: 3.3.2
-      redux: 4.1.2
+      redux: 4.2.1
 
   '@types/react-transition-group@4.4.6':
     dependencies:
@@ -6756,7 +6756,7 @@ snapshots:
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
       react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
-      redux: 4.1.2
+      redux: 4.2.1
     transitivePeerDependencies:
       - react-native
 
@@ -6901,7 +6901,7 @@ snapshots:
       indent-string: 4.0.0
       strip-indent: 3.0.0
 
-  redux-form@8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.1.2):
+  redux-form@8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.2.1):
     dependencies:
       '@babel/runtime': 7.25.0
       es6-error: 4.1.1
@@ -6913,7 +6913,7 @@ snapshots:
       react: 17.0.2
       react-is: 16.13.1
       react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
-      redux: 4.1.2
+      redux: 4.2.1
     optionalDependencies:
       immutable: 4.3.7
 
@@ -6925,9 +6925,9 @@ snapshots:
     dependencies:
       redux: 5.0.1
 
-  redux@4.1.2:
+  redux@4.2.1:
     dependencies:
-      '@babel/runtime': 7.22.3
+      '@babel/runtime': 7.25.0
 
   redux@5.0.1: {}
 
