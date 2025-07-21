@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-export class LimsResultSummary extends React.Component {
+export class DataCollectionResultSummary extends React.Component {
   taskSummary() {
     const task = this.props.taskData;
     const filePath = this.props.taskData.parameters.fullPath;

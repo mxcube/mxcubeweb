@@ -11,7 +11,7 @@ import {
   TASK_RUNNING,
   TASK_UNCOLLECTED,
 } from '../../constants';
-import { LimsResultSummary } from '../Lims/LimsResultSummary';
+import { DataCollectionResultSummary } from '../DataCollectionResult/DataCollectionResultSummary';
 
 export class TaskItem extends React.Component {
   static defaultProps = {
@@ -167,7 +167,10 @@ export class TaskItem extends React.Component {
               id="taskSummaryPopover"
               title={<b>{this.title()}</b>}
             >
-              <LimsResultSummary taskData={this.props.taskData} scale="0.5" />
+              <DataCollectionResultSummary
+                taskData={this.props.taskData}
+                scale="0.5"
+              />
             </Popover>
           }
         >

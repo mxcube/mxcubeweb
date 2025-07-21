@@ -1,12 +1,12 @@
 /* eslint-disable react/destructuring-assignment */
-import './LimsResultDialog.css';
+import './DataCollectionResultDialog.css';
 
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
-import { LimsResultSummary } from './LimsResultSummary';
+import { DataCollectionResultSummary } from './DataCollectionResultSummary';
 
-export class LimsResultDialog extends React.Component {
+export class DataCollectionResultDialog extends React.Component {
   constructor(props) {
     super(props);
     this.onHide = this.onHide.bind(this);
@@ -19,7 +19,7 @@ export class LimsResultDialog extends React.Component {
   render() {
     return (
       <Modal
-        dialogClassName="lims-result-dialog"
+        dialogClassName="dc-result-dialog"
         show={this.props.show}
         onHide={this.onHide}
       >
@@ -28,7 +28,7 @@ export class LimsResultDialog extends React.Component {
         </Modal.Header>
         <Modal.Body>
           {this.props.taskData ? (
-            <LimsResultSummary taskData={this.props.taskData} />
+            <DataCollectionResultSummary taskData={this.props.taskData} />
           ) : null}
         </Modal.Body>
         <Modal.Footer>
