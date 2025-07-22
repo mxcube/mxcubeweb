@@ -34,33 +34,31 @@ dynamic = [
 requires-poetry = "2.1.3"  # Keep in sync with `.pre-commit-config.yaml`
 
 [tool.poetry.dependencies]
+authlib = "^1.3.0"
 Flask = "^3.0.3"
-werkzeug = "^3.0.3"
-Flask-SocketIO = "^5.3.6"
-flask-sqlalchemy = "^3.1.1"
-Flask-Security-Too = "^5.4.3"
-argon2_cffi = "^23.1.0"
+flask-limiter = { version = "^3.12" }
 flask-login = "^0.6.3"
-gevent-websocket = "0.10.1"
-mock = "^4.0.3"
+Flask-Security-Too = { version = "5.4.3", extras = ["common", "fsqla"] }
+Flask-SocketIO = "^5.3.6"
+gevent = "^23.9.1"
+markupsafe = "^2.1.5"
+mxcubecore =  ">=1.342.0"
+pillow = "^10.4.0"
+pydantic = ">=2.8.2,<2.9.0"
+pytz = "^2022.6"
+requests = "^2.32.4"
 "ruamel.yaml" = "^0.17.21"
 scandir = "^1.10.0"
-redis = "^4.3.5"
-jsonschema = "^4.17.1"
-pydantic = ">=2.8.2,<2.9.0"
-PyDispatcher = "^2.0.6"
-pytz = "^2022.6"
+sqlalchemy = "^2.0.37"
+tomli = { version = "^2.2.1", python = "<=3.10" }
 tzlocal = "^4.2"
-mxcubecore =  ">=1.342.0"
-bcrypt = "^4.0.1"
-authlib = "^1.3.0"
-flask-limiter = "^3.12"
+werkzeug = "^3.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.1.0"
+psutil = "^5.9.4"
 pytest = "^8.3.4"
 pytest-cov = "^6.0.0"
-psutil = "^5.9.4"
 
 [tool.poetry.group.docs.dependencies]
 furo = "^2023.9.10"
