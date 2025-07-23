@@ -6,6 +6,7 @@ It allows configuring widgets for controlling gonio motors, on-axis sample viewe
 The ``ui.yaml`` contains following sections:
 
 * sample_view_
+* sample_view_motors_
 * sample_view_video_controls_
 * beamline_setup_
 * camera_setup_
@@ -17,13 +18,56 @@ See below an `example  ui.yaml <ui_yaml_example_>`_ file.
 sample_view
 -----------
 
-This section configures widgets for controlling gonio motors used for sample alignment.
+This section configures widgets for controlling diffractometer phase and the beam size.
 The section has the following syntax:
 
 .. code-block:: yaml
 
     sample_view:
       id: sample_view
+      components:
+        - attribute: <attribute id>
+          label: <label>
+
+
+The ``components`` key contains a list of auxiliary control widget specifications.
+Each widget specification has the following keys:
+
++-----------+-------------------------------------+
+| key       | purpose                             |
++===========+=====================================+
+| attribute | attribute id                        |
++-----------+-------------------------------------+
+| label     | widget's text label                 |
++-----------+-------------------------------------+
+
+Below is an example showing all auxiliary controls of the ``sample_view`` section:
+
+.. code-block:: yaml
+
+    sample_view:
+      id: sample_view
+      components:
+        - attribute: phase_control
+          label: Phase Control
+        - attribute: beam_size
+          label: Beam size
+
+All auxiliary controls are optional. If you want to hide one from the UI, just remove it from the ``component`` list.
+
+.. image:: auxiliary_controls.png
+
+
+sample_view_motors
+-----------
+
+This section configures widgets for controlling gonio motors used for sample alignment.
+The section has the following syntax:
+
+.. code-block:: yaml
+
+    sample_view_motors:
+      id: sample_view_motors
       components:
         - label: <motor_label>
           attribute: <beamline_attribute>
@@ -71,12 +115,12 @@ Common roles are:
 * zoom
 * focus
 
-Here is an example of ``sample_view`` section:
+Here is an example of ``sample_view_motors`` section:
 
 .. code-block:: yaml
 
-    sample_view:
-      id: sample_view
+    sample_view_motors:
+      id: sample_view_motors
       components:
         - label: Omega
           attribute: diffractometer.phi
