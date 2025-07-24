@@ -204,6 +204,22 @@ class MXCUBEApplication:
         MXCUBEApplication.harvester.init_signals()
 
     @staticmethod
+    def _get_graylog_handler(config, log_level):
+        server_cfg = getattr(config, "server", None)
+        graylog_host = getattr(server_cfg, "GRAYLOG_HOST", None) if server_cfg else None
+        graylog_port = getattr(server_cfg, "GRAYLOG_PORT", None) if server_cfg else None
+        if graylog_host and graylog_port:
+            try:
+                handler = graypy.GELFUDPHandler(graylog_host, graylog_port)
+                handler.setLevel(log_level)
+            except Exception as ex:
+                msg = "Graylog handler could not be initialized: " + str(ex)
+                logging.getLogger("HWR").info(msg)
+            else:
+                return handler
+        return None
+
+    @staticmethod
     def init_logging(log_file, log_level, enabled_logger_list):
         """
         :param str log_file: Path to log file
@@ -258,14 +274,16 @@ class MXCUBEApplication:
         stdout_log_handler = StreamHandler(sys.stdout)
         stdout_log_handler.setFormatter(console_formatter)
 
-        gelf_handler = graypy.GELFUDPHandler("graylog-dau.esrf.fr", 12210)
-        gelf_handler.setLevel(log_level)
+        gelf_handler = MXCUBEApplication._get_graylog_handler(
+            MXCUBEApplication.CONFIG, log_level
+        )
 
         for logger_name, logger in _loggers.items():
             if logger_name in enabled_logger_list:
                 logger.addHandler(custom_log_handler)
                 logger.addHandler(stdout_log_handler)
-                logger.addHandler(gelf_handler)
+                if gelf_handler:
+                    logger.addHandler(gelf_handler)
                 logger.setLevel(log_level)
 
                 if log_file and "mx3_ui" in logger_name:
