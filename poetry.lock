@@ -1186,6 +1186,22 @@ recommended = ["cffi (>=1.12.2) ; platform_python_implementation == \"CPython\""
 test = ["cffi (>=1.12.2) ; platform_python_implementation == \"CPython\"", "coverage (>=5.0) ; sys_platform != \"win32\"", "dnspython (>=1.16.0,<2.0) ; python_version < \"3.10\"", "idna ; python_version < \"3.10\"", "objgraph", "psutil (>=5.7.0) ; sys_platform != \"win32\" or platform_python_implementation == \"CPython\"", "requests", "setuptools"]
 
 [[package]]
+name = "graypy"
+version = "2.1.0"
+description = "Python logging handlers that send messages in the Graylog Extended Log Format (GELF)."
+optional = false
+python-versions = "*"
+groups = ["main"]
+files = [
+    {file = "graypy-2.1.0-py2.py3-none-any.whl", hash = "sha256:5df0102ed52fdaa24dd579bc1e4904480c2c9bbb98917a0b3241ecf510c94207"},
+    {file = "graypy-2.1.0.tar.gz", hash = "sha256:fd8dc4a721de1278576d92db10ac015e99b4e480cf1b18892e79429fd9236e16"},
+]
+
+[package.extras]
+amqp = ["amqplib (==1.0.2)"]
+docs = ["sphinx (>=2.1.2,<3.0.0)", "sphinx-autodoc-typehints (>=1.6.0,<2.0.0)", "sphinx-rtd-theme (>=0.4.3,<1.0.0)"]
+
+[[package]]
 name = "greenlet"
 version = "3.1.1"
 description = "Lightweight in-process concurrent programming"
@@ -3991,4 +4007,4 @@ testing = ["coverage[toml]", "zope.event", "zope.testing"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "0f0632f564b30c997f11b2d37b0fb2384b7a021247f1fe3f9c8885a3eff88244"
+content-hash = "9d941fbce88fee5f6a1e41d364141337dcb560c7b83f00fbce86130d1693ebcc"

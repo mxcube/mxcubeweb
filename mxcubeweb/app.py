@@ -10,6 +10,7 @@ import time
 from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
+import graypy
 
 from mxcubecore import (
     ColorFormatter,
@@ -203,6 +204,22 @@ class MXCUBEApplication:
         MXCUBEApplication.harvester.init_signals()
 
     @staticmethod
+    def _get_graylog_handler(config, log_level):
+        server_cfg = getattr(config, "server", None)
+        graylog_host = getattr(server_cfg, "GRAYLOG_HOST", None)
+        graylog_port = getattr(server_cfg, "GRAYLOG_PORT", None)
+        if graylog_host and graylog_port:
+            try:
+                handler = graypy.GELFUDPHandler(graylog_host, graylog_port)
+                handler.setLevel(log_level)
+            except Exception as ex:
+                msg = "Graylog handler could not be initialized: " + str(ex)
+                logging.getLogger("HWR").info(msg)
+            else:
+                return handler
+        return None
+
+    @staticmethod
     def init_logging(log_file, log_level, enabled_logger_list):
         """
         :param str log_file: Path to log file
@@ -244,6 +261,9 @@ class MXCUBEApplication:
         custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
         custom_log_handler.setLevel(log_level)
         custom_log_handler.setFormatter(file_formatter)
+        gelf_handler = MXCUBEApplication._get_graylog_handler(
+            MXCUBEApplication.CONFIG, log_level
+        )
 
         _loggers = {
             "hwr_logger": logging.getLogger("HWR"),
@@ -261,6 +281,8 @@ class MXCUBEApplication:
             if logger_name in enabled_logger_list:
                 logger.addHandler(custom_log_handler)
                 logger.addHandler(stdout_log_handler)
+                if gelf_handler:
+                    logger.addHandler(gelf_handler)
                 logger.setLevel(log_level)
 
                 if log_file and "mx3_ui" in logger_name:
