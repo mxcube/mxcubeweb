@@ -1,84 +1,9 @@
 /* eslint-disable react/destructuring-assignment */
-import { useEffect, useRef, useState } from 'react';
-import { Modal } from 'react-bootstrap';
-import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
+import { useState } from 'react';
 
+import GalleryModal from './GalleryModal';
 import styles from './imageViewer.module.css';
 
-function GalleryImage(props) {
-  return (
-    <img
-      className={`${styles.image_galery_view} ${props.className}`}
-      src={props.src}
-      alt={props.alt}
-    />
-  );
-}
-
-// eslint-disable-next-line react/no-multi-comp
-function GalleryModal(props) {
-  const { isOpen, drawTarget } = props;
-  const canvasRef = useRef(null);
-  const imageRef = useRef(null);
-
-  useEffect(() => {
-    if (isOpen && drawTarget) {
-      _drawTarget();
-    }
-  });
-
-  function _drawTarget() {
-    const context = canvasRef.getContext('2d');
-
-    canvasRef.style.position = 'absolute';
-    canvasRef.style.left = `${imageRef.offsetLeft}px`;
-    canvasRef.style.top = `${imageRef.offsetTop}px`;
-
-    context.strokeStyle = 'white';
-    context.lineWidth = 2;
-
-    context.beginPath();
-
-    context.moveTo(props.imgTargetX - 20, props.imgTargetY - 20);
-    context.lineTo(props.imgTargetX + 20, props.imgTargetY + 20);
-
-    context.moveTo(props.imgTargetX + 20, props.imgTargetY - 20);
-    context.lineTo(props.imgTargetX - 20, props.imgTargetY + 20);
-
-    context.stroke();
-  }
-
-  if (!isOpen) {
-    return null;
-  }
-
-  return (
-    <Modal show={isOpen} onHide={props.handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>{props.imageName}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <TransformWrapper>
-          <TransformComponent>
-            <img
-              ref={imageRef}
-              alt=""
-              width="100%"
-              height="100%"
-              className={styles.image_modale_view}
-              src={props.src}
-            />
-            {props.drawTarget ? (
-              <canvas ref={canvasRef} aria-label="target_xy" />
-            ) : null}
-          </TransformComponent>
-        </TransformWrapper>
-      </Modal.Body>
-    </Modal>
-  );
-}
-
-// eslint-disable-next-line react/no-multi-comp
 export default function ImageViewer(props) {
   const [showModal, setShowModal] = useState('');
   const [imgUrl, setImgUrl] = useState('');
@@ -100,7 +25,7 @@ export default function ImageViewer(props) {
           return (
             <div key={url} className="col-sm-6 col-md-3 col-xl-2">
               <div className={styles.gallery_card}>
-                <GalleryImage
+                <img
                   className={styles.gallery_thumbnail}
                   src={url}
                   alt={props.imgAlt}
@@ -126,7 +51,7 @@ export default function ImageViewer(props) {
   ) : (
     <div>
       <div className={styles.gallery_card}>
-        <GalleryImage
+        <img
           className={`${styles.gallery_thumbnail} img-fluid`}
           src={props.imgUrl}
           alt={props.imgAlt}
