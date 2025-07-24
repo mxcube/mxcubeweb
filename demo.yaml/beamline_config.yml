@@ -102,6 +102,7 @@ configuration:
       helical:
         # Defaults for helical scan. Missing values are taken from default
         number_of_images: 100
+        detector_mode_list: ["0", "C18", "C2"]
 
     characterisation:
       # Defaults for characterisation. Missing values are taken from default
@@ -110,6 +111,7 @@ configuration:
       overlap: -89
       num_images: 4
       shutterless: false
+      detector_mode_list: ["0", "C18", "C2"]
 
     mesh:
       # Defaults for 'advanced' acquisition. Missing values are taken from default

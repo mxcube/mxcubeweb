@@ -18,7 +18,7 @@ import TaskContainer from '../containers/TaskContainer';
 import WorkflowParametersDialog from '../containers/WorkflowParametersDialog';
 import diagonalNoise from '../img/diagonal-noise.png';
 import ChatWidget from './ChatWidget';
-import { LimsResultDialog } from './Lims/LimsResultDialog';
+import { DataCollectionResultDialog } from './DataCollectionResult/DataCollectionResultDialog';
 import LoadingScreen from './LoadingScreen/LoadingScreen';
 import SelectProposal from './LoginForm/SelectProposal';
 import styles from './Main.module.css';
@@ -66,7 +66,7 @@ function Main() {
       <ConfirmCollectDialog />
       <WorkflowParametersDialog />
       <GphlWorkflowParametersDialog />
-      <LimsResultDialog
+      <DataCollectionResultDialog
         show={general.dialogType === 'LIMS_RESULT_DIALOG'}
         taskData={general.dialogData}
         onHide={() => dispatch(showDialog(false))}

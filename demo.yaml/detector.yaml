@@ -21,5 +21,6 @@ configuration:
   type: Eiger2
   username: detector
   width: 3110
+  roi_mode_list: '["0", "C18", "C12", "C2"]'
 objects:
   detector_distance: dtox.yaml

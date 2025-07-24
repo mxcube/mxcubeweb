@@ -397,7 +397,6 @@ export function addTaskResultAction(
   taskIndex,
   state,
   progress,
-  limsResultData,
   queueID,
 ) {
   return {
@@ -406,13 +405,8 @@ export function addTaskResultAction(
     taskIndex,
     state,
     progress,
-    limsResultData,
     queueID,
   };
-}
-
-export function updateTaskLimsData(sampleID, taskIndex, limsResultData) {
-  return { type: 'UPDATE_TASK_LIMS_DATA', sampleID, taskIndex, limsResultData };
 }
 
 export function deleteSamplesFromQueue(sampleIDList) {

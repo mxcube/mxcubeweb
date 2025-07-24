@@ -13,6 +13,7 @@
   <height>3269</height>
   <hasShutterless>True</hasShutterless>
   <fileSuffix>cbf</fileSuffix>
+  <roi_mode_list>["0", "C18", "C12", "C2"]</roi_mode_list>
 
   <beam>
       <!-- Values are in pixels/mm and pixels resp. -->

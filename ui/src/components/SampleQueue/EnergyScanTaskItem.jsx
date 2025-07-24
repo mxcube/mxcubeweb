@@ -7,7 +7,6 @@ import PropTypes from 'prop-types';
 import { Component } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
-import { TASK_COLLECTED } from '../../constants';
 import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
@@ -20,26 +19,7 @@ export default class EnergyScanTaskItem extends Component {
   constructor(props) {
     super(props);
     this.showForm = this.showForm.bind(this);
-    this.getResult = this.getResult.bind(this);
     this.pointIDString = this.pointIDString.bind(this);
-  }
-
-  getResult(state) {
-    if (state !== TASK_COLLECTED) {
-      return <span />;
-    }
-    const link = this.props.data.limsResultData
-      ? this.props.data.limsResultData.limsTaskLink
-      : '';
-
-    return (
-      <div className={styles.resultBody}>
-        <a href={link} target="_blank" rel="noreferrer">
-          {' '}
-          View Results in ISPyB
-        </a>
-      </div>
-    );
   }
 
   showForm() {
@@ -134,7 +114,6 @@ export default class EnergyScanTaskItem extends Component {
                 <b>Edge:</b> {parameters.edge}
               </div>
             </div>
-            {this.getResult(state)}
           </div>
         </div>
       </TaskItemContainer>
