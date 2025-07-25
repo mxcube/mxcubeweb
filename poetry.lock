@@ -1189,9 +1189,10 @@ test = ["cffi (>=1.12.2) ; platform_python_implementation == \"CPython\"", "cove
 name = "graypy"
 version = "2.1.0"
 description = "Python logging handlers that send messages in the Graylog Extended Log Format (GELF)."
-optional = false
+optional = true
 python-versions = "*"
 groups = ["main"]
+markers = "extra == \"graylog\""
 files = [
     {file = "graypy-2.1.0-py2.py3-none-any.whl", hash = "sha256:5df0102ed52fdaa24dd579bc1e4904480c2c9bbb98917a0b3241ecf510c94207"},
     {file = "graypy-2.1.0.tar.gz", hash = "sha256:fd8dc4a721de1278576d92db10ac015e99b4e480cf1b18892e79429fd9236e16"},
@@ -4004,7 +4005,10 @@ docs = ["Sphinx", "furo", "repoze.sphinx.autointerface"]
 test = ["coverage[toml]", "zope.event", "zope.testing"]
 testing = ["coverage[toml]", "zope.event", "zope.testing"]
 
+[extras]
+graylog = ["graypy"]
+
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "9d941fbce88fee5f6a1e41d364141337dcb560c7b83f00fbce86130d1693ebcc"
+content-hash = "8cdedc9dadfee981e42e766d8ffeb5ccf7afdb1db1df2246aa27f7d552455f70"
