@@ -239,10 +239,18 @@ class MXCUBEAppConfigModel(BaseModel):
     ui_properties: dict[str, UIPropertiesModel] = {}
 
 
+class BraggyConfigModel(BaseModel):
+    BRAGGY_URL: str = Field("", description="Base URL for braggy server")
+    USE_BRAGGY: bool = Field(
+        False, description="Set to True to use braggy for displaying images"
+    )
+
+
 class AppConfigModel(BaseModel):
     server: FlaskConfigModel
     mxcube: MXCUBEAppConfigModel
     sso: SSOConfigModel | None
+    braggy: BraggyConfigModel | None
 
 
 class ResourceHandlerConfigModel(BaseModel):

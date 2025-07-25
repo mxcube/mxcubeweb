@@ -265,6 +265,33 @@ The default value is ``True``.
 The content of this key is a list of username and role specifications.
 Currently, only the *staff* role can be specified.
 
+braggy
+------
+
+The ``braggy`` section allows you to configure the Braggy image viewer integration.
+It contains settings for the Braggy server URL and whether to use Braggy for displaying images.
+The section has the following syntax:
+
+.. code-block:: yaml
+
+    braggy:
+      BRAGGY_URL: <braggy server URL>
+      USE_BRAGGY: <boolean>
+
+The ``braggy`` section may contain keys as described below.
+
+``BRAGGY_URL``
+~~~~~~~~~~~~~~~
+The base URL for the Braggy server.
+This URL is used to construct the full image URL for displaying images in the UI.
+Default value is an empty string, which means that Braggy is not used.
+
+``USE_BRAGGY``
+~~~~~~~~~~~~~~~
+A boolean flag that indicates whether to use Braggy for displaying images.
+If set to `True`, the application will use the Braggy server to display images.
+Default value is `False`, meaning that Braggy is not used.
+
 .. _server_yaml_example:
 
 server.yaml example

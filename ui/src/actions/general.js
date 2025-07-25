@@ -55,9 +55,8 @@ export function showConfirmClearQueueDialog(show = true) {
 export function displayImage(path, imgNum) {
   return async () => {
     const data = await fetchDisplayImage(path, imgNum);
-    window.open(
-      `https://braggy.mxcube3.esrf.fr/?file=${data.path}/image_${data.img_num}.h5.dataset`,
-      'braggy',
-    );
+    if (data && data.image_url) {
+      window.open(data.image_url, 'braggy');
+    }
   };
 }

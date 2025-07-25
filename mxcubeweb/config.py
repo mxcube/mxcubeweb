@@ -10,6 +10,7 @@ from pydantic.v1 import (
 
 from mxcubeweb.core.models.configmodels import (
     AppConfigModel,
+    BraggyConfigModel,
     FlaskConfigModel,
     MXCUBEAppConfigModel,
     SSOConfigModel,
@@ -38,6 +39,7 @@ class Config:
     flask: FlaskConfigModel
     app: MXCUBEAppConfigModel
     sso: SSOConfigModel
+    braggy: BraggyConfigModel
 
     def __init__(self, fpath):
         Config.CONFIG_ROOT_PATH = fpath
@@ -48,6 +50,7 @@ class Config:
         self.app = app_config.mxcube
         self.app.ui_properties = uiprop
         self.sso = app_config.sso
+        self.braggy = app_config.braggy
 
     def load_config(self, component_name, schema):
         fpath = os.path.join(Config.CONFIG_ROOT_PATH, f"{component_name}.yaml")

@@ -82,3 +82,7 @@ mxcube:
     users:
       - username: opid291
         role: staff
+
+braggy:
+  BRAGGY_URL: ""
+  USE_BRAGGY: false
