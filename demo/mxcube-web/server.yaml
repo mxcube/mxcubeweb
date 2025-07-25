@@ -45,8 +45,8 @@ server:
   CSP_REPORT_ONLY: false
   CSP_REPORT_URI: "/mxcube/api/v0.1/csp/report"
 
-  GRAYLOG_HOST: "graylog-dau.esrf.fr"
-  GRAYLOG_PORT: 12210
+  GRAYLOG_HOST: null
+  GRAYLOG_PORT: null
 
 sso:
   USE_SSO: false
