@@ -116,6 +116,51 @@ Path of the certificate file to use for SSL connections.
 
 Path of the private key file to use for SSL connections.
 
+``CSP_ENABLED``
+~~~~~~~~~~~~~~~
+
+Enable or disable Content Security Policy (CSP) headers for the server.
+When set to ``true``, CSP headers are sent with responses according to the policy defined in ``CSP_POLICY``.
+
+Default value is ``false``.
+
+``CSP_POLICY``
+~~~~~~~~~~~~~~
+
+Defines the Content Security Policy (CSP) rules applied by the server.
+This should be a mapping of CSP directives to lists of allowed sources.
+
+``CSP_REPORT_ONLY``
+~~~~~~~~~~~~~~~~~~~
+
+If set to ``true``, the CSP policy is only reported (not enforced).
+Violations are sent to the URI specified by ``CSP_REPORT_URI``.
+
+Default value is ``false``.
+
+``CSP_REPORT_URI``
+~~~~~~~~~~~~~~~~~~
+
+Specifies the URI where CSP violation reports are sent when ``CSP_REPORT_ONLY`` is enabled.
+
+Default value is ``/mxcube/api/v0.1/csp/report``.
+
+``GRAYLOG_HOST``
+~~~~~~~~~~~~~~~~
+
+Hostname or IP address of the Graylog server for logging.
+Set to ``null`` to disable Graylog logging.
+
+Default value is ``null``.
+
+``GRAYLOG_PORT``
+~~~~~~~~~~~~~~~~
+
+Port number of the Graylog server for logging.
+Set to ``null`` to disable Graylog logging.
+
+Default value is ``null``.
+
 mxcube
 ------
 
