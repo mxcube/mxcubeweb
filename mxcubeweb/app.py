@@ -10,7 +10,11 @@ import time
 from logging import StreamHandler
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
-import graypy
+
+try:
+    import graypy
+except ImportError:
+    graypy = None
 
 from mxcubecore import (
     ColorFormatter,
@@ -205,17 +209,19 @@ class MXCUBEApplication:
 
     @staticmethod
     def _get_graylog_handler(config, log_level):
+        if graypy is None:
+            return None
         server_cfg = getattr(config, "server", None)
         graylog_host = getattr(server_cfg, "GRAYLOG_HOST", None)
         graylog_port = getattr(server_cfg, "GRAYLOG_PORT", None)
         if graylog_host and graylog_port:
             try:
                 handler = graypy.GELFUDPHandler(graylog_host, graylog_port)
-                handler.setLevel(log_level)
             except Exception as ex:
                 msg = "Graylog handler could not be initialized: " + str(ex)
                 logging.getLogger("HWR").info(msg)
             else:
+                handler.setLevel(log_level)
                 return handler
         return None
 
