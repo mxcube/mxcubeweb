@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 import { useEffect, useRef } from 'react';
 import { Modal } from 'react-bootstrap';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
@@ -6,7 +5,16 @@ import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
 import styles from './imageViewer.module.css';
 
 export default function GalleryModal(props) {
-  const { isOpen, drawTarget } = props;
+  const {
+    handleClose,
+    isOpen,
+    drawTarget,
+    imgTargetX,
+    imgTargetY,
+    imageName,
+    src,
+  } = props;
+
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
 
@@ -28,11 +36,11 @@ export default function GalleryModal(props) {
 
     context.beginPath();
 
-    context.moveTo(props.imgTargetX - 20, props.imgTargetY - 20);
-    context.lineTo(props.imgTargetX + 20, props.imgTargetY + 20);
+    context.moveTo(imgTargetX - 20, imgTargetY - 20);
+    context.lineTo(imgTargetX + 20, imgTargetY + 20);
 
-    context.moveTo(props.imgTargetX + 20, props.imgTargetY - 20);
-    context.lineTo(props.imgTargetX - 20, props.imgTargetY + 20);
+    context.moveTo(imgTargetX + 20, imgTargetY - 20);
+    context.lineTo(imgTargetX - 20, imgTargetY + 20);
 
     context.stroke();
   }
@@ -42,9 +50,9 @@ export default function GalleryModal(props) {
   }
 
   return (
-    <Modal show={isOpen} onHide={props.handleClose}>
+    <Modal show={isOpen} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>{props.imageName}</Modal.Title>
+        <Modal.Title>{imageName}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <TransformWrapper>
@@ -55,11 +63,9 @@ export default function GalleryModal(props) {
               width="100%"
               height="100%"
               className={styles.image_modale_view}
-              src={props.src}
+              src={src}
             />
-            {props.drawTarget ? (
-              <canvas ref={canvasRef} aria-label="target_xy" />
-            ) : null}
+            {drawTarget && <canvas ref={canvasRef} aria-label="target_xy" />}
           </TransformComponent>
         </TransformWrapper>
       </Modal.Body>
