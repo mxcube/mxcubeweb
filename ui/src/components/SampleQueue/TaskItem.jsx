@@ -129,35 +129,15 @@ export default class TaskItem extends Component {
   }
 
   render() {
-    const {
-      data,
-      deleteTask,
-      progress,
-      sampleId,
-      selected,
-      show,
-      showContextMenu,
-      state,
-      taskHeaderOnClickHandler,
-      taskHeaderOnContextMenuHandler,
-    } = this.props;
+    const { data } = this.props;
     const wedges =
       data.type === 'Interleaved' ? data.parameters.wedges : [data];
 
     return (
       <TaskItemContainer
-        dataLabel={data.label}
-        deleteTask={deleteTask}
         index={this.props.index}
+        data={data}
         pointIDString={this.pointIDString(wedges)}
-        progress={progress}
-        sampleId={sampleId}
-        selected={selected}
-        show={show}
-        showContextMenu={showContextMenu}
-        state={state}
-        taskHeaderOnClickHandler={taskHeaderOnClickHandler}
-        taskHeaderOnContextMenuHandler={taskHeaderOnContextMenuHandler}
       >
         <div className={styles.taskBody}>
           {wedges.map((wedge, i) => {

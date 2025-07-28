@@ -5,8 +5,8 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { showDialog } from '../actions/general';
-import { addTask, deleteTask } from '../actions/queue';
-import { collapseItem, selectItem, showList } from '../actions/queueGUI';
+import { addTask } from '../actions/queue';
+import { showList } from '../actions/queueGUI';
 import { showTaskForm } from '../actions/taskForm';
 import { showWorkflowParametersDialog } from '../actions/workflow';
 import UserMessage from '../components/Notify/UserMessage';
@@ -102,10 +102,7 @@ class SampleQueueContainer extends React.Component {
             mounted={currentSampleID}
             sampleList={sampleList}
             checked={checked}
-            deleteTask={this.props.deleteTask}
             showForm={showForm}
-            collapseItem={this.props.collapseItem}
-            selectItem={this.props.selectItem}
             displayData={displayData}
             addTask={this.props.addTask}
             plotsData={this.props.plotsData}
@@ -156,7 +153,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     // Queue actions
-    deleteTask: bindActionCreators(deleteTask, dispatch),
     addTask: bindActionCreators(addTask, dispatch),
 
     // Workflow action
@@ -165,9 +161,6 @@ function mapDispatchToProps(dispatch) {
       dispatch,
     ),
 
-    // Queue GUI actions
-    collapseItem: bindActionCreators(collapseItem, dispatch),
-    selectItem: bindActionCreators(selectItem, dispatch),
     showList: bindActionCreators(showList, dispatch),
 
     showForm: bindActionCreators(showTaskForm, dispatch),

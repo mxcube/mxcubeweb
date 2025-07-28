@@ -73,35 +73,15 @@ export default class EnergyScanTaskItem extends Component {
   }
 
   render() {
-    const {
-      data,
-      deleteTask,
-      progress,
-      sampleId,
-      selected,
-      show,
-      showContextMenu,
-      state,
-      taskHeaderOnClickHandler,
-      taskHeaderOnContextMenuHandler,
-    } = this.props;
+    const { data } = this.props;
 
     const { parameters } = data;
 
     return (
       <TaskItemContainer
-        dataLabel={data.label}
-        deleteTask={deleteTask}
         index={this.props.index}
+        data={data}
         pointIDString={this.pointIDString(parameters)}
-        progress={progress}
-        sampleId={sampleId}
-        selected={selected}
-        show={show}
-        showContextMenu={showContextMenu}
-        state={state}
-        taskHeaderOnClickHandler={taskHeaderOnClickHandler}
-        taskHeaderOnContextMenuHandler={taskHeaderOnContextMenuHandler}
       >
         <div className={styles.taskBody}>
           <div>

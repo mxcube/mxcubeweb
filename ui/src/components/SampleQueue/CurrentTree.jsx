@@ -1,7 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
-/* eslint-disable react/no-unused-state */
 import React from 'react';
-import { contextMenu, Item, Menu } from 'react-contexify';
+import { Item, Menu } from 'react-contexify';
 
 import CharacterisationTaskItem from './CharacterisationTaskItem';
 import EnergyScanTaskItem from './EnergyScanTaskItem';
@@ -13,14 +12,10 @@ import XRFTaskItem from './XRFTaskItem';
 export default class CurrentTree extends React.Component {
   constructor(props) {
     super(props);
-    this.taskHeaderOnClickHandler = this.taskHeaderOnClickHandler.bind(this);
-    this.taskHeaderOnContextMenuHandler =
-      this.taskHeaderOnContextMenuHandler.bind(this);
     this.showInterleavedDialog = this.showInterleavedDialog.bind(this);
     this.interleavedAvailable = this.interleavedAvailable.bind(this);
     this.selectedTasks = this.selectedTasks.bind(this);
     this.duplicateTask = this.duplicateTask.bind(this);
-    this.state = { showContextMenu: false, taskIndex: -1 };
   }
 
   selectedTasks() {
@@ -47,13 +42,6 @@ export default class CurrentTree extends React.Component {
     return selectedTasks;
   }
 
-  showContextMenu(event, id) {
-    contextMenu.show({
-      id,
-      event,
-    });
-  }
-
   interleavedAvailable() {
     let available = false;
     const selectedTasks = this.selectedTasks();
@@ -71,9 +59,8 @@ export default class CurrentTree extends React.Component {
     return available;
   }
 
-  duplicateTask() {
-    const task =
-      this.props.sampleList[this.props.mounted].tasks[this.state.taskIndex];
+  duplicateTask(taskIndex) {
+    const task = this.props.sampleList[this.props.mounted].tasks[taskIndex];
 
     if (task) {
       const tpars = {
@@ -83,19 +70,6 @@ export default class CurrentTree extends React.Component {
       };
       this.props.addTask([task.sampleID], tpars, false);
     }
-  }
-
-  taskHeaderOnClickHandler(e, index) {
-    const task = this.props.sampleList[this.props.mounted].tasks[index];
-    if (!e.ctrlKey) {
-      this.props.collapseItem(task.queueID);
-    } else {
-      this.props.selectItem(task.queueID);
-    }
-  }
-
-  taskHeaderOnContextMenuHandler(_e, index) {
-    this.setState({ showContextMenu: true, taskIndex: index });
   }
 
   showInterleavedDialog() {
@@ -141,7 +115,6 @@ export default class CurrentTree extends React.Component {
         <div style={{ top: '6%', height: '69%' }} className={styles.listBody}>
           {sampleTasks.map((taskData, i) => {
             let task = null;
-            const displayData = this.props.displayData[taskData.queueID] || {};
 
             switch (taskData.type) {
               case 'Workflow':
@@ -152,23 +125,14 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
-                    selected={displayData.selected}
                     checked={this.props.checked}
-                    taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
-                    taskHeaderOnContextMenuHandler={
-                      this.taskHeaderOnContextMenuHandler
-                    }
                     state={
                       this.props.sampleList[taskData.sampleID].tasks[i].state
                     }
-                    show={displayData.collapsed}
-                    progress={displayData.progress}
                     showForm={this.props.showForm}
                     shapes={this.props.shapes}
                     showDialog={this.props.showDialog}
-                    showContextMenu={this.showContextMenu}
                     showWorkflowParametersDialog={
                       this.props.showWorkflowParametersDialog
                     }
@@ -184,24 +148,12 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
-                    selected={displayData.selected}
                     checked={this.props.checked}
-                    taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
-                    taskHeaderOnContextMenuHandler={
-                      this.taskHeaderOnContextMenuHandler
-                    }
-                    state={
-                      this.props.sampleList[taskData.sampleID].tasks[i].state
-                    }
-                    show={displayData.collapsed}
-                    progress={displayData.progress}
                     showForm={this.props.showForm}
                     plotsData={this.props.plotsData}
                     plotsInfo={this.props.plotsInfo}
                     showDialog={this.props.showDialog}
-                    showContextMenu={this.showContextMenu}
                   />
                 );
 
@@ -214,23 +166,11 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
-                    selected={displayData.selected}
                     checked={this.props.checked}
-                    taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
-                    taskHeaderOnContextMenuHandler={
-                      this.taskHeaderOnContextMenuHandler
-                    }
-                    state={
-                      this.props.sampleList[taskData.sampleID].tasks[i].state
-                    }
-                    show={displayData.collapsed}
-                    progress={displayData.progress}
                     showForm={this.props.showForm}
                     shapes={this.props.shapes}
                     showDialog={this.props.showDialog}
-                    showContextMenu={this.showContextMenu}
                   />
                 );
 
@@ -243,24 +183,15 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
-                    selected={displayData.selected}
                     checked={this.props.checked}
-                    taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
-                    taskHeaderOnContextMenuHandler={
-                      this.taskHeaderOnContextMenuHandler
-                    }
                     state={
                       this.props.sampleList[taskData.sampleID].tasks[i].state
                     }
-                    show={displayData.collapsed}
-                    progress={displayData.progress}
                     showForm={this.props.showForm}
                     addTask={this.props.addTask}
                     shapes={this.props.shapes}
                     showDialog={this.props.showDialog}
-                    showContextMenu={this.showContextMenu}
                   />
                 );
 
@@ -273,23 +204,11 @@ export default class CurrentTree extends React.Component {
                     index={i}
                     id={`${taskData.queueID}`}
                     data={taskData}
-                    deleteTask={this.props.deleteTask}
                     sampleId={sampleData.sampleID}
-                    selected={displayData.selected}
                     checked={this.props.checked}
-                    taskHeaderOnClickHandler={this.taskHeaderOnClickHandler}
-                    taskHeaderOnContextMenuHandler={
-                      this.taskHeaderOnContextMenuHandler
-                    }
-                    state={
-                      this.props.sampleList[taskData.sampleID].tasks[i].state
-                    }
-                    show={displayData.collapsed}
-                    progress={displayData.progress}
                     showForm={this.props.showForm}
                     shapes={this.props.shapes}
                     showDialog={this.props.showDialog}
-                    showContextMenu={this.showContextMenu}
                   />
                 );
               }
@@ -305,7 +224,9 @@ export default class CurrentTree extends React.Component {
           >
             Create interleaved data collection
           </Item>
-          <Item onClick={this.duplicateTask}>Duplicate this item</Item>
+          <Item onClick={({ props }) => this.duplicateTask(props.taskIndex)}>
+            Duplicate this item
+          </Item>
         </Menu>
       </div>
     );

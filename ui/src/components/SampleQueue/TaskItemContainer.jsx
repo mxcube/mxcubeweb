@@ -1,6 +1,9 @@
-import { Component } from 'react';
 import { Collapse, ProgressBar } from 'react-bootstrap';
+import { contextMenu } from 'react-contexify';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { deleteTask } from '../../actions/queue';
+import { collapseItem, selectItem } from '../../actions/queueGUI';
 import {
   TASK_COLLECT_FAILED,
   TASK_COLLECTED,
@@ -15,88 +18,135 @@ const stateBasedStyles = {
   [TASK_COLLECT_FAILED]: styles.taskError,
 };
 
-export default class TaskItemContainer extends Component {
-  constructor(props) {
-    super(props);
-    this.taskHeaderOnClick = this.taskHeaderOnClick.bind(this);
-    this.taskHeaderOnContextMenu = this.taskHeaderOnContextMenu.bind(this);
-    this.deleteTask = this.deleteTask.bind(this);
+/**
+ * @typedef {Object} TaskData
+ * @property {string} queueID
+ * @property {string} type
+ * @property {string} label
+ * @property {{ label: string }} [parameters]
+ * @property {Array<any>} [diffractionPlan]
+ */
+
+/**
+ * Task item container component.
+ *
+ * @param {Object} props
+ * @param {React.ReactNode} props.children - Nested child elements
+ * @param {TaskData} props.data - Task data object
+ * @param {number} props.index - Index of the task in the queue
+ * @param {string} props.pointIDString - ID string displayed in the UI
+ * @returns {JSX.Element}
+ */
+export default function TaskItemContainer({
+  children,
+  data,
+  index,
+  pointIDString,
+}) {
+  const dispatch = useDispatch();
+  const currentSampleID = useSelector((state) => state.queue.currentSampleID);
+  const displayData = useSelector(
+    (state) => state.queueGUI.displayData[data.queueID] || {},
+  );
+  const taskState = useSelector(
+    (state) =>
+      state.sampleGrid.sampleList[currentSampleID]?.tasks[index]?.state,
+  );
+
+  function handleContextMenu(e) {
+    e.preventDefault();
+    contextMenu.show({
+      id: 'currentSampleQueueContextMenu',
+      event: e,
+      props: {
+        taskIndex: index,
+      },
+    });
   }
 
-  taskHeaderOnClick(e) {
-    const { index, taskHeaderOnClickHandler } = this.props;
-    taskHeaderOnClickHandler(e, index);
+  function taskHeaderOnClick(e) {
+    if (!e.ctrlKey) {
+      dispatch(collapseItem(data.queueID));
+    } else {
+      dispatch(selectItem(data.queueID));
+    }
   }
 
-  taskHeaderOnContextMenu(e) {
-    const { index, taskHeaderOnContextMenuHandler } = this.props;
-    taskHeaderOnContextMenuHandler(e, index);
+  function taskHeaderOnKeyDown(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      taskHeaderOnClick(e);
+    }
   }
 
-  deleteTask(e) {
+  function onDeleteTask(e) {
     e.stopPropagation();
-    const { deleteTask, sampleId, index } = this.props;
-    deleteTask(sampleId, index);
+    dispatch(deleteTask(currentSampleID, index));
   }
 
-  render() {
-    const {
-      children,
-      dataLabel,
-      pointIDString,
-      progress,
-      selected,
-      show,
-      showContextMenu,
-      warningTaskCSS = false,
-      state,
-    } = this.props;
+  let taskCSS = displayData.selected
+    ? styles.taskHeadSelected
+    : styles.taskHead;
 
-    let taskCSS = selected ? styles.taskHeadSelected : styles.taskHead;
-    taskCSS += ` ${
-      warningTaskCSS ? styles.taskWarning : stateBasedStyles[state] || ''
-    }`;
+  // there is a special css style for emitting a warning signal
+  // if a diffraction task is collected but no diffraction plan is present
+  if (
+    data.type === 'Characterisation' &&
+    taskState === TASK_COLLECTED &&
+    data.diffractionPlan.length === undefined
+  ) {
+    taskCSS += ` ${styles.taskWarning}`;
+  } else {
+    taskCSS += ` ${stateBasedStyles[taskState] || ''}`;
+  }
 
-    return (
-      <div className={styles.nodeSample}>
+  const dataLabel = data.type.includes('Workflow')
+    ? data.parameters.label
+    : data.label;
+
+  return (
+    <div className={styles.nodeSample}>
+      <div onContextMenu={(e) => handleContextMenu(e)}>
         <div
-          onContextMenu={(e) =>
-            showContextMenu(e, 'currentSampleQueueContextMenu')
-          }
-          id="currentSampleQueueContextMenu"
+          role="button"
+          tabIndex={0}
+          onClick={taskHeaderOnClick}
+          onKeyDown={taskHeaderOnKeyDown}
+          aria-expanded={!displayData.collapsed}
+          aria-controls={`collapse-${data.queueID}`}
+          className={taskCSS}
+          style={{ display: 'flex' }}
         >
-          <div
-            onClick={this.taskHeaderOnClick}
-            onContextMenu={this.taskHeaderOnContextMenu}
-          >
-            <div className={taskCSS} style={{ display: 'flex' }}>
-              <span className={styles.nodeName} style={{ fontWeight: 'bold' }}>
-                {pointIDString} {dataLabel}
-              </span>
-              {state === TASK_RUNNING && (
-                <ProgressBar
-                  variant="info"
-                  striped
-                  className={styles.progressBar}
-                  min={0}
-                  max={1}
-                  animated={progress < 1}
-                  label={`${(progress * 100).toPrecision(3)} %`}
-                  now={progress}
-                />
-              )}
+          <span className={styles.nodeName} style={{ fontWeight: 'bold' }}>
+            {pointIDString} {dataLabel}
+          </span>
+          {taskState === TASK_RUNNING && (
+            <ProgressBar
+              variant="info"
+              striped
+              className={styles.progressBar}
+              min={0}
+              max={1}
+              animated={displayData.progress < 1}
+              label={`${(displayData.progress * 100).toPrecision(3)} %`}
+              now={displayData.progress}
+            />
+          )}
 
-              {state === TASK_UNCOLLECTED && (
-                <i
-                  className={`fas fa-times ${styles.delTask}`}
-                  onClick={this.deleteTask}
-                />
-              )}
-            </div>
-          </div>
-          <Collapse in={Boolean(show)}>{children}</Collapse>
+          {taskState === TASK_UNCOLLECTED && (
+            <i
+              className={`fas fa-times ${styles.delTask}`}
+              onClick={onDeleteTask}
+            />
+          )}
         </div>
+        <Collapse
+          id={`collapse-${data.queueID}`}
+          in={Boolean(displayData.collapsed)}
+        >
+          {children}
+        </Collapse>
       </div>
-    );
-  }
+    </div>
+  );
 }

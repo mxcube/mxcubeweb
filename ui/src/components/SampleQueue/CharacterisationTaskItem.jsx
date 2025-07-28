@@ -179,39 +179,15 @@ export default class TaskItem extends Component {
   }
 
   render() {
-    const {
-      data,
-      deleteTask,
-      progress,
-      sampleId,
-      selected,
-      show,
-      showContextMenu,
-      state,
-      taskHeaderOnClickHandler,
-      taskHeaderOnContextMenuHandler,
-    } = this.props;
+    const { data, state } = this.props;
     const wedges =
       data.type === 'Interleaved' ? data.parameters.wedges : [data];
 
     return (
       <TaskItemContainer
-        dataLabel={data.label}
-        deleteTask={deleteTask}
-        diffractionPlanLength={data.diffractionPlan.length}
         index={this.props.index}
+        data={data}
         pointIDString={this.pointIDString(wedges)}
-        progress={progress}
-        sampleId={sampleId}
-        selected={selected}
-        show={show}
-        showContextMenu={showContextMenu}
-        warningTaskCSS={
-          state === TASK_COLLECTED && data.diffractionPlan.length === undefined
-        } // this is a special prop for emitting a warning signal if the task is collected but has no diffraction plan
-        state={state}
-        taskHeaderOnClickHandler={taskHeaderOnClickHandler}
-        taskHeaderOnContextMenuHandler={taskHeaderOnContextMenuHandler}
       >
         <div className={styles.taskBody}>
           {wedges.map((wedge, i) => {
