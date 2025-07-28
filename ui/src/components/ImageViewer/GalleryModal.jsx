@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import { useEffect, useRef } from 'react';
 import { Modal } from 'react-bootstrap';
 import { TransformComponent, TransformWrapper } from 'react-zoom-pan-pinch';
@@ -35,13 +36,10 @@ export default function GalleryModal(props) {
     context.lineWidth = 2;
 
     context.beginPath();
-
     context.moveTo(imgTargetX - 20, imgTargetY - 20);
     context.lineTo(imgTargetX + 20, imgTargetY + 20);
-
     context.moveTo(imgTargetX + 20, imgTargetY - 20);
     context.lineTo(imgTargetX - 20, imgTargetY + 20);
-
     context.stroke();
   }
 
@@ -72,3 +70,13 @@ export default function GalleryModal(props) {
     </Modal>
   );
 }
+
+GalleryModal.propTypes = {
+  handleClose: PropTypes.func.isRequired,
+  isOpen: PropTypes.bool.isRequired,
+  drawTarget: PropTypes.bool,
+  imgTargetX: PropTypes.number,
+  imgTargetY: PropTypes.number,
+  imageName: PropTypes.string,
+  src: PropTypes.string,
+};
