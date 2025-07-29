@@ -1,40 +1,26 @@
-/* eslint-disable react/destructuring-assignment */
-
-import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
 import styles from './dataCollectionResult.module.css';
 import { DataCollectionResultSummary } from './DataCollectionResultSummary';
 
-export class DataCollectionResultDialog extends React.Component {
-  constructor(props) {
-    super(props);
-    this.onHide = this.onHide.bind(this);
-  }
-      dialogClassName={styles.dc_result_dialog}
-  onHide() {
-    this.props.onHide();
-  }
+export function DataCollectionResultDialog(props) {
+  const { show, onHide, taskData } = props;
 
-  render() {
-    return (
-      <Modal
-        dialogClassName="dc-result-dialog"
-        show={this.props.show}
-        onHide={this.onHide}
-      >
-        <Modal.Header closeButton>
-          <Modal.Title>Result summary</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {this.props.taskData ? (
-            <DataCollectionResultSummary taskData={this.props.taskData} />
-          ) : null}
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={this.onHide}>Close</Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
+  return (
+    <Modal
+      dialogClassName={styles.dc_result_dialog}
+      show={show}
+      onHide={onHide}
+    >
+      <Modal.Header closeButton>
+        <Modal.Title>Result summary : {taskData?.label}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {taskData && <DataCollectionResultSummary taskData={taskData} />}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={onHide}>Close</Button>
+      </Modal.Footer>
+    </Modal>
+  );
 }
