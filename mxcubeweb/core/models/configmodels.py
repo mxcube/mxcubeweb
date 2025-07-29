@@ -201,6 +201,10 @@ class MXCUBEAppConfigModel(BaseModel):
         description="If the connected client's hostname ends with one of these domains"
         ", it will be considered 'local'",
     )
+    SESSION_REFRESH_INTERVAL: int = Field(
+        9000,
+        description="Session refresh interval in milliseconds",
+    )
     usermanager: UserManagerConfigModel
     ui_properties: dict[str, UIPropertiesModel] = {}
 

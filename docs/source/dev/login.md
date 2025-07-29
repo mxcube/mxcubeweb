@@ -49,7 +49,7 @@ For this purpose:
   right after successful authentication.
 
 - The front-end calls the `/mxcube/api/v0.1/login/refresh_session` endpoint
-  regularly (hardcoded value: 9000 milliseconds)
+  regularly (interval is specified in [`server.yaml`](../config/server.rst#session-refresh-interval), default to 9000 milliseconds )
   for as long as the browser tab is open.
 
 Every time the _refresh_ endpoint is called,

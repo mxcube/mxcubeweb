@@ -390,6 +390,7 @@ class BaseUserManager(ComponentBase):
             "rootPath": HWR.beamline.session.get_base_image_directory(),
             "user": current_user.todict(),
             "useSSO": self.app.CONFIG.sso.USE_SSO,
+            "sessionRefreshInterval": self.app.CONFIG.app.SESSION_REFRESH_INTERVAL,
         }
 
         res["selectedProposal"] = "%s%s" % (

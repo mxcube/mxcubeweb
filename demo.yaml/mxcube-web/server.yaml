@@ -31,6 +31,10 @@ mxcube:
   # Mode, SSX-CHIP, SSX-INJECTOR, OSC
   mode: OSC
 
+  # Interval with which request to refresh token is made
+  # by the client application.
+  SESSION_REFRESH_INTERVAL: 9000
+
   usermanager:
     class: UserManager
     inhouse_is_staff: true

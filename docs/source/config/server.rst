@@ -131,6 +131,7 @@ The section has the following syntax:
       VIDEO_FORMAT: <format name>
       VIDEO_STREAM_URL: <stream URL>
       VIDEO_STREAM_PORT: <stream port>
+      SESSION_REFRESH_INTERVAL: <refresh interval>
       usermanager:
         class: <class name>
         inhouse_is_staff: <boolean>
@@ -192,6 +193,13 @@ that provide video stream from custom URLs.
 This configuration is used when ``USE_EXTERNAL_STREAMER`` flag is enabled.
 The specified value is passed on to the camera hardware object,
 when invoking the start stream hook.
+
+``SESSION_REFRESH_INTERVAL``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The interval in milliseconds at which the front-end makes
+requests to refresh the session.
+
+Default interval is ``9000`` milliseconds.
 
 ``usermanager``
 ~~~~~~~~~~~~~~~

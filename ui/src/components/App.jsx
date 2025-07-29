@@ -20,8 +20,6 @@ import LoadingScreen from './LoadingScreen/LoadingScreen';
 import Main from './Main';
 import PrivateOutlet from './PrivateOutlet';
 
-const REFRESH_INTERVAL = 9000;
-
 const router = createBrowserRouter([
   {
     path: '/login',
@@ -71,6 +69,10 @@ function App() {
   const { showBoundary } = useErrorBoundary();
   const loggedIn = useSelector((state) => state.login.loggedIn);
 
+  const sessionRefreshInterval = useSelector(
+    (state) => state.login.sessionRefreshInterval,
+  );
+
   useEffect(() => {
     // Fetch login info on mount
     dispatch(getLoginInfo()).catch(showBoundary); // eslint-disable-line promise/prefer-await-to-then
@@ -79,7 +81,10 @@ function App() {
   useEffect(() => {
     if (loggedIn) {
       serverIO.listen();
-      const refreshInterval = setInterval(sendRefreshSession, REFRESH_INTERVAL);
+      const refreshInterval = setInterval(
+        sendRefreshSession,
+        sessionRefreshInterval,
+      );
 
       return () => {
         clearInterval(refreshInterval);
@@ -89,7 +94,7 @@ function App() {
 
     // no clean-up required, until we connect to serverIO
     return undefined;
-  }, [loggedIn]);
+  }, [loggedIn, sessionRefreshInterval]);
 
   if (loggedIn === null) {
     // Fetching login info

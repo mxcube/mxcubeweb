@@ -69,6 +69,10 @@ mxcube:
   # This is used to determine whether we can get samples from the sample changer
   # if false, Only LIMS samples will be availble to fetch for the sample list
 
+  # Interval with which request to refresh token is made
+  # by the client application.
+  SESSION_REFRESH_INTERVAL: 9000
+
   usermanager:
     class: UserManager
     inhouse_is_staff: true

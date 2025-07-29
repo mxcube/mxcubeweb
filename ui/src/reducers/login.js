@@ -7,6 +7,7 @@ const INITIAL_STATE = {
   user: {
     inControl: false,
   },
+  sessionRefreshInterval: 9000,
 };
 
 function loginReducer(state = INITIAL_STATE, action = {}) {
@@ -24,6 +25,7 @@ function loginReducer(state = INITIAL_STATE, action = {}) {
         rootPath,
         limsName,
         useSSO,
+        sessionRefreshInterval,
       } = action.loginInfo;
       return {
         ...state,
@@ -38,6 +40,7 @@ function loginReducer(state = INITIAL_STATE, action = {}) {
         rootPath,
         limsName,
         useSSO,
+        sessionRefreshInterval,
       };
     }
     case 'SHOW_PROPOSALS_FORM': {
