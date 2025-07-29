@@ -1,9 +1,9 @@
 /* eslint-disable react/destructuring-assignment */
-import './DataCollectionResultDialog.css';
 
 import React from 'react';
 import { Button, Modal } from 'react-bootstrap';
 
+import styles from './dataCollectionResult.module.css';
 import { DataCollectionResultSummary } from './DataCollectionResultSummary';
 
 export class DataCollectionResultDialog extends React.Component {
@@ -11,7 +11,7 @@ export class DataCollectionResultDialog extends React.Component {
     super(props);
     this.onHide = this.onHide.bind(this);
   }
-
+      dialogClassName={styles.dc_result_dialog}
   onHide() {
     this.props.onHide();
   }
