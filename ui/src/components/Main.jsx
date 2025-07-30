@@ -6,7 +6,6 @@ import { Stack } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Outlet, useLocation } from 'react-router-dom';
 
-import { showDialog } from '../actions/general';
 import { getInitialState } from '../actions/login';
 import ConfirmCollectDialog from '../containers/ConfirmCollectDialog';
 import ConnectionLostDialog from '../containers/ConnectionLostDialog';
@@ -66,11 +65,7 @@ function Main() {
       <ConfirmCollectDialog />
       <WorkflowParametersDialog />
       <GphlWorkflowParametersDialog />
-      <DataCollectionResultDialog
-        show={general.dialogType === 'LIMS_RESULT_DIALOG'}
-        taskData={general.dialogData}
-        onHide={() => dispatch(showDialog(false))}
-      />
+      <DataCollectionResultDialog />
 
       <MXNavbar />
 
