@@ -58,7 +58,6 @@ class SampleViewContainer extends Component {
     if (!('sample_view_motors' in uiproperties)) {
       return null;
     }
-
     const { sourceScale, imageRatio } = this.props.sampleViewState;
     const { currentSampleID } = this.props;
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
@@ -207,7 +206,6 @@ class SampleViewContainer extends Component {
                 grids={grids}
                 selectedGrids={selectedGrids}
                 cellCounting={this.props.cellCounting}
-                cellSpacing={this.props.cellSpacing}
                 busy={this.props.queueState === QUEUE_RUNNING}
                 setAttribute={this.props.setAttribute}
                 displayImage={this.props.displayImage}
@@ -243,7 +241,6 @@ function mapStateToProps(state) {
     defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,
     cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
-    cellSpacing: state.taskForm.defaultParameters.mesh.cell_spacing,
     remoteAccess: state.remoteAccess,
     uiproperties: state.uiproperties,
     mode: state.general.mode,

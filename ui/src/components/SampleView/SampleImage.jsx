@@ -937,7 +937,6 @@ export default class SampleImage extends React.Component {
               show={this.props.drawGrid}
               getGridOverlayOpacity={this.getGridOverlayOpacity}
               setGridOverlayOpacity={this.setGridOverlayOpacity}
-              cellSpacing={this.props.cellSpacing}
               setHCellSpacing={this.setHCellSpacing}
               setVCellSpacing={this.setVCellSpacing}
               gridList={this.props.grids}
