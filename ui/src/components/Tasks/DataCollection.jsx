@@ -283,12 +283,12 @@ class DataCollection extends React.Component {
                 <InputField propName="kappa" type="number" label="Kappa" />
                 <InputField propName="kappa_phi" type="number" label="Phi" />
               </FieldsRow>
-              {this.props.initialValues.detector_mode_list.length > 0 && (
+              {this.props.detector_mode_list.length > 0 && (
                 <FieldsRow>
                   <SelectField
                     propName="detector_roi_mode"
                     label="Detector mode"
-                    list={this.props.initialValues.detector_mode_list}
+                    list={this.props.detector_mode_list}
                   />
                 </FieldsRow>
               )}
@@ -375,7 +375,8 @@ export default connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
+  const { limits, acq_parameters } =
+    state.taskForm.defaultParameters[type.toLowerCase()];
   const { parameters } = state.taskForm.taskData;
 
   if (Number.parseFloat(parameters.osc_range) === 0) {
@@ -390,6 +391,7 @@ export default connect((state) => {
     filename: fname,
     acqParametersLimits: limits,
     beamline: state.beamline,
+    detector_mode_list: acq_parameters.detector_mode_list,
     components: state.uiproperties.sample_view_motors.components,
     initialValues: {
       ...parameters,

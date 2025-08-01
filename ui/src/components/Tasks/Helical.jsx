@@ -174,11 +174,11 @@ class Helical extends React.Component {
                   label="Beam size"
                   list={this.props.apertureList}
                 />
-                {this.props.initialValues.detector_mode_list.length > 0 && (
+                {this.props.detector_mode_list.length > 0 && (
                   <SelectField
                     propName="detector_roi_mode"
                     label="Detector mode"
-                    list={this.props.initialValues.detector_mode_list}
+                    list={this.props.detector_mode_list}
                   />
                 )}
               </FieldsRow>
@@ -295,13 +295,15 @@ export default connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
+  const { limits, acq_parameters } =
+    state.taskForm.defaultParameters[type.toLowerCase()];
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
     acqParametersLimits: limits,
     beamline: state.beamline,
+    detector_mode_list: acq_parameters.detector_mode_list,
     components: state.uiproperties.sample_view_motors.components,
     initialValues: {
       ...state.taskForm.taskData.parameters,

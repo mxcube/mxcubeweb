@@ -173,11 +173,11 @@ class Characterisation extends React.Component {
                 <InputField propName="kappa_phi" type="number" label="Phi" />
               </FieldsRow>
               <FieldsRow>
-                {this.props.initialValues.detector_mode_list.length > 0 && (
+                {this.props.detector_mode_list.length > 0 && (
                   <SelectField
                     propName="detector_roi_mode"
                     label="Detector mode"
-                    list={this.props.initialValues.detector_mode_list}
+                    list={this.props.detector_mode_list}
                   />
                 )}
                 <InputField propName="overlap" label="Overlap" />
@@ -496,7 +496,8 @@ export default connect((state) => {
   }
 
   const { type } = state.taskForm.taskData;
-  const { limits } = state.taskForm.defaultParameters[type.toLowerCase()];
+  const { limits, acq_parameters } =
+    state.taskForm.defaultParameters[type.toLowerCase()];
   const { parameters } = state.taskForm.taskData;
 
   // Set number of images to 1 for 2D points
@@ -523,6 +524,7 @@ export default connect((state) => {
     opt_sad: selector(state, 'opt_sad'),
     use_min_dose: selector(state, 'use_min_dose'),
     use_min_time: selector(state, 'use_min_time'),
+    detector_mode_list: acq_parameters.detector_mode_list,
     components: state.uiproperties.sample_view_motors.components,
     initialValues: {
       ...parameters,
