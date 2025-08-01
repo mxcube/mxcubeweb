@@ -46,7 +46,7 @@ server:
   CSP_REPORT_URI: "/mxcube/api/v0.1/csp/report"
 
   GRAYLOG_HOST: None
-  GRAYLOG_PORT: null
+  GRAYLOG_PORT: None
 
 sso:
   USE_SSO: false
