@@ -42,6 +42,7 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
       return {
         ...state,
         sampleList: { ...action.sampleList },
+        order: action.sampleOrder,
       };
     }
     // Set the list of samples (sampleList), clearing any existing list
