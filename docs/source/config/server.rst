@@ -159,7 +159,7 @@ Default value is ``None``.
 Port number of the Graylog server for logging.
 Set to ``null`` to disable Graylog logging.
 
-Default value is ``null``.
+Default value is ``None``.
 
 mxcube
 ------
