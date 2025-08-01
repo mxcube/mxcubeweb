@@ -151,7 +151,7 @@ Default value is ``/mxcube/api/v0.1/csp/report``.
 Hostname or IP address of the Graylog server for logging.
 Set to ``null`` to disable Graylog logging.
 
-Default value is ``null``.
+Default value is ``None``.
 
 ``GRAYLOG_PORT``
 ~~~~~~~~~~~~~~~~
