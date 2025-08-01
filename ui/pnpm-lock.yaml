@@ -13,16 +13,16 @@ importers:
         version: 5.15.4
       '@reduxjs/toolkit':
         specifier: 2.6.1
-        version: 2.6.1(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)
+        version: 2.6.1(react-redux@7.2.9(react-dom@17.0.2(react@19.1.1))(react@19.1.1))(react@19.1.1)
       '@rjsf/core':
         specifier: 5.13.1
-        version: 5.13.1(@rjsf/utils@5.13.1(react@17.0.2))(react@17.0.2)
+        version: 5.13.1(@rjsf/utils@5.13.1(react@19.1.1))(react@19.1.1)
       '@rjsf/utils':
         specifier: 5.13.1
-        version: 5.13.1(react@17.0.2)
+        version: 5.13.1(react@19.1.1)
       '@rjsf/validator-ajv8':
         specifier: 5.13.1
-        version: 5.13.1(@rjsf/utils@5.13.1(react@17.0.2))
+        version: 5.13.1(@rjsf/utils@5.13.1(react@19.1.1))
       bootstrap:
         specifier: 5.3.7
         version: 5.3.7(@popperjs/core@2.11.8)
@@ -42,62 +42,62 @@ importers:
         specifier: ^4.17.21
         version: 4.17.21
       react:
-        specifier: ^17.0.2
-        version: 17.0.2
+        specifier: ^19.1.0
+        version: 19.1.1
       react-bootstrap:
         specifier: 2.8.0
-        version: 2.8.0(@types/react@17.0.60)(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 2.8.0(@types/react@17.0.60)(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       react-chat-widget:
         specifier: ^3.1.4
-        version: 3.1.4(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 3.1.4(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       react-collapsible:
         specifier: ^2.10.0
-        version: 2.10.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 2.10.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       react-contexify:
         specifier: 6.0.0
-        version: 6.0.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 6.0.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       react-copy-to-clipboard:
         specifier: ^5.1.0
-        version: 5.1.0(react@17.0.2)
+        version: 5.1.0(react@19.1.1)
       react-dom:
         specifier: ^17.0.2
-        version: 17.0.2(react@17.0.2)
+        version: 17.0.2(react@19.1.1)
       react-draggable:
         specifier: ^4.4.5
-        version: 4.4.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 4.4.5(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       react-error-boundary:
         specifier: 4.1.2
-        version: 4.1.2(react@17.0.2)
+        version: 4.1.2(react@19.1.1)
       react-hook-form:
         specifier: 7.45.0
-        version: 7.45.0(react@17.0.2)
+        version: 7.45.0(react@19.1.1)
       react-icons:
         specifier: ^4.9.0
-        version: 4.9.0(react@17.0.2)
+        version: 4.9.0(react@19.1.1)
       react-lazyload:
         specifier: ^3.2.0
-        version: 3.2.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 3.2.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       react-redux:
         specifier: 7.2.9
-        version: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 7.2.9(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       react-router:
         specifier: ^6.19.0
-        version: 6.19.0(react@17.0.2)
+        version: 6.19.0(react@19.1.1)
       react-router-dom:
         specifier: ^6.19.0
-        version: 6.19.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 6.19.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       react-slick:
         specifier: ^0.29.0
-        version: 0.29.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 0.29.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       react-zoom-pan-pinch:
         specifier: 3.3.0
-        version: 3.3.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 3.3.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       redux:
         specifier: 4.2.1
         version: 4.2.1
       redux-form:
         specifier: ^8.3.10
-        version: 8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.2.1)
+        version: 8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@19.1.1))(react@19.1.1))(react@19.1.1)(redux@4.2.1)
       redux-logger:
         specifier: 3.0.6
         version: 3.0.6
@@ -122,7 +122,7 @@ importers:
         version: 5.16.5
       '@testing-library/react':
         specifier: ^12.1.5
-        version: 12.1.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+        version: 12.1.5(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       '@testing-library/user-event':
         specifier: ^13.5.0
         version: 13.5.0(@testing-library/dom@9.3.3)
@@ -2955,8 +2955,8 @@ packages:
       react: '*'
       react-dom: '*'
 
-  react@17.0.2:
-    resolution: {integrity: sha512-gnhPt75i/dq/z3/6q/0asP78D0u592D5L1pd7M8P+dck6Fu/jJeL6iVVK23fptSUZj8Vjf++7wXA8UNclGQcbA==}
+  react@19.1.1:
+    resolution: {integrity: sha512-w8nqGImo45dmMIfljjMwOGtbmC/mk4CMYhWIicdSflH91J9TyCyczcPFXJzrZ/ZXcgGRFeP6BU0BEJTw6tZdfQ==}
     engines: {node: '>=0.10.0'}
 
   read-package-up@11.0.0:
@@ -4039,64 +4039,64 @@ snapshots:
 
   '@popperjs/core@2.11.8': {}
 
-  '@react-aria/ssr@3.6.0(react@17.0.2)':
+  '@react-aria/ssr@3.6.0(react@19.1.1)':
     dependencies:
       '@swc/helpers': 0.4.14
-      react: 17.0.2
+      react: 19.1.1
 
-  '@reduxjs/toolkit@2.6.1(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)':
+  '@reduxjs/toolkit@2.6.1(react-redux@7.2.9(react-dom@17.0.2(react@19.1.1))(react@19.1.1))(react@19.1.1)':
     dependencies:
       immer: 10.1.1
       redux: 5.0.1
       redux-thunk: 3.1.0(redux@5.0.1)
       reselect: 5.1.1
     optionalDependencies:
-      react: 17.0.2
-      react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      react: 19.1.1
+      react-redux: 7.2.9(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
 
   '@remix-run/router@1.12.0': {}
 
-  '@restart/hooks@0.4.9(react@17.0.2)':
+  '@restart/hooks@0.4.9(react@19.1.1)':
     dependencies:
       dequal: 2.0.3
-      react: 17.0.2
+      react: 19.1.1
 
-  '@restart/ui@1.6.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
+  '@restart/ui@1.6.5(react-dom@17.0.2(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@babel/runtime': 7.25.0
       '@popperjs/core': 2.11.8
-      '@react-aria/ssr': 3.6.0(react@17.0.2)
-      '@restart/hooks': 0.4.9(react@17.0.2)
+      '@react-aria/ssr': 3.6.0(react@19.1.1)
+      '@restart/hooks': 0.4.9(react@19.1.1)
       '@types/warning': 3.0.0
       dequal: 2.0.3
       dom-helpers: 5.2.1
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
-      uncontrollable: 8.0.2(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
+      uncontrollable: 8.0.2(react@19.1.1)
       warning: 4.0.3
 
-  '@rjsf/core@5.13.1(@rjsf/utils@5.13.1(react@17.0.2))(react@17.0.2)':
+  '@rjsf/core@5.13.1(@rjsf/utils@5.13.1(react@19.1.1))(react@19.1.1)':
     dependencies:
-      '@rjsf/utils': 5.13.1(react@17.0.2)
+      '@rjsf/utils': 5.13.1(react@19.1.1)
       lodash: 4.17.21
       lodash-es: 4.17.21
-      markdown-to-jsx: 7.5.0(react@17.0.2)
+      markdown-to-jsx: 7.5.0(react@19.1.1)
       nanoid: 3.3.8
       prop-types: 15.8.1
-      react: 17.0.2
+      react: 19.1.1
 
-  '@rjsf/utils@5.13.1(react@17.0.2)':
+  '@rjsf/utils@5.13.1(react@19.1.1)':
     dependencies:
       json-schema-merge-allof: 0.8.1
       jsonpointer: 5.0.1
       lodash: 4.17.21
       lodash-es: 4.17.21
-      react: 17.0.2
+      react: 19.1.1
       react-is: 18.2.0
 
-  '@rjsf/validator-ajv8@5.13.1(@rjsf/utils@5.13.1(react@17.0.2))':
+  '@rjsf/validator-ajv8@5.13.1(@rjsf/utils@5.13.1(react@19.1.1))':
     dependencies:
-      '@rjsf/utils': 5.13.1(react@17.0.2)
+      '@rjsf/utils': 5.13.1(react@19.1.1)
       ajv: 8.12.0
       ajv-formats: 2.1.1(ajv@8.12.0)
       lodash: 4.17.21
@@ -4288,13 +4288,13 @@ snapshots:
       lodash: 4.17.21
       redent: 3.0.0
 
-  '@testing-library/react@12.1.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)':
+  '@testing-library/react@12.1.5(react-dom@17.0.2(react@19.1.1))(react@19.1.1)':
     dependencies:
       '@babel/runtime': 7.25.0
       '@testing-library/dom': 8.20.1
       '@types/react-dom': 17.0.20
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
 
   '@testing-library/user-event@13.5.0(@testing-library/dom@9.3.3)':
     dependencies:
@@ -5190,11 +5190,11 @@ snapshots:
 
   electron-to-chromium@1.5.134: {}
 
-  emoji-mart@3.0.1(react@17.0.2):
+  emoji-mart@3.0.1(react@19.1.1):
     dependencies:
       '@babel/runtime': 7.25.0
       prop-types: 15.8.1
-      react: 17.0.2
+      react: 19.1.1
 
   emoji-regex@8.0.0: {}
 
@@ -6460,9 +6460,9 @@ snapshots:
       mdurl: 1.0.1
       uc.micro: 1.0.6
 
-  markdown-to-jsx@7.5.0(react@17.0.2):
+  markdown-to-jsx@7.5.0(react@19.1.1):
     dependencies:
-      react: 17.0.2
+      react: 19.1.1
 
   math-intrinsics@1.1.0: {}
 
@@ -6725,9 +6725,9 @@ snapshots:
 
   process@0.11.10: {}
 
-  prop-types-extra@1.1.1(react@17.0.2):
+  prop-types-extra@1.1.1(react@19.1.1):
     dependencies:
-      react: 17.0.2
+      react: 19.1.1
       react-is: 16.13.1
       warning: 4.0.3
 
@@ -6760,84 +6760,84 @@ snapshots:
 
   queue-microtask@1.2.3: {}
 
-  react-bootstrap@2.8.0(@types/react@17.0.60)(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-bootstrap@2.8.0(@types/react@17.0.60)(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
       '@babel/runtime': 7.22.3
-      '@restart/hooks': 0.4.9(react@17.0.2)
-      '@restart/ui': 1.6.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      '@restart/hooks': 0.4.9(react@19.1.1)
+      '@restart/ui': 1.6.5(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       '@types/react-transition-group': 4.4.6
       classnames: 2.3.2
       dom-helpers: 5.2.1
       invariant: 2.2.4
       prop-types: 15.8.1
-      prop-types-extra: 1.1.1(react@17.0.2)
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
-      react-transition-group: 4.4.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
-      uncontrollable: 7.2.1(react@17.0.2)
+      prop-types-extra: 1.1.1(react@19.1.1)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
+      react-transition-group: 4.4.5(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
+      uncontrollable: 7.2.1(react@19.1.1)
       warning: 4.0.3
     optionalDependencies:
       '@types/react': 17.0.60
 
-  react-chat-widget@3.1.4(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-chat-widget@3.1.4(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
       classnames: 2.3.2
       date-fns: 2.30.0
-      emoji-mart: 3.0.1(react@17.0.2)
+      emoji-mart: 3.0.1(react@19.1.1)
       markdown-it: 8.4.2
       markdown-it-link-attributes: 2.1.0
       markdown-it-sanitizer: 0.4.3
       markdown-it-sup: 1.0.0
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
-      react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
+      react-redux: 7.2.9(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       redux: 4.2.1
     transitivePeerDependencies:
       - react-native
 
-  react-collapsible@2.10.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-collapsible@2.10.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
 
-  react-contexify@6.0.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-contexify@6.0.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
       clsx: 1.2.1
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
 
-  react-copy-to-clipboard@5.1.0(react@17.0.2):
+  react-copy-to-clipboard@5.1.0(react@19.1.1):
     dependencies:
       copy-to-clipboard: 3.3.3
       prop-types: 15.8.1
-      react: 17.0.2
+      react: 19.1.1
 
-  react-dom@17.0.2(react@17.0.2):
+  react-dom@17.0.2(react@19.1.1):
     dependencies:
       loose-envify: 1.4.0
       object-assign: 4.1.1
-      react: 17.0.2
+      react: 19.1.1
       scheduler: 0.20.2
 
-  react-draggable@4.4.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-draggable@4.4.5(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
       clsx: 1.2.1
       prop-types: 15.8.1
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
 
-  react-error-boundary@4.1.2(react@17.0.2):
+  react-error-boundary@4.1.2(react@19.1.1):
     dependencies:
       '@babel/runtime': 7.25.0
-      react: 17.0.2
+      react: 19.1.1
 
-  react-hook-form@7.45.0(react@17.0.2):
+  react-hook-form@7.45.0(react@19.1.1):
     dependencies:
-      react: 17.0.2
+      react: 19.1.1
 
-  react-icons@4.9.0(react@17.0.2):
+  react-icons@4.9.0(react@19.1.1):
     dependencies:
-      react: 17.0.2
+      react: 19.1.1
 
   react-is@16.13.1: {}
 
@@ -6845,65 +6845,62 @@ snapshots:
 
   react-is@18.2.0: {}
 
-  react-lazyload@3.2.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-lazyload@3.2.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
 
   react-lifecycles-compat@3.0.4: {}
 
-  react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-redux@7.2.9(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
       '@babel/runtime': 7.25.0
       '@types/react-redux': 7.1.33
       hoist-non-react-statics: 3.3.2
       loose-envify: 1.4.0
       prop-types: 15.8.1
-      react: 17.0.2
+      react: 19.1.1
       react-is: 17.0.2
     optionalDependencies:
-      react-dom: 17.0.2(react@17.0.2)
+      react-dom: 17.0.2(react@19.1.1)
 
-  react-router-dom@6.19.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-router-dom@6.19.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
       '@remix-run/router': 1.12.0
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
-      react-router: 6.19.0(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
+      react-router: 6.19.0(react@19.1.1)
 
-  react-router@6.19.0(react@17.0.2):
+  react-router@6.19.0(react@19.1.1):
     dependencies:
       '@remix-run/router': 1.12.0
-      react: 17.0.2
+      react: 19.1.1
 
-  react-slick@0.29.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-slick@0.29.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
       classnames: 2.3.2
       enquire.js: 2.1.6
       json2mq: 0.2.0
       lodash.debounce: 4.0.8
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
       resize-observer-polyfill: 1.5.1
 
-  react-transition-group@4.4.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-transition-group@4.4.5(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
       '@babel/runtime': 7.25.0
       dom-helpers: 5.2.1
       loose-envify: 1.4.0
       prop-types: 15.8.1
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
 
-  react-zoom-pan-pinch@3.3.0(react-dom@17.0.2(react@17.0.2))(react@17.0.2):
+  react-zoom-pan-pinch@3.3.0(react-dom@17.0.2(react@19.1.1))(react@19.1.1):
     dependencies:
-      react: 17.0.2
-      react-dom: 17.0.2(react@17.0.2)
+      react: 19.1.1
+      react-dom: 17.0.2(react@19.1.1)
 
-  react@17.0.2:
-    dependencies:
-      loose-envify: 1.4.0
-      object-assign: 4.1.1
+  react@19.1.1: {}
 
   read-package-up@11.0.0:
     dependencies:
@@ -6936,7 +6933,7 @@ snapshots:
       indent-string: 4.0.0
       strip-indent: 3.0.0
 
-  redux-form@8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)(redux@4.2.1):
+  redux-form@8.3.10(immutable@4.3.7)(react-redux@7.2.9(react-dom@17.0.2(react@19.1.1))(react@19.1.1))(react@19.1.1)(redux@4.2.1):
     dependencies:
       '@babel/runtime': 7.25.0
       es6-error: 4.1.1
@@ -6945,9 +6942,9 @@ snapshots:
       is-promise: 2.2.2
       lodash: 4.17.21
       prop-types: 15.8.1
-      react: 17.0.2
+      react: 19.1.1
       react-is: 16.13.1
-      react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+      react-redux: 7.2.9(react-dom@17.0.2(react@19.1.1))(react@19.1.1)
       redux: 4.2.1
     optionalDependencies:
       immutable: 4.3.7
@@ -7555,17 +7552,17 @@ snapshots:
       has-symbols: 1.1.0
       which-boxed-primitive: 1.1.1
 
-  uncontrollable@7.2.1(react@17.0.2):
+  uncontrollable@7.2.1(react@19.1.1):
     dependencies:
       '@babel/runtime': 7.25.0
       '@types/react': 18.3.3
       invariant: 2.2.4
-      react: 17.0.2
+      react: 19.1.1
       react-lifecycles-compat: 3.0.4
 
-  uncontrollable@8.0.2(react@17.0.2):
+  uncontrollable@8.0.2(react@19.1.1):
     dependencies:
-      react: 17.0.2
+      react: 19.1.1
 
   undici-types@7.8.0:
     optional: true
