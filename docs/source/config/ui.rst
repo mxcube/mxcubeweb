@@ -154,7 +154,7 @@ The section has the following syntax:
           show: <show>
           show_hspace: <show_hspace>
           show_vspace: <show_vspace>
-        - id: 3_click_centring
+        - id: click_centring
           show: <show>
         - id: focus
           show: <show>
