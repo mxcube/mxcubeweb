@@ -8,46 +8,50 @@ name: Create/Update Tag
     branches:
       - develop
 
-permissions:
-  contents: write
-  packages: write
-  id-token: write
-
 jobs:
   create-version-tag:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
     steps:
       - uses: actions/checkout@v4
         with:
           token: ${{ secrets.CI_TOKEN }}
-      - name: Set up Python 3.10
-        uses: actions/setup-python@v5
+
+      - name: Set up Conda environment with Micromamba
+        uses: mamba-org/setup-micromamba@v2
         with:
-          python-version: "3.10"
+          cache-environment: true
+          create-args: >-
+            python=3.10
+          environment-file: conda-environment.yml
+          post-cleanup: all
+
       - name: Update version
         id: update-version
         run: |
-          pip install --upgrade pip
-          pip install poetry
-          poetry version minor
+          ${MAMBA_EXE} run --name mxcubeweb poetry version minor
           git config --global user.email "oscarsso@esrf.fr"
           git config --global user.name "Marcus Oskarsson"
           git add -A
           git commit -m "[skip ci] Bumped minor version"
           git push -f
-          poetry build
+          ${MAMBA_EXE} run --name mxcubeweb poetry build
+
       - name: Publish package to PyPI
-        id: publish-pacakge
+        id: publish-package
         run: |
-          poetry config pypi-token.pypi ${{ secrets.PYPI }}
-          poetry publish
+          ${MAMBA_EXE} run --name mxcubeweb poetry config pypi-token.pypi ${{ secrets.PYPI }}
+          ${MAMBA_EXE} run --name mxcubeweb poetry publish
+
       - name: Read package version
         id: set-tag
         run: |
           pip install --upgrade pip
           pip install toml
-          pip install poetry
-          echo "tag_name=v$(poetry version -s)" >> $GITHUB_ENV
+          echo "tag_name=v$(${MAMBA_EXE} run --name mxcubeweb poetry version -s)" >> $GITHUB_ENV
+
       - name: Check tag exists
         id: check-tag-exists
         uses: actions/github-script@v7
