@@ -115,8 +115,8 @@ importers:
         specifier: 1.1.5
         version: 1.1.5(@typescript-eslint/parser@8.29.0(eslint@9.24.0(jiti@1.21.7))(typescript@5.8.2))(@typescript-eslint/utils@8.29.1(eslint@9.24.0(jiti@1.21.7))(typescript@5.8.2))(eslint@9.24.0(jiti@1.21.7))(typescript@5.8.2)
       '@testing-library/cypress':
-        specifier: 10.0.1
-        version: 10.0.1(cypress@14.5.2)
+        specifier: 10.0.3
+        version: 10.0.3(cypress@14.5.2)
       '@testing-library/jest-dom':
         specifier: ^5.16.5
         version: 5.16.5
@@ -125,7 +125,7 @@ importers:
         version: 12.1.5(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
       '@testing-library/user-event':
         specifier: ^13.5.0
-        version: 13.5.0(@testing-library/dom@9.3.3)
+        version: 13.5.0(@testing-library/dom@10.4.1)
       '@types/react':
         specifier: 17.0.60
         version: 17.0.60
@@ -737,19 +737,19 @@ packages:
   '@swc/types@0.1.18':
     resolution: {integrity: sha512-NZghLaQvF3eFdj2DUjGkpwaunbZYaRcxciHINnwA4n3FrLAI8hKFOBqs2wkcOiLQfWkIdfuG6gBkNFrkPNji5g==}
 
-  '@testing-library/cypress@10.0.1':
-    resolution: {integrity: sha512-e8uswjTZIBhaIXjzEcrQQ8nHRWHgZH7XBxKuIWxZ/T7FxfWhCR48nFhUX5nfPizjVOKSThEfOSv67jquc1ASkw==}
+  '@testing-library/cypress@10.0.3':
+    resolution: {integrity: sha512-TeZJMCNtiS59cPWalra7LgADuufO5FtbqQBYxuAgdX6ZFAR2D9CtQwAG8VbgvFcchW3K414va/+7P4OkQ80UVg==}
     engines: {node: '>=12', npm: '>=6'}
     peerDependencies:
-      cypress: ^12.0.0 || ^13.0.0
+      cypress: ^12.0.0 || ^13.0.0 || ^14.0.0
+
+  '@testing-library/dom@10.4.1':
+    resolution: {integrity: sha512-o4PXJQidqJl82ckFaXUeoAW+XysPLauYI43Abki5hABd853iMhitooc6znOnczgbTYmEP6U6/y1ZyKAIsvMKGg==}
+    engines: {node: '>=18'}
 
   '@testing-library/dom@8.20.1':
     resolution: {integrity: sha512-/DiOQ5xBxgdYRC8LNk7U+RWat0S3qRLeIw3ZIkMQ9kkVlRmwD/Eg8k8CqIpD6GW7u20JIUOfMKbxtiLutpjQ4g==}
     engines: {node: '>=12'}
-
-  '@testing-library/dom@9.3.3':
-    resolution: {integrity: sha512-fB0R+fa3AUqbLHWyxXa2kGVtf1Fe1ZZFr0Zp6AIbIAzXb2mKbEXl+PCQNUOaq5lbTab5tfctfXRNsWXxa2f7Aw==}
-    engines: {node: '>=14'}
 
   '@testing-library/jest-dom@5.16.5':
     resolution: {integrity: sha512-N5ixQ2qKpi5OLYfwQmUb/5mSV9LneAcaUfp32pn4yCnpb8r/Yz0pXFPck21dIicKmi+ta5WRAknkZCfA8refMA==}
@@ -1055,6 +1055,9 @@ packages:
 
   aria-query@5.1.3:
     resolution: {integrity: sha512-R5iJ5lkuHybztUfuOAznmboyjWq8O6sqNqtK7CLOqdydi54VNbORp49mb14KbWgG1QD3JFO9hJdZ+y4KutfdOQ==}
+
+  aria-query@5.3.0:
+    resolution: {integrity: sha512-b0P0sZPKtyu8HkeRAfCq0IfURZK+SuwMjY1UXGBU27wpAiTwQAIlq56IbIO+ytk/JjS1fMR14ee5WBBfKi5J6A==}
 
   aria-query@5.3.2:
     resolution: {integrity: sha512-COROpnaoap1E2F000S62r6A60uHZnmlvomhfyT2DlTcrY1OrBKn2UhH7qn5wTC9zMvD0AY7csdPSNwKP+7WiQw==}
@@ -4248,27 +4251,27 @@ snapshots:
     dependencies:
       '@swc/counter': 0.1.3
 
-  '@testing-library/cypress@10.0.1(cypress@14.5.2)':
+  '@testing-library/cypress@10.0.3(cypress@14.5.2)':
     dependencies:
-      '@babel/runtime': 7.22.3
-      '@testing-library/dom': 9.3.3
+      '@babel/runtime': 7.25.0
+      '@testing-library/dom': 10.4.1
       cypress: 14.5.2
+
+  '@testing-library/dom@10.4.1':
+    dependencies:
+      '@babel/code-frame': 7.26.2
+      '@babel/runtime': 7.25.0
+      '@types/aria-query': 5.0.1
+      aria-query: 5.3.0
+      dom-accessibility-api: 0.5.16
+      lz-string: 1.5.0
+      picocolors: 1.1.1
+      pretty-format: 27.5.1
 
   '@testing-library/dom@8.20.1':
     dependencies:
       '@babel/code-frame': 7.24.7
       '@babel/runtime': 7.25.0
-      '@types/aria-query': 5.0.1
-      aria-query: 5.1.3
-      chalk: 4.1.2
-      dom-accessibility-api: 0.5.16
-      lz-string: 1.5.0
-      pretty-format: 27.5.1
-
-  '@testing-library/dom@9.3.3':
-    dependencies:
-      '@babel/code-frame': 7.24.7
-      '@babel/runtime': 7.22.3
       '@types/aria-query': 5.0.1
       aria-query: 5.1.3
       chalk: 4.1.2
@@ -4296,10 +4299,10 @@ snapshots:
       react: 17.0.2
       react-dom: 17.0.2(react@17.0.2)
 
-  '@testing-library/user-event@13.5.0(@testing-library/dom@9.3.3)':
+  '@testing-library/user-event@13.5.0(@testing-library/dom@10.4.1)':
     dependencies:
       '@babel/runtime': 7.22.3
-      '@testing-library/dom': 9.3.3
+      '@testing-library/dom': 10.4.1
 
   '@tootallnate/once@2.0.0':
     optional: true
@@ -4632,6 +4635,10 @@ snapshots:
   aria-query@5.1.3:
     dependencies:
       deep-equal: 2.2.1
+
+  aria-query@5.3.0:
+    dependencies:
+      dequal: 2.0.3
 
   aria-query@5.3.2: {}
 
