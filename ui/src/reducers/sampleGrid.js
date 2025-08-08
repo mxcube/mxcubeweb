@@ -20,10 +20,6 @@ const INITIAL_STATE = {
   crystalList: [],
   order: [],
   moving: {},
-  viewMode: {
-    mode: 'Table View',
-    options: ['Table View', 'Graphical View'],
-  },
   filterOptions: {
     text: '',
     inQueue: false,
@@ -268,13 +264,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, sampleList };
     }
-    // Change view mode
-    case 'SET_VIEW_MODE': {
-      const viewMode = { ...state.viewMode };
-      viewMode.mode = action.mode;
-      return { ...state, viewMode };
-    }
-
     case 'SET_SAMPLE_ATTRIBUTE': {
       const sampleList = { ...state.sampleList };
       action.sampleIDList.forEach((sid) => {

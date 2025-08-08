@@ -49,10 +49,6 @@ export function toggleSelectedAction(sampleID) {
   return { type: 'TOGGLE_SELECTED_SAMPLE', sampleID };
 }
 
-export function setViewModeAction(mode) {
-  return { type: 'SET_VIEW_MODE', mode };
-}
-
 export function filterAction(filterOptions) {
   return { type: 'FILTER_SAMPLE_LIST', filterOptions };
 }

@@ -5,6 +5,7 @@ This configuration file allows customizing the UI to match the local beamline.
 It allows configuring widgets for controlling gonio motors, on-axis sample viewer, hutch video streams and more.
 The ``ui.yaml`` contains following sections:
 
+* sample_list_view_modes_
 * sample_view_
 * sample_view_motors_
 * sample_view_video_controls_
@@ -14,6 +15,53 @@ The ``ui.yaml`` contains following sections:
 
 Each section groups settings for related UI features.
 See below an `example  ui.yaml <ui_yaml_example_>`_ file.
+
+sample_list_view_modes
+----------------
+
+This section configures the sample list view, more specifically the view modes available.
+The section has the following syntax:
+
+.. code-block:: yaml
+
+    sample_list_view_modes:
+      id: sample_list_view_modes
+      components:
+        - id: <view_mode_id>
+          show: <show>
+
+The ``components`` key contains an array of view mode specifications.
+Each view mode specification has the following keys:
+
++-----------+---------------------+
+| key       | purpose             |
++===========+=====================+
+| id        | view mode identifier|
++-----------+---------------------+
+| show      | boolean flag        |
++-----------+---------------------+
+
+The ``id`` key specifies the view mode identifier, which is used by the UI to render the view. The following view modes are supported:
+
+* ``table_view`` - table view mode
+* ``graphical_view`` - graphical view mode
+
+The ``show`` key is a boolean flag, when it's *true* the view mode is included, when *false* it is omitted.
+If the ``show`` key is not specified, the view mode is included by default. At least one view mode **must** be specified.
+
+Here is an example of ``sample_list_view_modes`` section:
+
+.. code-block:: yaml
+
+    sample_list_view_modes:
+      id: sample_list_view_modes
+      components:
+        - id: table_view
+          show: true
+        - id: graphical_view
+          show: true
+
+.. image:: view_modes.png
 
 sample_view
 -----------
@@ -56,7 +104,6 @@ Below is an example showing all auxiliary controls of the ``sample_view`` sectio
 All auxiliary controls are optional. If you want to hide one from the UI, just remove it from the ``component`` list.
 
 .. image:: auxiliary_controls.png
-
 
 sample_view_motors
 -----------

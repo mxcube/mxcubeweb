@@ -149,7 +149,6 @@ export default function SampleGridTableContainer(props) {
   const contextMenu = useSelector(
     (state) => state.contextMenu.genericContextMenu,
   );
-  const viewMode = useSelector((state) => state.sampleGrid.viewMode);
   const workflows = useSelector((state) => state.workflow.workflows);
   const defaultParameters = useSelector(
     (state) => state.taskForm.defaultParameters,
@@ -169,6 +168,7 @@ export default function SampleGridTableContainer(props) {
     removeSelectedTasks,
     filterSampleByKey,
     type,
+    viewMode,
   } = props;
 
   const [rubberBandVisible, setRubberBandVisible] = useState(false);
@@ -1019,7 +1019,7 @@ export default function SampleGridTableContainer(props) {
       >
         <div className="selection-rubber-band" id="selectionRubberBand" />
         {getManualSamples()}
-        {viewMode.mode === 'Graphical View' ? (
+        {viewMode === 'Graphical View' ? (
           <>
             {getSampleListAsDrawing()}
             {getSampleListAsTable()}

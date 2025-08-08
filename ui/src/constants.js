@@ -116,3 +116,11 @@ export const HW_STATE = {
   FAULT: 'FAULT',
   OFF: 'OFF',
 };
+
+/**
+ * Sample List View Modes
+ */
+export const SAMPLE_LIST_VIEW_MODES = {
+  graphical_view: 'Graphical View',
+  table_view: 'Table View',
+};

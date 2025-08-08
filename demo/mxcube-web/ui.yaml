@@ -1,5 +1,13 @@
 ---
 
+sample_list_view_modes:
+  id: sample_list_view_modes
+  components:
+    - id: table_view
+      show: true
+    - id: graphical_view
+      show: true
+
 sample_view:
   id: sample_view
   components:
@@ -7,7 +15,6 @@ sample_view:
       label: Phase Control
     - attribute: beam_size
       label: Beam size
-
 
 sample_view_motors:
   id: sample_view_motors

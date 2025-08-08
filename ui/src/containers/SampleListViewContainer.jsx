@@ -1,4 +1,4 @@
-import { useCallback, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import {
   Button,
   ButtonGroup,
@@ -30,12 +30,15 @@ import {
   getLimsSamples,
   getSamplesList,
   selectSamplesAction,
-  setViewModeAction,
   showGenericContextMenu,
 } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import TooltipTrigger from '../components/TooltipTrigger';
-import { isCollected, QUEUE_RUNNING } from '../constants';
+import {
+  isCollected,
+  QUEUE_RUNNING,
+  SAMPLE_LIST_VIEW_MODES,
+} from '../constants';
 import loader from '../img/loader.gif';
 import QueueSettings from './QueueSettings';
 import SampleGridTableContainer from './SampleGridTableContainer';
@@ -49,7 +52,12 @@ export default function SampleListViewContainer() {
   const loading = useSelector((state) => state.queueGUI.loading);
   const selected = useSelector((state) => state.sampleGrid.selected);
   const sampleList = useSelector((state) => state.sampleGrid.sampleList);
-  const viewMode = useSelector((state) => state.sampleGrid.viewMode);
+  const viewModeOptions = useSelector((state) =>
+    state.uiproperties.sample_list_view_modes.components
+      .filter((el) => el.show)
+      .map((el) => SAMPLE_LIST_VIEW_MODES[el.id]),
+  );
+
   const defaultParameters = useSelector(
     (state) => state.taskForm.defaultParameters,
   );
@@ -63,24 +71,33 @@ export default function SampleListViewContainer() {
     (state) => state.general.useGetSamplesFromSC,
   );
 
+  const [viewMode, setViewMode] = useState(() => {
+    const localStorageViewMode = localStorage.getItem('view-mode');
+    if (
+      localStorageViewMode &&
+      viewModeOptions.includes(localStorageViewMode)
+    ) {
+      return localStorageViewMode;
+    }
+    return viewModeOptions[0];
+  });
+
   const handleSetViewMode = useCallback(
     (mode) => {
-      if (sampleChangerType.includes('FLEX') && mode.includes('Graphical')) {
+      if (
+        sampleChangerType.includes('FLEX') &&
+        mode === SAMPLE_LIST_VIEW_MODES.graphical_view
+      ) {
         dispatch(filterAction({ cellFilter: '1' }));
       } else {
         dispatch(filterAction({ cellFilter: '' }));
       }
 
       localStorage.setItem('view-mode', mode);
-      dispatch(setViewModeAction(mode));
+      setViewMode(mode);
     },
     [dispatch, sampleChangerType],
   );
-
-  useEffect(() => {
-    const localStorageViewMode = localStorage.getItem('view-mode');
-    handleSetViewMode(localStorageViewMode || viewMode.mode);
-  }, [handleSetViewMode, viewMode.mode]);
 
   function showCharacterisationForm() {
     displayTaskForm('Characterisation', {});
@@ -117,7 +134,7 @@ export default function SampleListViewContainer() {
       ));
     }
 
-    if (viewMode.mode !== 'Graphical View') {
+    if (viewMode !== SAMPLE_LIST_VIEW_MODES.graphical_view) {
       options.push(
         <option key="all" value="">
           ALL
@@ -788,17 +805,18 @@ export default function SampleListViewContainer() {
               <Dropdown>
                 <TooltipTrigger
                   id="sync-samples-tooltip"
-                  tooltipContent="Change Samples List View Mode from Graphical to Table and vice versa"
+                  tooltipContent="Change Samples List View Mode"
                 >
                   <Dropdown.Toggle
                     variant="outline-secondary"
                     id="dropdown-basic"
+                    disabled={viewModeOptions.length < 2}
                   >
-                    <MdGridView size="1em" /> {viewMode.mode}
+                    <MdGridView size="1em" /> {viewMode}
                   </Dropdown.Toggle>
                 </TooltipTrigger>
                 <Dropdown.Menu>
-                  {viewMode.options.map((option) => (
+                  {viewModeOptions.map((option) => (
                     <Dropdown.Item
                       key={option}
                       onClick={() => handleSetViewMode(option)}
@@ -871,6 +889,7 @@ export default function SampleListViewContainer() {
             removeSelectedTasks={removeSelectedTasks}
             filterSampleByKey={applyFilter}
             type={sampleChangerType}
+            viewMode={viewMode}
           />
         </Card.Body>
       </Card>

@@ -5,7 +5,7 @@ from typing import (
     Literal,
 )
 
-from pydantic.v1 import BaseModel, Field
+from pydantic.v1 import BaseModel, Field, validator
 
 
 class FlaskConfigModel(BaseModel):
@@ -118,6 +118,29 @@ class UISampleViewMotorsModel(UIPropertiesModel):
     components: list[UIComponentModel]
 
 
+class _UISampleListViewModesComponentModel(BaseModel):
+    id: Literal["table_view", "graphical_view"]
+    show: bool = True
+
+
+class UISampleListViewModesModel(BaseModel):
+    id: Literal["sample_list_view_modes"]
+    components: list[_UISampleListViewModesComponentModel]
+
+    @validator("components")
+    @classmethod
+    def check_at_least_one_component_shown(
+        cls, components: list[_UISampleListViewModesComponentModel]
+    ) -> list[_UISampleListViewModesComponentModel]:
+        """
+        Validates that at least one component in the list has 'show' set to True.
+        """
+        if not any(component.show for component in components):
+            msg = "At least one component must have 'show' set to True."
+            raise ValueError(msg)
+        return components
+
+
 class UISampleViewVideoControlsModel(UIPropertiesModel):
     # It is important to keep the Union elements in that order; from the more specific to the more general.
     components: list[
@@ -142,6 +165,7 @@ class UIPropertiesListModel(BaseModel):
     beamline_setup: UIPropertiesModel
     camera_setup: UICameraConfigModel | None
     sample_view_motors: UISampleViewMotorsModel
+    sample_list_view_modes: UISampleListViewModesModel
     sample_view_video_controls: UISampleViewVideoControlsModel | None
     session_picker: UISessionPickerModel = UISessionPickerModel()
 
