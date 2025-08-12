@@ -286,13 +286,16 @@ def function_with_types_in_docstring(param1, param2):
 ```
 
 The Python code is to be formatted and checked for lint with
-[*ruff*](https://astral.sh/ruff).
-This repository uses [*pre-commit*](https://pre-commit.com/) hooks
+[*Ruff*](https://astral.sh/ruff).
+This repository uses [*Pre-commit*](https://pre-commit.com/) hooks
 to check the code quality automatically.
 These checks are done for each pull request on GitHub.
 It is also recommended to do these checks locally by enabling the git pre-commit hooks.
 For example with a one-time command like this: `pre-commit install`.
-
+One can also run the Ruff linter and Ruff formatter locally with commands like
+`poetry run ruff check` and `poetry run ruff format`.
+To get Ruff to automatically fix some of the issues it detects,
+one can run a command like this: `poetry run ruff check --fix`.
 
 
 ## Continuous integration (CI)
