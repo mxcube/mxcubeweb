@@ -188,16 +188,19 @@ def sc_contents_update():
 
 def sc_maintenance_update(*args):
     if len(args) == 3:
-        # be backward compatible with older HW objects,
-        # which are emitting signal with 3 arguments
-        _, cmd_state, message = args
+        # Restore the `global_state` parameter removed in this commit 337efd37
+        global_state, cmd_state, message = args
     else:
+        # Be backward compatible with HW objects which are emitting signal with
+        # 2 arguments
+        global_state = {}
         cmd_state, message = args
 
     try:
         server.emit(
             "sc_maintenance_update",
             {
+                "global_state": global_state,
                 "commands_state": json.dumps(cmd_state),
                 "message": message,
             },

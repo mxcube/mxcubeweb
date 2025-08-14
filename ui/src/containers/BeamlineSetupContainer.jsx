@@ -5,13 +5,13 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { setAttribute } from '../actions/beamline';
 import { stopBeamlineAction } from '../actions/beamlineActions';
-import { sendCommand } from '../actions/sampleChanger';
 import BeamlineAttribute from '../components/BeamlineAttribute/BeamlineAttribute';
 import BeamlineCamera from '../components/BeamlineCamera/BeamlineCamera';
 import DeviceState from '../components/DeviceState/DeviceState';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import MachInfo from '../components/MachInfo/MachInfo';
 import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
+import SampleChanger from '../components/SampleChanger/SampleChanger';
 import BeamlineActions from './BeamlineActionsContainer';
 
 function BeamlineSetupContainer() {
@@ -23,6 +23,9 @@ function BeamlineSetupContainer() {
     (state) => state.beamline.hardwareObjects,
   );
   const sampleChangerState = useSelector((state) => state.sampleChanger.state);
+  const sampleChangerMaint = useSelector(
+    (state) => state.sampleChangerMaintenance,
+  );
 
   function renderBeamstopAlignmentOverlay() {
     const motor = hardwareObjects['diffractometer.beamstop_distance'];
@@ -212,14 +215,9 @@ function BeamlineSetupContainer() {
         </Nav>
         <Nav className="me-3">
           <Nav.Item>
-            <InOutSwitch
-              openText="Power On"
-              offText="Power Off"
-              openValue="PowerOn"
-              offValue="PowerOff"
-              labelText="Sample Changer"
-              value={sampleChangerState}
-              onSave={(cmdparts, args) => dispatch(sendCommand(cmdparts, args))}
+            <SampleChanger
+              state={sampleChangerState}
+              maintenance={sampleChangerMaint}
             />
           </Nav.Item>
           {renderActuatorComponent()}

@@ -121,13 +121,15 @@ export function getInitialState() {
         .catch(notify),
       fetchSampleChangerInitialState()
         .then((json) => {
-          const { state, contents, loaded_sample, cmds, global_state } = json;
+          const { state, contents, loaded_sample, cmds, global_state, msg } =
+            json;
           return {
             sampleChangerState: { state },
             sampleChangerContents: contents,
             loadedSample: loaded_sample,
             sampleChangerCommands: cmds,
             sampleChangerGlobalState: global_state,
+            sampleChangerMessage: msg,
           };
         })
         .catch(notify),
