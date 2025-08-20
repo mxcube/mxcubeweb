@@ -68,8 +68,7 @@ Adapters specify the `HardwareObject` types they support using the `SUPPORTED_TY
 class MotorAdapter(ActuatorAdapterBase):
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractMotor.AbstractMotor]
 
-    def __init__(self, ho, role, app):
-        ...
+    def __init__(self, ho, role, app): ...
 ```
 
 Subclasses can override `SUPPORTED_TYPES` to narrow down or change the supported types. For example, a base class may support `AbstractActuator` like `ActuatorAdapterBase`, while a subclass can specialize `AbstractMotor` like above. The list can contain multiple types and does not need to include abstract classes.
@@ -85,6 +84,7 @@ Adapter methods and properties can be exposed as HTTP endpoints using the `Adapt
   - Strings are sanitized to allow only alphanumeric characters, dot (`.`), hyphen (`-`), and underscore (`_`).
 
 - **Output**: Must be one of:
+
   - A Pydantic model
   - A dictionary-like object implementing `__dict__`
   - A native type (`str`, `int`, `float`, `bool`, or `list`)
@@ -96,9 +96,7 @@ Returned data is serialized to JSON before being sent.
 Exports, endpoint-mapping, are defined in a list of dictionaries with the following format:
 
 ```python
-exports = [
-    {"attr": "get_value", "method": "PUT", "decorators": []}
-]
+exports = [{"attr": "get_value", "method": "PUT", "decorators": []}]
 ```
 
 - **`attr`**: Name of the method or property on the adapter.
@@ -137,9 +135,7 @@ attributes = ["data"]
 This generates:
 
 ```python
-[
-    {"attr": "data", "method": "GET", "decorators": []}
-]
+[{"attr": "data", "method": "GET", "decorators": []}]
 ```
 
 ## Example Configuration
@@ -156,6 +152,7 @@ resource_handler_config = ResourceHandlerConfigModel(
     ],
     attributes=["data"],
 )
+
 
 class MotorAdapter(ActuatorAdapterBase):
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractMotor.AbstractMotor]

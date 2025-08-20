@@ -12,12 +12,10 @@ Useful links:
 
 ![Swagger UI](assets/swagger.png)
 
-
 ## Exercise 2: Create a new beamline action and trigger it from the UI
 
 For procedures that are frequently used and involve more than a simple command.
 Try it out, play with multiple hardware objects.
-
 
 ### Solution
 
@@ -38,26 +36,25 @@ And implement the actual action in `mxcubecore/mxcubecore/HardwareObjects/mockup
 ```python
 class SuperAction:
     def __call__(self, *args, **kw):
-        logging.getLogger('HWR').info("Running super action")
+        logging.getLogger("HWR").info("Running super action")
 
         from mxcubecore import HardwareRepository as HWR
-        logging.getLogger('HWR').info("Setting diff to transfer")
 
-        HWR.beamline.diffractometer.set_phase('Transfer')
+        logging.getLogger("HWR").info("Setting diff to transfer")
+
+        HWR.beamline.diffractometer.set_phase("Transfer")
         gevent.sleep(3)
-        logging.getLogger('HWR').info("Restarting detector")
+        logging.getLogger("HWR").info("Restarting detector")
 
         HWR.beamline.detector.restart()
-        logging.getLogger('HWR').info("Running super action")
+        logging.getLogger("HWR").info("Running super action")
 ```
-
 
 ## Exercise 3: Add a custom action for the detector and make it appear in the UI (custom equipment tab)
 
 For not so often used or temporary instrumentation commands
 
 ![Trigger UI](assets/trigger.png)
-
 
 ### Solution
 
@@ -76,7 +73,6 @@ and define as exportable in the detector.xml
   <exports>["restart", "trigger"]</exports>
 ```
 
-
 ## Exercise 4: Humidity controller
 
 - Create a new hardware object that emulates a humidity controller:
@@ -85,7 +81,6 @@ and define as exportable in the detector.xml
 - The UI can control the reference
 
 ![Humidity UI](assets/humidity-ui.png)
-
 
 ### Solution
 
@@ -147,7 +142,7 @@ class HumidityControllerMockup(AbstractActuator.AbstractActuator):
             ValueError: Invalid value or attemp to set read only actuator.
             RuntimeError: Timeout waiting for status ready  # From wait_ready
         """
-        print('set_value')
+        print("set_value")
         self._nominal_value = value
         return self.get_value()
 
@@ -158,9 +153,8 @@ class HumidityControllerMockup(AbstractActuator.AbstractActuator):
         while True:
             gevent.sleep(5)
             value = self.get_value()
-            print('new humidity value {}'.format(value))
+            print("new humidity value {}".format(value))
             self.emit("valueChanged", (value,))
-
 ```
 
 with the `humidity.xml`:
@@ -303,7 +297,6 @@ export function sendHumidity(humidity) {
   };
 }
 ```
-
 
 ## Exercise 5: New React component from scratch
 

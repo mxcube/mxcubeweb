@@ -3,7 +3,6 @@
 Some aspects to pay attention to
 when considering the deployment of {{ project }} into a production environment.
 
-
 ## Python backend part of the web application
 
 The Python backend part of {{ project }}
@@ -24,7 +23,6 @@ it is ensured that the dependency versions installed are well known,
 and for example that they are the ones used during development phase
 and during automated tests.
 
-
 ### Install without using Poetry
 
 Poetry is a tool meant for development, it is not an installer, like *pip* for example.
@@ -44,30 +42,34 @@ With a series of commands like the following,
 it should be possible to approximate the behaviour of installing with Poetry's lockfile.
 
 1. Let Poetry export its lockfile into a pip-compatible requirements file
-    ```shell
-    poetry export --format=requirements.txt > requirements.txt
-    ```
+
+   ```shell
+   poetry export --format=requirements.txt > requirements.txt
+   ```
 
 1. Move the `requirements.txt` file to the deployment target system
 
 1. On the deployment system,
-    let pip install {{project}} via the exported requirements file
+   let pip install {{project}} via the exported requirements file
 
-    1. Install the dependencies
+   1. Install the dependencies
+
+      ```shell
+      python -m pip install --no-deps --requirement requirements.txt
+      ```
+
+   1. Install {{project}} itself,
+      and make sure to skip the dependencies (with the `--no-deps` flag)
+      since they are now already installed
+
+      - For example as editable
+
         ```shell
-        python -m pip install --no-deps --requirement requirements.txt
+        python -m pip install --no-deps --editable mxcubeweb
         ```
 
-    1. Install {{project}} itself,
-        and make sure to skip the dependencies (with the `--no-deps` flag)
-        since they are now already installed
+      - Or not
 
-        * For example as editable
-          ```shell
-          python -m pip install --no-deps --editable mxcubeweb
-          ```
-
-        * Or not
-          ```shell
-          python -m pip install --no-deps mxcubeweb
-          ```
+        ```shell
+        python -m pip install --no-deps mxcubeweb
+        ```

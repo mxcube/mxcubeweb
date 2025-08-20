@@ -3,7 +3,6 @@
 Before submitting code to the repository, please read these contribution guidelines.
 The aim of these guidelines is to help the developer community to maintain the code stable and reusable.
 
-
 ## Reporting bugs
 
 Before submitting a new bug report,
@@ -24,7 +23,6 @@ If it has not been reported yet, then:
   - If possible, add an error log and a screenshot.
 
 - Assign a label to the issue (see available labels).
-
 
 ## Submitting code to the repository
 
@@ -60,6 +58,7 @@ This means that all pull requests should be made against the [**develop**](https
   ```
 
 - If you already are working on the **develop** branch and tracking the official repository, simply:
+
   ```bash
   git pull --rebase develop
   ```
@@ -69,7 +68,6 @@ We **recommend to always rebase your local changes instead of merging them**, gi
 ```bash
 git config --global pull.rebase true
 ```
-
 
 ### Preparing a new commit
 
@@ -97,14 +95,12 @@ git pull --rebase develop
   `git push origin NEW_BRACH_NAME`
 - Go to the GitHub webpage and create a new PR.
 
-
 ### Creating a new pull request via GitHub webpage
 
 - Keep the pull requests small, preferably containing a single feature or change.
 - Give enough information about the changes in the pull request summary so that the reviewers easily understand what's been done.
 - Highlight technically complex/complicated sections of the code and supply additional comments to code that might need extra explication/motivation by making inline comments.
 - If needed, assign a developer who should review the PR.
-
 
 ### Accepting a pull request
 
@@ -115,7 +111,6 @@ git pull --rebase develop
 - A PR that has no reviewer assigned can be reviewed by anyone.
 - The author of the PR is free to merge the PR once it has been reviewed
   and all pending comments and discussions are solved.
-
 
 ## Versioning
 
@@ -140,7 +135,6 @@ Versioning is partly automated by GitHub actions and [Poetry](https://python-poe
 
 The exact routine is described more precisely in [MEP01](https://github.com/mxcube/mxcubecore/blob/develop/doc/MEPS/MEP-01/mep01.md).
 
-
 ## Coding convention and style guidelines
 
 ### Units
@@ -158,11 +152,9 @@ code base:
 - Pixels are to be used for beam location (centre)
 - Date time `YYYY-MM-DD HH:MM:SS(.ff)`, possibly with hundreds of seconds (ff), and with 24-hour clock.
 
-
 ### Type hints
 
 We strongly encourage the usage of type hints
-
 
 ### Naming convention
 
@@ -173,11 +165,9 @@ We strongly encourage the usage of type hints
   the words _centring_ and _characterisation_ that are the preferred spelling
   to _centering_ and _characterization_.
 
-
 #### Functions
 
 - functions names should be recognisable as actions and should generally contain a verb
-
 
 #### Variables and parameters:
 
@@ -187,13 +177,11 @@ We strongly encourage the usage of type hints
 - variables should distinguish between objects (e.g. 'motor') and their names or string representations (e.g. 'motor_name')
 - Booleans can be indicated by participles (e.g. 'enabled', 'tunable') or an 'is\_' prefix. We should use positive rather than negative expressions (e.g. 'enabled' rather than 'disabled')
 
-
 ### Properties v. functions
 
-- You should prefer functions ('get*', 'set*', 'update\_') when attributes are mutable and changing the value requires moving hardware or is slow or has side effects, or where you (might) need additional parameters like switches or timeout values.
+- You should prefer functions ('get\*', 'set\*', 'update\_') when attributes are mutable and changing the value requires moving hardware or is slow or has side effects, or where you (might) need additional parameters like switches or timeout values.
   - For boolean states, prefer e.g. `set_enabled` (`True` or `False`) rather than separate `enable()` and `disable()` functions.
 - You should prefer properties for simple properties or states of objects (e.g. 'name', 'user_name', 'tolerance'). Contained HardwareObjects also use properties
-
 
 ### Style guidelines
 
@@ -215,74 +203,73 @@ An example of how to describe a class:
 
 ```python
 class ExampleClass(object):
-  """The summary line for a class docstring should fit on one line.
+    """The summary line for a class docstring should fit on one line.
 
-  If the class has public attributes, they may be documented here
-  in an ``Attributes`` section and follow the same formatting as a
-  function's ``Args`` section. Alternatively, attributes may be documented
-  inline with the attribute's declaration (see __init__ method below).
+    If the class has public attributes, they may be documented here
+    in an ``Attributes`` section and follow the same formatting as a
+    function's ``Args`` section. Alternatively, attributes may be documented
+    inline with the attribute's declaration (see __init__ method below).
 
-  Properties created with the ``@property`` decorator should be documented
-  in the property's getter method.
+    Properties created with the ``@property`` decorator should be documented
+    in the property's getter method.
 
-  Attributes:
-      attr1 (str): Description of `attr1`.
-      attr2 (:obj:`int`, optional): Description of `attr2`.
+    Attributes:
+        attr1 (str): Description of `attr1`.
+        attr2 (:obj:`int`, optional): Description of `attr2`.
 
-  """
+    """
 
-  def __init__(self, param1, param2, param3):
-      """Example of docstring on the __init__ method.
+    def __init__(self, param1, param2, param3):
+        """Example of docstring on the __init__ method.
 
-      The __init__ method may be documented in either the class level
-      docstring, or as a docstring on the __init__ method itself.
+        The __init__ method may be documented in either the class level
+        docstring, or as a docstring on the __init__ method itself.
 
-      Either form is acceptable, but the two should not be mixed. Choose one
-      convention to document the __init__ method and be consistent with it.
+        Either form is acceptable, but the two should not be mixed. Choose one
+        convention to document the __init__ method and be consistent with it.
 
-      Note:
-          Do not include the `self` parameter in the ``Args`` section.
+        Note:
+            Do not include the `self` parameter in the ``Args`` section.
 
-      Args:
-          param1 (str): Description of `param1`.
-          param2 (:obj:`int`, optional): Description of `param2`. Multiple
-              lines are supported.
-          param3 (list(str)): Description of `param3`.
+        Args:
+            param1 (str): Description of `param1`.
+            param2 (:obj:`int`, optional): Description of `param2`. Multiple
+                lines are supported.
+            param3 (list(str)): Description of `param3`.
 
-      """
-      self.attr1 = param1
-      self.attr2 = param2
-      self.attr3 = param3  #: Doc comment *inline* with attribute
+        """
+        self.attr1 = param1
+        self.attr2 = param2
+        self.attr3 = param3  #: Doc comment *inline* with attribute
 
-      #: list(str): Doc comment *before* attribute, with type specified
-      self.attr4 = ['attr4']
+        #: list(str): Doc comment *before* attribute, with type specified
+        self.attr4 = ["attr4"]
 
-      self.attr5 = None
-      """str: Docstring *after* attribute, with type specified."""
-
+        self.attr5 = None
+        """str: Docstring *after* attribute, with type specified."""
 ```
 
 An example of how to describe a function:
 
 ```python
 def function_with_types_in_docstring(param1, param2):
-  """Example function with types documented in the docstring.
+    """Example function with types documented in the docstring.
 
-  `PEP 484`_ type annotations are supported. If attribute, parameter, and
-  return types are annotated according to `PEP 484`_, they do not need to be
-  included in the docstring:
+    `PEP 484`_ type annotations are supported. If attribute, parameter, and
+    return types are annotated according to `PEP 484`_, they do not need to be
+    included in the docstring:
 
-  Args:
-      param1 (int): The first parameter.
-      param2 (str): The second parameter.
+    Args:
+        param1 (int): The first parameter.
+        param2 (str): The second parameter.
 
-  Returns:
-      bool: The return value. True for success, False otherwise.
+    Returns:
+        bool: The return value. True for success, False otherwise.
 
-  .. _PEP 484:
-      https://www.python.org/dev/peps/pep-0484/
+    .. _PEP 484:
+        https://www.python.org/dev/peps/pep-0484/
 
-  """
+    """
 ```
 
 The Python code is to be formatted and checked for lint with
@@ -297,11 +284,9 @@ One can also run the Ruff linter and Ruff formatter locally with commands like
 To get Ruff to automatically fix some of the issues it detects,
 one can run a command like this: `poetry run ruff check --fix`.
 
-
 ## Continuous integration (CI)
 
 *GitHub Actions* workflows are used for continuous integration.
-
 
 ## Additional notes
 

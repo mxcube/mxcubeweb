@@ -67,7 +67,7 @@ To debug state management issues, you can either install the [Redux devtools ext
 - For each endpoint, there is a function in the API's front-end file dedicated to making HTTP requests to that endpoint (e.g. `fetchLoginInfo`, `fetchBeamInfo` ...)
   - Functions that retrieve resources are named `fetch<Something>`.
   - Functions that perform actions are named `send<DoSomething>`.
-- The [wretch](https://github.com/elbywan/wretch) library is used to make HTTP requests; it is a thin wrapper around the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API>).
+- The [wretch](https://github.com/elbywan/wretch) library is used to make HTTP requests; it is a thin wrapper around the [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API).
 
 ### Styling
 

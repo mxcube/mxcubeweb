@@ -18,11 +18,13 @@ The development environment will include Sphinx and all necessary packages for b
 
 Once you have a working environment, use these commands to build the documentation:
 
-    # goto docs folder
-    $ cd docs
+```
+# goto docs folder
+$ cd docs
 
-    # build documents with Sphinx
-    $ make html
+# build documents with Sphinx
+$ make html
+```
 
 The commands above will generate documentation in `docs/html/` directory.
 The generated docs can be viewed by opening `docs/html/index.html` in your web browser.
