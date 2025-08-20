@@ -34,6 +34,9 @@ class GenericTaskForm extends React.Component {
     this.submitRunNow = this.submitRunNow.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
     this.defaultParameters = this.defaultParameters.bind(this);
+    this.state = {
+      rjsfErrors: [],
+    };
     this.jsformData = {};
   }
 
@@ -47,6 +50,14 @@ class GenericTaskForm extends React.Component {
 
   get jsFormStorageKey() {
     return `current${this.props.taskData.type}Parameters`;
+  }
+
+  get isFormValid() {
+    return (
+      this.props.valid &&
+      this.props.taskData.parameters.shape !== -1 &&
+      this.state.rjsfErrors.length === 0
+    );
   }
 
   clearCurrentJSFormParameters() {
@@ -119,7 +130,7 @@ class GenericTaskForm extends React.Component {
               className="me-3 ms-3"
               size="sm"
               variant="success"
-              disabled={this.props.invalid}
+              disabled={!this.isFormValid}
               onClick={this.submitRunNow}
             >
               Run Now
@@ -127,7 +138,7 @@ class GenericTaskForm extends React.Component {
             <Button
               size="sm"
               variant="outline-secondary"
-              disabled={this.props.invalid}
+              disabled={!this.isFormValid}
               onClick={this.submitAddToQueue}
             >
               {this.props.taskData.sampleID ? 'Change' : 'Add to Queue'}
@@ -145,16 +156,14 @@ class GenericTaskForm extends React.Component {
           <Button
             className="me-3"
             variant="success"
-            disabled={
-              this.props.taskData.parameters.shape === -1 || this.props.invalid
-            }
+            disabled={!this.isFormValid}
             onClick={this.submitRunNow}
           >
             Run Now
           </Button>
           <Button
             variant="primary"
-            disabled={this.props.invalid}
+            disabled={!this.isFormValid}
             onClick={this.submitAddToQueue}
           >
             Add Collection Plan to Queue
@@ -167,7 +176,6 @@ class GenericTaskForm extends React.Component {
   showFooter() {
     const { isDiffractionPlan } = this.props.taskData;
     let foot = '';
-
     if (isDiffractionPlan) {
       foot = this.showDPFooter();
     } else {
@@ -294,10 +302,11 @@ class GenericTaskForm extends React.Component {
               schema={schema}
               uiSchema={uiSchema}
               showErrorList={false}
-              onChange={({ formData }) => {
+              onChange={({ formData, errors }) => {
                 this.updateFromRemoteValidation(formData);
                 this.saveCurrentJSFormParameters(formData);
                 this.jsformData = formData;
+                this.setState({ rjsfErrors: errors });
               }}
               templates={{
                 ObjectFieldTemplate: CustomObjectFieldTemplate,
