@@ -61,6 +61,11 @@ Here is an example of ``sample_list_view_modes`` section:
         - id: graphical_view
           show: true
 
+.. note::
+
+    The ``sample_list_view_modes`` section is optional, if not specified, the default view modes are used.
+    The default view modes are: *table_view* and *graphical_view*.
+
 .. image:: view_modes.png
 
 sample_view

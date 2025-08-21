@@ -124,8 +124,14 @@ class _UISampleListViewModesComponentModel(BaseModel):
 
 
 class UISampleListViewModesModel(BaseModel):
-    id: Literal["sample_list_view_modes"]
-    components: list[_UISampleListViewModesComponentModel]
+    id: Literal["sample_list_view_modes"] = "sample_list_view_modes"
+    components: list[_UISampleListViewModesComponentModel] = Field(
+        default_factory=lambda: [
+            _UISampleListViewModesComponentModel(id="table_view", show=True),
+            _UISampleListViewModesComponentModel(id="graphical_view", show=True),
+        ],
+        description="List of components for sample list view modes",
+    )
 
     @validator("components")
     @classmethod
@@ -165,7 +171,7 @@ class UIPropertiesListModel(BaseModel):
     beamline_setup: UIPropertiesModel
     camera_setup: UICameraConfigModel | None
     sample_view_motors: UISampleViewMotorsModel
-    sample_list_view_modes: UISampleListViewModesModel
+    sample_list_view_modes: UISampleListViewModesModel = UISampleListViewModesModel()
     sample_view_video_controls: UISampleViewVideoControlsModel | None
     session_picker: UISessionPickerModel = UISessionPickerModel()
 
