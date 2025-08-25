@@ -1,7 +1,5 @@
-import { BsInfoCircleFill } from 'react-icons/bs';
-
-import TooltipTrigger from '../TooltipTrigger';
 import styles from './CustomFieldTemplate.module.css';
+import { FieldDescriptionTooltip } from './Widgets/FieldDescriptionTooltip/FieldDescriptionTooltip';
 
 /**
  * CustomFieldTemplate is a custom field template for React JSON Schema Form (RJSF).
@@ -29,9 +27,23 @@ export default function CustomFieldTemplate(props) {
 
   const span = Number(uiSchema['ui:options']?.col) || 6;
   const gridClass = `col-${span}`;
+  const fieldClassNames = `${gridClass} ${classNames}`.trim();
+
+  if (schema.type === 'boolean') {
+    return (
+      <div className={fieldClassNames}>
+        {/*
+         * RJSF renders the checkbox with label and description by default
+         * These will be provided be custom CheckboxWidget
+         * In the same line as the checkbox input.
+         */}
+        {children}
+      </div>
+    );
+  }
 
   return (
-    <div className={`${gridClass} ${classNames}`.trim()}>
+    <div className={fieldClassNames}>
       <div className={styles.fieldTitle}>
         {label && (
           <label htmlFor={id} className={styles.fieldLabel}>
@@ -40,15 +52,7 @@ export default function CustomFieldTemplate(props) {
           </label>
         )}
         {rawDescription && (
-          <TooltipTrigger
-            tooltipContent={rawDescription}
-            id={`${id}_tooltip`}
-            inModal
-          >
-            <span>
-              <BsInfoCircleFill />
-            </span>
-          </TooltipTrigger>
+          <FieldDescriptionTooltip description={rawDescription} />
         )}
       </div>
       <div className={styles.fieldInput}>

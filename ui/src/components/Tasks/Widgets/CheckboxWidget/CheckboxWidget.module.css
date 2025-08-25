@@ -1,0 +1,31 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/*
+ * Changing default bootstrap-provided styles for checkboxes,
+ * to make it more obvious that a checkbox is disabled.
+ */
+
+.wrapper input[type='checkbox'] {
+  background-color: white;
+  border-color: black;
+  cursor: pointer;
+}
+.wrapper input[type='checkbox']:checked {
+  background-color: var(--bs-primary);
+  border-color: var(--bs-primary);
+}
+
+.wrapper input[type='checkbox']:disabled {
+  background-color: #f0f0f0; /* Light gray */
+  border-color: #ccc;
+}
+
+.label {
+  font-weight: bold;
+  font-size: 1rem;
+  margin-bottom: 0;
+}
