@@ -22,6 +22,7 @@ import {
 } from './fields';
 import validate from './validate';
 import warn from './warning';
+import CheckboxWidget from './Widgets/CheckboxWidget/CheckboxWidget';
 
 class GenericTaskForm extends React.Component {
   constructor(props) {
@@ -312,6 +313,9 @@ class GenericTaskForm extends React.Component {
                 ObjectFieldTemplate: CustomObjectFieldTemplate,
                 FieldTemplate: CustomFieldTemplate,
                 FieldErrorTemplate: CustomFieldErrorTemplate,
+              }}
+              widgets={{
+                CheckboxWidget,
               }}
             />
           </div>

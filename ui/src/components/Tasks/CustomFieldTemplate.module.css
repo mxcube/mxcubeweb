@@ -1,14 +1,13 @@
 .fieldTitle {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 0.5rem;
 }
+
 .fieldTitle .fieldLabel {
   font-weight: bold;
   font-size: 1rem;
-  line-height: 1.2;
   margin-bottom: 0;
-  margin-top: 0.5rem;
 }
 
 .fieldInput {
