@@ -127,9 +127,6 @@ export default class CurrentTree extends React.Component {
                     data={taskData}
                     sampleId={sampleData.sampleID}
                     checked={this.props.checked}
-                    state={
-                      this.props.sampleList[taskData.sampleID].tasks[i].state
-                    }
                     showForm={this.props.showForm}
                     shapes={this.props.shapes}
                     showDialog={this.props.showDialog}

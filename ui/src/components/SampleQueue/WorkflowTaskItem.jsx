@@ -56,7 +56,7 @@ export default class WorkflowTaskItem extends Component {
   }
 
   render() {
-    const { data, state } = this.props;
+    const { data } = this.props;
 
     const { parameters } = data;
 
@@ -92,7 +92,6 @@ export default class WorkflowTaskItem extends Component {
                 <i aria-hidden="true" className="fa fa-sliders-h" />
               </Button>
             </div>
-            {this.getResult(state)}
           </div>
         </div>
       </TaskItemContainer>
