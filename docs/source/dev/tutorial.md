@@ -8,7 +8,7 @@ Useful links:
 
 - React Developer Tools: [installation](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) and [usage](https://react.dev/learn/react-developer-tools)
 - Redux DevTools: [installation](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd) and [usage](https://github.com/reduxjs/redux-devtools)
-- Swagger link once `mxcubeweb` is running: <http://localhost:8081/apidoc/swagger/>
+- Swagger link once `mxcubeweb` is running: <http://localhost:8081/apidocs/docs_swagger/>
 
 ![Swagger UI](assets/swagger.png)
 
