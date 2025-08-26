@@ -15,19 +15,21 @@ class Workflow(ComponentBase):
         workflows = {}
         beamline = HWR.beamline
 
-        try:
-            for wf in beamline.workflow.get_available_workflows():
-                # Rename name and path to wfname and wfpath in order to avoid name
-                # clashes
-                wf["wfname"] = wf.pop("name")
-                wf["wfpath"] = wf.pop("path")
+        if beamline.workflow:
+            # Add workflows if available
+            try:
+                for wf in beamline.workflow.get_available_workflows():
+                    # Rename name and path to wfname and wfpath in order to avoid name
+                    # clashes
+                    wf["wfname"] = wf.pop("name")
+                    wf["wfpath"] = wf.pop("path")
 
-                workflows[wf["wfname"]] = wf
-        except Exception:
-            msg = "Problem with available workflows or naming/pathing: {wf.name}"
-            hwr_logger.exception(msg)
+                    workflows[wf["wfname"]] = wf
+            except Exception:
+                msg = "Problem with available workflows or naming/pathing: {wf.name}"
+                hwr_logger.exception(msg)
 
-        if getattr(beamline, "gphl_workflow", None):
+        if beamline.gphl_workflow:
             # Add Global Phasing workflows if available
             workflows.update(beamline.gphl_workflow.get_available_workflows())
 
