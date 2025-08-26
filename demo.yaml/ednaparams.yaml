@@ -7,31 +7,31 @@ configuration:
   workflow:
     - path: MeshScan
       requires: grid
-      title: WF Mesh Scan
+      name: WF Mesh Scan
     - path: XrayCentring
       requires: grid
-      title: X-ray Centring
+      name: X-ray Centring
     - path: HelicalCharacterisation
       requires: line
-      title: Helical characterisation
+      name: Helical characterisation
     - path: EnhancedCharacterisation
       requires: point
-      title: Enhanced characterisation
+      name: Enhanced characterisation
     - path: MXPressE
       requires: samplegrid
-      title: MXPressE
+      name: MXPressE
     - path: MeshAndCollect
       requires: grid
-      title: Mesh and collect
+      name: Mesh and collect
     - path: MeshAndCollectFromFile
       requires: grid
-      title: Mesh and collect from file
+      name: Mesh and collect from file
     - path: DistanceCalibration
       requires: point
-      title: Distance calibration
+      name: Distance calibration
     - path: TroubleShooting
       requires: samplegrid
-      title: Trouble shooting
+      name: Trouble shooting
     - path: TroubleShootingWithDialog
       requires: samplegrid
-      title: Trouble shooting Dialog
+      name: Trouble shooting Dialog
