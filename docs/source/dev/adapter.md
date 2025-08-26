@@ -4,7 +4,7 @@ A **HardwareObject adapter** adapts or translates essential methods and signals/
 
 ## JSON Representation
 
-All adapter objects are serializable to JSON via their `data()` method. Adapters inheriting from `BaseAdapter` return an object with the following fields:
+All adapter objects are serializable to JSON via their `data()` method. Adapters inheriting from `AdapterBase` return an object with the following fields:
 
 - **`name`**: Unique object name.
 - **`state`**: Current state (e.g., `READY`, `BUSY`), based on the `HardwareObject` state.
