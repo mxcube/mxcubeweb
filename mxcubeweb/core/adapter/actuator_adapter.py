@@ -53,7 +53,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
     def _value_change(self, *args, **kwargs):
         self._vc(*args, **kwargs)
 
-    def set_value(self, value: HOActuatorValueChangeModel):
+    def set_value(self, value: HOActuatorValueChangeModel) -> str:
         """
         Execute the sequence to set the value.
         Args:
@@ -66,6 +66,7 @@ class ActuatorAdapter(ActuatorAdapterBase):
             StopItteration: When a value change was interrupted (abort/cancel).
         """
         self._ho.set_value(float(value.value))
+        return self.get_value()
 
     def get_value(self) -> FloatValueModel:
         """

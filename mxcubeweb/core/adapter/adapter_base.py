@@ -406,12 +406,14 @@ class ActuatorAdapterBase(AdapterBase):
         self.emit_ho_value_changed(args[0])
 
     # Abstract method
-    def set_value(self, value) -> None:
+    def set_value(self, value) -> str:
         """
         Sets a value on underlying hardware object.
 
         Args:
             value(float): Value to be set.
+        Returns:
+            (str): The actual value set as str.
         Raises:
             ValueError: When conversion or treatment of value fails.
             StopIteration: When a value change was interrupted (abort/cancel).

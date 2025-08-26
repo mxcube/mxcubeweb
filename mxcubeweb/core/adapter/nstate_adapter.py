@@ -58,8 +58,21 @@ class NStateAdapter(ActuatorAdapterBase):
     def commands(self):
         return self._get_valid_states()
 
-    def set_value(self, value: HOActuatorValueChangeModel):
+    def set_value(self, value: HOActuatorValueChangeModel) -> str:
+        """
+        Sets value of the Nstate adapter.
+
+        Args:
+            value (Enum): value to be set containing name and value attributes.
+        Returns:
+            (str): The actual value set as a string.
+        Raises:
+            ValueError: Value not valid.
+            RuntimeError: Timeout while setting the value.
+            StopItteration: When a value change was interrupted (abort/cancel).
+        """
         self._ho.set_value(self._ho.VALUES[value.value])
+        return self.get_value()
 
     def get_value(self) -> StrValueModel:
         return StrValueModel(value=self._ho.get_value().name)
