@@ -1,13 +1,16 @@
 import api from './api';
 
-const endpoint = api.url('/detector');
+const endpoint = api.url('/hwobj/');
 
 export function fetchDetectorInfo() {
-  return endpoint.get('/').safeJson();
+  return endpoint.get('detector/detector/get_detector_info').safeJson();
 }
 
 export function fetchDisplayImage(path, imgNum) {
   return endpoint
-    .get(`/display_image?path=${path}&img_num=${imgNum}`)
+    .put(
+      { image_path: path, image_num: imgNum },
+      'detector/detector/display_image',
+    )
     .safeJson();
 }
