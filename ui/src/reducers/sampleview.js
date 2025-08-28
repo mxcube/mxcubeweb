@@ -170,13 +170,13 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
     case 'SET_INITIAL_STATE': {
       return {
         ...state,
-        width: action.data.Camera.imageWidth,
-        height: action.data.Camera.imageHeight,
-        videoFormat: action.data.Camera.format,
-        videoSizes: action.data.Camera.videoSizes,
-        sourceIsScalable: action.data.Camera.sourceIsScalable,
-        videoHash: action.data.Camera.videoHash,
-        videoURL: action.data.Camera.videoURL,
+        width: action.data.camera.imageWidth,
+        height: action.data.camera.imageHeight,
+        videoFormat: action.data.camera.format,
+        videoSizes: action.data.camera.videoSizes,
+        sourceIsScalable: action.data.camera.sourceIsScalable,
+        videoHash: action.data.camera.videoHash,
+        videoURL: action.data.camera.videoURL,
         apertureList: action.data.beamInfo.apertureList,
         currentAperture: action.data.beamInfo.currentAperture,
         beamPosition: action.data.beamInfo.position,
@@ -187,8 +187,8 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
         },
         phaseList: action.data.phaseList,
         currentPhase: action.data.currentPhase,
-        pixelsPerMm: action.data.Camera.pixelsPerMm,
-        sourceScale: action.data.Camera.scale,
+        pixelsPerMm: action.data.camera.pixelsPerMm,
+        sourceScale: action.data.camera.scale,
       };
     }
     default: {

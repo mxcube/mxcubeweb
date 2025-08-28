@@ -67,9 +67,7 @@ class Beamline(ComponentBase):
 
         pixelsPerMm = HWR.beamline.diffractometer.get_pixels_per_mm()
 
-        beam_info_dict = self.get_beam_info()
-
-        data = {
+        return {
             "pixelsPerMm": pixelsPerMm,
             "imageWidth": width,
             "imageHeight": height,
@@ -80,9 +78,6 @@ class Beamline(ComponentBase):
             "videoHash": HWR.beamline.sample_view.camera.stream_hash,
             "videoURL": self.app.CONFIG.app.VIDEO_STREAM_URL,
         }
-
-        data.update(beam_info_dict)
-        return data
 
     def beamline_get_all_attributes(self):
         ho = BeamlineAdapter(HWR.beamline)

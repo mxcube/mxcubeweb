@@ -107,7 +107,7 @@ export function getInitialState() {
         .then((actionsList) => actionsList)
         .catch(notify),
       fetchImageData()
-        .then((Camera) => ({ Camera }))
+        .then((camera) => ({ camera }))
         .catch(notify),
       fetchDiffractometerInfo().catch(notify),
       fetchDetectorInfo()
