@@ -1,4 +1,3 @@
-import { useCallback, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -11,19 +10,12 @@ function BeamlineActionsContainer() {
   const actionsList = useSelector(
     (state) => state.beamline.beamlineActionsList,
   );
-  const currentActionName = useSelector(
-    (state) => state.beamline.currentBeamlineAction.name,
-  );
-
-  const [plotIdByAction, setPlotIdByAction] = useState({});
 
   function startAction(cmdName, params = {}, showOutput = true) {
     const cmd = actionsList.find((action) => action.name === cmdName);
     if (!cmd) {
       return;
     }
-
-    setPlotIdByAction((prev) => ({ ...prev, [currentActionName]: null }));
 
     if (cmd.argument_type === 'List') {
       const parameters = cmd.arguments.map((arg) =>
@@ -35,13 +27,6 @@ function BeamlineActionsContainer() {
 
     dispatch(startBeamlineAction(cmdName, params, showOutput));
   }
-
-  const newPlotDisplayed = useCallback(
-    (plotId) => {
-      setPlotIdByAction((prev) => ({ ...prev, [currentActionName]: plotId }));
-    },
-    [currentActionName],
-  );
 
   if (actionsList.length === 0) {
     return null;
@@ -87,11 +72,7 @@ function BeamlineActionsContainer() {
           })}
         </Dropdown.Menu>
       </Dropdown>
-      <BeamlineActionDialog
-        handleStartAction={startAction}
-        plotId={plotIdByAction[currentActionName]}
-        handleOnPlotDisplay={newPlotDisplayed}
-      />
+      <BeamlineActionDialog handleStartAction={startAction} />
     </>
   );
 }

@@ -1,17 +1,23 @@
+import PropTypes from 'prop-types';
 import { Button, Card, Col, Modal, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { hideActionOutput } from '../../actions/beamlineActions';
 import { RUNNING } from '../../constants';
 import { DraggableModal } from '../DraggableModal';
-import Plot1D from '../Plot1D';
 import AnnotatedBeamlineActionForm from './AnnotatedBeamlineActionForm';
 import BeamlineActionForm from './BeamlineActionForm';
 
 const DEFAULT_DIALOG_POSITION = { x: -100, y: 100 };
 
-export default function BeamlineActionDialog(props) {
-  const { handleStartAction, plotId, handleOnPlotDisplay } = props;
+/**
+ * BeamlineActionDialog displays a draggable modal for the current beamline action.
+ *
+ * @param {Object} props
+ * @param {(cmdName: string, params?: Object, showOutput?: boolean) => void} props.handleStartAction
+ * @returns {JSX.Element}
+ */
+export default function BeamlineActionDialog({ handleStartAction }) {
   const dispatch = useDispatch();
   const currentAction = useSelector(
     (state) => state.beamline.currentBeamlineAction,
@@ -42,11 +48,6 @@ export default function BeamlineActionDialog(props) {
         )}
         <Row className="py-2">
           <Col>
-            <Plot1D
-              displayedPlotCallback={handleOnPlotDisplay}
-              plotId={plotId}
-              autoNext={isActionRunning}
-            />
             {currentAction.messages.length > 0 && (
               <Card>
                 {currentAction.messages.map((message) => (
@@ -69,3 +70,7 @@ export default function BeamlineActionDialog(props) {
     </DraggableModal>
   );
 }
+
+BeamlineActionDialog.propTypes = {
+  handleStartAction: PropTypes.func.isRequired,
+};
