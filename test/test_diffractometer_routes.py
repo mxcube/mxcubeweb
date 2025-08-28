@@ -44,12 +44,16 @@ def test_set_aperture(client):
     original value also is the current
     """
 
-    resp = client.get("/mxcube/api/v0.1/beamline/beam/info")
+    resp = client.put(
+        "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
+        data="{}",
+        content_type="application/json",
+    )
     data = json.loads(resp.data)
 
-    original_aperture = data["currentAperture"]
+    original_aperture = data["value"]["currentAperture"]
 
-    ap = data["apertureList"][0]
+    ap = data["value"]["apertureList"][0]
 
     # make sure we are testing a change of aperture
     assert ap != original_aperture
@@ -60,8 +64,12 @@ def test_set_aperture(client):
         content_type="application/json",
     )
 
-    resp = client.get("/mxcube/api/v0.1/beamline/beam/info")
-    actual_aperture = json.loads(resp.data)["currentAperture"]
+    resp = client.put(
+        "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
+        data="{}",
+        content_type="application/json",
+    )
+    actual_aperture = json.loads(resp.data)["value"]["currentAperture"]
 
     aperture_value_changed = Event()
     # listen for 'valueChanged' signal
@@ -77,8 +85,12 @@ def test_set_aperture(client):
     # wait until aperture changes the value
     aperture_value_changed.wait()
 
-    resp = client.get("/mxcube/api/v0.1/beamline/beam/info")
-    actual_original_aperture = json.loads(resp.data)["currentAperture"]
+    resp = client.put(
+        "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
+        data="{}",
+        content_type="application/json",
+    )
+    actual_original_aperture = json.loads(resp.data)["value"]["currentAperture"]
 
     assert ap == actual_aperture
     assert actual_original_aperture == original_aperture

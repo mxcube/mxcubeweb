@@ -43,7 +43,7 @@ class HOActuatorValueChangeModel(BaseModel):
     value: str = Field("", description="New value of actuator (position)")
 
 
-class HOBeamRawValueModel(BaseModel):
+class HOBeamValueModel(BaseModel):
     apertureList: list[str] = Field([0], description="List of available apertures")
     currentAperture: str = Field(0, description="Current aperture label")
     position: tuple[float, float] = Field((0, 0), description="Beam position on OAV")
@@ -62,11 +62,7 @@ class HOBeamRawValueModel(BaseModel):
 
 
 class HOBeamModel(HOActuatorModel):
-    value: HOBeamRawValueModel
-
-
-class HOBeamValueModel(BaseModel):
-    value: HOBeamRawValueModel
+    value: HOBeamValueModel
 
 
 class FloatValueModel(BaseModel):

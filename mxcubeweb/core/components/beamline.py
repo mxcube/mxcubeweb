@@ -99,44 +99,6 @@ class Beamline(ComponentBase):
 
         return data
 
-    def get_beam_info(self):
-        """
-        Returns beam information retrieved by the beam_info hardware object,
-        containing position, size and shape.
-
-        :return: Beam info dictionary with keys: position, shape, size_x, size_y
-        :rtype: dict
-        """
-        beam = HWR.beamline.beam
-        beam_info_dict = {
-            "position": [],
-            "shape": "",
-            "size_x": 0,
-            "size_y": 0,
-        }
-        sx, sy, shape, _label = beam.get_value()
-
-        if beam is not None:
-            beam_info_dict.update(
-                {
-                    "position": beam.get_beam_position_on_screen(),
-                    "size_x": sx,
-                    "size_y": sy,
-                    "shape": shape.value,
-                }
-            )
-
-        aperture_list, current_aperture = self.get_aperture()
-
-        beam_info_dict.update(
-            {
-                "apertureList": aperture_list,
-                "currentAperture": current_aperture,
-            }
-        )
-
-        return beam_info_dict
-
     def prepare_beamline_for_sample(self):
         if hasattr(HWR.beamline.collect, "prepare_for_new_sample"):
             HWR.beamline.collect.prepare_for_new_sample()

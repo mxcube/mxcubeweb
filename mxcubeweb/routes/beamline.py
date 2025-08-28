@@ -16,15 +16,6 @@ def init_route(app, server, url_prefix):
     def beamline_get_all_attributes():
         return jsonify(app.beamline.beamline_get_all_attributes())
 
-    @bp.route("/beam/info", methods=["GET"])
-    @server.restrict
-    def get_beam_info():
-        """
-        Beam information: position, size, shape
-        return_data = {"position": , "shape": , "size_x": , "size_y": }
-        """
-        return jsonify(app.beamline.get_beam_info())
-
     @bp.route("/datapath", methods=["GET"])
     @server.restrict
     def beamline_get_data_path():

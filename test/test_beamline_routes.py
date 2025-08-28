@@ -128,13 +128,17 @@ def test_get_beam_info(client):
     Tests retrieval of information regarding the beam, and that the data is
     returned on the expected format
     """
-    resp = client.get("/mxcube/api/v0.1/beamline/beam/info")
-    data = json.loads(resp.data)
+    resp = client.put(
+        "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
+        data="{}",
+        content_type="application/json",
+    )
+    data = json.loads(resp.data)["value"]
 
     assert isinstance(data["currentAperture"], str)
     assert len(data["apertureList"]) > 0
-    assert isinstance(data["position"][0], int)
-    assert isinstance(data["position"][1], int)
+    assert isinstance(data["position"][0], float)
+    assert isinstance(data["position"][1], float)
     assert isinstance(data["size_x"], float)
     assert isinstance(data["size_y"], float)
 
