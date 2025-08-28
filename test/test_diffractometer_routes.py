@@ -5,34 +5,6 @@ from gevent.event import Event
 from mxcubecore import HardwareRepository as HWR
 
 
-def test_get_phase_list(client):
-    """
-    Checks retrieval of phase list and if the returned data is list.
-    Does not test if the actual phases in the list are correct
-    """
-    resp = client.get("/mxcube/api/v0.1/diffractometer/phaselist")
-    data = json.loads(resp.data)
-
-    assert isinstance(data["current_phase"], list)
-
-
-def test_get_phase(client):
-    """
-    Checks if current phase is one of the phases in the phase list.
-    """
-    resp = client.get("/mxcube/api/v0.1/diffractometer/phaselist")
-    data = json.loads(resp.data)
-
-    phase_list = data["current_phase"]
-
-    resp = client.get("/mxcube/api/v0.1/diffractometer/phase")
-    data = json.loads(resp.data)
-
-    phase = data["current_phase"]
-
-    assert phase in phase_list
-
-
 def test_set_phase(client):
     """
     Sets phase to a phase P (any phase in the phase list), checks if the
@@ -42,12 +14,10 @@ def test_set_phase(client):
     current phase after the move is OP
     """
     # Get current phase
-    resp = client.get("/mxcube/api/v0.1/diffractometer/phase")
-    original_phase = json.loads(resp.data)["current_phase"]
+    resp = client.get("/mxcube/api/v0.1/diffractometer/info")
+    info = json.loads(resp.data)
 
-    resp = client.get("/mxcube/api/v0.1/diffractometer/phaselist")
-    data = json.loads(resp.data)
-    phase_list = data["current_phase"]
+    phase_list = info["phaseList"]
 
     new_phase = phase_list[random.randint(0, len(phase_list) - 1)]
 
@@ -59,28 +29,10 @@ def test_set_phase(client):
     )
 
     # Retrieve current phase
-    resp = client.get("/mxcube/api/v0.1/diffractometer/phase")
-    actual_phase = json.loads(resp.data)["current_phase"]
-
-    # Move phase back to its original value
-    resp = client.put(
-        "/mxcube/api/v0.1/diffractometer/phase",
-        data=json.dumps({"phase": original_phase}),
-        content_type="application/json",
-    )
+    resp = client.get("/mxcube/api/v0.1/diffractometer/info")
+    actual_phase = json.loads(resp.data)["currentPhase"]
 
     assert new_phase == actual_phase
-
-
-def test_get_aperture(client):
-    """
-    Checks if the data returned have is on the expected format
-    """
-    resp = client.get("/mxcube/api/v0.1/diffractometer/aperture")
-    data = json.loads(resp.data)
-
-    assert isinstance(data["currentAperture"], str)
-    assert isinstance(data["apertureList"], list)
 
 
 def test_set_aperture(client):
@@ -92,7 +44,7 @@ def test_set_aperture(client):
     original value also is the current
     """
 
-    resp = client.get("/mxcube/api/v0.1/diffractometer/aperture")
+    resp = client.get("/mxcube/api/v0.1/beamline/beam/info")
     data = json.loads(resp.data)
 
     original_aperture = data["currentAperture"]
@@ -108,7 +60,7 @@ def test_set_aperture(client):
         content_type="application/json",
     )
 
-    resp = client.get("/mxcube/api/v0.1/diffractometer/aperture")
+    resp = client.get("/mxcube/api/v0.1/beamline/beam/info")
     actual_aperture = json.loads(resp.data)["currentAperture"]
 
     aperture_value_changed = Event()
@@ -125,19 +77,11 @@ def test_set_aperture(client):
     # wait until aperture changes the value
     aperture_value_changed.wait()
 
-    resp = client.get("/mxcube/api/v0.1/diffractometer/aperture")
+    resp = client.get("/mxcube/api/v0.1/beamline/beam/info")
     actual_original_aperture = json.loads(resp.data)["currentAperture"]
 
     assert ap == actual_aperture
     assert actual_original_aperture == original_aperture
-
-
-def test_get_md_plate_mode(client):
-    """
-    Simply checks if the route runs and does not throws any exceptions
-    """
-    resp = client.get("/mxcube/api/v0.1/diffractometer/platemode")
-    assert resp.status_code == 200
 
 
 def test_get_diffractometer_info(client):
