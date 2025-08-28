@@ -21,17 +21,17 @@ import { DraggableModal } from '../components/DraggableModal';
 
 class BeamlineActionsContainer extends React.Component {
   constructor(props) {
-    super(props);
+    super(props); //构造器类必调用super
 
     this.plotIdByAction = {};
-
+    // 把类的方法绑定到当前组件实例，确保方法内部的this正确指向组件
     this.startAction = this.startAction.bind(this);
     this.stopAction = this.stopAction.bind(this);
     this.showOutput = this.showOutput.bind(this);
     this.hideOutput = this.hideOutput.bind(this);
     this.newPlotDisplayed = this.newPlotDisplayed.bind(this);
   }
-
+   // 函数
   startAction(cmdName, showOutput = true) {
     const parameters = [];
 
@@ -88,7 +88,7 @@ class BeamlineActionsContainer extends React.Component {
                 Beamline Actions
               </Dropdown.Toggle>
                 <Dropdown.Menu>
-                  {this.props.actionsList.map((cmd, i) => {
+                  {this.props.actionsList.map((cmd) => {
                     const cmdName = cmd.name;
                     const cmdUsername = cmd.username;
                     const cmdState = cmd.state;
@@ -101,7 +101,7 @@ class BeamlineActionsContainer extends React.Component {
                         <Dropdown.Item
                           style={{width: '250px' }}
                           className='d-flex justify-content-between align-items-start'
-                          key={i}
+                          key={cmdName} // 修复：使用cmdName 替代 i
                         >
                           <div className="ms-2 me-auto">
                             <div className="fw-bold">{cmdUsername}</div>
@@ -193,7 +193,8 @@ class BeamlineActionsContainer extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    currentAction: state.beamline.currentBeamlineAction
+    currentAction: state.beamline.currentBeamlineAction,
+    actionsList: state.beamline.beamlineActionsList,
   };
 }
 

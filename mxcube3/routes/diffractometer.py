@@ -72,9 +72,6 @@ def init_route(app, server, url_prefix):
         try:
             current_position = HWR.beamline.diffractometer.get_cold_head_state()
             data = {"current_rex_position": current_position}
-            print("-----------------------------------------------------")
-            print(data)
-            print("-----------------------------------------------------")
             resp = jsonify(data)
             resp.status_code = 200
             return resp

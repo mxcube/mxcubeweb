@@ -142,10 +142,6 @@ export default (state = initialState, action) => {
       return { ...state, rexPosition: action.payload };
     }
 
-    // case 'SEND_REX_POSITION': { // new add
-    //   return { ...state, rexPosition: action.payload };
-    // }
-
     case 'SET_STEP_SIZE': {
       return {
         ...state,

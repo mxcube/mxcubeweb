@@ -375,7 +375,8 @@ class SampleView(ComponentBase):
         # 下面的打印日志代码是针对raster scan的，对于3-click和2d-point会导致exception
         # logging.getLogger("HWR.MX3").info("get into update_shapes method in sampleview")
         # logging.getLogger("HWR.MX3").debug("shape from react, width: %f , height: %f. " %(shapes[0]['width'], shapes[0]['height']))
-
+        # import pdb
+        # pdb.set_trace()
         updated_shapes = []
 
         for s in shapes:
