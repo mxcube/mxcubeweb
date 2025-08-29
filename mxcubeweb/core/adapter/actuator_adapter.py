@@ -12,7 +12,7 @@ from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 from mxcubeweb.core.util.networkutils import RateLimited
 
 resource_handler_config = ResourceHandlerConfigModel(
-    commands=["get_value", "set_value", "stop"], attributes=["data"]
+    commands=["set_value", "stop"], attributes=["data", "get_value"]
 )
 
 hwr_logger = logging.getLogger("MX3.HWR")

@@ -8,8 +8,8 @@ from mxcubeweb.core.adapter.wavelength_adapter import WavelengthAdapter
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
 resource_handler_config = ResourceHandlerConfigModel(
-    commands=["get_value", "set_value", "stop", "get_resolution_limits_for_energy"],
-    attributes=["data"],
+    commands=["set_value", "stop", "get_resolution_limits_for_energy"],
+    attributes=["data", "get_value"],
 )
 
 

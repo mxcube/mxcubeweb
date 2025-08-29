@@ -24,9 +24,11 @@ from mxcubeweb.core.server.resource_handler import (
 default_resource_handler_config = ResourceHandlerConfigModel(
     commands=[
         "set_value",
+    ],
+    attributes=[
+        "data",
         "get_value",
     ],
-    attributes=["data"],
 )
 
 

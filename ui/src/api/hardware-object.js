@@ -8,7 +8,7 @@ export function sendExecuteCommand(objectType, objectId, command, value) {
     .safeJson();
 }
 
-export function sendGetAttribute(objectType, objectId, attributeName) {
+export function fetchAttribute(objectType, objectId, attributeName) {
   return endpoint.get(`/${objectType}/${objectId}/${attributeName}`).safeJson();
 }
 
@@ -16,8 +16,8 @@ export function sendSetValue(objectId, objectType, value) {
   return sendExecuteCommand(objectType, objectId, 'set_value', { value });
 }
 
-export function sendGetValue(objectId, objectType) {
-  return sendExecuteCommand(objectType, objectId, 'get_value', {});
+export function fetchValue(objectId, objectType) {
+  return fetchAttribute(objectType, objectId, 'get_value');
 }
 
 export function sendStop(objectId, objectType) {

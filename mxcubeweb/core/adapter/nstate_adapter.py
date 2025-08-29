@@ -16,7 +16,7 @@ from mxcubeweb.core.models.adaptermodels import (
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
 resource_handler_config = ResourceHandlerConfigModel(
-    commands=["get_value", "set_value", "stop"], attributes=["data"]
+    commands=["set_value", "stop"], attributes=["data", "get_value"]
 )
 
 

@@ -1,6 +1,6 @@
 import {
+  fetchAttribute,
   sendExecuteCommand,
-  sendGetAttribute,
   sendStop,
 } from '../api/hardware-object';
 import { RUNNING } from '../constants';
@@ -54,7 +54,7 @@ export function startBeamlineAction(cmdName, parameters, showOutput = true) {
 }
 
 export function fetchGetAllActions() {
-  return sendGetAttribute(
+  return fetchAttribute(
     'beamlineaction',
     'beamline_actions',
     'get_all_actions',
