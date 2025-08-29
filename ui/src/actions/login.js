@@ -2,7 +2,7 @@
 import { fetchBeamlineSetup } from '../api/beamline';
 import { fetchDetectorInfo } from '../api/detector';
 import { fetchDiffractometerInfo } from '../api/diffractometer';
-import { sendGetValue } from '../api/hardware-object';
+import { fetchValue } from '../api/hardware-object';
 import { fetchHarvesterInitialState } from '../api/harvester';
 import { sendSelectProposal } from '../api/lims';
 import { fetchLogMessages } from '../api/log';
@@ -95,7 +95,7 @@ export function getInitialState() {
       fetchQueueState()
         .then((queue) => ({ queue }))
         .catch(notify),
-      sendGetValue('beam', 'beam')
+      fetchValue('beam', 'beam')
         .then((beamInfo) => ({ beamInfo: beamInfo.value }))
         .catch(notify),
       fetchBeamlineSetup()

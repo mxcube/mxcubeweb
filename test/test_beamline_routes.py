@@ -128,10 +128,8 @@ def test_get_beam_info(client):
     Tests retrieval of information regarding the beam, and that the data is
     returned on the expected format
     """
-    resp = client.put(
+    resp = client.get(
         "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
-        data="{}",
-        content_type="application/json",
     )
     data = json.loads(resp.data)["value"]
 
