@@ -346,7 +346,7 @@ class ResourceHandler:
                 # We only handle a single argument when using Pydantic models
                 # We handle complex structures by checking if param_data
                 # contains a value or a dictionary.
-                if isinstance(param_data[param_name], dict):
+                if isinstance(param_data.get(param_name), dict):
                     return param_type.parse_obj(param_data[param_name])
 
                 # If its a single value and Pydantic model, pass the entire
