@@ -55,8 +55,8 @@ def test_set_aperture(client):
     assert ap != original_aperture
 
     resp = client.put(
-        "/mxcube/api/v0.1/diffractometer/aperture",
-        data=json.dumps({"diameter": ap}),
+        "/mxcube/api/v0.1/hwobj/beam/beam/set_value",
+        data=json.dumps({"value": ap}),
         content_type="application/json",
     )
 
@@ -70,8 +70,8 @@ def test_set_aperture(client):
     )
 
     resp = client.put(
-        "/mxcube/api/v0.1/diffractometer/aperture",
-        data=json.dumps({"diameter": original_aperture}),
+        "/mxcube/api/v0.1/hwobj/beam/beam/set_value",
+        data=json.dumps({"value": original_aperture}),
         content_type="application/json",
     )
     # wait until aperture changes the value

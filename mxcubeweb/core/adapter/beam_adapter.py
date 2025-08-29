@@ -1,3 +1,4 @@
+import logging
 from typing import ClassVar
 
 from mxcubecore.HardwareObjects.abstract import AbstractBeam
@@ -51,6 +52,12 @@ class BeamAdapter(ActuatorAdapterBase):
 
         return aperture_list, current_aperture
 
+    def set_value(self, value: int) -> HOBeamModel:
+        self._ho.set_value(value)
+        msg = f"Changing beams size to: {value}"
+        logging.getLogger("MX3.HWR").info(msg)
+        return self.get_value()
+
     def get_value(self) -> HOBeamValueModel:
         beam_info_dict = {
             "position": [],
@@ -79,12 +86,6 @@ class BeamAdapter(ActuatorAdapterBase):
         )
 
         return HOBeamValueModel(value=beam_info_dict)
-
-    def get_size(self) -> HOBeamModel:
-        pass
-
-    def set_size(self, value: HOBeamModel) -> HOBeamModel:
-        pass
 
     def data(self) -> HOBeamModel:
         return HOBeamModel(**self._dict_repr())

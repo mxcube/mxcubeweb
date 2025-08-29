@@ -1,7 +1,5 @@
-import {
-  sendUpdateAperture,
-  sendUpdateCurrentPhase,
-} from '../api/diffractometer';
+import { sendUpdateCurrentPhase } from '../api/diffractometer';
+import { sendSetValue } from '../api/hardware-object';
 import {
   sendAbortCentring,
   sendAcceptCentring,
@@ -350,7 +348,7 @@ export function moveToPoint(id) {
 
 export function changeAperture(size) {
   return async (dispatch) => {
-    await sendUpdateAperture(size);
+    await sendSetValue('beam', 'beam', size);
     dispatch(setAperture(size));
   };
 }

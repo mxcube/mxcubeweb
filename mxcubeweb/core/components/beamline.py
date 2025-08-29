@@ -149,12 +149,6 @@ class Beamline(ComponentBase):
 
         HWR.beamline.diffractometer.set_phase(phase)
 
-    def set_aperture(self, pos):
-        beam = HWR.beamline.beam
-        msg = "Changing beam size to: %s" % pos
-        logging.getLogger("MX3.HWR").info(msg)
-        beam.set_value(pos)
-
     def diffractometer_get_info(self):
         ret = {}
 
