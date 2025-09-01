@@ -1,4 +1,4 @@
-import { fetchDisplayImage } from '../api/detector';
+import { sendExecuteCommand } from '../api/hardware-object';
 
 export function addUserMessage(records, target) {
   return {
@@ -54,9 +54,15 @@ export function showConfirmClearQueueDialog(show = true) {
 
 export function displayImage(path, imgNum) {
   return async () => {
-    const data = await fetchDisplayImage(path, imgNum);
-    if (data && data.image_url) {
-      window.open(data.image_url, 'braggy');
-    }
+    const data = await sendExecuteCommand(
+      'detector',
+      'detector',
+      'display_image',
+      { path, imgNum },
+    );
+    window.open(
+      `https://braggy.mxcube3.esrf.fr/?file=${data.path}/image_${data.img_num}.h5.dataset`,
+      'braggy',
+    );
   };
 }

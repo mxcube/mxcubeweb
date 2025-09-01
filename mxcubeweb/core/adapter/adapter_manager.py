@@ -3,7 +3,7 @@ import sys
 import traceback
 
 from mxcubecore import (
-    HardwareRepository as HWR,  # noqa: N814 (should be disabled globaly)
+    HardwareRepository as HWR,
 )
 from mxcubecore.utils.conversion import make_table
 

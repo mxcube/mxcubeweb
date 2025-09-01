@@ -1,5 +1,3 @@
-import logging
-
 from mxcubecore import HardwareRepository as HWR
 
 from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
@@ -100,29 +98,3 @@ class Beamline(ComponentBase):
     def prepare_beamline_for_sample(self):
         if hasattr(HWR.beamline.collect, "prepare_for_new_sample"):
             HWR.beamline.collect.prepare_for_new_sample()
-
-    def get_detector_info(self):
-        try:
-            filetype = HWR.beamline.detector.get_property("file_suffix")
-        except Exception:
-            filetype = None
-
-        if filetype is None:
-            filetype = "cbf"
-            logging.getLogger("MX3.HWR").warning(
-                "Detector file format not specified. Using cbf."
-            )
-
-        return filetype
-
-    def display_image(self, path, img_num):
-        res = {"path": "", "img": 0}
-
-        if path:
-            fpath, img = HWR.beamline.detector.get_actual_file_path(path, img_num)
-            HWR.beamline.collect.adxv_notify(fpath, img)
-            fpath = HWR.beamline.session.get_path_with_proposal_as_root(fpath)
-
-            res = {"path": fpath, "img_num": img_num}
-
-        return res

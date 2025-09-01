@@ -15,6 +15,9 @@ select = [
     "ALL",
 ]
 
+[lint.pep8-naming]
+extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` imported as constant `HWR`
+
 
 [lint.per-file-ignores]
 "docs/conf.py" = [
