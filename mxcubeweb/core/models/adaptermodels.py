@@ -80,3 +80,8 @@ class StrValueModel(BaseModel):
 class BeamlineActionInputModel(BaseModel):
     cmd: str
     parameters: dict | list
+
+
+class FrontEndStackTraceModel(BaseModel):
+    stack: str
+    state: dict

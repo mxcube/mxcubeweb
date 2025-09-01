@@ -3,6 +3,7 @@ import logging
 
 from mxcubeweb import logging_handler
 from mxcubeweb.core.components.component_base import ComponentBase
+from mxcubeweb.core.models.adaptermodels import FrontEndStackTraceModel
 from mxcubeweb.core.models.configmodels import (
     ResourceHandlerConfigModel,
 )
@@ -45,14 +46,14 @@ class Log(ComponentBase):
 
         return messages
 
-    def log_frontend_traceback(self, args):
+    def log_frontend_traceback(self, trace: FrontEndStackTraceModel) -> dict:
         """
         Logs a UI traceback to the UI logger
         """
         logging.getLogger("MX3.UI").error("------ Start of UI trace back ------")
-        logging.getLogger("MX3.UI").error("Traceback: %s", args["stack"])
+        logging.getLogger("MX3.UI").error("Traceback: %s", trace.stack)
         logging.getLogger("MX3.UI").error(
-            "State: %s", json.dumps(args["state"], indent=4)
+            "State: %s", json.dumps(trace.state, indent=4)
         )
         logging.getLogger("MX3.UI").error("------ End of UI trace back ------")
         return {}

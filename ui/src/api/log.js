@@ -8,7 +8,7 @@ export function fetchLogMessages() {
 
 export function sendLogFrontEndTraceBack(stack, state) {
   const { logger, ...stateToLog } = state;
-  const body = { stack, state: stateToLog };
+  const trace = { stack, state: stateToLog };
 
-  return endpoint.post(body, '/log_frontend_traceback').res();
+  return endpoint.post({ trace }, '/log_frontend_traceback').res();
 }
