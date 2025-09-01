@@ -139,14 +139,3 @@ def test_get_beam_info(client):
     assert isinstance(data["position"][1], float)
     assert isinstance(data["size_x"], float)
     assert isinstance(data["size_y"], float)
-
-
-def test_get_data_path(client):
-    """
-    Retrieve data path, this is specific for each beamline.
-    """
-
-    resp = client.get("/mxcube/api/v0.1/beamline/datapath")
-    data = json.loads(resp.data)
-    assert isinstance(data["path"], str)
-    assert len(data) > 0

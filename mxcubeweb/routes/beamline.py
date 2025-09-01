@@ -5,7 +5,6 @@ from flask import (
     Response,
     jsonify,
 )
-from mxcubecore import HardwareRepository as HWR
 
 
 def init_route(app, server, url_prefix):
@@ -15,16 +14,6 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def beamline_get_all_attributes():
         return jsonify(app.beamline.beamline_get_all_attributes())
-
-    @bp.route("/datapath", methods=["GET"])
-    @server.restrict
-    def beamline_get_data_path():
-        """
-        Retrieve data directory from the session hwobj,
-        this is specific for each beamline.
-        """
-        data = HWR.beamline.session.get_base_image_directory()
-        return jsonify({"path": data})
 
     @bp.route("/prepare_beamline", methods=["PUT"])
     @server.require_control
