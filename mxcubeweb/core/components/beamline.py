@@ -95,41 +95,11 @@ class Beamline(ComponentBase):
             {"energyScanElements": ho.get_available_elements().get("elements", [])}
         )
 
-        data.update(self.diffractometer_get_info())
-
         return data
 
     def prepare_beamline_for_sample(self):
         if hasattr(HWR.beamline.collect, "prepare_for_new_sample"):
             HWR.beamline.collect.prepare_for_new_sample()
-
-    def diffractometer_set_phase(self, phase):
-        try:
-            HWR.beamline.diffractometer.wait_ready(30)
-        except Exception:
-            logging.getLogger("MX3.HWR").warning("Diffractometer not ready")
-
-        HWR.beamline.diffractometer.set_phase(phase)
-
-    def diffractometer_get_info(self):
-        ret = {}
-
-        try:
-            ret["useSC"] = HWR.beamline.diffractometer.use_sc
-        except AttributeError:
-            ret["useSC"] = False
-
-        try:
-            ret["currentPhase"] = HWR.beamline.diffractometer.get_current_phase()
-        except AttributeError:
-            ret["currentPhase"] = "None"
-
-        try:
-            ret["phaseList"] = HWR.beamline.diffractometer.get_phase_list()
-        except AttributeError:
-            ret["phaseList"] = []
-
-        return ret
 
     def get_detector_info(self):
         try:

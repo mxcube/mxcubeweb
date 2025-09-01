@@ -120,9 +120,6 @@ class Server:
         from mxcubeweb.routes.beamline import init_route as init_beamline_route
         from mxcubeweb.routes.csp_report import init_route as init_csp_route
         from mxcubeweb.routes.detector import init_route as init_detector_route
-        from mxcubeweb.routes.diffractometer import (
-            init_route as init_diffractometer_route,
-        )
         from mxcubeweb.routes.harvester import init_route as init_harvester_route
         from mxcubeweb.routes.lims import init_route as init_lims_route
         from mxcubeweb.routes.login import init_route as init_login_route
@@ -144,12 +141,6 @@ class Server:
 
         Server._register_route(
             init_detector_route, mxcube, f"{url_root_prefix}/detector"
-        )
-
-        Server._register_route(
-            init_diffractometer_route,
-            mxcube,
-            f"{url_root_prefix}/diffractometer",
         )
 
         Server._register_route(init_lims_route, mxcube, f"{url_root_prefix}/lims")

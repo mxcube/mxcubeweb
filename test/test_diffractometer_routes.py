@@ -14,7 +14,7 @@ def test_set_phase(client):
     current phase after the move is OP
     """
     # Get current phase
-    resp = client.get("/mxcube/api/v0.1/diffractometer/info")
+    resp = client.get("/mxcube/api/v0.1/hwobj/diffractometer/diffractometer/get_value")
     info = json.loads(resp.data)
 
     phase_list = info["phaseList"]
@@ -23,13 +23,13 @@ def test_set_phase(client):
 
     # Set a phase (any in the phase list)
     resp = client.put(
-        "/mxcube/api/v0.1/diffractometer/phase",
+        "/mxcube/api/v0.1/hwobj/diffractometer/diffractometer/set_phase",
         data=json.dumps({"phase": new_phase}),
         content_type="application/json",
     )
 
     # Retrieve current phase
-    resp = client.get("/mxcube/api/v0.1/diffractometer/info")
+    resp = client.get("/mxcube/api/v0.1/hwobj/diffractometer/diffractometer/get_value")
     actual_phase = json.loads(resp.data)["currentPhase"]
 
     assert new_phase == actual_phase
@@ -88,11 +88,3 @@ def test_set_aperture(client):
 
     assert ap == actual_aperture
     assert actual_original_aperture == original_aperture
-
-
-def test_get_diffractometer_info(client):
-    """
-    Simply checks if the route runs and does not throws any exceptions
-    """
-    resp = client.get("/mxcube/api/v0.1/diffractometer/info")
-    assert resp.status_code == 200

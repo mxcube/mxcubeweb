@@ -1,7 +1,6 @@
 /* eslint-disable promise/prefer-await-to-then */
 import { fetchBeamlineSetup } from '../api/beamline';
 import { fetchDetectorInfo } from '../api/detector';
-import { fetchDiffractometerInfo } from '../api/diffractometer';
 import { fetchValue } from '../api/hardware-object';
 import { fetchHarvesterInitialState } from '../api/harvester';
 import { sendSelectProposal } from '../api/lims';
@@ -110,7 +109,9 @@ export function getInitialState() {
       fetchImageData()
         .then((camera) => ({ camera }))
         .catch(notify),
-      fetchDiffractometerInfo().catch(notify),
+      fetchValue('diffractometer', 'diffractometer')
+        .then((diffractometer) => ({ diffractometer }))
+        .catch(notify),
       fetchDetectorInfo()
         .then((detector) => ({ detector }))
         .catch(notify),

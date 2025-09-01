@@ -185,8 +185,8 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
           x: action.data.beamInfo.size_x,
           y: action.data.beamInfo.size_y,
         },
-        phaseList: action.data.phaseList,
-        currentPhase: action.data.currentPhase,
+        phaseList: action.data.diffractometer.phaseList,
+        currentPhase: action.data.diffractometer.currentPhase,
         pixelsPerMm: action.data.camera.pixelsPerMm,
         sourceScale: action.data.camera.scale,
       };

@@ -1,11 +1,14 @@
 from typing import ClassVar
 
-from mxcubecore.HardwareObjects import (
-    GenericDiffractometer,
-    MiniDiff,
-)
+from mxcubecore.HardwareObjects import GenericDiffractometer, MiniDiff
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
+
+resource_handler_config = ResourceHandlerConfigModel(
+    commands=["set_chip_layout", "set_phase"],
+    attributes=["data", "get_value", "head_configuration"],
+)
 
 
 class DiffractometerAdapter(AdapterBase):
@@ -17,12 +20,12 @@ class DiffractometerAdapter(AdapterBase):
         GenericDiffractometer.GenericDiffractometer,
     ]
 
-    def __init__(self, ho, *args):
+    def __init__(self, ho, role, app):
         """
         Args:
             (object): Hardware object.
         """
-        super().__init__(ho, *args)
+        super().__init__(ho, role, app, resource_handler_config)
         ho.connect("stateChanged", self._state_change)
         ho.connect("valueChanged", self._state_change)
         ho.connect("phaseChanged", self._diffractometer_phase_changed)
@@ -36,6 +39,12 @@ class DiffractometerAdapter(AdapterBase):
 
     def _state_change(self, *args, **kwargs):
         self.state_change(*args, **kwargs)
+
+    def get_value(self) -> dict:
+        return {
+            "currentPhase": self._ho.get_current_phase(),
+            "phaseList": self._ho.get_phase_list(),
+        }
 
     def stop(self):
         pass
@@ -52,4 +61,8 @@ class DiffractometerAdapter(AdapterBase):
         layout_name: str,
     ) -> bool:
         self._ho.set_chip_layout(layout_name)
+        return True
+
+    def set_phase(self, phase: str) -> bool:
+        self._ho.set_phase(phase)
         return True

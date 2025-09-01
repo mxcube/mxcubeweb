@@ -1,5 +1,4 @@
-import { sendUpdateCurrentPhase } from '../api/diffractometer';
-import { sendSetValue } from '../api/hardware-object';
+import { sendExecuteCommand, sendSetValue } from '../api/hardware-object';
 import {
   sendAbortCentring,
   sendAcceptCentring,
@@ -355,7 +354,9 @@ export function changeAperture(size) {
 
 export function changeCurrentPhase(phase) {
   return async (dispatch) => {
-    await sendUpdateCurrentPhase(phase);
+    await sendExecuteCommand('diffractometer', 'diffractometer', 'set_phase', {
+      phase,
+    });
     dispatch(setCurrentPhase(phase));
   };
 }
