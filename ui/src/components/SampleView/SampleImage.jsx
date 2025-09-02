@@ -101,21 +101,12 @@ export default class SampleImage extends React.Component {
     this.initJSMpeg();
   }
 
-  // eslint-disable-next-line react/no-unsafe
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    const { width, cinema } = this.props;
-    if (
-      nextProps.width !== width ||
-      nextProps.cinema !== cinema ||
-      (nextProps.autoScale && this.props.imageRatio !== nextProps.imageRatio)
-    ) {
+  componentDidUpdate(prevProps) {
+    const { imageRatio, width } = this.props; // #NOSONAR
+    if (imageRatio !== prevProps.imageRatio || width !== prevProps.width) {
+      // #NOSONAR
       this.setImageRatio();
     }
-
-    this.drawGridPlugin.setScale(nextProps.imageRatio);
-  }
-
-  componentDidUpdate(prevProps) {
     // Initialize JSMpeg for decoding the MPEG1 stream
     if (prevProps.videoFormat !== 'MPEG1') {
       this.initJSMpeg();
@@ -201,10 +192,8 @@ export default class SampleImage extends React.Component {
   }
 
   setImageRatio() {
-    if (this.props.autoScale) {
-      const { clientWidth } = document.querySelector('#outsideWrapper');
-      this.props.sampleViewActions.setImageRatio(clientWidth);
-    }
+    const { clientWidth } = document.querySelector('#outsideWrapper');
+    this.props.sampleViewActions.setImageRatio(clientWidth);
   }
 
   setVCellSpacing(e) {

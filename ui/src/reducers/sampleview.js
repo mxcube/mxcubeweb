@@ -11,7 +11,6 @@ const INITIAL_STATE = {
   videoURL: '',
   sourceIsScalable: false,
   videoSizes: [],
-  autoScale: true,
   imageRatio: 0,
   pixelsPerMm: [0, 0],
   sourceScale: 1,
@@ -21,7 +20,6 @@ const INITIAL_STATE = {
   beamPosition: [0, 0],
   beamShape: 'ellipse',
   beamSize: { x: 0, y: 0 },
-  cinema: false,
   phaseList: [],
   drawGrid: false,
   videoMessageOverlay: { show: false, msg: '' },
@@ -32,9 +30,6 @@ const INITIAL_STATE = {
 // eslint-disable-next-line complexity
 function sampleViewReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
-    case 'TOOGLE_CINEMA': {
-      return { ...state, cinema: !state.cinema };
-    }
     case 'SET_PIXELS_PER_MM': {
       return { ...state, pixelsPerMm: action.pixelsPerMm };
     }
@@ -98,10 +93,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
     }
     case 'SET_VIDEO_SIZE': {
       return { ...state, videoSize: action.width };
-    }
-    case 'TOGGLE_AUTO_SCALE': {
-      const imageRatio = state.autoScale ? 1 : action.width / state.width;
-      return { ...state, autoScale: !state.autoScale, imageRatio };
     }
     case 'SET_APERTURE': {
       return { ...state, currentAperture: action.size };

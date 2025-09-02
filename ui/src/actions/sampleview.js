@@ -100,14 +100,6 @@ export function deleteShapeAction(id) {
   return { type: 'DELETE_SHAPE', id };
 }
 
-export function saveImageSize(width, height, pixelsPerMm) {
-  return { type: 'SAVE_IMAGE_SIZE', width, height, pixelsPerMm };
-}
-
-export function toggleAutoScale(width = 1) {
-  return { type: 'TOGGLE_AUTO_SCALE', width };
-}
-
 export function videoMessageOverlay(show, msg) {
   return { type: 'SHOW_VIDEO_MESSAGE_OVERLAY', show, msg };
 }
@@ -143,10 +135,6 @@ export function updateMotorState(name, value) {
 
 export function setShapes(shapes) {
   return { type: 'SET_SHAPES', shapes };
-}
-
-export function toggleCinema() {
-  return { type: 'TOOGLE_CINEMA' };
 }
 
 export function setGridOverlay(level) {
