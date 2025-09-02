@@ -20,13 +20,19 @@ function PhaseInput() {
       value={value}
       data-busy={isBusy || undefined}
       onChange={(evt) => {
-        if (evt.target.value !== 'Unknown') {
-          dispatch(changeCurrentPhase(evt.target.value));
-        }
+        dispatch(changeCurrentPhase(evt.target.value));
       }}
     >
+      <option hidden key="Unknown">
+        Unknown
+      </option>
+
       {options.map((option) => (
-        <option key={option}>{option}</option>
+        // The "Unknown" option is hidden, so that it only appears as the selected value
+        // when the diffractometer hardware object sets it.
+        <option key={option} hidden={option === 'Unknown'}>
+          {option}
+        </option>
       ))}
     </Form.Select>
   );
