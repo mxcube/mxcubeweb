@@ -177,7 +177,7 @@ class MXCUBEApplication:
         # Install server-side UI state storage
         MXCUBEApplication.init_state_storage()
 
-        msg = "MXCuBE 3 initialized, it took %.1f seconds" % (
+        msg = "MXCuBE initialized, it took %.1f seconds" % (
             time.time() - MXCUBEApplication.t0
         )
         logging.getLogger("MX3.HWR").info(msg)
