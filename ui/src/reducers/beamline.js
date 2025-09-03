@@ -221,20 +221,6 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
       return data;
     }
 
-    case 'SET_MOTOR_MOVING': {
-      return {
-        ...state,
-        motorInputDisable: true,
-        motors: {
-          ...state.motors,
-          [action.name.toLowerCase()]: {
-            ...state.motors[action.name.toLowerCase()],
-            state: action.status,
-          },
-        },
-      };
-    }
-
     case 'SAVE_MOTOR_POSITIONS': {
       return {
         ...state,

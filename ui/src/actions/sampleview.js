@@ -13,10 +13,6 @@ import {
 } from '../api/sampleview';
 import { showErrorPanel } from './general';
 
-export function setMotorMoving(name, status) {
-  return { type: 'SET_MOTOR_MOVING', name, status };
-}
-
 export function setBeamInfo(info) {
   return { type: 'SET_BEAM_INFO', info };
 }
@@ -84,10 +80,6 @@ export function clearSelectedShapes() {
   return { type: 'CLEAR_SELECTED_SHAPES' };
 }
 
-export function addCentringPoint(x, y) {
-  return { type: 'ADD_CENTRING_POINT', x, y };
-}
-
 export function addShapeAction(shape) {
   return { type: 'ADD_SHAPE', shape };
 }
@@ -135,10 +127,6 @@ export function updateMotorState(name, value) {
 
 export function setShapes(shapes) {
   return { type: 'SET_SHAPES', shapes };
-}
-
-export function setGridOverlay(level) {
-  return { type: 'SET_GRID_OVERLAY', level };
 }
 
 export function toggleDrawGrid() {

@@ -1,6 +1,5 @@
 const INITIAL_STATE = {
   clickCentring: false,
-  clickCentringPoints: [],
   clickCentringClicksLeft: -1,
   measureDistance: false,
   distancePoints: [],
@@ -34,24 +33,13 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
       return { ...state, pixelsPerMm: action.pixelsPerMm };
     }
     case 'START_CLICK_CENTRING': {
-      return { ...state, clickCentring: true, clickCentringPoints: [] };
+      return { ...state, clickCentring: true };
     }
     case 'STOP_CLICK_CENTRING': {
-      return { ...state, clickCentring: false, clickCentringPoints: [] };
+      return { ...state, clickCentring: false };
     }
     case 'CLEAR_SELECTED_SHAPES': {
       return { ...state, selectedShapes: [] };
-    }
-    case 'ADD_CENTRING_POINT': {
-      return state.clickCentringPoints.length === 2
-        ? { ...state, clickCentring: false, clickCentringPoints: [] }
-        : {
-            ...state,
-            clickCentringPoints: [
-              ...state.clickCentringPoints,
-              { x: action.x, y: action.y },
-            ],
-          };
     }
     case 'DRAW_GRID': {
       let { selectedGrids } = state;
@@ -91,9 +79,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
     case 'SET_IMAGE_RATIO': {
       return { ...state, imageRatio: action.clientWidth / state.width };
     }
-    case 'SET_VIDEO_SIZE': {
-      return { ...state, videoSize: action.width };
-    }
     case 'SET_APERTURE': {
       return { ...state, currentAperture: action.size };
     }
@@ -114,9 +99,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
         ...state,
         videoMessageOverlay: { show: action.show, msg: action.msg },
       };
-    }
-    case 'SET_CENTRING_METHOD': {
-      return { ...state, centringMethod: action.centringMethod };
     }
     case 'UPDATE_SHAPES': {
       let selectedShapes = [...state.selectedShapes];
@@ -143,7 +125,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
       return {
         ...state,
         distancePoints: [],
-        clickCentringPoints: [],
         gridList: [],
         gridCount: 0,
         selectedShapes: [],
@@ -153,7 +134,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
       return {
         ...state,
         distancePoints: [],
-        clickCentringPoints: [],
         gridList: [],
         gridCount: 0,
       };
