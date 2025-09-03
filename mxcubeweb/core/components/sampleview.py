@@ -285,17 +285,16 @@ class SampleView(ComponentBase):
                 # Store pixels per mm for third party software, to facilitate
                 # certain calculations
 
-                beam_info_dict = self.app.beamline.get_beam_info()
-
                 shape_data["pixels_per_mm"] = (
                     HWR.beamline.diffractometer.get_pixels_per_mm()
                 )
+
                 shape_data["beam_pos"] = (
-                    beam_info_dict.get("position")[0],
-                    beam_info_dict.get("position")[1],
+                    HWR.beamline.beam.get_beam_position_on_screen()[0],
+                    HWR.beamline.beam.get_beam_position_on_screen()[1],
                 )
-                shape_data["beam_width"] = beam_info_dict.get("size_x", 0)
-                shape_data["beam_height"] = beam_info_dict.get("size_y", 0)
+                shape_data["beam_width"] = HWR.beamline.beam.get_value()[0]
+                shape_data["beam_height"] = HWR.beamline.beam.get_value()[1]
 
                 # Shape does not have any refs, create a new Centered position
                 if not refs:
