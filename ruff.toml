@@ -30,7 +30,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "E501",
     "FBT002",
     "N813",
-    "N814",
     "PTH109",
 ]
 "mxcubeweb/__version__.py" = [
@@ -44,7 +43,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "G004",
     "I001",
     "N806",
-    "N814",
     "PLR0913",
     "PTH101",
     "PTH113",
@@ -95,7 +93,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "RUF012",
 ]
 "mxcubeweb/core/adapter/energy_adapter.py" = [
-    "N814",
 ]
 "mxcubeweb/core/adapter/flux_adapter.py" = [
     "BLE001",
@@ -123,7 +120,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 "mxcubeweb/core/components/beamline.py" = [
     "BLE001",
     "N806",
-    "N814",
     "TRY002",
     "UP031",
 ]
@@ -139,7 +135,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "BLE001",
     "N803",
     "N806",
-    "N814",
     "TRY300",
 ]
 "mxcubeweb/core/components/lims.py" = [
@@ -149,7 +144,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "FBT002",
     "FURB188",
     "G002",
-    "N814",
     "TRY301",
     "UP031",
 ]
@@ -168,7 +162,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "G002",
     "G004",
     "N806",
-    "N814",
     "PERF401",
     "PLR0912",
     "PLR0915",
@@ -194,7 +187,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "FBT003",
     "N802",
     "N806",
-    "N814",
     "PLR5501",
     "TRY300",
     "UP031",
@@ -203,7 +195,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "ARG002",
     "BLE001",
     "E501",
-    "N814",
     "PLR5501",
     "PLW0127",
     "TRY003",
@@ -223,7 +214,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "FBT001",
     "FBT002",
     "FBT003",
-    "N814",
     "PLR5501",
     "S110",
     "TRY002",
@@ -236,7 +226,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 "mxcubeweb/core/components/workflow.py" = [
     "ARG002",
     "BLE001",
-    "N814",
 ]
 "mxcubeweb/core/models/adaptermodels.py" = [
     "FBT003",
@@ -272,7 +261,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "N802",
     "N803",
     "N806",
-    "N814",
     "TRY400",
     "UP031",
 ]
@@ -285,7 +273,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "BLE001",
     "C901",
     "G002",
-    "N814",
     "PLR0913",
     "SLF001",
     "TRY300",
@@ -293,10 +280,8 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "UP031",
 ]
 "mxcubeweb/routes/diffractometer.py" = [
-    "N814",
 ]
 "mxcubeweb/routes/harvester.py" = [
-    "N814",
 ]
 "mxcubeweb/routes/lims.py" = [
     "BLE001",
@@ -314,12 +299,10 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 "mxcubeweb/routes/main.py" = [
     "ARG001",
     "DTZ005",
-    "N814",
 ]
 "mxcubeweb/routes/queue.py" = [
     "A005",
     "BLE001",
-    "N814",
     "PLR0915",
     "TRY300",
 ]
@@ -331,7 +314,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "ARG001",
     "BLE001",
     "E501",
-    "N814",
     "PLR0915",
     "TRY002",
     "TRY003",
@@ -340,7 +322,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 "mxcubeweb/routes/samplechanger.py" = [
     "BLE001",
     "FBT003",
-    "N814",
 ]
 "mxcubeweb/routes/signals.py" = [
     "ARG001",
@@ -353,7 +334,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "N803",
     "N806",
     "N813",
-    "N814",
     "N816",
     "PLR0913",
     "S110",
@@ -405,7 +385,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "S108",
 ]
 "test/test_diffractometer_routes.py" = [
-    "N814",
     "S311",
 ]
 "test/test_queue_routes.py" = [
