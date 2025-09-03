@@ -54,11 +54,7 @@ export default class SampleImage extends React.Component {
     this.drawGridPlugin = new DrawGridPlugin();
     this.drawGridPlugin.setGridResultFormat(props.meshResultFormat);
     this._keyPressed = null;
-    this.gridStarted = false; // eslint-disable-line react/no-unused-class-component-methods
-    this.girdOrigin = null; // eslint-disable-line react/no-unused-class-component-methods
-    this.lineGroup = null; // eslint-disable-line react/no-unused-class-component-methods
     this.player = null;
-    this.centringCross = []; // eslint-disable-line react/no-unused-class-component-methods
     this.removeShapes = this.removeShapes.bind(this);
   }
 
@@ -803,13 +799,6 @@ export default class SampleImage extends React.Component {
     }
   }
 
-  // eslint-disable-next-line react/no-unused-class-component-methods
-  preventAction(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    e.nativeEvent.stopImmediatePropagation();
-  }
-
   renderSampleView() {
     const {
       imageRatio,
@@ -929,7 +918,6 @@ export default class SampleImage extends React.Component {
               setHCellSpacing={this.setHCellSpacing}
               setVCellSpacing={this.setVCellSpacing}
               gridList={this.props.grids}
-              currentGrid={this.drawGridPlugin.currentGridData()}
               removeGrid={this.props.sampleViewActions.deleteShape}
               saveGrid={this.saveGrid}
               toggleVisibility={this.toggleGridVisibility}
