@@ -1,4 +1,3 @@
-import { sendPrepareBeamlineForNewSample } from '../api/beamline';
 import { sendExecuteCommand, sendSetValue } from '../api/hardware-object';
 import { sendLogFrontEndTraceBack } from '../api/log';
 
@@ -51,7 +50,13 @@ export function executeCommand(object_type, object_id, name, args) {
 }
 
 export function prepareBeamlineForNewSample() {
-  return () => sendPrepareBeamlineForNewSample();
+  return () =>
+    sendExecuteCommand(
+      'beamline',
+      'beamline',
+      'prepare_beamline_for_sample',
+      {},
+    );
 }
 
 export function logFrontEndTraceBack(stack) {

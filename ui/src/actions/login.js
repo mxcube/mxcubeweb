@@ -1,5 +1,4 @@
 /* eslint-disable promise/prefer-await-to-then */
-import { fetchBeamlineSetup } from '../api/beamline';
 import { fetchValue } from '../api/hardware-object';
 import { fetchHarvesterInitialState } from '../api/harvester';
 import { sendSelectProposal } from '../api/lims';
@@ -96,7 +95,7 @@ export function getInitialState() {
       fetchValue('beam', 'beam')
         .then((beamInfo) => ({ beamInfo: beamInfo.value }))
         .catch(notify),
-      fetchBeamlineSetup()
+      fetchValue('beamline', 'beamline')
         .then((beamlineSetup) => ({
           beamlineSetup,
           datapath: beamlineSetup.path,

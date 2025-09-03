@@ -1,6 +1,5 @@
 from mxcubecore import HardwareRepository as HWR
 
-from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
 from mxcubeweb.core.components.component_base import ComponentBase
 
 
@@ -9,28 +8,7 @@ class Beamline(ComponentBase):
         super().__init__(app, config)
 
     def init_signals(self):
-        from mxcubeweb.routes import signals
-
-        if HWR.beamline.xrf_spectrum:
-            HWR.beamline.xrf_spectrum.connect(
-                HWR.beamline.xrf_spectrum,
-                "xrf_task_progress",
-                signals.xrf_task_progress,
-            )
-
-    def get_aperture(self):
-        """
-        Returns list of apertures and the one currently used.
-
-        :return: Tuple, (list of apertures, current aperture)
-        :rtype: tuple
-        """
-        beam = HWR.beamline.beam
-
-        aperture_list = beam.get_available_size()["values"]
-        current_aperture = beam.get_value()[-1]
-
-        return aperture_list, current_aperture
+        pass
 
     def get_viewport_info(self):
         """
@@ -76,25 +54,3 @@ class Beamline(ComponentBase):
             "videoHash": HWR.beamline.sample_view.camera.stream_hash,
             "videoURL": self.app.CONFIG.app.VIDEO_STREAM_URL,
         }
-
-    def beamline_get_all_attributes(self):
-        ho = BeamlineAdapter(HWR.beamline)
-        data = ho.dict()
-        actions = []
-
-        data.update(
-            {
-                "path": HWR.beamline.session.get_base_image_directory(),
-                "actionsList": actions,
-            }
-        )
-
-        data.update(
-            {"energyScanElements": ho.get_available_elements().get("elements", [])}
-        )
-
-        return data
-
-    def prepare_beamline_for_sample(self):
-        if hasattr(HWR.beamline.collect, "prepare_for_new_sample"):
-            HWR.beamline.collect.prepare_for_new_sample()

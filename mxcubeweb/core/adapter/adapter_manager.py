@@ -8,7 +8,6 @@ from mxcubecore import (
 from mxcubecore.utils.conversion import make_table
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
-from mxcubeweb.core.adapter.beamline_adapter import BeamlineAdapter
 
 
 class HardwareObjectAdapterManager:
@@ -44,7 +43,6 @@ class HardwareObjectAdapterManager:
         done when one wishes.
         """
         try:
-            self.beamline = BeamlineAdapter(HWR.beamline, self.app)
             self.adapt_hardware_objects()
         except Exception:  # noqa: BLE001
             msg = (
@@ -124,32 +122,44 @@ class HardwareObjectAdapterManager:
         logging.getLogger("MX3.HWR").error(msg)
         raise RuntimeError(msg)
 
+    def adapt_hardware_object(self, ho, _id):
+        adapter_cls = self.find_best_adapter(ho)
+
+        if adapter_cls:
+            try:
+                adapter_instance = adapter_cls(ho, _id, self.app)
+                msg = f"Added adapter for {_id}"
+                logging.getLogger("MX3.HWR").info(msg)
+            except Exception:
+                msg = f"Could not add adapter for {_id}"
+                logging.getLogger("MX3.HWR").exception(msg)
+                adapter_cls = AdapterBase
+                adapter_instance = AdapterBase(ho, _id, self.app)
+
+            self._add_adapter(_id, adapter_cls, ho, adapter_instance)
+        else:
+            msg = f"No adapter for {_id}"
+            logging.getLogger("MX3.HWR").info(msg)
+
     def adapt_hardware_objects(self):
         _hwr = HWR.get_hardware_repository()
+
+        # Beamline is not added to the list of hardware objects
+        # returned by _hwr.hardware_objects as its considered a
+        # special object root object for all other hardware objects
+        # so we add it manually here. We give it the id 'beamline'
+        # so that it can be retrieved by the adapter manager but
+        # in reality has no id.
+        self.adapt_hardware_object(HWR.beamline, "beamline")
 
         for ho_name in _hwr.hardware_objects:
             ho = _hwr.get_hardware_object(ho_name)
             if not ho:
                 continue
 
-            _id = ho.id
-            adapter_cls = self.find_best_adapter(ho)
+            _id = ho.id or "beamline"
 
-            if adapter_cls:
-                try:
-                    adapter_instance = adapter_cls(ho, _id, self.app)
-                    msg = f"Added adapter for {_id}"
-                    logging.getLogger("MX3.HWR").info(msg)
-                except Exception:
-                    msg = f"Could not add adapter for {_id}"
-                    logging.getLogger("MX3.HWR").exception(msg)
-                    adapter_cls = AdapterBase
-                    adapter_instance = AdapterBase(ho, _id, self.app)
-
-                self._add_adapter(_id, adapter_cls, ho, adapter_instance)
-            else:
-                msg = f"No adapter for {_id}"
-                logging.getLogger("MX3.HWR").info(msg)
+            self.adapt_hardware_object(ho, _id)
 
         self._print_adapter_table()
 

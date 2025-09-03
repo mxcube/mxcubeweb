@@ -117,7 +117,6 @@ class Server:
             Server.flask, Server.user_datastore, register_blueprint=False
         )
 
-        from mxcubeweb.routes.beamline import init_route as init_beamline_route
         from mxcubeweb.routes.csp_report import init_route as init_csp_route
         from mxcubeweb.routes.harvester import init_route as init_harvester_route
         from mxcubeweb.routes.lims import init_route as init_lims_route
@@ -133,9 +132,6 @@ class Server:
 
         url_root_prefix = "/mxcube/api/v0.1"
 
-        Server._register_route(
-            init_beamline_route, mxcube, f"{url_root_prefix}/beamline"
-        )
         Server._register_route(init_csp_route, mxcube, f"{url_root_prefix}/csp")
 
         Server._register_route(init_lims_route, mxcube, f"{url_root_prefix}/lims")

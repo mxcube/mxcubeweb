@@ -6,7 +6,9 @@ def test_beamline_get_all_attribute(client):
     Checks that the data returned has the right structure and if "all"
     beamline attributes are at least present
     """
-    resp = client.get("/mxcube/api/v0.1/beamline/")
+    resp = client.get(
+        "/mxcube/api/v0.1/hwobj/beamline/beamline/get_value",
+    )
     data = json.loads(resp.data)
 
     actual = list(data.get("hardwareObjects").keys())
