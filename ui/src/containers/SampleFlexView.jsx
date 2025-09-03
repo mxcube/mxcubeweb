@@ -5,14 +5,11 @@ import { Col } from 'react-bootstrap';
 
 import Collapsible from 'react-collapsible';
 
-import { BsChevronUp, BsChevronDown} from "react-icons/bs";
-
+import { BsChevronUp, BsChevronDown } from "react-icons/bs";
 
 import "react-contexify/dist/ReactContexify.css";
 
-import {
-  filterAction,
-} from '../actions/sampleGrid';
+import { filterAction,} from '../actions/sampleGrid';
 
 
 

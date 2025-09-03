@@ -21,23 +21,23 @@ const GridGroup = fabric.util.createClass(fabric.Group, {
  */
 function _GridData() {
   return {
-    screenCoord: [0, 0],
-    top: 0,
-    left: 0,
-    width: 0,
-    height: 0,
-    cellWidth: 0,
-    cellHeight: 0,
-    cellVSpace: 0,
-    cellHSpace: 0,
-    numCols: 0,
-    numRows: 0,
-    cellCountFun: null,
-    selected: false,
-    id: null,
-    result: '',
-    pixelsPerMMX: 1,
-    pixelsPerMMY: 1,
+    screenCoord: [0, 0], //网格在画布上的起始坐标
+    top: 0, //网格顶部位置
+    left: 0, //网格左侧位置
+    width: 0, //网格宽度
+    height: 0, //网格高度
+    cellWidth: 0, //单元格宽度
+    cellHeight: 0, //单元格高度
+    cellVSpace: 0, //单元格垂直间距
+    cellHSpace: 0, //单元格水平间距
+    numCols: 0, //列数
+    numRows: 0, //行数
+    cellCountFun: null, //单元格编号方法
+    selected: false, // 网格是否被选中
+    id: null, // 网格唯一标识
+    result: '', // 网格结果（如图像数据或热图数据）
+    pixelsPerMMX: 1, // X方向每毫米像素数
+    pixelsPerMMY: 1, // Y方向每毫米像素数
   };
 }
 
@@ -186,7 +186,7 @@ export default class DrawGridPlugin {
 
     if (this.gridResultFormat === 'RGB') {
       for (let c = 0; c < col; c++) {
-        for (let r = 0; r < row; c++) {
+        for (let r = 0; r < row; r++) {
           cellResultMatrix.append([0, [0, 0, 0]]);
         }
       }
