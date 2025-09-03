@@ -140,38 +140,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
         resp.status_code = 200
         return resp
 
-    @bp.route("/shapes/<sid>", methods=["GET"])
-    @server.restrict
-    def get_shape_with_sid(sid):
-        """
-        Retrieve requested shape information.
-            :response Content-type: application/json, the stored centred positions.
-            :statuscode: 200: no error
-            :statuscode: 409: shape not found
-        """
-        shape = app.sample_view.get_shapes()
-
-        if shape is not None:
-            resp = jsonify(shape)
-            resp.status_code = 200
-            return resp
-        return Response(status=409)
-
-    @bp.route("/shapes/<sid>", methods=["POST"])
-    def shape_add_result(sid):
-        """
-        Update shape result data.
-            :parameter shape_data: dict with result info (result value dict, data file path)
-            :response Content-type: application/json, response status.
-            :statuscode: 200: no error
-            :statuscode: 409: error
-        """
-        params = request.get_json()
-        result = params.get("result")
-        data_file = params.get("data_file")
-        app.sample_view.shape_add_result(sid, result, data_file)
-        return Response(status=200)
-
     @bp.route("/shapes", methods=["POST"])
     @server.require_control
     @server.restrict
@@ -225,18 +193,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
             resp = Response(status=200)
 
         return resp
-
-    @bp.route("/centring/startauto", methods=["GET"])
-    @server.require_control
-    @server.restrict
-    def centre_auto():
-        """
-        Start automatic (lucid) centring procedure.
-            :statuscode: 200: no error
-            :statuscode: 409: error
-        """
-        app.sample_view.start_auto_centring()
-        return Response(status=200)
 
     @bp.route("/centring/start_click_centring", methods=["PUT"])
     @server.require_control
@@ -309,14 +265,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
         Accept the centring position.
         """
         HWR.beamline.diffractometer.accept_centring()
-        return Response(status=200)
-
-    @bp.route("/centring/reject", methods=["PUT"])
-    @server.require_control
-    @server.restrict
-    def reject_centring():
-        """Reject the centring position."""
-        app.sample_view.reject_centring()
         return Response(status=200)
 
     @bp.route("/movetobeam", methods=["PUT"])
