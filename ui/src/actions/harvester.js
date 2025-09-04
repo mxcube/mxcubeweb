@@ -10,7 +10,7 @@ import {
 } from '../api/harvester';
 import { showErrorPanel } from './general';
 
-export function setContents(contents) {
+function setContents(contents) {
   return {
     type: 'SET_HARVESTER_CONTENTS',
     data: { harvesterContents: contents },
@@ -25,7 +25,7 @@ export function updateHarvesterContents(data) {
   return { type: 'UPDATE_HARVESTER_CONTENTS', data };
 }
 
-export function setHarvesterCommandResponse(response) {
+function setHarvesterCommandResponse(response) {
   return { type: 'SET_HARVESTER_RESPONSE', response };
 }
 

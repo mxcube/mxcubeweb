@@ -14,7 +14,7 @@ import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchGetAllActions } from './beamlineActions';
 import { applicationFetched, showErrorPanel } from './general';
 
-export function setLoginInfo(loginInfo) {
+function setLoginInfo(loginInfo) {
   return {
     type: 'SET_LOGIN_INFO',
     loginInfo,
@@ -33,7 +33,7 @@ export function hideProposalsForm() {
   };
 }
 
-export function setInitialState(data) {
+function setInitialState(data) {
   return { type: 'SET_INITIAL_STATE', data };
 }
 
