@@ -1,0 +1,1 @@
+python3 /home/mxcube19u1/mxcube/mxcube3/mxcube3-server -l ~/logs/mxcube.log -r /home/mxcube19u1/mxcube/mxcubecore/mxcubecore/configuration --static-folder /home/mxcube19u1/mxcube/mxcube3/ui/build
