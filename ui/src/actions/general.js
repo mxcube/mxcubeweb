@@ -1,21 +1,5 @@
 import { sendExecuteCommand } from '../api/hardware-object';
 
-export function addUserMessage(records, target) {
-  return {
-    type: 'ADD_USER_MESSAGE',
-    records,
-    target,
-  };
-}
-
-export function removeUserMessage(messageID) {
-  return { type: 'REMOVE_USER_MESSAGE', messageID };
-}
-
-export function clearAllUserMessages() {
-  return { type: 'CLEAR_ALL_USER_MESSAGES' };
-}
-
 export function applicationFetched(data) {
   return { type: 'APPLICATION_FETCHED', data };
 }
