@@ -1,12 +1,5 @@
 import { HW_STATE, RUNNING } from '../constants';
 
-// The different states a beamline attribute can assume.
-export const STATE = {
-  IDLE: 'READY',
-  BUSY: 'BUSY',
-  ABORT: 'UNUSABLE',
-};
-
 /**
  *  Initial redux state for beamline hardwareObjects, object containing each beamline
  *  attribute (name, attribute object). Each attribute object in turn have the
@@ -17,13 +10,13 @@ export const STATE = {
  *     state:  hardwareObjects current state, see STATE for more information
  *     msg:    arbitray message describing current state
  */
-export const INITIAL_STATE = {
+const INITIAL_STATE = {
   hardwareObjects: {
     fast_shutter: {
       limits: [0, 1, 1],
       name: 'fast_shutter',
       value: 'undefined',
-      state: 'undefined',
+      state: HW_STATE.UNKNOWN,
       msg: 'UNKNOWN',
       readonly: false,
     },
@@ -31,7 +24,7 @@ export const INITIAL_STATE = {
       limits: [0, 1, 1],
       name: 'safety_shutter',
       value: 'undefined',
-      state: 'undefined',
+      state: HW_STATE.UNKNOWN,
       msg: 'UNKNOWN',
       readonly: false,
     },
@@ -39,7 +32,7 @@ export const INITIAL_STATE = {
       limits: [0, 1, 1],
       name: 'beamstop',
       value: 'undefined',
-      state: 'undefined',
+      state: HW_STATE.UNKNOWN,
       msg: 'UNKNOWN',
       readonly: false,
     },
@@ -47,7 +40,7 @@ export const INITIAL_STATE = {
       limits: [0, 1, 1],
       name: 'capillary',
       value: 'undefined',
-      state: 'undefined',
+      state: HW_STATE.UNKNOWN,
       msg: 'UNKNOWN',
       readonly: false,
     },
@@ -55,7 +48,7 @@ export const INITIAL_STATE = {
       limits: [0, 1000, 0.1],
       name: 'energy',
       value: '0',
-      state: STATE.IDLE,
+      state: HW_STATE.READY,
       msg: '',
       readonly: false,
     },
@@ -63,7 +56,7 @@ export const INITIAL_STATE = {
       limits: [0, 1000, 0.1],
       name: 'energy',
       value: '0',
-      state: STATE.IDLE,
+      state: HW_STATE.READY,
       msg: '',
       readonly: false,
     },
@@ -71,7 +64,7 @@ export const INITIAL_STATE = {
       limits: [0, 1000, 0.1],
       name: 'resolution',
       value: '0',
-      state: STATE.IDLE,
+      state: HW_STATE.READY,
       msg: '',
       readonly: false,
     },
@@ -79,7 +72,7 @@ export const INITIAL_STATE = {
       limits: [0, 1000, 0.1],
       name: 'transmission',
       value: '0',
-      state: STATE.IDLE,
+      state: HW_STATE.READY,
       msg: '',
       readonly: false,
     },
@@ -87,7 +80,7 @@ export const INITIAL_STATE = {
       limits: [0, 1000, 0.1],
       name: 'flux',
       value: '0',
-      state: 'STATE.IDLE',
+      state: HW_STATE.READY,
       msg: 'UNKNOWN',
       readonly: false,
     },
@@ -95,7 +88,7 @@ export const INITIAL_STATE = {
       limits: [0, 1000, 0.1],
       name: 'cryo',
       value: '0',
-      state: 'STATE.IDLE',
+      state: HW_STATE.READY,
       msg: 'UNKNOWN',
       readonly: false,
     },
@@ -103,7 +96,7 @@ export const INITIAL_STATE = {
       limits: [],
       name: 'machine_info',
       value: { current: -1, message: '', fillmode: '' },
-      state: 'STATE.IDLE',
+      state: HW_STATE.READY,
       msg: 'UNKNOWN',
       readonly: false,
     },
@@ -149,10 +142,6 @@ export const INITIAL_STATE = {
 // eslint-disable-next-line complexity
 function beamlineReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
-    case 'BL_ATTR_GET_ALL': {
-      return { ...state, ...action.data };
-    }
-
     case 'BL_UPDATE_HARDWARE_OBJECT': {
       const attrData = {
         ...state.hardwareObjects[action.data.name],
@@ -204,28 +193,6 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
             value: action.data.value,
           },
         },
-      };
-    }
-    case 'BL_ACT_SET': {
-      return {
-        ...state,
-        actuators: {
-          ...state.actuators,
-          [action.data.name]: action.data,
-        },
-      };
-    }
-    case 'BL_UPDATE_HARDWARE_OBJECT_STATE': {
-      const data = { ...state };
-      data.hardwareObjects[action.data.name].state = action.data.state;
-      return data;
-    }
-
-    case 'SAVE_MOTOR_POSITIONS': {
-      return {
-        ...state,
-        motors: { ...state.motors, ...action.data },
-        zoom: action.data.zoom.position,
       };
     }
     case 'SAVE_MOTOR_POSITION': {
