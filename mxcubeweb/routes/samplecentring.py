@@ -16,31 +16,6 @@ from mxcubecore import HardwareRepository as HWR
 def init_route(app, server, url_prefix):  # noqa: C901
     bp = Blueprint("sampleview", __name__, url_prefix=url_prefix)
 
-    @bp.route("/camera/subscribe", methods=["GET"])
-    @server.restrict
-    def subscribe_to_camera():
-        """
-        Subscribe to the camera streaming
-            :response: image as html Content-type
-        """
-        if app.CONFIG.app.VIDEO_FORMAT == "MPEG1":
-            result = Response(status=200)
-        else:
-            result = app.sample_view.http_streamer.get_response()
-
-        return result
-
-    @bp.route("/camera/unsubscribe", methods=["PUT"])
-    @server.restrict
-    def unsubscribe_to_camera():
-        """
-        SampleCentring: unsubscribe from the camera streaming
-            :statuscode: 200: no error
-            :statuscode: 409: error
-        """
-        HWR.beamline.sample_view.camera.streaming_greenlet.kill()
-        return Response(status=200)
-
     @bp.route("/camera/snapshot", methods=["POST"])
     @server.restrict
     def snapshot():

@@ -1,9 +1,6 @@
 import logging
-from io import StringIO
 
 import gevent.event
-import PIL
-from flask import Response
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore.queue_entry.base_queue_entry import CENTRING_METHOD
 
@@ -17,88 +14,12 @@ SNAPSHOT_RECEIVED = gevent.event.Event()
 SNAPSHOT = None
 
 
-class HttpStreamer:
-    """
-    Implements 'MJPEG' streaming from the sample view camera.
-
-    Provides get_response() method, that creates a Response object,
-    that will stream JPEG images from the sample view camera,
-    in 'multipart' HTTP response format.
-    """
-
-    def __init__(self):
-        self._new_frame = gevent.event.Event()
-        self._sample_image = None
-        self._clients = 0
-
-    def _client_connected(self):
-        if self._clients == 0:
-            # first client connected,
-            # start listening to frames from sample camera
-            HWR.beamline.sample_view.camera.connect(
-                "imageReceived", self._new_frame_received
-            )
-
-        self._clients += 1
-
-    def _client_disconnected(self):
-        self._clients -= 1
-        if self._clients == 0:
-            # last client disconnected,
-            # disconnect from the sample camera
-            HWR.beamline.sample_view.camera.disconnect(
-                "imageReceived", self._new_frame_received
-            )
-
-    def _new_frame_received(self, img, width, height, *args, **kwargs):
-        if not isinstance(img, str | bytes):
-            rawdata = img.bits().asstring(img.numBytes())
-            strbuf = StringIO()
-            image = PIL.Image.frombytes("RGBA", (width, height), rawdata)
-            (r, g, b, a) = image.split()
-            image = PIL.Image.merge("RGB", (b, g, r))
-            image.save(strbuf, "JPEG")
-            img = strbuf.get_value()
-
-        self._sample_image = img
-
-        # signal clients that there is a new frame available
-        self._new_frame.set()
-        self._new_frame.clear()
-
-    def get_response(self) -> Response:
-        """
-        build new Response object, that will send frames to the client
-        """
-
-        def frames():
-            while True:
-                self._new_frame.wait()
-                yield (
-                    b"--frame\r\n--!>\nContent-type: image/jpeg\n\n"
-                    + self._sample_image
-                    + b"\r\n"
-                )
-
-        self._client_connected()
-
-        response = Response(
-            frames(),
-            mimetype='multipart/x-mixed-replace; boundary="!>"',
-        )
-        # keep track of when client stops reading the stream
-        response.call_on_close(self._client_disconnected)
-
-        return response
-
-
 class SampleView(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
         self._click_count = 0
         self._click_limit = 3
         self._centring_point_id = None
-        self.http_streamer = HttpStreamer()
 
         HWR.beamline.sample_view.connect("shapesChanged", self._emit_shapes_updated)
 

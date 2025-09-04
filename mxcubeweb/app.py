@@ -148,11 +148,10 @@ class MXCUBEApplication:
 
         MXCUBEApplication.mxcubecore.init()
 
-        if cfg.app.USE_EXTERNAL_STREAMER:
-            MXCUBEApplication.init_sample_video(
-                _format=cfg.app.VIDEO_FORMAT,
-                port=cfg.app.VIDEO_STREAM_PORT,
-            )
+        MXCUBEApplication.init_sample_video(
+            _format=cfg.app.VIDEO_FORMAT,
+            port=cfg.app.VIDEO_STREAM_PORT,
+        )
 
         MXCUBEApplication.init_logging(log_fpath, log_level, enabled_logger_list)
 
