@@ -56,7 +56,6 @@
   "devDependencies": {
     "@esrf/eslint-config": "1.1.5",
     "@testing-library/cypress": "10.0.3",
-    "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^12.1.5",
     "@testing-library/user-event": "^13.5.0",
     "@types/react": "17.0.60",
