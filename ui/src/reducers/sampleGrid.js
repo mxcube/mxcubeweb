@@ -100,22 +100,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
       });
       return { ...state, sampleList };
     }
-    case 'ADD_SAMPLES_TO_QUEUE': {
-      const sampleIDList = action.samplesData.map((s) => s.sampleID);
-      const sampleList = { ...state.sampleList };
-      sampleIDList.forEach((sampleID, i) => {
-        if (sampleList[sampleID].tasks.length > 0) {
-          sampleList[sampleID].tasks = [
-            ...sampleList[sampleID].tasks,
-            ...action.samplesData[i].tasks,
-          ];
-        } else {
-          sampleList[sampleID].tasks = action.samplesData[i].tasks;
-        }
-      });
-
-      return { ...state, sampleList };
-    }
     case 'ADD_TASK_RESULT': {
       const sampleList = {
         ...state.sampleList,
@@ -308,9 +292,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
       return { ...state, sampleList, order };
     }
     case 'CLEAR_SAMPLE_GRID': {
-      return { ...state, ...INITIAL_STATE };
-    }
-    case 'CLEAR_ALL': {
       return { ...state, ...INITIAL_STATE };
     }
     default: {

@@ -62,19 +62,6 @@ function queueGUIReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, displayData };
     }
-
-    case 'ADD_SAMPLES_TO_QUEUE': {
-      const displayData = { ...state.displayData };
-      action.samplesData.forEach((sample) => {
-        displayData[sample.queueID] = {
-          collpased: false,
-          selected: false,
-          progress: 0,
-        };
-      });
-
-      return { ...state, displayData };
-    }
     case 'REMOVE_TASK': {
       return { ...state, displayData: omit(state.displayData, action.queueID) };
     }
@@ -133,9 +120,6 @@ function queueGUIReducer(state = INITIAL_STATE, action = {}) {
       });
 
       return { ...state, displayData };
-    }
-    case 'CLEAR_ALL': {
-      return INITIAL_STATE;
     }
     default: {
       return state;

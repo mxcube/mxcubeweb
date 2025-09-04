@@ -120,7 +120,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
       );
       return { ...state, selectedShapes };
     }
-    case 'CLEAR_ALL':
     case 'SET_CURRENT_SAMPLE': {
       return {
         ...state,

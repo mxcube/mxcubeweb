@@ -15,7 +15,6 @@ const INITIAL_STATE = {
   groupFolder: '',
 };
 
-// eslint-disable-next-line complexity
 function queueReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
     case 'SET_QUEUE': {
@@ -27,10 +26,6 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
         queue: [],
         currentSampleID: null,
       };
-    }
-    case 'ADD_SAMPLES_TO_QUEUE': {
-      const sampleIDList = action.samplesData.map((s) => s.sampleID);
-      return { ...state, queue: [...state.queue, ...sampleIDList] };
     }
     case 'SET_QUEUE_STATUS': {
       return {
@@ -100,12 +95,6 @@ function queueReducer(state = INITIAL_STATE, action = {}) {
     }
     case 'SET_QUEUE_SETTING': {
       return { ...state, [action.settingName]: action.value };
-    }
-    case 'CLEAR_ALL': {
-      return { ...state, ...INITIAL_STATE, autoMountNext: state.autoMountNext };
-    }
-    case 'QUEUE_STATE': {
-      return Object.assign({}, state, ...action.queueState);
     }
     case 'SET_INITIAL_STATE': {
       return {

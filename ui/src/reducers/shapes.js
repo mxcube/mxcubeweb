@@ -33,9 +33,6 @@ function shapesReducer(state = INITIAL_STATE, action = {}) {
     case 'SET_CURRENT_SAMPLE': {
       return INITIAL_STATE;
     }
-    case 'CLEAR_ALL': {
-      return INITIAL_STATE;
-    }
     case 'SET_INITIAL_STATE': {
       return {
         ...state,

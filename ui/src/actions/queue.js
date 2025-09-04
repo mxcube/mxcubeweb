@@ -23,15 +23,11 @@ import { mountSample } from './sampleChanger';
 import { clearSampleGrid, selectSamplesAction } from './sampleGrid';
 import { abortCentring, updateShapes } from './sampleview';
 
-export function queueLoading(loading) {
+function queueLoading(loading) {
   return { type: 'QUEUE_LOADING', loading };
 }
 
-export function clearAll() {
-  return { type: 'CLEAR_ALL' };
-}
-
-export function setQueueAction(queue) {
+function setQueueAction(queue) {
   const { sampleOrder, sampleList } = queue;
   return { type: 'SET_QUEUE', sampleOrder, sampleList };
 }
@@ -56,27 +52,23 @@ export function setQueue(queue) {
   };
 }
 
-export function setCentringMethodAction(centringMethod) {
+function setCentringMethodAction(centringMethod) {
   return { type: 'SET_CENTRING_METHOD', centringMethod };
 }
 
-export function setQueueSettingAction(settingName, value) {
+function setQueueSettingAction(settingName, value) {
   return { type: 'SET_QUEUE_SETTING', settingName, value };
 }
 
-export function setNumSnapshotsAction(n) {
+function setNumSnapshotsAction(n) {
   return { type: 'SET_NUM_SNAPSHOTS', n };
 }
 
-export function setGroupFolderAction(path) {
+function setGroupFolderAction(path) {
   return { type: 'SET_GROUP_FOLDER', path };
 }
 
-export function addSamplesToQueueAction(samplesData) {
-  return { type: 'ADD_SAMPLES_TO_QUEUE', samplesData };
-}
-
-export function removeSamplesFromQueueAction(sampleIDList) {
+function removeSamplesFromQueueAction(sampleIDList) {
   return { type: 'REMOVE_SAMPLES_FROM_QUEUE', sampleIDList };
 }
 
@@ -119,7 +111,7 @@ export function addSampleAndMount(sampleData) {
   };
 }
 
-export function clearQueueAction() {
+function clearQueueAction() {
   return { type: 'CLEAR_QUEUE' };
 }
 
@@ -136,10 +128,6 @@ export function clearQueue(clearQueueOnly = false) {
 
 export function setStatus(queueState) {
   return { type: 'SET_QUEUE_STATUS', queueState };
-}
-
-export function setState(queueState) {
-  return { type: 'QUEUE_STATE', queueState };
 }
 
 export function startQueue(autoMountNext = true, sid = -1) {
@@ -172,11 +160,11 @@ export function runSample(sampleID, taskIndex) {
   };
 }
 
-export function removeTaskAction(sampleID, taskIndex, queueID = null) {
+function removeTaskAction(sampleID, taskIndex, queueID = null) {
   return { type: 'REMOVE_TASK', sampleID, taskIndex, queueID };
 }
 
-export function removeTaskListAction(taskList, queueIDList = null) {
+function removeTaskListAction(taskList, queueIDList = null) {
   return { type: 'REMOVE_TASKS_LIST', taskList, queueIDList };
 }
 
@@ -271,7 +259,7 @@ export function addTaskAction(tasks) {
   return { type: 'ADD_TASKS', tasks };
 }
 
-export function updateTaskAction(sampleID, taskIndex, taskData) {
+function updateTaskAction(sampleID, taskIndex, taskData) {
   return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
 }
 
@@ -428,7 +416,7 @@ export function deleteSamplesFromQueue(sampleIDList) {
   };
 }
 
-export function setAutoMountAction(automount) {
+function setAutoMountAction(automount) {
   return { type: 'SET_AUTO_MOUNT_SAMPLE', automount };
 }
 
@@ -448,7 +436,7 @@ export function setAutoMountSample(automount) {
   };
 }
 
-export function setAutoAddDiffPlanAction(autoadd) {
+function setAutoAddDiffPlanAction(autoadd) {
   return { type: 'SET_AUTO_ADD_DIFFPLAN', autoadd };
 }
 
