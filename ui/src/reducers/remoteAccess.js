@@ -21,9 +21,6 @@ function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
     case 'SET_MASTER': {
       return { ...state, sid: action.sid };
     }
-    case 'SET_OBSERVERS': {
-      return { ...state, observers: action.observers };
-    }
     case 'SET_ALLOW_REMOTE': {
       return { ...state, allowRemote: action.allow };
     }

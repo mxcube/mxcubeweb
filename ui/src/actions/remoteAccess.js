@@ -55,7 +55,7 @@ export function requestControl(message) {
   };
 }
 
-export function cancelControlRequest() {
+function cancelControlRequest() {
   return async (dispatch) => {
     await sendCancelControlRequest();
     dispatch(getLoginInfo());
@@ -106,10 +106,6 @@ export function updateTimeoutGivesControl(timeoutGivesControl) {
     await sendUpdateTimeoutGivesControl(timeoutGivesControl);
     dispatch({ type: 'SET_TIMEOUT_GIVES_CONTROL', timeoutGivesControl });
   };
-}
-
-export function setObservers(observers) {
-  return { type: 'SET_OBSERVERS', observers };
 }
 
 export function resetChatMessageCount() {
