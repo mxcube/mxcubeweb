@@ -203,6 +203,8 @@ export default class SampleImage extends React.Component {
 
   onMouseUp() {
     this.drawGridPlugin.endDrawing(null, this.canvas);
+    const gridData = this.drawGridPlugin.currentGridData();
+    console.log("Grid data after drawing completed:", gridData); // 打印当前网格数据
   }
 
   setGridResultType(resultType) {

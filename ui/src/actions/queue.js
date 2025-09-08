@@ -505,7 +505,7 @@ export function addDiffractionPlanAction(tasks) {
 }
 
 export function addTask(sampleIDs, parameters, runNow) {
-
+  console.log("======= add task")
   return function (dispatch, getState) {
     console.log("sampleIDs")
     console.log(sampleIDs)

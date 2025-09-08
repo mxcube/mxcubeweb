@@ -230,7 +230,8 @@ class MXCUBEApplication:
 
     # Enable automatic Mountie of sample when queue executed in
     # "automatic/pipeline" mode
-    AUTO_MOUNT_SAMPLE = False
+    # AUTO_MOUNT_SAMPLE = False
+    AUTO_MOUNT_SAMPLE = True
 
     # Automatically add and execute diffraction plans coming from
     # characterizations
