@@ -11,7 +11,7 @@ import DeviceState from '../components/DeviceState/DeviceState';
 import InOutSwitch from '../components/InOutSwitch/InOutSwitch';
 import MachInfo from '../components/MachInfo/MachInfo';
 import OneAxisTranslationControl from '../components/MotorInput/OneAxisTranslationControl';
-import SampleChanger from '../components/SampleChanger/SampleChanger';
+import SampleChangerInfo from '../components/SampleChangerInfo/SampleChangerInfo';
 import BeamlineActions from './BeamlineActionsContainer';
 
 function BeamlineSetupContainer() {
@@ -215,7 +215,7 @@ function BeamlineSetupContainer() {
         </Nav>
         <Nav className="me-3">
           <Nav.Item>
-            <SampleChanger
+            <SampleChangerInfo
               state={sampleChangerState}
               maintenance={sampleChangerMaint}
             />

@@ -1,12 +1,12 @@
 import React from 'react';
 import { Badge, Col, OverlayTrigger, Popover, Row } from 'react-bootstrap';
 
-import styles from './sampleChangerStyle.module.css';
+import styles from './sampleChangerInfoStyle.module.css';
 
-function SampleChanger(props) {
+function SampleChangerInfo(props) {
   const { state, maintenance } = props;
   const { global_state, message } = maintenance;
-  const tooltipTitle = 'Sample Changer Status\n';
+  const tooltipTitle = 'Sample Changer Status';
 
   let variant = 'info';
   let popContent = '';
@@ -15,7 +15,7 @@ function SampleChanger(props) {
     ['READY', 'LOADED', 'CHARGING', 'STANDBY'].includes(state.toUpperCase())
   ) {
     variant = 'success';
-  } else if (['FAULT'].includes(state.toUpperCase())) {
+  } else if (state.toUpperCase() === 'FAULT') {
     variant = 'danger';
   } else {
     variant = 'warning';
@@ -56,7 +56,7 @@ function SampleChanger(props) {
   return (
     <OverlayTrigger placement="bottom" overlay={sampleChangerInfoPop}>
       <div className={styles.sampleChangerInfo}>
-        <Badge className={styles.sampleChangerLabel} bg="secondary">
+        <Badge className={styles.sampleChangerInfoLabel} bg="secondary">
           Sample Changer
         </Badge>
         <Badge
@@ -73,9 +73,9 @@ function SampleChanger(props) {
   );
 }
 
-SampleChanger.defaultProps = {
+SampleChangerInfo.defaultProps = {
   maintenance: { global_state: {}, message: '' },
   state: 'UNKNOWN',
 };
 
-export default React.memo(SampleChanger);
+export default React.memo(SampleChangerInfo);
