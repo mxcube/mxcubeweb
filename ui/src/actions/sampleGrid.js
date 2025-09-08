@@ -4,7 +4,7 @@ import { showErrorPanel } from './general';
 import { setQueue } from './queue';
 import { hideWaitDialog, showWaitDialog } from './waitDialog';
 
-export function updateSampleList(sampleList, order) {
+function updateSampleList(sampleList, order) {
   return { type: 'UPDATE_SAMPLE_LIST', sampleList, order };
 }
 
@@ -45,16 +45,8 @@ export function selectSamplesAction(keys, selected = true) {
   return { type: 'SELECT_SAMPLES', keys, selected };
 }
 
-export function toggleSelectedAction(sampleID) {
-  return { type: 'TOGGLE_SELECTED_SAMPLE', sampleID };
-}
-
 export function filterAction(filterOptions) {
   return { type: 'FILTER_SAMPLE_LIST', filterOptions };
-}
-
-export function setSamplesInfoAction(sampleInfoList) {
-  return { type: 'SET_SAMPLES_INFO', sampleInfoList };
 }
 
 export function getSamplesList() {
@@ -100,7 +92,7 @@ export function getLimsSamples(lims) {
 }
 
 // update list crystal from crims
-export function updateCrystalList(crystalList) {
+function updateCrystalList(crystalList) {
   return { type: 'UPDATE_CRYSTAL_LIST', crystalList };
 }
 
@@ -120,8 +112,4 @@ export function syncWithCrims() {
       );
     }
   };
-}
-
-export function toggleMovableAction(key) {
-  return { type: 'TOGGLE_MOVABLE_SAMPLE', key };
 }

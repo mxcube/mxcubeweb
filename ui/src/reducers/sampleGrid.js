@@ -70,36 +70,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, sampleList, order };
     }
-    case 'SET_SAMPLES_INFO': {
-      const sampleList = {};
-      Object.keys(state.sampleList).forEach((key) => {
-        const sample = state.sampleList[key];
-        let sampleInfo;
-        for (sampleInfo of action.sampleInfoList) {
-          if (sampleInfo.code) {
-            // find sample with data matrix code
-            if (sample.code === sampleInfo.code) {
-              sampleList[key] = { ...sample, ...sampleInfo };
-              break;
-            }
-          } else {
-            // check with sample changer location
-            const containerLocation = sampleInfo.containerSampleChangerLocation;
-            const { sampleLocation } = sampleInfo;
-            const limsLocation = `${containerLocation}:${sampleLocation}`;
-
-            if (sample.location === limsLocation) {
-              sampleList[key] = { ...sample, ...sampleInfo };
-              break;
-            }
-          }
-        }
-        if (sampleList[key] === undefined) {
-          sampleList[key] = { ...sample };
-        }
-      });
-      return { ...state, sampleList };
-    }
     case 'ADD_TASK_RESULT': {
       const sampleList = {
         ...state.sampleList,
@@ -256,12 +226,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, sampleList };
     }
-    // Toggles a samples movable flag
-    case 'TOGGLE_MOVABLE_SAMPLE': {
-      const moving = {};
-      moving[action.key] = !state.moving[action.key];
-      return { ...state, moving };
-    }
     // Select a range of samples
     case 'SELECT_SAMPLES': {
       const selectedItems = {};
@@ -273,11 +237,6 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
       }
 
       return { ...state, selected: selectedItems, moving: movingItems };
-    }
-    case 'TOGGLE_SELECTED_SAMPLE': {
-      const selected = { ...state.selected };
-      selected[action.sampleID] = !state.selected[action.sampleID];
-      return { ...state, selected };
     }
     case 'FILTER_SAMPLE_LIST': {
       const filterOptions = {
