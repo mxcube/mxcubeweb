@@ -42,7 +42,6 @@
     "react-icons": "^4.9.0",
     "react-lazyload": "^3.2.0",
     "react-redux": "7.2.9",
-    "react-router": "^6.19.0",
     "react-router-dom": "^6.19.0",
     "react-slick": "^0.29.0",
     "react-zoom-pan-pinch": "3.3.0",
@@ -56,8 +55,6 @@
   "devDependencies": {
     "@esrf/eslint-config": "1.1.5",
     "@testing-library/cypress": "10.0.3",
-    "@testing-library/react": "^12.1.5",
-    "@testing-library/user-event": "^13.5.0",
     "@types/react": "17.0.60",
     "@types/react-dom": "17.0.20",
     "@types/react-redux": "7.1.33",
