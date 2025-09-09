@@ -9,6 +9,7 @@ import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
 import GridForm from './GridForm';
 import { JSMpeg } from './jsmpeg.min.js';
+import styles from './SampleImage.module.css';
 import {
   makeCentringHorizontalLine,
   makeCentringVerticalLine,
@@ -747,6 +748,7 @@ export default class SampleImage extends React.Component {
           }}
           key={this.props.clickCentringClicksLeft}
           id="video-message-overlay"
+          className={styles.videoMessageOverlay}
         />
       );
     }
@@ -762,11 +764,16 @@ export default class SampleImage extends React.Component {
     }
 
     let result = (
-      <img id="sample-img" className="img" src={source} alt="SampleView" />
+      <img
+        id="sample-img"
+        className={styles.sampleImg}
+        src={source}
+        alt="SampleView"
+      />
     );
 
     if (format === 'MPEG1') {
-      result = <canvas id="sample-img" className="img" />;
+      result = <canvas id="sample-img" className={styles.sampleImg} />;
     }
 
     return result;
@@ -909,8 +916,8 @@ export default class SampleImage extends React.Component {
 
     return (
       <div>
-        <div className="outsideWrapper" id="outsideWrapper">
-          <div className="insideWrapper" id="insideWrapper">
+        <div className={styles.outsideWrapper} id="outsideWrapper">
+          <div className={styles.insideWrapper} id="insideWrapper">
             <GridForm
               show={this.props.drawGrid}
               getGridOverlayOpacity={this.getGridOverlayOpacity}
@@ -930,7 +937,7 @@ export default class SampleImage extends React.Component {
             <SampleControls canvas={this.canvas} />
             <div>{this.centringMessage()}</div>
 
-            <canvas id="canvas" className="coveringCanvas" />
+            <canvas id="canvas" className={styles.coveringCanvas} />
           </div>
         </div>
       </div>

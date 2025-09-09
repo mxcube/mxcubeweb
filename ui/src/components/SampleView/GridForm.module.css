@@ -1,0 +1,22 @@
+.gridForm {
+  position: absolute;
+  z-index: 1001;
+  width: 65em;
+  float: left;
+  padding: 5px 0;
+  margin: 2px 0 0;
+  background-color: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+}
+
+.gridTable > tbody > tr[data-selected='true'] {
+  background-color: #dff0d8;
+  color: #000;
+  font-weight: bold;
+}
+
+.gridTable > tbody > tr[data-user-hidden='true'] {
+  background-color: #a3ceff;
+  font-style: italic;
+}
