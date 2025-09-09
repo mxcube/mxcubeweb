@@ -2,7 +2,6 @@ import contextlib
 import logging
 
 from mxcubecore import HardwareRepository as HWR
-from mxcubecore import queue_entry as qe
 from mxcubecore.HardwareObjects.Harvester import HarvesterState
 from mxcubecore.model import queue_model_objects as qmo
 
@@ -89,17 +88,6 @@ def harvester_state_changed(*args):
 
 def harvester_contents_update():
     server.emit("harvester_contents_update")
-
-
-def centring_started(method, *args):
-    msg = {"method": method}
-
-    if method in ["Computer automatic"]:
-        msg = {"method": qe.CENTRING_METHOD.LOOP}
-    elif method in [HWR.beamline.diffractometer.CENTRING_METHOD_MANUAL]:
-        msg = {"method": qe.CENTRING_METHOD.MANUAL}
-
-    server.emit("sample_centring", msg, namespace="/hwr")
 
 
 def get_task_state(entry):
@@ -338,10 +326,6 @@ def collect_started(*args, **kwargs):
             server.emit("task", msg, namespace="/hwr")
         except Exception:
             logging.getLogger("HWR").error("error sending message: " + str(msg))
-
-
-def grid_result_available(shape):
-    server.emit("grid_result_available", {"shape": shape}, namespace="/hwr")
 
 
 def energy_scan_finished(pk, ip, rm, sample):

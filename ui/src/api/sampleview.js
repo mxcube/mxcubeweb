@@ -1,59 +1,81 @@
-import api from './api';
+import { fetchAttribute, sendExecuteCommand } from './hardware-object';
 
-const endpoint = api.url('/sampleview');
+function fetchSampleViewAttribute(attribute) {
+  return fetchAttribute('sample_view', 'sample_view', attribute);
+}
+
+function sendSampleViewCommand(command, params = {}) {
+  return sendExecuteCommand('sample_view', 'sample_view', command, params);
+}
 
 export function fetchImageData() {
-  return endpoint.get('/camera').safeJson();
+  return fetchSampleViewAttribute('sample_image_meta_data');
 }
 
 export function sendSetVideoSize(width, height) {
-  return endpoint.post({ width, height }, '/camera').safeJson();
+  return sendSampleViewCommand('set_image_size', {
+    width,
+    height,
+  });
 }
 
 export function fetchShapes() {
-  return endpoint.get('/shapes').safeJson();
+  return fetchSampleViewAttribute('shapes');
 }
 
 export function sendAddOrUpdateShapes(shapes) {
-  return endpoint.post({ shapes }, '/shapes').safeJson();
+  return sendSampleViewCommand('update_shapes', {
+    shapes,
+  });
 }
 
-export function sendDeleteShape(id) {
-  return endpoint.delete(`/shapes/${id}`).res();
+export function sendDeleteShape(sid) {
+  return sendSampleViewCommand('delete_shape', {
+    sid,
+  });
 }
 
 export function sendRotateToShape(sid) {
-  return endpoint.post({ sid }, '/shapes/rotate_to').res();
+  return sendSampleViewCommand('rotate_to', {
+    sid,
+  });
 }
 
-export function sendSetCentringMethod(centringMethod) {
-  return endpoint.put({ centringMethod }, '/centring/centring_method').res();
+export function sendSetCentringMethod(method) {
+  sendSampleViewCommand('set_centring_method', {
+    method,
+  });
 }
 
 export function sendStartClickCentring() {
-  return endpoint.put(undefined, '/centring/start_click_centring').safeJson();
+  return sendSampleViewCommand('start_click_centring', {});
 }
 
 export function sendRecordCentringClick(x, y) {
-  return endpoint.put({ clickPos: { x, y } }, '/centring/click').safeJson();
+  return sendSampleViewCommand('click', { x, y });
 }
 
 export function sendAcceptCentring() {
-  return endpoint.put(undefined, '/centring/accept').res();
+  return sendSampleViewCommand('accept_centring', {});
 }
 
 export function sendAbortCentring() {
-  return endpoint.put(undefined, '/centring/abort').res();
+  return sendSampleViewCommand('abort_centring', {});
 }
 
-export function sendMoveToPoint(id) {
-  return endpoint.put(undefined, `/centring/${id}/moveto`).res();
+export function sendMoveToPoint(point_id) {
+  return sendSampleViewCommand('move_to_centred_position', { point_id });
 }
 
 export function sendMoveToBeam(x, y) {
-  return endpoint.put({ clickPos: { x, y } }, '/movetobeam').res();
+  return sendSampleViewCommand('move_to_beam', {
+    x,
+    y,
+  });
 }
 
 export function sendTakeSnapshot(canvasData) {
-  return endpoint.post({ overlay: canvasData }, '/camera/snapshot').blob();
+  return sendSampleViewCommand('snapshot', {
+    value: canvasData,
+  });
 }

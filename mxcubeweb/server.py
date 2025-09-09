@@ -123,7 +123,6 @@ class Server:
         from mxcubeweb.routes.main import init_route as init_main_route
         from mxcubeweb.routes.queue import init_route as init_queue_route
         from mxcubeweb.routes.ra import init_route as init_ra_route
-        from mxcubeweb.routes.samplecentring import init_route as init_sampleview_route
         from mxcubeweb.routes.workflow import init_route as init_workflow_route
 
         url_root_prefix = "/mxcube/api/v0.1"
@@ -140,12 +139,6 @@ class Server:
 
         Server._register_route(
             init_workflow_route, mxcube, f"{url_root_prefix}/workflow"
-        )
-
-        Server._register_route(
-            init_sampleview_route,
-            mxcube,
-            f"{url_root_prefix}/sampleview",
         )
 
         Server._register_route(

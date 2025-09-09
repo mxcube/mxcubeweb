@@ -95,3 +95,11 @@ class SampleInputModel(BaseModel):
 
     class Config:
         allow_population_by_field_name = True
+
+
+class ListOfShapesModel(BaseModel):
+    shapes: list[dict] = Field([], description="List of dictionaries")
+
+
+class Base64StrModel(BaseModel):
+    value: str = Field("", description="Base64 encoded string")

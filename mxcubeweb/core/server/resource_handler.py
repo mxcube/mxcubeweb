@@ -344,8 +344,8 @@ class ResourceHandler:
                 # Pydantic model
                 return param_type.parse_obj(param_data)
             except ValidationError as e:
-                msg = f"Invalid input for '{param_name}' '{e.errors}'"
-                msg += f" on: {request.url}"
+                msg = f"Invalid input for '{param_name}' '{e.errors}' with data"
+                msg += f" '{param_data}' on: {request.url}"
                 raise ValueError(msg) from e
 
         # If its not a Pydantic model, we expect the parameter to be present
@@ -607,7 +607,6 @@ class AdapterResourceHandler(ResourceHandler):
 
             # Check if the object_id exists in the handler_dict and corresponds to a
             # HardwareObject
-
             obj = self._app.mxcubecore.get_adapter(object_id)
 
             if not obj:

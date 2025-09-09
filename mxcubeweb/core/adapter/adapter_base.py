@@ -65,6 +65,9 @@ class AdapterBase:
 
         cls_name = self.__class__.__name__.lower()
 
+        if resource_handler_config:
+            cls_name = resource_handler_config.name or cls_name
+
         if cls_name not in self.ADAPTER_DICT:
             self.ADAPTER_DICT[cls_name] = {}
 
@@ -72,8 +75,10 @@ class AdapterBase:
             self.ADAPTER_DICT[cls_name][ho.name] = self
 
         if resource_handler_config:
+            _name = resource_handler_config.name or cls_name
+
             ResourceHandlerFactory.create_or_get(
-                name=resource_handler_config.name or cls_name,
+                name=_name,
                 url_prefix="/mxcube/api/v0.1/hwobj/"
                 + (resource_handler_config.name or self._type.lower()),
                 handler_dict=self.ADAPTER_DICT[cls_name],

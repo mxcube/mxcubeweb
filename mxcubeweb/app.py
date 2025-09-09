@@ -30,7 +30,6 @@ from mxcubeweb.core.components.chat import Chat
 from mxcubeweb.core.components.component_base import import_component
 from mxcubeweb.core.components.harvester import Harvester
 from mxcubeweb.core.components.queue import Queue
-from mxcubeweb.core.components.sampleview import SampleView
 from mxcubeweb.core.components.workflow import Workflow
 from mxcubeweb.core.components.lims import Lims
 from mxcubeweb.core.components.log import Log
@@ -161,7 +160,6 @@ class MXCUBEApplication:
             MXCUBEApplication, cfg.app.usermanager
         )
         MXCUBEApplication.chat = Chat(MXCUBEApplication, {})
-        MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, {})
         MXCUBEApplication.workflow = Workflow(MXCUBEApplication, {})
         MXCUBEApplication.harvester = Harvester(MXCUBEApplication, {})
         MXCUBEApplication.log = Log(MXCUBEApplication, {})
@@ -193,7 +191,6 @@ class MXCUBEApplication:
         to the corresponding signals/events.
         """
         MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
-        MXCUBEApplication.sample_view.init_signals()
         MXCUBEApplication.harvester.init_signals()
 
     @staticmethod
@@ -262,7 +259,7 @@ class MXCUBEApplication:
 
         _loggers = {
             "hwr_logger": logging.getLogger("HWR"),
-            "mx3_hwr_logger": logging.getLogger("MX3.HWR"),
+            "server_logger": logging.getLogger("MX3.HWR"),
             "user_logger": logging.getLogger("user_level_log"),
             "queue_logger": logging.getLogger("queue_exec"),
             "mx3_ui_logger": logging.getLogger("MX3.UI"),
@@ -286,6 +283,7 @@ class MXCUBEApplication:
                     logger.addHandler(log_file_handler)
 
                 logger.propagate = False
+                setattr(MXCUBEApplication, logger_name, logger)
             else:
                 logger.disabled = True
 

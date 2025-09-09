@@ -69,16 +69,16 @@ def parse_args(argv):
         dest="enabled_logger_list",
         help=(
             "Which loggers to use, default is to use all loggers"
-            " ([exception_logger, hwr_logger, mx3_hwr_logger,"
+            " ([exception_logger, hwr_logger, server_logger,"
             " user_logger, queue_logger])"
         ),
         default=[
             "exception_logger",
             "hwr_logger",
-            "mx3_hwr_logger",
+            "server_logger",
             "user_logger",
             "queue_logger",
-            "mx3_ui_logger",
+            "ui_logger",
             "csp_logger",
         ],
     )

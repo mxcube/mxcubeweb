@@ -47,6 +47,7 @@ def test_beamline_get_all_attribute(client):
         "transmission",
         "beamline_actions",
         "sample_changer",
+        "sample_view",
     ]
 
     assert isinstance(data["hardwareObjects"], dict)
