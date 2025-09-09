@@ -350,8 +350,20 @@ class SampleView(ComponentBase):
             phi_value = round(float(cp.as_dict().get("phi", None)), 3)
             if phi_value:
                 try:
-                    HWR.beamline.diffractometer.centringPhi.set_value(phi_value)
+                    logging.getLogger("user_level_log").info(
+                        "Rotating to position %s", phi_value
+                    )
+                    if hasattr(HWR.beamline.diffractometer, "centringPhi"):
+                        HWR.beamline.diffractometer.centringPhi.set_value(phi_value)
+                    else:
+                        # This is for backward compatibility - handle case where
+                        # `sample_centring` was not used in configuration files or
+                        # where it is set to false, in order to perform manual centring
+                        HWR.beamline.diffractometer.phi_motor_hwobj.set_value(phi_value)
                 except Exception:
+                    logging.getLogger("user_level_log").exception(
+                        "Error rotating to position"
+                    )
                     raise
 
     def start_auto_centring(self):
