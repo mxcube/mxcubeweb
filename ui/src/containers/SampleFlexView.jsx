@@ -3,6 +3,7 @@ import { Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { filterAction } from '../actions/sampleGrid';
+import styles from './SampleFlexView.module.css';
 
 export default function SampleFlexView(props) {
   const {
@@ -132,7 +133,7 @@ export default function SampleFlexView(props) {
             handleDisplayPuckCellContextMenu(e, puckMenuID, cellID, puckID)
           }
           fill={isPuckSelected(cellID, puckID) ? '#015f9d' : '#cdced1'}
-          className="puck_cicle"
+          className={styles.puckCicle}
         >
           <circle
             key={`circle_${pos.x}_${pos.y}`}
@@ -142,7 +143,6 @@ export default function SampleFlexView(props) {
             fill={isPuckSelected(cellID, puckID) ? '#015f9d' : '#cdced1'}
             stroke="#01011ba2"
             strokeWidth="0.05"
-            className="_cicle"
           />
           <text
             x={pos.x}
@@ -151,7 +151,7 @@ export default function SampleFlexView(props) {
             textAnchor="middle"
             dominantBaseline="middle"
             fill={isPuckSelected(cellID, puckID) ? 'white' : 'black'}
-            className="text_puck_cicle"
+            className={styles.textPuckCicle}
           >
             Puck {puckID}
           </text>
@@ -187,7 +187,7 @@ export default function SampleFlexView(props) {
         onContextMenu={(e) =>
           handleDisplayPuckCellContextMenu(e, cellMenuID, cellID, null)
         }
-        className="cell_cicle_g"
+        className={styles.cellCicleG}
       >
         {/* Pie Slice */}
         <path
@@ -195,7 +195,7 @@ export default function SampleFlexView(props) {
           fill={color}
           stroke="white"
           strokeWidth="0.12"
-          className="cell_cicle"
+          className={styles.cellCicle}
         />
         {/* Circles Inside the Slice (Triangle Grid) */}
         {getCirclesInSlice(idxCell)}
@@ -206,7 +206,7 @@ export default function SampleFlexView(props) {
           textAnchor="middle"
           dominantBaseline="middle"
           fill="black"
-          className="cell_cicle_text"
+          className={styles.cellCicleText}
         >
           Cell {cellID}
         </text>
@@ -217,7 +217,7 @@ export default function SampleFlexView(props) {
 
   return (
     <Col sm={6}>
-      <div className="div-svg-flex">
+      <div className={styles.divSvgFlex}>
         <svg height="100%" width="100%" viewBox="0 1 18 18">
           {Array.from({ length: numberOfCell }, (_, idx) => getCellSlice(idx))}
           <circle fill="#6cb0f5" r="2" cx="10" cy="10" />

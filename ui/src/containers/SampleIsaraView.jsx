@@ -1,10 +1,10 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import { Col } from 'react-bootstrap';
-import { BsChevronDown, BsChevronUp } from 'react-icons/bs';
 import { connect } from 'react-redux';
 
 import { filterAction } from '../actions/sampleGrid';
+import styles from './SampleIsaraView.module.css';
 
 class NewSampleIsaraView extends React.Component {
   constructor(props) {
@@ -19,40 +19,12 @@ class NewSampleIsaraView extends React.Component {
     document.addEventListener('keydown', this.onKeyDown, false);
   }
 
-  // eslint-disable-next-line react/no-unused-class-component-methods
-  onClickCell(event, idx, disabled) {
-    if (!disabled) {
-      this.props.filter({ cellFilter: `${idx + 1}` });
-    }
-    event.stopPropagation();
-  }
-
   isPuckSelected(puck) {
     let isPuckSelected = false;
     if (Number(this.props.filterOptions.puckFilter) === puck) {
       isPuckSelected = true;
     }
     return isPuckSelected;
-  }
-
-  // eslint-disable-next-line react/no-unused-class-component-methods
-  getCollapsibleHeaderOpen(cssClass) {
-    return (
-      <div className="sample-items-collapsible-header">
-        <b>Isara</b>
-        <BsChevronUp className={cssClass} size="1em" />
-      </div>
-    );
-  }
-
-  // eslint-disable-next-line react/no-unused-class-component-methods
-  getCollapsibleHeaderClose(cssClass) {
-    return (
-      <div className="sample-items-collapsible-header">
-        <b>Isara</b>
-        <BsChevronDown className={cssClass} size="1em" />
-      </div>
-    );
   }
 
   getContainerCoordinates(_cell, position) {
@@ -234,15 +206,15 @@ class NewSampleIsaraView extends React.Component {
 
     return (
       <Col className="col-sm-2" style={{ marginTop: '25vh' }}>
-        <div className="div-flex-pie-collapsible">
+        <div className={styles.divFlexPieCollapsible}>
           <div>
-            <svg
-              className="svg-flex"
-              height="97%"
-              width="97%"
-              viewBox="0 0 20 20"
-            >
-              <circle className="main-circle-center" r="10" cx="10" cy="10" />
+            <svg height="97%" width="97%" viewBox="0 0 20 20">
+              <circle
+                className={styles.mainCircleCenter}
+                r="10"
+                cx="10"
+                cy="10"
+              />
               <rect
                 x="0"
                 y="0"

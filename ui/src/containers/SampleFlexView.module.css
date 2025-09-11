@@ -1,0 +1,30 @@
+.divSvgFlex {
+  margin-left: auto;
+}
+
+.cellCicleG,
+.puckCicle {
+  cursor: pointer;
+}
+
+.cellCicle:hover {
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 0.09;
+}
+
+.cellCicleText:hover {
+  font-weight: bold;
+}
+
+.puckCicle:hover > circle {
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 0.09;
+}
+
+.puckCicle:hover > .textPuckCicle {
+  paint-order: stroke;
+  fill: #ffffff;
+  stroke-width: 0.01;
+}

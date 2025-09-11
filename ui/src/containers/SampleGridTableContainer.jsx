@@ -35,6 +35,7 @@ import { TaskItem } from '../components/SampleGrid/TaskItem';
 import TooltipTrigger from '../components/TooltipTrigger';
 import { isCollected, QUEUE_RUNNING, QUEUE_STOPPED } from '../constants';
 import SampleFlexView from './SampleFlexView';
+import styles from './SampleGridTableContainer.module.css';
 import SampleIsaraView from './SampleIsaraView';
 
 const SETTINGS = {
@@ -489,12 +490,12 @@ export default function SampleGridTableContainer(props) {
 
   function getSampleItemCollapsibleHeaderActions(cellID) {
     return (
-      <div className="sample-items-collapsible-header-actions">
+      <div>
         <b className="me-2 mt-1">{isSingleCell ? null : `Cell ${cellID}`}</b>
         {sampleItemsControls(cellID, null)}
         <span
           title="Cell Options"
-          className="samples-grid-table-context-menu-icon"
+          className={styles.samplesGridTableContextMenuIcon}
           onClick={(e) => {
             displayPuckCellContextMenu(e, CELL_MENU_ID, cellID, null);
           }}
@@ -505,20 +506,20 @@ export default function SampleGridTableContainer(props) {
     );
   }
 
-  function getCollapsibleHeaderOpen(cell, cssClass) {
+  function getCollapsibleHeaderOpen(cell) {
     return (
-      <div className="sample-items-collapsible-header">
+      <div className={styles.sampleItemsCollapsibleHeader}>
         {getSampleItemCollapsibleHeaderActions(cell)}
-        <BsChevronUp className={cssClass} size="1em" />
+        <BsChevronUp className={styles.collapsibleArrowC} size="1em" />
       </div>
     );
   }
 
-  function getCollapsibleHeaderClose(cell, cssClass) {
+  function getCollapsibleHeaderClose(cell) {
     return (
-      <div className="sample-items-collapsible-header">
+      <div className={styles.sampleItemsCollapsibleHeader}>
         {getSampleItemCollapsibleHeaderActions(cell)}
-        <BsChevronDown className={cssClass} size="1em" />
+        <BsChevronDown className={styles.collapsibleArrowC} size="1em" />
       </div>
     );
   }
@@ -561,11 +562,11 @@ export default function SampleGridTableContainer(props) {
             const isCurrent = currentSample(key);
             const contextMenuID = isCurrent ? MOUNTED_MENU_ID : MENU_ID;
 
-            const classes = cx('samples-grid-table-li', {
-              'samples-grid-table-item-selected': selected[key],
-              'samples-grid-table-item-to-be-collected': picked,
-              'samples-grid-table-item-collected': isCollected(sample),
-              'samples-grid-table-li-manual': cellID === 0,
+            const classes = cx(styles.samplesGridTableLi, {
+              [styles.samplesGridTableItemSelected]: selected[key],
+              [styles.samplesGridTableItemToBeCollected]: picked,
+              [styles.samplesGridTableItemCollected]: isCollected(sample),
+              [styles.samplesGridTableLiManual]: cellID === 0,
             });
 
             return (
@@ -589,7 +590,7 @@ export default function SampleGridTableContainer(props) {
                   picked={picked}
                 >
                   <Slider
-                    className="samples-grid-table-item-tasks"
+                    className={styles.sampleGridTableItemTasks}
                     {...SETTINGS}
                   >
                     {sample.tasks.map((taskData, i) => (
@@ -644,7 +645,7 @@ export default function SampleGridTableContainer(props) {
     return (
       <>
         {puckID && puckCode && (
-          <span className="span-container-code"> {puckCode} </span>
+          <span className={styles.spanContainerCode}> {puckCode} </span>
         )}
         <TooltipTrigger
           id="pick-sample-tooltip"
@@ -657,7 +658,7 @@ export default function SampleGridTableContainer(props) {
         >
           <Button
             variant="link"
-            className="pick-puck-checkbox-button"
+            className={styles.pickPuckCheckboxButton}
             onClick={(e) =>
               pickAllCellPuckItemsOnClick(e, allPuckSample, pickSample)
             }
@@ -671,7 +672,7 @@ export default function SampleGridTableContainer(props) {
 
   function sampleGridTable(cell, cellID, puckList) {
     return (
-      <Table bordered responsive size="sm" className="sample-items-table">
+      <Table bordered responsive size="sm" className={styles.sampleItemsTable}>
         <thead>{tableHeader(cell, cellID, puckList)}</thead>
         <tbody>{tableBody(cell, cellID, puckList)}</tbody>
       </Table>
@@ -685,10 +686,7 @@ export default function SampleGridTableContainer(props) {
           const puckidx = cell.children.findIndex((p) => p.name === puck.name);
           const puckID = isSingleCell ? Number(puck.name) : puckidx + 1;
           return (
-            <td
-              key={`${cellID}-td-${puckID}`}
-              className={`sample-items-table-column-body custom-table-border-${puckID}`}
-            >
+            <td key={`${cellID}-td-${puckID}`}>
               {getSampleItems(cellID, puckID)}
             </td>
           );
@@ -707,14 +705,12 @@ export default function SampleGridTableContainer(props) {
           return (
             <th
               key={`${cellID}-th-${puckID}`}
-              className="sample-items-table-row-header-th"
+              className={styles.sampleItemsTableRowHeaderTh}
             >
-              <span className="puck-label">Puck {puckID}</span>
-              <span className="puck-controls">
-                {sampleItemsControls(cellID, puckID)}
-              </span>
+              <span>Puck {puckID}</span>
+              <span>{sampleItemsControls(cellID, puckID)}</span>
               <span
-                className="samples-grid-table-context-menu-icon"
+                className={styles.samplesGridTableContextMenuIcon}
                 title="Puck Options"
                 onClick={(e) =>
                   displayPuckCellContextMenu(e, PUCK_MENU_ID, cellID, puckID)
@@ -733,7 +729,7 @@ export default function SampleGridTableContainer(props) {
   function getSingleCellPucks(cell, cellID, puckList, colsm) {
     return puckList.map((puck) => (
       <Col
-        className="mt-2 p-2 sample-items-col"
+        className={`mt-2 p-2 ${styles.sampleItemsCol}`}
         sm={colsm}
         key={`puck-${puck.name}`}
       >
@@ -754,16 +750,12 @@ export default function SampleGridTableContainer(props) {
         >
           <Collapsible
             transitionTime={300}
-            className="sample-items-collapsible"
-            openedClassName="sample-items-collapsible"
+            className={styles.sampleItemsCollapsible}
             open
             onClosing={forceVisible()}
             lazyget
-            trigger={getCollapsibleHeaderClose(cellID, 'collapsible-arrow-c')}
-            triggerWhenOpen={getCollapsibleHeaderOpen(
-              cellID,
-              'collapsible-arrow-c',
-            )}
+            trigger={getCollapsibleHeaderClose(cellID)}
+            triggerWhenOpen={getCollapsibleHeaderOpen(cellID)}
           >
             {sampleGridTable(cell, cellID, puckList)}
           </Collapsible>
@@ -1011,13 +1003,12 @@ export default function SampleGridTableContainer(props) {
     <div>
       <MXContextMenu>{getContextMenu(contextMenu.id)}</MXContextMenu>
       <Row
-        className="samples-grid-table"
         onMouseDown={onMouseDown}
         onMouseUp={onMouseUp}
         onMouseMove={onMouseMove}
         xs="auto"
       >
-        <div className="selection-rubber-band" id="selectionRubberBand" />
+        <div className={styles.selectionRubberBand} id="selectionRubberBand" />
         {getManualSamples()}
         {viewMode === 'Graphical View' ? (
           <>
