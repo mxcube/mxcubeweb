@@ -350,7 +350,7 @@ class SampleView(ComponentBase):
             phi_value = round(float(cp.as_dict().get("phi", None)), 3)
             if phi_value:
                 try:
-                    HWR.beamline.diffractometer.centringPhi.set_value(phi_value)
+                    HWR.beamline.diffractometer.omega.set_value(phi_value)
                 except Exception:
                     raise
 
