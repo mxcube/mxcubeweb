@@ -36,7 +36,6 @@ import TooltipTrigger from '../components/TooltipTrigger';
 import { isCollected, QUEUE_RUNNING, QUEUE_STOPPED } from '../constants';
 import SampleFlexView from './SampleFlexView';
 import styles from './SampleGridTableContainer.module.css';
-import SampleIsaraView from './SampleIsaraView';
 
 const SETTINGS = {
   dots: false,
@@ -964,13 +963,8 @@ export default function SampleGridTableContainer(props) {
   }
 
   function getSampleListAsDrawing() {
-    const isCATS = type.includes('CATS');
     const isFLEX = type.includes('FLEX');
     const isMOCK = type.includes('Mock');
-
-    if (isCATS) {
-      return <SampleIsaraView />;
-    }
 
     if (isFLEX) {
       return (
