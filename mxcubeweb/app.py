@@ -25,7 +25,6 @@ from mxcubecore import (
 )
 
 from mxcubeweb.core.adapter.adapter_manager import HardwareObjectAdapterManager
-from mxcubeweb.core.components.beamline import Beamline
 from mxcubeweb.core.components.chat import Chat
 from mxcubeweb.core.components.component_base import import_component
 from mxcubeweb.core.components.harvester import Harvester
@@ -166,7 +165,6 @@ class MXCUBEApplication:
         )
         MXCUBEApplication.chat = Chat(MXCUBEApplication, {})
         MXCUBEApplication.sample_changer = SampleChanger(MXCUBEApplication, {})
-        MXCUBEApplication.beamline = Beamline(MXCUBEApplication, {})
         MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, {})
         MXCUBEApplication.workflow = Workflow(MXCUBEApplication, {})
         MXCUBEApplication.harvester = Harvester(MXCUBEApplication, {})
@@ -203,7 +201,6 @@ class MXCUBEApplication:
         MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
         MXCUBEApplication.sample_view.init_signals()
         MXCUBEApplication.sample_changer.init_signals()
-        MXCUBEApplication.beamline.init_signals()
         MXCUBEApplication.harvester.init_signals()
 
     @staticmethod

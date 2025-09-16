@@ -64,7 +64,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        data = app.beamline.get_viewport_info()
+        data = app.sample_view.get_viewport_info()
 
         resp = jsonify(data)
         resp.status_code = 200
