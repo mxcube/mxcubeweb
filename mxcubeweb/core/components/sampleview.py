@@ -148,9 +148,7 @@ class SampleView(ComponentBase):
             try:
                 if args[0]:
                     motors = args[1]["motors"]
-                    (x, y) = HWR.beamline.sample_view.motor_positions_to_screen(
-                        motors
-                    )
+                    (x, y) = HWR.beamline.sample_view.motor_positions_to_screen(motors)
                     self.centring_update_current_point(motors, x, y)
                     shape = HWR.beamline.sample_view.get_shape(self._centring_point_id)
             except Exception:
@@ -199,9 +197,7 @@ class SampleView(ComponentBase):
             motor_positions.pop("beam_y", None)
             motor_positions.pop("beam_x", None)
 
-            (x, y) = HWR.beamline.sample_view.motor_positions_to_screen(
-                motor_positions
-            )
+            (x, y) = HWR.beamline.sample_view.motor_positions_to_screen(motor_positions)
 
             self.centring_update_current_point(motor_positions, x, y)
 
@@ -382,7 +378,7 @@ class SampleView(ComponentBase):
                 HWR.beamline.sample_view.cancel_centring_method(reject=True)
             nb_clicks = HWR.beamline.config.click_centring_num_clicks
             msg = f"Centring using {nb_clicks}-click centring"
-            logging.getLogger("user_level_log").info(msg, nb_clicks)
+            logging.getLogger("user_level_log").info(msg)
             HWR.beamline.sample_view.start_manual_centring(nb_clicks)
             self.centring_reset_click_count()
         else:

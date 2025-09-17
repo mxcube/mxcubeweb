@@ -207,10 +207,9 @@ def init_route(app, server, url_prefix):  # noqa: C901
         try:
             data = app.sample_view.start_manual_centring()
         except Exception:
-            msg = "Could not start %s click centring"
-            logging.getLogger("MX3.HWR").exception(
-                msg, HWR.beamline.config.click_centring_num_clicks
-            )
+            msg = f"Could not start {HWR.beamline.config.click_centring_num_clicks} click centring"
+            logging.getLogger("MX3.HWR").exception(msg)
+
             resp = (
                 "Could not move motor",
                 409,

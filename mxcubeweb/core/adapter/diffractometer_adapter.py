@@ -1,6 +1,7 @@
 from typing import ClassVar
 
 from mxcubecore.HardwareObjects import GenericDiffractometer, MiniDiff
+from mxcubecore.HardwareObjects.abstract import AbstractDiffractometer
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
@@ -18,6 +19,7 @@ class DiffractometerAdapter(AdapterBase):
     SUPPORTED_TYPES: ClassVar[list[object]] = [
         MiniDiff.MiniDiff,
         GenericDiffractometer.GenericDiffractometer,
+        AbstractDiffractometer.AbstractDiffractometer,
     ]
 
     def __init__(self, ho, role, app):
@@ -41,7 +43,6 @@ class DiffractometerAdapter(AdapterBase):
         self.state_change(*args, **kwargs)
 
     def get_value(self) -> dict:
-        import pdb; pdb.set_trace()
         return {
             "currentPhase": self._ho.get_phase().name,
             "phaseList": self._ho.get_phase_list(),
@@ -54,8 +55,8 @@ class DiffractometerAdapter(AdapterBase):
         return "READY" if self._ho.is_ready() else "BUSY"
 
     def head_configuration(self) -> dict:
-        data = self._ho.get_head_configuration()
-        return data.dict() if data else {}
+        data = self._ho.get_head_type.name  # noqa: F841
+        return {}
 
     def set_chip_layout(
         self,
