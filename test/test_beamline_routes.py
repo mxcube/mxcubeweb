@@ -29,7 +29,7 @@ def test_beamline_get_all_attribute(client):
         "diffractometer.frontlightswitch",
         "diffractometer.kappa",
         "diffractometer.kappa_phi",
-        "diffractometer.phi",
+        "diffractometer.omega",
         "diffractometer.phix",
         "diffractometer.phiy",
         "diffractometer.phiz",

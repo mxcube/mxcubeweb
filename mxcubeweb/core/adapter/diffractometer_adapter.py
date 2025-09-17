@@ -41,8 +41,9 @@ class DiffractometerAdapter(AdapterBase):
         self.state_change(*args, **kwargs)
 
     def get_value(self) -> dict:
+        import pdb; pdb.set_trace()
         return {
-            "currentPhase": self._ho.get_current_phase(),
+            "currentPhase": self._ho.get_phase().name,
             "phaseList": self._ho.get_phase_list(),
         }
 

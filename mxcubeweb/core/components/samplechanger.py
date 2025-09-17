@@ -222,15 +222,14 @@ class SampleChanger(ComponentBase):
                     res
                     and HWR.beamline.queue_manager.centring_method
                     == queue_entry.CENTRING_METHOD.LOOP
-                    and not HWR.beamline.diffractometer.in_plate_mode()
+                    and not HWR.beamline.diffractometer.in_plate_mode
                     and not self.app.harvester.mount_from_harvester()
                 ):
-                    HWR.beamline.diffractometer.reject_centring()
+                    # HWR.beamline.sample_view.cancel_centring()
                     msg = "Starting autoloop centring ..."
                     logging.getLogger("MX3.HWR").info(msg)
-                    C3D_MODE = HWR.beamline.diffractometer.C3D_MODE
-                    HWR.beamline.diffractometer.start_centring_method(C3D_MODE)
-                elif HWR.beamline.diffractometer.in_plate_mode():
+                    HWR.beamline.sample_view.start_automatic_centring()
+                elif HWR.beamline.diffractometer.in_plate_mode:
                     msg = "Starting autoloop Focusing ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     sc.move_to_crystal_position(None)
@@ -372,7 +371,7 @@ class SampleChanger(ComponentBase):
             },
             "cmds": {"cmds": cmds},
             "msg": msg,
-            "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),
+            "plate_mode": HWR.beamline.diffractometer.in_plate_mode,
         }
 
     def sync_with_crims(self):

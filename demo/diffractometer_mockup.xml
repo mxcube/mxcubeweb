@@ -1,0 +1,24 @@
+<object class="DiffractometerMockup">
+  <username>Mock Diffractometer</username>
+  <motors>
+    <object href="/udiff_omega" role="omega"/>
+    <object href="/udiff_kappa" role="kappa"/>
+    <object href="/udiff_kappaphi" role="kappa_phi"/>
+    <object href="/udiff_phix" role="focus"/>
+    <object href="/udiff_phiy" role="phiy"/>
+    <object href="/udiff_phiz" role="phiz"/>
+    <object href="/udiff_sampx" role="sampx"/>
+    <object href="/udiff_sampy" role="sampy"/>
+    <object href="/udiff_backlight" role="backlight"/>
+    <object href="/udiff_frontlight" role="frontlight"/>
+  </motors>
+  <nstate_equipment>
+    <object href="/fast_shutter" role="fshutter"/>
+    <object href="/aperture" role="aperture"/>
+    <object href="/beamstop" role="beamstop"/>
+    <object href="/capillary" role="capillary"/>
+    <object href="/udiff_backlightswitch" role="backlightswitch"/>
+    <object href="/udiff_frontlightswitch" role="frontlightswitch"/>
+    <object href="/udiff_zoom" role="zoom"/>
+  </nstate_equipment>
+</object>

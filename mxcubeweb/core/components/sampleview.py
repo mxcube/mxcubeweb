@@ -148,7 +148,7 @@ class SampleView(ComponentBase):
             try:
                 if args[0]:
                     motors = args[1]["motors"]
-                    (x, y) = HWR.beamline.diffractometer.motor_positions_to_screen(
+                    (x, y) = HWR.beamline.sample_view.motor_positions_to_screen(
                         motors
                     )
                     self.centring_update_current_point(motors, x, y)
@@ -199,14 +199,14 @@ class SampleView(ComponentBase):
             motor_positions.pop("beam_y", None)
             motor_positions.pop("beam_x", None)
 
-            (x, y) = HWR.beamline.diffractometer.motor_positions_to_screen(
+            (x, y) = HWR.beamline.sample_view.motor_positions_to_screen(
                 motor_positions
             )
 
             self.centring_update_current_point(motor_positions, x, y)
 
             if self.app.AUTO_MOUNT_SAMPLE:
-                HWR.beamline.diffractometer.accept_centring()
+                HWR.beamline.sample_view.accept_centring()
 
     def init_signals(self):
         """
@@ -215,12 +215,12 @@ class SampleView(ComponentBase):
         """
         from mxcubeweb.routes import signals
 
-        dm = HWR.beamline.diffractometer
-        dm.connect("centringStarted", signals.centring_started)
-        dm.connect("centringSuccessful", self.wait_for_centring_finishes)
-        dm.connect("centringFailed", self.wait_for_centring_finishes)
-        dm.connect("centringAccepted", self.centring_add_current_point)
-        HWR.beamline.sample_view.connect("newGridResult", self.handle_grid_result)
+        sview = HWR.beamline.sample_view
+        sview.connect("centringStarted", signals.centring_started)
+        sview.connect("centringSuccessful", self.wait_for_centring_finishes)
+        sview.connect("centringFailed", self.wait_for_centring_finishes)
+        sview.connect("centringAccepted", self.centring_add_current_point)
+        sview.connect("newGridResult", self.handle_grid_result)
         self._click_limit = int(HWR.beamline.config.click_centring_num_clicks or 3)
 
     def set_image_size(self, width, height):
@@ -232,7 +232,7 @@ class SampleView(ComponentBase):
 
         if point:
             motor_positions = point.get_centred_position().as_dict()
-            HWR.beamline.diffractometer.move_motors(motor_positions)
+            HWR.beamline.diffractometer.set_value_motors(motor_positions)
 
         return point
 
@@ -347,10 +347,10 @@ class SampleView(ComponentBase):
         if sid:
             shape = HWR.beamline.sample_view.get_shape(sid)
             cp = shape.get_centred_position()
-            phi_value = round(float(cp.as_dict().get("phi", None)), 3)
-            if phi_value:
+            omega_value = round(float(cp.as_dict().get("omega", None)), 3)
+            if omega_value:
                 try:
-                    HWR.beamline.diffractometer.centringPhi.set_value(phi_value)
+                    HWR.beamline.diffractometer.omega.set_value(omega_value)
                 except Exception:
                     raise
 
@@ -360,13 +360,10 @@ class SampleView(ComponentBase):
             :statuscode: 200: no error
             :statuscode: 409: error
         """
-        if not HWR.beamline.diffractometer.current_centring_procedure:
+        if not HWR.beamline.sample_view.current_centring_procedure:
             msg = "Starting automatic centring"
             logging.getLogger("user_level_log").info(msg)
-
-            HWR.beamline.diffractometer.start_centring_method(
-                HWR.beamline.diffractometer.C3D_MODE
-            )
+            HWR.beamline.sample_view.start_auto_centring()
         else:
             msg = "Could not starting automatic centring, already centring."
             logging.getLogger("user_level_log").info(msg)
@@ -378,20 +375,15 @@ class SampleView(ComponentBase):
             :statuscode: 409: error
         """
         if HWR.beamline.diffractometer.is_ready():
-            if HWR.beamline.diffractometer.current_centring_procedure:
+            if HWR.beamline.sample_view.current_centring_procedure:
                 logging.getLogger("user_level_log").info(
                     "Aborting current centring ..."
                 )
-                HWR.beamline.diffractometer.cancel_centring_method(reject=True)
-            msg = "Centring using %s-click centring"
-            logging.getLogger("user_level_log").info(
-                msg, HWR.beamline.config.click_centring_num_clicks
-            )
-
-            HWR.beamline.diffractometer.start_centring_method(
-                HWR.beamline.diffractometer.CENTRING_METHOD_MANUAL
-            )
-
+                HWR.beamline.sample_view.cancel_centring_method(reject=True)
+            nb_clicks = HWR.beamline.config.click_centring_num_clicks
+            msg = f"Centring using {nb_clicks}-click centring"
+            logging.getLogger("user_level_log").info(msg, nb_clicks)
+            HWR.beamline.sample_view.start_manual_centring(nb_clicks)
             self.centring_reset_click_count()
         else:
             logging.getLogger("user_level_log").warning(
@@ -405,38 +397,37 @@ class SampleView(ComponentBase):
     def abort_centring(self):
         try:
             logging.getLogger("user_level_log").info("User canceled centring")
-            HWR.beamline.diffractometer.cancel_centring_method()
+            HWR.beamline.sample_view.cancel_centring()
             self.centring_remove_current_point()
         except Exception:
             logging.getLogger("MX3.HWR").warning("Canceling centring failed")
 
     def centring_handle_click(self, x, y):
-        if HWR.beamline.diffractometer.current_centring_procedure:
+        if HWR.beamline.sample_view.current_centring_procedure:
             try:
-                HWR.beamline.diffractometer.image_clicked(x, y, x, y)
+                HWR.beamline.sample_view.image_clicked(x, y, x, y)
                 self.centring_click()
             except Exception:
                 return {"clicksLeft": -1}
         else:
             if not self.centring_clicks_left():
                 self.centring_reset_click_count()
-                HWR.beamline.diffractometer.cancel_centring_method()
-
-                HWR.beamline.diffractometer.start_centring_method(
-                    HWR.beamline.diffractometer.CENTRING_METHOD_MANUAL
+                HWR.beamline.sample_view.cancel_centring_method()
+                HWR.beamline.sample_view.start_manual_centring(
+                    HWR.beamline.config.click_centring_num_clicks
                 )
 
         return {"clicksLeft": self.centring_clicks_left()}
 
     def reject_centring(self):
-        HWR.beamline.diffractometer.reject_centring()
+        HWR.beamline.sample_view.cancel_centring()
         self.centring_remove_current_point()
 
     def move_to_beam(self, x, y):
         msg = "Moving point x: %s, y: %s to beam" % (x, y)
         logging.getLogger("user_level_log").info(msg)
 
-        HWR.beamline.diffractometer.move_to_beam(x, y)
+        HWR.beamline.sample_view.move_to_beam(x, y)
 
     def set_centring_method(self, method):
         if method == CENTRING_METHOD.LOOP:

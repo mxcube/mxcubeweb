@@ -264,7 +264,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         """
         Accept the centring position.
         """
-        HWR.beamline.diffractometer.accept_centring()
+        HWR.beamline.sample_view.accept_centring()
         return Response(status=200)
 
     @bp.route("/movetobeam", methods=["PUT"])
