@@ -26,7 +26,14 @@
 }
 
 .input {
-  width: 8em;
+  width: 9em;
   height: 36px;
   appearance: auto !important;
+}
+
+.error {
+  color: var(--bs-form-invalid-color);
+  line-height: 1;
+  margin-top: 0.625rem;
+  margin-bottom: 0;
 }

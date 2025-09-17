@@ -7,7 +7,14 @@ import BeamlineAttributeForm from './BeamlineAttributeForm';
 
 function BeamlineAttribute(props) {
   const { attribute, format, precision = 1, suffix, onSave, onCancel } = props;
-  const { state, value = 0, step = 0.1, msg, readonly = false } = attribute;
+  const {
+    state,
+    value = 0,
+    step = 0.1,
+    limits,
+    msg,
+    readonly = false,
+  } = attribute;
 
   const isBusy = state === HW_STATE.BUSY;
 
@@ -49,6 +56,7 @@ function BeamlineAttribute(props) {
             isBusy={isBusy}
             step={step}
             precision={precision}
+            limits={limits}
             onSave={onSave}
             onCancel={onCancel}
           />
