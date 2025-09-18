@@ -2236,8 +2236,11 @@ class Queue(ComponentBase):
 
     def init_queue_settings(self):
         self.app.NUM_SNAPSHOTS = HWR.beamline.collect.get_property("num_snapshots", 4)
+        # self.app.AUTO_MOUNT_SAMPLE = HWR.beamline.collect.get_property(
+        #     "auto_mount_sample", False
+        # )
         self.app.AUTO_MOUNT_SAMPLE = HWR.beamline.collect.get_property(
-            "auto_mount_sample", False
+            "auto_mount_sample", True
         )
         self.app.AUTO_ADD_DIFFPLAN = HWR.beamline.collect.get_property(
             "auto_add_diff_plan", False

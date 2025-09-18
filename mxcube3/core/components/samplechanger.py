@@ -257,11 +257,11 @@ class SampleChanger(ComponentBase):
                     and self.app.CENTRING_METHOD == queue_entry.CENTRING_METHOD.LOOP
                     and not HWR.beamline.diffractometer.in_plate_mode()
                 ):
-                    # msg = "Starting autoloop centring ..."
-                    # logging.getLogger("MX3.HWR").info(msg)
-                    # C3D_MODE = HWR.beamline.diffractometer.C3D_MODE
-                    # HWR.beamline.diffractometer.start_centring_method(C3D_MODE)
-                    pass
+                    msg = "Starting autoloop centring ..."
+                    logging.getLogger("MX3.HWR").info(msg)
+                    C3D_MODE = HWR.beamline.diffractometer.C3D_MODE
+                    HWR.beamline.diffractometer.start_centring_method(C3D_MODE)
+                    # pass
 
             else:
                 msg = "Mounting sample: %s" % sample["sampleName"]
