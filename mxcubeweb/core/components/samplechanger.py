@@ -337,7 +337,12 @@ class SampleChanger(ComponentBase):
         try:
             return HWR.beamline.sample_changer_maintenance.get_global_state()
         except Exception:
-            return "OFFLINE", "OFFLINE", "OFFLINE"
+            logging.getLogger("MX3.HWR").exception("Could not get sc global state")
+            return (
+                {},
+                "SC maintenance controller doesn't response",
+                "Can't retrieve the global state",
+            )
 
     def get_initial_state(self):
         if HWR.beamline.sample_changer_maintenance is not None:
