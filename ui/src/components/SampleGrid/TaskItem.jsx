@@ -1,6 +1,4 @@
 /* eslint-disable react/destructuring-assignment */
-import './SampleGridTable.css';
-
 import React from 'react';
 import { Badge, OverlayTrigger, Popover } from 'react-bootstrap';
 
@@ -12,6 +10,7 @@ import {
   TASK_UNCOLLECTED,
 } from '../../constants';
 import { DataCollectionResultSummary } from '../DataCollectionResult/DataCollectionResultSummary';
+import styles from './TaskItem.module.css';
 
 export class TaskItem extends React.Component {
   static defaultProps = {
@@ -157,13 +156,13 @@ export class TaskItem extends React.Component {
     const task = this.props.taskData;
 
     return (
-      <div key={this.props.taskIndex} className=" ms-1 sample-grid-task-item">
+      <div key={this.props.taskIndex} className=" ms-1">
         <OverlayTrigger
           rootClose="true"
           placement="auto"
           overlay={
             <Popover
-              className="p-2"
+              className={`${styles.taskSummaryPopover} p-2`}
               id="taskSummaryPopover"
               title={<b>{this.title()}</b>}
             >

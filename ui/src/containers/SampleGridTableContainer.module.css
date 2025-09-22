@@ -1,0 +1,133 @@
+.sampleItemsCollapsible {
+  margin-bottom: 1%;
+  width: 100%;
+  margin-right: auto;
+}
+
+.sampleItemsCollapsibleHeader {
+  display: flex;
+  border: 1px solid #d1d6da !important;
+  border-radius: 3px 3px 0 0 !important;
+  padding: 4px;
+}
+
+.collapsibleArrowC {
+  float: right;
+  margin-right: 10px;
+  margin-left: auto;
+  margin-top: 4px;
+}
+
+.samplesGridTableContextMenuIcon {
+  position: relative;
+  bottom: 2px;
+  margin-right: 10px;
+  cursor: pointer;
+}
+
+.sampleItemsTable {
+  align-items: center;
+  margin-bottom: 0;
+  background: #e5e8eb6b;
+  width: 100%;
+}
+
+.sampleItemsTable > thead {
+  border-bottom: transparent !important;
+}
+
+.sampleItemsTable > :not(:first-child) {
+  border-top: 0;
+}
+
+.sampleItemsTable > tbody > tr > td {
+  padding: 0.3em !important;
+}
+
+.sampleItemsTableRowHeaderTh {
+  padding: 0 !important;
+  text-align: right;
+  width: 330px !important;
+}
+
+.sampleItemsCol {
+  max-width: 365px;
+}
+
+.samplesGridTableLi {
+  min-width: 283px;
+  max-width: 365px;
+  margin: auto auto 6px 0;
+  z-index: 2 !important;
+  list-style-type: none;
+  height: 70px;
+  border: 1px solid #9c9c9c !important;
+  border-radius: 3px !important;
+  cursor: context-menu;
+}
+
+.samplesGridTableLiManual {
+  margin-right: 5px;
+}
+
+.samplesGridTableItemTasks {
+  height: 26px;
+  padding-left: 19px;
+  display: grid;
+  margin-right: 25px;
+}
+
+.samplesGridTableItemTasks > .slick-list > .slick-track {
+  margin-left: 0 !important;
+}
+
+.samplesGridTableItemTasks > .slick-next::before,
+.samplesGridTableItemTasks > .slick-prev:before {
+  color: #9e9c9c;
+  opacity: 100%;
+}
+
+.samplesGridTableItemTasks > .slick-prev.slick-disabled:before,
+.samplesGridTableItemTasks > .slick-next.slick-disabled:before {
+  opacity: 25%;
+}
+
+.samplesGridTableItemTasks > .slick-prev {
+  left: 1px;
+}
+
+.samplesGridTableItemSelected {
+  border: 3px dashed #585555 !important;
+}
+
+.samplesGridTableItemToBeCollected {
+  background: #cee3f6 !important;
+}
+
+.samplesGridTableItemCollected {
+  background-color: #baf04e;
+}
+
+.spanContainerCode {
+  float: left;
+  padding-left: 10px;
+  margin-top: 6px;
+  max-width: 200px;
+  display: inline-flex;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.pickPuckCheckboxButton {
+  position: relative;
+  bottom: 3px;
+}
+
+.selectionRubberBand {
+  position: fixed;
+  background-color: rgba(1, 152, 255, 0.3);
+  border: 1px solid #0198e1;
+  display: none;
+  z-index: 10;
+}

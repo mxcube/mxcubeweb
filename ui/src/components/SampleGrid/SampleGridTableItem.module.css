@@ -1,0 +1,60 @@
+.samplesGridTableItemButton {
+  background: Transparent;
+}
+
+.samplesGridTableItem {
+  list-style-type: none !important;
+  padding: 0;
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05) !important;
+}
+
+.samplesGridTableItemNamePt {
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.samplesGridTableItemNameProteinAcronym {
+  font-size: small;
+  font-weight: bold;
+  pointer-events: auto;
+  max-width: 160px;
+  background: #5cb85c;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.samplesItemControlsContainer {
+  float: left;
+}
+
+.scLocation {
+  font-size: 11px;
+  float: right;
+  pointer-events: none;
+  position: absolute;
+  margin: 2px;
+  top: 0;
+  right: 0;
+}
+
+.newQueueOrder {
+  position: absolute;
+  right: 5%;
+  top: 38%;
+  margin-left: 10px;
+  font-size: 16px;
+  line-height: 16px;
+  text-align: center;
+  font-style: italic;
+  font-weight: bold;
+  color: #222;
+  opacity: 0.3;
+}
+
+.labelCustomSuccess {
+  color: #464646;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background-color: #d9edf7;
+  font-weight: bolder;
+}

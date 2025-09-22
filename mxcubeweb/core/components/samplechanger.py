@@ -289,14 +289,13 @@ class SampleChanger(ComponentBase):
         gevent.spawn(self.mount_sample_clean_up, sample)
         return self.get_sc_contents()
 
-    def unmount_sample(self, sample):
-        self.unmount_sample_clean_up(sample)
-        return self.get_sc_contents()
-
     def unmount_current(self):
-        location = HWR.beamline.sample_changer.get_loaded_sample().get_address()
-        self.unmount_sample_clean_up({"location": location})
-
+        sc_sample = HWR.beamline.sample_changer.get_loaded_sample()
+        if sc_sample:
+            location = sc_sample.get_address()
+            self.unmount_sample_clean_up({"location": location})
+        else:
+            self.unmount_sample_clean_up({"location": "Manual"})
         return self.get_sc_contents()
 
     def get_loaded_sample(self):

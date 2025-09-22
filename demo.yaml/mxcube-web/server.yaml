@@ -22,7 +22,6 @@ sso:
   CODE_CHALLANGE_METHOD: S256
 
 mxcube:
-  USE_EXTERNAL_STREAMER: true
   VIDEO_FORMAT: MPEG1
   VIDEO_STREAM_URL: ws://localhost:8000/ws
 

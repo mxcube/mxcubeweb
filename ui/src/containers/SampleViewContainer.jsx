@@ -1,6 +1,4 @@
 /* eslint-disable react/destructuring-assignment */
-import '../components/SampleView/SampleView.css';
-
 import { Component } from 'react';
 import { Col, Container, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';

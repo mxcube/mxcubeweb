@@ -281,18 +281,24 @@ export function SelectField({ propName, label, list, col1, col2 }) {
     <Field
       name={propName}
       component={(prop) => (
-        <Form.Group
-          as={Row}
-          controlId={prop.input.name}
-          validationState={prop.meta.error ? 'error' : null}
-        >
-          <Form.Label column sm={col1 || 6} style={{ textAlign: 'left' }}>
+        <Form.Group as={Row} controlId={prop.input.name}>
+          <Form.Label
+            column
+            sm={col1 || 6}
+            style={{
+              textAlign: 'left',
+              color: validation(prop.meta.error, prop.meta.warning),
+            }}
+          >
             {label}
           </Form.Label>
           <Col sm={col2 || 4}>
             <Form.Select
               value={prop.input.value}
               onChange={prop.input.onChange}
+              style={{
+                borderColor: validation(prop.meta.error, prop.meta.warning),
+              }}
               {...prop}
             >
               {list.map((val, i) => {
@@ -307,6 +313,24 @@ export function SelectField({ propName, label, list, col1, col2 }) {
               })}
             </Form.Select>
           </Col>
+          {prop.meta.error || prop.meta.warning ? (
+            <Col
+              sm={1}
+              style={{ top: '7px', left: '-10px', position: 'relative' }}
+            >
+              {errorIndicator(prop.meta.error, prop.meta.warning)}
+            </Col>
+          ) : (
+            <Col sm={1} />
+          )}
+
+          {prop.meta.error || prop.meta.warning ? (
+            <Row>
+              <Col sm={12}>
+                {errorLabel(prop.meta.error, prop.meta.warning)}
+              </Col>
+            </Row>
+          ) : null}
         </Form.Group>
       )}
     />

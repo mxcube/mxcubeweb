@@ -109,6 +109,27 @@ function validate(values, props) {
     errors.num_images = 'Omega out of limits';
   }
 
+  // processing fields are required if at least one of them is filled in
+  const processingFields = {
+    space_group: values.space_group,
+    cellA: values.cellA,
+    cellB: values.cellB,
+    cellC: values.cellC,
+    cellAlpha: values.cellAlpha,
+    cellBeta: values.cellBeta,
+    cellGamma: values.cellGamma,
+  };
+  const processingFieldsRequired = Object.values(processingFields).some(
+    (field) => field !== undefined && field !== '',
+  );
+  if (processingFieldsRequired) {
+    Object.entries(processingFields).forEach(([key, value]) => {
+      if (value === undefined || value === '') {
+        errors[key] = emptyField;
+      }
+    });
+  }
+
   return errors;
 }
 

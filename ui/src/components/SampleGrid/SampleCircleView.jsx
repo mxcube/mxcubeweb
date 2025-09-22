@@ -3,6 +3,7 @@ import { Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { filterAction } from '../../actions/sampleGrid';
+import styles from '../../containers/SampleFlexView.module.css';
 
 const CELL_ID = 1;
 
@@ -74,7 +75,7 @@ export default function SampleCircleView(props) {
             handleDisplayPuckCellContextMenu(e, puckMenuID, puckID)
           }
           fill={isPuckSelected ? '#015f9d' : '#cdced1'}
-          className="puck_cicle"
+          className={styles.puckCicle}
         >
           <circle
             cx={x}
@@ -103,7 +104,7 @@ export default function SampleCircleView(props) {
 
   return (
     <Col sm={6}>
-      <div className="div-svg-flex">
+      <div className={styles.divSvgFlex}>
         <svg height="100%" width="100%" viewBox="0 1 20 20">
           <circle fill="#6cb0f5" r="8" cx="10" cy="10" />
           {getSingleCellAsCircle(10, 10)}

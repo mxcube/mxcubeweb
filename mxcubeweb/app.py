@@ -25,7 +25,6 @@ from mxcubecore import (
 )
 
 from mxcubeweb.core.adapter.adapter_manager import HardwareObjectAdapterManager
-from mxcubeweb.core.components.beamline import Beamline
 from mxcubeweb.core.components.chat import Chat
 from mxcubeweb.core.components.component_base import import_component
 from mxcubeweb.core.components.harvester import Harvester
@@ -148,11 +147,10 @@ class MXCUBEApplication:
 
         MXCUBEApplication.mxcubecore.init()
 
-        if cfg.app.USE_EXTERNAL_STREAMER:
-            MXCUBEApplication.init_sample_video(
-                _format=cfg.app.VIDEO_FORMAT,
-                port=cfg.app.VIDEO_STREAM_PORT,
-            )
+        MXCUBEApplication.init_sample_video(
+            _format=cfg.app.VIDEO_FORMAT,
+            port=cfg.app.VIDEO_STREAM_PORT,
+        )
 
         MXCUBEApplication.init_logging(log_fpath, log_level, enabled_logger_list)
 
@@ -167,7 +165,6 @@ class MXCUBEApplication:
         )
         MXCUBEApplication.chat = Chat(MXCUBEApplication, {})
         MXCUBEApplication.sample_changer = SampleChanger(MXCUBEApplication, {})
-        MXCUBEApplication.beamline = Beamline(MXCUBEApplication, {})
         MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, {})
         MXCUBEApplication.workflow = Workflow(MXCUBEApplication, {})
         MXCUBEApplication.harvester = Harvester(MXCUBEApplication, {})
@@ -204,7 +201,6 @@ class MXCUBEApplication:
         MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
         MXCUBEApplication.sample_view.init_signals()
         MXCUBEApplication.sample_changer.init_signals()
-        MXCUBEApplication.beamline.init_signals()
         MXCUBEApplication.harvester.init_signals()
 
     @staticmethod

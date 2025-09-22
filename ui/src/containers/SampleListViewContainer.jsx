@@ -42,6 +42,7 @@ import {
 import loader from '../img/loader.gif';
 import QueueSettings from './QueueSettings';
 import SampleGridTableContainer from './SampleGridTableContainer';
+import styles from './SampleListViewContainer.module.css';
 
 export default function SampleListViewContainer() {
   const dispatch = useDispatch();
@@ -754,23 +755,23 @@ export default function SampleListViewContainer() {
     <Container
       fluid
       id="sampleGridContainer"
-      className="samples-grid-table-container mt-4"
+      className={`${styles.samplesGridTableContainer} mt-4`}
     >
       {loading ? (
         <div
-          className="center-in-box"
+          className={styles.centerInBox}
           style={{ zIndex: 1200, position: 'fixed' }}
         >
           <img
             src={loader}
-            className="img-centerd img-fluid"
+            className={`${styles.imgCentered} img-fluid`}
             width="150"
             alt=""
           />
         </div>
       ) : null}
-      <Card className="samples-grid-table-card">
-        <Card.Header className="samples-grid-table-card-header">
+      <Card className={styles.samplesGridTableCard}>
+        <Card.Header className={styles.samplesGridTableCardHeader}>
           <Row className="gap-2">
             <Col className="d-flex">
               {getSynchronizationDropDownList()}
@@ -840,7 +841,7 @@ export default function SampleListViewContainer() {
                   </Form.Label>
                   <Col sm="9">
                     <InputGroup
-                      className={filterIsUsed() ? 'filter-input-active' : ''}
+                      className={filterIsUsed() ? styles.filterInputActive : ''}
                     >
                       <Form.Control
                         style={{ borderColor: '#CCC' }}
@@ -875,7 +876,7 @@ export default function SampleListViewContainer() {
             </Col>
           </Row>
         </Card.Header>
-        <Card.Body className="samples-grid-table-card-body">
+        <Card.Body className={styles.samplesGridTableCardBody}>
           <SampleGridTableContainer
             addSelectedSamplesToQueue={addSelectedSamplesToQueue}
             addSamplesToQueue={handleAddSamplesToQueue}

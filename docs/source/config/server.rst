@@ -172,7 +172,6 @@ The section has the following syntax:
 
     mxcube:
       mode: <experiment mode>
-      USE_EXTERNAL_STREAMER: <boolean>
       VIDEO_FORMAT: <format name>
       VIDEO_STREAM_URL: <stream URL>
       VIDEO_STREAM_PORT: <stream port>
@@ -206,14 +205,7 @@ The following values are supported:
 
 Default mode is ``OSC``.
 
-``USE_EXTERNAL_STREAMER``
 ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Use an external process to stream the sample view video.
-When enabled, MXCuBE will invoke an appropriate hook on the camera hardware object to start the streamer.
-It is assumed that the camera object supports the external streamer feature.
-
-Default value is ``False``.
 
 ``VIDEO_FORMAT``
 ~~~~~~~~~~~~~~~~
@@ -226,18 +218,12 @@ Default format is ``MPEG1``.
 
 ``VIDEO_STREAM_URL``
 ~~~~~~~~~~~~~~~~~~~~
-
-The URL that is used by the UI to fetch the sample view video.
-When set, it will override the default video stream URL.
-This configuration is primarily useful with external streams,
-that provide video stream from custom URLs.
+The URL from which the video stream is served. This URL is used by the front-end to
+connect to the video stream.
 
 ``VIDEO_STREAM_PORT``
 ~~~~~~~~~~~~~~~~~~~~~
-
-This configuration is used when ``USE_EXTERNAL_STREAMER`` flag is enabled.
-The specified value is passed on to the camera hardware object,
-when invoking the start stream hook.
+Port from which the video stream is served
 
 ``SESSION_REFRESH_INTERVAL``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

@@ -129,3 +129,7 @@ input[type='color']:focus,
 .nowrap-style {
   white-space: nowrap;
 }
+
+.btn-link:not([data-default-styles]) {
+  color: #333 !important;
+}

@@ -1,6 +1,4 @@
 /* eslint-disable react/destructuring-assignment */
-import './SampleGridTable.css';
-
 import cx from 'classnames';
 import React from 'react';
 import {
@@ -14,7 +12,9 @@ import { BsCheck2Square, BsSquare } from 'react-icons/bs';
 
 import CopyToClipboard from '../../components/CopyToClipboard/CopyToClipboard';
 import { isCollected } from '../../constants';
+import containerStyles from '../../containers/SampleGridTableContainer.module.css';
 import TooltipTrigger from '../TooltipTrigger';
+import styles from './SampleGridTableItem.module.css';
 
 export class SampleGridTableItem extends React.Component {
   static defaultProps = {
@@ -43,7 +43,7 @@ export class SampleGridTableItem extends React.Component {
 
   itemControls() {
     return (
-      <div className="samples-item-controls-container">
+      <div className={styles.samplesItemControlsContainer}>
         <TooltipTrigger
           id="pick-sample"
           placement="auto"
@@ -52,7 +52,7 @@ export class SampleGridTableItem extends React.Component {
           <Button
             variant="link"
             disabled={this.props.current && this.props.picked}
-            className="samples-grid-table-item-button"
+            className={styles.samplesGridTableItemButton}
             onClick={(e) => {
               this.pickButtonOnClick(e);
             }}
@@ -74,7 +74,7 @@ export class SampleGridTableItem extends React.Component {
     const showId = this.props.picked ? '' : 'none';
     return (
       <div>
-        <div style={{ display: showId }} className="new-queue-order">
+        <div style={{ display: showId }} className={styles.newQueueOrder}>
           {this.props.queueOrder}
         </div>
       </div>
@@ -147,13 +147,15 @@ export class SampleGridTableItem extends React.Component {
   }
 
   render() {
-    const classes = cx('samples-grid-table-item', {
-      'samples-grid-table-item-to-be-collected': this.props.picked,
-      'samples-grid-table-item-collected': isCollected(this.props.sampleData),
+    const classes = cx(styles.SampleGridTableItem, {
+      [containerStyles.samplesGridTableItemToBeCollected]: this.props.picked,
+      [containerStyles.samplesGridTableItemCollected]: isCollected(
+        this.props.sampleData,
+      ),
     });
 
-    const scLocationClasses = cx('sc_location', 'label', 'label-default', {
-      'label-custom-success': this.props.sampleData.loadable === true,
+    const scLocationClasses = cx(styles.scLocation, 'label', 'label-default', {
+      [styles.labelCustomSuccess]: this.props.sampleData.loadable === true,
     });
 
     const limsLink = this.props.sampleData.limsLink || '#';
@@ -167,7 +169,7 @@ export class SampleGridTableItem extends React.Component {
         onClick={this.handleItemClick}
       >
         <ListGroup.Item className={classes}>
-          <div className="samples-grid-table-item-top d-flex">
+          <div className="d-flex">
             {this.itemControls()}
             <div>
               <OverlayTrigger
@@ -176,7 +178,7 @@ export class SampleGridTableItem extends React.Component {
                   <Popover id={this.sampleDisplayName()}>
                     <Popover.Header className="d-flex">
                       <div>
-                        <b className="samples-grid-table-item-name-pt">
+                        <b className={styles.samplesGridTableItemNamePt}>
                           {this.sampleDisplayName()}
                         </b>
                       </div>
@@ -193,7 +195,7 @@ export class SampleGridTableItem extends React.Component {
                   ref={(ref) => {
                     this.pacronym = ref; // eslint-disable-line react/no-unused-class-component-methods
                   }}
-                  className="samples-grid-table-item-name-protein-acronym ms-1 mt-2"
+                  className={`${styles.samplesGridTableItemNameProteinAcronym} ms-1 mt-2`}
                   data-type="text"
                   data-pk="1"
                   data-url="/post"

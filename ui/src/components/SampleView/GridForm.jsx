@@ -1,12 +1,11 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import './SampleView.css';
-
 import { useEffect, useRef, useState } from 'react';
 import { Button, Col, Form, Row, Table } from 'react-bootstrap';
 import Draggable from 'react-draggable';
 import { useSelector } from 'react-redux';
 
 import TooltipTrigger from '../TooltipTrigger';
+import styles from './GridForm.module.css';
 
 function handleContextMenu(e) {
   e.stopPropagation();
@@ -208,9 +207,9 @@ export default function GridForm(props) {
       onDrag={(_e, data) => setPosition({ x: data.x, y: data.y })}
       cancel="form"
     >
-      <Row className="gridform" ref={draggableRef}>
+      <Row className={styles.gridForm} ref={draggableRef}>
         <Col xs={8}>
-          <Table striped hover responsive>
+          <Table striped hover responsive className={styles.gridTable}>
             <thead>
               <tr>
                 <th>Name</th>
