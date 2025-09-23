@@ -51,10 +51,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
         HWR.beamline.sample_changer.select(loc)
         return app.sample_changer.get_sc_contents()
 
+    @bp.route("/scan/", methods=["GET"])
     @bp.route("/scan/<loc>", methods=["GET"])
     @server.require_control
     @server.restrict
-    def scan_location(loc):
+    def scan_location(loc=None):
         # do a recursive scan
         HWR.beamline.sample_changer.scan(loc, True)
         return app.sample_changer.get_sc_contents()
