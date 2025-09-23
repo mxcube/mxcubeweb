@@ -135,6 +135,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def get_initial_state():
         return jsonify(app.sample_changer.get_initial_state())
 
+    @bp.route("/send_command/<cmdparts>", methods=["GET"])
     @bp.route("/send_command/<cmdparts>/<args>", methods=["GET"])
     @server.require_control
     @server.restrict
