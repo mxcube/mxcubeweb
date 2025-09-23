@@ -62,11 +62,9 @@ import { store } from './store';
 const { dispatch } = store;
 
 class ServerIO {
-  constructor() {
-    this.hwrSocket = null;
-    this.loggingSocket = null;
-    this.connectionLostTimeout = undefined;
-  }
+  hwrSocket = null;
+  loggingSocket = null;
+  connectionLostTimeout;
 
   listen() {
     clearTimeout(this.connectionLostTimeout);
