@@ -78,6 +78,10 @@ class BeamlineActionInputModel(BaseModel):
     parameters: dict | list
 
 
+class ChipCalibrationInputModel(BaseModel):
+    data: dict
+
+
 class FrontEndStackTraceModel(BaseModel):
     stack: str
     state: dict
