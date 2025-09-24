@@ -1,7 +1,5 @@
-import { useSelector } from 'react-redux';
-
-export function DataCollectionResultSummary() {
-  const taskData = useSelector((state) => state.general.dialogData);
+export function DataCollectionResultSummary(props) {
+  const { taskData } = props;
 
   if (!taskData?.parameters) {
     return <div>No data available</div>;
