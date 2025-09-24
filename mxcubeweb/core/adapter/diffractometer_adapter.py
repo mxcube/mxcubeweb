@@ -5,9 +5,15 @@ from mxcubecore.HardwareObjects.abstract import AbstractDiffractometer
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
+from mxcubeweb.core.models.adaptermodels import ChipCalibrationInputModel
 
 resource_handler_config = ResourceHandlerConfigModel(
-    commands=["set_chip_layout", "set_phase", "use_position_for_callibration", "ir_auto_focus"],
+    commands=[
+        "set_chip_layout",
+        "set_phase",
+        "use_position_for_calibration",
+        "ir_auto_focus",
+    ],
     attributes=["data", "get_value", "head_configuration"],
 )
 
@@ -69,8 +75,8 @@ class DiffractometerAdapter(AdapterBase):
         self._ho.set_phase(phase)
         return True
 
-    def use_position_for_callibration(self, data:dict) -> bool:
-        return self._ho.use_position_for_callibration(data)
+    def use_position_for_calibration(self, data: ChipCalibrationInputModel) -> bool:
+        return self._ho.use_position_for_calibration(data.data)
 
     def ir_auto_focus(self) -> bool:
         return self._ho.ir_auto_focus()
