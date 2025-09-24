@@ -91,6 +91,22 @@ sample_view_motors:
       step: 0.1
       precision: 3
       suffix: mm
+    -
+      label: SSX Horizontal
+      attribute: diffractometer.phix
+      role: sample_horizontal
+      step: 0.1
+      precision: 3
+      suffix: mm
+    -
+      label: SSX Vertical
+      attribute: diffractometer.phiy
+      role: sample_vertical
+      step: 0.1
+      precision: 3
+      suffix: mm
+
+
 
 sample_view_video_controls:
   id: sample_view_video_controls

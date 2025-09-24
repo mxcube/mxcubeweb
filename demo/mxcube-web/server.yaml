@@ -69,7 +69,8 @@ mxcube:
   MXCUBE_STARTS_VIDEO_STREAM: true
 
   # Mode, SSX-CHIP, SSX-INJECTOR, OSC
-  mode: OSC
+  #mode: OSC
+  mode: SSX-CHIP
 
   # This is used to determine whether we can get samples from the sample changer
   # if false, Only LIMS samples will be available to fetch for the sample list

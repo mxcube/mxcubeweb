@@ -1,14 +1,16 @@
 {
-    "current": "SMALL_FOIL",
+    "current": "OXFORD_CHIP",
     "available": {
         "OXFORD_CHIP": {
-            "head_type": "SSX",
-            "holder_type": "known_geometry",
+            "head_type": "CHIP",
+            "holder_type": "KNOWN_GEOMETRY",
             "holder_brand": "Oxford Chip",
             "holder_size": [
                 30.0,
                 30.0
             ],
+            "number_of_runs": 3,
+            "offset": 0.10,
             "sections": [
                 {
                     "section_offset": [
@@ -16,12 +18,12 @@
                         0
                     ],
                     "block_size": [
-                        30.0,
-                        30.0
-                    ],
-                    "block_spacing": [
                         15.0,
                         15.0
+                    ],
+                    "block_spacing": [
+                        10.0,
+                        10.0
                     ],
                     "block_shape": "RECTANGULAR",
                     "number_of_rows": 8,
@@ -71,83 +73,118 @@
             }
         },
         "SMALL_FOIL": {
-            "head_type": "SSX",
-            "holder_type": "free_geometry",
+            "head_type": "CHIP",
+            "holder_type": "FREE_GEOMETRY",
             "holder_brand": "FOIL",
             "holder_size": [
                 100.0,
                 100.0
             ],
+            "number_of_runs": 3,
+            "offset": 0.10,            
             "sections": [],
             "calibration_data": {
                 "top_left": [
-                    18.0,
+                    17.5,
                     15.8,
-                    -0.17
+                    -0.2
                 ],
                 "top_right": [
-                    22.0,
+                    21.5,
                     15.8,
-                    -0.17
+                    -0.2
                 ],
                 "bottom_left": [
-                    18.0,
+                    17.5,
                     24.0,
-                    -0.17
+                    -0.2
                 ]
             }
         },
-        "BIG_FOIL": {
-            "head_type": "SSX",
-            "holder_type": "free_geometry",
+        "MID_FOIL": {
+            "head_type": "CHIP",
+            "holder_type": "FREE_GEOMETRY",
             "holder_brand": "FOIL",
             "holder_size": [
                 100.0,
                 100.0
             ],
+            "number_of_runs": 3,
+            "offset": 0.10,            
+            "sections": [],
+            "calibration_data": {
+                "top_left": [
+                    15.5,
+                    10.5,
+                    -0.2
+                ],
+                "top_right": [
+                    23.5,
+                    10.5,
+                    -0.2
+                ],
+                "bottom_left": [
+                    15.5,
+                    22.5,
+                    -0.2
+                ]
+            }
+        },
+        "LARGE_FOIL": {
+            "head_type": "CHIP",
+            "holder_type": "FREE_GEOMETRY",
+            "holder_brand": "FOIL",
+            "holder_size": [
+                100.0,
+                100.0
+            ],
+            "number_of_runs": 3,
+            "offset": 0.10,            
             "sections": [],
             "calibration_data": {
                 "top_left": [
                     7.0,
                     3.0,
-                    0.08
+                    0.07
                 ],
                 "top_right": [
                     32.0,
                     3.0,
-                    0.08
+                    0.07
                 ],
                 "bottom_left": [
                     7.0,
                     28.0,
-                    0.08
+                    0.07
                 ]
             }
         },
-        "CUSTOM_FOIL": {
-            "head_type": "SSX",
-            "holder_type": "free_geometry",
+        "SERIAL_X": {
+            "head_type": "CHIP",
+            "holder_type": "FREE_GEOMETRY",
             "holder_brand": "FOIL",
             "holder_size": [
                 100.0,
                 100.0
             ],
+            "number_of_runs": 3,
+            "offset": 0.10,            
             "sections": [],
             "calibration_data": {
                 "top_left": [
-                    15.0,
-                    16.0,
-                    -0.008
+                    3.55,
+                    7.0,
+                    -1.1
                 ],
                 "top_right": [
-                    23.0,
-                    16.0,
-                    -0.008
+                    34.5,
+                    7.0,
+                    -1.1
                 ],
                 "bottom_left": [
-                    15.0,
-                    24.0,
-                    -0.008
+                    3.55,
+                    10.5,
+                    -1.1
                 ]
             }
         }
