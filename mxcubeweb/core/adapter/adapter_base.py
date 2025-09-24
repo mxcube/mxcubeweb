@@ -291,24 +291,30 @@ class AdapterBase:
     def attributes(self):
         _attributes = {}
 
-        for attribute_name in self.ATTRIBUTES:
-            attr = getattr(self, attribute_name, None)
+        rh = ResourceHandlerFactory.get_handler(self.__class__.__name__.lower())
 
-            if attr:
-                model = self._model_from_typehint(attr)
-                value = attr()
+        if rh:
+            for export in rh.attributes:
+                if export["attr"] in ["data", "get_value"]:
+                    continue
 
-                try:
-                    model["return"].validate({"return": value})
-                except ValidationError:
-                    logging.getLogger("MX3.HWR").exception(
-                        "Return value of"
-                        f" {self._name}.{attribute_name} is of wrong"
-                        " type"
-                    )
-                    _attributes[attribute_name] = {}
-                else:
-                    _attributes[attribute_name] = attr()
+                attr = getattr(self, export["attr"], None)
+
+                if attr:
+                    model = self._model_from_typehint(attr)
+                    value = attr()
+
+                    try:
+                        model["return"].validate({"return": value})
+                    except ValidationError:
+                        logging.getLogger("MX3.HWR").exception(
+                            "Return value of"
+                            f" {self._name}.{export['attr']} is of wrong"
+                            " type"
+                        )
+                        _attributes[export["attr"]] = {}
+                    else:
+                        _attributes[export["attr"]] = attr()
 
         return _attributes
 
