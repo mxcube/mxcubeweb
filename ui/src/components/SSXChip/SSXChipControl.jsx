@@ -1,6 +1,8 @@
-import React from 'react';
 import 'fabric';
 import './ssxchipcontrol.css';
+
+import React from 'react';
+
 import SSXChip from './SSXChip.jsx';
 
 export default function SSXChipControl(props) {

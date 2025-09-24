@@ -1,15 +1,16 @@
 /* eslint-disable react/jsx-key */
-/* eslint-disable react/no-unused-state */
+
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import React, { useState, useEffect, useRef } from 'react';
-import { Row, Col, Form, Button, Card, Container } from 'react-bootstrap';
-import { Menu, Item, Separator, contextMenu } from 'react-contexify';
 import 'fabric';
 import './ssxchipcontrol.css';
 
+import React, { useEffect, useRef, useState } from 'react';
+import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
+import { contextMenu, Item, Menu, Separator } from 'react-contexify';
+
 import MotorInput from '../MotorInput/MotorInput';
 
-const { fabric } = window;
+const { fabric } = globalThis;
 
 function _GridData(fabricObject) {
   return {
@@ -405,7 +406,6 @@ export default function SSXChip(props) {
   const freeFormCanvasRef = useRef(null);
   const currentChipLayout = props.chipLayoutList[props.currentLayoutName];
 
-
   debugger;
 
   const [chipState, setChipState] = useState({
@@ -420,7 +420,7 @@ export default function SSXChip(props) {
     bottom_left_z: currentChipLayout.calibration_data.bottom_left[2],
     bottom_right_x: currentChipLayout.calibration_data.bottom_right[0],
     bottom_right_y: currentChipLayout.calibration_data.bottom_right[1],
-    bottom_right_z: currentChipLayout.calibration_data.bottom_right[2],    
+    bottom_right_z: currentChipLayout.calibration_data.bottom_right[2],
     currentLayoutName: props.currentLayoutName,
   });
 
@@ -440,7 +440,7 @@ export default function SSXChip(props) {
   });
 
   function setCalibratedPosition(name) {
-    debugger;	
+    debugger;
     setCalibratedPositions((prevState) => ({
       ...prevState,
       [name]: [
@@ -480,7 +480,6 @@ export default function SSXChip(props) {
   function handleSubmit(key, arg, e) {
     switch (key) {
       case 'move_to': {
-        debugger;
         props.setAttribute(
           props.sampleMotorHorizontal.name,
           chipState[`${arg}_x`],
@@ -490,8 +489,8 @@ export default function SSXChip(props) {
           chipState[`${arg}_y`],
         );
         props.setAttribute(props.focusMotor.name, chipState[`${arg}_z`]);
+        break;
       }
-
       case 'top_left': {
         setActivePosition(key);
         break;
@@ -516,7 +515,6 @@ export default function SSXChip(props) {
         break;
       }
       case 'clear': {
-        debugger;
         setCalibratedPositions({
           ...calibratedPositions,
           [activePosition]: [],
@@ -525,13 +523,15 @@ export default function SSXChip(props) {
       }
       case 'clear_all': {
         setCalibratedPositions({ ...initialCalibratedPos });
+        break;
       }
       case 'set_layout': {
         const currentChipLayout = props.chipLayoutList[e.target.value];
 
         setChipState({
           top_left_x: currentChipLayout.calibration_data.top_left[0],
-          top_left_y: currentChipLayout.calibration_data.todiffractometer.focusp_left[1],
+          top_left_y:
+            currentChipLayout.calibration_data.todiffractometer.focusp_left[1],
           top_left_z: currentChipLayout.calibration_data.top_left[1],
           top_right_x: currentChipLayout.calibration_data.top_right[0],
           top_right_y: currentChipLayout.calibration_data.top_right[0],
@@ -552,17 +552,13 @@ export default function SSXChip(props) {
         props.sendExecuteCommand(
           'diffractometer',
           'use_position_for_callibration',
-          JSON.stringify({data: calibratedPositions}),
+          JSON.stringify({ data: calibratedPositions }),
         );
 
         break;
       }
       case 'ir_auto_focus': {
-        props.sendExecuteCommand(
-          'diffractometer',
-          'ir_auto_focus',
-          {},
-        );
+        props.sendExecuteCommand('diffractometer', 'ir_auto_focus', {});
 
         break;
       }
