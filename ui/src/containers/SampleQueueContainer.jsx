@@ -4,9 +4,11 @@ import { Nav } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import { executeCommand, setAttribute } from '../actions/beamline';
 import { showDialog } from '../actions/general';
 import { addTask } from '../actions/queue';
 import { showList } from '../actions/queueGUI';
+import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
 import { showTaskForm } from '../actions/taskForm';
 import { showWorkflowParametersDialog } from '../actions/workflow';
 import UserMessage from '../components/Notify/UserMessage';
@@ -16,9 +18,6 @@ import TodoTree from '../components/SampleQueue/TodoTree';
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
 import loader from '../img/loader.gif';
 import styles from './SampleQueueContainer.module.css';
-
-import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
-import { executeCommand, setAttribute } from '../actions/beamline';
 
 class SampleQueueContainer extends React.Component {
   constructor(props) {
@@ -152,14 +151,14 @@ class SampleQueueContainer extends React.Component {
             defaultParameters={this.props.defaultParameters}
             groupFolder={this.props.groupFolder}
             hardwareObjects={this.props.hardwareObjects}
-            uiproperties={this.props.uiproperties.sample_view}
+            uiproperties={this.props.uiproperties.sample_view_motors}
             sampleViewActions={this.props.sampleViewActions}
             grids={grids}
             selectedGrids={selectedGrids}
             setAttribute={this.props.setAttribute}
             sendExecuteCommand={this.props.sendExecuteCommand}
           />
-	  {visibleList !== 'chip' && (
+          {visibleList !== 'chip' && (
             <div className={styles.queueMessages}>
               <div className={styles.queueMessagesTitle}>
                 <span
