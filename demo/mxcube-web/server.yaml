@@ -65,7 +65,8 @@ mxcube:
   # At which port to stream from
   VIDEO_STREAM_PORT: 8000
   # Mode, SSX-CHIP, SSX-INJECTOR, OSC
-  mode: OSC
+  #mode: OSC
+  mode: SSX-CHIP
 
   USE_GET_SAMPLES_FROM_SC: true
   # This is used to determine whether we can get samples from the sample changer
