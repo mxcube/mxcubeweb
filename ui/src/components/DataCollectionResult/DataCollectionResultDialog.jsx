@@ -34,7 +34,7 @@ export function DataCollectionResultDialog() {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <DataCollectionResultSummary />
+        <DataCollectionResultSummary taskData={taskData} />
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleHideDialog}>Close</Button>
