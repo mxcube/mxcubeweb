@@ -589,7 +589,7 @@ export default function SampleGridTableContainer(props) {
                   picked={picked}
                 >
                   <Slider
-                    className={styles.sampleGridTableItemTasks}
+                    className={styles.samplesGridTableItemTasks}
                     {...SETTINGS}
                   >
                     {sample.tasks.map((taskData, i) => (

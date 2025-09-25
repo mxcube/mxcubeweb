@@ -147,7 +147,7 @@ export class SampleGridTableItem extends React.Component {
   }
 
   render() {
-    const classes = cx(styles.SampleGridTableItem, {
+    const classes = cx(styles.samplesGridTableItem, {
       [containerStyles.samplesGridTableItemToBeCollected]: this.props.picked,
       [containerStyles.samplesGridTableItemCollected]: isCollected(
         this.props.sampleData,
