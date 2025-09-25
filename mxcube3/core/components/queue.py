@@ -2273,6 +2273,7 @@ class Queue(ComponentBase):
 
         except Exception as ex:
             logging.getLogger("MX3.HWR").debug("[QUEUE] exception happened during Queue starting, e: ",ex)
+            print(f"==== queue_start: {ex}")
             signals.queue_execution_failed(ex)
         else:
             logging.getLogger("MX3.HWR").info("[QUEUE] Queue started")
