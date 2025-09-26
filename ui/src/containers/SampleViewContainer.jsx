@@ -55,7 +55,6 @@ class SampleViewContainer extends Component {
     if (!('sample_view_motors' in uiproperties)) {
       return null;
     }
-    const { sourceScale, imageRatio } = this.props.sampleViewState;
     const { currentSampleID } = this.props;
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
@@ -191,21 +190,11 @@ class SampleViewContainer extends Component {
               />
               <SampleImage
                 {...this.props.sampleViewState}
-                uiproperties={uiproperties}
-                hardwareObjects={this.props.hardwareObjects}
-                imageRatio={imageRatio * sourceScale}
-                contextMenuVisible={this.props.contextMenu.show}
-                shapes={this.props.shapes}
                 points={points}
                 twoDPoints={twoDPoints}
                 lines={lines}
                 grids={grids}
                 selectedGrids={selectedGrids}
-                cellCounting={this.props.cellCounting}
-                busy={this.props.queueState === QUEUE_RUNNING}
-                setAttribute={this.props.setAttribute}
-                displayImage={this.props.displayImage}
-                meshResultFormat={this.props.meshResultFormat}
               />
             </DefaultErrorBoundary>
           </Col>
@@ -230,17 +219,13 @@ function mapStateToProps(state) {
     sampleList: state.sampleGrid.sampleList,
     currentSampleID: state.queue.currentSampleID,
     groupFolder: state.queue.groupFolder,
-    queueState: state.queue.queueStatus,
     sampleViewState: state.sampleview,
-    contextMenu: state.contextMenu,
     hardwareObjects: state.beamline.hardwareObjects,
     defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,
-    cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
     remoteAccess: state.remoteAccess,
     uiproperties: state.uiproperties,
     mode: state.general.mode,
-    meshResultFormat: state.general.meshResultFormat,
     sampleChangerContents: state.sampleChanger.contents,
     sampleChangerState: state.sampleChanger.state,
     global_state: state.sampleChangerMaintenance.global_state,
@@ -259,7 +244,6 @@ function mapDispatchToProps(dispatch) {
     showForm: bindActionCreators(showTaskForm, dispatch),
     showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
-    displayImage: bindActionCreators(displayImage, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
     logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),
 
