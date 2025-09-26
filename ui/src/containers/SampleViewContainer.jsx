@@ -19,7 +19,6 @@ import {
   setPlate,
 } from '../actions/sampleChanger';
 import { syncWithCrims } from '../actions/sampleGrid';
-import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
 import { showTaskForm } from '../actions/taskForm';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
@@ -191,7 +190,6 @@ class SampleViewContainer extends Component {
                 getControlAvailability={this.getControlAvailability}
               />
               <SampleImage
-                sampleViewActions={this.props.sampleViewActions}
                 {...this.props.sampleViewState}
                 uiproperties={uiproperties}
                 hardwareObjects={this.props.hardwareObjects}
@@ -258,7 +256,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
-    sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
     showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),

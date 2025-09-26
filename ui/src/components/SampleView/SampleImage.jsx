@@ -3,7 +3,23 @@
 import 'fabric';
 
 import React from 'react';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
+import {
+  abortCentring,
+  addDistancePoint,
+  addShape,
+  deleteShape,
+  moveToBeam,
+  recordCentringClick,
+  rotateToShape,
+  setImageRatio,
+  setOverlay,
+  showContextMenu,
+  toggleDrawGrid,
+  updateShapes,
+} from '../../actions/sampleview.js';
 import { HW_STATE } from '../../constants';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
@@ -23,7 +39,7 @@ const { fabric } = globalThis;
 fabric.Group.prototype.hasControls = false;
 fabric.Group.prototype.hasBorders = false;
 
-export default class SampleImage extends React.Component {
+class SampleImage extends React.Component {
   constructor(props) {
     super(props);
     this.onMouseUp = this.onMouseUp.bind(this);
@@ -190,7 +206,7 @@ export default class SampleImage extends React.Component {
 
   setImageRatio() {
     const { clientWidth } = document.querySelector('#outsideWrapper');
-    this.props.sampleViewActions.setImageRatio(clientWidth);
+    this.props.setImageRatio(clientWidth);
   }
 
   setVCellSpacing(e) {
@@ -208,7 +224,7 @@ export default class SampleImage extends React.Component {
         gridData.cellHSpace,
         value,
       );
-      this.props.sampleViewActions.updateShapes([gd]);
+      this.props.updateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(
         null,
@@ -234,7 +250,7 @@ export default class SampleImage extends React.Component {
         value,
         gridData.cellVSpace,
       );
-      this.props.sampleViewActions.updateShapes([gd]);
+      this.props.updateShapes([gd]);
     } else if (this.props.drawGrid) {
       this.drawGridPlugin.setCurrentCellSpace(
         value,
@@ -253,7 +269,7 @@ export default class SampleImage extends React.Component {
     }
 
     this.drawGridPlugin.setGridOverlay(value);
-    this.props.sampleViewActions.setOverlay(value);
+    this.props.setOverlay(value);
     this.drawGridPlugin.repaint(this.canvas);
     this.renderSampleView();
   }
@@ -295,11 +311,11 @@ export default class SampleImage extends React.Component {
 
       if (this._keyPressed === 'Escape') {
         if (this.props.clickCentring) {
-          this.props.sampleViewActions.abortCentring();
+          this.props.abortCentring();
         }
 
         if (this.props.drawGrid) {
-          this.props.sampleViewActions.toggleDrawGrid();
+          this.props.toggleDrawGrid();
         }
       }
     }
@@ -307,11 +323,11 @@ export default class SampleImage extends React.Component {
 
   removeShapes() {
     if (this.props.clickCentring) {
-      this.props.sampleViewActions.abortCentring();
+      this.props.abortCentring();
     }
 
     this.props.selectedShapes.forEach((shapeID) => {
-      this.props.sampleViewActions.deleteShape(shapeID);
+      this.props.deleteShape(shapeID);
     });
   }
 
@@ -320,12 +336,11 @@ export default class SampleImage extends React.Component {
   }
 
   goToBeam(e) {
-    const { sampleViewActions, imageRatio } = this.props;
-    const { moveToBeam } = sampleViewActions;
+    const { imageRatio } = this.props;
 
     // Only move to beam if the click was done directly on the canvas.
     if (e.target.tagName === 'CANVAS' && e.shiftKey) {
-      moveToBeam(e.layerX / imageRatio, e.layerY / imageRatio);
+      this.props.moveToBeam(e.layerX / imageRatio, e.layerY / imageRatio);
     }
   }
 
@@ -351,8 +366,6 @@ export default class SampleImage extends React.Component {
 
   rightClick(e) {
     e.preventDefault();
-
-    const { showContextMenu } = this.props.sampleViewActions;
 
     const group = this.canvas.getActiveObject();
     const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
@@ -487,7 +500,7 @@ export default class SampleImage extends React.Component {
     }
 
     const { imageRatio } = this.props;
-    showContextMenu(
+    this.props.showContextMenu(
       true,
       ctxMenuObj,
       e.pageX,
@@ -502,23 +515,17 @@ export default class SampleImage extends React.Component {
     let objectFound = false;
     this.drawGridPlugin.clearMouseOverGridLabel(this.canvas);
 
-    const {
-      sampleViewActions,
-      clickCentring,
-      measureDistance,
-      imageRatio,
-      drawGrid,
-    } = this.props;
+    const { clickCentring, measureDistance, imageRatio, drawGrid } = this.props;
 
     if (clickCentring) {
       this.canvas.selection = false; // Disable group selection
-      sampleViewActions.recordCentringClick(
+      this.props.recordCentringClick(
         option.e.layerX / imageRatio,
         option.e.layerY / imageRatio,
       );
     } else if (measureDistance) {
       this.canvas.selection = false; // Disable group selection
-      sampleViewActions.addDistancePoint(
+      this.props.addDistancePoint(
         option.e.layerX / imageRatio,
         option.e.layerY / imageRatio,
       );
@@ -647,7 +654,7 @@ export default class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
-      this.props.sampleViewActions.updateShapes(updatedShapes);
+      this.props.updateShapes(updatedShapes);
     }
   }
 
@@ -666,7 +673,7 @@ export default class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
-      this.props.sampleViewActions.updateShapes(updatedShapes);
+      this.props.updateShapes(updatedShapes);
     }
   }
 
@@ -702,7 +709,7 @@ export default class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
-      this.props.sampleViewActions.updateShapes(updatedShapes);
+      this.props.updateShapes(updatedShapes);
     }
   }
 
@@ -719,7 +726,7 @@ export default class SampleImage extends React.Component {
     const gd = this.drawGridPlugin.saveGrid(
       this.drawGridPlugin.currentGridData(),
     );
-    this.props.sampleViewActions.addShape({ t: 'G', ...gd });
+    this.props.addShape({ t: 'G', ...gd });
     this.drawGridPlugin.reset();
   }
 
@@ -734,7 +741,7 @@ export default class SampleImage extends React.Component {
       grid.user_state = 'HIDDEN';
     }
 
-    this.props.sampleViewActions.updateShapes([grid]);
+    this.props.updateShapes([grid]);
   }
 
   centringMessage() {
@@ -925,10 +932,10 @@ export default class SampleImage extends React.Component {
               setHCellSpacing={this.setHCellSpacing}
               setVCellSpacing={this.setVCellSpacing}
               gridList={this.props.grids}
-              removeGrid={this.props.sampleViewActions.deleteShape}
+              removeGrid={this.props.deleteShape}
               saveGrid={this.saveGrid}
               toggleVisibility={this.toggleGridVisibility}
-              rotateTo={this.props.sampleViewActions.rotateToShape}
+              rotateTo={this.props.rotateToShape}
               selectGrid={this.selectShape}
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
             />
@@ -944,3 +951,22 @@ export default class SampleImage extends React.Component {
     );
   }
 }
+
+function mapDispatchToProps(dispatch) {
+  return {
+    setImageRatio: bindActionCreators(setImageRatio, dispatch),
+    setOverlay: bindActionCreators(setOverlay, dispatch),
+    showContextMenu: bindActionCreators(showContextMenu, dispatch),
+    addDistancePoint: bindActionCreators(addDistancePoint, dispatch),
+    toggleDrawGrid: bindActionCreators(toggleDrawGrid, dispatch),
+    rotateToShape: bindActionCreators(rotateToShape, dispatch),
+    recordCentringClick: bindActionCreators(recordCentringClick, dispatch),
+    moveToBeam: bindActionCreators(moveToBeam, dispatch),
+    addShape: bindActionCreators(addShape, dispatch),
+    updateShapes: bindActionCreators(updateShapes, dispatch),
+    deleteShape: bindActionCreators(deleteShape, dispatch),
+    abortCentring: bindActionCreators(abortCentring, dispatch),
+  };
+}
+
+export default connect(undefined, mapDispatchToProps)(SampleImage);
