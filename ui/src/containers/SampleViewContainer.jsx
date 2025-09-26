@@ -9,7 +9,7 @@ import {
   logFrontEndTraceBack,
   setAttribute,
 } from '../actions/beamline';
-import { displayImage, showErrorPanel } from '../actions/general';
+import { showErrorPanel } from '../actions/general';
 import {
   mountSample,
   refresh,
@@ -28,7 +28,6 @@ import MotorControls from '../components/SampleView/MotorControls';
 import PhaseInput from '../components/SampleView/PhaseInput';
 import SampleImage from '../components/SampleView/SampleImage';
 import SSXChipControl from '../components/SSXChip/SSXChipControl';
-import { QUEUE_RUNNING } from '../constants';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
 import DefaultErrorBoundary from './DefaultErrorBoundary';
 import SampleQueueContainer from './SampleQueueContainer';
@@ -189,7 +188,6 @@ class SampleViewContainer extends Component {
                 getControlAvailability={this.getControlAvailability}
               />
               <SampleImage
-                {...this.props.sampleViewState}
                 points={points}
                 twoDPoints={twoDPoints}
                 lines={lines}
@@ -219,7 +217,6 @@ function mapStateToProps(state) {
     sampleList: state.sampleGrid.sampleList,
     currentSampleID: state.queue.currentSampleID,
     groupFolder: state.queue.groupFolder,
-    sampleViewState: state.sampleview,
     hardwareObjects: state.beamline.hardwareObjects,
     defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,

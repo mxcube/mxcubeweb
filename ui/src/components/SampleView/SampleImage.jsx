@@ -577,7 +577,7 @@ class SampleImage extends React.Component {
   wheel(e) {
     e.preventDefault();
     e.stopPropagation();
-    const { hardwareObjects, uiproperties, setAttribute } = this.props;
+    const { hardwareObjects, uiproperties } = this.props;
     const { components } = uiproperties.sample_view_motors;
     const keyPressed = this._keyPressed;
 
@@ -591,22 +591,34 @@ class SampleImage extends React.Component {
 
     if (keyPressed === 'r' && omega.state === HW_STATE.READY) {
       if (e.deltaY > 0) {
-        setAttribute(omegaProps.attribute, omega.value + omegaProps.step);
+        this.props.setAttribute(
+          omegaProps.attribute,
+          omega.value + omegaProps.step,
+        );
       } else if (e.deltaY < 0) {
-        setAttribute(omegaProps.attribute, omega.value - omegaProps.step);
+        this.props.setAttribute(
+          omegaProps.attribute,
+          omega.value - omegaProps.step,
+        );
       }
     } else if (keyPressed === 'f' && focus.state === HW_STATE.READY) {
       if (e.deltaY > 0) {
-        setAttribute(focusProps.attribute, focus.value + focusProps.step);
+        this.props.setAttribute(
+          focusProps.attribute,
+          focus.value + focusProps.step,
+        );
       } else if (e.deltaY < 0) {
-        setAttribute(focusProps.attribute, focus.value - focusProps.step);
+        this.props.setAttribute(
+          focusProps.attribute,
+          focus.value - focusProps.step,
+        );
       }
     } else if (keyPressed === 'z' && zoom.state === HW_STATE.READY) {
       const index = zoom.commands.indexOf(zoom.value);
       if (e.deltaY > 0 && index < zoom.commands.length - 1) {
-        setAttribute(zoomProps.attribute, zoom.commands[index + 1]);
+        this.props.setAttribute(zoomProps.attribute, zoom.commands[index + 1]);
       } else if (e.deltaY < 0 && index > 0) {
-        setAttribute(zoomProps.attribute, zoom.commands[index - 1]);
+        this.props.setAttribute(zoomProps.attribute, zoom.commands[index - 1]);
       }
     }
   }
@@ -963,7 +975,24 @@ function mapStateToProps(state) {
     cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
     busy: state.queue.queueStatus === QUEUE_RUNNING,
     meshResultFormat: state.general.meshResultFormat,
-    imageRatio: state.sampleview.sourceScale * state.sampleview.imageRatio,
+    imageRatio: state.sampleview.sourceScale * state.sampleview.imageRatio, // <=== IMPORTANT!
+    clickCentring: state.sampleview.clickCentring,
+    clickCentringClicksLeft: state.sampleview.clickCentringClicksLeft,
+    measureDistance: state.sampleview.measureDistance,
+    distancePoints: state.sampleview.distancePoints,
+    width: state.sampleview.width,
+    height: state.sampleview.height,
+    sourceScale: state.sampleview.sourceScale,
+    drawGrid: state.sampleview.drawGrid,
+    selectedShapes: state.sampleview.selectedShapes,
+    pixelsPerMm: state.sampleview.pixelsPerMm,
+    beamPosition: state.sampleview.beamPosition,
+    beamShape: state.sampleview.beamShape,
+    beamSize: state.sampleview.beamSize,
+    videoMessageOverlay: state.sampleview.videoMessageOverlay,
+    videoURL: state.sampleview.videoURL,
+    videoHash: state.sampleview.videoHash,
+    videoFormat: state.sampleview.videoFormat,
   };
 }
 
