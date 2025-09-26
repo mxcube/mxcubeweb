@@ -4,11 +4,7 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
-import {
-  executeCommand,
-  logFrontEndTraceBack,
-  setAttribute,
-} from '../actions/beamline';
+import { logFrontEndTraceBack, setAttribute } from '../actions/beamline';
 import { displayImage, showErrorPanel } from '../actions/general';
 import {
   mountSample,
@@ -20,7 +16,6 @@ import {
 } from '../actions/sampleChanger';
 import { syncWithCrims } from '../actions/sampleGrid';
 import * as sampleViewActions from '../actions/sampleview'; // eslint-disable-line import/no-namespace
-import { showTaskForm } from '../actions/taskForm';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
 import ApertureInput from '../components/SampleView/ApertureInput';
@@ -57,7 +52,6 @@ class SampleViewContainer extends Component {
       return null;
     }
     const { sourceScale, imageRatio } = this.props.sampleViewState;
-    const { currentSampleID } = this.props;
     const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
     const selectedGrids = [];
     const phase_control = uiproperties.sample_view?.components?.find(
@@ -142,20 +136,7 @@ class SampleViewContainer extends Component {
               )}
 
               {this.props.mode === 'SSX-CHIP' && (
-                <SSXChipControl
-                  showForm={this.props.showForm}
-                  currentSampleID={currentSampleID}
-                  sampleData={this.props.sampleList[currentSampleID]}
-                  defaultParameters={this.props.defaultParameters}
-                  groupFolder={this.props.groupFolder}
-                  hardwareObjects={this.props.hardwareObjects}
-                  uiproperties={uiproperties.sample_view_motors}
-                  sampleViewActions={this.props.sampleViewActions}
-                  grids={grids}
-                  selectedGrids={selectedGrids}
-                  setAttribute={this.props.setAttribute}
-                  sendExecuteCommand={this.props.sendExecuteCommand}
-                />
+                <SSXChipControl grids={grids} />
               )}
               {this.props.sampleChangerContents.name === 'PlateManipulator' && (
                 <PlateManipulator
@@ -229,17 +210,12 @@ class SampleViewContainer extends Component {
 
 function mapStateToProps(state) {
   return {
-    sampleList: state.sampleGrid.sampleList,
-    currentSampleID: state.queue.currentSampleID,
-    groupFolder: state.queue.groupFolder,
     queueState: state.queue.queueStatus,
     sampleViewState: state.sampleview,
     contextMenu: state.contextMenu,
     hardwareObjects: state.beamline.hardwareObjects,
-    defaultParameters: state.taskForm.defaultParameters,
     shapes: state.shapes.shapes,
     cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
-    remoteAccess: state.remoteAccess,
     uiproperties: state.uiproperties,
     mode: state.general.mode,
     meshResultFormat: state.general.meshResultFormat,
@@ -259,11 +235,9 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
   return {
     sampleViewActions: bindActionCreators(sampleViewActions, dispatch),
-    showForm: bindActionCreators(showTaskForm, dispatch),
     showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
     displayImage: bindActionCreators(displayImage, dispatch),
-    sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
     logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),
 
     mountSample: (address) => dispatch(mountSample(address)),

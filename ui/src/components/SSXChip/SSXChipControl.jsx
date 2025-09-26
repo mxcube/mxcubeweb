@@ -4,10 +4,17 @@ import './ssxchipcontrol.css';
 
 import React from 'react';
 import { Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
 
+import { executeCommand, setAttribute } from '../../actions/beamline.js';
+import { addShape } from '../../actions/sampleview.js';
+import { showTaskForm } from '../../actions/taskForm.js';
 import SSXChip from './SSXChip.jsx';
 
-export default class SSXChipControl extends React.Component {
+const SID = -1;
+
+class SSXChipControl extends React.Component {
   constructor(props) {
     super(props);
     this.handleAddTask = this.handleAddTask.bind(this);
@@ -15,10 +22,12 @@ export default class SSXChipControl extends React.Component {
   }
 
   handleAddTask(triggerEvent) {
-    const { currentSampleID, sampleData, defaultParameters } = this.props;
-    const sid = -1;
+    const { currentSampleID, sampleList, defaultParameters, groupFolder } =
+      this.props;
 
-    this.props.showForm(
+    const sampleData = sampleList[currentSampleID];
+
+    this.props.showTaskForm(
       'Generic',
       [currentSampleID],
       {
@@ -26,7 +35,7 @@ export default class SSXChipControl extends React.Component {
           ...defaultParameters.ssx_chip_collection.acq_parameters,
           name: 'SSX Collection',
           prefix: sampleData.defaultPrefix,
-          subdir: `${this.props.groupFolder}${sampleData.defaultSubDir}`,
+          subdir: `${groupFolder}${sampleData.defaultSubDir}`,
           cell_count: 0,
           numRows: 0,
           numCols: 0,
@@ -34,26 +43,27 @@ export default class SSXChipControl extends React.Component {
         },
         type: 'ssx_chip_collection',
       },
-      sid,
+      SID,
     );
   }
 
   handleAddGrid(data) {
-    this.props.sampleViewActions.addShape({ t: 'G', ...data });
+    this.props.addShape({ t: 'G', ...data });
   }
 
   renderChip() {
+    const { grids, hardwareObjects, uiproperties } = this.props;
+
     const headConfiguration =
-      this.props.hardwareObjects.diffractometer.attributes.head_configuration ??
-      {};
+      hardwareObjects.diffractometer.attributes.head_configuration ?? {};
 
     const chipLayoutList = headConfiguration.available;
 
-    const sampleVerticalUiProp = this.props.uiproperties.components.find(
+    const sampleVerticalUiProp = uiproperties.components.find(
       (el) => el.role === 'sample_vertical',
     );
 
-    const sampleHorizontalUiProp = this.props.uiproperties.components.find(
+    const sampleHorizontalUiProp = uiproperties.components.find(
       (el) => el.role === 'sample_horizontal',
     );
 
@@ -70,11 +80,11 @@ export default class SSXChipControl extends React.Component {
             availableChipLayoutList={Object.keys(headConfiguration.available)}
             onAddTask={this.handleAddTask}
             onAddGrid={this.handleAddGrid}
-            gridList={Object.values(this.props.grids)}
+            gridList={Object.values(grids)}
             sampleMotorVerticalName={sampleVerticalUiProp.attribute}
             sampleMotorHorizontalName={sampleHorizontalUiProp.attribute}
             setAttribute={this.props.setAttribute}
-            sendExecuteCommand={this.props.sendExecuteCommand}
+            sendExecuteCommand={this.props.executeCommand}
           />
         </Popover.Body>
       </Popover>
@@ -99,3 +109,25 @@ export default class SSXChipControl extends React.Component {
     );
   }
 }
+
+function mapStateToProps(state) {
+  return {
+    sampleList: state.sampleGrid.sampleList,
+    currentSampleID: state.queue.currentSampleID,
+    defaultParameters: state.taskForm.defaultParameters,
+    groupFolder: state.queue.groupFolder,
+    hardwareObjects: state.beamline.hardwareObjects,
+    uiproperties: state.uiproperties.sample_view_motors,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {
+    addShape: bindActionCreators(addShape, dispatch),
+    showTaskForm: bindActionCreators(showTaskForm, dispatch),
+    setAttribute: bindActionCreators(setAttribute, dispatch),
+    executeCommand: bindActionCreators(executeCommand, dispatch),
+  };
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(SSXChipControl);
