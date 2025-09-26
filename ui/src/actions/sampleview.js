@@ -29,7 +29,7 @@ export function setOverlay(level) {
   return { type: 'SET_OVERLAY', level };
 }
 
-export function setAperture(size) {
+function setAperture(size) {
   return { type: 'SET_APERTURE', size };
 }
 
@@ -76,11 +76,11 @@ export function stopClickCentring() {
   return { type: 'STOP_CLICK_CENTRING' };
 }
 
-export function clearSelectedShapes() {
+function clearSelectedShapes() {
   return { type: 'CLEAR_SELECTED_SHAPES' };
 }
 
-export function addShapeAction(shape) {
+function addShapeAction(shape) {
   return { type: 'ADD_SHAPE', shape };
 }
 
@@ -88,7 +88,7 @@ export function updateShapesAction(shapes) {
   return { type: 'UPDATE_SHAPES', shapes };
 }
 
-export function deleteShapeAction(id) {
+function deleteShapeAction(id) {
   return { type: 'DELETE_SHAPE', id };
 }
 
@@ -147,7 +147,7 @@ export function toggleDrawGrid() {
   };
 }
 
-export function centringClicksLeft(clicksLeft) {
+function centringClicksLeft(clicksLeft) {
   return { type: 'CENTRING_CLICKS_LEFT', clicksLeft };
 }
 
@@ -238,7 +238,7 @@ export function deleteShape(id) {
   };
 }
 
-export function unselectShapes(shapes) {
+function unselectShapes(shapes) {
   return (dispatch, getState) => {
     const state = getState();
 
@@ -274,7 +274,7 @@ export function toggleCentring() {
   };
 }
 
-export function startClickCentring() {
+function startClickCentring() {
   return async (dispatch, getState) => {
     const { queue, shapes, general } = getState();
     dispatch(clearSelectedShapes());
