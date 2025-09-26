@@ -406,8 +406,6 @@ export default function SSXChip(props) {
   const freeFormCanvasRef = useRef(null);
   const currentChipLayout = props.chipLayoutList[props.currentLayoutName];
 
-  debugger;
-
   const [chipState, setChipState] = useState({
     top_left_x: currentChipLayout.calibration_data.top_left[0],
     top_left_y: currentChipLayout.calibration_data.top_left[1],
@@ -440,7 +438,6 @@ export default function SSXChip(props) {
   });
 
   function setCalibratedPosition(name) {
-    debugger;
     setCalibratedPositions((prevState) => ({
       ...prevState,
       [name]: [
@@ -542,7 +539,7 @@ export default function SSXChip(props) {
           currentLayoutName: e.target.value,
         });
 
-        props.sendExecuteCommand('diffractometer', 'set_chip_layout', {
+        props.sendExecuteCommand('diffractometer', 'diffractometer', 'set_chip_layout', {
           layout_name: e.target.value,
         });
 
@@ -551,14 +548,15 @@ export default function SSXChip(props) {
       case 'apply': {
         props.sendExecuteCommand(
           'diffractometer',
-          'use_position_for_callibration',
-          JSON.stringify({ data: calibratedPositions }),
+          'diffractometer',
+          'use_position_for_calibration',
+          { data: calibratedPositions },
         );
 
         break;
       }
       case 'ir_auto_focus': {
-        props.sendExecuteCommand('diffractometer', 'ir_auto_focus', {});
+        props.sendExecuteCommand('diffractometer', 'diffractometer', 'ir_auto_focus', {});
 
         break;
       }
