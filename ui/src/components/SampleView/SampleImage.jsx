@@ -6,6 +6,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
+import { setAttribute } from '../../actions/beamline.js';
+import { displayImage } from '../../actions/general.js';
 import {
   abortCentring,
   addDistancePoint,
@@ -20,7 +22,7 @@ import {
   toggleDrawGrid,
   updateShapes,
 } from '../../actions/sampleview.js';
-import { HW_STATE } from '../../constants';
+import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
 import GridForm from './GridForm';
@@ -952,8 +954,23 @@ class SampleImage extends React.Component {
   }
 }
 
+function mapStateToProps(state) {
+  return {
+    uiproperties: state.uiproperties,
+    hardwareObjects: state.beamline.hardwareObjects,
+    contextMenuVisible: state.contextMenu.show,
+    shapes: state.shapes.shapes,
+    cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
+    busy: state.queue.queueStatus === QUEUE_RUNNING,
+    meshResultFormat: state.general.meshResultFormat,
+    imageRatio: state.sampleview.sourceScale * state.sampleview.imageRatio,
+  };
+}
+
 function mapDispatchToProps(dispatch) {
   return {
+    setAttribute: bindActionCreators(setAttribute, dispatch),
+    displayImage: bindActionCreators(displayImage, dispatch),
     setImageRatio: bindActionCreators(setImageRatio, dispatch),
     setOverlay: bindActionCreators(setOverlay, dispatch),
     showContextMenu: bindActionCreators(showContextMenu, dispatch),
@@ -969,4 +986,4 @@ function mapDispatchToProps(dispatch) {
   };
 }
 
-export default connect(undefined, mapDispatchToProps)(SampleImage);
+export default connect(mapStateToProps, mapDispatchToProps)(SampleImage);
