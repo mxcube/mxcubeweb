@@ -23,7 +23,7 @@ class SampleView(ComponentBase):
 
         HWR.beamline.sample_view.connect("shapesChanged", self._emit_shapes_updated)
 
-        zoom_motor = HWR.beamline.diffractometer.get_object_by_role("zoom")
+        zoom_motor = HWR.beamline.diffractometer.zoom
 
         if zoom_motor:
             zoom_motor.connect("stateChanged", self._zoom_changed)
@@ -62,7 +62,6 @@ class SampleView(ComponentBase):
 
     def centring_add_current_point(self, *args):
         shape = HWR.beamline.sample_view.get_shape(self._centring_point_id)
-
         # There is no current centered point shape when the centring is done
         # by software like Workflows, so we add one.
         if not shape:
@@ -161,6 +160,7 @@ class SampleView(ComponentBase):
             # shape key comes case lowered from the to_camel (2dp1), this breaks UI
             # let's ensure it's upper case by only camel casing the dict data
             shape_dict.update({shape.id: to_camel(s)})
+        print(f"-------------------> get_shapes: {shape_dict}")
         return {"shapes": shape_dict}
 
     def get_shape_width_sid(self, sid):
@@ -186,6 +186,7 @@ class SampleView(ComponentBase):
 
     def update_shapes(self, shapes):
         updated_shapes = []
+        print(f"update_shapes --------------->{shapes}")
         for s in shapes:
             shape_data = from_camel(s)
             pos = []
@@ -217,7 +218,7 @@ class SampleView(ComponentBase):
                 if not refs:
                     try:
                         x, y = shape_data["screen_coord"]
-                        mpos = HWR.beamline.diffractometer.get_centred_point_from_coord(
+                        mpos = HWR.beamline.sample_view.get_centred_point_from_coord(
                             x, y, return_by_names=True
                         )
                         pos.append(mpos)
@@ -235,7 +236,7 @@ class SampleView(ComponentBase):
                                 + (shape_data["num_rows"] / 2.0)
                                 * shape_data["cell_height"]
                             )
-                            center_positions = HWR.beamline.diffractometer.get_centred_point_from_coord(
+                            center_positions = HWR.beamline.sample_view.get_centred_point_from_coord(
                                 x_c, y_c, return_by_names=True
                             )
                             pos.append(center_positions)
@@ -296,7 +297,7 @@ class SampleView(ComponentBase):
                 logging.getLogger("user_level_log").info(
                     "Aborting current centring ..."
                 )
-                HWR.beamline.sample_view.cancel_centring_method(reject=True)
+                HWR.beamline.sample_view.cancel_centring(reject=True)
             nb_clicks = HWR.beamline.config.click_centring_num_clicks
             msg = f"Centring using {nb_clicks}-click centring"
             logging.getLogger("user_level_log").info(msg)
@@ -322,14 +323,14 @@ class SampleView(ComponentBase):
     def centring_handle_click(self, x, y):
         if HWR.beamline.sample_view.current_centring_procedure:
             try:
-                HWR.beamline.sample_view.image_clicked(x, y, x, y)
+                HWR.beamline.sample_view.image_clicked(x, y)
                 self.centring_click()
             except Exception:
                 return {"clicksLeft": -1}
         else:
             if not self.centring_clicks_left():
                 self.centring_reset_click_count()
-                HWR.beamline.sample_view.cancel_centring_method()
+                HWR.beamline.sample_view.cancel_centring()
                 HWR.beamline.sample_view.start_manual_centring(
                     HWR.beamline.config.click_centring_num_clicks
                 )
@@ -341,7 +342,7 @@ class SampleView(ComponentBase):
         self.centring_remove_current_point()
 
     def move_to_beam(self, x, y):
-        msg = "Moving point x: %s, y: %s to beam" % (x, y)
+        msg = f"Moving point x: {x}, y: {y}to beam"
         logging.getLogger("user_level_log").info(msg)
 
         HWR.beamline.sample_view.move_to_beam(x, y)
