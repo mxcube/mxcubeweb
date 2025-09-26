@@ -5,10 +5,10 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import {
-  executeCommand,
   logFrontEndTraceBack,
   setAttribute,
 } from '../actions/beamline';
+
 import { displayImage, showErrorPanel } from '../actions/general';
 import {
   mountSample,
@@ -34,6 +34,7 @@ import BeamlineSetupContainer from './BeamlineSetupContainer';
 import DefaultErrorBoundary from './DefaultErrorBoundary';
 import SampleQueueContainer from './SampleQueueContainer';
 import styles from './SampleViewContainer.module.css';
+import { sendExecuteCommand } from '../api/hardware-object';
 
 class SampleViewContainer extends Component {
   constructor(props) {
@@ -263,7 +264,7 @@ function mapDispatchToProps(dispatch) {
     showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
     displayImage: bindActionCreators(displayImage, dispatch),
-    sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
+    sendExecuteCommand: bindActionCreators(sendExecuteCommand, dispatch),
     logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),
 
     mountSample: (address) => dispatch(mountSample(address)),
