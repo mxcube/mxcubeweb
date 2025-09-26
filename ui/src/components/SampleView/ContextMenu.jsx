@@ -492,19 +492,19 @@ export default function ContextMenu(props) {
     dispatch(toggleDrawGrid());
   }
 
-  function createPointAndShowModal(name, extraParams = {}) {
-    dispatch(
-      add2DPoint(sampleViewX, sampleViewY, 'SAVED', (shape2D) =>
-        showModal(name, extraParams, shape2D),
-      ),
+  async function createPointAndShowModal(name, extraParams = {}) {
+    const new2DPoint = await dispatch(
+      add2DPoint(sampleViewX, sampleViewY, 'SAVED'),
     );
+
+    showModal(name, extraParams, new2DPoint);
   }
 
   function createTwoDPoint() {
-    dispatch(add2DPoint(sampleViewX, sampleViewY, 'SAVED', null));
+    dispatch(add2DPoint(sampleViewX, sampleViewY, 'SAVED'));
   }
 
-  function createLine(modal, wf = {}) {
+  async function createLine(modal, wf = {}) {
     const sid = shape.id;
 
     const lines = sid.filter((x) => x.match(/L*/u)[0]);
@@ -515,11 +515,8 @@ export default function ContextMenu(props) {
       lines.map((x) => sid.splice(sid.indexOf(x), 1));
     }
 
-    dispatch(
-      addShape({ t: 'L', refs: shape.id }, (s) => {
-        showModal(modal, wf, s);
-      }),
-    );
+    const newLine = await dispatch(addShape({ t: 'L', refs: shape.id }));
+    showModal(modal, wf, newLine);
   }
 
   const options = menuOptions();
