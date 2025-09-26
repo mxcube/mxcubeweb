@@ -225,7 +225,6 @@ class SampleChanger(ComponentBase):
                     and not HWR.beamline.diffractometer.in_plate_mode
                     and not self.app.harvester.mount_from_harvester()
                 ):
-                    # HWR.beamline.sample_view.cancel_centring()
                     msg = "Starting autoloop centring ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     HWR.beamline.sample_view.start_automatic_centring()

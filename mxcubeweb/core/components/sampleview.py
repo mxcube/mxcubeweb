@@ -160,7 +160,6 @@ class SampleView(ComponentBase):
             # shape key comes case lowered from the to_camel (2dp1), this breaks UI
             # let's ensure it's upper case by only camel casing the dict data
             shape_dict.update({shape.id: to_camel(s)})
-        print(f"-------------------> get_shapes: {shape_dict}")
         return {"shapes": shape_dict}
 
     def get_shape_width_sid(self, sid):
@@ -186,7 +185,6 @@ class SampleView(ComponentBase):
 
     def update_shapes(self, shapes):
         updated_shapes = []
-        print(f"update_shapes --------------->{shapes}")
         for s in shapes:
             shape_data = from_camel(s)
             pos = []
@@ -236,8 +234,10 @@ class SampleView(ComponentBase):
                                 + (shape_data["num_rows"] / 2.0)
                                 * shape_data["cell_height"]
                             )
-                            center_positions = HWR.beamline.sample_view.get_centred_point_from_coord(
-                                x_c, y_c, return_by_names=True
+                            center_positions = (
+                                HWR.beamline.sample_view.get_centred_point_from_coord(
+                                    x_c, y_c, return_by_names=True
+                                )
                             )
                             pos.append(center_positions)
 
