@@ -93,7 +93,7 @@ export function mountSample(sampleData) {
     try {
       await sendMountSample(sampleData);
     } catch (error) {
-      dispatch(showErrorPanel(true, error.response.headers.get('message')));
+      dispatch(showErrorPanel(true, error.json.message));
       throw error;
     }
   };
@@ -105,7 +105,7 @@ export function unmountSample() {
       await sendUnmountCurrentSample();
       dispatch(clearCurrentSample());
     } catch (error) {
-      dispatch(showErrorPanel(true, error.response.headers.get('message')));
+      dispatch(showErrorPanel(true, error.json.message));
     }
   };
 }

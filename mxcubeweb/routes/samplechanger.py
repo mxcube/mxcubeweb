@@ -65,35 +65,20 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def unmount_current():
         try:
-            res = app.sample_changer.unmount_current()
+            return jsonify(app.sample_changer.unmount_current()), 200
         except Exception:
             logging.getLogger("MX3.HWR").exception("Cannot unload sample")
-            res = (
-                "Cannot unload sample",
-                409,
-                {
-                    "Content-Type": "application/json",
-                },
-            )
-        return jsonify(res)
+            return jsonify(message="Cannot unload sample"), 409
 
     @bp.route("/mount", methods=["POST"])
     @server.require_control
     @server.restrict
     def mount_sample():
         try:
-            resp = jsonify(app.sample_changer.mount_sample(request.get_json()))
+            return jsonify(app.sample_changer.mount_sample(request.get_json())), 200
         except Exception:
             logging.getLogger("MX3.HWR").exception("Cannot load sample")
-            resp = (
-                "Cannot load sample",
-                409,
-                {
-                    "Content-Type": "application/json",
-                },
-            )
-
-        return resp
+            return jsonify(message="Cannot load sample"), 409
 
     @bp.route("/capacity", methods=["GET"])
     @server.restrict
