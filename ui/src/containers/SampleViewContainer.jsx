@@ -40,23 +40,21 @@ class SampleViewContainer extends Component {
   }
 
   getControlAvailability(name) {
-    const available =
-      this.props.uiproperties.sample_view_video_controls.components.find(
-        (component) => component.id === name && component.show === true,
-      );
+    const { uiproperties } = this.props;
+    const available = uiproperties.sample_view_video_controls.components.find(
+      (component) => component.id === name && component.show === true,
+    );
 
     return available?.show || false;
   }
 
   render() {
-    const { uiproperties } = this.props;
+    const { uiproperties, currentSampleID, shapes = {} } = this.props;
 
     if (!('sample_view_motors' in uiproperties)) {
       return null;
     }
-    const { currentSampleID } = this.props;
-    const [points, lines, grids, twoDPoints] = [{}, {}, {}, {}];
-    const selectedGrids = [];
+
     const phase_control = uiproperties.sample_view?.components?.find(
       (c) => c.attribute === 'phase_control',
     );
@@ -64,38 +62,19 @@ class SampleViewContainer extends Component {
       (c) => c.attribute === 'beam_size',
     );
 
-    if (this.props.shapes !== undefined) {
-      Object.keys(this.props.shapes).forEach((key) => {
-        const shape = this.props.shapes[key];
-        switch (shape.t) {
-          case 'P': {
-            points[shape.id] = shape;
-
-            break;
-          }
-          case '2DP': {
-            twoDPoints[shape.id] = shape;
-
-            break;
-          }
-          case 'L': {
-            lines[shape.id] = shape;
-
-            break;
-          }
-          case 'G': {
-            grids[shape.id] = shape;
-
-            if (shape.selected) {
-              selectedGrids.push(shape);
-            }
-
-            break;
-          }
-          // No default
-        }
-      });
-    }
+    const points = Object.fromEntries(
+      Object.entries(shapes).filter(([_, shape]) => shape.t === 'P'),
+    );
+    const twoDPoints = Object.fromEntries(
+      Object.entries(shapes).filter(([_, shape]) => shape.t === '2DP'),
+    );
+    const lines = Object.fromEntries(
+      Object.entries(shapes).filter(([_, shape]) => shape.t === 'L'),
+    );
+    const grids = Object.fromEntries(
+      Object.entries(shapes).filter(([_, shape]) => shape.t === 'G'),
+    );
+    const selectedGrids = Object.values(grids).filter((s) => s.selected);
 
     return (
       <Container fluid>
