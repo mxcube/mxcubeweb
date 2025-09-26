@@ -192,24 +192,19 @@ export function moveToBeam(x, y) {
   return () => sendMoveToBeam(x, y);
 }
 
-export function add2DPoint(x, y, state, successCb) {
+export function add2DPoint(x, y, state) {
   return (dispatch) => {
-    return dispatch(
-      addShape({ t: '2DP', screenCoord: [x, y], state }, successCb),
-    );
+    return dispatch(addShape({ t: '2DP', screenCoord: [x, y], state }));
   };
 }
 
-export function addShape(shapeData = {}, successCb = null) {
+export function addShape(shapeData = {}) {
   return async (dispatch) => {
     try {
       const json = await sendAddOrUpdateShapes([shapeData]);
       const [shape] = json.shapes;
       dispatch(addShapeAction(shape));
-
-      if (successCb) {
-        successCb(shape);
-      }
+      return shape;
     } catch {
       throw new Error('Server refused to add shape');
     }
