@@ -9,16 +9,6 @@ import {
   logFrontEndTraceBack,
   setAttribute,
 } from '../actions/beamline';
-import { showErrorPanel } from '../actions/general';
-import {
-  mountSample,
-  refresh,
-  selectDrop,
-  selectWell,
-  sendCommand,
-  setPlate,
-} from '../actions/sampleChanger';
-import { syncWithCrims } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
@@ -134,28 +124,7 @@ class SampleViewContainer extends Component {
                 />
               )}
               {this.props.sampleChangerContents.name === 'PlateManipulator' && (
-                <PlateManipulator
-                  contents={this.props.sampleChangerContents}
-                  loadedSample={this.props.loadedSample}
-                  select={this.props.select}
-                  load={this.props.mountSample}
-                  sendCommand={this.props.sendCommand}
-                  refresh={this.props.refresh}
-                  plates={this.props.plateGrid}
-                  plateIndex={this.props.plateIndex}
-                  selectedRow={this.props.selectedRow}
-                  selectedCol={this.props.selectedCol}
-                  selectedDrop={this.props.selectedDrop}
-                  setPlate={this.props.setPlate}
-                  selectWell={this.props.selectWell}
-                  selectDrop={this.props.selectDrop}
-                  crystalList={this.props.crystalList}
-                  syncSamplesCrims={this.props.syncSamplesCrims}
-                  showErrorPanel={this.props.showErrorPanel}
-                  global_state={this.props.global_state}
-                  state={this.props.sampleChangerState}
-                  inPopover
-                />
+                <PlateManipulator inPopover />
               )}
 
               <MotorControls />
@@ -203,33 +172,15 @@ function mapStateToProps(state) {
     uiproperties: state.uiproperties,
     mode: state.general.mode,
     sampleChangerContents: state.sampleChanger.contents,
-    sampleChangerState: state.sampleChanger.state,
-    global_state: state.sampleChangerMaintenance.global_state,
-    loadedSample: state.sampleChanger.loadedSample,
-    plateGrid: state.sampleChanger.plateGrid,
-    plateIndex: state.sampleChanger.currentPlateIndex,
-    selectedRow: state.sampleChanger.selectedRow,
-    selectedCol: state.sampleChanger.selectedCol,
-    selectedDrop: state.sampleChanger.selectedDrop,
-    crystalList: state.sampleGrid.crystalList,
   };
 }
 
 function mapDispatchToProps(dispatch) {
   return {
     showForm: bindActionCreators(showTaskForm, dispatch),
-    showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
     logFrontEndTraceBack: bindActionCreators(logFrontEndTraceBack, dispatch),
-
-    mountSample: (address) => dispatch(mountSample(address)),
-    refresh: () => dispatch(refresh()),
-    selectWell: (row, col) => dispatch(selectWell(row, col)),
-    setPlate: (address) => dispatch(setPlate(address)),
-    selectDrop: (address) => dispatch(selectDrop(address)),
-    syncSamplesCrims: () => dispatch(syncWithCrims()),
-    sendCommand: (cmd, args) => dispatch(sendCommand(cmd, args)),
   };
 }
 
