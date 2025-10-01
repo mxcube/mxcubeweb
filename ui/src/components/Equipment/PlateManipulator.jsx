@@ -9,34 +9,43 @@ import {
 } from 'react-bootstrap';
 import { contextMenu, Item, Menu, Separator } from 'react-contexify';
 import { MdSync } from 'react-icons/md';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { showErrorPanel } from '../../actions/general';
+import {
+  mountSample,
+  refresh,
+  selectDrop,
+  selectWell,
+  sendCommand,
+  setPlate,
+} from '../../actions/sampleChanger';
+import { syncWithCrims } from '../../actions/sampleGrid';
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './equipment.module.css';
 
 const strokeColor = 'rgb(136, 136, 136)';
 
 export default function PlateManipulator(props) {
-  const {
-    state,
-    global_state,
-    crystalList,
-    contents,
-    selectedRow,
-    selectedCol,
-    selectedDrop,
-    plates,
-    plateIndex,
-    loadedSample,
-    refresh,
-    showErrorPanel,
-    setPlate,
-    selectWell,
-    selectDrop,
-    inPopover,
-    load,
-    sendCommand,
-    syncSamplesCrims,
-  } = props;
+  const { inPopover = false } = props;
+  const dispatch = useDispatch();
+
+  const sampleChangerState = useSelector((state) => state.sampleChanger.state);
+  const contents = useSelector((state) => state.sampleChanger.contents);
+  const loadedSample = useSelector((state) => state.sampleChanger.loadedSample);
+  const plateGrid = useSelector((state) => state.sampleChanger.plateGrid);
+  const currentPlateIndex = useSelector(
+    (state) => state.sampleChanger.currentPlateIndex,
+  );
+  const selectedRow = useSelector((state) => state.sampleChanger.selectedRow);
+  const selectedCol = useSelector((state) => state.sampleChanger.selectedCol);
+  const selectedDrop = useSelector((state) => state.sampleChanger.selectedDrop);
+
+  const crystalList = useSelector((state) => state.sampleGrid.crystalList);
+
+  const global_state = useSelector(
+    (state) => state.sampleChangerMaintenance.global_state,
+  );
 
   function showContextMenu(event, id) {
     let position = {
@@ -64,13 +73,13 @@ export default function PlateManipulator(props) {
       cplate_label = global_state.plate_info.plate_label;
     }
 
-    plates.forEach((cplate, index) => {
+    plateGrid.forEach((cplate, index) => {
       if (cplate_label === cplate.name) {
         plate_index = index;
       }
     });
 
-    setPlate(plate_index);
+    dispatch(setPlate(plate_index));
   }
 
   useEffect(() => {
@@ -78,7 +87,7 @@ export default function PlateManipulator(props) {
   });
 
   function refreshClicked() {
-    refresh();
+    dispatch(refresh());
   }
 
   // PlateManipulator: Check whether a drop contain crystal --?
@@ -138,36 +147,42 @@ export default function PlateManipulator(props) {
   }
 
   function initLoadSample(rowIdx, colIdx, row, col) {
-    load({
-      sampleID: `${row}${col}:${1}-0`,
-      location: `${row}${col}:${1}-0`,
-      row: rowIdx,
-      col: colIdx,
-      dropID: 1,
-    });
+    dispatch(
+      mountSample({
+        sampleID: `${row}${col}:${1}-0`,
+        location: `${row}${col}:${1}-0`,
+        row: rowIdx,
+        col: colIdx,
+        dropID: 1,
+      }),
+    );
   }
 
   function loadSample(drop) {
     if (selectedRow !== null) {
-      load({
-        sampleID: `${selectedRow}${selectedCol}:${drop}-0`,
-        location: `${selectedRow}${selectedCol}:${drop}-0`,
-        row: selectedRow,
-        col: selectedCol,
-        dropID: drop,
-      });
+      dispatch(
+        mountSample({
+          sampleID: `${selectedRow}${selectedCol}:${drop}-0`,
+          location: `${selectedRow}${selectedCol}:${drop}-0`,
+          row: selectedRow,
+          col: selectedCol,
+          dropID: drop,
+        }),
+      );
     } else {
-      showErrorPanel(
-        true,
-        'There is no selected Well \n Please select a well first',
+      dispatch(
+        showErrorPanel(
+          true,
+          'There is no selected Well \n Please select a well first',
+        ),
       );
       setTimeout(() => {
-        showErrorPanel(false, '');
+        dispatch(showErrorPanel(false, ''));
       }, 2000);
     }
   }
 
-  const plate = plates[plateIndex];
+  const plate = plateGrid[currentPlateIndex];
   const nbcols = plate.colTitle.length;
   const nbrows = plate.rowTitle.length;
   let loadedDrop = '';
@@ -219,10 +234,10 @@ export default function PlateManipulator(props) {
             strokeWidth: drop === selectedDrop ? '3' : '1',
           }}
           onClick={() => {
-            selectDrop(drop);
+            dispatch(selectDrop(drop));
           }}
           onContextMenu={() => {
-            selectDrop(drop);
+            dispatch(selectDrop(drop));
           }}
           onDoubleClick={() => {
             loadSample(drop);
@@ -242,10 +257,10 @@ export default function PlateManipulator(props) {
                 : '#ffffff',
           }}
           onClick={() => {
-            selectDrop(drop);
+            dispatch(selectDrop(drop));
           }}
           onContextMenu={() => {
-            selectDrop(drop);
+            dispatch(selectDrop(drop));
           }}
           onDoubleClick={() => {
             loadSample(drop);
@@ -287,9 +302,11 @@ export default function PlateManipulator(props) {
                 <Separator />
                 <Item
                   onClick={() =>
-                    sendCommand(
-                      'moveToCrystalPosition',
-                      crystalForSelectedWell.crystal_uuid,
+                    dispatch(
+                      sendCommand(
+                        'moveToCrystalPosition',
+                        crystalForSelectedWell.crystal_uuid,
+                      ),
                     )
                   }
                 >
@@ -445,10 +462,10 @@ export default function PlateManipulator(props) {
                               initLoadSample(rowIdx, colIdx, row, col);
                             }}
                             onClick={() => {
-                              selectWell(row, col);
+                              dispatch(selectWell(row, col));
                             }}
                             onContextMenu={() => {
-                              selectWell(row, col);
+                              dispatch(selectWell(row, col));
                             }}
                           >
                             <rect
@@ -551,10 +568,10 @@ export default function PlateManipulator(props) {
                               initLoadSample(rowIdx, colIdx, row, col);
                             }}
                             onClick={() => {
-                              selectWell(row, col);
+                              dispatch(selectWell(row, col));
                             }}
                             onContextMenu={() => {
-                              selectWell(row, col);
+                              dispatch(selectWell(row, col));
                             }}
                           >
                             <rect
@@ -628,7 +645,7 @@ export default function PlateManipulator(props) {
     cplate_label = global_state.plate_info.plate_label;
   }
   let cssDisable = {};
-  if (state === 'MOVING') {
+  if (sampleChangerState === 'MOVING') {
     cssDisable = { cursor: 'wait', pointerEvents: 'none', opacity: '0.5' };
   }
 
@@ -636,7 +653,11 @@ export default function PlateManipulator(props) {
     return (
       <Row
         className="mt-4"
-        title={state === 'MOVING' ? 'Plate Moving, can not send commande' : ''}
+        title={
+          sampleChangerState === 'MOVING'
+            ? 'Plate Moving, can not send commande'
+            : ''
+        }
       >
         <Col className="ms-3">
           <ButtonToolbar className="ms-4">
@@ -661,7 +682,7 @@ export default function PlateManipulator(props) {
               <Button
                 size="sm"
                 variant="outline-success"
-                onClick={syncSamplesCrims}
+                onClick={() => dispatch(syncWithCrims())}
               >
                 <MdSync size="1.5em" /> CRIMS
               </Button>
@@ -731,7 +752,7 @@ export default function PlateManipulator(props) {
             ? 'Move to Crystal position'
             : 'No Crystal Found / Crims not Sync'
         }
-        onClick={() => sendCommand('moveToCrystalPosition')}
+        onClick={() => dispatch(sendCommand('moveToCrystalPosition'))}
         disabled={!hasCrystals()}
       >
         <i className="fas fa-gem" /> Move to Crystal

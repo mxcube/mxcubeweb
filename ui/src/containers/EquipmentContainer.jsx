@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
 import { executeCommand } from '../actions/beamline';
-import { showErrorPanel } from '../actions/general';
 import {
   abort as haAbort,
   harvestAndLoadCrystal,
@@ -17,13 +16,8 @@ import {
   refresh,
   scan,
   select,
-  selectDrop,
-  selectWell,
-  sendCommand,
-  setPlate,
   unmountSample,
 } from '../actions/sampleChanger';
-import { syncWithCrims } from '../actions/sampleGrid';
 import GenericEquipment from '../components/Equipment/GenericEquipment';
 import GenericEquipmentControl from '../components/Equipment/GenericEquipmentControl';
 import Harvester from '../components/Equipment/Harvester';
@@ -46,27 +40,7 @@ function EquipmentContainer(props) {
             {props.contents.name === 'PlateManipulator' ? (
               <Row className="row">
                 <Col sm={6}>
-                  <PlateManipulator
-                    contents={props.contents}
-                    loadedSample={props.loadedSample}
-                    load={props.mountSample}
-                    sendCommand={props.sendCommand}
-                    refresh={props.refresh}
-                    inPopover={false}
-                    plates={props.plateGrid}
-                    plateIndex={props.plateIndex}
-                    selectedRow={props.selectedRow}
-                    selectedCol={props.selectedCol}
-                    selectedDrop={props.selectedDrop}
-                    setPlate={props.setPlate}
-                    selectWell={props.selectWell}
-                    selectDrop={props.selectDrop}
-                    crystalList={props.crystalList}
-                    syncSamplesCrims={props.syncSamplesCrims}
-                    showErrorPanel={props.showErrorPanel}
-                    global_state={props.global_state}
-                    state={props.sampleChangerState}
-                  />
+                  <PlateManipulator />
                 </Col>
                 <Col sm={6}>
                   <PlateManipulatorMaintenance />
@@ -148,16 +122,8 @@ function mapStateToProps(state) {
     sampleChangerState: state.sampleChanger.state,
     loadedSample: state.sampleChanger.loadedSample,
 
-    plateGrid: state.sampleChanger.plateGrid,
-    plateIndex: state.sampleChanger.currentPlateIndex,
-    selectedRow: state.sampleChanger.selectedRow,
-    selectedCol: state.sampleChanger.selectedCol,
-    selectedDrop: state.sampleChanger.selectedDrop,
-    crystalList: state.sampleGrid.crystalList,
-
     commands: state.sampleChangerMaintenance.commands,
     commands_state: state.sampleChangerMaintenance.commands_state,
-    global_state: state.sampleChangerMaintenance.global_state,
     beamline: state.beamline,
 
     haContents: state.harvester.contents,
@@ -173,13 +139,7 @@ function mapDispatchToProps(dispatch) {
     scan: (container) => dispatch(scan(container)),
     refresh: () => dispatch(refresh()),
     abort: () => dispatch(abort()),
-    sendCommand: (cmd, args) => dispatch(sendCommand(cmd, args)),
     executeCommand: bindActionCreators(executeCommand, dispatch),
-    showErrorPanel: bindActionCreators(showErrorPanel, dispatch),
-    selectWell: (row, col) => dispatch(selectWell(row, col)),
-    setPlate: (address) => dispatch(setPlate(address)),
-    selectDrop: (address) => dispatch(selectDrop(address)),
-    syncSamplesCrims: () => dispatch(syncWithCrims()),
 
     harvestCrystal: (address) => dispatch(harvestCrystal(address)),
     harvestAndLoadCrystal: (address) =>
