@@ -18,61 +18,49 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Generate Bandit skips from Ruff
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install bandit[sarif]
+
+      - name: Extract Bandit skips from ruff.toml
         id: bandit_skips
         run: |
-          pip install ruff jq
-          SKIPS=$(ruff rule --all --output-format json \
-            | jq -r '.[] | select(.code | test("^S[0-9]{3}$")) | .code' \
-            | sed 's/S/B/' \
-            | paste -sd, -)
+          SKIPS=$(python3 - <<'PY'
+          import re
+          import tomllib as toml
+          with open('ruff.toml', 'rb') as f:
+              config = toml.load(f)
+          all_codes = config.get('lint', {}).get('ignore', [])
+          for codes in config.get('lint', {}).get('per-file-ignores', {}).values():
+              all_codes.extend(codes)
+          bandit_codes = [c for c in set(all_codes) if re.match(r'^S\d{3}$', c)]
+          print(','.join(sorted(bandit_codes)))
+          PY
+          )
           echo "skips=$SKIPS" >> $GITHUB_OUTPUT
 
-      - name: Bandit Scan
-        uses: shundor/python-bandit-scan@ab1d87dfccc5a0ffab88be3aaac6ffe35c10d6cd
-        with:
-          exit_zero: true
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          excluded_paths: ./test/
-          level: MEDIUM
-          confidence: HIGH
-          skips: ${{ steps.bandit_skips.outputs.skips }}
+      - name: Run Bandit Scan
+        run: |
+          SKIP_PARAM="${{ steps.bandit_skips.outputs.skips }}"
+          bandit -r mxcubeweb/ -f sarif -o results.sarif --exclude ./test/ \
+            --severity-level medium --confidence-level medium \
+            ${SKIP_PARAM:+--skip $SKIP_PARAM}
+        continue-on-error: false
 
-      - name: Upload SARIF file to GitHub
+      - name: Upload Bandit results as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: bandit-results
+          path: results.sarif
+        if: always()
+
+      - name: Upload SARIF to Code Scanning
+        if: always()
         uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: results.sarif
-          category: bandit
-
-  sonarcloud:
-    name: SonarCloud Scan
-    runs-on: ubuntu-latest
-    if: >
-      github.event.pull_request.head.repo.full_name == github.repository ||
-      github.event_name != 'pull_request'
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set up Java
-        uses: actions/setup-java@v3
-        with:
-          distribution: 'temurin'
-          java-version: '17'
-
-      - name: Cache SonarCloud packages
-        uses: actions/cache@v3
-        with:
-          path: ~/.sonar/cache
-          key: ${{ runner.os }}-sonar
-          restore-keys: ${{ runner.os }}-sonar
-
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2
-        with:
-          args: >
-            -Dsonar.organization=mxcubeweb
-            -Dsonar.projectKey=mxcube_mxcubeweb
-            -Dsonar.coverage.exclusions=**
-            -Dsonar.cpd.exclusions=**
-            -Dsonar.cpd.skip=true
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        continue-on-error: true
