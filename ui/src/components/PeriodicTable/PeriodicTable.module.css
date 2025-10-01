@@ -11,10 +11,12 @@
 
 .cell {
   position: relative;
+  cursor: pointer;
 }
 
 .cell:not([data-available]) {
   opacity: 0.4;
+  pointer-events: none;
 }
 
 .element {
