@@ -3,23 +3,18 @@
   height: 200px;
   margin-right: -1px;
   text-shadow: none;
-}
-
-.periodicRow {
-  clear: both;
-  height: 8%;
+  display: grid;
+  grid-template-columns: repeat(18, 1fr);
+  grid-template-rows: repeat(10, 1fr);
+  gap: 4px;
 }
 
 .cell {
-  float: left;
   position: relative;
-  width: 5.55%;
-  height: 100%;
-  opacity: 0.4;
 }
 
-.cell.available {
-  opacity: 1;
+.cell:not([data-available]) {
+  opacity: 0.4;
 }
 
 .element {
@@ -37,7 +32,8 @@
   transition: all 200ms ease;
   background-color: rgba(0, 128, 128, 0.6);
 }
-.element.selected {
+
+.element[data-selected] {
   border: 1px solid #000;
 }
 
@@ -45,18 +41,17 @@
   border-color: rgba(0, 0, 0, 0.1);
   transform: scale(1.5, 1.5);
   z-index: 1;
-  background-color: #008080;
 }
 
-.at_num,
-.at_details {
+.atomicNumber,
+.atomDetails {
   position: absolute;
   font-size: 4px;
   color: rgba(255, 255, 255, 0.5);
   opacity: 0;
 }
 
-.at_num {
+.atomicNumber {
   top: 4px;
   right: 5px;
 }
@@ -73,64 +68,46 @@
   color: rgba(255, 255, 255, 0.9);
 }
 
-.at_details {
+.atomDetails {
   bottom: 4px;
   left: 0;
   right: 0;
 }
 
-.cell:nth-child(-n + 2) .element,
-.cell:nth-child(n + 13) .element {
-  background-color: rgba(0, 160, 96, 0.6);
-}
-.cell:nth-child(1) .element,
-.periodicRow:nth-child(2) .cell:nth-child(n + 14) .element,
-.periodicRow:nth-child(3) .cell:nth-child(n + 15) .element,
-.periodicRow:nth-child(4) .cell:nth-child(n + 16) .element,
-.periodicRow:nth-child(5) .cell:nth-child(n + 17) .element {
+.element[data-category='diatomic nonmetal'],
+.element[data-category='alkali metal'],
+.element[data-category='polyatomic nonmetal'] {
   background-color: rgba(0, 192, 64, 0.6);
 }
-.periodicRow:nth-child(-n + 6) .cell:nth-child(18) .element {
+
+.element[data-category='noble gas'] {
   background-color: rgba(64, 192, 0, 0.6);
 }
-.periodicRow:nth-child(n + 9) .element {
+.element[data-category='lanthanide'],
+.element[data-category='actinide'] {
   background-color: rgba(0, 96, 160, 0.6);
 }
-.cell:nth-child(-n + 2):hover .element,
-.cell:nth-child(n + 13):hover .element {
-  background-color: rgba(0, 160, 96, 0.9);
+
+.element[data-altBg] {
+  background-color: rgba(0, 160, 96, 0.6);
 }
-.cell:nth-child(1):hover .element,
-.periodicRow:nth-child(2) .cell:nth-child(n + 14):hover .element,
-.periodicRow:nth-child(3) .cell:nth-child(n + 15):hover .element,
-.periodicRow:nth-child(4) .cell:nth-child(n + 16):hover .element,
-.periodicRow:nth-child(5) .cell:nth-child(n + 17):hover .element {
+
+.element[data-category='diatomic nonmetal']:hover,
+.element[data-category='alkali metal']:hover,
+.element[data-category='polyatomic nonmetal']:hover {
   background-color: rgba(0, 192, 64, 0.9);
 }
-.periodicRow:nth-child(-n + 6) .cell:nth-child(18):hover .element {
+
+.element[data-category='noble gas']:hover {
   background-color: rgba(64, 192, 0, 0.9);
 }
-.periodicRow:nth-child(n + 9) .cell:hover .element {
+.element[data-category='lanthanide']:hover,
+.element[data-category='actinide']:hover {
   background-color: rgba(0, 96, 160, 0.9);
 }
 
-.cell:nth-child(1) .element {
-  transform-origin: 0 50%;
-}
-.cell:nth-child(18) .element {
-  transform-origin: 100% 50%;
-}
-.periodicRow:nth-child(10) .cell .element {
-  transform-origin: 50% 100%;
-}
-.periodicRow:nth-child(1) .cell:nth-child(1) .element {
-  transform-origin: 0 0;
-}
-.periodicRow:nth-child(1) .cell:nth-child(18) .element {
-  transform-origin: 100% 0;
-}
-.periodicRow:nth-child(10) .cell:nth-child(18) .element {
-  transform-origin: 100% 100%;
+.element[data-altBg]:hover {
+  background-color: rgba(0, 160, 96, 0.9);
 }
 
 @media (min-width: 600px) {
@@ -144,8 +121,8 @@
     bottom: 2px;
   }
 
-  .at_num,
-  .at_details {
+  .atomicNumber,
+  .atomDetails {
     font-size: 4px;
     opacity: 1;
   }
@@ -176,8 +153,8 @@
     height: 680px;
   }
 
-  .at_num,
-  .at_details {
+  .atomicNumber,
+  .atomDetails {
     font-size: 5px;
   }
 
@@ -191,8 +168,8 @@
     height: 400px;
   }
 
-  .at_num,
-  .at_details {
+  .atomicNumber,
+  .atomDetails {
     font-size: 10px;
     display: none;
   }
