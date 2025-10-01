@@ -30,9 +30,15 @@ export default function PlateManipulator(props) {
   const { inPopover = false } = props;
   const dispatch = useDispatch();
 
-  const sampleChangerState = useSelector((state) => state.sampleChanger.state);
-  const contents = useSelector((state) => state.sampleChanger.contents);
-  const loadedSample = useSelector((state) => state.sampleChanger.loadedSample);
+  const isMoving = useSelector(
+    (state) => state.sampleChanger.state === 'MOVING',
+  );
+  const hasContents = useSelector(
+    (state) => state.sampleChanger.contents.children !== null,
+  );
+  const sampleAddress = useSelector(
+    (state) => state.sampleChanger.loadedSample.address,
+  );
   const plateGrid = useSelector((state) => state.sampleChanger.plateGrid);
   const currentPlateIndex = useSelector(
     (state) => state.sampleChanger.currentPlateIndex,
@@ -43,8 +49,8 @@ export default function PlateManipulator(props) {
 
   const crystalList = useSelector((state) => state.sampleGrid.crystalList);
 
-  const global_state = useSelector(
-    (state) => state.sampleChangerMaintenance.global_state,
+  const plateInfo = useSelector(
+    (state) => state.sampleChangerMaintenance.global_state.plate_info,
   );
 
   function showContextMenu(event, id) {
@@ -69,8 +75,8 @@ export default function PlateManipulator(props) {
   function _setPlate() {
     let cplate_label = '';
     let plate_index = 0;
-    if (global_state.plate_info?.plate_label) {
-      cplate_label = global_state.plate_info.plate_label;
+    if (plateInfo?.plate_label) {
+      cplate_label = plateInfo.plate_label;
     }
 
     plateGrid.forEach((cplate, index) => {
@@ -94,14 +100,13 @@ export default function PlateManipulator(props) {
   function hasCrystals() {
     let _crystalLists = [];
 
-    if (loadedSample.address) {
-      const _loadedSample = loadedSample.address;
-      const loadedRow = _loadedSample.charAt(0);
-      let loadedCol = _loadedSample.charAt(1);
-      let loadedDrop = Number(_loadedSample.charAt(3), 10);
+    if (sampleAddress) {
+      const loadedRow = sampleAddress.charAt(0);
+      let loadedCol = sampleAddress.charAt(1);
+      let loadedDrop = Number(sampleAddress.charAt(3), 10);
       if (loadedDrop === ':') {
-        loadedDrop = _loadedSample.charAt(4);
-        loadedCol = Number(_loadedSample.slice(1, 2), 10);
+        loadedDrop = sampleAddress.charAt(4);
+        loadedCol = Number(sampleAddress.slice(1, 2), 10);
       }
       if (crystalList.xtal_list) {
         _crystalLists = crystalList.xtal_list.filter(
@@ -187,11 +192,11 @@ export default function PlateManipulator(props) {
   const nbrows = plate.rowTitle.length;
   let loadedDrop = '';
 
-  if (loadedSample.address) {
-    loadedDrop = loadedSample.address.charAt(3);
+  if (sampleAddress) {
+    loadedDrop = sampleAddress.charAt(3);
 
     if (loadedDrop === ':') {
-      loadedDrop = loadedSample.address.charAt(4);
+      loadedDrop = sampleAddress.charAt(4);
     }
   }
 
@@ -288,7 +293,7 @@ export default function PlateManipulator(props) {
         style={{ display: 'grid', paddingTop: '5px' }}
       >
         <div className={styles.plateDesc} style={{ display: 'grid' }}>
-          <div>Currently loaded :{loadedSample.address}</div>
+          <div>Currently loaded :{sampleAddress}</div>
           <Menu id={`drop-${selectedDrop}-tr`}>
             <Item
               onClick={() => {
@@ -435,7 +440,7 @@ export default function PlateManipulator(props) {
                 plate.colTitle.map((col, colIdx) => {
                   let cell = null;
                   const crystal = getCrystalAddress(row, col);
-                  if (contents.children !== null) {
+                  if (hasContents) {
                     if (plate.type === 'square') {
                       cell = (
                         <div
@@ -483,7 +488,7 @@ export default function PlateManipulator(props) {
                               style={{
                                 fill:
                                   `${row}${col}:${loadedDrop}-0` ===
-                                  loadedSample.address
+                                  sampleAddress
                                     ? '#e57373'
                                     : '#e0e0e0',
                               }}
@@ -541,7 +546,7 @@ export default function PlateManipulator(props) {
                 plate.colTitle.map((col, colIdx) => {
                   let cell = null;
                   const crystal = getCrystalAddress(row, col);
-                  if (contents.children !== null) {
+                  if (hasContents) {
                     if (plate.type === 'square') {
                       cell = (
                         <div
@@ -581,7 +586,7 @@ export default function PlateManipulator(props) {
                               style={{
                                 fill:
                                   `${row}${col}:${loadedDrop}-0` ===
-                                  loadedSample.address
+                                  sampleAddress
                                     ? '#e57373'
                                     : '#e0e0e0',
                               }}
@@ -641,11 +646,11 @@ export default function PlateManipulator(props) {
   }
 
   let cplate_label = '';
-  if (global_state.plate_info && global_state.plate_info.plate_label) {
-    cplate_label = global_state.plate_info.plate_label;
+  if (plateInfo && plateInfo.plate_label) {
+    cplate_label = plateInfo.plate_label;
   }
   let cssDisable = {};
-  if (sampleChangerState === 'MOVING') {
+  if (isMoving) {
     cssDisable = { cursor: 'wait', pointerEvents: 'none', opacity: '0.5' };
   }
 
@@ -653,11 +658,7 @@ export default function PlateManipulator(props) {
     return (
       <Row
         className="mt-4"
-        title={
-          sampleChangerState === 'MOVING'
-            ? 'Plate Moving, can not send commande'
-            : ''
-        }
+        title={isMoving ? 'Plate Moving, can not send commande' : ''}
       >
         <Col className="ms-3">
           <ButtonToolbar className="ms-4">
@@ -717,9 +718,7 @@ export default function PlateManipulator(props) {
         placement="auto-end"
         overlay={
           <Popover id="platePopover" style={{ maxWidth: '800px' }}>
-            <Popover.Header>
-              {global_state.plate_info.plate_label}
-            </Popover.Header>
+            <Popover.Header>{plateInfo.plate_label}</Popover.Header>
             <Popover.Body style={{ padding: 0 }}>{renderPlate()}</Popover.Body>
           </Popover>
         }
