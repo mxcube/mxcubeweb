@@ -11,7 +11,7 @@ export default function CustomObjectFieldTemplate({
 }) {
   const groups = groupBy(
     properties,
-    (field) => uiSchema[field.name]?.['ui:options'].group,
+    (field) => uiSchema[field.name]?.['ui:options']?.group,
   );
 
   const { undefined: ungroupedFields = [], ...groupedFieldsMap } = groups;
