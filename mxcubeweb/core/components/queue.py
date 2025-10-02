@@ -252,7 +252,7 @@ class Queue(ComponentBase):
         queue = self.queue_to_dict(include_lims_data=True)
         sample_order = queue.get("sample_order", [])
         try:
-            current = self.app.sample_changer.get_current_sample().get("sampleID", "")
+            current = self.app.lims.get_current_sample().get("sampleID", "")
         except Exception as ex:
             logging.getLogger("MX3.HWR").warning(
                 "Error retrieving current sample, {0}".format(ex.message)
@@ -1838,9 +1838,7 @@ class Queue(ComponentBase):
             # tasks, so in order function as expected; just mount the sample
             if (
                 not len(current_queue[sid]["tasks"])
-            ) and sid != self.app.sample_changer.get_current_sample().get(
-                "sampleID", ""
-            ):
+            ) and sid != self.app.lims.get_current_sample().get("sampleID", ""):
                 try:
                     self.app.sample_changer.mount_sample_clean_up(current_queue[sid])
                 except Exception:
@@ -2238,21 +2236,31 @@ class Queue(ComponentBase):
 
     def get_task_schema(self, data_model):
         return {
-            "path_parameters": data_model.__signature__.parameters[
-                "path_parameters"
-            ].annotation.schema(),
-            "common_parameters": data_model.__signature__.parameters[
-                "common_parameters"
-            ].annotation.schema(),
-            "collection_parameters": data_model.__signature__.parameters[
-                "collection_parameters"
-            ].annotation.schema(),
-            "user_collection_parameters": data_model.__signature__.parameters[
-                "user_collection_parameters"
-            ].annotation.schema(),
-            "legacy_parameters": data_model.__signature__.parameters[
-                "legacy_parameters"
-            ].annotation.schema(),
+            "path_parameters": (
+                data_model.__signature__.parameters[
+                    "path_parameters"
+                ].annotation.schema()
+            ),
+            "common_parameters": (
+                data_model.__signature__.parameters[
+                    "common_parameters"
+                ].annotation.schema()
+            ),
+            "collection_parameters": (
+                data_model.__signature__.parameters[
+                    "collection_parameters"
+                ].annotation.schema()
+            ),
+            "user_collection_parameters": (
+                data_model.__signature__.parameters[
+                    "user_collection_parameters"
+                ].annotation.schema()
+            ),
+            "legacy_parameters": (
+                data_model.__signature__.parameters[
+                    "legacy_parameters"
+                ].annotation.schema()
+            ),
         }
 
     def get_available_tasks(self):

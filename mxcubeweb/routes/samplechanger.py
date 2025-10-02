@@ -17,8 +17,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/samples_list", methods=["GET"])
     @server.restrict
     def get_sample_list():
-        app.sample_changer.get_sample_list()
-        return jsonify(app.lims.sample_list_get())
+        return jsonify(app.lims.sample_list_get(retrieve_samples_from_sc=True))
 
     @bp.route("/sync_with_crims", methods=["GET"])
     @server.require_control

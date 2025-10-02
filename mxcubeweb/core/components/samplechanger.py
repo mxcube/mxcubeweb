@@ -5,10 +5,6 @@ from mxcubecore import HardwareRepository as HWR
 from mxcubecore import queue_entry
 
 from mxcubeweb.core.components.component_base import ComponentBase
-from mxcubeweb.core.components.queue import (
-    COLLECTED,
-    UNCOLLECTED,
-)
 
 
 # TO CONSIDER:
@@ -40,70 +36,6 @@ class SampleChanger(ComponentBase):
             HWR.beamline.sample_changer_maintenance.connect(
                 "gripperChanged", self._gripper_changed
             )
-
-    def get_sample_list(self):
-        samples_list = (
-            HWR.beamline.sample_changer.get_sample_list()
-            if HWR.beamline.sample_changer
-            else []
-        )
-        samples = {}
-        samplesByCoords = {}
-        order = []
-        current_sample = {}
-
-        loaded_sample = (
-            HWR.beamline.sample_changer.get_loaded_sample()
-            if HWR.beamline.sample_changer
-            else None
-        )
-
-        for s in samples_list:
-            if not s.is_present():
-                continue
-            state = COLLECTED if s.has_been_loaded() else UNCOLLECTED
-            sample_dm = s.get_id() or ""
-            coords = s.get_coords()
-            sample_data = {
-                "sampleID": s.get_address(),
-                "location": s.get_address(),
-                "sampleName": s.get_name() or "Sample-%s" % s.get_address(),
-                "crystalUUID": s.get_id() or s.get_address(),
-                "proteinAcronym": (
-                    s.proteinAcronym if hasattr(s, "proteinAcronym") else ""
-                ),
-                "code": sample_dm,
-                "loadable": True,
-                "state": state,
-                "tasks": [],
-                "type": "Sample",
-                "cell_no": s.get_cell_no() if hasattr(s, "get_cell_no") else 1,
-                "puck_no": s.get_basket_no() if hasattr(s, "get_basket_no") else 1,
-            }
-            order.append(coords)
-            samplesByCoords[coords] = sample_data["sampleID"]
-
-            sample_data["defaultPrefix"] = self.app.lims.get_default_prefix(sample_data)
-            sample_data["defaultSubDir"] = self.app.lims.get_default_subdir(sample_data)
-
-            samples[s.get_address()] = sample_data
-            self.sc_contents_add(sample_data)
-
-            if loaded_sample and sample_data["location"] == loaded_sample.get_address():
-                current_sample = sample_data
-                self.app.queue.queue_add_item([current_sample])
-
-        # sort by location, using coords tuple
-        order.sort()
-        sample_list = {
-            "sampleList": samples,
-            "sampleOrder": [samplesByCoords[coords] for coords in order],
-        }
-
-        self.app.lims.sample_list_set(sample_list)
-
-        if current_sample:
-            self.set_current_sample(current_sample["sampleID"])
 
     def get_sc_contents(self):  # noqa: C901
         def _getElementStatus(e):
@@ -157,41 +89,6 @@ class SampleChanger(ComponentBase):
 
         return contents
 
-    def sc_contents_init(self):
-        self.app.SC_CONTENTS = {"FROM_CODE": {}, "FROM_LOCATION": {}}
-
-    def sc_contents_add(self, sample):
-        code, location = sample.get("code", None), sample.get("sampleID")
-
-        if code:
-            self.app.SC_CONTENTS.get("FROM_CODE")[code] = sample
-        if location:
-            self.app.SC_CONTENTS.get("FROM_LOCATION")[location] = sample
-
-    def sc_contents_from_code_get(self, code):
-        return self.app.SC_CONTENTS["FROM_CODE"].get(code, {})
-
-    def sc_contents_from_location_get(self, loc):
-        return self.app.SC_CONTENTS["FROM_LOCATION"].get(loc, {})
-
-    def set_current_sample(self, sample_id):
-        self.app.CURRENTLY_MOUNTED_SAMPLE = sample_id
-        msg = "[SC] Setting currenly mounted sample to %s" % sample_id
-        logging.getLogger("MX3.HWR").info(msg)
-
-        from mxcubeweb.routes.signals import set_current_sample
-
-        set_current_sample(sample_id)
-
-    def get_current_sample(self):
-        sample_id = self.app.CURRENTLY_MOUNTED_SAMPLE
-        sample = self.app.SAMPLE_LIST["sampleList"].get(sample_id, {})
-        msg = "[SC] Getting currently mounted sample %s" % sample
-
-        logging.getLogger("MX3.HWR").info(msg)
-
-        return sample
-
     def mount_sample_clean_up(self, sample):
         from mxcubeweb.routes import signals
 
@@ -202,7 +99,7 @@ class SampleChanger(ComponentBase):
         try:
             signals.sc_load(sample["location"])
 
-            sid = self.get_current_sample().get("sampleID", False)
+            sid = self.app.lims.get_current_sample().get("sampleID", False)
             current_queue = self.app.queue.queue_to_dict()
 
             if sample["location"] != "Manual":
@@ -239,7 +136,7 @@ class SampleChanger(ComponentBase):
                 msg = "Mounting sample: %s" % sample["sampleName"]
                 logging.getLogger("user_level_log").info(msg)
 
-                self.set_current_sample(sample["sampleID"])
+                self.app.lims.set_current_sample(sample["sampleID"])
                 res = True
 
         except Exception as ex:
@@ -273,7 +170,7 @@ class SampleChanger(ComponentBase):
             if sample["location"] != "Manual":
                 HWR.beamline.sample_changer.unload(sample["location"], wait=False)
             else:
-                self.set_current_sample(None)
+                self.app.lims.set_current_sample(None)
                 signals.sc_load_ready(sample["location"])
 
             msg = "[SC] unmounted %s" % sample["location"]
