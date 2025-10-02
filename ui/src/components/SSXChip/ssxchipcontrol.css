@@ -1,3 +1,7 @@
+#test {
+  min-width: fit-content;
+}
+
 .chip-title {
   font-weight: bold;
   overflow: hidden;
