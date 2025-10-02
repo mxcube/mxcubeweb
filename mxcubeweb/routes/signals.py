@@ -155,13 +155,13 @@ def loaded_sample_changed(sample):
         sampleID = address
 
         if HWR.beamline.sample_changer.has_loaded_sample():
-            mxcube.sample_changer.set_current_sample(sampleID)
+            mxcube.lims.set_current_sample(sampleID)
         else:
             sample = HWR.beamline.sample_changer.get_loaded_sample()
 
             address = sample.get_address() if sample else None
 
-            mxcube.sample_changer.set_current_sample(address)
+            mxcube.lims.set_current_sample(address)
 
         server.emit(
             "loaded_sample_changed",
@@ -172,14 +172,6 @@ def loaded_sample_changed(sample):
         sc_load_ready(address)
     except Exception as msg:
         logging.getLogger("HWR").error("error setting loaded sample: %s" + str(msg))
-
-
-def set_current_sample(sample_id):
-    if not sample_id:
-        sample_id = ""
-
-    sample = {"sampleID": sample_id}
-    server.emit("set_current_sample", sample, namespace="/hwr")
 
 
 def sc_contents_update():

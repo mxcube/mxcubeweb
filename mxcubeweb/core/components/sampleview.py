@@ -110,7 +110,7 @@ class SampleView(ComponentBase):
 
         # we do not send/save any centring data if there is no sample
         # to avoid the 2d centring when no sample is mounted
-        if self.app.sample_changer.get_current_sample().get("sampleID", "") == "":
+        if self.app.lims.get_current_sample().get("sampleID", "") == "":
             return
 
         # If centering is valid add the point, otherwise remove it
