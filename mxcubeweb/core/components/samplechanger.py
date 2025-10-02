@@ -1,8 +1,10 @@
+import json
 import logging
 
 import gevent
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import queue_entry
+from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
 
 from mxcubeweb.core.components.component_base import ComponentBase
 
@@ -14,28 +16,117 @@ class SampleChanger(ComponentBase):
         super().__init__(app, config)
 
     def init_signals(self):
-        from mxcubeweb.routes import signals
+        sc = HWR.beamline.sample_changer
 
-        """Initialize hwobj signals."""
-        HWR.beamline.sample_changer.connect("stateChanged", signals.sc_state_changed)
-        HWR.beamline.sample_changer.connect(
-            "isCollisionSafe", signals.is_collision_safe
-        )
-        HWR.beamline.sample_changer.connect(
-            "loadedSampleChanged", signals.loaded_sample_changed
-        )
-        HWR.beamline.sample_changer.connect(
-            "contentsUpdated", signals.sc_contents_update
-        )
+        # Initialize hwobj signals
+        sc.connect("stateChanged", self._sc_state_changed)
+        sc.connect("isCollisionSafe", self._is_collision_safe)
+        sc.connect("loadedSampleChanged", self._loaded_sample_changed)
+        sc.connect("contentsUpdated", self._sc_contents_update)
 
         if HWR.beamline.sample_changer_maintenance is not None:
             HWR.beamline.sample_changer_maintenance.connect(
-                "globalStateChanged", signals.sc_maintenance_update
+                "globalStateChanged", self._sc_maintenance_update
             )
 
             HWR.beamline.sample_changer_maintenance.connect(
                 "gripperChanged", self._gripper_changed
             )
+
+    def _sc_state_changed(self, *args):
+        new_state = args[0]
+        state_str = SampleChangerState.STATE_DESC.get(new_state, "Unknown").upper()
+        self.app.server.emit("sc_state", state_str, namespace="/hwr")
+
+    def _is_collision_safe(self, *args):
+        new_state = args[0]
+        # we are only interested when it becames true
+        if new_state:
+            msg = {
+                "signal": "isCollisionSafe",
+                "message": "Sample moved to safe area",
+            }
+            self.app.server.emit("sc", msg, namespace="/hwr")
+
+    def _loaded_sample_changed(self, sample):
+        if hasattr(sample, "get_address"):
+            address = sample.get_address()
+            barcode = sample.get_id()
+        else:
+            address = ""
+            barcode = ""
+
+        logging.getLogger("HWR").info("Loaded sample changed: %s", address)
+
+        try:
+            sampleID = address
+
+            if HWR.beamline.sample_changer.has_loaded_sample():
+                self.app.lims.set_current_sample(sampleID)
+            else:
+                sample = HWR.beamline.sample_changer.get_loaded_sample()
+                address = sample.get_address() if sample else None
+                self.app.lims.set_current_sample(address)
+
+            self.app.server.emit(
+                "loaded_sample_changed",
+                {"address": address, "barcode": barcode},
+                namespace="/hwr",
+            )
+
+            self._sc_load_ready(address)
+        except Exception:
+            logging.getLogger("HWR").exception("Error setting loaded sample")
+
+    def _sc_load_ready(self, location):
+        msg = {
+            "signal": "loadReady",
+            "location": location,
+            "message": "Sample changer, loaded sample",
+        }
+
+        self.app.server.emit("sc", msg, namespace="/hwr")
+
+    def _sc_unload(self, location):
+        msg = {
+            "signal": "operatingSampleChanger",
+            "location": location,
+            "message": "Please wait, unloading sample",
+        }
+
+        self.app.server.emit("sc", msg, namespace="/hwr")
+
+    def _sc_contents_update(self):
+        self.app.server.emit("sc_contents_update", {}, namespace="/hwr")
+
+    def _sc_maintenance_update(self, *args):
+        if len(args) == 3:
+            # Restore the `global_state` parameter removed in this commit 337efd37
+            global_state, cmd_state, message = args
+        else:
+            # Be backward compatible with HW objects which are emitting signal with
+            # 2 arguments
+            global_state = {}
+            cmd_state, message = args
+
+        try:
+            self.app.server.emit(
+                "sc_maintenance_update",
+                {
+                    "global_state": global_state,
+                    "commands_state": json.dumps(cmd_state),
+                    "message": message,
+                },
+                namespace="/hwr",
+            )
+        except Exception:
+            logging.getLogger("HWR").exception("error sending message")
+
+    def _gripper_changed(self):
+        self.app.queue.queue_clear()
+        self.app.server.emit(
+            "queue", {"Signal": "update", "message": "all"}, namespace="/hwr"
+        )
 
     def get_sc_contents(self):  # noqa: C901
         def _getElementStatus(e):
@@ -89,15 +180,18 @@ class SampleChanger(ComponentBase):
 
         return contents
 
-    def mount_sample_clean_up(self, sample):
-        from mxcubeweb.routes import signals
-
+    def _mount_sample(self, sample):
         sc = HWR.beamline.sample_changer
-
         res = False
 
         try:
-            signals.sc_load(sample["location"])
+            msg = {
+                "signal": "operatingSampleChanger",
+                "location": sample["location"],
+                "message": "Please wait, loading sample",
+            }
+
+            self.app.server.emit("sc", msg, namespace="/hwr")
 
             sid = self.app.lims.get_current_sample().get("sampleID", False)
             current_queue = self.app.queue.queue_to_dict()
@@ -155,23 +249,23 @@ class SampleChanger(ComponentBase):
                 if sid and current_queue.get(sid, False):
                     node_id = current_queue[sid]["queueID"]
                     self.app.queue.set_enabled_entry(node_id, False)
-                    signals.queue_toggle_sample(self.app.queue.get_entry(node_id)[1])
+                    self.app.queue.queue_toggle_sample(
+                        self.app.queue.get_entry(node_id)[1]
+                    )
         finally:
-            signals.sc_load_ready(sample["location"])
+            self._sc_load_ready(sample["location"])
 
         return res
 
-    def unmount_sample_clean_up(self, sample):
-        from mxcubeweb.routes import signals
-
+    def _unmount_sample(self, sample):
         try:
-            signals.sc_unload(sample["location"])
+            self._sc_unload(sample["location"])
 
             if sample["location"] != "Manual":
                 HWR.beamline.sample_changer.unload(sample["location"], wait=False)
             else:
                 self.app.lims.set_current_sample(None)
-                signals.sc_load_ready(sample["location"])
+                self._sc_load_ready(sample["location"])
 
             msg = "[SC] unmounted %s" % sample["location"]
             logging.getLogger("MX3.HWR").info(msg)
@@ -183,17 +277,22 @@ class SampleChanger(ComponentBase):
             HWR.beamline.queue_model.mounted_sample = ""
             HWR.beamline.sample_view.clear_all()
 
-    def mount_sample(self, sample):
-        gevent.spawn(self.mount_sample_clean_up, sample)
+    def mount_sample(self, sample, wait=True):  # noqa: FBT002
+        if wait:
+            self._mount_sample(sample)
+        else:
+            gevent.spawn(self._mount_sample, sample)
+
         return self.get_sc_contents()
 
     def unmount_current(self):
         sc_sample = HWR.beamline.sample_changer.get_loaded_sample()
         if sc_sample:
             location = sc_sample.get_address()
-            self.unmount_sample_clean_up({"location": location})
+            self._unmount_sample({"location": location})
         else:
-            self.unmount_sample_clean_up({"location": "Manual"})
+            self._unmount_sample({"location": "Manual"})
+
         return self.get_sc_contents()
 
     def get_loaded_sample(self):
@@ -302,9 +401,3 @@ class SampleChanger(ComponentBase):
         except Exception:
             logging.getLogger("MX3.HWR").exception("Could not get crystal List")
             return {"xtal_list": xtal_list}
-
-    def _gripper_changed(self):
-        self.app.queue.queue_clear()
-        self.app.server.emit(
-            "queue", {"Signal": "update", "message": "all"}, namespace="/hwr"
-        )
