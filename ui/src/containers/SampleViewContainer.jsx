@@ -9,6 +9,7 @@ import {
   logFrontEndTraceBack,
   setAttribute,
 } from '../actions/beamline';
+import { addShape } from '../actions/sampleview';
 import { showTaskForm } from '../actions/taskForm';
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
@@ -116,7 +117,7 @@ class SampleViewContainer extends Component {
                   groupFolder={this.props.groupFolder}
                   hardwareObjects={this.props.hardwareObjects}
                   uiproperties={uiproperties.sample_view_motors}
-                  sampleViewActions={this.props.sampleViewActions}
+                  addShape={this.props.addShape}
                   grids={grids}
                   selectedGrids={selectedGrids}
                   setAttribute={this.props.setAttribute}
@@ -177,6 +178,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
   return {
+    addShape: bindActionCreators(addShape, dispatch),
     showForm: bindActionCreators(showTaskForm, dispatch),
     setAttribute: bindActionCreators(setAttribute, dispatch),
     sendExecuteCommand: bindActionCreators(executeCommand, dispatch),
