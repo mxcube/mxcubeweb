@@ -1,10 +1,8 @@
 import contextlib
-import json
 import logging
 
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import queue_entry as qe
-from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
 from mxcubecore.HardwareObjects.Harvester import HarvesterState
 from mxcubecore.model import queue_model_objects as qmo
 
@@ -93,115 +91,6 @@ def harvester_contents_update():
     server.emit("harvester_contents_update")
 
 
-def sc_state_changed(*args):
-    new_state = args[0]
-    state_str = SampleChangerState.STATE_DESC.get(new_state, "Unknown").upper()
-    server.emit("sc_state", state_str, namespace="/hwr")
-
-
-def sc_load(location):
-    msg = {
-        "signal": "operatingSampleChanger",
-        "location": location,
-        "message": "Please wait, loading sample",
-    }
-
-    server.emit("sc", msg, namespace="/hwr")
-
-
-def sc_load_ready(location):
-    msg = {
-        "signal": "loadReady",
-        "location": location,
-        "message": "Sample changer, loaded sample",
-    }
-
-    server.emit("sc", msg, namespace="/hwr")
-
-
-def sc_unload(location):
-    msg = {
-        "signal": "operatingSampleChanger",
-        "location": location,
-        "message": "Please wait, unloading sample",
-    }
-
-    server.emit("sc", msg, namespace="/hwr")
-
-
-def is_collision_safe(*args):
-    # responds to the 'isCollisionSafe' signal from the Sample Changer
-    new_state = args[0]
-    # we are only interested when it becames true
-    if new_state:
-        msg = {
-            "signal": "isCollisionSafe",
-            "message": "Sample moved to safe area",
-        }
-        server.emit("sc", msg, namespace="/hwr")
-
-
-def loaded_sample_changed(sample):
-    if hasattr(sample, "get_address"):
-        address = sample.get_address()
-        barcode = sample.get_id()
-    else:
-        address = ""
-        barcode = ""
-
-    logging.getLogger("HWR").info("Loaded sample changed: " + address)
-
-    try:
-        sampleID = address
-
-        if HWR.beamline.sample_changer.has_loaded_sample():
-            mxcube.lims.set_current_sample(sampleID)
-        else:
-            sample = HWR.beamline.sample_changer.get_loaded_sample()
-
-            address = sample.get_address() if sample else None
-
-            mxcube.lims.set_current_sample(address)
-
-        server.emit(
-            "loaded_sample_changed",
-            {"address": address, "barcode": barcode},
-            namespace="/hwr",
-        )
-
-        sc_load_ready(address)
-    except Exception as msg:
-        logging.getLogger("HWR").error("error setting loaded sample: %s" + str(msg))
-
-
-def sc_contents_update():
-    server.emit("sc_contents_update", {}, namespace="/hwr")
-
-
-def sc_maintenance_update(*args):
-    if len(args) == 3:
-        # Restore the `global_state` parameter removed in this commit 337efd37
-        global_state, cmd_state, message = args
-    else:
-        # Be backward compatible with HW objects which are emitting signal with
-        # 2 arguments
-        global_state = {}
-        cmd_state, message = args
-
-    try:
-        server.emit(
-            "sc_maintenance_update",
-            {
-                "global_state": global_state,
-                "commands_state": json.dumps(cmd_state),
-                "message": message,
-            },
-            namespace="/hwr",
-        )
-    except Exception as msg:
-        logging.getLogger("HWR").error("error sending message: %s" + str(msg))
-
-
 def centring_started(method, *args):
     msg = {"method": method}
 
@@ -242,16 +131,7 @@ def queue_execution_entry_finished(entry, message):
     if not mxcube.queue.is_interleaved(entry.get_data_model()):
         server.emit("task", get_task_state(entry), namespace="/hwr")
 
-    queue_toggle_sample(entry)
-
-
-def queue_toggle_sample(entry):
-    if isinstance(entry, qe.SampleQueueEntry):
-        msg = {
-            "Signal": "DisableSample",
-            "sampleID": entry.get_data_model().loc_str,
-        }
-        server.emit("queue", msg, namespace="/hwr")
+    mxcube.queue._queue_toggle_sample(entry)
 
 
 def queue_execution_started(entry, queue_state=None):

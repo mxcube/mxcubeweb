@@ -1840,7 +1840,7 @@ class Queue(ComponentBase):
                 not len(current_queue[sid]["tasks"])
             ) and sid != self.app.lims.get_current_sample().get("sampleID", ""):
                 try:
-                    self.app.sample_changer.mount_sample_clean_up(current_queue[sid])
+                    self.app.sample_changer.mount_sample(current_queue[sid], wait=True)
                 except Exception:
                     HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
                 else:
@@ -1959,6 +1959,14 @@ class Queue(ComponentBase):
         HWR.beamline.queue_manager.connect(
             "energy_scan_finished", signals.energy_scan_finished
         )
+
+    def queue_toggle_sample(self, entry):
+        if isinstance(entry, qe.SampleQueueEntry):
+            msg = {
+                "Signal": "DisableSample",
+                "sampleID": entry.get_data_model().loc_str,
+            }
+            self.app.server.emit("queue", msg, namespace="/hwr")
 
     def enable_sample_entries(self, sample_id_list, flag):
         current_queue = self.queue_to_dict()
