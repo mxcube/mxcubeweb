@@ -147,6 +147,24 @@ function _GridData() {
   };
 }
 
+/**
+ * @typedef {Object} Color
+ * @property {number} r - red channel [0-255]
+ * @property {number} g - green channel [0-255]
+ * @property {number} b - blue channel [0-255]
+ */
+
+/**
+ * Return an RGBA string from Color object
+ *
+ * @param {Color} color
+ * @param {number} alpha - alpha channel [0-1]
+ * @return {string} RGBA string
+ */
+function toRGBA(color, alpha) {
+  return `rgba(${color.r}, ${color.g}, ${color.b}, ${alpha})`;
+}
+
 export default class DrawGridPlugin {
   constructor() {
     this.startDrawing = this.startDrawing.bind(this);
@@ -175,6 +193,11 @@ export default class DrawGridPlugin {
     this.resultType = 'heatmap';
     this.gridResultFormat = 'PNG';
     this.canvas = null;
+    this.colors = {
+      selected: { r: 136, g: 255, b: 91 }, // green
+      unselected: { r: 228, g: 255, b: 9 }, // yellow
+      drawing: { r: 150, g: 255, b: 70 }, // light green
+    };
   }
 
   /**
@@ -446,8 +469,9 @@ export default class DrawGridPlugin {
    * or if we are drawing in small cell size' mode.
    */
   addInnerLines(shapes, gridData, left, top, height, width, cellTH, cellTW) {
-    if (!gridData.selected) {
-      /* we only draw inner lines for selected meshes */
+    const isBeingDrawn = this.drawing && gridData.id === null;
+    if (!gridData.selected && !isBeingDrawn) {
+      /* we only draw inner lines for selected meshes or the one being drawn */
       return;
     }
 
@@ -456,7 +480,9 @@ export default class DrawGridPlugin {
       return;
     }
 
-    const lineColor = 'rgba(136, 255, 91, 0.5)';
+    const lineColor = isBeingDrawn
+      ? toRGBA(this.colors.drawing, 0.5)
+      : toRGBA(this.colors.selected, 0.5);
     const strokeArray = [5, 5];
 
     for (let nw = 1; nw < gridData.numCols; nw++) {
@@ -518,9 +544,11 @@ export default class DrawGridPlugin {
     const width = cellTW * gridData.numCols;
 
     let color = gridData.selected
-      ? 'rgba(136, 255, 91, 1)'
-      : 'rgba(228, 255, 9, 0.5)';
-    color = gridData.result?.length > 0 ? 'rgba(228, 255, 9, 1)' : color;
+      ? toRGBA(this.colors.selected, 1)
+      : toRGBA(this.colors.unselected, 0.5);
+
+    color =
+      gridData.result?.length > 0 ? toRGBA(this.colors.unselected, 1) : color;
     const outlineStrokeArray = gridData.selected ? [] : [5, 5];
 
     if (cellTW > 0 && cellTH > 0) {
@@ -595,15 +623,18 @@ export default class DrawGridPlugin {
       }
     }
 
+    const isBeingDrawn = this.drawing && gridData.id === null;
     shapes.push(
       new fabric.Rect({
         left,
         top,
         width,
         height,
-        fill: 'rgba(0,0,0,0)',
+        fill: isBeingDrawn
+          ? toRGBA(this.colors.drawing, 0.3)
+          : toRGBA({ r: 0, g: 0, b: 0 }, 0),
         strokeDashArray: outlineStrokeArray,
-        stroke: color,
+        stroke: isBeingDrawn ? toRGBA(this.colors.drawing, 1) : color,
         hasControls: false,
         selectable: true,
         hoverCursor: 'pointer',
