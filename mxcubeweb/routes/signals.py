@@ -131,7 +131,7 @@ def queue_execution_entry_finished(entry, message):
     if not mxcube.queue.is_interleaved(entry.get_data_model()):
         server.emit("task", get_task_state(entry), namespace="/hwr")
 
-    mxcube.queue._queue_toggle_sample(entry)
+    mxcube.queue.queue_toggle_sample(entry)
 
 
 def queue_execution_started(entry, queue_state=None):

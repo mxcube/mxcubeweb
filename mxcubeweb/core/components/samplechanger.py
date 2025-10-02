@@ -128,58 +128,6 @@ class SampleChanger(ComponentBase):
             "queue", {"Signal": "update", "message": "all"}, namespace="/hwr"
         )
 
-    def get_sc_contents(self):  # noqa: C901
-        def _getElementStatus(e):
-            if e.is_leaf():
-                if e.is_loaded():
-                    return "Loaded"
-                if e.has_been_loaded():
-                    return "Used"
-            if e.is_present():
-                return "Present"
-            return ""
-
-        def _getElementID(e):
-            if e == HWR.beamline.sample_changer:
-                if e.get_token() is not None:
-                    return e.get_token()
-            else:
-                if e.get_id() is not None:
-                    return e.get_id()
-            return ""
-
-        def _addElement(parent, element):
-            new_element = {
-                "name": element.get_address(),
-                "status": _getElementStatus(element),
-                "id": _getElementID(element),
-                "selected": element.is_selected(),
-            }
-
-            parent.setdefault("children", []).append(new_element)
-
-            if not element.is_leaf():
-                for e in element.get_components():
-                    _addElement(new_element, e)
-
-        if HWR.beamline.sample_changer:
-            root_name = HWR.beamline.sample_changer.get_address()
-
-            contents = {"name": root_name}
-
-            if hasattr(HWR.beamline.sample_changer, "get_room_temperature_mode"):
-                contents["room_temperature_mode"] = (
-                    HWR.beamline.sample_changer.get_room_temperature_mode()
-                )
-
-            for element in HWR.beamline.sample_changer.get_components():
-                if element.is_present():
-                    _addElement(contents, element)
-        else:
-            contents = {"name": "OFFLINE"}
-
-        return contents
-
     def _mount_sample(self, sample):
         sc = HWR.beamline.sample_changer
         res = False
@@ -235,7 +183,6 @@ class SampleChanger(ComponentBase):
 
         except Exception as ex:
             logging.getLogger("MX3.HWR").exception("[SC] sample could not be mounted")
-
             raise RuntimeError(str(ex)) from ex
         else:
             # Clean up if the new sample was mounted or the current sample was
@@ -277,13 +224,16 @@ class SampleChanger(ComponentBase):
             HWR.beamline.queue_model.mounted_sample = ""
             HWR.beamline.sample_view.clear_all()
 
+    def get_sc_contents(self):
+        return HWR.beamline.sample_changer.get_contents_as_dict()
+
     def mount_sample(self, sample, wait=True):  # noqa: FBT002
         if wait:
             self._mount_sample(sample)
         else:
             gevent.spawn(self._mount_sample, sample)
 
-        return self.get_sc_contents()
+        return HWR.beamline.sample_changer.get_contents_as_dict()
 
     def unmount_current(self):
         sc_sample = HWR.beamline.sample_changer.get_loaded_sample()
@@ -293,7 +243,7 @@ class SampleChanger(ComponentBase):
         else:
             self._unmount_sample({"location": "Manual"})
 
-        return self.get_sc_contents()
+        return HWR.beamline.sample_changer.get_contents_as_dict()
 
     def get_loaded_sample(self):
         try:
@@ -352,7 +302,7 @@ class SampleChanger(ComponentBase):
             cmds = []
             msg = ""
 
-        contents = self.get_sc_contents()
+        contents = HWR.beamline.sample_changer.get_contents_as_dict()
         address, barcode = self.get_loaded_sample()
 
         loaded_sample = {"address": address, "barcode": barcode}
