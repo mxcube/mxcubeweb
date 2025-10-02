@@ -22,20 +22,6 @@ body {
   display: flex;
 }
 
-.popover {
-  width: auto !important;
-  z-index: 1040;
-}
-
-#test {
-  min-width: fit-content;
-}
-
-.device-status-container > div {
-  margin-right: 1em;
-  width: 12%;
-}
-
 button[disabled] {
   opacity: 0.2;
   pointer-events: none;
@@ -55,8 +41,7 @@ input[type='email']:focus,
 input[type='url']:focus,
 input[type='search']:focus,
 input[type='tel']:focus,
-input[type='color']:focus,
-.uneditable-input:focus {
+input[type='color']:focus {
   border-color: rgba(126, 161, 185, 0.8);
   box-shadow:
     0 1px 1px rgba(0, 0, 0, 0.075) inset,
@@ -78,6 +63,8 @@ input[type='color']:focus,
 
 .popover {
   max-width: 100%; /* Max Width of the popover (depending on the container!) */
+  width: auto !important;
+  z-index: 1040;
 }
 
 .btn-primary {
@@ -124,10 +111,6 @@ input[type='color']:focus,
   box-shadow: none !important;
   background: transparent;
   color: #000000;
-}
-
-.nowrap-style {
-  white-space: nowrap;
 }
 
 .btn-link:not([data-default-styles]) {

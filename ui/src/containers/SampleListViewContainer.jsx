@@ -561,7 +561,7 @@ export default function SampleListViewContainer() {
         >
           <Button
             variant="outline-secondary"
-            className="nowrap-style"
+            className={styles.actionBtn}
             onClick={() => handleGetLimsSamples(loginData.limsName[0].name)}
           >
             <i className="fas fa-sync-alt" style={{ marginRight: '0.5em' }} />
@@ -585,7 +585,7 @@ export default function SampleListViewContainer() {
               <Dropdown.Item
                 onClick={getSamplesFromSC}
                 variant="outline-secondary"
-                className="nowrap-style"
+                className={styles.actionBtn}
               >
                 Get samples from SC
               </Dropdown.Item>
@@ -777,7 +777,7 @@ export default function SampleListViewContainer() {
               {getSynchronizationDropDownList()}
               <span style={{ marginLeft: '1.5em' }} />
               <Button
-                className="nowrap-style"
+                className={styles.actionBtn}
                 variant="outline-secondary"
                 onClick={() => showAddSampleForm()}
               >
@@ -790,7 +790,7 @@ export default function SampleListViewContainer() {
                 tooltipContent="Remove all samples from sample list and queue"
               >
                 <Button
-                  className="nowrap-style"
+                  className={styles.actionBtn}
                   variant="outline-secondary"
                   onClick={() => dispatch(showConfirmClearQueueDialog())}
                   disabled={
@@ -858,7 +858,7 @@ export default function SampleListViewContainer() {
               <span style={{ marginLeft: '1.5em' }} />
               <Button
                 variant="outline-secondary"
-                className="nowrap-style"
+                className={styles.actionBtn}
                 title="Context Menu to Add DC or Workflow to all filtered Samples Options"
                 disabled={Object.keys(sampleList).length === 0}
                 onClick={(e) => {

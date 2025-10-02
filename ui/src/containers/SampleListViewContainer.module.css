@@ -48,3 +48,7 @@
 .filterInputActive input:focus {
   box-shadow: none;
 }
+
+.actionBtn {
+  white-space: nowrap;
+}
