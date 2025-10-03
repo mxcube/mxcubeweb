@@ -1029,7 +1029,7 @@ class Queue(ComponentBase):
                 params.get("subdir", "").strip("/").split("/")[0:-1]
             )
 
-        full_path, process_path = HWR.beamline.session.get_full_path(
+        full_path, process_path = HWR.beamline.session.get_full_paths(
             params.get("subdir", ""), self.get_folder_tag(params)
         )
 
@@ -1242,7 +1242,7 @@ class Queue(ComponentBase):
                 sample_model
             )
 
-        full_path, process_path = HWR.beamline.session.get_full_path(
+        full_path, process_path = HWR.beamline.session.get_full_paths(
             params.get("subdir", ""), "xrf"
         )
         model.path_template.directory = full_path
@@ -1285,7 +1285,7 @@ class Queue(ComponentBase):
                 sample_model
             )
 
-        full_path, process_path = HWR.beamline.session.get_full_path(
+        full_path, process_path = HWR.beamline.session.get_full_paths(
             params.get("subdir", ""), "energy_scan"
         )
         model.path_template.directory = full_path
@@ -1532,7 +1532,7 @@ class Queue(ComponentBase):
                 sample_model
             )
 
-        full_path, process_path = HWR.beamline.session.get_full_path(
+        full_path, process_path = HWR.beamline.session.get_full_paths(
             # Note that 'experiment_name' field can either be omitted, set to None
             # or some string value. For cases it is not defined (omitted or None)
             # the "" will be used for the path generation.
