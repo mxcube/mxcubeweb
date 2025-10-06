@@ -1,21 +1,53 @@
 import json
 import logging
+from typing import ClassVar
 
 import gevent
+from markupsafe import escape
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import queue_entry
-from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import SampleChangerState
+from mxcubecore.HardwareObjects.abstract.AbstractSampleChanger import (
+    SampleChanger,
+    SampleChangerState,
+)
 
-from mxcubeweb.core.components.component_base import ComponentBase
+from mxcubeweb.core.adapter.adapter_base import AdapterBase
+from mxcubeweb.core.models.adaptermodels import (
+    SampleChangerCommandInputModel,
+    SampleInputModel,
+)
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
+
+logger = logging.getLogger("MX3.HWR")
+
+resource_handler_config = ResourceHandlerConfigModel(
+    name="sample_changer",
+    url_prefix="/mxcube/api/v0.1/sample_changer",
+    attributes=[
+        "loaded_sample",
+        "get_contents",
+        "get_value",
+        "sync_with_crims",
+    ],
+    commands=[
+        "select_location",
+        "scan_location",
+        "unmount_current",
+        "mount_sample",
+        "send_command",
+    ],
+)
 
 
-# TO CONSIDER:
-# This should maybe be made into an adapter instead of a component
-class SampleChanger(ComponentBase):
-    def __init__(self, app, config):
-        super().__init__(app, config)
+class SampleChangerAdapter(AdapterBase):
+    """Adapter for AbstractSampleChanger"""
 
-    def init_signals(self):
+    SUPPORTED_TYPES: ClassVar[list[object]] = [SampleChanger]
+
+    def __init__(self, ho, role, app):
+        super().__init__(ho, role, app, resource_handler_config)
+        self.app = app
+
         sc = HWR.beamline.sample_changer
 
         # Initialize hwobj signals
@@ -59,10 +91,10 @@ class SampleChanger(ComponentBase):
         logging.getLogger("HWR").info("Loaded sample changed: %s", address)
 
         try:
-            sampleID = address
+            sample_id = address
 
             if HWR.beamline.sample_changer.has_loaded_sample():
-                self.app.lims.set_current_sample(sampleID)
+                self.app.lims.set_current_sample(sample_id)
             else:
                 sample = HWR.beamline.sample_changer.get_loaded_sample()
                 address = sample.get_address() if sample else None
@@ -135,7 +167,7 @@ class SampleChanger(ComponentBase):
         try:
             msg = {
                 "signal": "operatingSampleChanger",
-                "location": sample["location"],
+                "location": sample.location,
                 "message": "Please wait, loading sample",
             }
 
@@ -144,18 +176,15 @@ class SampleChanger(ComponentBase):
             sid = self.app.lims.get_current_sample().get("sampleID", False)
             current_queue = self.app.queue.queue_to_dict()
 
-            if sample["location"] != "Manual":
-                msg = "Mounting sample: %s (%s)" % (
-                    sample["location"],
-                    sample.get("sampleName", ""),
-                )
+            if sample.location != "Manual":
+                msg = f"Mounting sample: {sample.location} ({sample.sample_name})"
                 logging.getLogger("user_level_log").info(msg)
 
                 if (
                     not sc.get_loaded_sample()
-                    or sc.get_loaded_sample().get_address() != sample["location"]
+                    or sc.get_loaded_sample().get_address() != sample.location
                 ):
-                    res = sc.load(sample["sampleID"], wait=True)
+                    res = sc.load(sample.sample_id, wait=True)
 
                 if (
                     res
@@ -167,18 +196,19 @@ class SampleChanger(ComponentBase):
                     HWR.beamline.diffractometer.reject_centring()
                     msg = "Starting autoloop centring ..."
                     logging.getLogger("MX3.HWR").info(msg)
-                    C3D_MODE = HWR.beamline.diffractometer.C3D_MODE
-                    HWR.beamline.diffractometer.start_centring_method(C3D_MODE)
+                    HWR.beamline.diffractometer.start_centring_method(
+                        HWR.beamline.diffractometer.C3D_MODE
+                    )
                 elif HWR.beamline.diffractometer.in_plate_mode():
                     msg = "Starting autoloop Focusing ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     sc.move_to_crystal_position(None)
 
             else:
-                msg = "Mounting sample: %s" % sample["sampleName"]
+                msg = f"Mounting sample: {sample.sample_name}"
                 logging.getLogger("user_level_log").info(msg)
 
-                self.app.lims.set_current_sample(sample["sampleID"])
+                self.app.lims.set_current_sample(sample.sample_id)
                 res = True
 
         except Exception as ex:
@@ -195,26 +225,26 @@ class SampleChanger(ComponentBase):
 
                 if sid and current_queue.get(sid, False):
                     node_id = current_queue[sid]["queueID"]
-                    self.app.queue.set_enabled_entry(node_id, False)
+                    self.app.queue.set_enabled_entry(node_id, False)  # noqa: FBT003
                     self.app.queue.queue_toggle_sample(
                         self.app.queue.get_entry(node_id)[1]
                     )
         finally:
-            self._sc_load_ready(sample["location"])
+            self._sc_load_ready(sample.location)
 
         return res
 
-    def _unmount_sample(self, sample):
+    def _unmount_sample(self, location):
         try:
-            self._sc_unload(sample["location"])
+            self._sc_unload(location)
 
-            if sample["location"] != "Manual":
-                HWR.beamline.sample_changer.unload(sample["location"], wait=False)
+            if location != "Manual":
+                HWR.beamline.sample_changer.unload(location, wait=False)
             else:
                 self.app.lims.set_current_sample(None)
-                self._sc_load_ready(sample["location"])
+                self._sc_load_ready(location)
 
-            msg = "[SC] unmounted %s" % sample["location"]
+            msg = f"[SC] unmounted {location}"
             logging.getLogger("MX3.HWR").info(msg)
         except Exception:
             msg = "[SC] sample could not be mounted"
@@ -224,26 +254,55 @@ class SampleChanger(ComponentBase):
             HWR.beamline.queue_model.mounted_sample = ""
             HWR.beamline.sample_view.clear_all()
 
-    def get_sc_contents(self):
-        return HWR.beamline.sample_changer.get_contents_as_dict()
+    def get_value(self) -> dict:
+        if HWR.beamline.sample_changer_maintenance is not None:
+            global_state, cmdstate, msg = self.get_global_state()
 
-    def mount_sample(self, sample, wait=True):  # noqa: FBT002
-        if wait:
-            self._mount_sample(sample)
+            cmds = HWR.beamline.sample_changer_maintenance.get_cmd_info()
+
         else:
-            gevent.spawn(self._mount_sample, sample)
+            global_state = {}
+            cmdstate = "SC maintenance controller not defined"
+            cmds = []
+            msg = ""
 
-        return HWR.beamline.sample_changer.get_contents_as_dict()
+        contents = self._ho.get_contents_as_dict()
+        address, barcode = self.get_loaded_sample()
 
-    def unmount_current(self):
-        sc_sample = HWR.beamline.sample_changer.get_loaded_sample()
-        if sc_sample:
-            location = sc_sample.get_address()
-            self._unmount_sample({"location": location})
+        loaded_sample = {"address": address, "barcode": barcode}
+
+        try:
+            state = HWR.beamline.sample_changer.get_status().upper()
+        except Exception:
+            logging.getLogger("MX3.HWR").exception("")
+            state = "OFFLINE"
+
+        return {
+            "state": state,
+            "loaded_sample": loaded_sample,
+            "contents": contents,
+            "global_state": {
+                "global_state": global_state,
+                "commands_state": cmdstate,
+            },
+            "cmds": {"cmds": cmds},
+            "msg": msg,
+            "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),
+        }
+
+    def state(self):
+        return "READY" if self._ho.is_ready() else "BUSY"
+
+    def loaded_sample(self) -> dict:
+        if self._ho.has_loaded_sample():
+            address, barcode = self._ho.get_loaded_sample()
         else:
-            self._unmount_sample({"location": "Manual"})
+            address, barcode = "", ""
 
-        return HWR.beamline.sample_changer.get_contents_as_dict()
+        return {"address": address, "barcode": barcode}
+
+    def get_contents(self):
+        return self._ho.get_contents_as_dict()
 
     def get_loaded_sample(self):
         try:
@@ -261,24 +320,6 @@ class SampleChanger(ComponentBase):
 
         return address, barcode
 
-    def get_capacity(self):
-        baskets = HWR.beamline.sample_changer.get_basket_list()
-        num_samples = 0
-        for basket in baskets:
-            num_samples += basket.get_number_of_samples()
-        return {
-            "num_baskets": len(baskets),
-            "num_samples": num_samples,
-        }
-
-    def get_maintenance_cmds(self):
-        if HWR.beamline.sample_changer_maintenance is not None:
-            ret = HWR.beamline.sample_changer_maintenance.get_cmd_info()
-        else:
-            ret = "SC maintenance controller not defined"
-
-        return ret
-
     def get_global_state(self):
         try:
             return HWR.beamline.sample_changer_maintenance.get_global_state()
@@ -290,40 +331,44 @@ class SampleChanger(ComponentBase):
                 "Can't retrieve the global state",
             )
 
-    def get_initial_state(self):
-        if HWR.beamline.sample_changer_maintenance is not None:
-            global_state, cmdstate, msg = self.get_global_state()
+    def select_location(self, loc: str):
+        self._ho.select(loc)
+        return self._ho.get_contents_as_dict()
 
-            cmds = HWR.beamline.sample_changer_maintenance.get_cmd_info()
+    def scan_location(self, loc: str):
+        loc = None if loc == "" else loc
+        self._ho.scan(loc, recursive=True)
+        return self._ho.get_contents_as_dict()
 
+    def mount_sample(self, sample: SampleInputModel, wait=True):  # noqa: FBT002
+        if wait:
+            self._mount_sample(sample)
         else:
-            global_state = {}
-            cmdstate = "SC maintenance controller not defined"
-            cmds = []
-            msg = ""
+            gevent.spawn(self._mount_sample, sample)
 
-        contents = HWR.beamline.sample_changer.get_contents_as_dict()
-        address, barcode = self.get_loaded_sample()
+        return HWR.beamline.sample_changer.get_contents_as_dict()
 
-        loaded_sample = {"address": address, "barcode": barcode}
+    def unmount_current(self):
+        sc_sample = HWR.beamline.sample_changer.get_loaded_sample()
+        if sc_sample:
+            location = sc_sample.get_address()
+            self._unmount_sample(location)
+        else:
+            self._unmount_sample("Manual")
 
+        return HWR.beamline.sample_changer.get_contents_as_dict()
+
+    def send_command(self, command: SampleChangerCommandInputModel):
         try:
-            state = HWR.beamline.sample_changer.get_status().upper()
-        except Exception:
-            state = "OFFLINE"
-
-        return {
-            "state": state,
-            "loaded_sample": loaded_sample,
-            "contents": contents,
-            "global_state": {
-                "global_state": global_state,
-                "commands_state": cmdstate,
-            },
-            "cmds": {"cmds": cmds},
-            "msg": msg,
-            "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),
-        }
+            return {
+                "response": HWR.beamline.sample_changer_maintenance.send_command(
+                    command.cmd, command.arguments
+                )
+            }
+        except Exception as _ex:
+            logger.exception("SC cannot execute command %s", command.cmd)
+            msg = f"Cannot execute command {escape(command.cmd)}"
+            raise RuntimeError(msg) from _ex
 
     def sync_with_crims(self):
         """
@@ -347,7 +392,7 @@ class SampleChanger(ComponentBase):
                     "sample": x.sample,
                 }
                 xtal_list.append(response)
-            return {"xtal_list": xtal_list}
         except Exception:
             logging.getLogger("MX3.HWR").exception("Could not get crystal List")
-            return {"xtal_list": xtal_list}
+
+        return {"xtal_list": xtal_list}

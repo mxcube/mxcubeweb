@@ -8,7 +8,6 @@ import { fetchLoginInfo, sendLogIn } from '../api/loginBase';
 import { fetchApplicationSettings, fetchUIProperties } from '../api/main';
 import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 import { fetchRemoteAccessState } from '../api/remoteAccess';
-import { fetchSampleChangerInitialState } from '../api/sampleChanger';
 import { fetchImageData, fetchShapes } from '../api/sampleview';
 import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchGetAllActions } from './beamlineActions';
@@ -119,7 +118,7 @@ export function getInitialState() {
       fetchShapes()
         .then((json) => ({ shapes: json.shapes }))
         .catch(notify),
-      fetchSampleChangerInitialState()
+      fetchValue('sample_changer', 'sample_changer')
         .then((json) => {
           const { state, contents, loaded_sample, cmds, global_state, msg } =
             json;

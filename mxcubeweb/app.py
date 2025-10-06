@@ -30,7 +30,6 @@ from mxcubeweb.core.components.component_base import import_component
 from mxcubeweb.core.components.harvester import Harvester
 from mxcubeweb.core.components.lims import Lims
 from mxcubeweb.core.components.queue import Queue
-from mxcubeweb.core.components.samplechanger import SampleChanger
 from mxcubeweb.core.components.sampleview import SampleView
 from mxcubeweb.core.components.workflow import Workflow
 from mxcubeweb.core.components.log import Log
@@ -164,7 +163,6 @@ class MXCUBEApplication:
             MXCUBEApplication, cfg.app.usermanager
         )
         MXCUBEApplication.chat = Chat(MXCUBEApplication, {})
-        MXCUBEApplication.sample_changer = SampleChanger(MXCUBEApplication, {})
         MXCUBEApplication.sample_view = SampleView(MXCUBEApplication, {})
         MXCUBEApplication.workflow = Workflow(MXCUBEApplication, {})
         MXCUBEApplication.harvester = Harvester(MXCUBEApplication, {})
@@ -200,7 +198,6 @@ class MXCUBEApplication:
         """
         MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
         MXCUBEApplication.sample_view.init_signals()
-        MXCUBEApplication.sample_changer.init_signals()
         MXCUBEApplication.harvester.init_signals()
 
     @staticmethod

@@ -70,8 +70,9 @@ class AdapterBase:
 
         if resource_handler_config:
             ResourceHandlerFactory.create_or_get(
-                name=cls_name,
-                url_prefix="/mxcube/api/v0.1/hwobj/" + self._type.lower(),
+                name=resource_handler_config.name or cls_name,
+                url_prefix="/mxcube/api/v0.1/hwobj/"
+                + (resource_handler_config.name or self._type.lower()),
                 handler_dict=self.ADAPTER_DICT[cls_name],
                 app=self.app,
                 exports=resource_handler_config.exports,

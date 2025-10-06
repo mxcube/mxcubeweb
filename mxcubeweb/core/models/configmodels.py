@@ -294,6 +294,13 @@ class ResourceHandlerConfigModel(BaseModel):
     """
 
     url_prefix: str = Field("", description="URL prefix")
+    name: str | None = Field(
+        None,
+        description=(
+            "Name of the resource handler, if not given the class name (lower case) ",
+            "is used",
+        ),
+    )
     exports: list[dict[str, str | list]] = Field(
         [],
         description=(

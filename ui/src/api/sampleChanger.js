@@ -1,47 +1,48 @@
-import api from './api';
+import { fetchAttribute, sendExecuteCommand } from './hardware-object';
 
-const endpoint = api.url('/sample_changer');
+function fetchSampleChangerAttribute(attribute) {
+  return fetchAttribute('sample_changer', 'sample_changer', attribute);
+}
 
-export function fetchSampleChangerInitialState() {
-  return endpoint.get('/get_initial_state').safeJson();
+function _sendSampleChangerCommand(cmd, args) {
+  return sendExecuteCommand('sample_changer', 'sample_changer', cmd, args);
 }
 
 export function fetchSampleChangerContents() {
-  return endpoint.get('/contents').safeJson();
+  return fetchSampleChangerAttribute('get_contents');
 }
 
 export function fetchLoadedSample() {
-  return endpoint.get('/loaded_sample').safeJson();
+  return fetchSampleChangerAttribute('loaded_sample');
 }
 
-export function fetchSamplesList() {
-  return endpoint.get('/samples_list').safeJson();
+export function sendSelectContainer(loc) {
+  return _sendSampleChangerCommand('select_location', { loc });
 }
 
-export function sendSelectContainer(address) {
-  return endpoint.get(`/select/${address}`).safeJson();
-}
-
-export function sendScanSampleChanger(address) {
-  return endpoint.get(`/scan/${address}`).safeJson();
+export function sendScanSampleChanger(loc) {
+  return _sendSampleChangerCommand('scan_location', { loc });
 }
 
 export function sendMountSample(sampleData) {
-  return endpoint.post(sampleData, '/mount').res();
+  return _sendSampleChangerCommand('mount_sample', sampleData);
 }
 
 export function sendUnmountCurrentSample() {
-  return endpoint.post(undefined, '/unmount_current').res();
+  return _sendSampleChangerCommand('unmount_current', {});
 }
 
 export function sendAbortSampleChanger() {
-  return endpoint.get('/send_command/abort').res();
+  return _sendSampleChangerCommand('send_command', {
+    cmd: 'abort',
+    arguments: '',
+  });
 }
 
-export function sendSampleChangerCommand(cmdparts, args) {
-  return endpoint.get(`/send_command/${cmdparts}/${args}`).res();
+export function sendSampleChangerCommand(cmd, args) {
+  return _sendSampleChangerCommand('send_command', { cmd, arguments: args });
 }
 
 export function sendSyncWithCrims() {
-  return endpoint.get('/sync_with_crims').safeJson();
+  return _sendSampleChangerCommand('sync_with_crims', {});
 }

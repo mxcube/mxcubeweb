@@ -37,7 +37,7 @@ def validate_input_str(input_string: str) -> bool:
     Returns:
         bool: True if the string is valid, False otherwise.
     """
-    pattern = r"^[a-zA-Z0-9._]+$"
+    pattern = r"^[a-zA-Z0-9._]*$"
     return bool(re.match(pattern, input_string))
 
 
@@ -354,6 +354,7 @@ class ResourceHandler:
                 return param_type.parse_obj(param_data)
             except ValidationError as e:
                 msg = f"Invalid input for '{param_name}' '{e.errors}'"
+                msg += f" on: {request.url}"
                 raise ValueError(msg) from e
 
         elif isinstance(param_data[param_name], int | float | bool):
@@ -366,13 +367,15 @@ class ResourceHandler:
             if validate_input_str(param_data[param_name]):
                 return param_data[param_name]
 
-            msg = f"Invalid string input for '{param_data[param_name]}'"
+            msg = f"Invalid string input for '{param_name}' '{param_data[param_name]}'"
+            msg += f" on: {request.url}"
             raise ValueError(msg)
 
         else:
             # We could handle this case as well but we would need to be
             # carefull with how the data is validated
             msg = f"No model defined for '{param_name}'"
+            msg += f" on: {request.url}"
             raise TypeError(msg)
 
     def _handle_view_result(self, result: object) -> dict | Response:
@@ -384,6 +387,9 @@ class ResourceHandler:
             Flask Response: JSON response.
         """
         try:
+            if isinstance(result, Response):
+                # If it's already a Flask Response, return it directly
+                return result
             # Check if the result is a Pydantic model or any other serializable object
             if isinstance(result, BaseModel):
                 # Convert Pydantic model to a dict
@@ -609,7 +615,9 @@ class AdapterResourceHandler(ResourceHandler):
                 log.error(msg)
                 return jsonify({"error": msg}), 400
 
-            # Check if the object_id exists in the handler_dict
+            # Check if the object_id exists in the handler_dict and corresponds to a
+            # HardwareObject
+
             obj = self._app.mxcubecore.get_adapter(object_id)
 
             if not obj:

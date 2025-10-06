@@ -15,3 +15,7 @@ export function fetchLimsResults(qid) {
 export function sendSelectProposal(number) {
   return endpoint.post({ proposal_number: number }, '/proposal').res();
 }
+
+export function fetchSamplesList() {
+  return endpoint.get('/samples_list').safeJson();
+}

@@ -11,6 +11,11 @@ from flask import (
 def init_route(app, server, url_prefix):
     bp = Blueprint("lims", __name__, url_prefix=url_prefix)
 
+    @bp.route("/samples_list", methods=["GET"])
+    @server.restrict
+    def get_sample_list():
+        return jsonify(app.lims.sample_list_get(retrieve_samples_from_sc=True))
+
     @bp.route("/lims_samples", methods=["GET"])
     @server.restrict
     def get_proposal_samples():
