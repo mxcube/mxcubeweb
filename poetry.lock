@@ -1997,14 +1997,14 @@ uvicorn = ">=0.34.0,<0.35.0"
 
 [[package]]
 name = "mxcubecore"
-version = "1.342.0"
+version = "1.391.0"
 description = "Core libraries for the MXCuBE application"
 optional = false
 python-versions = "<3.12,>=3.10"
 groups = ["main"]
 files = [
-    {file = "mxcubecore-1.342.0-py3-none-any.whl", hash = "sha256:a1ab230af771bfe4bfe42091dd385a8d31e0fbbf0d2ee661f679e117e228b2b3"},
-    {file = "mxcubecore-1.342.0.tar.gz", hash = "sha256:2a3ba5f5d971bd750ef558c272dcb910284a80020858571db0cdcba85d170ac8"},
+    {file = "mxcubecore-1.391.0-py3-none-any.whl", hash = "sha256:f0af343ef4cc432e33d1288c6a6a33d6072e2ee4bd4bf9d954277503d7f0a8d7"},
+    {file = "mxcubecore-1.391.0.tar.gz", hash = "sha256:59793ebc5cc9a2e9c323b5ea9a3ac52ca8899abab3ca0f76474971545ecb373a"},
 ]
 
 [package.dependencies]
@@ -2018,11 +2018,11 @@ jsonschema = ">=4.17.1,<5.0.0"
 lucid3 = ">=3.0.0,<4.0.0"
 lxml = ">=4.9.1,<5.0.0"
 matplotlib = ">=3.6.2,<4.0.0"
-mxcube-video-streamer = ">=1.8.2"
+mxcube-video-streamer = ">=1.8.3"
 numpy = ">=1.23.5,<2.0.0"
 Pillow = ">=10.4.0,<11.0.0"
 psutil = ">=5.9.4,<6.0.0"
-py4j = "0.10.9.7"
+py4j = "0.10.9.9"
 pydantic = ">=2.8.2,<2.9.0"
 PyDispatcher = ">=2.0.6,<3.0.0"
 PyTango = ">=9.3.6,<10.0.0"
@@ -2369,14 +2369,14 @@ test = ["enum34 ; python_version <= \"3.4\"", "ipaddress ; python_version < \"3.
 
 [[package]]
 name = "py4j"
-version = "0.10.9.7"
+version = "0.10.9.9"
 description = "Enables Python programs to dynamically access arbitrary Java objects"
 optional = false
 python-versions = "*"
 groups = ["main"]
 files = [
-    {file = "py4j-0.10.9.7-py2.py3-none-any.whl", hash = "sha256:85defdfd2b2376eb3abf5ca6474b51ab7e0de341c75a02f46dc9b5976f5a5c1b"},
-    {file = "py4j-0.10.9.7.tar.gz", hash = "sha256:0b6e5315bb3ada5cf62ac651d107bb2ebc02def3dee9d9548e3baac644ea8dbb"},
+    {file = "py4j-0.10.9.9-py2.py3-none-any.whl", hash = "sha256:c7c26e4158defb37b0bb124933163641a2ff6e3a3913f7811b0ddbe07ed61533"},
+    {file = "py4j-0.10.9.9.tar.gz", hash = "sha256:f694cad19efa5bd1dee4f3e5270eb406613c974394035e5bfc4ec1aba870b879"},
 ]
 
 [[package]]
@@ -4039,4 +4039,4 @@ graylog = ["graypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "e121a7705085aa19f2f08ae23adc914ab73a499523fa0f5418d33d2badb39fa9"
+content-hash = "7e13d276c0715cb58f1209e2f0f72aa8b9713a2fd0d906f99b3741063ec7b257"
