@@ -38,3 +38,10 @@
 .fieldHelp p {
   margin-bottom: 0;
 }
+
+.unitLabel {
+  /* font-weight is inherited from the label by default */
+  font-weight: normal;
+  font-family: monospace;
+  color: var(--bs-secondary);
+}

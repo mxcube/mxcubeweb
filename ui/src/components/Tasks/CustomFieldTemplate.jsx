@@ -42,12 +42,15 @@ export default function CustomFieldTemplate(props) {
     );
   }
 
+  const unit = schema.unit ? ` [${schema.unit}]` : '';
+
   return (
     <div className={fieldClassNames}>
       <div className={styles.fieldTitle}>
         {label && (
           <label htmlFor={id} className={styles.fieldLabel}>
             {label}
+            <span className={styles.unitLabel}>{unit}</span>
             {required && <span className="text-danger">*</span>}
           </label>
         )}
