@@ -39,13 +39,19 @@ class DetectorAdapter(AdapterBase):
         """
         Notify ADXV and/or Braggy of the image to display.
         """
-        res = {"path": "", "img": 0}
+        res = {"image_url": ""}
 
         if path:
             fpath, img = HWR.beamline.detector.get_actual_file_path(path, img_num)
             HWR.beamline.collect.adxv_notify(fpath, img)
             fpath = HWR.beamline.session.get_path_with_proposal_as_root(fpath)
 
-            res = {"path": fpath, "img_num": img_num}
+            if self.app.config.braggy.USE_BRAGGY:
+                res = {
+                    "image_url": (
+                        f"{self.app.config.braggy.BRAGGY_URL}/"
+                        f"?file={fpath}/image_${img_num}.h5.dataset"
+                    )
+                }
 
         return res
