@@ -2337,7 +2337,9 @@ class Queue(ComponentBase):
         Pause the execution of the queue
         """
         HWR.beamline.queue_manager.pause(True)
-
+        print(
+            f'@=@=@ components queue pause'
+        )
         msg = {
             "Signal": self.queue_exec_state(),
             "Message": "Queue execution paused",

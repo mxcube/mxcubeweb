@@ -378,7 +378,9 @@ def queue_execution_paused(state):
         msg = {"Signal": "QueuePaused", "Message": "Queue execution paused"}
     else:
         msg = {"Signal": "QueueRunning", "Message": "Queue execution running"}
-
+    logging.getLogger("HWR").debug(
+        f'@@@=== emit queue msg: {msg}'
+    )
     server.emit("queue", msg, namespace="/hwr")
 
 
