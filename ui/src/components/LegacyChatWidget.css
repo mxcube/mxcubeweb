@@ -1,0 +1,124 @@
+.rcw-widget-container {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  width: 360px;
+  max-width: calc(100% - 40px);
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  display: flex;
+  flex-direction: column;
+  font-family: inherit;
+  z-index: 2000;
+}
+
+.rcw-hidden {
+  display: none;
+}
+
+.rcw-header {
+  padding: 0.6rem;
+  border-bottom: 1px solid #eee;
+  background: #f7f7f8;
+  position: relative;
+}
+.rcw-title {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.rcw-subtitle {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.rcw-messages-container {
+  padding: 0.6rem;
+  max-height: 280px;
+  overflow: auto;
+  background: #fafafa;
+}
+
+.rcw-message {
+  margin-bottom: 0.6rem;
+  display: flex;
+  flex-direction: column;
+}
+.rcw-response {
+  align-items: flex-start;
+}
+.rcw-message-client {
+  align-items: flex-end;
+}
+.rcw-client .rcw-message-text {
+  background: #cfeef3;
+  color: #000;
+}
+.rcw-response .rcw-message-text {
+  background: #fff;
+  color: #000;
+}
+
+.rcw-message-text {
+  padding: 0.45rem 0.6rem;
+  border-radius: 6px;
+  max-width: 85%;
+  word-break: break-word;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.03);
+}
+
+.rcw-timestamp {
+  font-size: 0.72rem;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
+.rcw-sender {
+  padding: 0.6rem;
+  border-top: 1px solid #eee;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+.rcw-new-message {
+  flex: 1;
+  padding: 0.4rem;
+  border-radius: 6px;
+  border: 1px solid #e6e6e6;
+  resize: none;
+}
+.rcw-send {
+  padding: 0.35rem 0.7rem;
+}
+
+.rcw-launcher {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  cursor: pointer;
+  z-index: 2001;
+  background: none;
+  border: none;
+  padding: 0;
+  outline: none;
+  box-shadow: none;
+}
+
+.rcw-launcher:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.rcw-badge {
+  background: red;
+  color: #fff;
+  min-width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 0 6px;
+}
