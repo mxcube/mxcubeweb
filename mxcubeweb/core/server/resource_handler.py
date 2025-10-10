@@ -357,11 +357,17 @@ class ResourceHandler:
                 msg += f" on: {request.url}"
                 raise ValueError(msg) from e
 
-        elif isinstance(param_data[param_name], int | float | bool):
+        # If its not a Pydantic model, we expect the parameter to be present
+        # and match the type hint (method signature)
+        elif param_data is None or param_name not in param_data:
+            msg = f"Missing required parameter '{param_name}' on: {request.url}"
+            raise ValueError(msg)
+
+        if isinstance(param_data[param_name], int | float | bool):
             # We consider int, float and bool safe and limits handled
             # by adapter or HardwareObject
             return param_data[param_name]
-        elif isinstance(param_data[param_name], str):
+        if isinstance(param_data[param_name], str):
             # We consider str safe if it contains, alpha numerical
             # characters and dot "." and underscore "_"
             if validate_input_str(param_data[param_name]):
@@ -371,12 +377,9 @@ class ResourceHandler:
             msg += f" on: {request.url}"
             raise ValueError(msg)
 
-        else:
-            # We could handle this case as well but we would need to be
-            # carefull with how the data is validated
-            msg = f"No model defined for '{param_name}'"
-            msg += f" on: {request.url}"
-            raise TypeError(msg)
+        msg = f"No model defined for '{param_name}'"
+        msg += f" on: {request.url}"
+        raise TypeError(msg)
 
     def _handle_view_result(self, result: object) -> dict | Response:
         """

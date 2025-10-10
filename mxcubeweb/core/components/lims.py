@@ -12,6 +12,7 @@ from mxcubeweb.core.components.queue import (
     COLLECTED,
     UNCOLLECTED,
 )
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
 VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")
 
@@ -22,7 +23,87 @@ class NoSessionError(Exception):
 
 class Lims(ComponentBase):
     def __init__(self, app, config):
-        super().__init__(app, config)
+        super().__init__(
+            app,
+            config,
+            resource_handler_config=ResourceHandlerConfigModel(
+                exports=[
+                    {
+                        "attr": "get_all_samples",
+                        "method": "GET",
+                        "url": "/samples_list",
+                        "decorators": [app.server.restrict],
+                    },
+                    {
+                        "attr": "get_lims_samples",
+                        "method": "GET",
+                        "url": "/lims_samples",
+                        "decorators": [app.server.restrict],
+                    },
+                    {
+                        "attr": "set_proposal",
+                        "method": "POST",
+                        "url": "/proposal",
+                        "decorators": [app.server.restrict],
+                    },
+                    {
+                        "attr": "get_proposal",
+                        "method": "GET",
+                        "url": "/proposal",
+                        "decorators": [app.server.restrict],
+                    },
+                ]
+            ),
+        )
+
+    def get_all_samples(self):
+        return self.sample_list_get(retrieve_samples_from_sc=True)
+
+    def get_lims_samples(self, lims: str) -> dict:
+        """
+        Gets samples from LIMS and filters to include only LIMS-linked entries.
+
+        This method synchronizes the sample list with the specified LIMS,
+        filters for entries that have a `limsID`, and sets the new sample list
+        accordingly.
+
+        Args: Name of the LIMS system to synchronize with.
+
+        Returns: The updated sample list with only LIMS samples.
+        """
+        self.synch_with_lims(lims)
+        new_sample_list = {"sampleList": {}, "sampleOrder": []}
+
+        try:
+            for loc, data in self.app.SAMPLE_LIST.get("sampleList", {}).items():
+                if data.get("limsID"):
+                    new_sample_list["sampleList"][loc] = data
+                    new_sample_list["sampleOrder"].append(loc)
+        except Exception:
+            logging.getLogger("MX3.HWR").exception(
+                "Error while filtering LIMS samples for '%s':", lims
+            )
+            return {"sampleList": {}, "sampleOrder": []}
+
+        self.sample_list_set(new_sample_list)
+        return self.app.SAMPLE_LIST
+
+    def set_proposal(self, proposal_number: str):
+        """
+        Set the selected proposal.
+
+        :param proposal_number: Proposal number
+        """
+        # proposal_number is the session identifier
+        self.select_session(proposal_number)
+        self.app.usermanager.update_active_users()
+        return {}
+
+    def get_proposal(self):
+        """
+        Return the currently selected proposal.
+        """
+        return {"Proposal": self.get_proposal_info()}
 
     def new_sample_list(self):
         return {"sampleList": {}, "sampleOrder": []}
@@ -271,8 +352,8 @@ class Lims(ComponentBase):
 
     def is_rescheduled_session(self, session):
         """
-        Returns true is the session is rescheduled. That means that either currently is not the expected timeslot
-        or because it is not in the expected beamline
+        Returns true is the session is rescheduled. That means that either currently
+        is not the expected timeslot or because it is not in the expected beamline
         """
         return not (session.is_scheduled_beamline and session.is_scheduled_time)
 
@@ -281,7 +362,8 @@ class Lims(ComponentBase):
 
     def select_session(self, session_id: str) -> bool:
         """
-        param session_id : this is a identifier that could be proposal name or session_id depending of the type of LIMS login type
+        param session_id : this is a identifier that could be proposal name or
+        session_id depending of the type of LIMS login type
         """
         logging.getLogger("MX3.HWR").debug("select_session session_id=%s" % session_id)
 
@@ -416,32 +498,3 @@ class Lims(ComponentBase):
                 self.sample_list_sync_sample(sample_info)
 
         return self.sample_list_get()
-
-    def get_lims_samples(self, lims_name: str) -> dict:
-        """
-        Gets samples from LIMS and filters to include only LIMS-linked entries.
-
-        This method synchronizes the sample list with the specified LIMS,
-        filters for entries that have a `limsID`, and sets the new sample list
-        accordingly.
-
-        Args: Name of the LIMS system to synchronize with.
-
-        Returns: The updated sample list with only LIMS samples.
-        """
-        self.synch_with_lims(lims_name)
-        new_sample_list = {"sampleList": {}, "sampleOrder": []}
-
-        try:
-            for loc, data in self.app.SAMPLE_LIST.get("sampleList", {}).items():
-                if data.get("limsID"):
-                    new_sample_list["sampleList"][loc] = data
-                    new_sample_list["sampleOrder"].append(loc)
-        except Exception:
-            logging.getLogger("MX3.HWR").exception(
-                "Error while filtering LIMS samples for '%s':", lims_name
-            )
-            return {"sampleList": {}, "sampleOrder": []}
-
-        self.sample_list_set(new_sample_list)
-        return self.app.SAMPLE_LIST

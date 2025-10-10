@@ -28,10 +28,10 @@ from mxcubeweb.core.adapter.adapter_manager import HardwareObjectAdapterManager
 from mxcubeweb.core.components.chat import Chat
 from mxcubeweb.core.components.component_base import import_component
 from mxcubeweb.core.components.harvester import Harvester
-from mxcubeweb.core.components.lims import Lims
 from mxcubeweb.core.components.queue import Queue
 from mxcubeweb.core.components.sampleview import SampleView
 from mxcubeweb.core.components.workflow import Workflow
+from mxcubeweb.core.components.lims import Lims
 from mxcubeweb.core.components.log import Log
 from mxcubeweb.core.models.configmodels import UIComponentModel
 from mxcubeweb.logging_handler import MX3LoggingHandler

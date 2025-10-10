@@ -119,7 +119,6 @@ class Server:
 
         from mxcubeweb.routes.csp_report import init_route as init_csp_route
         from mxcubeweb.routes.harvester import init_route as init_harvester_route
-        from mxcubeweb.routes.lims import init_route as init_lims_route
         from mxcubeweb.routes.login import init_route as init_login_route
         from mxcubeweb.routes.main import init_route as init_main_route
         from mxcubeweb.routes.queue import init_route as init_queue_route
@@ -130,8 +129,6 @@ class Server:
         url_root_prefix = "/mxcube/api/v0.1"
 
         Server._register_route(init_csp_route, mxcube, f"{url_root_prefix}/csp")
-
-        Server._register_route(init_lims_route, mxcube, f"{url_root_prefix}/lims")
 
         Server._register_route(init_login_route, mxcube, f"{url_root_prefix}/login")
 
