@@ -1,4 +1,4 @@
-import 'react-chat-widget/lib/styles.css';
+import './LegacyChatWidget.css';
 import './rachat.css';
 
 import { useEffect } from 'react';

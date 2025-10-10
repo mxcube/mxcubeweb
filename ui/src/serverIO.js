@@ -1,5 +1,4 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
-import { addResponseMessage } from 'react-chat-widget';
 import { connect } from 'socket.io-client';
 
 import {
@@ -56,6 +55,7 @@ import {
   showWorkflowParametersDialog,
   updateGphlWorkflowParametersDialog,
 } from './actions/workflow';
+import { addResponseMessage } from './components/LegacyChatWidgetAdapter';
 import { CLICK_CENTRING } from './constants';
 import { store } from './store';
 

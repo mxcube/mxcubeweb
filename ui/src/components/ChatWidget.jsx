@@ -1,10 +1,4 @@
 import { useEffect } from 'react';
-import {
-  addResponseMessage,
-  addUserMessage,
-  setBadgeCount,
-  Widget,
-} from 'react-chat-widget';
 import Draggable from 'react-draggable';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -14,6 +8,12 @@ import {
 } from '../actions/remoteAccess';
 import { fetchChatMessages, sendChatMessage } from '../api/remoteAccess';
 import { store } from '../store';
+import {
+  addResponseMessage,
+  addUserMessage,
+  setBadgeCount,
+  Widget,
+} from './LegacyChatWidgetAdapter';
 
 function ChatWidget() {
   const dispatch = useDispatch();
