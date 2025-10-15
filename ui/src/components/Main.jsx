@@ -1,6 +1,3 @@
-import './LegacyChatWidget.css';
-import './rachat.css';
-
 import { useEffect } from 'react';
 import { Stack } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
