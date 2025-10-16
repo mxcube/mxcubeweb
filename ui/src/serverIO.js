@@ -55,7 +55,7 @@ import {
   showWorkflowParametersDialog,
   updateGphlWorkflowParametersDialog,
 } from './actions/workflow';
-import { addResponseMessage } from './components/LegacyChatWidgetAdapter';
+import { addResponseMessage } from './components/ChatWidget';
 import { CLICK_CENTRING } from './constants';
 import { store } from './store';
 

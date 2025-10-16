@@ -5,6 +5,7 @@ const INITIAL_STATE = {
   allowRemote: false,
   timeoutGivesControl: false,
   chatMessageCount: 0,
+  messages: [],
 };
 
 function remoteAccessReducer(state = INITIAL_STATE, action = {}) {

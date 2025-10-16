@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -10,51 +10,7 @@ import { fetchChatMessages, sendChatMessage } from '../api/remoteAccess';
 import { store } from '../store';
 import styles from './ChatWidget.module.css';
 
-const _messages = [];
-let _badgeCount = 0;
-let _isOpen = false;
-const _subs = new Set();
-
-function notify() {
-  for (const s of _subs) {
-    try {
-      s({ messages: [..._messages], badge: _badgeCount });
-    } catch {
-      // ignore
-    }
-  }
-}
-
-function addResponseMessage(text) {
-  _messages.push({
-    id: `r-${Date.now()}-${Math.random()}`,
-    type: 'response',
-    text,
-    date: new Date().toISOString(),
-  });
-  if (!_isOpen) {
-    _badgeCount += 1;
-  }
-  notify();
-}
-
-function addUserMessage(text) {
-  _messages.push({
-    id: `u-${Date.now()}-${Math.random()}`,
-    type: 'user',
-    text,
-    date: new Date().toISOString(),
-  });
-  notify();
-}
-
-function setBadgeCount(count) {
-  _badgeCount = Number(count) || 0;
-  notify();
-}
-
-// Export for external use (e.g., serverIO.js)
-export { addResponseMessage };
+let externalAddResponseMessage = null;
 
 function formatTime(iso) {
   try {
@@ -68,6 +24,10 @@ function formatTime(iso) {
   }
 }
 
+export function addResponseMessage(text) {
+  externalAddResponseMessage?.current?.(text);
+}
+
 function ChatWidget() {
   const dispatch = useDispatch();
 
@@ -77,75 +37,87 @@ function ChatWidget() {
     (state) => state.remoteAccess.chatMessageCount,
   );
 
-  const [state, setState] = useState({
-    messages: [..._messages],
-    badge: _badgeCount,
-    open: false,
-  });
-  const inputRef = useRef();
-  const messagesRef = useRef();
+  const [messages, setMessages] = useState([]);
+  const [isOpen, setIsOpen] = useState(false);
 
-  // Subscribe to internal message state
-  useEffect(() => {
-    function sub(s) {
-      setState((prev) => ({ ...prev, messages: s.messages, badge: s.badge }));
-    }
-    _subs.add(sub);
-    sub({ messages: [..._messages], badge: _badgeCount });
-    return () => _subs.delete(sub);
+  const inputRef = useRef();
+  const messagesContainerRef = useRef(null);
+  const addResponseRef = useRef(null);
+
+  if (!externalAddResponseMessage) {
+    externalAddResponseMessage = addResponseRef;
+  }
+
+  const addResponse = useCallback((text) => {
+    const newMessage = {
+      id: `r-${Date.now()}-${Math.random()}`,
+      type: 'response',
+      text,
+      date: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, newMessage]);
   }, []);
 
-  // Load messages from API on mount
+  addResponseRef.current = addResponse;
+
+  const addUser = useCallback((text) => {
+    const newMessage = {
+      id: `u-${Date.now()}-${Math.random()}`,
+      type: 'user',
+      text,
+      date: new Date().toISOString(),
+    };
+    setMessages((prev) => [...prev, newMessage]);
+  }, []);
+
   useEffect(() => {
-    const { user } = store.getState().login; // non-reactive so effect runs only on mount
+    const { user } = store.getState().login;
 
     (async function loadMessages() {
-      const { messages } = await fetchChatMessages();
-      let unread = 0;
-
-      messages.forEach((entry) => {
-        unread += entry.read ? 0 : 1;
-
-        if (entry.username === user.username) {
-          addUserMessage(`${entry.date} **You:** \n\n ${entry.message} \n\n`);
-        } else {
-          addResponseMessage(
-            `${entry.date} **${entry.nickname}:** \n\n ${entry.message}`,
-          );
-        }
+      const { messages: fetchedMessages } = await fetchChatMessages();
+      const built = fetchedMessages.map((entry) => {
+        const isSelf = entry.username === user.username;
+        return {
+          id:
+            entry.id || `${isSelf ? 'u' : 'r'}-${Date.now()}-${Math.random()}`,
+          type: isSelf ? 'user' : 'response',
+          text: isSelf
+            ? `${entry.date} **You:** \n\n ${entry.message} \n\n`
+            : `${entry.date} **${entry.nickname}:** \n\n ${entry.message}`,
+          date: entry.date || new Date().toISOString(),
+        };
       });
 
-      setBadgeCount(unread);
+      const unread = fetchedMessages.reduce(
+        (acc, e) => acc + (e.read ? 0 : 1),
+        0,
+      );
+
+      setMessages(built);
       dispatch(incChatMessageCount(unread));
     })();
   }, [dispatch]);
 
-  // Sync chatMessageCount from Redux
-  useEffect(() => {
-    setBadgeCount(chatMessageCount);
-  }, [chatMessageCount]);
-
-  // Auto-scroll to bottom when messages change
-  useEffect(() => {
-    if (state.open) {
+  const setMessagesRef = useCallback(() => {
+    if (isOpen && messagesContainerRef.current) {
       setTimeout(() => {
-        if (messagesRef.current) {
-          messagesRef.current.scrollTop = messagesRef.current.scrollHeight;
+        const container = messagesContainerRef.current;
+        if (container) {
+          container.scrollTop = container.scrollHeight;
         }
       }, 50);
     }
-  }, [state.messages, state.open]);
+  }, [isOpen]);
+
+  setMessagesRef();
 
   function toggleOpen() {
-    setState((prev) => {
-      if (!prev.open) {
+    setIsOpen((prev) => {
+      if (!prev) {
         dispatch(resetChatMessageCount());
-        _badgeCount = 0;
-        _isOpen = true;
-        return { ...prev, open: true, badge: 0 };
+        return true;
       }
-      _isOpen = false;
-      return { ...prev, open: false };
+      return false;
     });
   }
 
@@ -158,7 +130,7 @@ function ChatWidget() {
       return;
     }
     sendChatMessage(v, username);
-    addUserMessage(v);
+    addUser(v);
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -171,31 +143,25 @@ function ChatWidget() {
   return (
     <div className={styles.chatWidgetDragable}>
       <Draggable>
-        <div onClick={() => state.open && dispatch(resetChatMessageCount())}>
+        <div onClick={() => isOpen && dispatch(resetChatMessageCount())}>
           <div
             className={`${styles.widgetContainer} ${
-              state.open ? '' : styles.hidden
-            }`}
-            style={{
-              display: state.open ? 'flex' : 'none',
-              width: 360,
-              right: 20,
-              bottom: state.open ? 90 : 20,
-            }}
-            aria-hidden={!state.open}
+              isOpen ? styles.widgetContainerOpen : styles.widgetContainerClosed
+            } ${isOpen ? '' : styles.hidden}`}
+            aria-hidden={!isOpen}
           >
             <div className={styles.conversationContainer}>
-              <div className={styles.header} style={{ position: 'relative' }}>
+              <div className={styles.header}>
                 <div className={styles.title}>Chat</div>
               </div>
 
               <div
                 className={styles.messagesContainer}
-                ref={messagesRef}
+                ref={messagesContainerRef}
                 role="log"
                 aria-live="polite"
               >
-                {state.messages.map((m) => (
+                {messages.map((m) => (
                   <div
                     key={m.id}
                     className={`${styles.message} ${
@@ -204,10 +170,7 @@ function ChatWidget() {
                         : styles.response
                     }`}
                   >
-                    <div
-                      className={styles.messageText}
-                      style={{ whiteSpace: 'pre-wrap' }}
-                    >
+                    <div className={styles.messageText}>
                       <div dangerouslySetInnerHTML={{ __html: m.text }} />
                     </div>
                     <div className={styles.timestamp}>{formatTime(m.date)}</div>
@@ -244,29 +207,10 @@ function ChatWidget() {
           <button
             type="button"
             className={styles.launcher}
-            style={{
-              position: 'fixed',
-              right: 20,
-              bottom: 20,
-              cursor: 'pointer',
-              zIndex: 2001,
-            }}
             aria-label="Toggle chat"
             onClick={toggleOpen}
           >
-            <div
-              style={{
-                width: 60,
-                height: 60,
-                borderRadius: '50%',
-                backgroundColor: '#35cce6',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                boxShadow: '0 2px 10px 1px rgba(0,0,0,0.15)',
-              }}
-            >
+            <div className={styles.launcherIcon}>
               <svg
                 width="28"
                 height="28"
@@ -280,27 +224,8 @@ function ChatWidget() {
                 />
               </svg>
             </div>
-            {!state.open && state.badge > 0 ? (
-              <div
-                className={styles.badge}
-                style={{
-                  position: 'absolute',
-                  top: -8,
-                  right: -8,
-                  backgroundColor: 'red',
-                  color: 'white',
-                  width: 24,
-                  height: 24,
-                  borderRadius: '50%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 12,
-                  fontWeight: 700,
-                }}
-              >
-                {state.badge}
-              </div>
+            {!isOpen && chatMessageCount > 0 ? (
+              <div className={styles.badge}>{chatMessageCount}</div>
             ) : null}
           </button>
         </div>
