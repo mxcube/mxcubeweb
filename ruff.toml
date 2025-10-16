@@ -33,26 +33,17 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "PTH109",
 ]
 "mxcubeweb/__version__.py" = [
-    "I001",
     "PTH123",
 ]
 "mxcubeweb/app.py" = [
     "BLE001",
-    "E501",
-    "G002",
-    "G004",
     "I001",
     "N806",
     "PLR0913",
-    "PTH101",
     "PTH113",
-    "PTH118",
-    "PTH120",
     "PTH123",
     "RUF012",
     "SIM115",
-    "T201",
-    "UP031",
 ]
 "mxcubeweb/config.py" = [
     "G004",
@@ -62,28 +53,21 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 ]
 "mxcubeweb/core/adapter/actuator_adapter.py" = [
     "B904",
-    "BLE001",
-    "TRY003",
 ]
 "mxcubeweb/core/adapter/adapter_base.py" = [
     "ARG002",
     "B904",
-    "G003",
     "G004",
     "RUF012",
     "SLF001",
-    "TRY003",
     "TRY400",
     "UP031",
 ]
 "mxcubeweb/core/adapter/beamline_action_adapter.py" = [
     "BLE001",
-    "TRY400",
 ]
 "mxcubeweb/core/adapter/beamline_adapter.py" = [
     "G004",
-    "N802",
-    "PLW0603",
     "TRY400",
 ]
 "mxcubeweb/core/adapter/data_publisher_adapter.py" = [
@@ -92,20 +76,11 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 "mxcubeweb/core/adapter/diffractometer_adapter.py" = [
     "RUF012",
 ]
-"mxcubeweb/core/adapter/energy_adapter.py" = [
-]
-"mxcubeweb/core/adapter/flux_adapter.py" = [
-    "BLE001",
-    "ERA001",
-    "S110",
-    "UP032",
-]
 "mxcubeweb/core/adapter/machine_info_adapter.py" = [
     "ARG002",
 ]
 "mxcubeweb/core/adapter/motor_adapter.py" = [
     "B904",
-    "TRY003",
 ]
 "mxcubeweb/core/adapter/nstate_adapter.py" = [
     "BLE001",
@@ -113,15 +88,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 ]
 "mxcubeweb/core/adapter/wavelength_adapter.py" = [
     "ARG002",
-    "BLE001",
-    "TRY003",
-    "TRY203",
-]
-"mxcubeweb/core/components/beamline.py" = [
-    "BLE001",
-    "N806",
-    "TRY002",
-    "UP031",
 ]
 "mxcubeweb/core/components/chat.py" = [
     "ARG002",
@@ -138,13 +104,11 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "TRY300",
 ]
 "mxcubeweb/core/components/lims.py" = [
-    "B016",
     "BLE001",
     "E501",
     "FBT002",
     "FURB188",
     "G002",
-    "TRY301",
     "UP031",
 ]
 "mxcubeweb/core/components/queue.py" = [
@@ -172,32 +136,18 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "PLW2901",
     "PTH113",
     "PTH118",
-    "S110",
     "SLF001",
     "TD002",
     "TD003",
-    "TRY002",
-    "TRY003",
     "UP030",
     "UP031",
     "UP032",
-]
-"mxcubeweb/core/components/samplechanger.py" = [
-    "BLE001",
-    "FBT003",
-    "N802",
-    "N806",
-    "PLR5501",
-    "TRY300",
-    "UP031",
 ]
 "mxcubeweb/core/components/sampleview.py" = [
     "ARG002",
     "BLE001",
     "E501",
     "PLR5501",
-    "PLW0127",
-    "TRY003",
     "TRY203",
     "UP031",
 ]
@@ -207,25 +157,16 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 "mxcubeweb/core/components/user/usermanager.py" = [
     "ARG002",
     "B006",
-    "BLE001",
     "C901",
     "DTZ005",
     "ERA001",
     "FBT001",
     "FBT002",
     "FBT003",
-    "PLR5501",
-    "S110",
-    "TRY002",
-    "TRY003",
     "TRY201",
     "TRY203",
     "TRY400",
     "UP031",
-]
-"mxcubeweb/core/components/workflow.py" = [
-    "ARG002",
-    "BLE001",
 ]
 "mxcubeweb/core/models/adaptermodels.py" = [
     "FBT003",
@@ -234,7 +175,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 "mxcubeweb/core/models/configmodels.py" = [
     "E501",
     "FBT003",
-    "RUF012",
 ]
 "mxcubeweb/core/models/generic.py" = [
     "E501",
@@ -242,10 +182,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 ]
 "mxcubeweb/core/models/usermodels.py" = [
     "FBT003",
-]
-"mxcubeweb/core/util/adapterutils.py" = [
-    "PLR0911",
-    "SLF001",
 ]
 "mxcubeweb/core/util/convertutils.py" = [
     "FBT002",
@@ -268,29 +204,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "B018",
     "SLF001",
 ]
-"mxcubeweb/routes/beamline.py" = [
-    "ARG001",
-    "BLE001",
-    "C901",
-    "G002",
-    "PLR0913",
-    "SLF001",
-    "TRY300",
-    "TRY400",
-    "UP031",
-]
-"mxcubeweb/routes/diffractometer.py" = [
-]
-"mxcubeweb/routes/harvester.py" = [
-]
-"mxcubeweb/routes/lims.py" = [
-    "BLE001",
-]
-"mxcubeweb/routes/log.py" = [
-    "ARG001",
-    "G002",
-    "UP031",
-]
 "mxcubeweb/routes/login.py" = [
     "BLE001",
     "C901",
@@ -311,48 +224,29 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "PLR0915",
 ]
 "mxcubeweb/routes/samplecentring.py" = [
-    "ARG001",
     "BLE001",
     "E501",
     "PLR0915",
-    "TRY002",
-    "TRY003",
     "TRY301",
-]
-"mxcubeweb/routes/samplechanger.py" = [
-    "BLE001",
-    "FBT003",
 ]
 "mxcubeweb/routes/signals.py" = [
     "ARG001",
     "B006",
     "BLE001",
     "FBT003",
-    "FIX002",
-    "G002",
     "G003",
     "N803",
-    "N806",
     "N813",
     "N816",
     "PLR0913",
-    "S110",
     "SLF001",
-    "TD002",
-    "TD003",
-    "TD004",
     "TRY400",
-    "UP031",
-]
-"mxcubeweb/routes/workflow.py" = [
-    "ARG001",
 ]
 "mxcubeweb/server.py" = [
     "ARG004",
     "N805",
     "PTH118",
     "PTH120",
-    "PTH123",
     "UP031",
 ]
 "mxcubeweb/state_storage.py" = [
@@ -367,11 +261,9 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "E501",
     "PLW0603",
     "PTH100",
-    "PTH107",
     "PTH118",
     "PTH120",
     "S101",  # "Use of `assert` detected": ignored because tests do rely on `assert`
-    "S108",
 ]
 "test/test_*.py" = [
     "E712",
