@@ -130,8 +130,8 @@ function checkForOverlap(el1, el2) {
 }
 
 // Helper function to determine puck colsm value
-function getColsm(isSingleCell, puckCount) {
-  if (isSingleCell) {
+function getColsm(isSingleCellAndNotFlex, puckCount) {
+  if (isSingleCellAndNotFlex) {
     return puckCount <= 4 ? 3 : true;
   }
   return puckCount === 1 ? 2 : puckCount === 2 ? 4 : puckCount === 3 ? 6 : true;
@@ -176,6 +176,7 @@ export default function SampleGridTableContainer(props) {
   const isSingleCell = Object.values(sampleList).every(
     (sample) => sample.cell_no === 1 || sample.cell_no === 0,
   );
+  const isSingleCellAndNotFlex = isSingleCell && !type.includes('FLEX');
 
   // this supose to replace old shouldComponentUpdate , not sure we need it
   useEffect(() => {
@@ -490,7 +491,9 @@ export default function SampleGridTableContainer(props) {
   function getSampleItemCollapsibleHeaderActions(cellID) {
     return (
       <div>
-        <b className="me-2 mt-1">{isSingleCell ? null : `Cell ${cellID}`}</b>
+        <b className="me-2 mt-1">
+          {isSingleCellAndNotFlex ? null : `Cell ${cellID}`}
+        </b>
         {sampleItemsControls(cellID, null)}
         <span
           title="Cell Options"
@@ -613,7 +616,7 @@ export default function SampleGridTableContainer(props) {
     const puckFilterValue = Number(filterOptions.puckFilter); // Ensure numeric comparison
 
     return scContent.children.filter((puck, puckidx) => {
-      const puckID = isSingleCell ? Number(puck.name) : puckidx + 1;
+      const puckID = isSingleCellAndNotFlex ? Number(puck.name) : puckidx + 1;
       const [filterList] = getSampleListFilteredByCellPuck(cellID, puckID);
 
       return (
@@ -683,7 +686,9 @@ export default function SampleGridTableContainer(props) {
       <tr>
         {puckList.map((puck) => {
           const puckidx = cell.children.findIndex((p) => p.name === puck.name);
-          const puckID = isSingleCell ? Number(puck.name) : puckidx + 1;
+          const puckID = isSingleCellAndNotFlex
+            ? Number(puck.name)
+            : puckidx + 1;
           return (
             <td key={`${cellID}-td-${puckID}`}>
               {getSampleItems(cellID, puckID)}
@@ -699,7 +704,9 @@ export default function SampleGridTableContainer(props) {
       <tr>
         {puckList.map((puck) => {
           const puckidx = cell.children.findIndex((p) => p.name === puck.name);
-          const puckID = isSingleCell ? Number(puck.name) : puckidx + 1;
+          const puckID = isSingleCellAndNotFlex
+            ? Number(puck.name)
+            : puckidx + 1;
 
           return (
             <th
@@ -801,7 +808,7 @@ export default function SampleGridTableContainer(props) {
       return null;
     }
 
-    if (isSingleCell) {
+    if (isSingleCellAndNotFlex) {
       scContent = { children: [{ name: 1, children: scContent.children }] };
     }
 
@@ -812,9 +819,9 @@ export default function SampleGridTableContainer(props) {
         return null;
       }
 
-      const colsm = getColsm(isSingleCell, puckList.length);
+      const colsm = getColsm(isSingleCellAndNotFlex, puckList.length);
 
-      return isSingleCell
+      return isSingleCellAndNotFlex
         ? getSingleCellPucks(cell, cellID, puckList, colsm)
         : getMultipleCellPucks(cell, cellID, puckList, colsm);
     });
@@ -966,7 +973,7 @@ export default function SampleGridTableContainer(props) {
     const isFLEX = type.includes('FLEX');
     const isMOCK = type.includes('Mock');
 
-    if (isFLEX) {
+    if (isFLEX && !isSingleCell) {
       return (
         <SampleFlexView
           displayPuckCellContextMenu={displayPuckCellContextMenu}
@@ -976,7 +983,8 @@ export default function SampleGridTableContainer(props) {
         />
       );
     }
-    if (isSingleCell || isMOCK) {
+
+    if (isMOCK || isSingleCell) {
       return (
         <SampleCircleView
           displayPuckCellContextMenu={displayPuckCellContextMenu}
