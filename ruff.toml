@@ -20,12 +20,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 
 
 [lint.per-file-ignores]
-"docs/conf.py" = [
-    "A001",
-    "DTZ002",
-    "INP001",  # `implicit-namespace-package`: `conf.py` is not meant to be imported
-    "PLR2044",
-]
 "mxcubeweb/__init__.py" = [
     "E501",
     "FBT002",

@@ -1,5 +1,6 @@
-#
+# noqa: INP001  # The parent directory is not meant to be imported as a package.
 
+"""Configuration for Sphinx documentation generator."""
 
 import datetime
 import importlib.metadata
@@ -29,7 +30,7 @@ root_doc = "contents"
 
 project = MXCUBE_WEB_NAME
 author = PROJECT_PACKAGE_METADATA["Author"]
-copyright = f"{datetime.datetime.today().year}, {author}"
+project_copyright = f"{datetime.datetime.now(tz=datetime.timezone.utc).year}, {author}"
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -57,7 +58,9 @@ html_theme = "furo"
 
 extensions.append("myst_parser")
 
-myst_enable_extensions = ("substitution",)
+myst_enable_extensions = [
+    "substitution",
+]
 
 myst_substitutions = {
     "mxcube": MXCUBE_NAME,
@@ -123,6 +126,3 @@ extensions.append("sphinxcontrib.autohttp.flask")
 # https://pypi.org/project/sphinx-last-updated-by-git/
 
 extensions.append("sphinx_last_updated_by_git")
-
-
-# EOF
