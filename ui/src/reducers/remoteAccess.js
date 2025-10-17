@@ -42,6 +42,18 @@ export default function remoteAccessReducer(
         messages: [...state.messages, action.message],
       };
     }
+    case 'SET_CHAT_MESSAGES': {
+      return {
+        ...state,
+        messages: action.messages,
+      };
+    }
+    case 'ADD_CHAT_MESSAGE': {
+      return {
+        ...state,
+        messages: [...state.messages, action.message],
+      };
+    }
     case 'SET_INITIAL_STATE': {
       return {
         ...state,

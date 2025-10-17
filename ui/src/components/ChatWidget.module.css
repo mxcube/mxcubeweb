@@ -1,3 +1,10 @@
+/**
+ * ChatWidget Styles
+ *
+ * These styles are a local reimplementation of the react-chat-widget library styles,
+ * adapted for use with CSS Modules and React 18 compatibility.
+ */
+
 .widgetContainer {
   position: fixed;
   right: 20px;
@@ -143,10 +150,11 @@
   height: 60px;
   border-radius: 50%;
   background-color: #35cce6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
+  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 28px 28px;
+  display: block;
   box-shadow: 0 2px 10px 1px rgba(0, 0, 0, 0.15);
 }
 

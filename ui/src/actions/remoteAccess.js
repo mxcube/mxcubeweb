@@ -1,4 +1,5 @@
 import {
+  fetchChatMessages as apiFetchChatMessages,
   fetchRemoteAccessState,
   sendCancelControlRequest,
   sendChatMessage as apiSendChatMessage,
