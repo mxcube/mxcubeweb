@@ -1,6 +1,8 @@
 import {
+  fetchChatMessages as apiFetchChatMessages,
   fetchRemoteAccessState,
   sendCancelControlRequest,
+  sendChatMessage as apiSendChatMessage,
   sendGiveControl,
   sendLogoutUser,
   sendRequestControl,
@@ -11,6 +13,7 @@ import {
   sendUpdateNickname,
   sendUpdateTimeoutGivesControl,
 } from '../api/remoteAccess';
+import { store } from '../store';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
 import { showWaitDialog } from './waitDialog';
@@ -117,4 +120,73 @@ export function resetChatMessageCount() {
 
 export function incChatMessageCount(count = 1) {
   return { type: 'INC_CHAT_MESSAGE_COUNT', count };
+}
+
+export function setChatMessages(messages) {
+  return { type: 'SET_CHAT_MESSAGES', messages };
+}
+
+export function addChatMessage(message) {
+  return { type: 'ADD_CHAT_MESSAGE', message };
+}
+
+export function fetchChatMessages() {
+  return async (dispatch) => {
+    const { user } = store.getState().login;
+    const { messages: fetchedMessages } = await apiFetchChatMessages();
+
+    const built = fetchedMessages.map((entry) => {
+      const isSelf = entry.username === user.username;
+      let normalizedDate = new Date().toISOString();
+      if (entry.date) {
+        try {
+          const parsedDate = new Date(entry.date);
+          if (!Number.isNaN(parsedDate.getTime())) {
+            normalizedDate = parsedDate.toISOString();
+          }
+        } catch {
+          // Keep default
+        }
+      }
+
+      return {
+        id: entry.id || `${isSelf ? 'u' : 'r'}-${Date.now()}-${Math.random()}`,
+        type: isSelf ? 'user' : 'response',
+        text: isSelf
+          ? `**You:** \n\n ${entry.message} \n\n`
+          : `**${entry.nickname}:** \n\n ${entry.message}`,
+        date: normalizedDate,
+      };
+    });
+
+    const unread = fetchedMessages.reduce(
+      (acc, e) => acc + (e.read ? 0 : 1),
+      0,
+    );
+
+    dispatch(setChatMessages(built));
+    dispatch(incChatMessageCount(unread));
+  };
+}
+
+export function sendChatMessage(message, username) {
+  return async (dispatch) => {
+    await apiSendChatMessage(message, username);
+
+    const newMessage = {
+      id: `u-${Date.now()}-${Math.random()}`,
+      type: 'user',
+      text: message,
+      date: new Date().toISOString(),
+    };
+
+    dispatch(addChatMessage(newMessage));
+  };
+}
+
+export function markAllAsRead() {
+  return async (dispatch) => {
+    await sendSetAllMessagesRead();
+    dispatch(resetChatMessageCount());
+  };
 }

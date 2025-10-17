@@ -31,7 +31,11 @@ import {
   stopQueue,
 } from './actions/queue';
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
-import { getRaState, incChatMessageCount } from './actions/remoteAccess';
+import {
+  addChatMessage,
+  getRaState,
+  incChatMessageCount,
+} from './actions/remoteAccess';
 import {
   setLoadedSample,
   setSCGlobalState,
@@ -55,7 +59,6 @@ import {
   showWorkflowParametersDialog,
   updateGphlWorkflowParametersDialog,
 } from './actions/workflow';
-import { addResponseMessage } from './components/ChatWidget';
 import { CLICK_CENTRING } from './constants';
 import { store } from './store';
 
@@ -123,9 +126,25 @@ class ServerIO {
     this.hwrSocket.on('ra_chat_message', (record) => {
       const { username } = store.getState().login.user;
       if (record.username !== username && !record.read) {
-        addResponseMessage(
-          `${record.date} **${record.nickname}:** \n\n ${record.message}`,
-        );
+        let normalizedDate = new Date().toISOString();
+        if (record.date) {
+          try {
+            const parsedDate = new Date(record.date);
+            if (!Number.isNaN(parsedDate.getTime())) {
+              normalizedDate = parsedDate.toISOString();
+            }
+          } catch {
+            // Keep default
+          }
+        }
+
+        const message = {
+          id: `r-${Date.now()}-${Math.random()}`,
+          type: 'response',
+          text: `**${record.nickname}:** \n\n ${record.message}`,
+          date: normalizedDate,
+        };
+        dispatch(addChatMessage(message));
         dispatch(incChatMessageCount());
       }
     });
@@ -330,19 +349,28 @@ class ServerIO {
     });
 
     this.hwrSocket.on('observerLogout', (observer) => {
-      addResponseMessage(
-        `**${observer.nickname}** (${observer.ip}) disconnected.`,
-      );
+      const message = {
+        id: `sys-${Date.now()}-${Math.random()}`,
+        type: 'response',
+        text: `**${observer.nickname}** (${observer.ip}) disconnected.`,
+        date: new Date().toISOString(),
+      };
+      dispatch(addChatMessage(message));
     });
 
     this.hwrSocket.on('observerLogin', (observer) => {
-      if (observer.nickname && observer.ip) {
-        addResponseMessage(
-          `**${observer.nickname}** (${observer.ip}) connected.`,
-        );
-      } else {
-        addResponseMessage(`${observer.nickname} connecting ...`);
-      }
+      const text =
+        observer.nickname && observer.ip
+          ? `**${observer.nickname}** (${observer.ip}) connected.`
+          : `${observer.nickname} connecting ...`;
+
+      const message = {
+        id: `sys-${Date.now()}-${Math.random()}`,
+        type: 'response',
+        text,
+        date: new Date().toISOString(),
+      };
+      dispatch(addChatMessage(message));
     });
 
     this.hwrSocket.on('forceSignout', () => {

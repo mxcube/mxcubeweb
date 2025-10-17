@@ -1,20 +1,22 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
-  incChatMessageCount,
-  resetChatMessageCount,
+  markAllAsRead,
+  sendChatMessage as sendChatMessageAction,
 } from '../actions/remoteAccess';
-import { fetchChatMessages, sendChatMessage } from '../api/remoteAccess';
-import { store } from '../store';
 import styles from './ChatWidget.module.css';
-
-let externalAddResponseMessage = null;
 
 function formatTime(iso) {
   try {
+    if (!iso) {
+      return '';
+    }
     const d = new Date(iso);
+    if (Number.isNaN(d.getTime())) {
+      return '';
+    }
     return `${d.getHours().toString().padStart(2, '0')}:${d
       .getMinutes()
       .toString()
@@ -22,10 +24,6 @@ function formatTime(iso) {
   } catch {
     return '';
   }
-}
-
-export function addResponseMessage(text) {
-  externalAddResponseMessage?.current?.(text);
 }
 
 function ChatWidget() {
@@ -36,67 +34,12 @@ function ChatWidget() {
   const chatMessageCount = useSelector(
     (state) => state.remoteAccess.chatMessageCount,
   );
+  const messages = useSelector((state) => state.remoteAccess.messages);
 
-  const [messages, setMessages] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
   const inputRef = useRef();
   const messagesContainerRef = useRef(null);
-  const addResponseRef = useRef(null);
-
-  if (!externalAddResponseMessage) {
-    externalAddResponseMessage = addResponseRef;
-  }
-
-  const addResponse = useCallback((text) => {
-    const newMessage = {
-      id: `r-${Date.now()}-${Math.random()}`,
-      type: 'response',
-      text,
-      date: new Date().toISOString(),
-    };
-    setMessages((prev) => [...prev, newMessage]);
-  }, []);
-
-  addResponseRef.current = addResponse;
-
-  const addUser = useCallback((text) => {
-    const newMessage = {
-      id: `u-${Date.now()}-${Math.random()}`,
-      type: 'user',
-      text,
-      date: new Date().toISOString(),
-    };
-    setMessages((prev) => [...prev, newMessage]);
-  }, []);
-
-  useEffect(() => {
-    const { user } = store.getState().login;
-
-    (async function loadMessages() {
-      const { messages: fetchedMessages } = await fetchChatMessages();
-      const built = fetchedMessages.map((entry) => {
-        const isSelf = entry.username === user.username;
-        return {
-          id:
-            entry.id || `${isSelf ? 'u' : 'r'}-${Date.now()}-${Math.random()}`,
-          type: isSelf ? 'user' : 'response',
-          text: isSelf
-            ? `${entry.date} **You:** \n\n ${entry.message} \n\n`
-            : `${entry.date} **${entry.nickname}:** \n\n ${entry.message}`,
-          date: entry.date || new Date().toISOString(),
-        };
-      });
-
-      const unread = fetchedMessages.reduce(
-        (acc, e) => acc + (e.read ? 0 : 1),
-        0,
-      );
-
-      setMessages(built);
-      dispatch(incChatMessageCount(unread));
-    })();
-  }, [dispatch]);
 
   const setMessagesRef = useCallback(() => {
     if (isOpen && messagesContainerRef.current) {
@@ -113,11 +56,10 @@ function ChatWidget() {
 
   function toggleOpen() {
     setIsOpen((prev) => {
-      if (!prev) {
-        dispatch(resetChatMessageCount());
-        return true;
+      if (prev) {
+        dispatch(markAllAsRead());
       }
-      return false;
+      return !prev;
     });
   }
 
@@ -129,8 +71,7 @@ function ChatWidget() {
     if (!v) {
       return;
     }
-    sendChatMessage(v, username);
-    addUser(v);
+    dispatch(sendChatMessageAction(v, username));
     if (inputRef.current) {
       inputRef.current.value = '';
     }
@@ -143,7 +84,7 @@ function ChatWidget() {
   return (
     <div className={styles.chatWidgetDragable}>
       <Draggable>
-        <div onClick={() => isOpen && dispatch(resetChatMessageCount())}>
+        <div>
           <div
             className={`${styles.widgetContainer} ${
               isOpen ? styles.widgetContainerOpen : styles.widgetContainerClosed
@@ -210,20 +151,7 @@ function ChatWidget() {
             aria-label="Toggle chat"
             onClick={toggleOpen}
           >
-            <div className={styles.launcherIcon}>
-              <svg
-                width="28"
-                height="28"
-                viewBox="0 0 24 24"
-                fill="none"
-                aria-hidden
-              >
-                <path
-                  d="M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"
-                  fill="currentColor"
-                />
-              </svg>
-            </div>
+            <div className={styles.launcherIcon} aria-hidden="true" />
             {!isOpen && chatMessageCount > 0 ? (
               <div className={styles.badge}>{chatMessageCount}</div>
             ) : null}

@@ -13,6 +13,7 @@ import { fetchImageData, fetchShapes } from '../api/sampleview';
 import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchGetAllActions } from './beamlineActions';
 import { applicationFetched, showErrorPanel } from './general';
+import { fetchChatMessages } from './remoteAccess';
 
 function setLoginInfo(loginInfo) {
   return {
@@ -159,6 +160,7 @@ export function getInitialState() {
     ]);
 
     dispatch(setInitialState(Object.assign({}, ...initialStateSlices)));
+    dispatch(fetchChatMessages());
     dispatch(applicationFetched(true));
   };
 }
