@@ -19,9 +19,9 @@ hwr_logger = logging.getLogger("MX3.HWR")
 
 
 class ActuatorAdapter(ActuatorAdapterBase):
-    """
-    Adapter for Energy Hardware Object, a web socket is used to communicate
-    information on longer running processes.
+    """Adapter for Energy Hardware Object.
+
+    A web socket is used to communicate information on longer running processes.
     """
 
     SUPPORTED_TYPES: ClassVar[list[object]] = [
@@ -29,8 +29,15 @@ class ActuatorAdapter(ActuatorAdapterBase):
         AbstractFlux.AbstractFlux,
     ]
 
-    def __init__(self, ho, role, app, resource_handler_config=resource_handler_config):
-        """
+    def __init__(  # noqa: D417
+        self,
+        ho,
+        role,
+        app,
+        resource_handler_config=resource_handler_config,
+    ):
+        """Initialize.
+
         Args:
             ho (object): Hardware object.
         """
@@ -54,12 +61,14 @@ class ActuatorAdapter(ActuatorAdapterBase):
         self._vc(*args, **kwargs)
 
     def set_value(self, value: HOActuatorValueChangeModel) -> str:
-        """
-        Execute the sequence to set the value.
+        """Execute the sequence to set the value.
+
         Args:
             value (float): Target energy [keV].
+
         Returns:
             (float as str): The actual value set.
+
         Raises:
             ValueError: Value not valid or attemp to set a non-tunable energy.
             RuntimeError: Timeout while setting the value.
@@ -69,10 +78,11 @@ class ActuatorAdapter(ActuatorAdapterBase):
         return self.get_value()
 
     def get_value(self) -> FloatValueModel:
-        """
-        Read the energy.
+        """Read the energy.
+
         Returns:
             (float as str): Energy [keV].
+
         Raises:
             ValueError: When value for any reason can't be retrieved.
         """
@@ -83,15 +93,13 @@ class ActuatorAdapter(ActuatorAdapterBase):
             raise ValueError(msg)
 
     def stop(self):
-        """
-        Stop the execution.
-        """
+        """Stop the execution."""
         self._ho.abort()
 
     def read_only(self):
-        """
-        Check if the energy is tunable or not.
-        Retuns:
+        """Check if the energy is tunable or not.
+
+        Returns:
             (bool): True if tunable, False if not.
         """
         return self._ho.read_only

@@ -1,6 +1,3 @@
-#
-
-
 """Authentication tests."""
 
 import contextlib
@@ -117,7 +114,6 @@ def test_authn_same_proposal(make_client):
     If a user signs in for the same proposal as another user already signed in,
     this user should not be "in control".
     """
-
     client_0 = make_client()
     resp = client_0.post(URL_SIGNIN, json=CREDENTIALS_0)
 
@@ -153,12 +149,11 @@ def test_authn_same_proposal(make_client):
 
 
 def test_authn_session_timeout(client):
-    """Test the session timeout
+    """Test the session timeout.
 
     The session can be refreshed, and can expire.
     It should be possible to sign in again after a valid session expired.
     """
-
     # Sign in and --as a side effect-- create a session
     client.post(URL_SIGNIN, json=CREDENTIALS_0)
     resp = client.get(URL_INFO)

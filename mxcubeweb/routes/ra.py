@@ -19,8 +19,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/request_control", methods=["POST"])
     @server.restrict
     def request_control():
-        """ """
-
         @copy_current_request_context
         def handle_timeout_gives_control(sid, timeout=30):
             gevent.sleep(timeout)
@@ -56,7 +54,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/cancel_request", methods=["POST"])
     @server.restrict
     def cancel_request():
-        """Cancel request for control"""
+        """Cancel request for control."""
         current_user.requests_control = False
         current_user.requests_control_msg = None
         app.usermanager.update_user(current_user)
@@ -68,7 +66,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/take_control", methods=["POST"])
     @server.restrict
     def take_control():
-        """ """
         # Already master do nothing
         if app.usermanager.is_operator():
             return make_response("", 200)
@@ -80,7 +77,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/give_control", methods=["POST"])
     @server.restrict
     def give_control():
-        """ """
         username = request.get_json().get("username")
         toggle_operator(username, "You were given control")
 
@@ -89,7 +85,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/update_user_nickname", methods=["POST"])
     @server.restrict
     def update_user_nickname():
-        """ """
         name = request.get_json().get("name")
         current_user.nickname = name
         app.usermanager.update_user(current_user)
@@ -104,7 +99,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/logout_user", methods=["POST"])
     @server.restrict
     def logout_user():
-        """ """
         username = request.get_json().get("username")
         app.usermanager.force_signout_user(username)
         return make_response("", 200)
@@ -132,7 +126,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/", methods=["GET"])
     @server.restrict
     def rasettings():
-        """ """
         operator = app.usermanager.get_operator()
         data = {
             "observers": [_u.todict() for _u in app.usermanager.get_observers()],
@@ -146,7 +139,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/allow_remote", methods=["POST"])
     @server.restrict
     def allow_remote():
-        """ """
         allow = request.get_json().get("allow")
 
         if app.ALLOW_REMOTE and not allow:
@@ -159,7 +151,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/timeout_gives_control", methods=["POST"])
     @server.restrict
     def timeout_gives_control():
-        """ """
         control = request.get_json().get("timeoutGivesControl")
         app.TIMEOUT_GIVES_CONTROL = control
 
@@ -177,7 +168,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/request_control_response", methods=["POST"])
     @server.restrict
     def request_control_response():
-        """ """
         data = request.get_json()
         new_op = observer_requesting_control()
 

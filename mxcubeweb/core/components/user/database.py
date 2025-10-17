@@ -23,10 +23,12 @@ def init_db(path):
 
 
 class UserDatastore(SQLAlchemySessionUserDatastore):
-    """A UserDatastore implementation that assumes the
-    use of
+    """User datastore for Flask-SQLAlchemy datastore transactions.
+
+    A UserDatastore implementation that assumes the use of
     `Flask-SQLAlchemy <https://pypi.python.org/pypi/flask-sqlalchemy/>`_
     for datastore transactions.
+
     :param db:
     :param user_model: See :ref:`Models <models_topic>`.
     :param role_model: See :ref:`Models <models_topic>`.

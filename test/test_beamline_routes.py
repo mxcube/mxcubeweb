@@ -2,7 +2,8 @@ import json
 
 
 def test_beamline_get_all_attribute(client):
-    """
+    """Test getting all beamline attributes.
+
     Checks that the data returned has the right structure and if "all"
     beamline attributes are at least present
     """
@@ -56,7 +57,8 @@ def test_beamline_get_all_attribute(client):
 
 
 def test_beamline_get_attribute(client):
-    """
+    """Test retrieval of all the beamline attributes (one by one).
+
     Tests retrieval of all the beamline attributes (one by one), checks that
     the data returned at-least contain a minimal set of keys that make up a
     'beamline attribute'
@@ -90,8 +92,7 @@ def test_beamline_get_attribute(client):
 
 
 def test_beamline_set_attribute(client):
-    """
-    Tests set on the writable attributes
+    """Test set on the writable attributes.
 
     Basically only tests that the set command executes without unexpected
     errors. Reads the attributes current value and sets it to the same, so
@@ -127,7 +128,8 @@ def test_beamline_set_attribute(client):
 
 
 def test_get_beam_info(client):
-    """
+    """Test retrieval of information regarding the beam.
+
     Tests retrieval of information regarding the beam, and that the data is
     returned on the expected format
     """

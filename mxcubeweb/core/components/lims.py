@@ -60,8 +60,7 @@ class Lims(ComponentBase):
         return self.sample_list_get(retrieve_samples_from_sc=True)
 
     def get_lims_samples(self, lims: str) -> dict:
-        """
-        Gets samples from LIMS and filters to include only LIMS-linked entries.
+        """Get samples from LIMS and filters to include only LIMS-linked entries.
 
         This method synchronizes the sample list with the specified LIMS,
         filters for entries that have a `limsID`, and sets the new sample list
@@ -89,8 +88,7 @@ class Lims(ComponentBase):
         return self.app.SAMPLE_LIST
 
     def set_proposal(self, proposal_number: str):
-        """
-        Set the selected proposal.
+        """Set the selected proposal.
 
         :param proposal_number: Proposal number
         """
@@ -100,9 +98,7 @@ class Lims(ComponentBase):
         return {}
 
     def get_proposal(self):
-        """
-        Return the currently selected proposal.
-        """
+        """Return the currently selected proposal."""
         return {"Proposal": self.get_proposal_info()}
 
     def new_sample_list(self):
@@ -325,9 +321,11 @@ class Lims(ComponentBase):
         params["prefix"] = self.strip_prefix(path_template, params["prefix"])
 
     def strip_prefix(self, pt, prefix):
-        """
-        Strips the reference, wedge and mad prefix from a given prefix. For example
-        removes ref- from the beginning and _w[n] and -pk, -ip, -ipp from the end.
+        """Strip the reference, wedge and mad prefix from a given prefix.
+
+        For example,
+        remove ``ref-`` from the beginning
+        and ``_w[n]`` and ``-pk``, ``-ip``, ``-ipp`` from the end.
 
         :param PathTemplate pt: path template used to create the prefix
         :param str prefix: prefix from the client
@@ -351,9 +349,10 @@ class Lims(ComponentBase):
         return HWR.beamline.lims.session_manager
 
     def is_rescheduled_session(self, session):
-        """
-        Returns true is the session is rescheduled. That means that either currently
-        is not the expected timeslot or because it is not in the expected beamline
+        """Return true is the session is rescheduled.
+
+        That means that either currently is not the expected timeslot
+        or because it is not in the expected beamline
         """
         return not (session.is_scheduled_beamline and session.is_scheduled_time)
 
@@ -361,9 +360,11 @@ class Lims(ComponentBase):
         HWR.beamline.lims.allow_session(session)
 
     def select_session(self, session_id: str) -> bool:
-        """
-        param session_id : this is a identifier that could be proposal name or
-        session_id depending of the type of LIMS login type
+        """Select session.
+
+        Params:
+            session_id: This is a identifier that could be proposal name or
+                ``session_id`` depending of the type of LIMS login type.
         """
         logging.getLogger("MX3.HWR").debug("select_session session_id=%s" % session_id)
 

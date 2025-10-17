@@ -33,7 +33,7 @@ default_resource_handler_config = ResourceHandlerConfigModel(
 
 
 class AdapterBase:
-    """Hardware Object Adapter Base class"""
+    """Hardware Object Adapter Base class."""
 
     # List of supported HO base classes (or callable for more advanced matching)
     SUPPORTED_TYPES: ClassVar[list[object]] = []
@@ -45,8 +45,11 @@ class AdapterBase:
 
     ADAPTER_DICT = {}
 
-    def __init__(self, ho, role, app, resource_handler_config=None):
-        """
+    def __init__(  # noqa: D417
+        self, ho, role, app, resource_handler_config=None
+    ):
+        """Initialize.
+
         Args:
             ho (object): Hardware object to mediate for.
             (str): The name of the object
@@ -171,7 +174,8 @@ class AdapterBase:
 
     @property
     def adapter_type(self):
-        """
+        """Adapter type.
+
         Returns:
             (str): The data type of the value
         """
@@ -179,8 +183,8 @@ class AdapterBase:
 
     @property
     def ho(self):
-        """
-        Underlaying HardwareObject
+        """Underlaying HardwareObject.
+
         Returns:
             (object): HardwareObject
         """
@@ -188,9 +192,11 @@ class AdapterBase:
 
     # Abstract method
     def state(self):
-        """
+        """Retrieve the state of the underlying hardware object as a JavaScript string.
+
         Retrieves the state of the underlying hardware object and converts it to a str
         that can be used by the javascript front end.
+
         Returns:
             (str): The state
         """
@@ -198,25 +204,29 @@ class AdapterBase:
 
     # Abstract method
     def msg(self):
-        """
-        Returns a message describing the current state. should be used to communicate
-        details of the state to the user.
+        """Return a message describing the current state.
+
+        Should be used to communicate details of the state to the user.
+
         Returns:
             (str): The message string.
         """
         return self._msg
 
     def read_only(self):
-        """
-        Returns true if the hardware object is read only, set_value can not be called
+        """Return true if the hardware object is read only.
+
+        Return true if the hardware object is read only and
+        ``set_value`` can not be called.
+
         Returns:
             (bool): True if read enly.
         """
         return self._read_only
 
     def available(self):
-        """
-        Check if the hardware object is considered to be available/online/enabled
+        """Check if the hardware object is considered to be available/online/enabled.
+
         Returns:
             (bool): True if available.
         """
@@ -319,10 +329,7 @@ class AdapterBase:
         )
 
     def emit_ho_changed(self, state, **kwargs):
-        """
-        Signal handler to be used for sending the entire object to the client via
-        socketIO
-        """
+        """Signal handler to send entire object to the client via socketIO."""
         data = self.data().dict()
 
         if hasattr(state, "name"):
@@ -335,15 +342,12 @@ class AdapterBase:
         self.app.server.emit("hardware_object_changed", data, namespace="/hwr")
 
     def state_change(self, state, **kwargs):
-        """
-        Signal handler to be used for sending the state to the client via
-        socketIO
-        """
+        """Signal handler to send the state to the client via socketIO."""
         self.emit_ho_changed(state)
 
     def _dict_repr(self):
-        """
-        Dictionary representation of the hardware object.
+        """Dictionary representation of the hardware object.
+
         Returns:
             (dict): The dictionary.
         """
@@ -385,8 +389,11 @@ class AdapterBase:
 
 
 class ActuatorAdapterBase(AdapterBase):
-    def __init__(self, ho, role, app, resource_handler_config=None):
-        """
+    def __init__(  # noqa: D417
+        self, ho, role, app, resource_handler_config=None
+    ):
+        """Initialize.
+
         Args:
             (object): Hardware object to mediate for.
             (str): The name of the object.
@@ -402,34 +409,34 @@ class ActuatorAdapterBase(AdapterBase):
     # will share this method thus all methods will be effected if limit rated.
     # Rather LimitRate the function calling this one.
     def value_change(self, *args, **kwargs):
-        """
-        Signal handler to be used for sending values to the client via
-        socketIO.
-        """
+        """Signal handler to send values to the client via socketIO."""
         self.emit_ho_value_changed(args[0])
 
     # Abstract method
     def set_value(self, value) -> str:
-        """
-        Sets a value on underlying hardware object.
+        """Sets a value on underlying hardware object.
 
         Args:
             value(float): Value to be set.
+
         Returns:
             (str): The actual value set as str.
+
         Raises:
             ValueError: When conversion or treatment of value fails.
             StopIteration: When a value change was interrupted (abort/cancel).
+
         Emits:
             hardware_object_value_changed with values over websocket
         """
 
     # Abstract method
     def get_value(self):
-        """
-        Retrieve value from underlying hardware object.
+        """Retrieve value from underlying hardware object.
+
         Returns:
             (str): The value.
+
         Raises:
             ValueError: When value for any reason can't be retrieved.
         """
@@ -437,15 +444,14 @@ class ActuatorAdapterBase(AdapterBase):
 
     # Abstract method
     def stop(self):
-        """
-        Stop an action/movement.
-        """
+        """Stop an action/movement."""
 
     def limits(self):
-        """
-        Read the energy limits.
+        """Read the energy limits.
+
         Returns:
             (tuple): Two floats (min, max).
+
         Raises:
             ValueError: When limits for any reason can't be retrieved.
         """
@@ -459,6 +465,7 @@ class ActuatorAdapterBase(AdapterBase):
 
     def _dict_repr(self):
         """Dictionary representation of the hardware object.
+
         Returns:
             (dict): The dictionary.
         """

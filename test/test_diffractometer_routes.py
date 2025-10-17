@@ -6,7 +6,8 @@ from mxcubecore import HardwareRepository as HWR
 
 
 def test_set_phase(client):
-    """
+    """Check the "set phase" operation.
+
     Sets phase to a phase P (any phase in the phase list), checks if the
     actual phase after set_phase is P.
 
@@ -36,14 +37,14 @@ def test_set_phase(client):
 
 
 def test_set_aperture(client):
-    """
+    """Check the "set aperture" operation.
+
     Sets the aperture to an aperture AP belonging to the list of valid
     apertures and verifies that the aperture actually changed to AP.
 
     Moves the aperture back to its original value and verifies that the
     original value also is the current
     """
-
     resp = client.get(
         "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
     )

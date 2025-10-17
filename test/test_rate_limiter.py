@@ -8,7 +8,7 @@ from mxcubeweb.core.server.limiter import init_limiter, rate_limit_error_handler
 
 @pytest.fixture
 def limiter_app():
-    """Create a fresh Flask app with limiter for testing"""
+    """Create a fresh Flask app with limiter for testing."""
     app = Flask("limiter_test")
     app.config["RATELIMIT_DEFAULT"] = "3 per minute"
     app.config["RATELIMIT_STORAGE_URI"] = "memory://"
@@ -24,7 +24,7 @@ def limiter_app():
 
 
 def test_rate_limiter_initialization():
-    """Test that the limiter initializes correctly with various configurations"""
+    """Test that the limiter initializes correctly with various configurations."""
     app = Flask("limiter_test")
 
     app.config["RATELIMIT_DEFAULT"] = "100 per day;10 per hour"
@@ -39,7 +39,7 @@ def test_rate_limiter_initialization():
 
 
 def test_rate_limit_error_handler(limiter_app):
-    """Test the rate limit error handler directly"""
+    """Test the rate limit error handler directly."""
     with limiter_app.app_context():
         response, status_code = rate_limit_error_handler(Exception())
         data = json.loads(response.data)
@@ -50,7 +50,7 @@ def test_rate_limit_error_handler(limiter_app):
 
 
 def test_rate_limiter_enforcement(limiter_app):
-    """Test that the rate limiter enforces limits"""
+    """Test that the rate limiter enforces limits."""
     client = limiter_app.test_client()
 
     for _ in range(3):

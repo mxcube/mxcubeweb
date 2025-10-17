@@ -19,11 +19,15 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/camera/snapshot", methods=["POST"])
     @server.restrict
     def snapshot():
-        """
-        Take snapshot of the sample view
-        data = {"overlay": overlay_data} overlay is the image data to overlay on sample image,
+        """Take snapshot of the sample view.
+
+        ``data = {"overlay": overlay_data}``
+        ``overlay`` is the image data to overlay on sample image,
         it should normally contain the data of shapes drawn on canvas.
-        Return: Overlayed image uri, if successful, statuscode 500 otherwise.
+
+        Returns:
+            Overlayed image URI, if successful.
+            Status code ``500`` otherwise.
         """
         try:
             overlay = json.loads(request.data).get("overlay")
@@ -55,14 +59,17 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/camera", methods=["GET"])
     @server.restrict
     def get_image_data():
-        """
-        Get size of the image of the diffractometer
-            :response Content-type:application/json, example:
-            {  "imageHeight": 576, "imageWidth": 768,
-            "pixelsPerMm": [1661.1295681063123, 1661.1295681063123]
+        """Get size of the image of the diffractometer.
+
+        :response Content-type:application/json, example::
+            {
+                "imageHeight": 576,
+                "imageWidth": 768,
+                "pixelsPerMm": [1661.1295681063123, 1661.1295681063123],
             }
-            :statuscode: 200: no error
-            :statuscode: 409: error
+
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
         data = app.sample_view.get_viewport_info()
 
@@ -73,7 +80,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/camera", methods=["POST"])
     @server.restrict
     def set_image_size():
-        """ """
         params = request.get_json()
 
         res = app.sample_view.set_image_size(
@@ -88,11 +94,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def move_to_centred_position(point_id):
-        """
-        Move to the given centred position.
-            :parameter id: centred position identifier, integer
-            :statuscode: 200: no error
-            :statuscode: 409: error
+        """Move to the given centred position.
+
+        :parameter id: centred position identifier, integer
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
         point = app.sample_view.move_to_centred_position(point_id)
 
@@ -103,11 +109,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/shapes", methods=["GET"])
     @server.restrict
     def get_shapes():
-        """
-        Retrieve all the stored centred positions.
-            :response Content-type: application/json, the stored centred positions.
-            :statuscode: 200: no error
-            :statuscode: 409: error
+        """Retrieve all the stored centred positions.
+
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
         shapes = app.sample_view.get_shapes()
 
@@ -119,12 +125,12 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def update_shapes():
-        """
-        Update shape information.
-            :parameter shape_data: dict with shape information (id, type, ...)
-            :response Content-type: application/json, the stored centred positions.
-            :statuscode: 200: no error
-            :statuscode: 409: error
+        """Update shape information.
+
+        :parameter shape_data: dict with shape information (id, type, ...)
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
         shapes = request.get_json().get("shapes", [])
 
@@ -137,11 +143,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def delete_shape(sid):
-        """
-        Retrieve all the stored centred positions.
-            :response Content-type: application/json, the stored centred positions.
-            :statuscode: 200: no error
-            :statuscode: 409: error
+        """Retrieve all the stored centred positions.
+
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
         HWR.beamline.sample_view.delete_shape(sid)
         return Response(status=200)
@@ -150,13 +156,12 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def rotate_to():
-        """
-        Rotate Phi to the position where the given shape was defined
+        """Rotate Phi to the position where the given shape was defined.
 
-            :parameter sid: The shape id
-            :response Content-type: application/json, the stored centred positions.
-            :statuscode: 200: no error
-            :statuscode: 409: error
+        :parameter sid: The shape id
+        :response Content-type: application/json, the stored centred positions.
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
         sid = request.get_json().get("sid", -1)
 
@@ -173,12 +178,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def centre_click():
-        """
-        Start Click centring procedure.
-            :statuscode: 200: no error
-            :statuscode: 409: error
-        """
+        """Start Click centring procedure.
 
+        :statuscode: 200: no error
+        :statuscode: 409: error
+        """
         try:
             data = app.sample_view.start_manual_centring()
         except Exception:
@@ -201,10 +205,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def abort_centring():
-        """
-        Abort centring procedure.
-            :statuscode: 200: no error
-            :statuscode: 409: error
+        """Abort centring procedure.
+
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
         app.sample_view.abort_centring()
         return Response(status=200)
@@ -213,9 +217,9 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def click():
-        """
-        The click method needs the input from the user, a running click centring
-        procedure must be set before
+        """The click method needs the input from the user.
+
+        A running click centring procedure must be set before.
 
         :request Content-type: application/json, integer positions of the clicks,
                             {clickPos={"x": 123,"y": 456}}
@@ -236,9 +240,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def accept_centring():
-        """
-        Accept the centring position.
-        """
+        """Accept the centring position."""
         HWR.beamline.diffractometer.accept_centring()
         return Response(status=200)
 
@@ -257,13 +259,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def set_centring_method():
-        """
-        Set MXCuBE to use automatic (lucid) centring procedure when
-        mounting samples
+        """Set automatic (lucid) centring procedure when mounting samples.
 
         :statuscode: 200: no error
         :statuscode: 409: error
-
         """
         method = json.loads(request.data).get("centringMethod", None)
         app.sample_view.set_centring_method(method)

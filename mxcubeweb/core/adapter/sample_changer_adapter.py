@@ -40,7 +40,7 @@ resource_handler_config = ResourceHandlerConfigModel(
 
 
 class SampleChangerAdapter(AdapterBase):
-    """Adapter for AbstractSampleChanger"""
+    """Adapter for AbstractSampleChanger."""
 
     SUPPORTED_TYPES: ClassVar[list[object]] = [SampleChanger]
 
@@ -371,10 +371,13 @@ class SampleChangerAdapter(AdapterBase):
             raise RuntimeError(msg) from _ex
 
     def sync_with_crims(self):
-        """
-        To be use mostly when Diffractometer is in plate mode
-        This retun a List of crystal dict available in Crims that have been Harvested
-        With this user can visualize easier where the crystal are in Plate GUI
+        """Synchronize with Crims.
+
+        To be used mostly when diffractometer is in plate mode.
+        This returns a list of crystal dicts available in Crims
+        that have been harvested.
+        With this, the user can visualize more easily
+        where the crystals are in the plate GUI.
         """
         xtal_list = []
         try:

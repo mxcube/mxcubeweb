@@ -98,11 +98,10 @@ class SampleView(ComponentBase):
         self._emit_shapes_updated()
 
     def wait_for_centring_finishes(self, *args, **kwargs):
-        """
-        Executed when a centring is finished. It updates the temporary
-        centred point.
-        """
+        """Executed when a centring is finished.
 
+        It updates the temporary centred point.
+        """
         try:
             centring_status = args[1]
         except IndexError:
@@ -130,9 +129,9 @@ class SampleView(ComponentBase):
                 HWR.beamline.diffractometer.accept_centring()
 
     def init_signals(self):
-        """
-        Connect all the relevant hwobj signals with the corresponding
-        callback method.
+        """Connect relevant hardware object signals to callbacks.
+
+        Connect all the relevant hwobj signals with the corresponding callback method.
         """
         from mxcubeweb.routes import signals
 
@@ -276,10 +275,10 @@ class SampleView(ComponentBase):
                     raise
 
     def start_auto_centring(self):
-        """
-        Start automatic (lucid) centring procedure.
-            :statuscode: 200: no error
-            :statuscode: 409: error
+        """Start automatic (lucid) centring procedure.
+
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
         if not HWR.beamline.diffractometer.current_centring_procedure:
             msg = "Starting automatic centring"
@@ -293,10 +292,10 @@ class SampleView(ComponentBase):
             logging.getLogger("user_level_log").info(msg)
 
     def start_manual_centring(self):
-        """
-        Start Click centring procedure.
-            :statuscode: 200: no error
-            :statuscode: 409: error
+        """Start Click centring procedure.
+
+        :statuscode: 200: no error
+        :statuscode: 409: error
         """
         if HWR.beamline.diffractometer.is_ready():
             if HWR.beamline.diffractometer.current_centring_procedure:
@@ -370,7 +369,8 @@ class SampleView(ComponentBase):
         logging.getLogger("user_level_log").info(msg)
 
     def get_viewport_info(self):
-        """
+        """Get information about current "view port".
+
         Get information about current "view port" video dimension, beam position,
         pixels per mm, returns a dictionary with the format:
 

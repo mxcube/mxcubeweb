@@ -82,8 +82,7 @@ class Queue(ComponentBase):
         return pt.run_number
 
     def node_index(self, node):
-        """
-        Get the position (index) in the queue, sample and node id of node <node>.
+        """Get the position (index) in the queue, sample and node id of node <node>.
 
         :returns: dictionary on the form:
                 {'sample': sample, 'idx': index, 'queue_id': node_id}
@@ -123,8 +122,7 @@ class Queue(ComponentBase):
         }
 
     def load_queue_from_dict(self, queue_dict):
-        """
-        Loads the queue in queue_dict in to the current HWR.beamline.queue_model (HWR.beamline.queue_model)
+        """Load the queue in queue_dict in to the current HWR.beamline.queue_model (HWR.beamline.queue_model).
 
         :param dict queue_dict: Queue dictionary, on the same format as returned by
                                 queue_to_dict
@@ -138,8 +136,7 @@ class Queue(ComponentBase):
             self.queue_add_item(item_list)
 
     def queue_to_dict(self, node=None, include_lims_data=False):
-        """
-        Returns the dictionary representation of the queue
+        """Returns the dictionary representation of the queue.
 
         :param TaskNode node: list of Node objects to get representation for,
                             queue root used if nothing is passed.
@@ -172,8 +169,7 @@ class Queue(ComponentBase):
         )
 
     def queue_to_json(self, node=None, include_lims_data=False):
-        """
-        Returns the json representation of the queue
+        """Return the json representation of the queue.
 
         :param TaskNode node: list of Node objects to get representation for,
                             queue root used if nothing is passed.
@@ -208,8 +204,7 @@ class Queue(ComponentBase):
         return json.dumps(res, sort_keys=True, indent=4)
 
     def get_node_state(self, node_id):
-        """
-        Get the state of the given node.
+        """Get the state of the given node.
 
         :param TaskNode node: Node to get state for
 
@@ -239,8 +234,7 @@ class Queue(ComponentBase):
         return (enabled, state)
 
     def get_queue_state(self):
-        """
-        Return the dictionary representation of the current queue and its state
+        """Return the dictionary representation of the current queue and its state.
 
         :returns: dictionary on the form:
                 {
@@ -630,9 +624,7 @@ class Queue(ComponentBase):
         return {node.loc_str: sample}
 
     def queue_to_dict_rec(self, node, include_lims_data=False):
-        """
-        Parses node recursively and builds a representation of the queue based on
-        python dictionaries.
+        """Parse node recursively and builds a representation of the queue based on python dictionaries.
 
         :param TaskNode node: The node to parse
         :returns: A list on the form:
@@ -691,10 +683,10 @@ class Queue(ComponentBase):
         return result
 
     def queue_exec_state(self):
-        """
-        :returns: The queue execution state, one of QUEUE_STOPPED, QUEUE_PAUSED
-                or QUEUE_RUNNING
+        """Queue execution state.
 
+        :returns: The queue execution state, one of QUEUE_STOPPED, QUEUE_PAUSED
+        or QUEUE_RUNNING
         """
         state = QUEUE_STOPPED
 
@@ -706,8 +698,7 @@ class Queue(ComponentBase):
         return state
 
     def get_entry(self, _id):
-        """
-        Retrieves the model and the queue entry for the model node with id <id>
+        """Retrieve the model and the queue entry for the model node with id <id>.
 
         :param int _id: Node id of node to retrieve
         :returns: The tuple model, entry or the root node and QueueManger if _id is None
@@ -726,9 +717,7 @@ class Queue(ComponentBase):
         entry.set_enabled(enabled)
 
     def delete_entry(self, entry):
-        """
-        Helper function that deletes an entry and its model from the queue
-        """
+        """Helper function that deletes an entry and its model from the queue."""
         parent_entry = entry.get_container()
         parent_entry.dequeue(entry)
         model = entry.get_data_model()
@@ -757,10 +746,10 @@ class Queue(ComponentBase):
             self.delete_entry(entry)
 
     def enable_entry(self, id_or_qentry, flag):
-        """
-        Helper function that sets the enabled flag to <flag> for the entry
-        and associated model. Takes either the model node id or the QueueEntry
-        object.
+        """Helper function that sets the enabled flag for the entry and its model.
+
+        Helper function that sets the enabled flag to <flag> for the entry and associated model.
+        Takes either the model node id or the QueueEntry object.
 
         Sets enabled flag on both the entry and model.
 
@@ -776,9 +765,10 @@ class Queue(ComponentBase):
             model.set_enabled(flag)
 
     def swap_task_entry(self, sid, ti1, ti2):
-        """
+        """Swap order of two queue entries in the queue, with the same sample as parent.
+
         Swaps order of two queue entries in the queue, with the same sample <sid>
-        as parent
+        as parent.
 
         :param str sid: Sample id
         :param int ti1: Position of task1 (old position)
@@ -802,8 +792,9 @@ class Queue(ComponentBase):
         logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
 
     def queue_add_item(self, item_list):
-        """
-        Adds the queue items in item_list to the queue. The items in the list can
+        """Add queue items to the queue.
+
+        Add the queue items in item_list to the queue. The items in the list can
         be either samples and or tasks. Samples are only added if they are not
         already in the queue  and tasks are appended to the end of an
         (already existing) sample. A task is ignored if the sample is not already
@@ -853,7 +844,8 @@ class Queue(ComponentBase):
         return self.queue_to_dict()
 
     def _queue_add_item_rec(self, item_list, sample_node_id=None):
-        """
+        """Add the queue items in item_list to the queue.
+
         Adds the queue items in item_list to the queue. The items in the list can
         be either samples and or tasks. Samples are only added if they are not
         already in the queue  and tasks are appended to the end of an
@@ -911,8 +903,7 @@ class Queue(ComponentBase):
                 self.add_queue_entry(sample_node_id, item, item_t)
 
     def add_sample(self, sample_id, item):
-        """
-        Adds a sample with sample id <sample_id> the queue.
+        """Add a sample with sample id <sample_id> the queue.
 
         :param str sample_id: Sample id (often sample changer location)
         :returns: SampleQueueEntry
@@ -965,8 +956,7 @@ class Queue(ComponentBase):
         return tag
 
     def set_dc_params(self, model, entry, task_data, sample_model):
-        """
-        Helper method that sets the data collection parameters for a DataCollection.
+        """Helper method that sets the data collection parameters for a DataCollection.
 
         :param DataCollectionQueueModel: The model to set parameters of
         :param DataCollectionQueueEntry: The queue entry of the model
@@ -1095,8 +1085,7 @@ class Queue(ComponentBase):
         entry.set_enabled(task_data["checked"])
 
     def set_gphl_wf_params(self, model, entry, task_data, sample_model):
-        """
-        Helper method that sets the parameters for a GPhL workflow task.
+        """Helper method that sets the parameters for a GPhL workflow task.
 
         :param queue_model_objectsGphlWorkflow: The model to set parameters of
         :param GphlWorkflowQueueEntry: The queue entry of the model
@@ -1120,8 +1109,7 @@ class Queue(ComponentBase):
         entry.set_enabled(task_data["checked"])
 
     def set_wf_params(self, model, entry, task_data, sample_model):
-        """
-        Helper method that sets the parameters for a workflow task.
+        """Helper method that sets the parameters for a workflow task.
 
         :param WorkflowQueueModel: The model to set parameters of
         :param GenericWorkflowQueueEntry: The queue entry of the model
@@ -1185,9 +1173,9 @@ class Queue(ComponentBase):
         entry.set_enabled(task_data["checked"])
 
     def set_char_params(self, model, entry, task_data, sample_model):
-        """
-        Helper method that sets the characterisation parameters for a
-        Characterisation.
+        """Helper method that sets the characterisation parameters.
+
+        Helper method that sets the characterisation parameters for a Characterisation.
 
         :param CharacterisationQueueModel: The mode to set parameters of
         :param CharacterisationQueueEntry: The queue entry of the model
@@ -1220,8 +1208,7 @@ class Queue(ComponentBase):
         entry.set_enabled(task_data["checked"])
 
     def set_xrf_params(self, model, entry, task_data, sample_model):
-        """
-        Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
+        """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
 
         :param XRFSpectrum QueueModel: The model to set parameters of
         :param XrfSpectrumQueueEntry: The queue entry of the model
@@ -1263,8 +1250,7 @@ class Queue(ComponentBase):
         entry.set_enabled(task_data["checked"])
 
     def set_energy_scan_params(self, model, entry, task_data, sample_model):
-        """
-        Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
+        """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
 
         :param EnergyScan QueueModel: The model to set parameters of
         :param EnergyScanQueueEntry: The queue entry of the model
@@ -1307,7 +1293,8 @@ class Queue(ComponentBase):
         entry.set_enabled(task_data["checked"])
 
     def _create_dc(self):
-        """
+        """Create a data collection model and its corresponding queue entry.
+
         Creates a data collection model and its corresponding queue entry from
         a dict with collection parameters.
 
@@ -1326,8 +1313,10 @@ class Queue(ComponentBase):
 
         return dc_model, dc_entry
 
-    def _create_queue_entry(self, task, task_name):
-        """Creates a queue entry and its corresponding data model
+    def _create_queue_entry(  # noqa: D417
+        self, task, task_name
+    ):
+        """Create a queue entry and its corresponding data model.
 
         Args:
             task (dict): Collection parameters
@@ -1356,8 +1345,7 @@ class Queue(ComponentBase):
         return model, entry
 
     def _create_wf(self):
-        """
-        Creates a workflow model.
+        """Create a workflow model.
 
         :returns: The tuple (model, entry)
         :rtype: Tuple
@@ -1369,8 +1357,7 @@ class Queue(ComponentBase):
         return dc_model, dc_entry
 
     def _create_gphl_wf(self):
-        """
-        Creates a gphl workflow model.
+        """Create a gphl workflow model.
 
         :returns: The tuple (model, entry)
         :rtype: Tuple
@@ -1386,8 +1373,7 @@ class Queue(ComponentBase):
         return dc_model, dc_entry
 
     def _create_xrf(self, sample_model):
-        """
-        Creates a XRFSpectrum model.
+        """Create a XRFSpectrum model.
 
         :param dict task: Collection parameters
         :returns: The tuple (model, entry)
@@ -1400,8 +1386,9 @@ class Queue(ComponentBase):
         return xrf_model, xrf_entry
 
     def _create_energy_scan(self, sample_model):
-        """
-        Creates a energy scan model and its corresponding queue entry from
+        """Create an energy scan model and its corresponding queue entry.
+
+        Create an energy scan model and its corresponding queue entry from
         a dict with collection parameters.
 
         :param dict task: Collection parameters
@@ -1415,8 +1402,7 @@ class Queue(ComponentBase):
         return escan_model, escan_entry
 
     def add_characterisation(self, node_id, task):
-        """
-        Adds a data characterisation task to the sample with id: <id>
+        """Add a data characterisation task to the sample with id: <id>.
 
         :param int id: id of the sample to which the task belongs
         :param dict task: Task data (parameters)
@@ -1464,8 +1450,7 @@ class Queue(ComponentBase):
         return char_model._node_id
 
     def add_data_collection(self, node_id, task):
-        """
-        Adds a data collection task to the sample with id: <id>
+        """Add a data collection task to the sample with id: <id>.
 
         :param int id: id of the sample to which the task belongs
         :param dict task: task data
@@ -1491,7 +1476,7 @@ class Queue(ComponentBase):
         return dc_model._node_id
 
     def add_queue_entry(self, node_id, task, task_name):
-        """Adds a queue entry to the sample with id <node_id>
+        """Add a queue entry to the sample with id <node_id>.
 
         Args:
             node_id (int): id of the sample to which the task belongs
@@ -1560,8 +1545,7 @@ class Queue(ComponentBase):
         return model._node_id
 
     def add_workflow(self, node_id, task):
-        """
-        Adds a worklfow task to the parent node with id: <id>
+        """Add a worklfow task to the parent node with id: <id>.
 
         For adding GPhL Auto workflow, call with node_id==parent_node_id
         and all required parameters in task["parameters"]
@@ -1602,8 +1586,7 @@ class Queue(ComponentBase):
         return wf_model._node_id
 
     def add_interleaved(self, node_id, task):
-        """
-        Adds a interleaved data collection task to the sample with id: <id>
+        """Add a interleaved data collection task to the sample with id: <id>.
 
         :param int node_id: id of the sample to which the task belongs
         :param dict task: task data
@@ -1642,8 +1625,7 @@ class Queue(ComponentBase):
         return group_model._node_id
 
     def add_xrf_scan(self, node_id, task):
-        """
-        Adds a XRF Scan task to the sample with id: <id>
+        """Add a XRF Scan task to the sample with id: <id>.
 
         :param int id: id of the sample to which the task belongs
         :param dict task: task data
@@ -1669,8 +1651,7 @@ class Queue(ComponentBase):
         return xrf_model._node_id
 
     def add_energy_scan(self, node_id, task):
-        """
-        Adds a energy scan task to the sample with id: <id>
+        """Add a energy scan task to the sample with id: <id>.
 
         :param int id: id of the sample to which the task belongs
         :param dict task: task data
@@ -1696,8 +1677,8 @@ class Queue(ComponentBase):
         return escan_model._node_id
 
     def clear_queue(self):
-        """
-        Creates a new queue
+        """Create a new queue.
+
         :returns: MxCuBE QueueModel Object
         """
         from mxcubecore import HardwareRepository as HWR
@@ -1711,8 +1692,8 @@ class Queue(ComponentBase):
         HWR.beamline.queue_model.select_model("ispyb")
 
     def queue_model_child_added(self, parent, child):
-        """
-        Listen to the addition of elements to the queue model ('child_added').
+        """Listen to the addition of elements to the queue model ('child_added').
+
         Add the corresponding entries to the queue if they are not already
         added. Handles for instance the addition of reference collections for
         characterisations and workflows.
@@ -1800,7 +1781,8 @@ class Queue(ComponentBase):
         self.app.server.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
 
     def set_auto_add_diffplan(self, autoadd):
-        """
+        """Set auto add diffraction plan flag.
+
         Sets auto add diffraction plan flag, automatically add to the queue
         (True) or wait for user (False)
 
@@ -1822,8 +1804,7 @@ class Queue(ComponentBase):
                     entry.auto_add_diff_plan = autoadd
 
     def execute_entry_with_id(self, sid, tindex=None):
-        """
-        Execute the entry at position (sampleID, task index) in queue
+        """Execute the entry at position (sampleID, task index) in queue.
 
         :param str sid: sampleID
         :param int tindex: task index of task within sample with id sampleID
@@ -1872,9 +1853,7 @@ class Queue(ComponentBase):
                 HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
 
     def init_signals(self, queue):
-        """
-        Initialize queue hwobj related signals.
-        """
+        """Initialize queue hwobj related signals."""
         from mxcubeweb.routes import signals
 
         HWR.beamline.collect.connect(
@@ -1976,7 +1955,8 @@ class Queue(ComponentBase):
             self.enable_entry(sample_data["queueID"], flag)
 
     def set_auto_mount_sample(self, automount):
-        """
+        """Set auto mount next flag.
+
         Sets auto mount next flag, automatically mount next sample in queue
         (True) or wait for user (False)
 
@@ -1985,7 +1965,8 @@ class Queue(ComponentBase):
         self.app.AUTO_MOUNT_SAMPLE = automount
 
     def get_auto_mount_sample(self):
-        """
+        """Get auto-mount sample.
+
         :returns: Returns auto mount flag
         :rtype: bool
         """
@@ -2043,8 +2024,7 @@ class Queue(ComponentBase):
         )
 
     def queue_start(self, sid):
-        """
-        Start execution of the queue.
+        """Start execution of the queue.
 
         :returns: Respons object, status code set to:
                 200: On success
@@ -2075,9 +2055,7 @@ class Queue(ComponentBase):
         HWR.beamline.queue_manager.stop()
 
     def queue_pause(self):
-        """
-        Pause the execution of the queue
-        """
+        """Pause the execution of the queue."""
         HWR.beamline.queue_manager.pause(True)
 
         msg = {
@@ -2091,8 +2069,7 @@ class Queue(ComponentBase):
         return msg
 
     def queue_unpause(self):
-        """
-        Unpause execution of the queue
+        """Unpause execution of the queue.
 
         :returns: Response object, status code set to:
                 200: On success
@@ -2320,10 +2297,10 @@ class Queue(ComponentBase):
         root_path = HWR.beamline.session.get_base_image_directory()
         return {"path": path, "rootPath": root_path}
 
-    def set_setting(self, name_value: SimpleNameValue) -> tuple:
-        """
-        Sets the setting (on the MXCUBEApplication object)
-        with name to value
+    def set_setting(  # noqa: D417
+        self, name_value: SimpleNameValue
+    ) -> tuple:
+        """Set the setting (on the MXCUBEApplication object) with name to value.
 
         Args:
            name: The name of the setting
@@ -2344,7 +2321,8 @@ class Queue(ComponentBase):
         return result
 
     def set_num_snapshots(self, num_snapshots: int):
-        """Sets the number of snapshots to take during data collection
+        """Set the number of snapshots to take during data collection.
+
         Args:
             num_snapshots (int): number of snapshots to be taken
         """

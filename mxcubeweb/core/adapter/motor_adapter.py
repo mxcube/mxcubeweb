@@ -19,8 +19,11 @@ resource_handler_config = ResourceHandlerConfigModel(
 class MotorAdapter(ActuatorAdapterBase):
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractMotor.AbstractMotor]
 
-    def __init__(self, ho, role, app):
-        """
+    def __init__(  # noqa: D417
+        self, ho, role, app
+    ):
+        """Initialize.
+
         Args:
             ho (object): Hardware object.
         """
@@ -33,12 +36,14 @@ class MotorAdapter(ActuatorAdapterBase):
         self.value_change(*args, **kwargs)
 
     def set_value(self, value: float):
-        """
-        Set the detector distance.
+        """Set the detector distance.
+
         Args:
             value (float): Target distance [mm].
+
         Returns:
             (str): The actual value set.
+
         Raises:
             ValueError: Value not valid.
             RuntimeError: Timeout while setting the value.
@@ -48,10 +53,11 @@ class MotorAdapter(ActuatorAdapterBase):
         return self.get_value()
 
     def get_value(self) -> FloatValueModel:
-        """
-        Read the detector distance.
+        """Read the detector distance.
+
         Returns:
             (float as str): Detector distance [mm].
+
         Raises:
             ValueError: When value for any reason can't be retrieved.
         """
@@ -63,8 +69,8 @@ class MotorAdapter(ActuatorAdapterBase):
         return FloatValueModel(value=value)
 
     def state(self):
-        """
-        Get the state.
+        """Get the state.
+
         Returns:
             (str): The state.
         """
@@ -74,10 +80,11 @@ class MotorAdapter(ActuatorAdapterBase):
         self._ho.abort()
 
     def limits(self):
-        """
-        Read the detector distance limits.
+        """Read the detector distance limits.
+
         Returns:
             (tuple): Two floats (min, max).
+
         Raises:
             ValueError: When limits for any reason can't be retrieved.
         """

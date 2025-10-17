@@ -14,8 +14,7 @@ DEFAULT_RESPONSES = {
 
 
 def to_openapi_path(route: str) -> str:
-    """
-    Adds the "{" "}" to the route arguments that OpenAPI requires
+    """Add the "{" "}" to the route arguments that OpenAPI requires.
 
     Args:
         route(str): The route
@@ -87,7 +86,6 @@ class OpenAPISpec:
         self, prefix: str, route: str, http_method: str, model: type[BaseModel]
     ):
         """Adds Pydantic model definitions to OpenAPI schema."""
-
         open_api_path = to_openapi_path(prefix + route)
         schema_name = model.__name__
 
@@ -112,7 +110,6 @@ class OpenAPISpec:
         self, prefix: str, route: str, http_method: str, model: type[BaseModel]
     ):
         """Adds response schema to OpenAPI documentation."""
-
         open_api_path = to_openapi_path(prefix + route)
         schema_name = model.__name__ if isinstance(model, BaseModel) else None
 

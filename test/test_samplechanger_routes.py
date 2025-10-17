@@ -2,9 +2,7 @@ import json
 
 
 def test_get_sample_list(client):
-    """
-    Checks retrieval of the samples list from lims
-    """
+    """Check retrieval of the samples list from lims."""
     resp = client.get("/mxcube/api/v0.1/lims/samples_list")
     data = json.loads(resp.data)
 
@@ -13,9 +11,7 @@ def test_get_sample_list(client):
 
 
 def test_get_loaded_sample(client):
-    """
-    Checks retrieval of the sample changer loaded sample
-    """
+    """Check retrieval of the sample changer loaded sample."""
     resp = client.get(
         "/mxcube/api/v0.1/hwobj/sample_changer/sample_changer/loaded_sample"
     )
@@ -26,9 +22,7 @@ def test_get_loaded_sample(client):
 
 
 def test_get_sc_contents_view(client):
-    """
-    Checks retrieval of the sample changer contents
-    """
+    """Check retrieval of the sample changer contents."""
     resp = client.get(
         "/mxcube/api/v0.1/hwobj/sample_changer/sample_changer/get_contents"
     )
@@ -38,9 +32,7 @@ def test_get_sc_contents_view(client):
 
 
 def test_get_initial_state(client):
-    """
-    Checks retrieval of the sample changer initial state
-    """
+    """Check retrieval of the sample changer initial state."""
     resp = client.get("/mxcube/api/v0.1/hwobj/sample_changer/sample_changer/get_value")
     data = json.loads(resp.data)
 

@@ -1,6 +1,7 @@
-"""
-Module that contains application wide settings and state as well as functions
-for accessing and manipulating those.
+"""Application-wide settings and state.
+
+Module that contains application-wide settings and state
+as well as functions for accessing and manipulating them.
 """
 
 import logging
@@ -118,14 +119,11 @@ class MXCUBEApplication:
         enabled_logger_list,
         cfg,
     ):
-        """
-        Initializes application wide variables, sample video stream, and applies
+        """Initializes application wide variables, sample video stream, and applies.
 
-        :param hwr: HardwareRepository module
-        :param bool allow_remote: Allow remote usage, True else False
-        :param bool ra_timeout: Timeout gives control, True else False
-
-        :return None:
+        Params:
+            allow_remote(bool): Allow remote usage, ``True`` else ``False``.
+            ra_timeout(bool): Timeout gives control, ``True`` else ``False``.
         """
         # The routes created by the AdapterResourceHandler
         # via the factory are kept between calls to init as they
@@ -178,11 +176,8 @@ class MXCUBEApplication:
         logging.getLogger("MX3.HWR").info(msg)
 
     @staticmethod
-    def init_sample_video(_format, port):
-        """
-        Initializes video streaming
-        :return: None
-        """
+    def init_sample_video(_format, port) -> None:
+        """Initialize video streaming."""
         try:
             HWR.beamline.sample_view.camera.start_streaming(_format=_format, port=port)
         except Exception as ex:
@@ -192,9 +187,10 @@ class MXCUBEApplication:
 
     @staticmethod
     def init_signal_handlers():
-        """
-        Connects the signal handlers defined in routes/signals.py to the
-        corresponding signals/events
+        """Connect the signal handlers.
+
+        Connect the signal handlers defined in ``routes/signals.py``
+        to the corresponding signals/events.
         """
         MXCUBEApplication.queue.init_signals(HWR.beamline.queue_model)
         MXCUBEApplication.sample_view.init_signals()
@@ -219,11 +215,11 @@ class MXCUBEApplication:
         return None
 
     @staticmethod
-    def init_logging(log_file, log_level, enabled_logger_list):
-        """
-        :param str log_file: Path to log file
+    def init_logging(log_file: str, log_level, enabled_logger_list) -> None:
+        """Initialize logging.
 
-        :return: None
+        Params:
+            log_file: Path to log file.
         """
         removeLoggingHandlers()
 
@@ -295,7 +291,8 @@ class MXCUBEApplication:
 
     @staticmethod
     def init_state_storage():
-        """
+        """Set up of server side state storage.
+
         Set up of server side state storage, the UI state of the client is
         stored on the server
         """

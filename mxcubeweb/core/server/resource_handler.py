@@ -27,9 +27,7 @@ def valid_object_id(object_id: str) -> bool:
 
 
 def validate_input_str(input_string: str) -> bool:
-    """
-    Validates that the input string contains only alphanumeric characters
-    and/or dot (.).
+    """Validate that input string contains only alphanumeric characters and/or dot (.).
 
     Args:
         input_string (str): The string to validate.
@@ -42,8 +40,10 @@ def validate_input_str(input_string: str) -> bool:
 
 
 def assert_valid_type_arguments(func):
-    """Make sure that all the arguments of func are typehinted as pydantic model,
-    float, int, str or bool
+    """Make sure that all the arguments of the function are typehinted correctly.
+
+    Make sure that all the arguments of the function are typehinted as
+    pydantic model, float, int, str or bool
     """
     annotations = func.__annotations__
 
@@ -77,8 +77,10 @@ class ResourceHandlerFactory:
         attributes: list[str],
         handler_type="adapter",
     ) -> object:
-        """
-        Return existing handler if it exists, otherwise create and register a new one.
+        """Return or create handler.
+
+        Returns:
+            Existing handler if it exists, otherwise create and register a new one.
         """
         if name in cls._handlers:
             return cls._handlers[name]
@@ -133,8 +135,7 @@ class ResourceHandler:
         commands: list[str],
         attributes: list[str],
     ) -> None:
-        """
-        Initialize the AdapterResourceHandler.
+        """Initialize the AdapterResourceHandler.
 
         Args:
             name: Name of the blueprint.
@@ -169,9 +170,7 @@ class ResourceHandler:
         return [export for export in self._exports if export["method"] == "GET"]
 
     def _create_routes_for_exports(self) -> None:
-        """
-        Creates Flask routes dynamically for each exported command or attribute.
-        """
+        """Create Flask routes dynamically for each exported command or attribute."""
         for export in self._exports:
             route = self._get_handler_object_route(export)
             # For the time being we enforce the usage of pydantic models, int, float or
@@ -204,8 +203,7 @@ class ResourceHandler:
     def _apply_decorators(
         self, view_func: Callable, decorators: list[Callable]
     ) -> Callable:
-        """
-        Applies a list of decorators to a view function.
+        """Applies a list of decorators to a view function.
 
         Args:
             view_func (Callable): The view function.
@@ -217,8 +215,7 @@ class ResourceHandler:
         return reduce(lambda f, decorator: decorator(f), decorators, view_func)
 
     def _create_view_func(self, export: dict[str, str]) -> Callable:
-        """
-        Creates a Flask view function for handling requests dynamically.
+        """Creates a Flask view function for handling requests dynamically.
 
         Args:
             route (str): URL route.
@@ -233,15 +230,15 @@ class ResourceHandler:
         export: dict[str, str],
         handler_obj: object,
     ) -> dict | Response:
-        """
-        Validates parameters from the request and calls the handler function.
+        """Validates parameters from the request and calls the handler function.
+
         Args:
             export: Export definition with method, attr, and decorators.
             handler_obj: The handler object to call.
+
         Returns:
             The result of the handler function call or an error response.
         """
-
         # Get the method and its annotations
         handler_func = getattr(handler_obj, export["attr"])
         annotations = handler_func.__annotations__
@@ -281,16 +278,12 @@ class ResourceHandler:
             return self._handle_view_result(result)
 
     def _assert_valid_type_arguments(self, export):
-        """
-        Ensures the method referenced in the export uses Pydantic arguments.
-        """
+        """Ensure the method referenced in the export uses Pydantic arguments."""
         obj = next(iter(self._handler_dict.values()))
         assert_valid_type_arguments(getattr(obj, export["attr"]))
 
     def _create_openapi_doc_for_view(self, route, export):
-        """
-        Adds OpenAPI documentation for a route.
-        """
+        """Add OpenAPI documentation for a route."""
         # Get the first adapter object, the signature are all the same (same class) so
         # any will do for documentation purpose
         http_method = export["method"]
@@ -318,8 +311,7 @@ class ResourceHandler:
                 )
 
     def _extract_param_data(self, http_method) -> dict:
-        """
-        Extracts parameter data from request (JSON, query params, or form).
+        """Extract parameter data from request (JSON, query params, or form).
 
         Returns:
             Extracted data
@@ -334,8 +326,7 @@ class ResourceHandler:
     def _validate_param_data(
         self, param_name: str, param_type: type, param_data: any
     ) -> dict | int | float | bool | str:
-        """
-        Validates a single parameter based on its expected type.
+        """Validate a single parameter based on its expected type.
 
         Raises:
             ValueError: If validation fails or type is unsupported.
@@ -382,9 +373,10 @@ class ResourceHandler:
         raise TypeError(msg)
 
     def _handle_view_result(self, result: object) -> dict | Response:
-        """
-        Handles the result of a view function, ensuring that it is serializable and
-        properly formatted.
+        """Handle the result of a view function.
+
+        Handle the result of a view function,
+        ensuring that it is serializable and properly formatted.
 
         Returns:
             Flask Response: JSON response.
@@ -435,8 +427,7 @@ class ResourceHandler:
             )
 
     def _add_exports(self, items: list[str], http_method: str) -> None:
-        """
-        Add export definitions to the EXPORTS list.
+        """Add export definitions to the EXPORTS list.
 
         Args:
             items: The list of commands or properties to add
@@ -461,7 +452,8 @@ class ResourceHandler:
             self._exports.append(export)
 
     def is_unique_export(self, new_export):
-        """
+        """Check if an export is unique.
+
         Check if an export with the same 'attr' and 'method' already exists in the
         EXPORTS list.
 
@@ -488,11 +480,10 @@ class ResourceHandler:
         self._add_exports(attribute_list, "GET")
 
     def register_blueprint(self, parent_bp) -> None:
-        """
-        Registers the blueprint on the Flask server (server.flask). This allows the
-        routes defined in the blueprint to be accessible on the server.
-        """
+        """Register the blueprint on the Flask server (server.flask).
 
+        This allows the routes defined in the blueprint to be accessible on the server.
+        """
         self._create_routes_for_exports()
         parent_bp.register_blueprint(self._bp)
 
@@ -507,7 +498,8 @@ class ResourceHandler:
 
 
 class ComponentResourceHandler(ResourceHandler):
-    """
+    """Flask resource handler that dynamically creates routes for hardware objects.
+
     AdapterResourceHandler is a Flask resource handler that dynamically creates routes
     for hardware objects based on their attributes and methods.
     It supports GET and PUT requests for attributes and commands respectively.
@@ -528,14 +520,11 @@ class ComponentResourceHandler(ResourceHandler):
         )
 
     def _get_handler_object_route(self, export) -> str:
-        """
-        Returns the base route for the resource handler.
-        """
+        """Return the base route for the resource handler."""
         return f"{export['url']}"
 
     def _create_view_func(self, export: dict[str, str]) -> Callable:
-        """
-        Creates a Flask view function for handling requests dynamically.
+        """Create a Flask view function for handling requests dynamically.
 
         Args:
             route (str): URL route.
@@ -571,7 +560,8 @@ class ComponentResourceHandler(ResourceHandler):
 
 
 class AdapterResourceHandler(ResourceHandler):
-    """
+    """Flask resource handler that dynamically creates routes for hardware objects.
+
     AdapterResourceHandler is a Flask resource handler that dynamically creates routes
     for hardware objects based on their attributes and methods.
     It supports GET and PUT requests for attributes and commands respectively.
@@ -592,16 +582,13 @@ class AdapterResourceHandler(ResourceHandler):
         )
 
     def _get_handler_object_route(self, export) -> str:
-        """
-        Returns the base route for the resource handler.
-        """
+        """Return the base route for the resource handler."""
         # Dynamic route for handler object with id object_id, i.e:
         # /<object_id>/set_value
         return f"/<string:object_id>/{export['attr']}"
 
     def _create_view_func(self, export: dict[str, str]) -> Callable:
-        """
-        Creates a Flask view function for handling requests dynamically.
+        """Create a Flask view function for handling requests dynamically.
 
         Args:
             route (str): URL route.

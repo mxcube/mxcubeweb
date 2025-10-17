@@ -2,13 +2,14 @@ target-version = "py310"
 
 
 [format]
+docstring-code-format = true
 
 
 [lint]
 ignore = [
     "ANN",  # flake8-annotations: ignored, too many hits (1322)
     "COM812",  # Ruff recommends to ignore this linter rule when using its formatter
-    "D",  # pydocstyle: ignored, too many hits (958)
+    "D1",  # Allow missing docstrings
     "PLR2004",  # magic-value-comparison: ignored, too many hits
 ]
 select = [

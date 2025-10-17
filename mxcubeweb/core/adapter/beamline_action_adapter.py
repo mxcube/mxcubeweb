@@ -57,16 +57,17 @@ class ActionsList(BaseModel):
 class BeamlineActionAdapter(AdapterBase):
     SUPPORTED_TYPES: ClassVar[list[object]] = [BeamlineActions]
 
-    def __init__(
+    def __init__(  # noqa: D417
         self,
         ho: HardwareObject,
         role: str,
         app,
         resource_handler_config: ResourceHandlerConfigModel = resource_handler_config,
     ):
-        """
+        """Initialize.
+
         Args:
-            (object): Hardware object.
+            ho: Hardware object.
         """
         super().__init__(ho, role, app, resource_handler_config)
         self._value_change_model = HOActuatorValueChangeModel
@@ -114,21 +115,21 @@ class BeamlineActionAdapter(AdapterBase):
         return ""
 
     def stop(self):
-        """
-        Stop the execution.
-        """
+        """Stop the execution."""
         for cmd in self._ho.get_commands():
             self._ho.abort_command(cmd.name())
 
     def _valid_action_input(self, value: dict | list) -> bool:
-        """
-        Validates that the the action input value structure is
-        flat and contains only valid types (str, int, float, bool).
+        """Validate the action input value.
+
+        Validates that the action input value structure is flat
+        and contains only valid types (``str``, ``int``, ``float``, ``bool``).
 
         Args:
-            value The structure to validate.
+            value: The structure to validate.
+
         Returns:
-            bool: True if valid, False otherwise.
+            ``True`` if valid, ``False`` otherwise.
         """
         allowed_types = (str, int, float, bool)
 
@@ -139,9 +140,7 @@ class BeamlineActionAdapter(AdapterBase):
         return False
 
     def run_action(self, value: BeamlineActionInputModel):
-        """
-        Starts beamline action
-        """
+        """Start beamline action."""
         # Beamline actions are retrieved from a finite list of commands
         # its either a simple command name or an annotated command
         # Getting the KeyError means that the command is not annotated

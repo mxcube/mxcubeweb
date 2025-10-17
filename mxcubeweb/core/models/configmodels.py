@@ -138,9 +138,7 @@ class UISampleListViewModesModel(BaseModel):
     def check_at_least_one_component_shown(
         cls, components: list[_UISampleListViewModesComponentModel]
     ) -> list[_UISampleListViewModesComponentModel]:
-        """
-        Validates that at least one component in the list has 'show' set to True.
-        """
+        """Validate that at least one component in the list has 'show' set to True."""
         if not any(component.show for component in components):
             msg = "At least one component must have 'show' set to True."
             raise ValueError(msg)
@@ -248,7 +246,8 @@ class AppConfigModel(BaseModel):
 
 
 class ResourceHandlerConfigModel(BaseModel):
-    """
+    """Configuration modle for resource handler.
+
     Used to define  which adapter properties and methods that are
     exported over HTTP. An endpoint for each method and/or property
     is created by the AdapterResourceHandler and attached to the server.
@@ -257,10 +256,11 @@ class ResourceHandlerConfigModel(BaseModel):
     the HTTP verb to use and the decorators to apply to the view
     function,
 
-    The format is:
-    [
-        {"attr": "get_value", "method": "PUT", "decorators":[]}
-    ]
+    The format is::
+
+        [
+            {"attr": "get_value", "method": "PUT", "decorators": []},
+        ]
 
     Where "attr" is the method or property of the adapter, "method"
     is the http verb i.e GET, PUT, POST. and decoratoes are a list
@@ -271,14 +271,14 @@ class ResourceHandlerConfigModel(BaseModel):
     commands and attributes.
 
     Commands is list of functions/methods to export.
-    A dictionary like the one above:
+    A dictionary like the one above::
 
-        ({"attr": "get_value", "method": "PUT", "decorators":[]})
+        ({"attr": "get_value", "method": "PUT", "decorators": []})
 
     Will be generated from the commands list. With the values "method" and
     decorators set to defualt values, PUT and [restrict, require_control]
 
-    Example:
+    Example::
 
         commands = ["set_value", "get_value"]
 
@@ -286,7 +286,7 @@ class ResourceHandlerConfigModel(BaseModel):
 
     In the same way:
 
-    Example:
+    Example::
 
         attributes = ["data"]
 

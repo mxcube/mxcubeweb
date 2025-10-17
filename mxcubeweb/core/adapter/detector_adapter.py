@@ -15,18 +15,19 @@ resource_handler_config = ResourceHandlerConfigModel(
 class DetectorAdapter(AdapterBase):
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractDetector.AbstractDetector]
 
-    def __init__(self, ho, role, app):
-        """
+    def __init__(  # noqa: D417
+        self, ho, role, app
+    ):
+        """Initialize.
+
         Args:
-            (object): Hardware object.
+            ho (object): Hardware object.
         """
         super().__init__(ho, role, app, resource_handler_config)
         ho.connect("stateChanged", self._state_change)
 
     def get_value(self) -> dict:
-        """
-        Get the file suffix of the data files.
-        """
+        """Get the file suffix of the data files."""
         return {"fileSuffix": HWR.beamline.detector.get_property("file_suffix", "?")}
 
     def _state_change(self, *args, **kwargs):
@@ -36,9 +37,7 @@ class DetectorAdapter(AdapterBase):
         return self._ho.get_state().name.upper()
 
     def display_image(self, path: str, img_num) -> dict:
-        """
-        Notify ADXV and/or Braggy of the image to display.
-        """
+        """Notify ADXV and/or Braggy of the image to display."""
         res = {"image_url": ""}
 
         if path:

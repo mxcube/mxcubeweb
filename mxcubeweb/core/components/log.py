@@ -35,9 +35,7 @@ class Log(ComponentBase):
         )
 
     def log(self):
-        """
-        Retrieve log messages
-        """
+        """Retrieve log messages."""
         messages = []
 
         for handler in logging.getLogger("MX3.HWR").handlers:
@@ -47,9 +45,7 @@ class Log(ComponentBase):
         return messages
 
     def log_frontend_traceback(self, trace: FrontEndStackTraceModel) -> dict:
-        """
-        Logs a UI traceback to the UI logger
-        """
+        """Log a UI traceback to the UI logger."""
         logging.getLogger("MX3.UI").error("------ Start of UI trace back ------")
         logging.getLogger("MX3.UI").error("Traceback: %s", trace.stack)
         logging.getLogger("MX3.UI").error(
