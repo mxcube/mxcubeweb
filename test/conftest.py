@@ -16,7 +16,7 @@ import sys
 
 import psutil
 import pytest
-from input_parameters import (
+from .input_parameters import (
     test_sample_1,
     test_sample_5,
     test_task,

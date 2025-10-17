@@ -248,9 +248,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "ARG001",
     "N813",
 ]
-"test/*.py" = [
-    "INP001",
-]
 "test/conftest.py" = [
     "E402",
     "E501",

@@ -2,7 +2,7 @@ import copy
 import json
 import time
 
-from input_parameters import (
+from .input_parameters import (
     default_char_acq_params,
     default_dc_params,
     default_mesh_params,
