@@ -30,7 +30,7 @@ import {
 import { showTaskForm } from '../actions/taskForm';
 import MXContextMenu from '../components/GenericContextMenu/MXContextMenu';
 import SampleCircleView from '../components/SampleGrid/SampleCircleView';
-import { SampleGridTableItem } from '../components/SampleGrid/SampleGridTableItem';
+import SampleGridTableItem from '../components/SampleGrid/SampleGridTableItem';
 import { TaskItem } from '../components/SampleGrid/TaskItem';
 import TooltipTrigger from '../components/TooltipTrigger';
 import { isCollected, QUEUE_RUNNING, QUEUE_STOPPED } from '../constants';
@@ -579,7 +579,6 @@ export default function SampleGridTableContainer(props) {
                 onClick={(e) => selectItemUnderCursor(e, key)}
               >
                 <SampleGridTableItem
-                  itemKey={key}
                   pickButtonOnClickHandler={sampleItemPickButtonOnClickHandler}
                   sampleData={sample}
                   queueOrder={
@@ -587,7 +586,6 @@ export default function SampleGridTableContainer(props) {
                       .filter((keys) => queue.queue.includes(keys))
                       .indexOf(key) + 1
                   }
-                  selected={selected[key]}
                   current={isCurrent}
                   picked={picked}
                 >

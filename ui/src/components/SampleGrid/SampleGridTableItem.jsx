@@ -1,6 +1,4 @@
-/* eslint-disable react/destructuring-assignment */
 import cx from 'classnames';
-import React from 'react';
 import {
   Badge,
   Button,
@@ -16,32 +14,19 @@ import containerStyles from '../../containers/SampleGridTableContainer.module.cs
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './SampleGridTableItem.module.css';
 
-export class SampleGridTableItem extends React.Component {
-  static defaultProps = {
-    itemKey: '',
-    sampleData: {},
-    queueOrder: [],
-    selected: false,
-    current: false,
-    picked: false,
-    allowedDirections: [],
-    pickButtonOnClickHandler: undefined,
-  };
-
-  constructor(props) {
-    super(props);
-    this.pickButtonOnClick = this.pickButtonOnClick.bind(this);
-    this.handleItemClick = this.handleItemClick.bind(this);
-    this.sampleInformation = this.sampleInformation.bind(this);
+export default function SampleGridTableItem({
+  sampleData = {},
+  queueOrder = [],
+  current = false,
+  picked = false,
+  pickButtonOnClickHandler,
+  children,
+}) {
+  function pickButtonOnClick(e) {
+    pickButtonOnClickHandler?.(e, sampleData.sampleID);
   }
 
-  pickButtonOnClick(e) {
-    if (this.props.pickButtonOnClickHandler) {
-      this.props.pickButtonOnClickHandler(e, this.props.sampleData.sampleID);
-    }
-  }
-
-  itemControls() {
+  function getItemControls() {
     return (
       <div className={styles.samplesItemControlsContainer}>
         <TooltipTrigger
@@ -51,14 +36,12 @@ export class SampleGridTableItem extends React.Component {
         >
           <Button
             variant="link"
-            disabled={this.props.current && this.props.picked}
+            disabled={current && picked}
             className={styles.samplesGridTableItemButton}
-            onClick={(e) => {
-              this.pickButtonOnClick(e);
-            }}
+            onClick={pickButtonOnClick}
           >
             <i>
-              {this.props.picked ? (
+              {picked ? (
                 <BsCheck2Square size="1em" />
               ) : (
                 <BsSquare size="0.9em" />
@@ -70,31 +53,30 @@ export class SampleGridTableItem extends React.Component {
     );
   }
 
-  seqId() {
-    const showId = this.props.picked ? '' : 'none';
+  function getsequenceId() {
+    const showId = picked ? '' : 'none';
     return (
       <div>
         <div style={{ display: showId }} className={styles.newQueueOrder}>
-          {this.props.queueOrder}
+          {queueOrder}
         </div>
       </div>
     );
   }
 
-  sampleDisplayName() {
-    let name = this.props.sampleData.proteinAcronym || '';
+  function getSampleName() {
+    let name = sampleData.proteinAcronym || '';
 
-    if (this.props.sampleData.sampleName && name) {
-      name += ` - ${this.props.sampleData.sampleName}`;
+    if (sampleData.sampleName && name) {
+      name += ` - ${sampleData.sampleName}`;
     } else {
-      name = this.props.sampleData.sampleName || '';
+      name = sampleData.sampleName || '';
     }
 
     return name;
   }
 
-  sampleInformation() {
-    const { sampleData } = this.props;
+  function getSampleInformation() {
     const limsData = (
       <div>
         <div className="row">
@@ -136,91 +118,71 @@ export class SampleGridTableItem extends React.Component {
     );
   }
 
-  handleItemClick(e) {
-    if (this.props.onClick) {
-      this.props.onClick(e, this.props.sampleData.sampleID);
-    }
-  }
+  const currentSampleText = current ? '(MOUNTED)' : '';
 
-  currentSampleText() {
-    return this.props.current ? '(MOUNTED)' : '';
-  }
+  const classes = cx(styles.samplesGridTableItem, {
+    [containerStyles.samplesGridTableItemToBeCollected]: picked,
+    [containerStyles.samplesGridTableItemCollected]: isCollected(sampleData),
+  });
 
-  render() {
-    const classes = cx(styles.samplesGridTableItem, {
-      [containerStyles.samplesGridTableItemToBeCollected]: this.props.picked,
-      [containerStyles.samplesGridTableItemCollected]: isCollected(
-        this.props.sampleData,
-      ),
-    });
+  const scLocationClasses = cx(styles.scLocation, 'label', 'label-default', {
+    [styles.labelCustomSuccess]: sampleData.loadable === true,
+  });
 
-    const scLocationClasses = cx(styles.scLocation, 'label', 'label-default', {
-      [styles.labelCustomSuccess]: this.props.sampleData.loadable === true,
-    });
+  const limsLink = sampleData.limsLink || '#';
+  const sampleName = getSampleName();
 
-    const limsLink = this.props.sampleData.limsLink || '#';
-    return (
-      <ListGroup
-        variant="flush"
-        id={this.props.sampleData.sampleID}
-        ref={(ref) => {
-          this.sampleItem = ref; // eslint-disable-line react/no-unused-class-component-methods
-        }}
-        onClick={this.handleItemClick}
-      >
-        <ListGroup.Item className={classes}>
-          <div className="d-flex">
-            {this.itemControls()}
-            <div>
-              <OverlayTrigger
-                placement="right"
-                overlay={
-                  <Popover id={this.sampleDisplayName()}>
-                    <Popover.Header className="d-flex">
-                      <div>
-                        <b className={styles.samplesGridTableItemNamePt}>
-                          {this.sampleDisplayName()}
-                        </b>
-                      </div>
-                    </Popover.Header>
-                    <Popover.Body>{this.sampleInformation()}</Popover.Body>
-                  </Popover>
-                }
+  return (
+    <ListGroup variant="flush" id={sampleData.sampleID}>
+      <ListGroup.Item className={classes}>
+        <div className="d-flex">
+          {getItemControls()}
+          <div>
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Popover id={sampleName}>
+                  <Popover.Header className="d-flex">
+                    <div>
+                      <b className={styles.samplesGridTableItemNamePt}>
+                        {sampleName}
+                      </b>
+                    </div>
+                  </Popover.Header>
+                  <Popover.Body>{getSampleInformation()}</Popover.Body>
+                </Popover>
+              }
+            >
+              <Badge
+                href={limsLink}
+                target="_blank"
+                bg="light"
+                text="primary"
+                className={`${styles.samplesGridTableItemNameProteinAcronym} ms-1 mt-2`}
+                data-type="text"
+                data-pk="1"
+                data-url="/post"
+                data-title="Enter protein acronym"
               >
-                <Badge
-                  href={limsLink}
-                  target="_blank"
-                  bg="light"
-                  text="primary"
-                  ref={(ref) => {
-                    this.pacronym = ref; // eslint-disable-line react/no-unused-class-component-methods
-                  }}
-                  className={`${styles.samplesGridTableItemNameProteinAcronym} ms-1 mt-2`}
-                  data-type="text"
-                  data-pk="1"
-                  data-url="/post"
-                  data-title="Enter protein acronym"
-                >
-                  {this.sampleDisplayName()}
-                </Badge>
-              </OverlayTrigger>
-              <div
-                style={{ pointerEvents: 'none' }}
-                className={`ps-1 pe-1 ${scLocationClasses}`}
-              >
-                {this.props.sampleData.location} {this.currentSampleText()}
-              </div>
+                {sampleName}
+              </Badge>
+            </OverlayTrigger>
+            <div
+              style={{ pointerEvents: 'none' }}
+              className={`ps-1 pe-1 ${scLocationClasses}`}
+            >
+              {sampleData.location} {currentSampleText}
             </div>
-            <CopyToClipboard
-              text={this.sampleDisplayName()}
-              tittle="Sample Name"
-              id={`copy_${this.sampleDisplayName()}`}
-            />
-            {this.seqId()}
           </div>
-          {this.props.children}
-        </ListGroup.Item>
-      </ListGroup>
-    );
-  }
+          <CopyToClipboard
+            text={sampleName}
+            tittle="Sample Name"
+            id={`copy_${sampleName}`}
+          />
+          {getsequenceId()}
+        </div>
+        {children}
+      </ListGroup.Item>
+    </ListGroup>
+  );
 }
