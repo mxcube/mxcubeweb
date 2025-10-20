@@ -6,6 +6,7 @@ from functools import reduce
 from typing import ClassVar
 
 from flask import Blueprint, Response, jsonify, request
+from flask_login import current_user
 from pydantic import (
     BaseModel,
     ValidationError,
@@ -60,6 +61,7 @@ def assert_valid_type_arguments(func):
 
 
 log = logging.getLogger("MX3.HWR")
+server_access_log = logging.getLogger("server_access")
 
 
 class ResourceHandlerFactory:
@@ -198,7 +200,7 @@ class ResourceHandler:
             msg = (
                 f"Registerd {route} to blueprint '{self._bp.name}' ({self._url_prefix})"
             )
-            log.debug(msg)
+            server_access_log.debug(msg)
 
     def _apply_decorators(
         self, view_func: Callable, decorators: list[Callable]
@@ -268,13 +270,30 @@ class ResourceHandler:
 
         # Call the view function with validated data
         try:
+            server_access_log.debug(
+                f"{current_user.username} calling {handler_obj.__class__.__name__}.\
+                    {export['attr']} with {validated_data}"
+            )
             result = handler_func(**validated_data)
         except Exception:
-            msg = "Exception raised when calling view function"
+            server_access_log.debug(
+                f"{current_user.username} calling {handler_obj.__class__.__name__}.\
+                    {export['attr']} error"
+            )
+            msg = f"Exception raised when calling {handler_obj.__class__.__name__}.\
+                {export['attr']}"
             log.exception(msg)
-            return jsonify({"error": msg}), 500
+
+            error = (
+                f"Error when calling {handler_obj.__class__.__name__}.{export['attr']}"
+            )
+            return jsonify({"error": error}), 500
         else:
             # Handle and serialize the result
+            server_access_log.debug(
+                f"{current_user.username} calling {handler_obj.__class__.__name__}.\
+                    {export['attr']} sucessfull -> {result}"
+            )
             return self._handle_view_result(result)
 
     def _assert_valid_type_arguments(self, export):
@@ -494,7 +513,7 @@ class ResourceHandler:
         msg = (
             f"Blueprint '{self._bp.name}' ({self._url_prefix}) registered with server."
         )
-        log.debug(msg)
+        server_access_log.debug(msg)
 
 
 class ComponentResourceHandler(ResourceHandler):

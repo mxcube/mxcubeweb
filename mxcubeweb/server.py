@@ -10,6 +10,7 @@ from flask import (
     Flask,
     request,
 )
+from flask_login import current_user
 from flask_socketio import SocketIO
 from werkzeug.middleware.proxy_fix import ProxyFix
 
@@ -149,6 +150,10 @@ class Server:
 
     @staticmethod
     def emit(*args, **kwargs):
+        if current_user and current_user.is_authenticated:
+            logging.getLogger("server_access").debug(
+                f"{current_user.username} websocket emit: {args} {kwargs}"
+            )
         Server.flask_socketio.emit(*args, **kwargs)
 
     @staticmethod

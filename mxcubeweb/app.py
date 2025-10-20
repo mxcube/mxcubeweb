@@ -5,7 +5,6 @@ as well as functions for accessing and manipulating them.
 """
 
 import logging
-import os
 import sys
 import time
 from logging import StreamHandler
@@ -212,6 +211,7 @@ class MXCUBEApplication:
                 return handler
         return None
 
+    @staticmethod
     def init_logging(log_file: str, log_level, enabled_logger_list) -> None:
         removeLoggingHandlers()
 
@@ -220,22 +220,36 @@ class MXCUBEApplication:
         console_fmt = ColorFormatter(fmt)
         log_level = (log_level or "INFO").upper()
 
-        file_handlers = {
-            "log_file_handler": {
-                "handler": None,
-                "path": log_file,
-            },
-            "uilog_file_handler": {
-                "handler": None,
-                "path": f"{Path(log_file).stem}_ui.log",
-            },
-            "access_file_handler": {
-                "handler": None,
-                "path": f"{Path(log_file).stem}_server_access.log",
-            },
-        }
-
         if log_file:
+            file_handlers = {
+                "log_file_handler": {
+                    "handler": None,
+                    "path": log_file,
+                },
+                "uilog_file_handler": {
+                    "handler": None,
+                    "path": str(
+                        Path(log_file).with_name(f"{Path(log_file).stem}_ui.log")
+                    ),
+                },
+                "access_file_handler": {
+                    "handler": None,
+                    "path": str(
+                        Path(log_file).with_name(
+                            f"{Path(log_file).stem}_server_access.log"
+                        )
+                    ),
+                },
+                "csp_file_handler": {
+                    "handler": None,
+                    "path": str(
+                        Path(log_file).with_name(
+                            f"{Path(log_file).stem}_server_csp.log"
+                        )
+                    ),
+                },
+            }
+
             for item in file_handlers.values():
                 Path(item["path"]).touch(exist_ok=True)
                 handler = TimedRotatingFileHandler(
@@ -260,7 +274,7 @@ class MXCUBEApplication:
             "server_logger": "MX3.HWR",
             "user_logger": "user_level_log",
             "queue_logger": "queue_exec",
-            "mx3_ui_logger": "MX3.UI",
+            "ui_logger": "MX3.UI",
             "csp_logger": "csp",
             "server_access_logger": "server_access",
         }
@@ -270,8 +284,7 @@ class MXCUBEApplication:
 
             if attr in enabled_logger_list:
                 logger.setLevel(log_level)
-                logger.addHandler(custom_handler)
-                logger.addHandler(stdout_handler)
+
                 if gelf_handler:
                     logger.addHandler(gelf_handler)
 
@@ -280,12 +293,19 @@ class MXCUBEApplication:
                         logger.addHandler(
                             file_handlers["access_file_handler"]["handler"]
                         )
-                    elif "mx3_ui" in attr:
+                    elif attr == "mx3_ui_logger":
                         logger.addHandler(
                             file_handlers["uilog_file_handler"]["handler"]
                         )
+                    elif attr == "csp_logger":
+                        logger.addHandler(file_handlers["csp_file_handler"]["handler"])
                     else:
                         logger.addHandler(file_handlers["log_file_handler"]["handler"])
+                        logger.addHandler(custom_handler)
+                        logger.addHandler(stdout_handler)
+                else:
+                    logger.addHandler(custom_handler)
+                    logger.addHandler(stdout_handler)
 
                 logger.propagate = False
                 setattr(MXCUBEApplication, attr, logger)

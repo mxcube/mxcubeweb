@@ -80,6 +80,7 @@ def parse_args(argv):
             "queue_logger",
             "ui_logger",
             "csp_logger",
+            "server_access_logger",
         ],
     )
 
