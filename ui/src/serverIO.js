@@ -59,6 +59,7 @@ import {
   showWorkflowParametersDialog,
   updateGphlWorkflowParametersDialog,
 } from './actions/workflow';
+import { processChatMessageRecord } from './components/ChatWidget/chatMessages';
 import { CLICK_CENTRING } from './constants';
 import { store } from './store';
 
@@ -126,24 +127,7 @@ class ServerIO {
     this.hwrSocket.on('ra_chat_message', (record) => {
       const { username } = store.getState().login.user;
       if (record.username !== username && !record.read) {
-        let normalizedDate = new Date().toISOString();
-        if (record.date) {
-          try {
-            const parsedDate = new Date(record.date);
-            if (!Number.isNaN(parsedDate.getTime())) {
-              normalizedDate = parsedDate.toISOString();
-            }
-          } catch {
-            // Keep default
-          }
-        }
-
-        const message = {
-          id: `r-${Date.now()}-${Math.random()}`,
-          type: 'response',
-          text: `**${record.nickname}:** \n\n ${record.message}`,
-          date: normalizedDate,
-        };
+        const message = processChatMessageRecord(record, username);
         dispatch(addChatMessage(message));
         dispatch(incChatMessageCount());
       }

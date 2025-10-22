@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   markAllAsRead,
   sendChatMessage as sendChatMessageAction,
-} from '../actions/remoteAccess';
+} from '../../actions/remoteAccess';
 import styles from './ChatWidget.module.css';
 
 function formatTime(iso) {

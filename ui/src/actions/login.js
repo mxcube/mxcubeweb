@@ -7,13 +7,13 @@ import { sendSignOut } from '../api/login';
 import { fetchLoginInfo, sendLogIn } from '../api/loginBase';
 import { fetchApplicationSettings, fetchUIProperties } from '../api/main';
 import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
-import { fetchRemoteAccessState } from '../api/remoteAccess';
+import { fetchChatMessages, fetchRemoteAccessState } from '../api/remoteAccess';
 import { fetchSampleChangerInitialState } from '../api/sampleChanger';
 import { fetchImageData, fetchShapes } from '../api/sampleview';
 import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchGetAllActions } from './beamlineActions';
 import { applicationFetched, showErrorPanel } from './general';
-import { fetchChatMessages } from './remoteAccess';
+import { processFetchedChatMessages } from './remoteAccess';
 
 function setLoginInfo(loginInfo) {
   return {
@@ -85,7 +85,7 @@ export function signOut() {
 }
 
 export function getInitialState() {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
     const initialStateSlices = await Promise.all([
       fetchUIProperties()
         .then((uiproperties) => ({ uiproperties }))
@@ -148,6 +148,9 @@ export function getInitialState() {
       fetchRemoteAccessState()
         .then((json) => ({ remoteAccess: json.data }))
         .catch(notify),
+      fetchChatMessages()
+        .then((data) => ({ chatMessages: data }))
+        .catch(notify),
       fetchAvailableWorkflows()
         .then((workflow) => ({ workflow }))
         .catch(notify),
@@ -160,7 +163,20 @@ export function getInitialState() {
     ]);
 
     dispatch(setInitialState(Object.assign({}, ...initialStateSlices)));
-    dispatch(fetchChatMessages());
+
+    const chatMessagesData = initialStateSlices.find(
+      (slice) => slice.chatMessages,
+    );
+    if (chatMessagesData?.chatMessages) {
+      const { user } = getState().login;
+      dispatch(
+        processFetchedChatMessages(
+          chatMessagesData.chatMessages.messages,
+          user.username,
+        ),
+      );
+    }
+
     dispatch(applicationFetched(true));
   };
 }

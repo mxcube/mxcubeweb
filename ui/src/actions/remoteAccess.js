@@ -1,5 +1,5 @@
 import {
-  fetchChatMessages as apiFetchChatMessages,
+  fetchChatMessages,
   fetchRemoteAccessState,
   sendCancelControlRequest,
   sendChatMessage as apiSendChatMessage,
@@ -13,6 +13,7 @@ import {
   sendUpdateNickname,
   sendUpdateTimeoutGivesControl,
 } from '../api/remoteAccess';
+import { processChatMessageRecord } from '../components/ChatWidget/chatMessages';
 import { store } from '../store';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
@@ -130,34 +131,11 @@ export function addChatMessage(message) {
   return { type: 'ADD_CHAT_MESSAGE', message };
 }
 
-export function fetchChatMessages() {
-  return async (dispatch) => {
-    const { user } = store.getState().login;
-    const { messages: fetchedMessages } = await apiFetchChatMessages();
-
-    const built = fetchedMessages.map((entry) => {
-      const isSelf = entry.username === user.username;
-      let normalizedDate = new Date().toISOString();
-      if (entry.date) {
-        try {
-          const parsedDate = new Date(entry.date);
-          if (!Number.isNaN(parsedDate.getTime())) {
-            normalizedDate = parsedDate.toISOString();
-          }
-        } catch {
-          // Keep default
-        }
-      }
-
-      return {
-        id: entry.id || `${isSelf ? 'u' : 'r'}-${Date.now()}-${Math.random()}`,
-        type: isSelf ? 'user' : 'response',
-        text: isSelf
-          ? `**You:** \n\n ${entry.message} \n\n`
-          : `**${entry.nickname}:** \n\n ${entry.message}`,
-        date: normalizedDate,
-      };
-    });
+export function processFetchedChatMessages(fetchedMessages, username) {
+  return (dispatch) => {
+    const built = fetchedMessages.map((entry) =>
+      processChatMessageRecord(entry, username),
+    );
 
     const unread = fetchedMessages.reduce(
       (acc, e) => acc + (e.read ? 0 : 1),
@@ -166,6 +144,15 @@ export function fetchChatMessages() {
 
     dispatch(setChatMessages(built));
     dispatch(incChatMessageCount(unread));
+  };
+}
+
+export function fetchAndProcessChatMessages() {
+  return async (dispatch) => {
+    const { user } = store.getState().login;
+    const { messages: fetchedMessages } = await fetchChatMessages();
+
+    dispatch(processFetchedChatMessages(fetchedMessages, user.username));
   };
 }
 
