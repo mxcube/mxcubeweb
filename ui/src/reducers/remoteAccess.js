@@ -4,11 +4,13 @@ const INITIAL_STATE = {
   observers: [],
   allowRemote: false,
   timeoutGivesControl: false,
-  chatMessageCount: 0,
   messages: [],
 };
 
-function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
+export default function remoteAccessReducer(
+  state = INITIAL_STATE,
+  action = {},
+) {
   switch (action.type) {
     case 'SET_RA_STATE': {
       return {
@@ -27,9 +29,6 @@ function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
     }
     case 'SET_TIMEOUT_GIVES_CONTROL': {
       return { ...state, timeoutGivesControl: action.timeoutGivesControl };
-    }
-    case 'RESET_CHAT_MESSAGE_COUNT': {
-      return { ...state, chatMessageCount: 0 };
     }
     case 'INC_CHAT_MESSAGE_COUNT': {
       return {
@@ -64,5 +63,3 @@ function remoteAccessReducer(state = INITIAL_STATE, action = {}) {
     }
   }
 }
-
-export default remoteAccessReducer;

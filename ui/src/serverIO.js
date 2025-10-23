@@ -31,11 +31,7 @@ import {
   stopQueue,
 } from './actions/queue';
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
-import {
-  addChatMessage,
-  getRaState,
-  incChatMessageCount,
-} from './actions/remoteAccess';
+import { addChatMessage, getRaState } from './actions/remoteAccess';
 import {
   setLoadedSample,
   setSCGlobalState,
@@ -59,7 +55,7 @@ import {
   showWorkflowParametersDialog,
   updateGphlWorkflowParametersDialog,
 } from './actions/workflow';
-import { processChatMessageRecord } from './components/ChatWidget/chatMessages';
+import { processChatMessageRecord } from './components/ChatComponent/chatMessages';
 import { CLICK_CENTRING } from './constants';
 import { store } from './store';
 
@@ -129,7 +125,6 @@ class ServerIO {
       if (record.username !== username && !record.read) {
         const message = processChatMessageRecord(record, username);
         dispatch(addChatMessage(message));
-        dispatch(incChatMessageCount());
       }
     });
 

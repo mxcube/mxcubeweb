@@ -6,7 +6,8 @@ import {
   markAllAsRead,
   sendChatMessage as sendChatMessageAction,
 } from '../../actions/remoteAccess';
-import styles from './ChatWidget.module.css';
+import styles from './ChatComponent.module.css';
+import { selectUnreadChatMessageCount } from './selector';
 
 function formatTime(iso) {
   try {
@@ -30,11 +31,9 @@ function ChatWidget() {
   const dispatch = useDispatch();
 
   const username = useSelector((state) => state.login.user.username);
-  const observers = useSelector((state) => state.remoteAccess.observers);
-  const chatMessageCount = useSelector(
-    (state) => state.remoteAccess.chatMessageCount,
-  );
   const messages = useSelector((state) => state.remoteAccess.messages);
+  const observers = useSelector((state) => state.remoteAccess.observers);
+  const chatMessageCount = useSelector(selectUnreadChatMessageCount);
 
   const [isOpen, setIsOpen] = useState(false);
 

@@ -13,7 +13,7 @@ import {
   sendUpdateNickname,
   sendUpdateTimeoutGivesControl,
 } from '../api/remoteAccess';
-import { processChatMessageRecord } from '../components/ChatWidget/chatMessages';
+import { processChatMessageRecord } from '../components/ChatComponent/chatMessages';
 import { store } from '../store';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
@@ -112,13 +112,6 @@ export function updateTimeoutGivesControl(timeoutGivesControl) {
   };
 }
 
-export function resetChatMessageCount() {
-  return async (dispatch) => {
-    await sendSetAllMessagesRead();
-    dispatch({ type: 'RESET_CHAT_MESSAGE_COUNT' });
-  };
-}
-
 export function incChatMessageCount(count = 1) {
   return { type: 'INC_CHAT_MESSAGE_COUNT', count };
 }
@@ -137,13 +130,7 @@ export function processFetchedChatMessages(fetchedMessages, username) {
       processChatMessageRecord(entry, username),
     );
 
-    const unread = fetchedMessages.reduce(
-      (acc, e) => acc + (e.read ? 0 : 1),
-      0,
-    );
-
     dispatch(setChatMessages(built));
-    dispatch(incChatMessageCount(unread));
   };
 }
 
@@ -172,8 +159,13 @@ export function sendChatMessage(message, username) {
 }
 
 export function markAllAsRead() {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const { messages } = getState().remoteAccess;
+
+    const updatedMessages = messages.map((msg) => ({ ...msg, read: true }));
+
+    dispatch(setChatMessages(updatedMessages));
+
     await sendSetAllMessagesRead();
-    dispatch(resetChatMessageCount());
   };
 }
