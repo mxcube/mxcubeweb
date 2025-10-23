@@ -16,7 +16,7 @@ import styles from './SampleGridTableItem.module.css';
 
 export default function SampleGridTableItem({
   sampleData = {},
-  queueOrder = [],
+  queueOrder = '',
   current = false,
   picked = false,
   pickButtonOnClickHandler,
@@ -156,13 +156,10 @@ export default function SampleGridTableItem({
               <Badge
                 href={limsLink}
                 target="_blank"
+                rel="noopener noreferrer"
                 bg="light"
                 text="primary"
                 className={`${styles.samplesGridTableItemNameProteinAcronym} ms-1 mt-2`}
-                data-type="text"
-                data-pk="1"
-                data-url="/post"
-                data-title="Enter protein acronym"
               >
                 {sampleName}
               </Badge>
