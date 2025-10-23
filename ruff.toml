@@ -11,6 +11,7 @@ ignore = [
     "COM812",  # Ruff recommends to ignore this linter rule when using its formatter
     "D1",  # Allow missing docstrings
     "PLR2004",  # magic-value-comparison: ignored, too many hits
+    "G004", # Allow uses of f-strings to format logging messages
 ]
 select = [
     "ALL",
@@ -41,7 +42,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "SIM115",
 ]
 "mxcubeweb/config.py" = [
-    "G004",
     "PTH118",
     "PTH123",
     "TRY400",
@@ -52,7 +52,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 "mxcubeweb/core/adapter/adapter_base.py" = [
     "ARG002",
     "B904",
-    "G004",
     "RUF012",
     "SLF001",
     "TRY400",
@@ -62,7 +61,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "BLE001",
 ]
 "mxcubeweb/core/adapter/beamline_adapter.py" = [
-    "G004",
     "TRY400",
 ]
 "mxcubeweb/core/adapter/data_publisher_adapter.py" = [
@@ -90,7 +88,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "PERF401",
 ]
 "mxcubeweb/core/components/component_base.py" = [
-    "G004",
 ]
 "mxcubeweb/core/components/harvester.py" = [
     "BLE001",
@@ -119,7 +116,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "FIX002",
     "G001",
     "G002",
-    "G004",
     "N806",
     "PERF401",
     "PLR0912",
