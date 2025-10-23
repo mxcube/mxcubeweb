@@ -1,3 +1,5 @@
+import { processChatMessageRecord } from '../components/ChatComponent/chatMessages';
+
 const INITIAL_STATE = {
   // the null value is used to distinguish between signed out (null) or logged in (true/false)
   sid: null,
@@ -30,31 +32,24 @@ export default function remoteAccessReducer(
     case 'SET_TIMEOUT_GIVES_CONTROL': {
       return { ...state, timeoutGivesControl: action.timeoutGivesControl };
     }
-    case 'SET_CHAT_MESSAGES': {
-      return {
-        ...state,
-        messages: action.messages,
-      };
-    }
     case 'ADD_CHAT_MESSAGE': {
       return {
         ...state,
         messages: [...state.messages, action.message],
       };
     }
-    case 'SET_CHAT_MESSAGES': {
+    case 'MARK_ALL_READ': {
       return {
         ...state,
-        messages: action.messages,
-      };
-    }
-    case 'ADD_CHAT_MESSAGE': {
-      return {
-        ...state,
-        messages: [...state.messages, action.message],
+        messages: state.messages.map((msg) => ({ ...msg, read: true })),
       };
     }
     case 'SET_INITIAL_STATE': {
+      const messages =
+        action.data.chatMessages?.messages?.map((entry) =>
+          processChatMessageRecord(entry, action.data.login?.user?.username),
+        ) || [];
+
       return {
         ...state,
         observers: action.data.remoteAccess.observers,
@@ -62,6 +57,7 @@ export default function remoteAccessReducer(
         allowRemote: action.data.remoteAccess.allowRemote,
         timeoutGivesControl: action.data.remoteAccess.timeoutGivesControl,
         operator: action.data.remoteAccess.operator,
+        messages,
       };
     }
     default: {
