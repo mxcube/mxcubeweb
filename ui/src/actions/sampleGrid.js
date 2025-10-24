@@ -4,8 +4,12 @@ import { showErrorPanel } from './general';
 import { setQueue } from './queue';
 import { hideWaitDialog, showWaitDialog } from './waitDialog';
 
-function updateSampleList(sampleList, order) {
-  return { type: 'UPDATE_SAMPLE_LIST', sampleList, order };
+export function updateSampleList(sampleList) {
+  return { type: 'UPDATE_SAMPLE_LIST', sampleList };
+}
+
+export function updateSampleListAndOrder(sampleList, order) {
+  return { type: 'UPDATE_SAMPLE_LIST_AND_ORDER', sampleList, order };
 }
 
 export function clearSampleGrid() {
@@ -58,7 +62,7 @@ export function getSamplesList() {
     try {
       const json = await fetchSamplesList();
       const { sampleList, sampleOrder } = json;
-      dispatch(updateSampleList(sampleList, sampleOrder));
+      dispatch(updateSampleListAndOrder(sampleList, sampleOrder));
       dispatch(setQueue(json));
     } catch {
       dispatch(showErrorPanel(true, 'Could not get samples list'));
@@ -74,7 +78,7 @@ export function getLimsSamples(lims) {
 
     try {
       const json = await fetchLimsSamples(lims);
-      dispatch(updateSampleList(json.sampleList, json.sampleOrder));
+      dispatch(updateSampleListAndOrder(json.sampleList, json.sampleOrder));
       dispatch(setQueue(json));
     } catch (error) {
       dispatch(
