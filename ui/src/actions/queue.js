@@ -92,7 +92,7 @@ export function addSamplesToQueue(sampleDataList) {
     try {
       const json = await sendAddQueueItem(sampleDataList);
       dispatch(setQueue(json));
-      dispatch(updateSampleListAndOrder(json.sampleList, json.sampleOrder));
+      dispatch(updateSampleList(json.sampleList));
     } catch {
       dispatch(showErrorPanel(true, 'Server refused to add sample'));
     }
