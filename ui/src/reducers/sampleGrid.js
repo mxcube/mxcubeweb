@@ -34,13 +34,6 @@ const INITIAL_STATE = {
 // eslint-disable-next-line complexity
 function sampleGridReducer(state = INITIAL_STATE, action = {}) {
   switch (action.type) {
-    case 'SET_QUEUE': {
-      return {
-        ...state,
-        sampleList: { ...action.sampleList },
-        order: action.sampleOrder,
-      };
-    }
     case 'UPDATE_SAMPLE_LIST': {
       const { sampleList } = action;
       return { ...state, sampleList, selected: {} };

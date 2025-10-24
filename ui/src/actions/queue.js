@@ -20,7 +20,12 @@ import { sendSetCentringMethod } from '../api/sampleview';
 import { TASK_UNCOLLECTED } from '../constants';
 import { showErrorPanel } from './general';
 import { mountSample } from './sampleChanger';
-import { clearSampleGrid, selectSamplesAction } from './sampleGrid';
+import {
+  updateSampleList,
+  updateSampleListAndOrder,
+  clearSampleGrid,
+  selectSamplesAction
+} from './sampleGrid';
 import { abortCentring, updateShapes } from './sampleview';
 
 function queueLoading(loading) {
@@ -87,6 +92,7 @@ export function addSamplesToQueue(sampleDataList) {
     try {
       const json = await sendAddQueueItem(sampleDataList);
       dispatch(setQueue(json));
+      dispatch(updateSampleListAndOrder(json.sampleList, json.sampleOrder));
     } catch {
       dispatch(showErrorPanel(true, 'Server refused to add sample'));
     }
@@ -103,6 +109,7 @@ export function addSampleAndMount(sampleData) {
     try {
       const json = await sendAddQueueItem([sampleData]);
       dispatch(setQueue(json));
+      dispatch(updateSampleListAndOrder(json.sampleList, json.sampleOrder));
       dispatch(selectSamplesAction([sampleData.sampleID]));
     } catch {
       dispatch(showErrorPanel(true, 'Server refused to add sample'));
@@ -363,6 +370,7 @@ export function addTask(sampleIDs, parameters, runNow) {
     try {
       const json = await sendAddQueueItem(samples);
       dispatch(setQueue(json));
+      dispatch(updateSampleListAndOrder(json.sampleList, json.sampleOrder));
 
       if (runNow) {
         const sl = json.sampleList;
@@ -485,6 +493,7 @@ export function getQueue() {
     try {
       const json = await fetchQueueState();
       dispatch(setQueue(json.sampleList));
+      dispatch(updateSampleListAndOrder(json.sampleList, json.sampleOrder));
     } catch (error) {
       console.log(error); // eslint-disable-line no-console
     }
