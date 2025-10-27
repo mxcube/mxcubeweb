@@ -122,8 +122,11 @@ class ServerIO {
 
     this.hwrSocket.on('ra_chat_message', (record) => {
       const { username } = store.getState().login.user;
-      if (record.username !== username && !record.read) {
-        const message = processChatMessageRecord(record, username);
+      if (record.username !== username) {
+        const message = processChatMessageRecord(
+          { ...record, read: false },
+          username,
+        );
         dispatch(addChatMessage(message));
       }
     });

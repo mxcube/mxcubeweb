@@ -10,6 +10,7 @@
   right: 20px;
   width: 360px;
   max-width: 415px;
+  height: 450px;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
@@ -63,6 +64,8 @@
 
 .messagesContainer {
   padding: 0.6rem;
+  flex: 1;
+  min-height: 280px;
   max-height: 280px;
   overflow: auto;
   background: #f9f9f9;

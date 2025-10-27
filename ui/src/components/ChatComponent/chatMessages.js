@@ -20,9 +20,10 @@ export function processChatMessageRecord(record, currentUsername) {
   return {
     id: record.id || `${isSelf ? 'u' : 'r'}-${Date.now()}-${Math.random()}`,
     type: isSelf ? 'user' : 'response',
-    text: isSelf
-      ? `**You:** \n\n ${record.message} \n\n`
-      : `**${record.nickname}:** \n\n ${record.message}`,
+    name: isSelf ? 'You' : record.nickname || '',
+    message: record.message || '',
+    isSelf,
+    read: record.read !== undefined ? record.read : false,
     date: normalizedDate,
   };
 }

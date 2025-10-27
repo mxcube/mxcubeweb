@@ -30,12 +30,6 @@ export default function remoteAccessReducer(
     case 'SET_TIMEOUT_GIVES_CONTROL': {
       return { ...state, timeoutGivesControl: action.timeoutGivesControl };
     }
-    case 'INC_CHAT_MESSAGE_COUNT': {
-      return {
-        ...state,
-        chatMessageCount: state.chatMessageCount + action.count,
-      };
-    }
     case 'SET_CHAT_MESSAGES': {
       return {
         ...state,

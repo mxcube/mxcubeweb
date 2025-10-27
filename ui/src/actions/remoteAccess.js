@@ -1,5 +1,4 @@
 import {
-  fetchChatMessages,
   fetchRemoteAccessState,
   sendCancelControlRequest,
   sendChatMessage as apiSendChatMessage,
@@ -14,7 +13,6 @@ import {
   sendUpdateTimeoutGivesControl,
 } from '../api/remoteAccess';
 import { processChatMessageRecord } from '../components/ChatComponent/chatMessages';
-import { store } from '../store';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
 import { showWaitDialog } from './waitDialog';
@@ -112,10 +110,6 @@ export function updateTimeoutGivesControl(timeoutGivesControl) {
   };
 }
 
-export function incChatMessageCount(count = 1) {
-  return { type: 'INC_CHAT_MESSAGE_COUNT', count };
-}
-
 export function setChatMessages(messages) {
   return { type: 'SET_CHAT_MESSAGES', messages };
 }
@@ -134,15 +128,6 @@ export function processFetchedChatMessages(fetchedMessages, username) {
   };
 }
 
-export function fetchAndProcessChatMessages() {
-  return async (dispatch) => {
-    const { user } = store.getState().login;
-    const { messages: fetchedMessages } = await fetchChatMessages();
-
-    dispatch(processFetchedChatMessages(fetchedMessages, user.username));
-  };
-}
-
 export function sendChatMessage(message, username) {
   return async (dispatch) => {
     await apiSendChatMessage(message, username);
@@ -150,7 +135,10 @@ export function sendChatMessage(message, username) {
     const newMessage = {
       id: `u-${Date.now()}-${Math.random()}`,
       type: 'user',
-      text: message,
+      name: 'You',
+      message,
+      isSelf: true,
+      read: true,
       date: new Date().toISOString(),
     };
 

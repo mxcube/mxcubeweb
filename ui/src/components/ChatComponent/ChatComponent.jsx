@@ -1,4 +1,4 @@
-import { useCallback, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import Draggable from 'react-draggable';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -40,18 +40,14 @@ function ChatWidget() {
   const inputRef = useRef();
   const messagesContainerRef = useRef(null);
 
-  const setMessagesRef = useCallback(() => {
-    if (isOpen && messagesContainerRef.current) {
-      setTimeout(() => {
-        const container = messagesContainerRef.current;
-        if (container) {
-          container.scrollTop = container.scrollHeight;
-        }
-      }, 50);
+  // Scroll to bottom when messages change
+  useLayoutEffect(() => {
+    if (!isOpen || !messagesContainerRef.current) {
+      return;
     }
-  }, [isOpen]);
-
-  setMessagesRef();
+    messagesContainerRef.current.scrollTop =
+      messagesContainerRef.current.scrollHeight;
+  }, [isOpen, messages.length]);
 
   function toggleOpen() {
     setIsOpen((prev) => {
@@ -111,7 +107,28 @@ function ChatWidget() {
                     }`}
                   >
                     <div className={styles.messageText}>
-                      <div dangerouslySetInnerHTML={{ __html: m.text }} />
+                      <div>
+                        <div>
+                          <strong>{m.name}</strong>
+                          <span> : </span>
+                        </div>
+                        <div>
+                          {(() => {
+                            const raw = String(m.message || '');
+                            const lines = raw
+                              .split('\n')
+                              .map((l) =>
+                                l.endsWith('\r') ? l.slice(0, -1) : l,
+                              );
+                            return lines.map((line, idx) => (
+                              <span key={`${m.id}-${line}`}>
+                                {line}
+                                {idx < lines.length - 1 ? <br /> : null}
+                              </span>
+                            ));
+                          })()}
+                        </div>
+                      </div>
                     </div>
                     <div className={styles.timestamp}>{formatTime(m.date)}</div>
                   </div>
