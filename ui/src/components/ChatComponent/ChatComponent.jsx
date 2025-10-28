@@ -36,8 +36,8 @@ function ChatWidget() {
   const chatMessageCount = useSelector(selectUnreadChatMessageCount);
 
   const [isOpen, setIsOpen] = useState(false);
+  const [messageText, setMessageText] = useState('');
 
-  const inputRef = useRef();
   const messagesContainerRef = useRef(null);
 
   // Scroll to bottom when messages change
@@ -59,16 +59,18 @@ function ChatWidget() {
   }
 
   function submit() {
-    const v =
-      inputRef.current && inputRef.current.value
-        ? inputRef.current.value.trim()
-        : '';
-    if (!v) {
+    const trimmed = messageText.trim();
+    if (!trimmed) {
       return;
     }
-    dispatch(sendChatMessageAction(v, username));
-    if (inputRef.current) {
-      inputRef.current.value = '';
+    dispatch(sendChatMessageAction(trimmed, username));
+    setMessageText('');
+  }
+
+  function handleKeyDown(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      submit();
     }
   }
 
@@ -137,17 +139,13 @@ function ChatWidget() {
 
               <div className={styles.sender}>
                 <textarea
-                  ref={inputRef}
                   className={styles.newMessage}
                   placeholder="Type a message..."
                   rows={2}
                   aria-label="Type a message"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Enter' && !e.shiftKey) {
-                      e.preventDefault();
-                      submit();
-                    }
-                  }}
+                  value={messageText}
+                  onChange={(e) => setMessageText(e.target.value)}
+                  onKeyDown={handleKeyDown}
                 />
                 <button
                   type="button"
@@ -167,7 +165,12 @@ function ChatWidget() {
             aria-label="Toggle chat"
             onClick={toggleOpen}
           >
-            <div className={styles.launcherIcon} aria-hidden="true" />
+            <div
+              className={`${styles.launcherIcon} ${
+                isOpen ? styles.launcherIconOpen : ''
+              }`}
+              aria-hidden="true"
+            />
             {!isOpen && chatMessageCount > 0 ? (
               <div className={styles.badge}>{chatMessageCount}</div>
             ) : null}
