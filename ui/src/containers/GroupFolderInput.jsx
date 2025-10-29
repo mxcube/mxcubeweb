@@ -29,25 +29,25 @@ function GroupFolderInput() {
   }
 
   return (
-    <Form as="div">
-      <Form.Label>Group path :</Form.Label>
-      <Form.Group className="d-flex">
-        <Form.Control
-          size="sm"
-          {...register('groupFolder')}
-          style={{
-            borderColor: isDirty ? '#ffc107' : undefined,
-            boxShadow: isDirty ? '0 0 0 0.2rem rgba(255,193,7,.25)' : undefined,
-          }}
-        />
-        <span style={{ marginRight: '0.5em' }} />
-        <Button
-          variant="outline-secondary"
-          size="sm"
-          onClick={handleSubmit(onSubmit)}
-        >
-          Set
-        </Button>
+    <Form onSubmit={handleSubmit(onSubmit)}>
+      <Form.Group className="d-flex flex-column" controlId="group-folder-input">
+        <Form.Label>Group path :</Form.Label>
+        <div className="d-flex">
+          <Form.Control
+            size="sm"
+            {...register('groupFolder')}
+            style={{
+              marginRight: '0.5rem',
+              borderColor: isDirty ? '#ffc107' : undefined,
+              boxShadow: isDirty
+                ? '0 0 0 0.2rem rgba(255,193,7,.25)'
+                : undefined,
+            }}
+          />
+          <Button variant="outline-secondary" size="sm" type="submit">
+            Set
+          </Button>
+        </div>
       </Form.Group>
     </Form>
   );

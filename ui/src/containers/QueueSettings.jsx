@@ -24,7 +24,7 @@ export default function QueueSettings() {
         </span>
       </Dropdown.Toggle>
       <Dropdown.Menu className={styles.dropdownMenu}>
-        <Dropdown.Item>
+        <Dropdown.Item as="div">
           <Form.Check
             type="checkbox"
             name="autoMountNext"
@@ -34,7 +34,7 @@ export default function QueueSettings() {
             id="auto-mount-next"
           />
         </Dropdown.Item>
-        <Dropdown.Item>
+        <Dropdown.Item as="div">
           <Form.Check
             type="checkbox"
             onChange={(e) => {
@@ -50,7 +50,7 @@ export default function QueueSettings() {
             id="auto-loop-centring"
           />
         </Dropdown.Item>
-        <Dropdown.Item>
+        <Dropdown.Item as="div">
           <Form.Check
             type="checkbox"
             name="autoAddDiffPlan"
@@ -60,7 +60,7 @@ export default function QueueSettings() {
             id="auto-add-diff-plan"
           />
         </Dropdown.Item>
-        <Dropdown.Item>
+        <Dropdown.Item as="div">
           <Form.Check
             type="checkbox"
             name="rememberParametersBetweenSamples"
@@ -78,11 +78,11 @@ export default function QueueSettings() {
           />
         </Dropdown.Item>
         <Dropdown.Divider />
-        <Dropdown.Item>
+        <Dropdown.Item as="div">
           <NumSnapshotsDropDown align="end" />
         </Dropdown.Item>
         <Dropdown.Divider />
-        <Dropdown.Item>
+        <Dropdown.Item as="div">
           <GroupFolderInput />
         </Dropdown.Item>
       </Dropdown.Menu>
