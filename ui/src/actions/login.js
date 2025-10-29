@@ -8,7 +8,6 @@ import { fetchLoginInfo, sendLogIn } from '../api/loginBase';
 import { fetchApplicationSettings, fetchUIProperties } from '../api/main';
 import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 import { fetchChatMessages, fetchRemoteAccessState } from '../api/remoteAccess';
-import { fetchSampleChangerInitialState } from '../api/sampleChanger';
 import { fetchImageData, fetchShapes } from '../api/sampleview';
 import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchGetAllActions } from './beamlineActions';
