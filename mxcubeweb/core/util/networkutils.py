@@ -47,8 +47,7 @@ def remote_addr():
 
 
 def is_local_network(ip: str, local_domains: list):
-    """
-    Determines whether a given IP address belongs to the local network.
+    """Determine whether a given IP address belongs to the local network.
 
     The function compares the first two octets of the given IP address with the
     local host's IP address. It also checks if the reverse-resolved hostname of
@@ -80,8 +79,7 @@ def is_local_network(ip: str, local_domains: list):
 
 
 def is_local_host(local_domains: list):
-    """
-    Determines whether the remote client making the request is a "local host".
+    """Determine whether the remote client making the request is a "local host".
 
     A client is considered a "local host" if it runs on the same host as the
     mxcube-server, or if it belongs to the local network. The local network can

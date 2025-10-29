@@ -78,6 +78,20 @@ class BeamlineActionInputModel(BaseModel):
     parameters: dict | list
 
 
+class SampleChangerCommandInputModel(BaseModel):
+    cmd: str
+    arguments: str | None
+
+
 class FrontEndStackTraceModel(BaseModel):
     stack: str
     state: dict
+
+
+class SampleInputModel(BaseModel):
+    location: str
+    sample_name: str = Field(default="", alias="sampleName")
+    sample_id: str = Field(default="", alias="sampleID")
+
+    class Config:
+        allow_population_by_field_name = True

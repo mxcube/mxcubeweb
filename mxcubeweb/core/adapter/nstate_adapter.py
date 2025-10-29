@@ -26,10 +26,13 @@ class NStateAdapter(ActuatorAdapterBase):
         AbstractShutter.AbstractShutter,
     ]
 
-    def __init__(self, ho, role, app):
-        """
+    def __init__(  # noqa: D417
+        self, ho, role, app
+    ):
+        """Initialize.
+
         Args:
-            (object): Hardware object.
+            ho (object): Hardware object.
         """
         super().__init__(ho, role, app, resource_handler_config)
         self._value_change_model = HOActuatorValueChangeModel
@@ -59,13 +62,14 @@ class NStateAdapter(ActuatorAdapterBase):
         return self._get_valid_states()
 
     def set_value(self, value: HOActuatorValueChangeModel) -> str:
-        """
-        Sets value of the Nstate adapter.
+        """Set value of the N-state adapter.
 
         Args:
             value (Enum): value to be set containing name and value attributes.
+
         Returns:
             (str): The actual value set as a string.
+
         Raises:
             ValueError: Value not valid.
             RuntimeError: Timeout while setting the value.
@@ -78,9 +82,7 @@ class NStateAdapter(ActuatorAdapterBase):
         return StrValueModel(value=self._ho.get_value().name)
 
     def stop(self):
-        """
-        Stop the execution.
-        """
+        """Stop the execution."""
         self._ho.abort()
 
     def msg(self):

@@ -28,9 +28,7 @@ class BeamAdapter(ActuatorAdapterBase):
             ho.connect(ho, sig, self._beam_changed)
 
     def _beam_changed(self, *args, **kwargs):  # noqa: ARG002
-        """
-        Callback method for beam position and info changes.
-        """
+        """Callback method for beam position and info changes."""
         self.app.server.emit(
             "beam_changed", {"data": self.get_value().dict()["value"]}, namespace="/hwr"
         )
@@ -39,8 +37,7 @@ class BeamAdapter(ActuatorAdapterBase):
         return -1, -1
 
     def _get_aperture(self) -> tuple:
-        """
-        Returns list of apertures and the one currently used.
+        """Return list of apertures and the one currently used.
 
         :return: Tuple, (list of apertures, current aperture)
         :rtype: tuple

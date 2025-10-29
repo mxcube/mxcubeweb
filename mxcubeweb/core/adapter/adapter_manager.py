@@ -16,9 +16,7 @@ class HardwareObjectAdapterManager:
         self.adapter_dict = {}
 
     def exit_with_error(self, msg: str) -> None:
-        """
-        Writes the traceback and msg to the log and exits the
-        application
+        """Write the traceback and msg to the log and exits the application.
 
         :param msg: Additional message to write to log
         """
@@ -33,8 +31,7 @@ class HardwareObjectAdapterManager:
         sys.exit(-1)
 
     def init(self) -> None:
-        """
-        Initializes the HardwareRepository with XML files read from hwdir.
+        """Initialize the HardwareRepository with XML files read from hwdir.
 
         The hwr module must be imported at the very beginning of the application
         start-up to function correctly.
@@ -73,19 +70,19 @@ class HardwareObjectAdapterManager:
         return self._get_object_from_id(_id)
 
     def find_best_adapter(self, ho):
-        """
-        Rank adapters by the depth of their SUPPORTED_TYPES in the
-        inheritance tree.
+        """Rank adapters by the depth of their SUPPORTED_TYPES in the inheritance tree.
 
-        Choose the adapter with the most specific match (deepest class
-        in the hierarchy).
+        Choose the adapter with the most specific match
+        (deepest class in the hierarchy).
 
         Args:
-            ho: HardwareObject to adapt
+            ho: HardwareObject to adapt.
+
         Returns:
-            The best adapter class for the hardware object
+            The best adapter class for the hardware object.
+
         Raises:
-            RuntimeError: If multiple adapters suit the hardware object
+            RuntimeError: If multiple adapters suit the hardware object.
         """
         if ho.__class__ in AdapterBase.SUPPORTED_TYPES_TO_ADAPTERS:
             return AdapterBase.SUPPORTED_TYPES_TO_ADAPTERS[ho.__class__]

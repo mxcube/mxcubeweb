@@ -574,6 +574,7 @@ class SampleImage extends React.Component {
     }
   }
 
+  // eslint-disable-next-line complexity
   wheel(e) {
     e.preventDefault();
     e.stopPropagation();
@@ -585,9 +586,9 @@ class SampleImage extends React.Component {
     const focusProps = components.find((c) => c.role === 'focus');
     const zoomProps = components.find((c) => c.role === 'zoom');
 
-    const omega = hardwareObjects[omegaProps.attribute];
-    const focus = hardwareObjects[focusProps.attribute];
-    const zoom = hardwareObjects[zoomProps.attribute];
+    const omega = hardwareObjects[omegaProps?.attribute] ?? omegaProps;
+    const focus = hardwareObjects[focusProps?.attribute] ?? focusProps;
+    const zoom = hardwareObjects[zoomProps?.attribute] ?? zoomProps;
 
     if (keyPressed === 'r' && omega.state === HW_STATE.READY) {
       if (e.deltaY > 0) {

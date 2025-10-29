@@ -20,10 +20,13 @@ class DiffractometerAdapter(AdapterBase):
         GenericDiffractometer.GenericDiffractometer,
     ]
 
-    def __init__(self, ho, role, app):
-        """
+    def __init__(  # noqa: D417
+        self, ho, role, app
+    ):
+        """Initialize.
+
         Args:
-            (object): Hardware object.
+            ho (object): Hardware object.
         """
         super().__init__(ho, role, app, resource_handler_config)
         ho.connect("stateChanged", self._state_change)

@@ -15,10 +15,13 @@ class DataPublisherAdapter(AdapterBase):
     ATTRIBUTES = ["current_data", "all_data", "current"]
     SUPPORTED_TYPES: ClassVar[list[object]] = [DataPublisher.DataPublisher]
 
-    def __init__(self, ho, *args):
-        """
+    def __init__(  # noqa: D417
+        self, ho, *args
+    ):
+        """Initialize.
+
         Args:
-            (object): Hardware object.
+            ho (object): Hardware object.
         """
         super().__init__(ho, *args)
         self._all_data_list = []

@@ -9,10 +9,10 @@ from mxcubeweb.routes.csp_report import init_route
 
 
 class TestCSPMiddleware:
-    """Tests for the CSP middleware"""
+    """Tests for the CSP middleware."""
 
     def test_csp_middleware_enabled(self):
-        """Test that CSP middleware adds standard headers when enabled"""
+        """Test that CSP middleware adds standard headers when enabled."""
         config = {
             "CSP_ENABLED": True,
             "CSP_POLICY": {
@@ -47,7 +47,7 @@ class TestCSPMiddleware:
         assert "script-src 'self' 'unsafe-inline'" in csp_headers[0][1]
 
     def test_csp_middleware_report_only(self):
-        """Test that CSP middleware sets Report-Only mode when configured"""
+        """Test that CSP middleware sets Report-Only mode when configured."""
         config = {
             "CSP_ENABLED": True,
             "CSP_POLICY": {"default-src": ["'self'"]},
@@ -79,7 +79,7 @@ class TestCSPMiddleware:
         assert len(csp_headers) == 1
 
     def test_csp_middleware_report_uri(self):
-        """Test that CSP middleware adds report-uri when configured"""
+        """Test that CSP middleware adds report-uri when configured."""
         config = {
             "CSP_ENABLED": True,
             "CSP_POLICY": {"default-src": ["'self'"]},
@@ -110,7 +110,7 @@ class TestCSPMiddleware:
         assert "report-uri /mxcube/api/v0.1/csp/report" in csp_headers[0][1]
 
     def test_csp_middleware_disabled(self):
-        """Test that CSP middleware doesn't add any headers when disabled"""
+        """Test that CSP middleware doesn't add any headers when disabled."""
         config = {
             "CSP_ENABLED": False,
             "CSP_POLICY": {"default-src": ["'self'"]},
@@ -139,7 +139,7 @@ class TestCSPMiddleware:
         assert len(csp_headers) == 0
 
     def test_build_policy_string(self):
-        """Test that CSP policy string is correctly built from dictionary"""
+        """Test that CSP policy string is correctly built from dictionary."""
         config = {
             "CSP_ENABLED": True,
             "CSP_POLICY": {
@@ -175,11 +175,11 @@ class TestCSPMiddleware:
 
 
 class TestCSPReportEndpoint:
-    """Tests for the CSP report endpoint"""
+    """Tests for the CSP report endpoint."""
 
     @pytest.fixture
     def test_app(self):
-        """Create a test Flask app with the CSP report endpoint"""
+        """Create a test Flask app with the CSP report endpoint."""
         app = Flask(__name__)
         app.config["TESTING"] = True
 
@@ -193,7 +193,7 @@ class TestCSPReportEndpoint:
         return test_app.test_client()
 
     def test_csp_report_endpoint(self, client):
-        """Test that CSP violation reports are received and logged correctly"""
+        """Test that CSP violation reports are received and logged correctly."""
         test_report = {
             "csp-report": {
                 "document-uri": "http://localhost:8081/",
@@ -221,11 +221,11 @@ class TestCSPReportEndpoint:
 
 
 class TestCSPIntegration:
-    """Integration tests for CSP implementation"""
+    """Integration tests for CSP implementation."""
 
     @pytest.fixture
     def app_with_csp(self):
-        """Create a test Flask app with CSP middleware applied"""
+        """Create a test Flask app with CSP middleware applied."""
         app = Flask(__name__)
         app.config["TESTING"] = True
 
@@ -252,7 +252,7 @@ class TestCSPIntegration:
         return app_with_csp.test_client()
 
     def test_csp_headers_in_response(self, client):
-        """Test that CSP headers are correctly included in actual HTTP responses"""
+        """Test that CSP headers are correctly included in actual HTTP responses."""
         resp = client.get("/test")
 
         assert "Content-Security-Policy" in resp.headers

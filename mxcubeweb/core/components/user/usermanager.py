@@ -22,7 +22,7 @@ HTTP_REQUESTS_TIMEOUT = 10  # Generic timeout for HTTP requests in seconds
 
 
 class BaseUserManager(ComponentBase):
-    """Base class for managing user-related operations
+    """Base class for managing user-related operations.
 
     Operation it manages are: authentication, session management, and Single Sign-On
     (SSO) integration. It provides methods to handle user login, logout, session

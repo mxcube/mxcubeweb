@@ -19,8 +19,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def queue_start():
-        """
-        Start execution of the queue.
+        """Start execution of the queue.
 
         :returns: Respons object, status code set to:
                 200: On success
@@ -35,8 +34,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def queue_stop():
-        """
-        Stop execution of the queue.
+        """Stop execution of the queue.
 
         :returns: Response object status code set to:
                 200: On success
@@ -49,8 +47,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def queue_abort():
-        """
-        Abort execution of the queue.
+        """Abort execution of the queue.
 
         :returns: Response object, status code set to:
                 200 On success
@@ -63,8 +60,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def queue_pause():
-        """
-        Pause the execution of the queue
+        """Pause the execution of the queue.
 
         :returns: Response object, status code set to:
                 200: On success
@@ -78,8 +74,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def queue_unpause():
-        """
-        Unpause execution of the queue
+        """Unpause execution of the queue.
 
         :returns: Response object, status code set to:
                 200: On success
@@ -93,8 +88,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def queue_clear():
-        """
-        Clear the queue.
+        """Clear the queue.
 
         :returns: Response object, status code set to:
                 200: On success
@@ -106,8 +100,8 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/", methods=["GET"])
     @server.restrict
     def queue_get():
-        """
-        Get the queue
+        """Get the queue.
+
         :returns: Response object response Content-Type: application/json, json
                 object containing the queue on the format returned by
                 queue_to_dict. The status code is set to:
@@ -122,8 +116,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/queue_state", methods=["GET"])
     @server.restrict
     def queue_get_state():
-        """
-        Get the queue.
+        """Get the queue.
 
         :returns: Response object response Content-Type: application/json, json
                 object containing the queue state. The status code is set to:
@@ -139,8 +132,8 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def execute_entry_with_id(sid, tindex):
-        """
-        Execute the entry at position (sampleID, task index) in queue
+        """Execute the entry at position (sampleID, task index) in queue.
+
         :param str sid: sampleID
         :param int tindex: task index of task within sample with id sampleID
 
@@ -243,16 +236,16 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def update_sample(sample_id):
-        """
-        Update a sample info
-            :parameter node_id: entry identifier, integer. It can be a sample
-                or a task within a sample
-            :request Content-Type: application/json, object containing the
-                parameter(s) to be updated, any parameter not sent will
-                not be modified.
-            :statuscode: 200: no error
-            :statuscode: 409: sample info could not be updated, possibly because
-                the given sample does not exist in the queue
+        """Update a sample info.
+
+        :parameter node_id: entry identifier, integer. It can be a sample
+            or a task within a sample
+        :request Content-Type: application/json, object containing the
+            parameter(s) to be updated, any parameter not sent will
+            not be modified.
+        :statuscode: 200: no error
+        :statuscode: 409: sample info could not be updated, possibly because
+            the given sample does not exist in the queue
         """
         params = json.loads(request.data)
         node_id = int(sample_id)
@@ -268,9 +261,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/available_tasks", methods=["GET"])
     @server.restrict
     def get_avilable_tasks():
-        """
-        Returns a list of all available tasks
-        """
+        """Return a list of all available tasks."""
         resp = jsonify(app.queue.get_available_tasks())
 
         resp.status_code = 200
@@ -279,9 +270,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/update_dependent_field", methods=["POST"])
     @server.restrict
     def update_dependent_field():
-        """
-        Updates the dependent fields of the given task
-        """
+        """Update the dependent fields of the given task."""
         args = request.get_json()
         resp = jsonify(
             app.queue.update_dependent_field(args["task_name"], args["field_data"])

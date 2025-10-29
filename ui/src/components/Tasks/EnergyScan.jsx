@@ -154,9 +154,21 @@ class EnergyScan extends React.Component {
   }
 }
 
+function validateEnergyScan(values, props) {
+  const errors = validate(values, props);
+  const currElement = values.element;
+  const isElementAvailable = props.availableElements.some(
+    (item) => item.symbol === currElement,
+  );
+  if (!isElementAvailable) {
+    errors.element = 'Please select an element from the periodic table';
+  }
+  return errors;
+}
+
 const EnergyScanForm = reduxForm({
   form: 'energyscan',
-  validate,
+  validate: validateEnergyScan,
 })(EnergyScan);
 
 const selector = formValueSelector('energyscan');

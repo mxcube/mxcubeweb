@@ -11,15 +11,18 @@ hwr_logger = logging.getLogger("MX3.HWR")
 
 
 class WavelengthAdapter(ActuatorAdapterBase):
-    """
-    Adapter for wavelength Hardware Object, a web socket is used communicate
-    information on longer running processes.
+    """Adapter for wavelength Hardware Object.
+
+    A web socket is used to communicate information on longer running processes.
     """
 
-    def __init__(self, ho, *args):
-        """
+    def __init__(  # noqa: D417
+        self, ho, *args
+    ):
+        """Initialize.
+
         Args:
-            (object): Hardware object.
+            ho (object): Hardware object.
         """
         super().__init__(ho, *args)
         self._type = "MOTOR"
@@ -36,12 +39,14 @@ class WavelengthAdapter(ActuatorAdapterBase):
         self.value_change(wl)
 
     def set_value(self, value: HOActuatorValueChangeModel):
-        """
-        Execute the sequence to set the value.
+        """Execute the sequence to set the value.
+
         Args:
             value (float): Target wavelength [Å].
+
         Returns:
             (float as str): The actual value set.
+
         Raises:
             ValueError: Value not valid or attemp to set read only value.
             RuntimeError: Timeout while setting the value.
@@ -55,10 +60,11 @@ class WavelengthAdapter(ActuatorAdapterBase):
             hwr_logger.exception(msg)
 
     def get_value(self) -> FloatValueModel:
-        """
-        Read the wavelength value.
+        """Read the wavelength value.
+
         Returns:
             (float as str): Wavelength [Å].
+
         Raises:
             ValueError: When value for any reason can't be retrieved.
         """
@@ -69,8 +75,8 @@ class WavelengthAdapter(ActuatorAdapterBase):
             raise ValueError(msg) from ex
 
     def state(self):
-        """
-        Get the state.
+        """Get the state.
+
         Returns:
             (str): The state
         """
@@ -78,16 +84,15 @@ class WavelengthAdapter(ActuatorAdapterBase):
         return self._ho.get_state().name
 
     def stop(self):
-        """
-        Stop the execution.
-        """
+        """Stop the execution."""
         self._ho.abort()
 
     def limits(self):
-        """
-        Read the wavelengt limits.
+        """Read the wavelengt limits.
+
         Returns:
             (tuple): Two floats (min, max) limits.
+
         Raises:
             ValueError: When limits for any reason can't be retrieved.
         """
@@ -98,9 +103,9 @@ class WavelengthAdapter(ActuatorAdapterBase):
             raise ValueError(msg) from ex
 
     def read_only(self):
-        """
-        Check if the wavelength is read only or not.
-        Retuns:
-            (bool): True if read only, False if not.
+        """Check if the wavelength is read only or not.
+
+        Returns:
+            (bool): ``True`` if read only, ``False`` if not.
         """
         return self._ho.read_only

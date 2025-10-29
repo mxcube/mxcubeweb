@@ -1,7 +1,5 @@
 class CSPMiddleware:
-    """
-    Middleware to add Content Security Policy headers to responses.
-    """
+    """Middleware to add Content Security Policy headers to responses."""
 
     def __init__(self, app, config):
         self.app = app

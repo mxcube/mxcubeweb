@@ -81,18 +81,7 @@
   margin-left: 0 !important;
 }
 
-.samplesGridTableItemTasks > .slick-next::before,
-.samplesGridTableItemTasks > .slick-prev:before {
-  color: #9e9c9c;
-  opacity: 100%;
-}
-
-.samplesGridTableItemTasks > .slick-prev.slick-disabled:before,
-.samplesGridTableItemTasks > .slick-next.slick-disabled:before {
-  opacity: 25%;
-}
-
-.samplesGridTableItemTasks > .slick-prev {
+.samplesGridTableItemTasks :global(.slick-prev) {
   left: 1px;
 }
 

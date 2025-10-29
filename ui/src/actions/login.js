@@ -120,7 +120,7 @@ export function getInitialState() {
       fetchShapes()
         .then((json) => ({ shapes: json.shapes }))
         .catch(notify),
-      fetchSampleChangerInitialState()
+      fetchValue('sample_changer', 'sample_changer')
         .then((json) => {
           const { state, contents, loaded_sample, cmds, global_state, msg } =
             json;

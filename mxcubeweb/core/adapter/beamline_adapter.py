@@ -15,9 +15,7 @@ resource_handler_config = ResourceHandlerConfigModel(
 
 
 class BeamlineAdapter(ActuatorAdapterBase):
-    """
-    Adapter between Beamline route and Beamline hardware object.
-    """
+    """Adapter between Beamline route and Beamline hardware object."""
 
     SUPPORTED_TYPES: ClassVar[list[object]] = [Beamline]
 
@@ -67,10 +65,10 @@ class BeamlineAdapter(ActuatorAdapterBase):
         return escan.get_elements() if escan else []
 
     def get_value(self) -> dict:
-        """
-        Build dictionary value-representation for each beamline attribute
-         Returns:
-           (dict): The dictionary.
+        """Build dictionary value-representation for each beamline attribute.
+
+        Returns:
+            The dictionary.
         """
         attributes = {}
 

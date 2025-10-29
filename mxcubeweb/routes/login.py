@@ -19,8 +19,7 @@ def init_route(app, server, url_prefix):
 
     @bp.route("/", methods=["POST"])
     def login():
-        """
-        Login into mxcube application.
+        """Login into mxcube application.
 
         :returns: Response Object, Content-Type: application/json, an object
         containing following info:
@@ -77,28 +76,25 @@ def init_route(app, server, url_prefix):
     @bp.route("/signout")
     @server.restrict
     def signout():
-        """
-        Signout from MXCuBE Web and reset the session
-        """
+        """Signout from MXCuBE Web and reset the session."""
         app.usermanager.signout()
         return make_response(jsonify(""), 200)
 
     @bp.route("/login_info", methods=["GET"])
     def login_info():
-        """
-        Retrieve session/login info
+        """Retrieve session/login info.
 
         :returns: Response Object, Content-Type: application/json, an object
-                containing:
+                containing::
 
-        {'synchrotron_name': synchrotron_name,
-        'beamline_name': beamline_name,
-        'loginType': loginType,
-        'loggedIn': True,
-        'Proposal': proposal, 'session': todays_session,
-        'local_contact': local_contact,
-        'person': someone,
-        'laboratory': a_laboratory']}}
+            {'synchrotron_name': synchrotron_name,
+            'beamline_name': beamline_name,
+            'loginType': loginType,
+            'loggedIn': True,
+            'Proposal': proposal, 'session': todays_session,
+            'local_contact': local_contact,
+            'person': someone,
+            'laboratory': a_laboratory']}}
 
         Status code set to:
         200: On success

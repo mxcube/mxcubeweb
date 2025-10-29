@@ -6,7 +6,7 @@ from flask_limiter.util import get_remote_address
 
 
 def rate_limit_error_handler(_):
-    """Handler for rate limit errors"""
+    """Handler for rate limit errors."""
     logging.warning("Rate limit exceeded")
     return jsonify(
         {
@@ -17,7 +17,7 @@ def rate_limit_error_handler(_):
 
 
 def init_limiter(app):
-    """Initialize the rate limiter"""
+    """Initialize the rate limiter."""
     limiter = Limiter(
         app=app,
         key_func=get_remote_address,

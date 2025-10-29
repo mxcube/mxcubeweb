@@ -9,12 +9,15 @@ from mxcubeweb.core.util.networkutils import RateLimited
 
 
 class MachineInfoAdapter(ActuatorAdapterBase):
-    """Adapter for MachineInfo like objects"""
+    """Adapter for MachineInfo like objects."""
 
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractMachineInfo.AbstractMachineInfo]
 
-    def __init__(self, ho, *args):
-        """
+    def __init__(  # noqa: D417
+        self, ho, *args
+    ):
+        """Initialize.
+
         Args:
             (object): Hardware object.
         """
@@ -45,8 +48,10 @@ class MachineInfoAdapter(ActuatorAdapterBase):
         return value_dict
 
     def limits(self):
-        """
-        Returns: The detector distance limits.
+        """Get the detector distance limits.
+
+        Returns:
+            The detector distance limits.
         """
         return (-1, -1)
 

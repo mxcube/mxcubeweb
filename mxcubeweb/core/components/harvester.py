@@ -68,10 +68,10 @@ class Harvester(ComponentBase):
             return False
 
     def get_harvester_contents(self):
-        """Get the Harvester contents info
+        """Get the Harvester contents info.
 
-        Return (Dict): Dict content, object name etc..
-        crystal_list and number of available pins"
+        Returns:
+            dict: Dict containing name, crystal_list, number of available pins, etc.
         """
         if HWR.beamline.harvester:
             root_name = HWR.beamline.harvester.__TYPE__
@@ -97,10 +97,11 @@ class Harvester(ComponentBase):
         return contents
 
     def get_crystal_list(self):
-        """Get the Harvester Sample List info
+        """Get the Harvester Sample List info.
 
-        Return (List):  list of dict content
-        state , name etc.. of the current processing plan"
+        Returns:
+            list: List of dicts containing state, name, etc.
+                of the current processing plan.
         """
         crystal_list = []
 
@@ -145,9 +146,10 @@ class Harvester(ComponentBase):
             return "OFFLINE", "OFFLINE", "OFFLINE"
 
     def send_data_collection_info_to_crims(self) -> bool:
-        """Send Data collected to CRIMS
+        """Send Data collected to CRIMS.
 
-        Return (bool): Whether the request failed (false) or not (true)
+        Returns:
+            bool: Whether the request failed (``False``) or not (``True``).
         """
         dataCollectionGroupId = ""
         crystal_uuid = ""
