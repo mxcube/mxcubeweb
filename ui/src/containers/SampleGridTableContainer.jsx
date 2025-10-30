@@ -140,7 +140,7 @@ function getColsm(isSingleCellAndNotFlex, puckCount) {
 export default function SampleGridTableContainer(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { selected, sampleList, order, filterOptions } = useSelector(
+  const { selected, sampleList, filterOptions } = useSelector(
     (state) => state.sampleGrid,
   );
   const queue = useSelector((state) => state.queue);
@@ -180,7 +180,7 @@ export default function SampleGridTableContainer(props) {
   // this supose to replace old shouldComponentUpdate , not sure we need it
   useEffect(() => {
     console.log('Component Updated'); // eslint-disable-line no-console
-  }, [filterOptions, queue.queue, sampleList, order]);
+  }, [filterOptions, queue.queue, sampleList]);
 
   /**
    * @param {MouseEvent} e
@@ -526,23 +526,15 @@ export default function SampleGridTableContainer(props) {
   }
 
   function getSamplesList() {
-    const sampleItemList = [];
-
-    order.forEach((key) => {
-      const sample = sampleList[key];
-      if (filterSampleByKey(key)) {
-        sampleItemList.push(<li key={key}>{sample.sampleID}</li>);
-      }
-    });
-
-    return sampleItemList;
+    return Object.keys(sampleList)
+      .filter(filterSampleByKey)
+      .map((sampleId) => <li key={sampleId}>{sampleId}</li>);
   }
 
   /**
    * Build a list of SampleItems and for each SampleItem a list of TaskItems
    *
    * @property {Object} sampleList
-   * @property {array} order
    * @property {array} queue
    * @property {object} selected
    *
@@ -580,11 +572,7 @@ export default function SampleGridTableContainer(props) {
                 <SampleGridTableItem
                   pickButtonOnClickHandler={sampleItemPickButtonOnClickHandler}
                   sampleData={sample}
-                  queueOrder={
-                    order
-                      .filter((keys) => queue.queue.includes(keys))
-                      .indexOf(key) + 1
-                  }
+                  queueOrder={queue.queue.indexOf(key) + 1}
                   current={isCurrent}
                   picked={picked}
                 >
@@ -825,18 +813,12 @@ export default function SampleGridTableContainer(props) {
   }
 
   function mountAndCollect() {
-    let sampleData = null;
-
     // If several samples selected mount the first one and add the others to the queue
-    order.some((sampleID) => {
-      if (selected[sampleID]) {
-        sampleData = sampleList[sampleID];
-      }
-      return selected[sampleID] === true;
-    });
+    const sampleData = sampleList[Object.keys(selected)[0]];
 
     if (sampleData) {
       dispatch(mountSample(sampleData));
+      addSelectedSamplesToQueue();
       navigate('/datacollection', { replace: true });
     }
   }
