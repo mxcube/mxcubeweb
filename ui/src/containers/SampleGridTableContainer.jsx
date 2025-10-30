@@ -140,11 +140,10 @@ function getColsm(isSingleCellAndNotFlex, puckCount) {
 export default function SampleGridTableContainer(props) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const sampleList = useSelector((state) => state.sampleGrid.sampleList);
-  const filterOptions = useSelector((state) => state.sampleGrid.filterOptions);
-  const selected = useSelector((state) => state.sampleGrid.selected);
+  const { selected, sampleList, order, filterOptions } = useSelector(
+    (state) => state.sampleGrid,
+  );
   const queue = useSelector((state) => state.queue);
-  const order = useSelector((state) => state.sampleGrid.order);
   const sampleChanger = useSelector((state) => state.sampleChanger);
   const contextMenu = useSelector(
     (state) => state.contextMenu.genericContextMenu,
