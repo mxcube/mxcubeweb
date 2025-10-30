@@ -192,6 +192,12 @@ class Lims(ComponentBase):
                 "code": sample_dm,
                 "loadable": True,
                 "state": state,
+                "container_info": (
+                    s.container_info if hasattr(s, "container_info") else {}
+                ),
+                "image_url": s.get_image_url() or "",
+                "image_x": s.get_image_x() or "",
+                "image_y": s.get_image_y() or "",
                 "tasks": [],
                 "type": "Sample",
                 "cell_no": s.get_cell_no() if hasattr(s, "get_cell_no") else 1,
