@@ -1,4 +1,4 @@
-from pydantic.v1 import (
+from pydantic import (
     BaseModel,
     Field,
 )
@@ -34,7 +34,10 @@ class NStateModel(HOActuatorModel):
     value: str = Field("", description="Value of nstate object")
 
 
-class HOMachineInfoModel(HOActuatorModel):
+class HOMachineInfoModel(HOModel):
+    limits: tuple[float | None, float | None] = Field(
+        (-1, -1), description="Limits (min max)"
+    )
     value: dict = Field(description="Value of machine info")
 
 
@@ -94,7 +97,7 @@ class SampleInputModel(BaseModel):
     sample_id: str = Field(default="", alias="sampleID")
 
     class Config:
-        allow_population_by_field_name = True
+        populate_by_name = True
 
 
 class ListOfShapesModel(BaseModel):

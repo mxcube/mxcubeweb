@@ -6,7 +6,7 @@ import typing
 from typing import Any, ClassVar
 
 import gevent
-from pydantic.v1 import (
+from pydantic import (
     Field,
     ValidationError,
     create_model,
@@ -45,9 +45,7 @@ class AdapterBase:
 
     ADAPTER_DICT = {}
 
-    def __init__(  # noqa: D417
-        self, ho, role, app, resource_handler_config=None
-    ):
+    def __init__(self, ho, role, app, resource_handler_config=None):  # noqa: D417
         """Initialize.
 
         Args:
@@ -263,10 +261,12 @@ class AdapterBase:
 
     def _exported_methods(self):
         exported_methods = {}
-
         # Get exported attributes from underlaying HardwareObject
         # and only set display True for those methods that have
-        # been explicitly configured to be exported
+        # been explicitly configured to be exported. The method also
+        # needs to be defined as a command in the ResourceHandlerConfigModel
+        # to be exported.
+
         configured_exported = self._ho.exported_attributes.keys()
 
         rh = ResourceHandlerFactory.get_handler(self.__class__.__name__.lower())
@@ -394,9 +394,7 @@ class AdapterBase:
 
 
 class ActuatorAdapterBase(AdapterBase):
-    def __init__(  # noqa: D417
-        self, ho, role, app, resource_handler_config=None
-    ):
+    def __init__(self, ho, role, app, resource_handler_config=None):  # noqa: D417
         """Initialize.
 
         Args:

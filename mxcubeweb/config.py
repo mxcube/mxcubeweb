@@ -3,7 +3,7 @@ import os
 import sys
 
 import ruamel.yaml
-from pydantic.v1 import (
+from pydantic import (
     BaseModel,
     ValidationError,
 )

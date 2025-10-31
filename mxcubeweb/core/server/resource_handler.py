@@ -6,7 +6,7 @@ from functools import reduce
 from typing import ClassVar
 
 from flask import Blueprint, Response, jsonify, request
-from pydantic.v1 import (
+from pydantic import (
     BaseModel,
     ValidationError,
 )

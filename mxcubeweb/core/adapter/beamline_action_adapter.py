@@ -4,7 +4,7 @@ from typing import ClassVar
 
 from mxcubecore.BaseHardwareObjects import HardwareObject
 from mxcubecore.HardwareObjects.BeamlineActions import BeamlineActions
-from pydantic.v1 import (
+from pydantic import (
     BaseModel,
 )
 

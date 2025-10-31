@@ -5,7 +5,7 @@ from typing import (
     Literal,
 )
 
-from pydantic.v1 import BaseModel, Field, validator
+from pydantic import BaseModel, Field, validator
 
 
 class FlaskConfigModel(BaseModel):
@@ -71,25 +71,25 @@ class SSOConfigModel(BaseModel):
 class UIComponentModel(BaseModel):
     label: str
     attribute: str
-    role: str | None
-    step: float | None
-    precision: int | None
-    suffix: str | None
-    description: str | None
+    role: str | None = None
+    step: float | None = None
+    precision: int | None = None
+    suffix: str | None = None
+    description: str | None = None
     # Set internally not to be set through configuration
-    value_type: str | None
-    object_type: str | None
-    format: str | None
-    invert_color_semantics: bool | None
+    value_type: str | None = None
+    object_type: str | None = None
+    format: str | None = None
+    invert_color_semantics: bool | None = None
 
 
 class _UICameraConfigModel(BaseModel):
     label: str
     url: str
-    format: str | None
-    description: str | None
-    width: int | None
-    height: int | None
+    format: str | None = None
+    description: str | None = None
+    width: int | None = None
+    height: int | None = None
 
 
 class _UISampleViewVideoControlsModel(BaseModel):
@@ -165,12 +165,12 @@ class UISessionPickerModel(BaseModel):
 
 
 class UIPropertiesListModel(BaseModel):
-    sample_view: UIPropertiesModel | None
+    sample_view: UIPropertiesModel | None = None
     beamline_setup: UIPropertiesModel
-    camera_setup: UICameraConfigModel | None
+    camera_setup: UICameraConfigModel | None = None
     sample_view_motors: UISampleViewMotorsModel
     sample_list_view_modes: UISampleListViewModesModel = UISampleListViewModesModel()
-    sample_view_video_controls: UISampleViewVideoControlsModel | None
+    sample_view_video_controls: UISampleViewVideoControlsModel | None = None
     session_picker: UISessionPickerModel = UISessionPickerModel()
 
 
@@ -248,8 +248,8 @@ class BraggyConfigModel(BaseModel):
 class AppConfigModel(BaseModel):
     server: FlaskConfigModel
     mxcube: MXCUBEAppConfigModel
-    sso: SSOConfigModel | None
-    braggy: BraggyConfigModel | None
+    sso: SSOConfigModel | None = None
+    braggy: BraggyConfigModel | None = None
 
 
 class ResourceHandlerConfigModel(BaseModel):

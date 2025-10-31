@@ -1,7 +1,7 @@
 import re
 
 from flask import Blueprint, jsonify
-from pydantic.v1 import (
+from pydantic import (
     BaseModel,
 )
 

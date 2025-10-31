@@ -13,9 +13,7 @@ class MachineInfoAdapter(ActuatorAdapterBase):
 
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractMachineInfo.AbstractMachineInfo]
 
-    def __init__(  # noqa: D417
-        self, ho, *args
-    ):
+    def __init__(self, ho, *args):  # noqa: D417
         """Initialize.
 
         Args:
@@ -59,7 +57,7 @@ class MachineInfoAdapter(ActuatorAdapterBase):
         pass
 
     def state(self):
-        return HardwareObjectState.READY.value
+        return HardwareObjectState.READY.name
 
     def data(self) -> HOMachineInfoModel:
         return HOMachineInfoModel(**self._dict_repr())
