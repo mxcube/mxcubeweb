@@ -13,6 +13,7 @@ import { isCollected } from '../../constants';
 import containerStyles from '../../containers/SampleGridTableContainer.module.css';
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './SampleGridTableItem.module.css';
+import SampleInformation from './SampleInformation';
 
 export default function SampleGridTableItem({
   sampleData = {},
@@ -75,49 +76,6 @@ export default function SampleGridTableItem({
 
     return name;
   }
-
-  function getSampleInformation() {
-    const limsData = (
-      <div>
-        <div className="row">
-          <span className="col-sm-6">Space group:</span>
-          <span className="col-sm-6">{sampleData.crystalSpaceGroup}</span>
-        </div>
-        <div className="row">
-          <span style={{ paddingTop: '0.5em' }} className="col-sm-12">
-            <b>Crystal unit cell:</b>
-          </span>
-          <span className="col-sm-1">A:</span>
-          <span className="col-sm-2">{sampleData.cellA}</span>
-          <span className="col-sm-1">B:</span>
-          <span className="col-sm-2">{sampleData.cellB}</span>
-          <span className="col-sm-1">C:</span>
-          <span className="col-sm-2">{sampleData.cellC}</span>
-        </div>
-        <div className="row">
-          <span className="col-sm-1">&alpha;:</span>
-          <span className="col-sm-2">{sampleData.cellAlpha}</span>
-          <span className="col-sm-1">&beta;:</span>
-          <span className="col-sm-2">{sampleData.cellBeta}</span>
-          <span className="col-sm-1">&gamma;:</span>
-          <span className="col-sm-2">{sampleData.cellGamma}</span>
-        </div>
-      </div>
-    );
-
-    return (
-      <div>
-        <div className="row">
-          <span className="col-sm-6">Location:</span>
-          <span className="col-sm-6">{sampleData.location}</span>
-          <span className="col-sm-6">Data matrix:</span>
-          <span className="col-sm-6">{sampleData.code}</span>
-        </div>
-        {sampleData.limsID ? limsData : ''}
-      </div>
-    );
-  }
-
   const currentSampleText = current ? '(MOUNTED)' : '';
 
   const classes = cx(styles.samplesGridTableItem, {
@@ -149,7 +107,9 @@ export default function SampleGridTableItem({
                       </b>
                     </div>
                   </Popover.Header>
-                  <Popover.Body>{getSampleInformation()}</Popover.Body>
+                  <Popover.Body>
+                    <SampleInformation sampleData={sampleData} />
+                  </Popover.Body>
                 </Popover>
               }
             >
