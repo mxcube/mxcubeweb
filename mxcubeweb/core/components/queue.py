@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import re
-from functools import reduce
 from unittest.mock import Mock
 
 from mxcubecore import HardwareRepository as HWR
@@ -14,6 +13,7 @@ from mxcubecore.model import queue_model_enumerables as qme
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore.model.queue_model_enumerables import CENTRING_METHOD
 from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
+from pydantic import BaseModel, Field, field_validator
 
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.adaptermodels import (
@@ -42,10 +42,656 @@ READY = 0
 ORIGIN_MX3 = "MX3"
 
 
+class TaskDataPathModel(BaseModel):
+    shape: str | int = ""
+    directory: str = ""
+    process_directory: str = ""
+    xds_dir: str = ""
+    base_prefix: str = ""
+    mad_prefix: str = ""
+    reference_image_prefix: str = ""
+    wedge_prefix: str = ""
+    run_number: int = 0
+    suffix: str = ""
+    precision: int = 0
+    start_num: int = 0
+    num_files: int = 0
+    compression: str = ""
+    path: str = ""
+    prefix: str = ""
+
+    # Optional added by mxcubeweb, used but the frontend
+    fileName: str | None = ""  # noqa: N815
+    fullPath: str | None = ""  # noqa: N815
+    subdir: str = ""
+
+    model_config = {
+        "validate_assignment": True,
+        "extra": "ignore",
+        "str_strip_whitespace": True,
+        "use_enum_values": True,
+    }
+
+
+class XRFParameters(TaskDataPathModel):
+    # From mxcbecore xrf:
+    countTime: float = 0  # noqa: N815
+
+
+class EnergyScanParameters(TaskDataPathModel):
+    # From mxcbecore energy scan:
+    element: str = ""
+    edge: str = ""
+
+
+class DataCollectionParameters(TaskDataPathModel):
+    # From mxcubecore Datacollection, osc, mesh, helical
+    first_image: int = Field(0, description="First image number")
+    num_images: int = Field(0, description="Total number of images")
+    osc_start: float = Field(0, description="Starting oscillation angle")
+    osc_range: float = Field(0, description="Oscillation range per image")
+    osc_total_range: float = 0
+    overlap: float = 0
+    kappa: float = 0
+    kappa_phi: float = 0
+    exp_time: float = Field(0, description="Exposure time in seconds")
+    num_lines: int = 1
+    energy: float = Field(0, description="Energy in keV")
+    resolution: float = Field(0, description="Resolution in Angstrom")
+    detector_distance: float = 0
+    transmission: float = 100
+    shutterless: bool = True
+    take_snapshots: int = 0
+    detector_binning_mode: str | None = None
+    detector_roi_mode: int = 0
+    mesh_range: float = 0
+    num_triggers: int = 0
+    num_images_per_trigger: int = 0
+    cell_counting: str | None = None
+    mesh_center: str | None = None
+    cell_spacing: str | None = None
+    sub_wedge_size: int = 10
+    disable_processing: bool = False
+
+    # From mxcubeweb"
+    helical: bool = False
+    mesh: bool = False
+
+
+class CharacterisationParameters(DataCollectionParameters):
+    # From mxcubecore Characterisation
+    experiment_type: str = ""
+    use_aimed_resolution: float = 0
+    use_aimed_multiplicity: float = 0
+    aimed_multiplicity: float = 0
+    aimed_i_sigma: float = 0
+    aimed_completness: float = 0
+    strategy_complexity: str = ""
+    strategy_program: str = ""
+    induce_burn: bool = False
+    use_permitted_rotation: bool = False
+    permitted_phi_start: float = 0
+    permitted_phi_end: float = 0
+    low_res_pass_strat: bool = False
+    max_crystal_vdim: float = 0
+    min_crystal_vdim: float = 0
+    max_crystal_vphi: float = 0
+    min_crystal_vphi: float = 0
+    space_group: str = ""
+    use_min_dose: float = 0
+    use_min_time: float = 0
+    min_dose: float = 0
+    min_time: float = 0
+    account_rad_damage: bool = False
+    auto_res: bool = False
+    opt_sad: bool = False
+    sad_res: float = 0
+    determine_rad_params: bool = False
+    burn_osc_start: float = 0
+    burn_osc_interval: float = 0
+    rad_suscept: float = 0
+    beta: float = 0
+    gamma: float = 0
+
+    @field_validator("strategy_complexity", mode="before")
+    @classmethod
+    def strategy_complexity_to_int(cls, value: int | str) -> str:
+        if isinstance(value, str):
+            return value
+
+        try:
+            return [
+                "SINGLE",
+                "FEW",
+                "MANY",
+            ][value]
+        except ValueError:
+            return "SINGLE"
+
+
+class QueueNodeModel(BaseModel):
+    type: str = ""
+    queueID: int = -1  # noqa: N815
+    checked: bool = False
+    state: int = UNCOLLECTED
+
+
+class TaskNodeModel(QueueNodeModel):
+    label: str = ""
+    sampleID: str  # noqa: N815
+    sampleQueueID: int | None = None  # noqa: N815
+
+    # Only known once queued (given by mxcubecore queue)
+    taskIndex: int | None = None  # noqa: N815
+
+    # Optional fields
+    diffractionPlan: list["TaskNodeModel"] | None = None  # noqa: N815
+    diffractionPlanID: int | None = None  # noqa: N815
+    name: str | None = None
+
+
+class DataCollectionNodeModel(TaskNodeModel):
+    parameters: DataCollectionParameters
+
+
+class CharacterisationNodeModel(TaskNodeModel):
+    parameters: CharacterisationParameters
+
+
+class XRFNodeModel(TaskNodeModel):
+    parameters: XRFParameters
+
+
+class EnergyScanNodeModel(TaskNodeModel):
+    parameters: EnergyScanParameters
+
+
+class SampleNode(QueueNodeModel):
+    sampleID: str  # noqa: N815
+    code: str | None = None
+    location: str
+    cell_no: int = 0
+    puck_no: int = 1
+    sampleName: str  # noqa: N815
+    proteinAcronym: str | None = ""  # noqa: N815
+    defaultPrefix: str | None = ""  # noqa: N815
+    defaultSubDir: str | None = ""  # noqa: N815
+    tasks: list[
+        DataCollectionNodeModel
+        | CharacterisationNodeModel
+        | XRFNodeModel
+        | EnergyScanNodeModel
+    ]
+
+
+class QueueSerializer:
+    def __init__(self, app):
+        self.app = app
+
+    def queue_to_dict(self, node=None) -> list[dict]:
+        if node is None:
+            node = HWR.beamline.queue_model.get_model_root()
+            queue_dict = {
+                _n.sampleID: _n.model_dump() for _n in self._queue_to_dict_rec(node)
+            }
+
+            if queue_dict:
+                queue_dict["sample_order"] = list(queue_dict.keys())
+
+        else:
+            queue_dict = self._queue_to_dict_rec(node)[0].model_dump()
+
+        return queue_dict
+
+    def _queue_to_dict_rec(self, node) -> list[QueueNodeModel]:
+        result = []
+        node_list = node if isinstance(node, list) else node.get_children()
+
+        for n in node_list:
+            sample_node = n.get_sample_node() if hasattr(n, "get_sample_node") else None
+
+            if isinstance(n, qmo.Sample):
+                sample = SampleNode(
+                    sampleID=n.loc_str,
+                    queueID=n._node_id,
+                    code=n.code,
+                    type="Sample",
+                    location="Manual" if n.free_pin_mode else n.loc_str,
+                    sampleName=n.get_name(),
+                    proteinAcronym=n.crystals[0].protein_acronym,
+                    defaultPrefix=self.app.lims.get_default_prefix(n),
+                    defaultSubDir=self.app.lims.get_default_subdir(n),
+                    checked=n.is_enabled(),
+                    state=self.get_node_state(n._node_id)[1],
+                    tasks=self._queue_to_dict_rec(n),
+                )
+                result.append(sample)
+
+            elif isinstance(n, qmo.Characterisation):
+                result.append(self._handle_char_node(sample_node, n))
+
+            elif isinstance(n, qmo.DataCollection):
+                result.append(self._handle_dc_node(sample_node, n))
+
+            elif isinstance(n, qmo.Workflow):
+                result.append(self._handle_wf_node(sample_node, n))
+
+            elif isinstance(n, qmo.GphlWorkflow):
+                result.append(self._handle_gphl_node(sample_node, n))
+
+            elif isinstance(n, qmo.XRFSpectrum):
+                result.append(self._handle_xrf_node(sample_node, n))
+
+            elif isinstance(n, qmo.EnergyScan):
+                result.append(self._handle_energy_node(sample_node, n))
+
+            elif isinstance(n, qmo.TaskGroup) and getattr(
+                n, "interleave_num_images", 0
+            ):
+                result.append(self._handle_interleaved_node(sample_node, n))
+
+            elif isinstance(n, qmo.TaskNode) and getattr(n, "task_data", None):
+                result.append(self._handle_task_node(sample_node, n))
+
+            else:
+                result.extend(self._queue_to_dict_rec(n))
+
+        return result
+
+    def queue_to_json(self, root_node=None) -> str:
+        return json.dumps(self.queue_to_dict(root_node), sort_keys=True, indent=4)
+
+    def pretty_print_queue(self, msg: str | None = None) -> None:
+        """Pretty print current queue state for debugging."""
+        try:
+            q = self.queue_to_dict()
+            # Prefer devtools.debug for nice printing of pydantic models
+            try:
+                from devtools import debug as _debug
+
+                header = msg or "Queue state after addition:"
+                print(f"[QueueSerializer] {header}")
+                _debug(q)
+                return
+            except Exception:
+                import json as _json
+
+                pretty = _json.dumps(q, indent=2, sort_keys=True, ensure_ascii=False)
+                header = msg or "Queue state after addition:"
+                print(f"[QueueSerializer] {header}\n{pretty}")
+        except Exception as e:
+            try:
+                import logging as _logging
+
+                _logging.getLogger("MX3.QUEUE").exception(
+                    "Failed to pretty print queue: %s", e
+                )
+            except Exception:
+                # last resort fallback
+                print("[QueueSerializer] Failed to pretty print queue:", e)
+
+    def get_node_state(self, node_id):
+        if node_id is None:
+            return True, UNCOLLECTED
+
+        node, entry = self.app.queue.get_entry(node_id)
+
+        enabled = node.is_enabled()
+        curr_entry = HWR.beamline.queue_manager.get_current_entry()
+        running = HWR.beamline.queue_manager.is_executing() and (
+            curr_entry == entry or curr_entry == entry._parent_container
+        )
+
+        if entry.status == QUEUE_ENTRY_STATUS.FAILED:
+            state = FAILED
+        elif node.is_executed() or entry.status == QUEUE_ENTRY_STATUS.SUCCESS:
+            state = COLLECTED
+        elif running or entry.status == QUEUE_ENTRY_STATUS.RUNNING:
+            state = RUNNING
+        else:
+            state = UNCOLLECTED
+
+        return enabled, state
+
+    def _handle_char_node(self, sample_node, node) -> TaskNodeModel:
+        enabled, state = self.get_node_state(node._node_id)
+        originID, tasks = self._handle_diffraction_plan(node, sample_node)
+
+        parameters = node.characterisation_parameters.as_dict()
+        parameters["shape"] = node.get_point_index()
+        refp = self._handle_dc_node(
+            sample_node, node.reference_image_collection
+        ).parameters.dict()
+
+        parameters.update(refp)
+
+        return CharacterisationNodeModel(
+            label="CHARACTERISATION",
+            type="Characterisation",
+            parameters=parameters,
+            checked=node.is_enabled(),
+            sampleID=sample_node.loc_str,
+            sampleQueueID=sample_node._node_id,
+            taskIndex=self.app.queue.node_index(node)["idx"],
+            queueID=node._node_id,
+            state=state,
+            diffractionPlan=tasks if isinstance(tasks, list) else None,
+            diffractionPlanID=originID,
+        )
+
+    def _handle_dc_node(self, sample_node, node) -> TaskNodeModel:
+        enabled, state = self.get_node_state(node._node_id)
+        parameters = node.as_dict()
+        parameters["shape"] = getattr(node, "shape", "")
+
+        pt = node.acquisitions[0].path_template
+
+        # Remove python %s formatting for number of images and replace with #
+        parameters["fileName"] = pt.get_image_file_name().replace(
+            "%" + ("0%sd" % str(pt.precision)), int(pt.precision) * "#"
+        )
+
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
+
+        # Create a more user friendly label
+        dtype_label = qme.EXPERIMENT_TYPE._fields[node.experiment_type]
+        dtype_label = "OSCILLATION" if dtype_label == "NATIVE" else dtype_label
+        dtype_label = (
+            "LINE"
+            if dtype_label == "HELICAL" and parameters["osc_range"] == 0
+            else dtype_label
+        )
+
+        return DataCollectionNodeModel(
+            label=dtype_label + " (" + parameters["fileName"] + ")",
+            type="DataCollection",
+            parameters=parameters,
+            checked=node.is_enabled(),
+            sampleID=sample_node.loc_str,
+            sampleQueueID=sample_node._node_id,
+            # node._node_id and taskIndex are None for reference collections for an
+            # characterisation, we should default handle this case in mxcubecore
+            taskIndex=self.app.queue.node_index(node)["idx"] or 0,
+            queueID=node._node_id or -1,
+            state=state,
+        )
+
+    def _handle_wf_node(self, sample_node, node) -> TaskNodeModel:
+        enabled, state = self.get_node_state(node._node_id)
+        parameters = node.parameters.copy()
+        parameters.update(node.path_template.as_dict())
+        parameters["path"] = parameters["directory"]
+        pt = node.path_template
+        parameters["fileName"] = pt.get_image_file_name().replace(
+            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+        )
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
+        return DataCollectionNodeModel(
+            label=parameters["label"],
+            type="Workflow",
+            name=node._type,
+            parameters=parameters,
+            checked=node.is_enabled(),
+            sampleID=sample_node.loc_str,
+            taskIndex=self.app.queue.node_index(node)["idx"],
+            queueID=node._node_id,
+            state=state,
+        )
+
+    def _handle_gphl_node(self, sample_node, node) -> TaskNodeModel:
+        enabled, state = self.get_node_state(node._node_id)
+        pt = node.path_template
+        parameters = pt.as_dict()
+        parameters["path"] = parameters["directory"]
+        parameters["strategy_name"] = node.strategy_name
+        parameters["label"] = f"GΦL {parameters['strategy_name']}"
+        parameters["shape"] = node.shape
+        parameters["fileName"] = pt.get_image_file_name().replace(
+            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+        )
+        parameters["fullPath"] = os.path.join(
+            parameters["directory"], parameters["fileName"]
+        )
+        return DataCollectionNodeModel(
+            label=parameters["label"],
+            type="GphlWorkflow",
+            parameters=parameters,
+            checked=node.is_enabled(),
+            sampleID=sample_node.loc_str,
+            sampleQueueID=sample_node._node_id,
+            taskIndex=self.app.queue.node_index(node)["idx"],
+            queueID=node._node_id,
+            state=state,
+        )
+
+    def _handle_xrf_node(self, sample_node, node) -> TaskNodeModel:
+        enabled, state = self.get_node_state(node._node_id)
+        # This should be moved to as_dict of the XRFSpectrum node in mxcubecore
+        parameters = {"countTime": node.count_time, "shape": str(node.shape)}
+        parameters.update(node.path_template.as_dict())
+        parameters["path"] = parameters["directory"]
+        pt = node.path_template
+        parameters["prefix"] = pt.get_prefix()
+        parameters["fileName"] = pt.get_image_file_name().replace(
+            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+        )
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
+
+        return XRFNodeModel(
+            label="XRF Scan",
+            type="xrf_spectrum",
+            parameters=parameters,
+            checked=node.is_enabled(),
+            sampleID=sample_node.loc_str,
+            sampleQueueID=sample_node._node_id,
+            taskIndex=self.app.queue.node_index(node)["idx"],
+            queueID=node._node_id,
+            state=state,
+        )
+
+    def _handle_energy_node(self, sample_node, node) -> TaskNodeModel:
+        enabled, state = self.get_node_state(node._node_id)
+        parameters = {
+            "element": node.element_symbol,
+            "edge": node.edge,
+            "shape": str(node.shape),
+        }
+        parameters.update(node.path_template.as_dict())
+        parameters["path"] = parameters["directory"]
+        pt = node.path_template
+        parameters["prefix"] = pt.get_prefix()
+        parameters["fileName"] = pt.get_image_file_name().replace(
+            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+        )
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
+
+        return EnergyScanNodeModel(
+            label="Energy Scan",
+            type="energy_scan",
+            parameters=parameters,
+            checked=node.is_enabled(),
+            sampleID=sample_node.loc_str,
+            sampleQueueID=sample_node._node_id,
+            taskIndex=self.app.queue.node_index(node)["idx"],
+            queueID=node._node_id,
+            state=state,
+        )
+
+    def _handle_interleaved_node(self, sample_node, node) -> TaskNodeModel:
+        wedges = [self._handle_dc_node(sample_node, c) for c in node.get_children()]
+        _, state = self.get_node_state(node._node_id)
+        return DataCollectionNodeModel(
+            label="Interleaved",
+            type="Interleaved",
+            parameters={
+                "wedges": [w.dict() for w in wedges],
+                "swNumImages": node.interleave_num_images,
+            },
+            checked=node.is_enabled(),
+            sampleID=sample_node.loc_str,
+            sampleQueueID=sample_node._node_id,
+            taskIndex=self.app.queue.node_index(node)["idx"],
+            queueID=node._node_id,
+            state=state,
+        )
+
+    def _handle_task_node(self, sample_node, node) -> TaskNodeModel:
+        parameters = {
+            **node.task_data.collection_parameters.dict(),
+            **node.task_data.user_collection_parameters.dict(),
+            **node.task_data.path_parameters.dict(),
+            **node.task_data.common_parameters.dict(),
+            **node.task_data.legacy_parameters.dict(),
+        }
+        pt = node.acquisitions[0].path_template
+        parameters["path"] = pt.directory
+        parameters["subdir"] = os.path.join(
+            *parameters["path"].split(
+                self.app.HWR.beamline.session.raw_data_folder_name
+            )[1:]
+        ).lstrip("/")
+        parameters["fileName"] = pt.get_image_file_name().replace(
+            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
+        )
+        parameters["fullPath"] = os.path.join(
+            parameters["path"], parameters["fileName"]
+        )
+        _, state = self.get_node_state(node._node_id)
+        return DataCollectionNodeModel(
+            label=parameters.get("label", "TaskNode"),
+            type=parameters.get("type", "TaskNode"),
+            parameters=parameters,
+            checked=node.is_enabled(),
+            sampleID=sample_node.loc_str,
+            sampleQueueID=sample_node._node_id,
+            taskIndex=self.app.queue.node_index(node)["idx"],
+            queueID=node._node_id,
+            state=state,
+        )
+
+    def _handle_diffraction_plan(self, node, sample_node):
+        model, _ = self.app.queue.get_entry(node._node_id)
+        originID = model.get_origin()
+        tasks = []
+        if len(model.diffraction_plan) > 0:
+            collections = model.diffraction_plan[0]
+            for col in collections:
+                t = self._handle_dc_node(sample_node, col)
+                t_dict = t.dict()
+                t_dict["isDiffractionPlan"] = True
+                tasks.append(t_dict)
+            return originID, tasks
+        return -1, []
+
+    def _queue_add_item_rec(self, parent_node_id: int | None, item: SampleNode):
+        if item.type == "Sample":
+            sample_node_id = self.app.queue.add_sample(item.sampleID, item.dict())
+
+            for task in item.tasks or []:
+                self._queue_add_item_rec(sample_node_id, task)
+
+        elif item.type == "DataCollection":
+            self.app.queue.add_data_collection(parent_node_id, item.dict())
+
+        elif item.type == "Characterisation":
+            self.app.queue.add_characterisation(parent_node_id, item.dict())
+
+        elif item.type in ("Workflow", "GphlWorkflow"):
+            wf_node_id = self.app.queue.add_workflow(parent_node_id, item.dict())
+            for task in item.tasks or []:
+                self._queue_add_item_rec(wf_node_id, task)
+
+        elif item.type == "Interleaved":
+            self.app.queue.add_interleaved(parent_node_id, item.dict())
+
+        elif item.type == "xrf_spectrum":
+            self.app.queue.add_xrf_scan(parent_node_id, item.dict())
+
+        elif item.type == "energy_scan":
+            self.app.queue.add_energy_scan(parent_node_id, item.dict())
+
+        else:
+            self.app.queue.add_queue_entry(parent_node_id, item.dict(), item.type)
+
+        # Print the queue after adding an item for easier debugging
+        try:
+            self.pretty_print_queue(
+                f"Added item type={item.type} parent={parent_node_id}"
+            )
+        except Exception:
+            logging.getLogger("MX3.HWR").exception(
+                "Failed to pretty print queue after adding item"
+            )
+
+    def queue_add_item(self, item_list):
+        """Add queue items to the queue.
+
+        Add the queue items in item_list to the queue. The items in the list can
+        be either samples and or tasks. Samples are only added if they are not
+        already in the queue  and tasks are appended to the end of an
+        (already existing) sample. A task is ignored if the sample is not already
+        in the queue.
+
+        The items in item_list are dictionaries with the following structure:
+
+        { "type": "Sample | DataCollection | Characterisation",
+        "sampleID": sid
+        ... task or sample specific data
+        }
+
+        Each item (dictionary) describes either a sample or a task.
+        """
+        parsed_items = [SampleNode.model_validate(i) for i in item_list]
+        for item in parsed_items:
+            self._queue_add_item_rec(None, item)
+
+        # Handling interleaved data collections, swap interleave task with
+        # the first of the data collections that are used as wedges, and then
+        # remove all collections that were used as wedges
+        first_tasks = parsed_items[0].tasks or []
+        for task in first_tasks:
+            if (
+                task.type == "Interleaved"
+                and task.parameters
+                and task.parameters.taskIndexList
+            ):
+                current_queue = self.queue_to_dict()
+                sid = task.sampleID
+                interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
+                tindex_list = sorted(task.parameters.taskIndexList)
+
+                # Swap first "wedge task" and the actual interleaved collection
+                # so that the interleaved task is the first task
+                self.swap_task_entry(sid, interleaved_tindex, tindex_list[0])
+
+                # We remove the swapped wedge index from the list, (now pointing
+                # at the interleaved collection) and add its new position
+                # (last task item) to the list.
+                tindex_list = tindex_list[1:]
+                tindex_list.append(interleaved_tindex)
+
+                # The delete operation can be done all in one call if we make sure
+                # that we remove the items starting from the end (not altering
+                # previous indices)
+                for ti in reversed(tindex_list):
+                    self.delete_entry_at([[sid, int(ti)]])
+
+        return self.queue_to_dict()
+
+
 class Queue(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
         self.init_queue_settings()
+        self._qs = QueueSerializer(app)
 
     def build_prefix_path_dict(self, path_list):
         prefix_path_dict = {}
@@ -124,20 +770,6 @@ class Queue(ComponentBase):
             "sample_node": sample_model,
         }
 
-    def load_queue_from_dict(self, queue_dict):
-        """Load the queue in queue_dict in to the current HWR.beamline.queue_model (HWR.beamline.queue_model).
-
-        :param dict queue_dict: Queue dictionary, on the same format as returned by
-                                queue_to_dict
-        """
-        if queue_dict:
-            item_list = []
-
-            for sid in queue_dict["sample_order"]:
-                item_list.append(queue_dict[sid])
-
-            self.queue_add_item(item_list)
-
     def queue_to_dict(self, node=None, include_lims_data=False):
         """Returns the dictionary representation of the queue.
 
@@ -162,14 +794,7 @@ class Queue(ComponentBase):
                 task dict can be directly used with the set_from_dict methods of
                 the corresponding node.
         """
-        if not node:
-            node = HWR.beamline.queue_model.get_model_root()
-
-        return reduce(
-            lambda x, y: x.update(y) or x,
-            self.queue_to_dict_rec(node, include_lims_data),
-            {},
-        )
+        return self._qs.queue_to_dict(node)
 
     def queue_to_json(self, node=None, include_lims_data=False):
         """Return the json representation of the queue.
@@ -195,16 +820,7 @@ class Queue(ComponentBase):
                 task dict can be directly used with the set_from_dict methods of
                 the corresponding node.
         """
-        if not node:
-            node = HWR.beamline.queue_model.get_model_root()
-
-        res = reduce(
-            lambda x, y: x.update(y) or x,
-            self.queue_to_dict_rec(node, include_lims_data),
-            {},
-        )
-
-        return json.dumps(res, sort_keys=True, indent=4)
+        return self._qs.queue_to_json(node)
 
     def get_node_state(self, node_id):
         """Get the state of the given node.
@@ -283,407 +899,6 @@ class Queue(ComponentBase):
 
         res.update(settings)
         return res
-
-    def _handle_task_node(self, sample_node, node):
-        parameters = {
-            **node.task_data.collection_parameters.dict(),
-            **node.task_data.user_collection_parameters.dict(),
-            **node.task_data.path_parameters.dict(),
-            **node.task_data.common_parameters.dict(),
-            **node.task_data.legacy_parameters.dict(),
-        }
-        pt = node.acquisitions[0].path_template
-        parameters["path"] = pt.directory
-
-        parameters["subdir"] = os.path.join(
-            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
-        ).lstrip("/")
-
-        parameters["fileName"] = pt.get_image_file_name().replace(
-            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
-        )
-
-        parameters["fullPath"] = os.path.join(
-            parameters["path"], parameters["fileName"]
-        )
-
-        return {
-            "label": parameters["label"],
-            "type": parameters["type"],
-            "parameters": parameters,
-            "sampleID": sample_node.loc_str,
-            "sampleQueueID": sample_node._node_id,
-            "taskIndex": self.node_index(node)["idx"],
-            "queueID": node._node_id,
-            "checked": node.is_enabled(),
-            "state": self.get_node_state(node._node_id)[1],
-        }
-
-    def _handle_dc(self, sample_node, node, include_lims_data=False):
-        parameters = node.as_dict()
-        parameters["shape"] = getattr(node, "shape", "")
-        parameters["helical"] = node.experiment_type == qme.EXPERIMENT_TYPE.HELICAL
-        parameters["mesh"] = node.experiment_type == qme.EXPERIMENT_TYPE.MESH
-
-        parameters.pop("sample")
-        parameters.pop("acquisitions")
-        parameters.pop("acq_parameters")
-        parameters.pop("centred_position")
-
-        queueID = node._node_id
-        _, state = self.get_node_state(queueID)
-
-        parameters["subdir"] = os.path.join(
-            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
-        ).lstrip("/")
-
-        pt = node.acquisitions[0].path_template
-
-        parameters["fileName"] = pt.get_image_file_name().replace(
-            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
-        )
-
-        parameters["fullPath"] = os.path.join(
-            parameters["path"], parameters["fileName"]
-        )
-
-        dtype_label = qme.EXPERIMENT_TYPE._fields[node.experiment_type]
-        dtype_label = "OSCILLATION" if dtype_label == "NATIVE" else dtype_label
-        dtype_label = (
-            "LINE"
-            if dtype_label == "HELICAL" and parameters["osc_range"] == 0
-            else dtype_label
-        )
-
-        return {
-            "label": dtype_label + " (" + parameters["fileName"] + ")",
-            "type": "DataCollection",
-            "parameters": parameters,
-            "sampleID": sample_node.loc_str,
-            "sampleQueueID": sample_node._node_id,
-            "taskIndex": self.node_index(node)["idx"],
-            "queueID": queueID,
-            "checked": node.is_enabled(),
-            "state": state,
-        }
-
-    def _handle_gphl_wf(self, sample_node, node, include_lims_data=False):
-        pt = node.path_template
-        parameters = pt.as_dict()
-        parameters["path"] = parameters["directory"]
-
-        parameters["strategy_name"] = node.strategy_name
-        parameters["label"] = "GΦL " + parameters["strategy_name"]
-        parameters["shape"] = node.shape
-
-        queueID = node._node_id
-        _, state = self.get_node_state(queueID)
-
-        raw_data = HWR.beamline.session.raw_data_folder_name
-        ddir = parameters["directory"]
-        if raw_data in ddir:
-            parameters["subdir"] = os.path.join(*ddir.split(raw_data)[1:]).lstrip("/")
-        else:
-            # We are given a relative directory. Thisa might or mightnto work.
-            parameters["subdir"] = ddir
-
-        parameters["fileName"] = pt.get_image_file_name().replace(
-            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
-        )
-
-        parameters["fullPath"] = os.path.join(
-            parameters["directory"], parameters["fileName"]
-        )
-
-        return {
-            "label": parameters["label"],
-            "strategy_name": parameters["strategy_name"],
-            "type": "GphlWorkflow",
-            "parameters": parameters,
-            "sampleID": sample_node.loc_str,
-            "sampleQueueID": sample_node._node_id,
-            "taskIndex": self.node_index(node)["idx"],
-            "queueID": queueID,
-            "checked": node.is_enabled(),
-            "state": state,
-        }
-
-    def _handle_wf(self, sample_node, node, include_lims_data):
-        queueID = node._node_id
-        _, state = self.get_node_state(queueID)
-        parameters = node.parameters
-        parameters.update(node.path_template.as_dict())
-
-        parameters["path"] = parameters["directory"]
-
-        parameters["subdir"] = os.path.join(
-            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
-        ).lstrip("/")
-
-        pt = node.path_template
-
-        parameters["fileName"] = pt.get_image_file_name().replace(
-            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
-        )
-
-        parameters["fullPath"] = os.path.join(
-            parameters["path"], parameters["fileName"]
-        )
-
-        return {
-            "label": parameters["label"],
-            "type": "Workflow",
-            "name": node._type,
-            "parameters": parameters,
-            "sampleID": sample_node.loc_str,
-            "taskIndex": self.node_index(node)["idx"],
-            "queueID": queueID,
-            "checked": node.is_enabled(),
-            "state": state,
-        }
-
-    def _handle_xrf(self, sample_node, node):
-        queueID = node._node_id
-        _, state = self.get_node_state(queueID)
-        parameters = {
-            "countTime": node.count_time,
-            "shape": node.shape,
-        }
-        parameters.update(node.path_template.as_dict())
-        parameters["path"] = parameters["directory"]
-
-        parameters["subdir"] = os.path.join(
-            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
-        ).lstrip("/")
-
-        pt = node.path_template
-
-        parameters["fileName"] = pt.get_image_file_name().replace(
-            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
-        )
-
-        parameters["fullPath"] = os.path.join(
-            parameters["path"], parameters["fileName"]
-        )
-
-        return {
-            "label": "XRF Scan",
-            "type": "xrf_spectrum",
-            "parameters": parameters,
-            "sampleID": sample_node.loc_str,
-            "taskIndex": self.node_index(node)["idx"],
-            "queueID": queueID,
-            "sampleQueueID": sample_node._node_id,
-            "checked": node.is_enabled(),
-            "state": state,
-        }
-
-    def _handle_energy_scan(self, sample_node, node):
-        queueID = node._node_id
-        _, state = self.get_node_state(queueID)
-        parameters = {
-            "element": node.element_symbol,
-            "edge": node.edge,
-            "shape": -1,
-        }
-
-        parameters.update(node.path_template.as_dict())
-        parameters["path"] = parameters["directory"]
-
-        parameters["subdir"] = os.path.join(
-            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
-        ).lstrip("/")
-
-        pt = node.path_template
-
-        parameters["fileName"] = pt.get_image_file_name().replace(
-            "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
-        )
-
-        parameters["fullPath"] = os.path.join(
-            parameters["path"], parameters["fileName"]
-        )
-
-        return {
-            "label": "Energy Scan",
-            "type": "energy_scan",
-            "parameters": parameters,
-            "sampleID": sample_node.loc_str,
-            "sampleQueueID": sample_node._node_id,
-            "taskIndex": self.node_index(node)["idx"],
-            "queueID": queueID,
-            "checked": node.is_enabled(),
-            "state": state,
-        }
-
-    def _handle_char(self, parent_node, node, include_lims_data=False):
-        sample_node = parent_node.get_sample_node()
-        parameters = node.characterisation_parameters.as_dict()
-        parameters["shape"] = node.get_point_index()
-        refp = self._handle_dc(sample_node, node.reference_image_collection)[
-            "parameters"
-        ]
-
-        parameters.update(refp)
-
-        queueID = node._node_id
-        _, state = self.get_node_state(queueID)
-
-        originID, task = self._handle_diffraction_plan(node, sample_node)
-
-        return {
-            "label": "CHARACTERISATION",
-            "type": "Characterisation",
-            "parameters": parameters,
-            "checked": node.is_enabled(),
-            "sampleID": sample_node.loc_str,
-            "sampleQueueID": sample_node._node_id,
-            "taskIndex": self.node_index(node)["idx"],
-            "queueID": node._node_id,
-            "state": state,
-            "diffractionPlan": task,
-            "diffractionPlanID": originID,
-        }
-
-    def _handle_diffraction_plan(self, node, sample_node):
-        model, _ = self.get_entry(node._node_id)
-        originID = model.get_origin()
-        tasks = []
-
-        if len(model.diffraction_plan) > 0:
-            collections = model.diffraction_plan[0]  # a list of lists
-
-            for col in collections:
-                t = self._handle_dc(sample_node, col)
-                if t is None:
-                    tasks.append({})
-                    continue
-
-                t["isDiffractionPlan"] = True
-                tasks.append(t)
-
-            return (originID, tasks)
-
-        return (-1, {})
-
-    def _handle_interleaved(self, sample_node, node):
-        wedges = []
-
-        for child in node.get_children():
-            wedges.append(self._handle_dc(sample_node, child))
-
-        queueID = node._node_id
-        _, state = self.get_node_state(queueID)
-
-        return {
-            "label": "Interleaved",
-            "type": "Interleaved",
-            "parameters": {
-                "wedges": wedges,
-                "swNumImages": node.interleave_num_images,
-            },
-            "checked": node.is_enabled(),
-            "sampleID": sample_node.loc_str,
-            "sampleQueueID": sample_node._node_id,
-            "taskIndex": self.node_index(node)["idx"],
-            "queueID": node._node_id,
-            "state": state,
-        }
-
-    def _handle_sample(self, node, include_lims_data=False):
-        location = "Manual" if node.free_pin_mode else node.loc_str
-        enabled, state = self.get_node_state(node._node_id)
-        children_states = []
-
-        for child in node.get_children():
-            for _c in child.get_children():
-                _, child_state = self.get_node_state(_c._node_id)
-                children_states.append(child_state)
-
-        if RUNNING in children_states:
-            state = RUNNING & SAMPLE_MOUNTED
-        elif 3 in children_states:
-            state = FAILED & SAMPLE_MOUNTED
-        elif all(i == COLLECTED for i in children_states) and len(children_states) > 0:
-            state = COLLECTED & SAMPLE_MOUNTED
-        else:
-            state = UNCOLLECTED
-
-        sample = {
-            "sampleID": node.loc_str,
-            "queueID": node._node_id,
-            "code": node.code,
-            "location": location,
-            "sampleName": node.get_name(),
-            "proteinAcronym": node.crystals[0].protein_acronym,
-            "defaultPrefix": self.app.lims.get_default_prefix(node),
-            "defaultSubDir": self.app.lims.get_default_subdir(node),
-            "type": "Sample",
-            "checked": enabled,
-            "state": state,
-            "tasks": self.queue_to_dict_rec(node, include_lims_data),
-        }
-
-        return {node.loc_str: sample}
-
-    def queue_to_dict_rec(self, node, include_lims_data=False):
-        """Parse node recursively and builds a representation of the queue based on python dictionaries.
-
-        :param TaskNode node: The node to parse
-        :returns: A list on the form:
-                [ { sampleID_1: sid_1,
-                    queueID: qid_1,
-                    location: location_n
-                    tasks: [task1, ... taskn]},
-                    .
-                    .
-                    .
-                    { sampleID_N: sid_N,
-                    queueID: qid_N,
-                    location: location_n,
-                    tasks: [task1, ... taskn]} ]
-        """
-        result = []
-
-        node_list = node if isinstance(node, list) else node.get_children()
-
-        for node in node_list:
-            # NB under GPhL workflow, nodes do not have predictable distance
-            # to their sample node
-            sample_node = node.get_sample_node()
-            if isinstance(node, qmo.Sample):
-                if len(result) == 0:
-                    result = [{"sample_order": []}]
-
-                result.append(self._handle_sample(node, include_lims_data))
-
-                if node.is_enabled():
-                    result[0]["sample_order"].append(node.loc_str)
-
-            elif isinstance(node, qmo.Characterisation):
-                result.append(self._handle_char(sample_node, node, include_lims_data))
-            elif (
-                node.__class__ is qmo.DataCollection
-            ):  # isinstance(node, qmo.DataCollection):
-                result.append(self._handle_dc(sample_node, node, include_lims_data))
-            elif isinstance(node, qmo.Workflow):
-                result.append(self._handle_wf(sample_node, node, include_lims_data))
-            elif isinstance(node, qmo.GphlWorkflow):
-                result.append(
-                    self._handle_gphl_wf(sample_node, node, include_lims_data)
-                )
-            elif isinstance(node, qmo.XRFSpectrum):
-                result.append(self._handle_xrf(sample_node, node))
-            elif isinstance(node, qmo.EnergyScan):
-                result.append(self._handle_energy_scan(sample_node, node))
-            elif isinstance(node, qmo.TaskGroup) and node.interleave_num_images:
-                result.append(self._handle_interleaved(sample_node, node))
-            elif isinstance(node, qmo.TaskNode) and node.task_data:
-                result.append(self._handle_task_node(sample_node, node))
-            else:
-                result.extend(self.queue_to_dict_rec(node, include_lims_data))
-
-        return result
 
     def queue_exec_state(self):
         """Queue execution state.
@@ -812,6 +1027,8 @@ class Queue(ComponentBase):
 
         Each item (dictionary) describes either a sample or a task.
         """
+        return self._qs.queue_add_item(item_list)
+
         self._queue_add_item_rec(item_list, None)
 
         # Handling interleaved data collections, swap interleave task with
@@ -911,6 +1128,11 @@ class Queue(ComponentBase):
         :param str sample_id: Sample id (often sample changer location)
         :returns: SampleQueueEntry
         """
+        # Sample is already in the queue, just enable it (incase it was disabled)
+        if item.get("queueID", -1) != -1:
+            self.set_enabled_entry(item["queueID"], True)
+            return item["queueID"]
+
         sample_model = qmo.Sample()
         sample_model.set_origin(ORIGIN_MX3)
         sample_model.set_from_dict(item)
@@ -1191,15 +1413,6 @@ class Queue(ComponentBase):
             task_data,
             sample_model,
         )
-
-        try:
-            params["strategy_complexity"] = [
-                "SINGLE",
-                "FEW",
-                "MANY",
-            ].index(params["strategy_complexity"])
-        except ValueError:
-            params["strategy_complexity"] = 0
 
         model.characterisation_parameters.set_from_dict(params)
 
@@ -1721,9 +1934,11 @@ class Queue(ComponentBase):
                 parent_entry.enqueue(dc_entry)
                 sample = parent.get_sample_node()
 
-                task = self._handle_dc(sample, child)
+                task = self._qs._handle_dc_node(sample, child)
 
-                self.app.server.emit("add_task", {"tasks": [task]}, namespace="/hwr")
+                self.app.server.emit(
+                    "add_task", {"tasks": [task.dict()]}, namespace="/hwr"
+                )
 
             elif isinstance(child, qmo.TaskGroup):
                 dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
@@ -1770,7 +1985,7 @@ class Queue(ComponentBase):
 
                 setattr(collection, "shape", origin_model.shape)
 
-                task = self._handle_dc(sample, collection)
+                task = self._qs._handle_dc_node(sample, collection).dict()
                 task.update(
                     {
                         "isDiffractionPlan": True,
