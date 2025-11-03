@@ -160,7 +160,7 @@ class SampleChangerAdapter(AdapterBase):
             "queue", {"Signal": "update", "message": "all"}, namespace="/hwr"
         )
 
-    def _mount_sample(self, sample):
+    def _mount_sample(self, sample: SampleInputModel):
         sc = HWR.beamline.sample_changer
         res = False
 

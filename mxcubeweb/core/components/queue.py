@@ -16,6 +16,9 @@ from mxcubecore.model.queue_model_enumerables import CENTRING_METHOD
 from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
 
 from mxcubeweb.core.components.component_base import ComponentBase
+from mxcubeweb.core.models.adaptermodels import (
+    SampleInputModel,
+)
 from mxcubeweb.core.models.generic import SimpleNameValue
 from mxcubeweb.core.util.convertutils import (
     str_to_camel,
@@ -1821,8 +1824,11 @@ class Queue(ComponentBase):
                 not len(current_queue[sid]["tasks"])
             ) and sid != self.app.lims.get_current_sample().get("sampleID", ""):
                 try:
-                    self.app.sample_changer.mount_sample(current_queue[sid], wait=True)
+                    self.app.mxcubecore.get_adapter("sample_changer").mount_sample(
+                        SampleInputModel(**current_queue[sid]), wait=True
+                    )
                 except Exception:
+                    logging.getLogger("HWR").exception("")
                     HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
                 else:
                     HWR.beamline.queue_manager.emit("queue_stopped", (None,))
