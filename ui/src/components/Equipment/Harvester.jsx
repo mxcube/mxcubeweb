@@ -6,27 +6,8 @@ import { FcCollect, FcRefresh, FcUpload } from 'react-icons/fc';
 
 import CopyToClipboard from '../CopyToClipboard/CopyToClipboard.jsx';
 import ImageViewer from '../ImageViewer/ImageViewer.jsx';
+import { sampleStateBackground } from '../SampleGrid/util.js';
 import styles from './equipment.module.css';
-
-function sampleStateBackground(key) {
-  switch (key) {
-    case 'ready_to_execute': {
-      return 'success';
-    }
-    case 'harvested': {
-      return 'info';
-    }
-    case 'needs_repositionning': {
-      return 'warning';
-    }
-    case 'failed': {
-      return 'danger';
-    }
-    default: {
-      return 'info';
-    }
-  }
-}
 
 export default function Harvester(props) {
   function showContextMenu(event, id) {

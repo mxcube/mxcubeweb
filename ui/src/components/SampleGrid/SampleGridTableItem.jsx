@@ -14,6 +14,7 @@ import containerStyles from '../../containers/SampleGridTableContainer.module.cs
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './SampleGridTableItem.module.css';
 import SampleInformation from './SampleInformation';
+import { getSampleName, sampleStateBackground } from './util';
 
 export default function SampleGridTableItem({
   sampleData = {},
@@ -65,17 +66,6 @@ export default function SampleGridTableItem({
     );
   }
 
-  function getSampleName() {
-    let name = sampleData.proteinAcronym || '';
-
-    if (sampleData.sampleName && name) {
-      name += ` - ${sampleData.sampleName}`;
-    } else {
-      name = sampleData.sampleName || '';
-    }
-
-    return name;
-  }
   const currentSampleText = current ? '(MOUNTED)' : '';
 
   const classes = cx(styles.samplesGridTableItem, {
@@ -88,7 +78,7 @@ export default function SampleGridTableItem({
   });
 
   const limsLink = sampleData.limsLink || '#';
-  const sampleName = getSampleName();
+  const sampleName = getSampleName(sampleData);
 
   return (
     <ListGroup variant="flush" id={sampleData.sampleID}>
@@ -122,6 +112,7 @@ export default function SampleGridTableItem({
                 className={`${styles.samplesGridTableItemNameProteinAcronym} ms-1 mt-2`}
               >
                 {sampleName}
+                <span className="ms-1">{sampleName}</span>
               </Badge>
             </OverlayTrigger>
             <div
