@@ -28,33 +28,6 @@ export default function SampleGridTableItem({
     pickButtonOnClickHandler?.(e, sampleData.sampleID);
   }
 
-  function getItemControls() {
-    return (
-      <div className={styles.samplesItemControlsContainer}>
-        <TooltipTrigger
-          id="pick-sample"
-          placement="auto"
-          tooltipContent="Pick/Unpick sample for collect"
-        >
-          <Button
-            variant="link"
-            disabled={current && picked}
-            className={styles.samplesGridTableItemButton}
-            onClick={pickButtonOnClick}
-          >
-            <i>
-              {picked ? (
-                <BsCheck2Square size="1em" />
-              ) : (
-                <BsSquare size="0.9em" />
-              )}
-            </i>
-          </Button>
-        </TooltipTrigger>
-      </div>
-    );
-  }
-
   const classes = cx(styles.samplesGridTableItem, {
     [containerStyles.samplesGridTableItemToBeCollected]: picked,
     [containerStyles.samplesGridTableItemCollected]: isCollected(sampleData),
@@ -71,7 +44,28 @@ export default function SampleGridTableItem({
     <ListGroup variant="flush" id={sampleData.sampleID}>
       <ListGroup.Item className={classes}>
         <div className="d-flex">
-          {getItemControls()}
+          <div className={styles.samplesItemControlsContainer}>
+            <TooltipTrigger
+              id="pick-sample"
+              placement="auto"
+              tooltipContent="Pick/Unpick sample for collect"
+            >
+              <Button
+                variant="link"
+                disabled={current && picked}
+                className={styles.samplesGridTableItemButton}
+                onClick={pickButtonOnClick}
+              >
+                <i>
+                  {picked ? (
+                    <BsCheck2Square size="1em" />
+                  ) : (
+                    <BsSquare size="0.9em" />
+                  )}
+                </i>
+              </Button>
+            </TooltipTrigger>
+          </div>
           <div>
             <OverlayTrigger
               placement="right"
