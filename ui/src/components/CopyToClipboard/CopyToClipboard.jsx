@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Button } from 'react-bootstrap';
 import { CopyToClipboard as TriggerCopyToClipboard } from 'react-copy-to-clipboard';
 import { MdContentCopy } from 'react-icons/md';
 
@@ -17,23 +16,21 @@ export default function CopyToClipboard(props) {
   }
 
   return (
-    <Button className={styles.btnContent} variant="unknown">
-      <TooltipTrigger
-        placement={copied ? 'auto' : 'right'}
-        rootClose={false}
-        id={id}
-        tooltipContent={
-          copied ? `${tittle} Copied` : `Copy ${tittle} to Clipboard`
-        }
+    <TooltipTrigger
+      placement={copied ? 'auto' : 'right'}
+      rootClose={false}
+      id={id}
+      tooltipContent={
+        copied ? `${tittle} Copied` : `Copy ${tittle} to Clipboard`
+      }
+    >
+      <TriggerCopyToClipboard
+        onCopy={onCopy}
+        className={styles.link}
+        text={text}
       >
-        <TriggerCopyToClipboard
-          onCopy={onCopy}
-          className={styles.link}
-          text={text}
-        >
-          <MdContentCopy color={iconColor} size="1em" />
-        </TriggerCopyToClipboard>
-      </TooltipTrigger>
-    </Button>
+        <MdContentCopy color={iconColor} size="1em" />
+      </TriggerCopyToClipboard>
+    </TooltipTrigger>
   );
 }
