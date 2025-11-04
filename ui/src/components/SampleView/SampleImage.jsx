@@ -114,6 +114,7 @@ class SampleImage extends React.Component {
 
     globalThis.initJSMpeg = this.initJSMpeg;
     this.initJSMpeg();
+    this.renderSampleView();
   }
 
   componentDidUpdate(prevProps) {
