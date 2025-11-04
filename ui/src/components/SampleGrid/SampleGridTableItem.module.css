@@ -1,5 +1,8 @@
 .samplesGridTableItemButton {
   background: Transparent;
+  padding: 0%;
+  margin-left: 5px;
+  margin-top: 5px;
 }
 
 .samplesGridTableItem {
@@ -24,10 +27,11 @@
 }
 
 .samplesItemControlsContainer {
-  float: left;
+  margin-top: 2px;
 }
 
 .scLocation {
+  display: flex;
   font-size: 11px;
   float: right;
   pointer-events: none;
@@ -35,6 +39,11 @@
   margin: 2px;
   top: 0;
   right: 0;
+}
+
+.sampleStateBadge {
+  margin-left: 5px;
+  margin-bottom: 2px;
 }
 
 .newQueueOrder {

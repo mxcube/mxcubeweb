@@ -55,19 +55,6 @@ export default function SampleGridTableItem({
     );
   }
 
-  function getsequenceId() {
-    const showId = picked ? '' : 'none';
-    return (
-      <div>
-        <div style={{ display: showId }} className={styles.newQueueOrder}>
-          {queueOrder}
-        </div>
-      </div>
-    );
-  }
-
-  const currentSampleText = current ? '(MOUNTED)' : '';
-
   const classes = cx(styles.samplesGridTableItem, {
     [containerStyles.samplesGridTableItemToBeCollected]: picked,
     [containerStyles.samplesGridTableItemCollected]: isCollected(sampleData),
@@ -111,23 +98,38 @@ export default function SampleGridTableItem({
                 text="primary"
                 className={`${styles.samplesGridTableItemNameProteinAcronym} ms-1 mt-2`}
               >
-                {sampleName}
+                <CopyToClipboard
+                  text={sampleName}
+                  tittle="Sample Name"
+                  id={`copy_${sampleName}`}
+                />
                 <span className="ms-1">{sampleName}</span>
               </Badge>
             </OverlayTrigger>
-            <div
-              style={{ pointerEvents: 'none' }}
-              className={`ps-1 pe-1 ${scLocationClasses}`}
-            >
-              {sampleData.location} {currentSampleText}
+
+            <div className={`ps-1 pe-1 ${scLocationClasses}`}>
+              {sampleData.location}
+              {current ? (
+                ' (MOUNTED)'
+              ) : (
+                <div className={styles.sampleStateBadge}>
+                  <Badge
+                    bg={sampleStateBackground(
+                      sampleData?.container_info?.state,
+                    )}
+                  >
+                    {sampleData?.container_info?.state?.replaceAll('_', ' ')}
+                  </Badge>
+                </div>
+              )}
             </div>
           </div>
-          <CopyToClipboard
-            text={sampleName}
-            tittle="Sample Name"
-            id={`copy_${sampleName}`}
-          />
-          {getsequenceId()}
+          <div
+            style={{ display: picked ? '' : 'none' }}
+            className={styles.newQueueOrder}
+          >
+            {queueOrder}
+          </div>
         </div>
         {children}
       </ListGroup.Item>
