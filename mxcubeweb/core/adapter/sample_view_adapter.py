@@ -222,7 +222,7 @@ class SampleViewAdapter(AdapterBase):
         }
 
     def shapes(self) -> list:
-        return self._ho.get_shapes()
+        return {shape.id: to_camel(shape.as_dict()) for shape in self._ho.get_shapes()}
 
     def snapshot(self, overlay: Base64StrModel):
         """Take snapshot of the sample view.

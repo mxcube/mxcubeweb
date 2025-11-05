@@ -117,7 +117,7 @@ export function getInitialState() {
         .then((taskParameters) => ({ taskParameters }))
         .catch(notify),
       fetchShapes()
-        .then((json) => ({ shapes: json.shapes }))
+        .then((shapes) => ({ shapes }))
         .catch(notify),
       fetchValue('sample_changer', 'sample_changer')
         .then((json) => {
