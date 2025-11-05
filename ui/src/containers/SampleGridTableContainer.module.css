@@ -56,11 +56,12 @@
 
 .samplesGridTableLi {
   min-width: 283px;
-  max-width: 365px;
+  max-width: 335px;
   margin: auto auto 6px 0;
   z-index: 2 !important;
   list-style-type: none;
-  height: 70px;
+  height: fit-content;
+  min-height: 70px;
   border: 1px solid #9c9c9c !important;
   border-radius: 3px !important;
   cursor: context-menu;
@@ -71,18 +72,17 @@
 }
 
 .samplesGridTableItemTasks {
-  height: 26px;
-  padding-left: 19px;
-  display: grid;
-  margin-right: 25px;
-}
-
-.samplesGridTableItemTasks > .slick-list > .slick-track {
-  margin-left: 0 !important;
-}
-
-.samplesGridTableItemTasks :global(.slick-prev) {
-  left: 1px;
+  display: flex;
+  overflow-x: scroll;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+  gap: 0.25rem;
+  scrollbar-width: thin;
+  scrollbar-color: #0198e1 transparent;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
 }
 
 .samplesGridTableItemSelected {

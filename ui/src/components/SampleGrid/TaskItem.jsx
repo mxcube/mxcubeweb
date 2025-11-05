@@ -152,11 +152,12 @@ export class TaskItem extends React.Component {
       margin: 0,
       cursor: 'pointer',
       fontSize: '0.7em',
+      scrollSnapAlign: 'center',
     };
     const task = this.props.taskData;
 
     return (
-      <div key={this.props.taskIndex} className=" ms-1">
+      <div key={this.props.taskIndex}>
         <OverlayTrigger
           rootClose="true"
           placement="auto"
@@ -177,7 +178,6 @@ export class TaskItem extends React.Component {
             bg={this.stateClass()}
             style={style}
             onClick={this.taskItemOnClick}
-            className="p-1 me-2"
           >
             {this.tagName()}
             {task.state === TASK_UNCOLLECTED ? (

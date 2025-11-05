@@ -1,6 +1,3 @@
-import 'slick-carousel/slick/slick.css';
-import 'slick-carousel/slick/slick-theme.css';
-
 import cx from 'classnames';
 import { useCallback, useEffect, useState } from 'react';
 import { Button, Col, Dropdown, Row, Table } from 'react-bootstrap';
@@ -17,7 +14,6 @@ import { Md360, MdFlare, MdRemove } from 'react-icons/md';
 import LazyLoad, { forceVisible } from 'react-lazyload';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import Slider from 'react-slick';
 import { bindActionCreators } from 'redux';
 
 import { showDialog } from '../actions/general';
@@ -36,14 +32,6 @@ import TooltipTrigger from '../components/TooltipTrigger';
 import { isCollected, QUEUE_RUNNING, QUEUE_STOPPED } from '../constants';
 import SampleFlexView from './SampleFlexView';
 import styles from './SampleGridTableContainer.module.css';
-
-const SETTINGS = {
-  dots: false,
-  infinite: false,
-  speed: 100,
-  slidesToShow: 6,
-  slidesToScroll: 6,
-};
 
 const CELL_MENU_ID = 'samples-grid-table-context-menu-cell';
 const PUCK_MENU_ID = 'samples-grid-table-context-menu-puck';
@@ -576,10 +564,7 @@ export default function SampleGridTableContainer(props) {
                   current={isCurrent}
                   picked={picked}
                 >
-                  <Slider
-                    className={styles.samplesGridTableItemTasks}
-                    {...SETTINGS}
-                  >
+                  <div className={styles.samplesGridTableItemTasks}>
                     {sample.tasks.map((taskData, i) => (
                       <TaskItem
                         key={`task-${taskData.sampleID}`}
@@ -590,7 +575,7 @@ export default function SampleGridTableContainer(props) {
                         taskIndex={i}
                       />
                     ))}
-                  </Slider>
+                  </div>
                 </SampleGridTableItem>
               </div>
             );
