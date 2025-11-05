@@ -175,6 +175,7 @@ The section has the following syntax:
       VIDEO_FORMAT: <format name>
       VIDEO_STREAM_URL: <stream URL>
       VIDEO_STREAM_PORT: <stream port>
+      MXCUBE_STARTS_VIDEO_STREAM: <boolean>
       SESSION_REFRESH_INTERVAL: <refresh interval>
       usermanager:
         class: <class name>
@@ -224,6 +225,14 @@ connect to the video stream.
 ``VIDEO_STREAM_PORT``
 ~~~~~~~~~~~~~~~~~~~~~
 Port from which the video stream is served
+
+``MXCUBE_STARTS_VIDEO_STREAM``
+~~~~~~~~~~~~~~~~~~~~~
+Controls if On-Axis-Video (OAV) stream is started by MXCuBE process.
+If set to ``True``, MXCuBE will call the ``start_streaming()`` method of the Camera hardware object during start-up.
+If set to ``False``, it is assumed that OAV stream is started outside of MXCuBE process.
+
+Default value is ``True``.
 
 ``SESSION_REFRESH_INTERVAL``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

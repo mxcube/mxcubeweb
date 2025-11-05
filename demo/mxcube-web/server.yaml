@@ -64,6 +64,10 @@ mxcube:
 
   # At which port to stream from
   VIDEO_STREAM_PORT: 8000
+
+  # Start OAV stream from MXCuBE process
+  MXCUBE_STARTS_VIDEO_STREAM: true
+
   # Mode, SSX-CHIP, SSX-INJECTOR, OSC
   mode: OSC
 

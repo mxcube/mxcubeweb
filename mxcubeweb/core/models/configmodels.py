@@ -209,6 +209,13 @@ class MXCUBEAppConfigModel(BaseModel):
     # Port from which the video_stream process (https://github.com/mxcube/video-streamer)
     # streams video. The process runs in separate process (on localhost)
     VIDEO_STREAM_PORT: int = Field(8000, description="Video stream PORT")
+
+    # Should we call the `start_streaming()` method of Camera HWO
+    MXCUBE_STARTS_VIDEO_STREAM: bool = Field(
+        True,
+        description="Invoke 'start OAV stream' method on the Camera hardware object",
+    )
+
     USE_GET_SAMPLES_FROM_SC: bool = Field(
         True,
         description=(
