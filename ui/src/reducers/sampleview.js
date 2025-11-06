@@ -69,7 +69,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
         width: action.width,
         height: action.height,
         pixelsPerMm: action.pixelsPerMm,
-        beamPosition: action.beamPosition,
         sourceScale: action.sourceScale,
       };
     }

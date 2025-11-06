@@ -209,12 +209,6 @@ class SampleViewAdapter(AdapterBase):
 
         pixels_per_mm = HWR.beamline.diffractometer.get_pixels_per_mm()
 
-        # We need to get the beam size when changing the image
-        # size because of the current front end implementation.
-        # This not necessary and can be removed.
-        beam_ho = HWR.beamline.beam
-        sx, sy, shape, _label = beam_ho.get_value()
-
         return {
             "pixelsPerMm": pixels_per_mm,
             "imageWidth": width,
@@ -225,10 +219,6 @@ class SampleViewAdapter(AdapterBase):
             "videoSizes": video_sizes,
             "videoHash": self._ho.camera.stream_hash,
             "videoURL": self.app.CONFIG.app.VIDEO_STREAM_URL,
-            "position": beam_ho.get_beam_position_on_screen(),
-            "size_x": sx,
-            "size_y": sy,
-            "shape": shape.value,
         }
 
     def shapes(self) -> list:
