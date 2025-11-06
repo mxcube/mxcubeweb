@@ -1,4 +1,8 @@
-import { fetchAttribute, sendExecuteCommand } from './hardware-object';
+import {
+  fetchAttribute,
+  sendExecuteCommand,
+  sendExecuteCommandRaw,
+} from './hardware-object';
 
 function fetchSampleViewAttribute(attribute) {
   return fetchAttribute('sample_view', 'sample_view', attribute);
@@ -75,7 +79,7 @@ export function sendMoveToBeam(x, y) {
 }
 
 export function sendTakeSnapshot(canvasData) {
-  return sendSampleViewCommand('snapshot', {
+  return sendExecuteCommandRaw('sample_view', 'sample_view', 'snapshot', {
     value: canvasData,
-  });
+  }).blob();
 }

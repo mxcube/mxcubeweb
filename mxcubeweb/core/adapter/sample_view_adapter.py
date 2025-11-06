@@ -251,10 +251,12 @@ class SampleViewAdapter(AdapterBase):
 
         try:
             image = self._ho.take_snapshot(overlay_data=overlay_data)
-            b = io.BytesIO()
-            image.save(b, "JPEG")
+            data = io.BytesIO()
+            image.save(data, "JPEG")
+            data.seek(0)
+
             return send_file(
-                b,
+                data,
                 mimetype="image/jpeg",
                 as_attachment=True,
                 download_name="snapshot.jpeg",

@@ -8,6 +8,10 @@ export function sendExecuteCommand(objectType, objectId, command, value) {
     .safeJson();
 }
 
+export function sendExecuteCommandRaw(objectType, objectId, command, value) {
+  return endpoint.put(value, `/${objectType}/${objectId}/${command}`);
+}
+
 export function fetchAttribute(objectType, objectId, attributeName) {
   return endpoint.get(`/${objectType}/${objectId}/${attributeName}`).safeJson();
 }
