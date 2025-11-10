@@ -1997,14 +1997,14 @@ uvicorn = ">=0.34.0,<0.35.0"
 
 [[package]]
 name = "mxcubecore"
-version = "1.391.0"
+version = "1.419.0"
 description = "Core libraries for the MXCuBE application"
 optional = false
 python-versions = "<3.12,>=3.10"
 groups = ["main"]
 files = [
-    {file = "mxcubecore-1.391.0-py3-none-any.whl", hash = "sha256:f0af343ef4cc432e33d1288c6a6a33d6072e2ee4bd4bf9d954277503d7f0a8d7"},
-    {file = "mxcubecore-1.391.0.tar.gz", hash = "sha256:59793ebc5cc9a2e9c323b5ea9a3ac52ca8899abab3ca0f76474971545ecb373a"},
+    {file = "mxcubecore-1.419.0-py3-none-any.whl", hash = "sha256:251996c1cb1b024cf12d79ae9fad3eed7d8815b1beb45804e0b89bb454fe589b"},
+    {file = "mxcubecore-1.419.0.tar.gz", hash = "sha256:e755727a055ed97f915119f26804e968a48792cb63d23bf8f6b32cb2308710cb"},
 ]
 
 [package.dependencies]
@@ -4039,4 +4039,4 @@ graylog = ["graypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "7e13d276c0715cb58f1209e2f0f72aa8b9713a2fd0d906f99b3741063ec7b257"
+content-hash = "b38f2c0c279765c12556aed09e90a269ab9fd82c0a20a12c3455cdef9d0f9b72"

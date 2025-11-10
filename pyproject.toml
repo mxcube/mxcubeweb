@@ -45,7 +45,7 @@ Flask-Security-Too = { version = "5.4.3", extras = ["common", "fsqla"] }
 Flask-SocketIO = "^5.3.6"
 gevent = "^23.9.1"
 markupsafe = "^2.1.5"
-mxcubecore =  ">=1.391.0"
+mxcubecore =  ">=1.419.0"
 pillow = "^10.4.0"
 pydantic = ">=2.8.2,<2.9.0"
 pytz = "^2022.6"
