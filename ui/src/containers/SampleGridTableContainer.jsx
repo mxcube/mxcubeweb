@@ -527,7 +527,7 @@ export default function SampleGridTableContainer(props) {
 
   function getSamplesList() {
     return Object.keys(sampleList)
-      .filter(filterSampleByKey)
+      .filter((key) => filterSampleByKey(key))
       .map((sampleId) => <li key={sampleId}>{sampleId}</li>);
   }
 
