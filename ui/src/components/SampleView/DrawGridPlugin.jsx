@@ -5,6 +5,110 @@ const TAU = Math.PI * 2;
 const { fabric } = globalThis;
 
 /**
+ * @typedef {Object} GridOptions
+ * @property {number} cellRows - The number of rows in the grid.
+ * @property {number} cellCols - The number of columns in the grid.
+ * @property {number} cellWidth - The width of each cell in the grid.
+ * @property {number} cellHeight - The height of each cell in the grid.
+ * @property {number} cellHSpace - The horizontal space between cells.
+ * @property {number} cellVSpace - The vertical space between cells.
+ * @property {string} color - Color of the grid lines.
+ * @property {number} cellTW - The total width of each cell, including the horizontal space.
+ * @property {number} cellTH - The total height of each cell, including the vertical space.
+ * @property {boolean} [selected = false] - Whether the grid is selected.
+ */
+/**
+ * A custom Fabric.js object representing a grid.
+ * @typedef {fabric.IObjectOptions & GridOptions} Grid
+ * @extends fabric.Object
+ */
+const Grid = fabric.util.createClass(fabric.Object, {
+  type: 'Grid',
+  selected: false,
+
+  /**
+   * Initializes the Grid object.
+   *
+   * @param {GridOptions & fabric.IObjectOptions} gridOptions
+   */
+  initialize(gridOptions) {
+    this.callSuper('initialize', gridOptions);
+    this.selected = !!this.selected;
+    this.cacheProperties.push('selected');
+  },
+
+  /**
+   * Renders the grid on the canvas.
+   *
+   * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
+   * @private
+   */
+  _render(ctx) {
+    if (this.selected) {
+      this._drawInnerGridLines(ctx);
+    }
+    this._drawOuterBorder(ctx);
+  },
+
+  /**
+   * Draws the inner grid lines.
+   *
+   * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
+   * @private
+   */
+  _drawInnerGridLines(ctx) {
+    const lineColor = 'rgba(136, 255, 91, 0.5)';
+    // eslint-disable-next-line no-param-reassign
+    ctx.strokeStyle = lineColor;
+    const [left, right, top, bottom] = [
+      -this.width / 2,
+      this.width / 2,
+      -this.height / 2,
+      this.height / 2,
+    ];
+    if (inSmallCellSizeMode(this.cellTW, this.cellTH)) {
+      /* we don't draw inner lines for small cells, to reduce visual clutter */
+      return;
+    }
+    // Draw horizontal lines
+    for (let row = 1; row < this.cellRows; row++) {
+      const y = top + row * this.cellTH;
+      ctx.beginPath();
+      ctx.moveTo(left, y);
+      ctx.lineTo(right, y);
+      ctx.stroke();
+    }
+
+    // Draw vertical lines
+    for (let col = 1; col < this.cellCols; col++) {
+      const x = left + col * this.cellTW;
+      ctx.beginPath();
+      ctx.moveTo(x, top);
+      ctx.lineTo(x, bottom);
+      ctx.stroke();
+    }
+  },
+
+  /**
+   * Draws the outer border of the grid.
+   *
+   * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
+   * @private
+   */
+  _drawOuterBorder(ctx) {
+    // eslint-disable-next-line no-param-reassign
+    ctx.strokeStyle = this.color;
+    if (!this.selected) {
+      ctx.setLineDash([5, 5]);
+    } else {
+      ctx.setLineDash([]);
+    }
+
+    ctx.strokeRect(-this.width / 2, -this.height / 2, this.width, this.height);
+  },
+});
+
+/**
  * Based on cell width and height in pixels,
  * decide if we should do drawing in 'small cell size' mode.
  *
@@ -17,6 +121,7 @@ function inSmallCellSizeMode(cellWidth, cellHeight) {
 
 /**
  * Fabric Shape for drawing grid (defined by GridData)
+ * @typedef {fabric.Group & { id?: string }} GridGroup
  */
 const GridGroup = fabric.util.createClass(fabric.Group, {
   type: 'GridGroup',
@@ -26,11 +131,10 @@ const GridGroup = fabric.util.createClass(fabric.Group, {
     this.id = options.id;
   },
 });
-
 /**
- * Custom Fabric shape, for displaying mesh scan results.
+ * Custom Fabric shape, for displaying grid scan results.
  *
- * This is an optimization for drawing mesh grids with large number of
+ * This is an optimization for drawing grids with large number of
  * cells. Using one single custom fabric object for drawing results for
  * all cells is faster, then having a per cell fabric object.
  *
@@ -40,11 +144,15 @@ const GridGroup = fabric.util.createClass(fabric.Group, {
  * appears that drawing rectangles is much faster.
  *
  */
-const MeshGridResult = fabric.util.createClass(fabric.Object, {
-  type: 'GridGroup',
+const GridResult = fabric.util.createClass(fabric.Object, {
+  type: 'GridResult',
 
   initialize(objects, options = {}) {
     this.callSuper('initialize', objects, options);
+    const { cellTW, cellTH, cellColumns, cellRows } = objects;
+    const width = cellTW * cellColumns;
+    const height = cellTH * cellRows;
+    this.set({ width, height });
   },
 
   _render(ctx) {
@@ -53,8 +161,8 @@ const MeshGridResult = fabric.util.createClass(fabric.Object, {
       // the cells are small, draw them as rectangles
       //
 
-      const xOffset = this.cellHSpace / 2;
-      const yOffset = this.cellVSpace / 2;
+      const xOffset = -this.width / 2 + this.cellTH / 2;
+      const yOffset = -this.height / 2 + this.cellTW / 2;
       const width = this.cellTW - this.cellHSpace;
       const height = this.cellTH - this.cellVSpace;
 
@@ -75,8 +183,8 @@ const MeshGridResult = fabric.util.createClass(fabric.Object, {
       // normal cells, draw them as ellipses
       //
 
-      const xOffset = this.cellTW / 2;
-      const yOffset = this.cellTH / 2;
+      const xOffset = -this.width / 2 + this.cellTW / 2;
+      const yOffset = -this.height / 2 + this.cellTH / 2;
       const width = (this.cellTW - this.cellHSpace) / 2;
       const height = (this.cellTH - this.cellVSpace) / 2;
 
@@ -398,12 +506,14 @@ export default class DrawGridPlugin {
     );
   }
 
+  /**
+   * Creates the heatmap data for later fill grid cells
+   * @param {GridData} gd grid data
+   * @param {number} col - number of columns
+   * @param {number} row - number of rows
+   * @returns {string[][]} fillingMatrix - matrix of colors for each cell
+   */
   cellFillingFromData(gd, col, row) {
-    /**
-     * Creates the heatmap data for later fill grid cells
-     * @param {GridData} gd
-     * @param 2d array data
-     */
     const fillingMatrix = this.initializeCellFilling(gd, col, row);
 
     // Assume flat result object to remain compatible with old format only
@@ -440,59 +550,13 @@ export default class DrawGridPlugin {
   }
 
   /**
-   * Adds dashed inner lines to a mesh grid.
-   *
-   * Does nothing if mesh is not selected,
-   * or if we are drawing in small cell size' mode.
-   */
-  addInnerLines(shapes, gridData, left, top, height, width, cellTH, cellTW) {
-    if (!gridData.selected) {
-      /* we only draw inner lines for selected meshes */
-      return;
-    }
-
-    if (inSmallCellSizeMode(cellTW, cellTH)) {
-      /* we don't draw inner lines for small cells, to reduce visual clutter */
-      return;
-    }
-
-    const lineColor = 'rgba(136, 255, 91, 0.5)';
-    const strokeArray = [5, 5];
-
-    for (let nw = 1; nw < gridData.numCols; nw++) {
-      shapes.push(
-        new fabric.Line(
-          [left + cellTW * nw, top, left + cellTW * nw, top + height],
-          {
-            stroke: lineColor,
-            strokeDashArray: strokeArray,
-            hasControls: false,
-            selectable: false,
-          },
-        ),
-      );
-    }
-
-    for (let nh = 1; nh < gridData.numRows; nh++) {
-      shapes.push(
-        new fabric.Line(
-          [left, top + cellTH * nh, left + width, top + cellTH * nh],
-          {
-            stroke: lineColor,
-            strokeDashArray: strokeArray,
-            hasControls: false,
-            selectable: false,
-          },
-        ),
-      );
-    }
-  }
-
-  /**
    * Creates a Fabric GridGroup shape from a GridData object
    *
    * @param {GridData} gd
-   * @return {Object} {shapeGroup, gridData}
+   * @return ({
+   *  shapeGroup: GridGroup,
+   *  gridData: GridData
+   * })
    */
   shapeFromGridData(gd) {
     const gridData = { ...gd };
@@ -521,100 +585,81 @@ export default class DrawGridPlugin {
       ? 'rgba(136, 255, 91, 1)'
       : 'rgba(228, 255, 9, 0.5)';
     color = gridData.result?.length > 0 ? 'rgba(228, 255, 9, 1)' : color;
-    const outlineStrokeArray = gridData.selected ? [] : [5, 5];
-
-    if (cellTW > 0 && cellTH > 0) {
-      this.addInnerLines(
-        shapes,
-        gridData,
-        left,
-        top,
-        height,
-        width,
-        cellTH,
-        cellTW,
-      );
-      if (!this.drawing) {
-        if (this.gridResultFormat === 'RGB') {
-          const fillingMatrix = this.cellFillingFromData(
+    const grid = new Grid({
+      cellRows: gridData.numRows,
+      cellCols: gridData.numCols,
+      cellWidth,
+      cellHeight,
+      cellHSpace,
+      cellVSpace,
+      cellTW,
+      cellTH,
+      color,
+      selected: gridData.selected,
+      height,
+      width,
+    });
+    shapes.push(grid);
+    if (cellTW > 0 && cellTH > 0 && !this.drawing) {
+      if (this.gridResultFormat === 'RGB') {
+        const fillingMatrix = this.cellFillingFromData(
+          gridData,
+          gridData.numCols,
+          gridData.numRows,
+        );
+        shapes.push(
+          new GridResult({
+            cellColumns: gridData.numCols,
+            cellRows: gridData.numRows,
             gridData,
-            gridData.numCols,
-            gridData.numRows,
-          );
-          shapes.push(
-            new MeshGridResult({
-              left,
-              top,
-              cellColumns: gridData.numCols,
-              cellRows: gridData.numRows,
-              gridData,
-              cellTW,
-              cellTH,
-              cellHSpace,
-              cellVSpace,
-              fillingMatrix,
-            }),
-          );
-
-          for (let nw = 0; nw < gridData.numCols; nw++) {
+            cellTW,
+            cellTH,
+            cellHSpace,
+            cellVSpace,
+            fillingMatrix,
+          }),
+        );
+        for (let nw = 0; nw < gridData.numCols; nw++) {
+          for (let nh = 0; nh < gridData.numRows; nh++) {
+            const cellCount = this.countCells(
+              gridData.cellCountFun,
+              nw,
+              nh,
+              gridData.numRows,
+              gridData.numCols,
+            );
             // eslint-disable-next-line max-depth
-            for (let nh = 0; nh < gridData.numRows; nh++) {
-              const cellCount = this.countCells(
-                gridData.cellCountFun,
-                nw,
-                nh,
-                gridData.numRows,
-                gridData.numCols,
+            if (this.include_cell_labels) {
+              shapes.push(
+                new fabric.Text(cellCount, {
+                  left: left + cellHSpace / 2 + cellTW * nw + cellWidth / 2,
+                  top: top + cellVSpace / 2 + cellTH * nh + cellHeight / 2,
+                  originX: 'center',
+                  originY: 'center',
+                  fill: 'rgba(0, 0, 200, 1)',
+                  fontFamily: 'Helvetica',
+                  fontSize: 18,
+                }),
               );
-
-              // eslint-disable-next-line max-depth
-              if (this.include_cell_labels) {
-                shapes.push(
-                  new fabric.Text(cellCount, {
-                    left: left + cellHSpace / 2 + cellTW * nw + cellWidth / 2,
-                    top: top + cellVSpace / 2 + cellTH * nh + cellHeight / 2,
-                    originX: 'center',
-                    originY: 'center',
-                    fill: 'rgba(0, 0, 200, 1)',
-                    fontFamily: 'Helvetica',
-                    fontSize: 18,
-                  }),
-                );
-              }
             }
           }
-        } else if (gridData.result && gridData.result.length > 0) {
-          const imageElement = document.createElement('img');
-          imageElement.src = `data:image/png;base64,${gridData.result}`;
-          const image = new fabric.Image(imageElement);
-          image.scaleToHeight(height);
-          image.scaleX = width / imageElement.naturalWidth;
-          image.set({ top, left });
-          shapes.push(image);
         }
+      } else if (gridData.result && gridData.result.length > 0) {
+        const imageElement = document.createElement('img');
+        imageElement.src = `data:image/png;base64,${gridData.result}`;
+        const image = new fabric.Image(imageElement);
+        image.scaleToHeight(height);
+        image.scaleX = width / imageElement.naturalWidth;
+        image.set({ top, left });
+        shapes.push(image);
       }
     }
-
-    shapes.push(
-      new fabric.Rect({
-        left,
-        top,
-        width,
-        height,
-        fill: 'rgba(0,0,0,0)',
-        strokeDashArray: outlineStrokeArray,
-        stroke: color,
-        hasControls: false,
-        selectable: true,
-        hoverCursor: 'pointer',
-      }),
-    );
 
     if (gridData.name) {
       shapes.push(
         new fabric.Text(gridData.name, {
-          left: left + width,
-          top: top - 20,
+          left: width,
+          top: height,
           fill: color,
           fontFamily: 'Helvetica',
           fontSize: 18,
@@ -634,8 +679,9 @@ export default class DrawGridPlugin {
       visible: true,
       hoverCursor: 'pointer',
       id: gd.id,
+      top,
+      left,
     });
-
     return { shapeGroup, gridData };
   }
 
@@ -768,7 +814,6 @@ export default class DrawGridPlugin {
    */
   saveGrid(_gd) {
     const gd = structuredClone(_gd);
-
     gd.screenCoord[0] /= this.scale;
     gd.screenCoord[1] /= this.scale;
     gd.width /= this.scale;
