@@ -90,7 +90,7 @@ export default function Harvester(props) {
                       </h6>
                       <ImageViewer
                         galleryView={false}
-                        imgUrl={item.img_url}
+                        imageUrl={item.img_url}
                         imageName={item.name}
                         imgAlt=""
                         imgTargetX={item.img_target_x}

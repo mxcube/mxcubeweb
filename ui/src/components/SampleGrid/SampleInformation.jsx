@@ -75,9 +75,9 @@ export default function SampleInformation({ sampleData = {} }) {
           {sampleData.image_url ? (
             <ImageViewer
               galleryView={false}
-              imagegUrl={sampleData.image_url}
+              imageUrl={sampleData.image_url}
               imageName={sampleData.sampleName || 'Sample Image'}
-              imgAlt={sampleData.sampleName}
+              imgAlt={sampleData.sampleName || 'Sample Image'}
               imgTargetX={sampleData.image_x}
               imgTargetY={sampleData.image_y}
               drawTarget={!!(sampleData.image_x && sampleData.image_y)}

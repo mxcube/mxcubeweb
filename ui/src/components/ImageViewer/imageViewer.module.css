@@ -9,6 +9,7 @@
 
 .gallery_card img[alt] {
   color: rgb(212, 9, 9);
+  font-size: 1rem;
 }
 
 .gallery_thumbnail {

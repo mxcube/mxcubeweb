@@ -4,8 +4,16 @@ import GalleryModal from './GalleryModal';
 import styles from './imageViewer.module.css';
 
 export default function ImageViewer(props) {
-  const { galleryView, imgUrls, imgAlt, imgTargetX, imgTargetY, imageName } =
-    props;
+  const {
+    galleryView,
+    imageUrlList,
+    imageUrl,
+    imgAlt,
+    imgTargetX,
+    imgTargetY,
+    imageName,
+    drawTarget,
+  } = props;
 
   const [showModal, setShowModal] = useState(false);
   const [imgUrl, setImgUrl] = useState('');
@@ -23,7 +31,7 @@ export default function ImageViewer(props) {
   return galleryView ? (
     <div className="container-fluid gallery-container">
       <div className="row">
-        {imgUrls.map((url) => {
+        {imageUrlList.map((url) => {
           return (
             <div key={url} className="col-sm-6 col-md-3 col-xl-2">
               <div className={styles.gallery_card}>
@@ -48,6 +56,7 @@ export default function ImageViewer(props) {
         imgTargetX={imgTargetX}
         imgTargetY={imgTargetY}
         imageName={imageName}
+        drawTarget={drawTarget}
       />
     </div>
   ) : (
@@ -55,18 +64,18 @@ export default function ImageViewer(props) {
       <div className={styles.gallery_card}>
         <img
           className={`${styles.gallery_thumbnail} img-fluid`}
-          src={imgUrl}
+          src={imageUrl}
           alt={imgAlt}
         />
         <span
           className={`${styles.viewer_icon_open} fa fa-expand`}
-          onClick={() => openModal(imgUrl)}
+          onClick={() => openModal(imageUrl)}
         />
       </div>
       <GalleryModal
         isOpen={showModal}
         handleClose={closeModal}
-        src={imgUrl}
+        src={imageUrl}
         imgTargetX={imgTargetX}
         imgTargetY={imgTargetY}
         imageName={imageName}
