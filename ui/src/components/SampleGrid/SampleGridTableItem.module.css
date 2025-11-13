@@ -18,7 +18,7 @@
 .samplesGridTableItemNameProteinAcronym {
   font-size: small;
   font-weight: bold;
-  pointer-events: auto;
+  cursor: pointer;
   max-width: 160px;
   background: #5cb85c;
   overflow: hidden;

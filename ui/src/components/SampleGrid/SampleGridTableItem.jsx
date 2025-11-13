@@ -69,6 +69,8 @@ export default function SampleGridTableItem({
           <div>
             <OverlayTrigger
               placement="right"
+              trigger="click"
+              rootClose
               overlay={
                 <Popover id={sampleName}>
                   <Popover.Header className="d-flex">
