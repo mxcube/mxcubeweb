@@ -1,0 +1,12 @@
+---
+# Inventory of VMs for MXCubeWeb
+
+mxcube_vms:
+  hosts:
+    mxcube_vm1:
+      ansible_host: mxcube-test-1
+      ansible_python_interpreter: /usr/bin/python3
+      vm_context: "mxcube_vm1"
+
+  vars:
+    ansible_python_interpreter: /usr/bin/python3

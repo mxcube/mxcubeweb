@@ -1,0 +1,23 @@
+---
+# Playbook to stop MXCubeWeb services
+
+- name: Stop MXCubeWeb services
+  hosts: mxcube_vms
+  become: true
+
+  tasks:
+    - name: Stop MXCubeWeb service
+      ansible.builtin.systemd:
+        name: "mxcubeweb-{{ vm_context }}"
+        state: stopped
+
+    - name: Display service status
+      ansible.builtin.systemd:
+        name: "mxcubeweb-{{ vm_context }}"
+      register: service_status
+
+    - name: Show service information
+      ansible.builtin.debug:
+        msg:
+          - "Service: mxcubeweb-{{ vm_context }}"
+          - "Status: {{ service_status.status.ActiveState }}"
