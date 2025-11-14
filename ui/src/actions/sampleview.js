@@ -111,8 +111,6 @@ export function setVideoSize(width, height) {
       pixelsPerMm: json.pixelsPerMm,
       sourceScale: json.scale,
     });
-
-    globalThis.initJSMpeg();
   };
 }
 

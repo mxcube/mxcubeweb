@@ -1,0 +1,8 @@
+.video {
+  position: absolute;
+  display: grid;
+  text-align: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+}

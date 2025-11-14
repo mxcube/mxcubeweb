@@ -1,5 +1,4 @@
 /* eslint-disable react/destructuring-assignment */
-/* eslint-disable jsx-a11y/control-has-associated-label */
 import 'fabric';
 
 import React from 'react';
@@ -26,7 +25,6 @@ import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
 import GridForm from './GridForm';
-import { JSMpeg } from './jsmpeg.min.js';
 import styles from './SampleImage.module.css';
 import {
   makeCentringHorizontalLine,
@@ -36,6 +34,7 @@ import {
   makePoints,
   makeTwoDPoints,
 } from './shapes';
+import VideoPlayer from './VideoPlayer';
 
 const { fabric } = globalThis;
 fabric.Group.prototype.hasControls = false;
@@ -61,7 +60,6 @@ class SampleImage extends React.Component {
     this.configureGrid = this.configureGrid.bind(this);
     this.updateGridResults = this.updateGridResults.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
-    this.initJSMpeg = this.initJSMpeg.bind(this);
     this.centringMessage = this.centringMessage.bind(this);
     this.selectShape = this.selectShape.bind(this);
     this.deSelectShape = this.deSelectShape.bind(this);
@@ -73,7 +71,6 @@ class SampleImage extends React.Component {
     this.drawGridPlugin = new DrawGridPlugin();
     this.drawGridPlugin.setGridResultFormat(props.meshResultFormat);
     this._keyPressed = null;
-    this.player = null;
     this.removeShapes = this.removeShapes.bind(this);
   }
 
@@ -112,20 +109,13 @@ class SampleImage extends React.Component {
     document.addEventListener('keydown', this.keyDown, false);
     document.addEventListener('keyup', this.keyUp, false);
 
-    globalThis.initJSMpeg = this.initJSMpeg;
-    this.initJSMpeg();
     this.renderSampleView();
   }
 
   componentDidUpdate(prevProps) {
-    const { imageRatio, width } = this.props; // #NOSONAR
+    const { imageRatio, width } = this.props;
     if (imageRatio !== prevProps.imageRatio || width !== prevProps.width) {
-      // #NOSONAR
       this.setImageRatio();
-    }
-    // Initialize JSMpeg for decoding the MPEG1 stream
-    if (prevProps.videoFormat !== 'MPEG1') {
-      this.initJSMpeg();
     }
 
     this.renderSampleView();
@@ -134,15 +124,6 @@ class SampleImage extends React.Component {
   componentWillUnmount() {
     if (this.canvas) {
       this.canvas.dispose();
-    }
-
-    if (this.player) {
-      try {
-        this.player.destroy();
-        this.player = null;
-      } catch {
-        this.player = null;
-      }
     }
 
     this.canvas.off('mouse:down', this.leftClick);
@@ -160,8 +141,6 @@ class SampleImage extends React.Component {
     imageOverlay.removeEventListener('contextmenu', this.rightClick);
     imageOverlay.removeEventListener('wheel', this.wheel);
     imageOverlay.removeEventListener('dblclick', this.goToBeam);
-
-    globalThis.initJSMpeg = null;
   }
 
   onMouseMove(options) {
@@ -362,8 +341,6 @@ class SampleImage extends React.Component {
     this.canvas.clear();
 
     // Set size of the Image from
-    document.querySelector('#sample-img').style.height = `${h}px`;
-    document.querySelector('#sample-img').style.width = `${w}px`;
     document.querySelector('#insideWrapper').style.height = `${h}px`;
   }
 
@@ -779,56 +756,6 @@ class SampleImage extends React.Component {
     return result;
   }
 
-  createVideoPlayerContainer(format) {
-    let source = '/mxcube/api/v0.1/sampleview/camera/subscribe';
-
-    if (this.props.videoURL !== '') {
-      source = `${this.props.videoURL}/${this.props.videoHash}`;
-    }
-
-    let result = (
-      <img
-        id="sample-img"
-        className={styles.sampleImg}
-        src={source}
-        alt="SampleView"
-      />
-    );
-
-    if (format === 'MPEG1') {
-      result = <canvas id="sample-img" className={styles.sampleImg} />;
-    }
-
-    return result;
-  }
-
-  initJSMpeg() {
-    if (this.props.videoFormat === 'MPEG1') {
-      const canvas = document.querySelector('#sample-img');
-
-      let source =
-        this.props.videoURL || `http://${document.location.hostname}:4042/`;
-
-      source = `${source}/${this.props.videoHash}`;
-
-      if (this.player) {
-        this.player.stop();
-      }
-
-      if (canvas) {
-        this.player = new JSMpeg.Player(source, {
-          canvas,
-          decodeFirstFrame: false,
-          preserveDrawingBuffer: false,
-          protocols: [],
-        });
-        this.player.play();
-      }
-
-      canvas.src = source;
-    }
-  }
-
   renderSampleView() {
     const {
       imageRatio,
@@ -955,12 +882,17 @@ class SampleImage extends React.Component {
               selectGrid={this.selectShape}
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
             />
-            {this.createVideoPlayerContainer(this.props.videoFormat)}
+            <div className={styles.videoCanvasWrapper}>
+              <VideoPlayer />
+              <canvas
+                id="canvas"
+                className={styles.coveringCanvas}
+                aria-label="Sample view"
+              />
+            </div>
 
             <SampleControls canvas={this.canvas} />
             <div>{this.centringMessage()}</div>
-
-            <canvas id="canvas" className={styles.coveringCanvas} />
           </div>
         </div>
       </div>
@@ -992,9 +924,6 @@ function mapStateToProps(state) {
     beamShape: state.sampleview.beamShape,
     beamSize: state.sampleview.beamSize,
     videoMessageOverlay: state.sampleview.videoMessageOverlay,
-    videoURL: state.sampleview.videoURL,
-    videoHash: state.sampleview.videoHash,
-    videoFormat: state.sampleview.videoFormat,
   };
 }
 
