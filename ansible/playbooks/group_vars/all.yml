@@ -42,4 +42,4 @@ mxcubeweb_repo: "https://github.com/mxcube/mxcubeweb.git"
 mxcubeweb_version: "develop"
 
 use_demo_config: true
-demo_config_source: "demo" 
+demo_config_source: "demo"

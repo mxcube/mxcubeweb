@@ -6,7 +6,7 @@
   become: true
 
   tasks:
-    # System package installation 
+    # System package installation
     - name: Install system dependencies
       ansible.builtin.package:
         name:
@@ -146,8 +146,8 @@
         - install
         - mxcubeweb
 
-    # Install then build frontend dependencies 
-    - name: Install UI dependencies 
+    # Install then build frontend dependencies
+    - name: Install UI dependencies
       ansible.builtin.command:
         cmd: >
           {{ vm_install_path }}/miniconda/bin/conda run -n mxcube
@@ -174,7 +174,7 @@
         - ui
         - build
         - frontend
-        
+
     - name: Create configuration directory
       ansible.builtin.file:
         path: "{{ vm_install_path }}/config"

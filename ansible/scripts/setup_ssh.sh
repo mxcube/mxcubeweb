@@ -34,22 +34,22 @@ HOSTS=$(ansible mxcube_vms -i "${PROJECT_ROOT}/inventory.yaml" --list-hosts | gr
 
 for HOST in $HOSTS; do
     ANSIBLE_DATA=$(ansible-inventory -i "${PROJECT_ROOT}/inventory.yaml" --host "$HOST" --json 2>/dev/null || true)
-    
+
     if command -v jq >/dev/null 2>&1 && [ -n "$ANSIBLE_DATA" ]; then
         # Use jq for reliable JSON parsing
         ANSIBLE_HOST=$(echo "$ANSIBLE_DATA" | jq -r '.ansible_host // empty')
         ANSIBLE_USER=$(echo "$ANSIBLE_DATA" | jq -r '.ansible_user // empty')
         ANSIBLE_PORT=$(echo "$ANSIBLE_DATA" | jq -r '.ansible_port // empty')
     else
-        # Fallback to grep/cut parsing 
+        # Fallback to grep/cut parsing
         ANSIBLE_HOST=$(ansible-inventory -i "${PROJECT_ROOT}/inventory.yaml" --host "$HOST" | grep -o '"ansible_host": "[^"]*"' | cut -d'"' -f4)
         ANSIBLE_USER=$(ansible-inventory -i "${PROJECT_ROOT}/inventory.yaml" --host "$HOST" | grep -o '"ansible_user": "[^"]*"' | cut -d'"' -f4)
         ANSIBLE_PORT=$(ansible-inventory -i "${PROJECT_ROOT}/inventory.yaml" --host "$HOST" | grep -o '"ansible_port": "[^"]*"' | cut -d'"' -f4)
     fi
-    
+
     TARGET_HOST=${ANSIBLE_HOST:-$HOST}
     TARGET_USER=${ANSIBLE_USER:-$USER}
-    
+
     SSH_PORT_ARG=""
     if [ -n "$ANSIBLE_PORT" ]; then
         SSH_PORT_ARG="-p ${ANSIBLE_PORT}"
@@ -57,7 +57,7 @@ for HOST in $HOSTS; do
     else
         echo "Copying SSH key to ${TARGET_USER}@${TARGET_HOST}..."
     fi
-    
+
     if ssh-copy-id -i "${KEY_FILE}" ${SSH_PORT_ARG} "${TARGET_USER}@${TARGET_HOST}" 2>&1; then
         echo "✓ Successfully copied SSH key to ${TARGET_HOST}"
     else

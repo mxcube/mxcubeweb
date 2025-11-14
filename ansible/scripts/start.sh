@@ -1,13 +1,13 @@
 #!/bin/bash
 
-# Script to deploy and start MXCubeWeb with SSH tunnel 
+# Script to deploy and start MXCubeWeb with SSH tunnel
 
 set -e
 
 SCRIPT_ROOT="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 PROJECT_ROOT="$(realpath "${SCRIPT_ROOT}/../")"
 
-# Configuration 
+# Configuration
 VM_HOST=$(grep -A1 "mxcube_vm1:" "${PROJECT_ROOT}/inventory.yaml" | grep "ansible_host:" | awk '{print $2}')
 REMOTE_PORT=8081
 LOCAL_PORT=8081
@@ -20,7 +20,7 @@ read -p "Do you want to deploy/update MXCubeWeb? (y/n) " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]; then
     "${SCRIPT_ROOT}/deploy.sh"
-    
+
     if [ $? -ne 0 ]; then
         echo "Deployment failed!"
         exit 1
@@ -55,7 +55,7 @@ echo "MXCubeWeb - Local port: ${LOCAL_PORT} "
 echo "Video Streamer - Local port: 8000"
 echo "URL: http://localhost:${LOCAL_PORT}"
 echo ""
-echo "Press Ctrl+C to stop the tunnels and close the application"
+echo "Use scripts/stop.sh to stop the tunnels and close the application"
 echo ""
 
 ssh -N -L ${LOCAL_PORT}:localhost:${REMOTE_PORT} -L 8000:localhost:8000 ${VM_HOST}
