@@ -567,7 +567,7 @@ export default function SampleGridTableContainer(props) {
                   <div className={styles.samplesGridTableItemTasks}>
                     {sample.tasks.map((taskData, i) => (
                       <TaskItem
-                        key={`task-${taskData.sampleID}`}
+                        key={`task-${taskData.queueID}`}
                         taskItemOnClick={taskItemOnClickHandler}
                         showDialog={bindActionCreators(showDialog, dispatch)}
                         deleteButtonOnClick={taskItemDeleteButtonOnClickHandler}
