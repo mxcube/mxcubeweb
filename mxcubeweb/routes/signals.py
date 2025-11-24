@@ -137,7 +137,6 @@ def queue_execution_finished(entry, queue_state=None):
     mxcube.TEMP_DISABLED = []
 
     server.emit("queue", msg, namespace="/hwr")
-    mxcube.sample_view._emit_shapes_updated()
 
 
 def queue_execution_stopped(*args):

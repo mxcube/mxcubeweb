@@ -69,6 +69,14 @@ class SampleViewAdapter(AdapterBase):
         if zoom_motor:
             zoom_motor.connect("stateChanged", self._zoom_changed)
 
+        HWR.beamline.queue_manager.connect(
+            "queue_execution_finished",
+            self._queue_execution_finished_handler,
+        )
+
+    def _queue_execution_finished_handler(self, queue_state=None):  # noqa: ARG002
+        self._emit_shapes_updated()
+
     def _centring_add_current_point(self, *args):
         shape = self._ho.get_shape(self._centring_point_id)
 
@@ -103,6 +111,12 @@ class SampleViewAdapter(AdapterBase):
             self._centring_point_id = point.id
 
         self._emit_shapes_updated()
+
+    def centring_remove_current_point(self):
+        if self._centring_point_id:
+            HWR.beamline.sample_view.delete_shape(self._centring_point_id)
+            self._emit_shapes_updated()
+            self._centring_point_id = None
 
     def _wait_for_centring_finishes(self, *args, **kwargs):  # noqa: ARG002
         """Executed when a centring is finished."""
@@ -369,7 +383,13 @@ class SampleViewAdapter(AdapterBase):
             raise RuntimeError(msg) from e
 
     def abort_centring(self):
-        self._ho.abort_centring()
+        try:
+            logging.getLogger("user_level_log").info("User canceled centring")
+            HWR.beamline.diffractometer.cancel_centring_method()
+            self.centring_remove_current_point()
+        except Exception:  # noqa: BLE001
+            logging.getLogger("MX3.HWR").warning("Canceling centring failed")
+
         return {}
 
     def click(self, x: float, y: float):
