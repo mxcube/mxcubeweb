@@ -1,0 +1,45 @@
+---
+# Global variables for MXCubeWeb deployment
+
+# User who will run the services
+service_user: "{{ lookup('env', 'USER') }}"
+service_group: "{{ lookup('env', 'USER') }}"
+
+# Base installation path
+install_base_path: "/opt/mxcubeweb"
+
+# VM-specific installation path
+vm_install_path: "{{ install_base_path }}/{{ vm_context }}"
+
+# MXCubeWeb configuration
+mxcubeweb_config:
+  port: 8081
+
+  host: "0.0.0.0"
+
+  hardware_repository_path: "{{ install_base_path }}/configuration"
+
+conda_base_path: "{{ install_base_path }}/conda"
+conda_env_name: "mxcube"
+python_version: "3.10"
+
+conda_environments:
+  mxcube:
+    conda_packages:
+      - nodejs==20.*
+      - pnpm==9.*
+      - poetry==2.1.3
+      - openldap
+      - ffmpeg
+    pip_packages:
+      - gunicorn
+      - gevent
+
+mxcubecore_repo: "https://github.com/mxcube/mxcubecore.git"
+mxcubecore_version: "develop"
+
+mxcubeweb_repo: "https://github.com/mxcube/mxcubeweb.git"
+mxcubeweb_version: "develop"
+
+use_demo_config: true
+demo_config_source: "demo"

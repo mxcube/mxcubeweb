@@ -1,0 +1,32 @@
+[Unit]
+Description=MXCubeWeb Server ({{ vm_context }})
+After=network.target
+
+[Service]
+Type=simple
+User={{ service_user }}
+Group=esrfusers
+WorkingDirectory={{ install_base_path }}/{{ vm_context }}/repositories/mxcubeweb
+
+# Environment variables
+Environment="PATH={{ install_base_path }}/{{ vm_context }}/miniconda/envs/mxcube/bin:$PATH"
+Environment="MXCUBE_HARDWARE_REPOSITORY={{ install_base_path }}/{{ vm_context }}/config"
+Environment="MXCUBE_HOST={{ mxcubeweb_config.host }}"
+Environment="MXCUBE_PORT={{ mxcubeweb_config.port }}"
+
+# Start command directly using the conda environment python
+ExecStart={{ install_base_path }}/{{ vm_context }}/miniconda/envs/mxcube/bin/mxcubeweb-server \
+    -r {{ install_base_path }}/{{ vm_context }}/config \
+    -s {{ install_base_path }}/{{ vm_context }}/repositories/mxcubeweb/ui/build
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mxcubeweb-{{ vm_context }}
+
+[Install]
+WantedBy=multi-user.target

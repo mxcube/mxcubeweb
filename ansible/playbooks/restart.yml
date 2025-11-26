@@ -1,0 +1,29 @@
+---
+# Playbook to restart MXCubeWeb services
+
+- name: Restart MXCubeWeb services
+  hosts: mxcube_vms
+  become: true
+
+  tasks:
+    - name: Restart MXCubeWeb service
+      ansible.builtin.systemd:
+        name: "mxcubeweb-{{ vm_context }}"
+        state: restarted
+        daemon_reload: true
+
+    - name: Wait for service to be ready
+      ansible.builtin.wait_for:
+        timeout: 10
+
+    - name: Display service status
+      ansible.builtin.systemd:
+        name: "mxcubeweb-{{ vm_context }}"
+      register: service_status
+
+    - name: Show service information
+      ansible.builtin.debug:
+        msg:
+          - "Service: mxcubeweb-{{ vm_context }}"
+          - "Status: {{ service_status.status.ActiveState }}"
+          - "Check logs: journalctl -u mxcubeweb-{{ vm_context }} -f"

@@ -11,6 +11,7 @@ configuration:
   sample_mount_mode: sample_changer
   username: diffractometer
   zoomcentre: '{"x":340,"y":250}'
+  exporter_address: localhost:9002
 objects:
   backlight: udiff_backlight.yaml
   backlightswitch: udiff_backlightswitch.yaml
