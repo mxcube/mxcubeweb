@@ -69,17 +69,6 @@
         - conda
         - setup
 
-    - name: Remove existing mxcubeweb conda environment if it exists
-      ansible.builtin.command:
-        cmd: "{{ install_base_path }}/miniconda/bin/conda env remove -n mxcubeweb -y"
-      become_user: "{{ service_user }}"
-      become: false
-      failed_when: false
-      changed_when: false
-      tags:
-        - conda
-        - environment
-
     - name: Create mxcubeweb conda environment from conda-environment.yml
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda env create --file {{ install_base_path }}/mxcubeweb/conda-environment.yml"
@@ -113,17 +102,6 @@
         - git
         - repositories
         - mxcubeweb
-
-    # - name: Install mxcubecore in editable mode with pip
-    #   ansible.builtin.pip:
-    #     name: "{{install_base_path }}/mxcubecore"
-    #     editable: true
-    #     executable: "{{install_base_path }}/miniconda/envs/mxcubeweb/bin/pip"
-    #   become_user: "{{ service_user }}"
-    #   tags:
-    #     - python
-    #     - install
-    #     - mxcubecore
   
     - name: Install mxcubeweb dependencies with Poetry
       ansible.builtin.command:
