@@ -45,7 +45,8 @@ function EquipmentContainer() {
               </Row>
             )}
           </GenericEquipment>
-          {haContents.use_harvester ? (
+
+          {haContents.use_harvester && (
             <GenericEquipment
               state={haState}
               name={haContents?.name}
@@ -60,27 +61,27 @@ function EquipmentContainer() {
                 </Col>
               </Row>
             </GenericEquipment>
-          ) : null}
+          )}
+
           <Row>
             <Col sm={12}>
-              {Object.entries(beamline.hardwareObjects).map(([key]) => {
-                const obj = beamline.hardwareObjects[key];
-                if (
-                  !Array.isArray(obj.commands) &&
-                  Object.values(obj.commands).length > 0
-                ) {
+              {Object.entries(beamline.hardwareObjects)
+                .filter(
+                  ([, obj]) =>
+                    !Array.isArray(obj.commands) &&
+                    Object.values(obj.commands).length > 0,
+                )
+                .map(([key, obj]) => {
                   return (
                     <GenericEquipmentControl
+                      key={key}
                       equipment={obj}
                       executeCommand={(...args) =>
                         dispatch(executeCommand(...args))
                       }
-                      key={key}
                     />
                   );
-                }
-                return null;
-              })}
+                })}
             </Col>
           </Row>
         </Col>

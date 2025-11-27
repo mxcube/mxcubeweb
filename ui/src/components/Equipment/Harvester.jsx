@@ -1,4 +1,4 @@
-import React from 'react';
+import { Fragment } from 'react';
 import { Badge, Button, Card } from 'react-bootstrap';
 import { contextMenu, Item, Menu, Separator } from 'react-contexify';
 import { FcCollect, FcRefresh, FcUpload } from 'react-icons/fc';
@@ -18,32 +18,6 @@ export default function Harvester() {
   const dispatch = useDispatch();
   const contents = useSelector((state) => state.harvester.contents);
 
-  function renderCrystalMenu(key) {
-    return (
-      <Menu id={key}>
-        <Item
-          onClick={() => {
-            dispatch(harvestCrystal(key));
-          }}
-        >
-          <span>
-            harvest Crystal <FcCollect />
-          </span>
-        </Item>
-        <Separator />
-        <Item
-          onClick={() => {
-            dispatch(harvestAndLoadCrystal(key));
-          }}
-        >
-          <span>
-            <FcCollect /> harvest & Load Sample <FcUpload />
-          </span>
-        </Item>
-      </Menu>
-    );
-  }
-
   const crystalUUID = contents.harvester_crystal_list;
 
   return (
@@ -57,22 +31,29 @@ export default function Harvester() {
         <div style={{ padding: '1em' }}>
           <Button
             variant="outline-secondary mb-2"
-            onClick={() => {
-              dispatch(refresh());
-            }}
+            onClick={() => dispatch(refresh())}
           >
             <FcRefresh /> Refresh
           </Button>
           <div className={styles.ha_grid_container}>
-            {crystalUUID
-              ? crystalUUID.map((item) => (
-                  <React.Fragment key={item.crystal_uuid}>
+            {crystalUUID &&
+              crystalUUID.map((item) => {
+                const {
+                  crystal_uuid: uuid,
+                  name,
+                  state,
+                  img_url,
+                  img_target_x,
+                  img_target_y,
+                } = item;
+
+                return (
+                  <Fragment key={uuid}>
                     <div
-                      key={item.crystal_uuid}
                       className={styles.ha_grid_item}
                       onContextMenu={(event) => {
                         contextMenu.show({
-                          id: item.crystal_uuid,
+                          id: uuid,
                           event,
                           position: {
                             x: event.clientX,
@@ -83,38 +64,53 @@ export default function Harvester() {
                     >
                       <h6 className="text-center mt-1">
                         <Badge pill bg="light" style={{ color: 'brown' }}>
-                          {item.name}
+                          {name}
                         </Badge>
                       </h6>
                       <ImageViewer
                         galleryView={false}
-                        imageUrl={item.img_url}
-                        imageName={item.name}
+                        imageUrl={img_url}
+                        imageName={name}
                         imgAlt=""
-                        imgTargetX={item.img_target_x}
-                        imgTargetY={item.img_target_y}
+                        imgTargetX={img_target_x}
+                        imgTargetY={img_target_y}
                         drawTarget={false}
                       />
                       <div className={styles.crystal_uuid_caption}>
                         <div className="mt-1">
-                          <Badge bg={sampleStateBackground(item.state)}>
-                            {item.state ? item.state.replaceAll('_', ' ') : ''}
+                          <Badge bg={sampleStateBackground(state)}>
+                            {state ? state.replaceAll('_', ' ') : ''}
                           </Badge>
                         </div>
                         <div>
-                          <span className="me-1">{item.crystal_uuid}</span>
+                          <span className="me-1">{uuid}</span>
                           <CopyToClipboard
-                            text={item.crystal_uuid}
+                            text={uuid}
                             tittle="crystal uuid"
-                            id={`copy_${item.crystal_uuid}`}
+                            id={`copy_${uuid}`}
                           />
                         </div>
                       </div>
                     </div>
-                    {renderCrystalMenu(item.crystal_uuid)}
-                  </React.Fragment>
-                ))
-              : null}
+
+                    <Menu id={uuid}>
+                      <Item onClick={() => dispatch(harvestCrystal(uuid))}>
+                        <span>
+                          harvest Crystal <FcCollect />
+                        </span>
+                      </Item>
+                      <Separator />
+                      <Item
+                        onClick={() => dispatch(harvestAndLoadCrystal(uuid))}
+                      >
+                        <span>
+                          <FcCollect /> harvest & Load Sample <FcUpload />
+                        </span>
+                      </Item>
+                    </Menu>
+                  </Fragment>
+                );
+              })}
           </div>
         </div>
       </Card.Body>

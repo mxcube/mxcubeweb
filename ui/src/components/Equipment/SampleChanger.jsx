@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useState } from 'react';
 import { Button, Card, Dropdown, DropdownButton, Form } from 'react-bootstrap';
@@ -16,43 +15,27 @@ import {
 import styles from './equipment.module.css';
 
 function getUniqueId() {
-  if (renderSampleChangerTreeNode._uid_count === undefined) {
-    renderSampleChangerTreeNode._uid_count = 0;
+  if (SampleChangerTreeNode._uid_count === undefined) {
+    SampleChangerTreeNode._uid_count = 0;
   }
-  return `SCTreeNodeID${renderSampleChangerTreeNode._uid_count++}`;
+  return `SCTreeNodeID${SampleChangerTreeNode._uid_count++}`;
 }
 
-function treeNodeCbxClick(e) {
-  const treeNodeIcon = document.querySelector(`#${e.target.id}icon`);
+function treeNodeCbxClick(evt) {
+  const treeNodeIcon = document.querySelector(`#${evt.target.id}icon`);
   if (treeNodeIcon) {
-    if (e.target.checked) {
-      treeNodeIcon.className = 'fa fa-minus';
-    } else {
-      treeNodeIcon.className = 'fa fa-plus';
-    }
+    treeNodeIcon.className = `fa fa-${evt.target.checked ? 'minus' : 'plus'}`;
   }
 }
 
-function showContextMenu(event, id) {
-  contextMenu.show({
-    id,
-    event,
-  });
-}
+function SampleChangerTreeNode(props) {
+  const { label, children } = props;
 
-function renderSampleChangerTreeNode(props) {
-  function selectClicked() {
-    props.select(props.label);
-  }
-
-  function scanClicked() {
-    props.scan(props.label);
-  }
-
+  const dispatch = useDispatch();
   const inputId = getUniqueId();
 
   return (
-    <div key={props.label}>
+    <div key={label}>
       <li className={styles.treeLi}>
         <input
           type="checkbox"
@@ -61,41 +44,47 @@ function renderSampleChangerTreeNode(props) {
           onClick={treeNodeCbxClick}
         />
         <Form.Label
-          onContextMenu={(e) => showContextMenu(e, `${props.label}`)}
-          htmlFor={inputId}
           className={styles.treeNodeLabel}
+          htmlFor={inputId}
+          onContextMenu={(event) => {
+            contextMenu.show({ id: `${label}`, event });
+          }}
         >
           <i id={`${inputId}icon`} className="fa fa-plus" />
           &nbsp;
-          {props.label}
+          {label}
         </Form.Label>
-        <ul className={styles.treeUl}>{props.children}</ul>
+        <ul className={styles.treeUl}>{children}</ul>
       </li>
 
-      <Menu id={`${props.label}`}>
+      <Menu id={`${label}`}>
         <li role="heading" aria-level="2" className="dropdown-header">
-          <b>Container {props.label}</b>
+          <b>Container {label}</b>
         </li>
         <Separator />
-        <Item onClick={scanClicked}>Scan</Item>
-        <Item onClick={selectClicked}>Move to this container</Item>
+        <Item onClick={() => dispatch(scan(label))}>Scan</Item>
+        <Item onClick={() => dispatch(select(label))}>
+          Move to this container
+        </Item>
       </Menu>
     </div>
   );
 }
 
+// eslint-disable-next-line react/no-multi-comp
 function SampleChangerTreeItem(props) {
+  const { label, status, dm } = props;
   const dispatch = useDispatch();
+
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
+
+  const loadedSampleAddress = useSelector(
+    (state) => state.sampleChanger.loadedSample?.address,
+  );
 
   function handleMountClick() {
     toggleDropdown();
-    dispatch(
-      mountSample({
-        sampleID: props.label,
-        location: props.label,
-      }),
-    );
+    dispatch(mountSample({ sampleID: label, location: label }));
   }
 
   function handleUnmountClick() {
@@ -107,8 +96,7 @@ function SampleChangerTreeItem(props) {
     setDropdownIsOpen(!dropdownIsOpen);
   }
 
-  const ls =
-    props.status === 'Loaded' ? { display: 'inline' } : { display: 'none' };
+  const ls = status === 'Loaded' ? { display: 'inline' } : { display: 'none' };
 
   return (
     <div>
@@ -116,17 +104,17 @@ function SampleChangerTreeItem(props) {
         <div className={styles.sampleLabel}>
           <DropdownButton
             style={{ fontStyle: 'italic', padding: '0.2em 0.2em' }}
-            title={`${props.label} ${props.dm}`}
+            title={`${label} ${dm}`}
             variant="link"
             onToggle={toggleDropdown}
             open={dropdownIsOpen}
           >
             <Dropdown.Header aria-level="2" className="dropdown-header">
-              <b>Position : {props.label}</b>
+              <b>Position : {label}</b>
             </Dropdown.Header>
             <Dropdown.Divider />
             <Dropdown.Item onClick={handleMountClick}>Mount</Dropdown.Item>
-            {props.loadedSample === props.label && (
+            {loadedSampleAddress === label && (
               <Dropdown.Item onClick={handleUnmountClick}>
                 Umount this position
               </Dropdown.Item>
@@ -143,32 +131,27 @@ function SampleChangerTreeItem(props) {
 }
 
 // eslint-disable-next-line react/no-multi-comp
-export default function SampleChanger() {
+function SampleChanger() {
   const dispatch = useDispatch();
 
   const scState = useSelector((state) => state.sampleChanger.state);
   const loadedSample = useSelector((state) => state.sampleChanger.loadedSample);
   const contents = useSelector((state) => state.sampleChanger.contents);
 
-  function renderTree(node, root) {
+  function renderTree(node, root = false) {
     if (node.children) {
-      const childNodes = [];
-      for (const c of node.children) {
-        childNodes.push(renderTree(c));
-      }
-      const treeNodeProps = {
-        label: node.name,
-        selected: node.selected,
-        root,
-        dm: node.id,
-        select: (address) => dispatch(select(address)),
-        status: node.status,
-        scan: (container) => dispatch(scan(container)),
-        refresh: () => dispatch(refresh()),
-        key: node.name,
-        children: childNodes,
-      };
-      return renderSampleChangerTreeNode(treeNodeProps);
+      return (
+        <SampleChangerTreeNode
+          key={node.name}
+          label={node.name}
+          selected={node.selected}
+          root={root}
+          dm={node.id}
+          status={node.status}
+        >
+          {node.children.map(renderTree)}
+        </SampleChangerTreeNode>
+      );
     }
 
     return (
@@ -177,33 +160,8 @@ export default function SampleChanger() {
         dm={node.id}
         status={node.status}
         key={node.name}
-        loadedSample={loadedSample?.address}
       />
     );
-  }
-
-  // display some buttons depending on available features
-  const nodes = renderTree(contents, true);
-  let current = '';
-
-  if (loadedSample.address) {
-    current = (
-      <div style={{ marginTop: '1em' }}>
-        Currently loaded: {loadedSample.address}
-        <span style={{ marginRight: '1em' }} />( {loadedSample.barcode} )
-        <span style={{ marginRight: '1em' }} />
-        <Button
-          variant="outline-secondary"
-          onClick={() => {
-            dispatch(unmountSample());
-          }}
-        >
-          <i className="fas fa-download" /> Unload
-        </Button>
-      </div>
-    );
-  } else {
-    current = <div style={{ marginTop: '1em', marginBottom: '1em' }} />;
   }
 
   return (
@@ -218,6 +176,7 @@ export default function SampleChanger() {
         >
           <i className="fas fa-sync" /> Refresh
         </Button>
+
         <Button
           style={{ marginLeft: '1em' }}
           variant="outline-secondary"
@@ -227,6 +186,7 @@ export default function SampleChanger() {
         >
           <i className="fas fa-qrcode" /> Scan all containers
         </Button>
+
         <span style={{ marginLeft: '1em' }}>
           {scState === 'MOVING' && (
             <Button
@@ -240,10 +200,32 @@ export default function SampleChanger() {
             </Button>
           )}
         </span>
-        {current}
+
+        {loadedSample.address ? (
+          <div style={{ marginTop: '1em' }}>
+            Currently loaded: {loadedSample.address}
+            <span style={{ marginRight: '1em' }} />( {loadedSample.barcode} )
+            <span style={{ marginRight: '1em' }} />
+            <Button
+              variant="outline-secondary"
+              onClick={() => {
+                dispatch(unmountSample());
+              }}
+            >
+              <i className="fas fa-download" /> Unload
+            </Button>
+          </div>
+        ) : (
+          <div style={{ marginTop: '1em', marginBottom: '1em' }} />
+        )}
+
         <div style={{ marginBottom: '1em' }} />
-        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>{nodes}</div>
+        <div style={{ maxHeight: '60vh', overflowY: 'auto' }}>
+          {renderTree(contents, true)}
+        </div>
       </Card.Body>
     </Card>
   );
 }
+
+export default SampleChanger;
