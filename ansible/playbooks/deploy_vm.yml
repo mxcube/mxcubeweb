@@ -25,7 +25,7 @@
     # Create the base installation directory for this VM
     - name: Create installation directory
       ansible.builtin.file:
-        path: "{{ vm_install_path }}"
+        path: "{{install_base_path }}"
         state: directory
         owner: "{{ service_user }}"
         mode: '0755'
@@ -35,7 +35,7 @@
 
     - name: Check if Miniconda is installed
       ansible.builtin.stat:
-        path: "{{ vm_install_path }}/miniconda/bin/conda"
+        path: "{{install_base_path }}/miniconda/bin/conda"
       register: conda_installed
       tags:
         - conda
@@ -53,7 +53,7 @@
 
     - name: Install Miniconda
       ansible.builtin.command:
-        cmd: "bash /tmp/miniconda.sh -b -p {{ vm_install_path }}/miniconda"
+        cmd: "bash /tmp/miniconda.sh -b -p {{install_base_path }}/miniconda"
       when: not conda_installed.stat.exists
       changed_when: true
       tags:
@@ -69,39 +69,31 @@
         - conda
         - setup
 
-    # Create a dedicated conda environment for MXCube
-    - name: Create conda environment for mxcube
+    - name: Remove existing mxcubeweb conda environment if it exists
       ansible.builtin.command:
-        cmd: >
-          {{ vm_install_path }}/miniconda/bin/conda create
-          -n mxcube
-          python={{ python_version }}
-          {{ conda_environments.mxcube.conda_packages | join(' ') }}
-          --override-channels
-          -c conda-forge
-          -y
-      args:
-        creates: "{{ vm_install_path }}/miniconda/envs/mxcube"
+        cmd: "{{ install_base_path }}/miniconda/bin/conda env remove -n mxcubeweb -y"
+      become_user: "{{ service_user }}"
+      become: false
+      failed_when: false
       changed_when: false
       tags:
         - conda
         - environment
 
-    # Prepare directory to hold git repositories
-    - name: Create directory for repositories
-      ansible.builtin.file:
-        path: "{{ vm_install_path }}/repositories"
-        state: directory
-        owner: "{{ service_user }}"
-        mode: '0755'
+    - name: Create mxcubeweb conda environment from conda-environment.yml
+      ansible.builtin.command:
+        cmd: "{{ install_base_path }}/miniconda/bin/conda env create --file {{ install_base_path }}/mxcubeweb/conda-environment.yml"
+      become_user: "{{ service_user }}"
+      become: false
+      changed_when: false
       tags:
-        - setup
-        - directories
+        - conda
+        - environment
 
     - name: Clone mxcubecore
       ansible.builtin.git:
         repo: "{{ mxcubecore_repo }}"
-        dest: "{{ vm_install_path }}/repositories/mxcubecore"
+        dest: "{{install_base_path }}/mxcubecore"
         version: "{{ mxcubecore_version }}"
         force: true
       become_user: "{{ service_user }}"
@@ -113,7 +105,7 @@
     - name: Clone mxcubeweb
       ansible.builtin.git:
         repo: "{{ mxcubeweb_repo }}"
-        dest: "{{ vm_install_path }}/repositories/mxcubeweb"
+        dest: "{{install_base_path }}/mxcubeweb"
         version: "{{ mxcubeweb_version }}"
         force: true
       become_user: "{{ service_user }}"
@@ -122,24 +114,24 @@
         - repositories
         - mxcubeweb
 
-    - name: Install mxcubecore in editable mode with pip
-      ansible.builtin.pip:
-        name: "{{ vm_install_path }}/repositories/mxcubecore"
-        editable: true
-        executable: "{{ vm_install_path }}/miniconda/envs/mxcube/bin/pip"
-      become_user: "{{ service_user }}"
-      tags:
-        - python
-        - install
-        - mxcubecore
-
+    # - name: Install mxcubecore in editable mode with pip
+    #   ansible.builtin.pip:
+    #     name: "{{install_base_path }}/mxcubecore"
+    #     editable: true
+    #     executable: "{{install_base_path }}/miniconda/envs/mxcubeweb/bin/pip"
+    #   become_user: "{{ service_user }}"
+    #   tags:
+    #     - python
+    #     - install
+    #     - mxcubecore
+  
     - name: Install mxcubeweb dependencies with Poetry
       ansible.builtin.command:
-        cmd: >
-          {{ vm_install_path }}/miniconda/bin/conda run -n mxcube
-          poetry install
+        cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb poetry install"
       args:
-        chdir: "{{ vm_install_path }}/repositories/mxcubeweb"
+        chdir: "{{ install_base_path }}/mxcubeweb"
+      become_user: "{{ service_user }}"
+      become: false
       changed_when: false
       tags:
         - python
@@ -149,13 +141,12 @@
     # Install then build frontend dependencies
     - name: Install UI dependencies
       ansible.builtin.command:
-        cmd: >
-          {{ vm_install_path }}/miniconda/bin/conda run -n mxcube
-          pnpm --prefix ui install
+        cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb pnpm --prefix ui install"
       args:
-        chdir: "{{ vm_install_path }}/repositories/mxcubeweb"
-      changed_when: false
+        chdir: "{{ install_base_path }}/mxcubeweb"
       become_user: "{{ service_user }}"
+      become: false
+      changed_when: false
       tags:
         - ui
         - install
@@ -163,42 +154,16 @@
 
     - name: Build UI
       ansible.builtin.command:
-        cmd: >
-          {{ vm_install_path }}/miniconda/bin/conda run -n mxcube
-          pnpm --prefix ui build
+        cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb pnpm --prefix ui build"
       args:
-        chdir: "{{ vm_install_path }}/repositories/mxcubeweb"
-      changed_when: false
+        chdir: "{{ install_base_path }}/mxcubeweb"
       become_user: "{{ service_user }}"
+      become: false
+      changed_when: false
       tags:
         - ui
         - build
         - frontend
-
-    - name: Create configuration directory
-      ansible.builtin.file:
-        path: "{{ vm_install_path }}/config"
-        state: directory
-        owner: "{{ service_user }}"
-        group: esrfusers
-        mode: '0755'
-      tags:
-        - setup
-        - config
-
-    - name: Copy demo configuration files
-      ansible.builtin.copy:
-        src: "{{ vm_install_path }}/repositories/mxcubeweb/{{ demo_config_source }}/"
-        dest: "{{ vm_install_path }}/config/"
-        remote_src: true
-        owner: "{{ service_user }}"
-        group: esrfusers
-        mode: preserve
-        directory_mode: '0755'
-      when: use_demo_config
-      tags:
-        - setup
-        - config
 
     # Render and install the systemd service unit for MXCubeWeb with jinjia
     - name: Create systemd service file for MXCubeWeb
@@ -225,7 +190,7 @@
       ansible.builtin.debug:
         msg:
           - "Deployment complete for {{ vm_context }}"
-          - "Installation path: {{ vm_install_path }}"
+          - "Installation path: {{install_base_path }}"
           - "Service: mxcubeweb-{{ vm_context }}"
           - "Status: systemctl status mxcubeweb-{{ vm_context }}"
           - "Logs: journalctl -u mxcubeweb-{{ vm_context }} -f"

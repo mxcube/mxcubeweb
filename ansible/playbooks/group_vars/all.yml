@@ -6,18 +6,13 @@ service_user: "{{ lookup('env', 'USER') }}"
 service_group: "{{ lookup('env', 'USER') }}"
 
 # Base installation path
-install_base_path: "/opt/mxcubeweb"
-
-# VM-specific installation path
-vm_install_path: "{{ install_base_path }}/{{ vm_context }}"
+install_base_path: "/opt/mxcube"
 
 # MXCubeWeb configuration
 mxcubeweb_config:
   port: 8081
 
   host: "0.0.0.0"
-
-  hardware_repository_path: "{{ install_base_path }}/configuration"
 
 conda_base_path: "{{ install_base_path }}/conda"
 conda_env_name: "mxcube"
