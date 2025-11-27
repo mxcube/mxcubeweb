@@ -921,9 +921,14 @@ class Queue(ComponentBase):
         sample_model.set_name(item["sampleName"])
         sample_model.name = item["sampleName"]
 
+        try:
+            is_plate_mode = HWR.beamline.diffractometer.in_plate_mode()
+        except (AttributeError, Exception):
+            is_plate_mode = False
+
         if sample_model.free_pin_mode:
             sample_model.location = (None, sample_id)
-        elif HWR.beamline.diffractometer.in_plate_mode():
+        elif is_plate_mode:
             component = HWR.beamline.sample_changer._resolve_component(item["location"])
             sample_model.location = component.get_coords()
         else:

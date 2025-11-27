@@ -1,7 +1,0 @@
-services:
-  sample-changer:
-    build:
-      context: ../..
-      dockerfile: docker/sc-docker/Dockerfile.sample-changer
-    ports:
-      - "9001:9001"

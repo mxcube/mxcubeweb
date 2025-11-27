@@ -186,11 +186,16 @@ class SampleChangerAdapter(AdapterBase):
                 ):
                     res = sc.load(sample.sample_id, wait=True)
 
+                try:
+                    is_plate_mode = HWR.beamline.diffractometer.in_plate_mode()
+                except (AttributeError, Exception):
+                    is_plate_mode = False
+
                 if (
                     res
                     and HWR.beamline.queue_manager.centring_method
                     == queue_entry.CENTRING_METHOD.LOOP
-                    and not HWR.beamline.diffractometer.in_plate_mode()
+                    and not is_plate_mode
                     and not self.app.harvester.mount_from_harvester()
                 ):
                     HWR.beamline.diffractometer.reject_centring()
@@ -199,7 +204,7 @@ class SampleChangerAdapter(AdapterBase):
                     HWR.beamline.diffractometer.start_centring_method(
                         HWR.beamline.diffractometer.C3D_MODE
                     )
-                elif HWR.beamline.diffractometer.in_plate_mode():
+                elif is_plate_mode:
                     msg = "Starting autoloop Focusing ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     sc.move_to_crystal_position(None)
@@ -287,8 +292,14 @@ class SampleChangerAdapter(AdapterBase):
             },
             "cmds": {"cmds": cmds},
             "msg": msg,
-            "plate_mode": HWR.beamline.diffractometer.in_plate_mode(),
         }
+
+        try:
+            result["plate_mode"] = HWR.beamline.diffractometer.in_plate_mode()
+        except (AttributeError, Exception):
+            result["plate_mode"] = False
+
+        return result
 
     def state(self):
         return "READY" if self._ho.is_ready() else "BUSY"

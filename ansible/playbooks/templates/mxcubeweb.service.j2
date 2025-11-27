@@ -9,8 +9,7 @@ Group=esrfusers
 WorkingDirectory={{ install_base_path }}/mxcubeweb
 
 # Environment variables
-Environment="PATH={{ install_base_path }}/miniconda/envs/mxcubeweb/bin:$PATH"
-Environment="MXCUBE_HARDWARE_REPOSITORY={{ install_base_path }}/mxcubeweb/demo"
+Environment="PYTHONPATH={{ install_base_path }}/mxcubecore:{{ install_base_path }}/mxcubeweb"
 Environment="MXCUBE_HOST={{ mxcubeweb_config.host }}"
 Environment="MXCUBE_PORT={{ mxcubeweb_config.port }}"
 

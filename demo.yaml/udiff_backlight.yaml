@@ -1,7 +1,13 @@
 %YAML 1.2
 ---
-class: MotorMockup.MotorMockup
+class: MicrodiffLight.MicrodiffLight
 configuration:
-  exporter_address: 192.168.96.43:9001
-  motor_name: backlight
-  username: backlight
+  username: Back light
+  actuator_name: BackLight
+  exporter_address: localhost:9002
+  position_suffix: Factor
+  limits: [0, 2]
+channels:
+  - name: chanLightIsOn
+    type: exporter
+    channel_name: BackLightIsOn

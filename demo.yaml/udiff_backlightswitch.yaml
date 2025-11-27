@@ -1,10 +1,9 @@
 %YAML 1.2
 ---
-class: ExporterNStateMockup.ExporterNStateMockup
+class: ExporterNState.ExporterNState
 configuration:
-  default_value: false
-  exporter_address: wid30bmd:9001
-  use_hwstate: true
-  username: backlight_switch
+  username: Back Light
+  exporter_address: localhost:9002
   value_channel_name: BackLightIsOn
   values: '{"IN": True, "OUT": False}'
+  state_channel_name: HardwareState

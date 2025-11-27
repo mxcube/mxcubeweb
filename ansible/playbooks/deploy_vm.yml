@@ -6,7 +6,6 @@
   become: true
 
   tasks:
-    # System package installation
     - name: Install system dependencies
       ansible.builtin.package:
         name:
@@ -18,28 +17,23 @@
           - python3-pip
         state: present
       when: ansible_os_family == "Debian"
-      tags:
-        - system
-        - dependencies
+      tags: [system, dependencies]
 
     # Create the base installation directory for this VM
     - name: Create installation directory
       ansible.builtin.file:
-        path: "{{install_base_path }}"
+        path: "{{ install_base_path }}"
         state: directory
         owner: "{{ service_user }}"
         mode: '0755'
-      tags:
-        - setup
-        - directories
+      tags: [setup, directories]
 
+    # Miniconda setup
     - name: Check if Miniconda is installed
       ansible.builtin.stat:
-        path: "{{install_base_path }}/miniconda/bin/conda"
+        path: "{{ install_base_path }}/miniconda/bin/conda"
       register: conda_installed
-      tags:
-        - conda
-        - setup
+      tags: [conda, setup]
 
     - name: Download Miniconda
       ansible.builtin.get_url:
@@ -47,27 +41,65 @@
         dest: "/tmp/miniconda.sh"
         mode: '0755'
       when: not conda_installed.stat.exists
-      tags:
-        - conda
-        - setup
+      tags: [conda, setup]
 
     - name: Install Miniconda
       ansible.builtin.command:
-        cmd: "bash /tmp/miniconda.sh -b -p {{install_base_path }}/miniconda"
+        cmd: "bash /tmp/miniconda.sh -b -p {{ install_base_path }}/miniconda"
       when: not conda_installed.stat.exists
       changed_when: true
-      tags:
-        - conda
-        - setup
+      tags: [conda, setup]
 
-    - name: Clean up installation file
-      ansible.builtin.file:
-        path: "/tmp/miniconda.sh"
-        state: absent
-      when: not conda_installed.stat.exists
-      tags:
-        - conda
-        - setup
+    # Copy or clone repositories depending on use_local_repos flag
+    - name: Copy local mxcubecore repository
+      ansible.posix.synchronize:
+        src: "{{ local_mxcubecore_path }}/"
+        dest: "{{ install_base_path }}/mxcubecore"
+        delete: false
+        recursive: true
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=__pycache__"
+          - "--exclude=*.pyc"
+      become_user: "{{ service_user }}"
+      when: use_local_repos
+      tags: [repositories, mxcubecore, local]
+
+    - name: Copy local mxcubeweb repository
+      ansible.posix.synchronize:
+        src: "{{ local_mxcubeweb_path }}/"
+        dest: "{{ install_base_path }}/mxcubeweb"
+        delete: false
+        recursive: true
+        rsync_opts:
+          - "--exclude=.git"
+          - "--exclude=__pycache__"
+          - "--exclude=*.pyc"
+          - "--exclude=node_modules"
+          - "--exclude=ui/build"
+      become_user: "{{ service_user }}"
+      when: use_local_repos
+      tags: [repositories, mxcubeweb, local]
+
+    - name: Clone mxcubecore from GitHub
+      ansible.builtin.git:
+        repo: "{{ mxcubecore_repo }}"
+        dest: "{{ install_base_path }}/mxcubecore"
+        version: "{{ mxcubecore_version }}"
+        force: true
+      become_user: "{{ service_user }}"
+      when: not use_local_repos
+      tags: [git, repositories, mxcubecore]
+
+    - name: Clone mxcubeweb from GitHub
+      ansible.builtin.git:
+        repo: "{{ mxcubeweb_repo }}"
+        dest: "{{ install_base_path }}/mxcubeweb"
+        version: "{{ mxcubeweb_version }}"
+        force: true
+      become_user: "{{ service_user }}"
+      when: not use_local_repos
+      tags: [git, repositories, mxcubeweb]
 
     - name: Create mxcubeweb conda environment from conda-environment.yml
       ansible.builtin.command:
@@ -75,35 +107,9 @@
       become_user: "{{ service_user }}"
       become: false
       changed_when: false
-      tags:
-        - conda
-        - environment
+      tags: [conda, environment]
 
-    - name: Clone mxcubecore
-      ansible.builtin.git:
-        repo: "{{ mxcubecore_repo }}"
-        dest: "{{install_base_path }}/mxcubecore"
-        version: "{{ mxcubecore_version }}"
-        force: true
-      become_user: "{{ service_user }}"
-      tags:
-        - git
-        - repositories
-        - mxcubecore
-
-    - name: Clone mxcubeweb
-      ansible.builtin.git:
-        repo: "{{ mxcubeweb_repo }}"
-        dest: "{{install_base_path }}/mxcubeweb"
-        version: "{{ mxcubeweb_version }}"
-        force: true
-      become_user: "{{ service_user }}"
-      tags:
-        - git
-        - repositories
-        - mxcubeweb
-  
-    - name: Install mxcubeweb dependencies with Poetry
+    - name: Install Mxcubeweb dependencies with Poetry
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb poetry install"
       args:
@@ -111,12 +117,9 @@
       become_user: "{{ service_user }}"
       become: false
       changed_when: false
-      tags:
-        - python
-        - install
-        - mxcubeweb
+      tags: [python, dependencies, mxcubeweb]
 
-    # Install then build frontend dependencies
+    # Frontend build
     - name: Install UI dependencies
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb pnpm --prefix ui install"
@@ -125,10 +128,7 @@
       become_user: "{{ service_user }}"
       become: false
       changed_when: false
-      tags:
-        - ui
-        - install
-        - frontend
+      tags: [ui, dependencies, frontend]
 
     - name: Build UI
       ansible.builtin.command:
@@ -138,21 +138,40 @@
       become_user: "{{ service_user }}"
       become: false
       changed_when: false
-      tags:
-        - ui
-        - build
-        - frontend
+      tags: [ui, build, frontend]
 
-    # Render and install the systemd service unit for MXCubeWeb with jinjia
-    - name: Create systemd service file for MXCubeWeb
+    # Docker containers management
+    - name: Load flex-server Docker image
+      ansible.builtin.shell:
+        cmd: "docker load -i {{ install_base_path }}/mxcubeweb/docker/flex-server-simulation_20241212.tar"
+      become_user: "{{ service_user }}"
+      tags: [docker]
+      register: docker_load_flex
+      changed_when: "'Loaded image' in docker_load_flex.stdout"
+
+    - name: Load arinax MD Docker image
+      ansible.builtin.shell:
+        cmd: "docker load -i {{ install_base_path }}/mxcubeweb/docker/arinax_md.tar"
+      become_user: "{{ service_user }}"
+      tags: [docker]
+      register: docker_load_md
+      changed_when: "'Loaded image' in docker_load_md.stdout"
+
+    - name: Start Docker containers with docker-compose
+      community.docker.docker_compose_v2:
+        project_src: "{{ install_base_path }}/mxcubeweb/docker"
+        state: present
+      become_user: "{{ service_user }}"
+      tags: [docker]
+
+    # Systemd service
+    - name: Create systemd service file
       ansible.builtin.template:
         src: templates/mxcubeweb.service.j2
         dest: "/etc/systemd/system/mxcubeweb-{{ vm_context }}.service"
         mode: '0644'
       notify: Reload systemd
-      tags:
-        - service
-        - systemd
+      tags: [service, systemd]
 
     - name: Enable and start MXCubeWeb service
       ansible.builtin.systemd:
@@ -160,27 +179,19 @@
         enabled: true
         state: started
         daemon_reload: true
-      tags:
-        - service
-        - systemd
+      tags: [service, systemd]
 
     - name: Display deployment information
       ansible.builtin.debug:
         msg:
-          - "Deployment complete for {{ vm_context }}"
-          - "Installation path: {{install_base_path }}"
-          - "Service: mxcubeweb-{{ vm_context }}"
-          - "Status: systemctl status mxcubeweb-{{ vm_context }}"
-          - "Logs: journalctl -u mxcubeweb-{{ vm_context }} -f"
-      tags:
-        - always
+          - " Deployment complete for {{ vm_context }}"
+          - " Installation path: {{ install_base_path }}"
+          - " Service name: mxcubeweb-{{ vm_context }}"
+          - " Check status: systemctl status mxcubeweb-{{ vm_context }}"
+          - " View logs: journalctl -u mxcubeweb-{{ vm_context }} -f"
+      tags: [always]
 
   handlers:
     - name: Reload systemd
       ansible.builtin.systemd:
         daemon_reload: true
-
-    - name: Restart MXCubeWeb
-      ansible.builtin.systemd:
-        name: "mxcubeweb-{{ vm_context }}"
-        state: restarted

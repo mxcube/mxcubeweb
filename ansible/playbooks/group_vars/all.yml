@@ -1,14 +1,11 @@
 ---
 # Global variables for MXCubeWeb deployment
 
-# User who will run the services
 service_user: "{{ lookup('env', 'USER') }}"
 service_group: "{{ lookup('env', 'USER') }}"
 
-# Base installation path
 install_base_path: "/opt/mxcube"
 
-# MXCubeWeb configuration
 mxcubeweb_config:
   port: 8081
 
@@ -30,8 +27,16 @@ conda_environments:
       - gunicorn
       - gevent
 
+# Set use_local_repos to true to copy from local paths instead of cloning from GitHub
+use_local_repos: true
+
+# GitHub repositories (used when use_local_repos is false)
 mxcubecore_repo: "https://github.com/mxcube/mxcubecore.git"
 mxcubecore_version: "develop"
 
 mxcubeweb_repo: "https://github.com/mxcube/mxcubeweb.git"
-mxcubeweb_version: "ml-DeployVM"
+mxcubeweb_version: "develop"
+
+# Local repository paths (used when use_local_repos is true)
+local_mxcubecore_path: "../../../mxcubecore"
+local_mxcubeweb_path: "../../../"

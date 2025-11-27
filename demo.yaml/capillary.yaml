@@ -1,7 +1,9 @@
 %YAML 1.2
 ---
-class: ExporterNStateMockup.ExporterNStateMockup
+class: ExporterNState.ExporterNState
 configuration:
-  use_hwstate: true
-  username: capillary
+  exporter_address: localhost:9002
+  state_channel_name: HardwareState
+  username: Capillary
+  value_channel_name: CapillaryPosition
   values: '{"IN": "BEAM", "OUT": "OFF"}'
