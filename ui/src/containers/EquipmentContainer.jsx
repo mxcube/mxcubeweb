@@ -2,20 +2,6 @@ import { Col, Container, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { executeCommand } from '../actions/beamline';
-import {
-  abort as haAbort,
-  harvestAndLoadCrystal,
-  harvestCrystal,
-  refresh as haRefresh,
-} from '../actions/harvester';
-import {
-  abort,
-  mountSample,
-  refresh,
-  scan,
-  select,
-  unmountSample,
-} from '../actions/sampleChanger';
 import GenericEquipment from '../components/Equipment/GenericEquipment';
 import GenericEquipmentControl from '../components/Equipment/GenericEquipmentControl';
 import Harvester from '../components/Equipment/Harvester';
@@ -29,7 +15,6 @@ function EquipmentContainer() {
   const dispatch = useDispatch();
 
   const beamline = useSelector((state) => state.beamline);
-  const loadedSample = useSelector((state) => state.sampleChanger.loadedSample);
   const scContents = useSelector((state) => state.sampleChanger.contents);
   const scState = useSelector((state) => state.sampleChanger.state);
   const haContents = useSelector((state) => state.harvester.contents);
@@ -52,17 +37,7 @@ function EquipmentContainer() {
             ) : (
               <Row className="row">
                 <Col sm={6}>
-                  <SampleChanger
-                    state={scState}
-                    loadedSample={loadedSample}
-                    select={(address) => dispatch(select(address))}
-                    load={(address) => dispatch(mountSample(address))}
-                    unload={() => dispatch(unmountSample())}
-                    abort={() => dispatch(abort())}
-                    scan={(container) => dispatch(scan(container))}
-                    contents={scContents}
-                    refresh={() => dispatch(refresh())}
-                  />
+                  <SampleChanger />
                 </Col>
                 <Col sm={6}>
                   <SampleChangerMaintenance />
@@ -78,18 +53,7 @@ function EquipmentContainer() {
             >
               <Row className="row">
                 <Col sm={9}>
-                  <Harvester
-                    state={haState}
-                    harvestCrystal={(address) =>
-                      dispatch(harvestCrystal(address))
-                    }
-                    harvestAndLoadCrystal={(address) =>
-                      dispatch(harvestAndLoadCrystal(address))
-                    }
-                    abort={() => dispatch(haAbort())}
-                    contents={haContents}
-                    handleRefresh={() => dispatch(haRefresh())}
-                  />
+                  <Harvester />
                 </Col>
                 <Col sm={3}>
                   <HarvesterMaintenance />

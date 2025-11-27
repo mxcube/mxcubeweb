@@ -1,52 +1,41 @@
-/* eslint-disable react/destructuring-assignment */
 import React from 'react';
 import { Badge, Button, Card } from 'react-bootstrap';
 import { contextMenu, Item, Menu, Separator } from 'react-contexify';
 import { FcCollect, FcRefresh, FcUpload } from 'react-icons/fc';
+import { useDispatch, useSelector } from 'react-redux';
 
+import {
+  harvestAndLoadCrystal,
+  harvestCrystal,
+  refresh,
+} from '../../actions/harvester.js';
 import CopyToClipboard from '../CopyToClipboard/CopyToClipboard.jsx';
 import ImageViewer from '../ImageViewer/ImageViewer.jsx';
 import { sampleStateBackground } from '../SampleGrid/util.js';
 import styles from './equipment.module.css';
 
-export default function Harvester(props) {
-  function showContextMenu(event, id) {
-    let position = {
-      x: event.clientX,
-      y: event.clientY,
-    };
-    if (props.inPopover) {
-      position = {
-        x: event.offsetX,
-        y: event.offsetY,
-      };
-    }
-
-    contextMenu.show({
-      id,
-      event,
-      position,
-    });
-  }
-
-  function harvestCrystal(UUID) {
-    props.harvestCrystal(UUID);
-  }
-
-  function harvestAndLoadCrystal(UUID) {
-    props.harvestAndLoadCrystal(UUID);
-  }
+export default function Harvester() {
+  const dispatch = useDispatch();
+  const contents = useSelector((state) => state.harvester.contents);
 
   function renderCrystalMenu(key) {
     return (
       <Menu id={key}>
-        <Item onClick={() => harvestCrystal(key)}>
+        <Item
+          onClick={() => {
+            dispatch(harvestCrystal(key));
+          }}
+        >
           <span>
             harvest Crystal <FcCollect />
           </span>
         </Item>
         <Separator />
-        <Item onClick={() => harvestAndLoadCrystal(key)}>
+        <Item
+          onClick={() => {
+            dispatch(harvestAndLoadCrystal(key));
+          }}
+        >
           <span>
             <FcCollect /> harvest & Load Sample <FcUpload />
           </span>
@@ -55,20 +44,22 @@ export default function Harvester(props) {
     );
   }
 
-  const crystalUUID = props.contents.harvester_crystal_list;
+  const crystalUUID = contents.harvester_crystal_list;
 
   return (
     <Card>
       <Card.Header>
         <span style={{ marginLeft: '10px' }}>
-          Number Of Available Pins : {props.contents.number_of_pins}
+          Number Of Available Pins : {contents.number_of_pins}
         </span>
       </Card.Header>
       <Card.Body>
         <div style={{ padding: '1em' }}>
           <Button
             variant="outline-secondary mb-2"
-            onClick={props.handleRefresh}
+            onClick={() => {
+              dispatch(refresh());
+            }}
           >
             <FcRefresh /> Refresh
           </Button>
@@ -79,9 +70,16 @@ export default function Harvester(props) {
                     <div
                       key={item.crystal_uuid}
                       className={styles.ha_grid_item}
-                      onContextMenu={(e) =>
-                        showContextMenu(e, item.crystal_uuid)
-                      }
+                      onContextMenu={(event) => {
+                        contextMenu.show({
+                          id: item.crystal_uuid,
+                          event,
+                          position: {
+                            x: event.clientX,
+                            y: event.clientY,
+                          },
+                        });
+                      }}
                     >
                       <h6 className="text-center mt-1">
                         <Badge pill bg="light" style={{ color: 'brown' }}>

@@ -3,7 +3,16 @@
 import { useState } from 'react';
 import { Button, Card, Dropdown, DropdownButton, Form } from 'react-bootstrap';
 import { contextMenu, Item, Menu, Separator } from 'react-contexify';
+import { useDispatch, useSelector } from 'react-redux';
 
+import {
+  abort,
+  mountSample,
+  refresh,
+  scan,
+  select,
+  unmountSample,
+} from '../../actions/sampleChanger';
 import styles from './equipment.module.css';
 
 function getUniqueId() {
@@ -76,19 +85,22 @@ function renderSampleChangerTreeNode(props) {
 }
 
 function SampleChangerTreeItem(props) {
+  const dispatch = useDispatch();
   const [dropdownIsOpen, setDropdownIsOpen] = useState(false);
 
   function handleMountClick() {
     toggleDropdown();
-    props.load({
-      sampleID: props.label,
-      location: props.label,
-    });
+    dispatch(
+      mountSample({
+        sampleID: props.label,
+        location: props.label,
+      }),
+    );
   }
 
   function handleUnmountClick() {
     toggleDropdown();
-    props.unload(props.label);
+    dispatch(unmountSample());
   }
 
   function toggleDropdown() {
@@ -131,21 +143,12 @@ function SampleChangerTreeItem(props) {
 }
 
 // eslint-disable-next-line react/no-multi-comp
-export default function SampleChanger(props) {
-  function scan() {
-    props.scan('');
-  }
+export default function SampleChanger() {
+  const dispatch = useDispatch();
 
-  function unload() {
-    props.unload('');
-  }
-
-  function abort() {
-    props.abort();
-  }
-  function handleRefresh() {
-    props.refresh();
-  }
+  const scState = useSelector((state) => state.sampleChanger.state);
+  const loadedSample = useSelector((state) => state.sampleChanger.loadedSample);
+  const contents = useSelector((state) => state.sampleChanger.contents);
 
   function renderTree(node, root) {
     if (node.children) {
@@ -158,10 +161,10 @@ export default function SampleChanger(props) {
         selected: node.selected,
         root,
         dm: node.id,
-        select: props.select,
+        select: (address) => dispatch(select(address)),
         status: node.status,
-        scan: props.scan,
-        refresh: props.refresh,
+        scan: (container) => dispatch(scan(container)),
+        refresh: () => dispatch(refresh()),
         key: node.name,
         children: childNodes,
       };
@@ -172,26 +175,29 @@ export default function SampleChanger(props) {
       <SampleChangerTreeItem
         label={node.name}
         dm={node.id}
-        load={props.load}
         status={node.status}
-        unload={props.unload}
         key={node.name}
-        loadedSample={props.loadedSample?.address}
+        loadedSample={loadedSample?.address}
       />
     );
   }
 
   // display some buttons depending on available features
-  const nodes = renderTree(props.contents, true);
+  const nodes = renderTree(contents, true);
   let current = '';
 
-  if (props.loadedSample.address) {
+  if (loadedSample.address) {
     current = (
       <div style={{ marginTop: '1em' }}>
-        Currently loaded: {props.loadedSample.address}
-        <span style={{ marginRight: '1em' }} />( {props.loadedSample.barcode} )
+        Currently loaded: {loadedSample.address}
+        <span style={{ marginRight: '1em' }} />( {loadedSample.barcode} )
         <span style={{ marginRight: '1em' }} />
-        <Button variant="outline-secondary" onClick={unload}>
+        <Button
+          variant="outline-secondary"
+          onClick={() => {
+            dispatch(unmountSample());
+          }}
+        >
           <i className="fas fa-download" /> Unload
         </Button>
       </div>
@@ -204,22 +210,31 @@ export default function SampleChanger(props) {
     <Card className="mb-3">
       <Card.Header>Content</Card.Header>
       <Card.Body>
-        <Button variant="outline-secondary" onClick={() => handleRefresh()}>
+        <Button
+          variant="outline-secondary"
+          onClick={() => {
+            dispatch(refresh());
+          }}
+        >
           <i className="fas fa-sync" /> Refresh
         </Button>
         <Button
           style={{ marginLeft: '1em' }}
           variant="outline-secondary"
-          onClick={scan}
+          onClick={() => {
+            dispatch(scan(''));
+          }}
         >
           <i className="fas fa-qrcode" /> Scan all containers
         </Button>
         <span style={{ marginLeft: '1em' }}>
-          {props.state === 'MOVING' && (
+          {scState === 'MOVING' && (
             <Button
               variant="danger"
               className={styles.abortButton}
-              onClick={abort}
+              onClick={() => {
+                dispatch(abort());
+              }}
             >
               <i className="fas fa-stop" /> Abort
             </Button>
