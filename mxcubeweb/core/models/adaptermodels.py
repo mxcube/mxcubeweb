@@ -43,7 +43,7 @@ class HOMachineInfoModel(HOModel):
 
 class HOActuatorValueChangeModel(BaseModel):
     name: str = Field("", description="Name of the hardware object to change")
-    value: str = Field("", description="New value of actuator (position)")
+    value: float | str = Field("", description="New value of actuator (position)")
 
 
 class HOBeamValueModel(BaseModel):
