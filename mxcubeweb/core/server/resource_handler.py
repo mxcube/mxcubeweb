@@ -344,7 +344,7 @@ class ResourceHandler:
                 # Pydantic model
                 return param_type.parse_obj(param_data)
             except ValidationError as e:
-                msg = f"Invalid input for '{param_name}' '{e.errors}' with data"
+                msg = f"Invalid input for '{param_name}' '{e.errors()}' with data"
                 msg += f" '{param_data}' on: {request.url}"
                 raise ValueError(msg) from e
 
