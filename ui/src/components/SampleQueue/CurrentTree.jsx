@@ -1,5 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
-import React from 'react';
 import { Item, Menu } from 'react-contexify';
 
 import CharacterisationTaskItem from './CharacterisationTaskItem';
@@ -9,29 +7,31 @@ import styles from './Tree.module.css';
 import WorkflowTaskItem from './WorkflowTaskItem';
 import XRFTaskItem from './XRFTaskItem';
 
-export default class CurrentTree extends React.Component {
-  constructor(props) {
-    super(props);
-    this.showInterleavedDialog = this.showInterleavedDialog.bind(this);
-    this.interleavedAvailable = this.interleavedAvailable.bind(this);
-    this.selectedTasks = this.selectedTasks.bind(this);
-    this.duplicateTask = this.duplicateTask.bind(this);
-  }
+function CurrentTree(props) {
+  const {
+    show,
+    sampleList,
+    mounted,
+    displayData,
+    shapes,
+    addTask,
+    checked,
+    plotsData,
+    plotsInfo,
+    showForm,
+    showDialog,
+    showWorkflowParametersDialog,
+  } = props;
 
-  selectedTasks() {
+  function getSelectedTasks() {
     const selectedTasks = [];
-    const taskList = this.props.sampleList[this.props.mounted]
-      ? this.props.sampleList[this.props.mounted].tasks
-      : [];
+    const taskList = sampleList[mounted] ? sampleList[mounted].tasks : [];
 
     taskList.forEach((task, taskIdx) => {
-      const displayData = this.props.displayData[task.queueID];
+      const data = displayData[task.queueID];
 
-      if (displayData && displayData.selected) {
-        const tData =
-          this.props.sampleList[this.props.mounted].tasks[
-            Number.parseInt(taskIdx, 10)
-          ];
+      if (data && data.selected) {
+        const tData = sampleList[mounted].tasks[Number.parseInt(taskIdx, 10)];
 
         if (tData) {
           selectedTasks.push(tData);
@@ -42,9 +42,9 @@ export default class CurrentTree extends React.Component {
     return selectedTasks;
   }
 
-  interleavedAvailable() {
+  function isInterleavedAvailable() {
     let available = false;
-    const selectedTasks = this.selectedTasks();
+    const selectedTasks = getSelectedTasks();
 
     // Interleaved is only available if more than one DataCollection task is selected
     available = selectedTasks.length > 1;
@@ -59,8 +59,8 @@ export default class CurrentTree extends React.Component {
     return available;
   }
 
-  duplicateTask(taskIndex) {
-    const task = this.props.sampleList[this.props.mounted].tasks[taskIndex];
+  function duplicateTask(taskIndex) {
+    const task = sampleList[mounted].tasks[taskIndex];
 
     if (task) {
       const tpars = {
@@ -68,164 +68,156 @@ export default class CurrentTree extends React.Component {
         label: task.label,
         ...task.parameters,
       };
-      this.props.addTask([task.sampleID], tpars, false);
+      addTask([task.sampleID], tpars, false);
     }
   }
 
-  showInterleavedDialog() {
+  function showInterleavedDialog() {
     const wedges = [];
     const taskIndexList = [];
 
-    Object.values(this.props.sampleList[this.props.mounted].tasks).forEach(
-      (task, taskIdx) => {
-        if (this.props.displayData[task.queueID].selected) {
-          wedges.push(
-            this.props.sampleList[this.props.mounted].tasks[
-              Number.parseInt(taskIdx, 10)
-            ],
-          );
-          taskIndexList.push(taskIdx);
-        }
-      },
-    );
+    Object.values(sampleList[mounted].tasks).forEach((task, taskIdx) => {
+      if (displayData[task.queueID].selected) {
+        wedges.push(sampleList[mounted].tasks[Number.parseInt(taskIdx, 10)]);
+        taskIndexList.push(taskIdx);
+      }
+    });
 
-    this.props.showForm(
+    showForm(
       'Interleaved',
-      [this.props.mounted],
+      [mounted],
       { type: 'DataCollection', parameters: { taskIndexList, wedges } },
       -1,
     );
   }
 
-  render() {
-    const sampleId = this.props.mounted;
-    let sampleData = {};
-    let sampleTasks = [];
+  const sampleId = mounted;
+  let sampleData = {};
+  let sampleTasks = [];
 
-    if (sampleId) {
-      sampleData = this.props.sampleList[sampleId];
-      sampleTasks = sampleData ? this.props.sampleList[sampleId].tasks : [];
-    }
-
-    if (!this.props.show) {
-      return <div />;
-    }
-    return (
-      <>
-        <div className={styles.listBody}>
-          {sampleTasks.map((taskData, i) => {
-            let task = null;
-
-            switch (taskData.type) {
-              case 'Workflow':
-              case 'GphlWorkflow': {
-                task = (
-                  <WorkflowTaskItem
-                    key={taskData.queueID}
-                    index={i}
-                    id={`${taskData.queueID}`}
-                    data={taskData}
-                    sampleId={sampleData.sampleID}
-                    checked={this.props.checked}
-                    showForm={this.props.showForm}
-                    shapes={this.props.shapes}
-                    showDialog={this.props.showDialog}
-                    showWorkflowParametersDialog={
-                      this.props.showWorkflowParametersDialog
-                    }
-                  />
-                );
-
-                break;
-              }
-              case 'xrf_spectrum': {
-                task = (
-                  <XRFTaskItem
-                    key={taskData.queueID}
-                    index={i}
-                    id={`${taskData.queueID}`}
-                    data={taskData}
-                    sampleId={sampleData.sampleID}
-                    checked={this.props.checked}
-                    showForm={this.props.showForm}
-                    plotsData={this.props.plotsData}
-                    plotsInfo={this.props.plotsInfo}
-                    showDialog={this.props.showDialog}
-                  />
-                );
-
-                break;
-              }
-              case 'energy_scan': {
-                task = (
-                  <EnergyScanTaskItem
-                    key={taskData.queueID}
-                    index={i}
-                    id={`${taskData.queueID}`}
-                    data={taskData}
-                    sampleId={sampleData.sampleID}
-                    checked={this.props.checked}
-                    showForm={this.props.showForm}
-                    shapes={this.props.shapes}
-                    showDialog={this.props.showDialog}
-                  />
-                );
-
-                break;
-              }
-              case 'Characterisation': {
-                task = (
-                  <CharacterisationTaskItem
-                    key={taskData.queueID}
-                    index={i}
-                    id={`${taskData.queueID}`}
-                    data={taskData}
-                    sampleId={sampleData.sampleID}
-                    checked={this.props.checked}
-                    state={
-                      this.props.sampleList[taskData.sampleID].tasks[i].state
-                    }
-                    showForm={this.props.showForm}
-                    addTask={this.props.addTask}
-                    shapes={this.props.shapes}
-                    showDialog={this.props.showDialog}
-                  />
-                );
-
-                break;
-              }
-              default: {
-                task = (
-                  <TaskItem
-                    key={taskData.queueID}
-                    index={i}
-                    id={`${taskData.queueID}`}
-                    data={taskData}
-                    sampleId={sampleData.sampleID}
-                    checked={this.props.checked}
-                    showForm={this.props.showForm}
-                    shapes={this.props.shapes}
-                    showDialog={this.props.showDialog}
-                  />
-                );
-              }
-            }
-
-            return task;
-          })}
-        </div>
-        <Menu id="currentSampleQueueContextMenu">
-          <Item
-            onClick={this.showInterleavedDialog}
-            disabled={!this.interleavedAvailable()}
-          >
-            Create interleaved data collection
-          </Item>
-          <Item onClick={({ props }) => this.duplicateTask(props.taskIndex)}>
-            Duplicate this item
-          </Item>
-        </Menu>
-      </>
-    );
+  if (sampleId) {
+    sampleData = sampleList[sampleId];
+    sampleTasks = sampleData ? sampleList[sampleId].tasks : [];
   }
+
+  if (!show) {
+    return <div />;
+  }
+
+  return (
+    <>
+      <div className={styles.listBody}>
+        {sampleTasks.map((taskData, i) => {
+          let task = null;
+
+          switch (taskData.type) {
+            case 'Workflow':
+            case 'GphlWorkflow': {
+              task = (
+                <WorkflowTaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  sampleId={sampleData.sampleID}
+                  checked={checked}
+                  showForm={showForm}
+                  shapes={shapes}
+                  showDialog={showDialog}
+                  showWorkflowParametersDialog={showWorkflowParametersDialog}
+                />
+              );
+
+              break;
+            }
+            case 'xrf_spectrum': {
+              task = (
+                <XRFTaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  sampleId={sampleData.sampleID}
+                  checked={checked}
+                  showForm={showForm}
+                  plotsData={plotsData}
+                  plotsInfo={plotsInfo}
+                  showDialog={showDialog}
+                />
+              );
+
+              break;
+            }
+            case 'energy_scan': {
+              task = (
+                <EnergyScanTaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  sampleId={sampleData.sampleID}
+                  checked={checked}
+                  showForm={showForm}
+                  shapes={shapes}
+                  showDialog={showDialog}
+                />
+              );
+
+              break;
+            }
+            case 'Characterisation': {
+              task = (
+                <CharacterisationTaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  sampleId={sampleData.sampleID}
+                  checked={checked}
+                  state={sampleList[taskData.sampleID].tasks[i].state}
+                  showForm={showForm}
+                  addTask={addTask}
+                  shapes={shapes}
+                  showDialog={showDialog}
+                />
+              );
+
+              break;
+            }
+            default: {
+              task = (
+                <TaskItem
+                  key={taskData.queueID}
+                  index={i}
+                  id={`${taskData.queueID}`}
+                  data={taskData}
+                  sampleId={sampleData.sampleID}
+                  checked={checked}
+                  showForm={showForm}
+                  shapes={shapes}
+                  showDialog={showDialog}
+                />
+              );
+            }
+          }
+
+          return task;
+        })}
+      </div>
+
+      <Menu id="currentSampleQueueContextMenu">
+        <Item
+          onClick={() => showInterleavedDialog()}
+          disabled={!isInterleavedAvailable()}
+        >
+          Create interleaved data collection
+        </Item>
+        <Item onClick={({ props: pp }) => duplicateTask(pp.taskIndex)}>
+          Duplicate this item
+        </Item>
+      </Menu>
+    </>
+  );
 }
+
+export default CurrentTree;
