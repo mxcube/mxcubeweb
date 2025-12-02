@@ -42,7 +42,7 @@ function Main() {
   }
 
   return (
-    <div className={styles.main}>
+    <div className={styles.root}>
       {showReadOnlyDiv && (
         <div
           className={styles.readOnly}
@@ -66,9 +66,9 @@ function Main() {
 
       <MXNavbar />
 
-      <Stack className="mb-4" gap={2}>
+      <main className={styles.main}>
         <Outlet />
-      </Stack>
+      </main>
 
       <ChatWidget />
     </div>

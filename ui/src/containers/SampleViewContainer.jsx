@@ -60,9 +60,10 @@ function SampleViewContainer() {
   const selectedGrids = Object.values(grids).filter((s) => s.selected);
 
   return (
-    <Container fluid>
+    <Container className="d-flex flex-column" fluid>
       <Row
         style={{
+          flex: 'none',
           background: '#fafafa',
           borderBottom: '1px solid lightgray',
           paddingBottom: '0em',
@@ -74,7 +75,7 @@ function SampleViewContainer() {
           </DefaultErrorBoundary>
         </Col>
       </Row>
-      <Row className="gx-3 mt-2 pt-1">
+      <Row className="flex-grow-1 gx-3 py-3">
         <Col sm={2} xxl={1} className={styles.controllers}>
           <DefaultErrorBoundary>
             {phaseControl !== undefined && (
