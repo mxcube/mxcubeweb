@@ -42,14 +42,6 @@ function SampleViewContainer() {
     (state) => state.sampleChanger.contents,
   );
 
-  function getControlAvailability(name) {
-    const available = uiproperties.sample_view_video_controls.components.find(
-      (component) => component.id === name && component.show === true,
-    );
-
-    return available?.show || false;
-  }
-
   if (!('sample_view_motors' in uiproperties)) {
     return null;
   }
@@ -132,7 +124,7 @@ function SampleViewContainer() {
         </Col>
         <Col sm={6}>
           <DefaultErrorBoundary>
-            <ContextMenu getControlAvailability={getControlAvailability} />
+            <ContextMenu />
             <SampleImage
               points={points}
               twoDPoints={twoDPoints}

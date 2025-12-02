@@ -31,8 +31,7 @@ const BESPOKE_TASK_NAMES = new Set([
   'interleaved',
 ]);
 
-export default function ContextMenu(props) {
-  const { getControlAvailability } = props;
+export default function ContextMenu() {
   const defaultParameters = useSelector(
     (state) => state.taskForm.defaultParameters,
   );
@@ -48,6 +47,13 @@ export default function ContextMenu(props) {
   const groupFolder = useSelector((state) => state.queue.groupFolder);
   const contextMenu = useSelector((state) => state.contextMenu);
   const { sampleViewX, sampleViewY, shape, pageX, pageY, show } = contextMenu;
+
+  const isDrawGridAvailable = useSelector(
+    (state) =>
+      state.uiproperties.sample_view_video_controls.components.find(
+        ({ id }) => id === 'draw_grid',
+      )?.show || false,
+  );
 
   const dispatch = useDispatch();
 
@@ -334,7 +340,7 @@ export default function ContextMenu(props) {
           },
           key: 2,
         },
-        getControlAvailability('draw_grid') && {
+        isDrawGridAvailable && {
           text: 'Draw Grid',
           action: () => {
             dispatch(toggleDrawGrid());
