@@ -107,6 +107,35 @@ function SampleChangerTreeItem(props) {
 }
 
 // eslint-disable-next-line react/no-multi-comp
+function SampleChangerTree(props) {
+  const { root = false, node, isLoading } = props;
+
+  if (!node.children) {
+    return (
+      <SampleChangerTreeItem
+        label={node.name}
+        dm={node.id}
+        disabled={isLoading}
+      />
+    );
+  }
+
+  return (
+    <SampleChangerTreeNode
+      label={node.name}
+      selected={node.selected}
+      root={root}
+      dm={node.id}
+      disabled={isLoading}
+    >
+      {node.children.map((c) => (
+        <SampleChangerTree key={c.name} node={c} isLoading={isLoading} />
+      ))}
+    </SampleChangerTreeNode>
+  );
+}
+
+// eslint-disable-next-line react/no-multi-comp
 function SampleChanger() {
   const dispatch = useDispatch();
 
@@ -115,32 +144,6 @@ function SampleChanger() {
   );
   const loadedSample = useSelector((state) => state.sampleChanger.loadedSample);
   const contents = useSelector((state) => state.sampleChanger.contents);
-
-  function renderTree(node, root = false) {
-    if (node.children) {
-      return (
-        <SampleChangerTreeNode
-          key={node.name}
-          label={node.name}
-          selected={node.selected}
-          root={root}
-          dm={node.id}
-          disabled={isLoading}
-        >
-          {node.children.map(renderTree)}
-        </SampleChangerTreeNode>
-      );
-    }
-
-    return (
-      <SampleChangerTreeItem
-        key={node.name}
-        label={node.name}
-        dm={node.id}
-        disabled={isLoading}
-      />
-    );
-  }
 
   return (
     <Card className="mb-3">
@@ -180,7 +183,7 @@ function SampleChanger() {
           </Button>
         )}
 
-        <Alert className="mt-3">
+        <Alert className={`mt-3 ${isLoading ? 'opacity-50' : ''}`}>
           {loadedSample.address ? (
             <>
               Currently mounted:{' '}
@@ -193,7 +196,9 @@ function SampleChanger() {
           )}
         </Alert>
 
-        <div className={styles.treeWrapper}>{renderTree(contents, true)}</div>
+        <div className={styles.treeWrapper}>
+          <SampleChangerTree root node={contents} isLoading={isLoading} />
+        </div>
       </Card.Body>
     </Card>
   );
