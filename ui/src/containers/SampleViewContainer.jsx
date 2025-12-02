@@ -17,6 +17,12 @@ import DefaultErrorBoundary from './DefaultErrorBoundary';
 import SampleQueueContainer from './SampleQueueContainer';
 import styles from './SampleViewContainer.module.css';
 
+function getShapes(shapes, type) {
+  return Object.fromEntries(
+    Object.entries(shapes).filter(([_, shape]) => shape.t === type),
+  );
+}
+
 function SampleViewContainer() {
   const dispatch = useDispatch();
 
@@ -48,25 +54,17 @@ function SampleViewContainer() {
     return null;
   }
 
-  const phase_control = uiproperties.sample_view?.components?.find(
+  const phaseControl = uiproperties.sample_view?.components?.find(
     (c) => c.attribute === 'phase_control',
   );
-  const beam_size = uiproperties?.sample_view?.components.find(
+  const beamSize = uiproperties.sample_view?.components.find(
     (c) => c.attribute === 'beam_size',
   );
 
-  const points = Object.fromEntries(
-    Object.entries(shapes).filter(([_, shape]) => shape.t === 'P'),
-  );
-  const twoDPoints = Object.fromEntries(
-    Object.entries(shapes).filter(([_, shape]) => shape.t === '2DP'),
-  );
-  const lines = Object.fromEntries(
-    Object.entries(shapes).filter(([_, shape]) => shape.t === 'L'),
-  );
-  const grids = Object.fromEntries(
-    Object.entries(shapes).filter(([_, shape]) => shape.t === 'G'),
-  );
+  const points = getShapes(shapes, 'P');
+  const twoDPoints = getShapes(shapes, '2DP');
+  const lines = getShapes(shapes, 'L');
+  const grids = getShapes(shapes, 'G');
   const selectedGrids = Object.values(grids).filter((s) => s.selected);
 
   return (
@@ -87,21 +85,21 @@ function SampleViewContainer() {
       <Row className="gx-3 mt-2 pt-1">
         <Col sm={2} xxl={1} className={styles.controllers}>
           <DefaultErrorBoundary>
-            {phase_control !== undefined && (
+            {phaseControl !== undefined && (
               <div className={motorInputStyles.container}>
                 <label className={motorInputStyles.label} htmlFor="PhaseInput">
-                  {phase_control.label}
+                  {phaseControl.label}
                 </label>
                 <PhaseInput />
               </div>
             )}
-            {beam_size !== undefined && (
+            {beamSize !== undefined && (
               <div className={motorInputStyles.container}>
                 <label
                   className={motorInputStyles.label}
                   htmlFor="ApertureInput"
                 >
-                  {beam_size.label}
+                  {beamSize.label}
                 </label>
                 <ApertureInput />
               </div>
