@@ -55,9 +55,10 @@ class Lims(ComponentBase):
                 ]
             ),
         )
+        self.retrieve_samples_from_sc = app.CONFIG.app.USE_GET_SAMPLES_FROM_SC
 
     def get_all_samples(self):
-        return self.sample_list_get(retrieve_samples_from_sc=True)
+        return self.sample_list_get()
 
     def get_lims_samples(self, lims: str) -> dict:
         """Get samples from LIMS and filters to include only LIMS-linked entries.
@@ -114,9 +115,9 @@ class Lims(ComponentBase):
         self.app.SAMPLE_LIST["sampleOrder"] = sample_order
 
     def sample_list_get(
-        self, loc=None, current_queue=None, retrieve_samples_from_sc=False
+        self, loc=None, current_queue=None
     ):
-        if retrieve_samples_from_sc:
+        if self.retrieve_samples_from_sc:
             self.get_sample_list_from_sc()
 
         self.synch_sample_list_with_queue(current_queue)
