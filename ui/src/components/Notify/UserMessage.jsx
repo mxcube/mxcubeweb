@@ -6,7 +6,7 @@ export default function UserMessage() {
   const messages = useSelector((state) => state.logger.logRecords);
 
   return (
-    <div id="usermessages" className={styles.messageBody}>
+    <>
       {[...messages].reverse().map((message) => (
         <div
           key={`${message.id}`}
@@ -22,6 +22,6 @@ export default function UserMessage() {
           </span>
         </div>
       ))}
-    </div>
+    </>
   );
 }

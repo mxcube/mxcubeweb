@@ -1,6 +1,6 @@
 /* eslint-disable react/destructuring-assignment */
 import React from 'react';
-import { Nav } from 'react-bootstrap';
+import { Nav, Stack } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -65,17 +65,18 @@ class SampleQueueContainer extends React.Component {
     }
 
     return (
-      <div className={styles.container}>
+      <Stack className="flex-grow-1" gap={3}>
         <QueueControl />
-        <div className={styles.queueBody}>
+
+        <div className={styles.queue}>
           <Nav
+            className={styles.queueNav}
             variant="tabs"
             fill
             justify
             defaultActiveKey="current"
             activeKey={visibleList}
             onSelect={this.handleSelect}
-            className={styles.queueNav}
           >
             <Nav.Item>
               <Nav.Link eventKey="current" className={styles.queueNavLink}>
@@ -92,42 +93,46 @@ class SampleQueueContainer extends React.Component {
               </Nav.Link>
             </Nav.Item>
           </Nav>
-          {loading ? (
-            <div className={styles.centerInBox} style={{ zIndex: '1000' }}>
-              <img src={loader} className="img-fluid" width="100" alt="" />
-            </div>
-          ) : null}
-          <CurrentTree
-            show={visibleList === 'current'}
-            mounted={currentSampleID}
-            sampleList={sampleList}
-            checked={checked}
-            showForm={showForm}
-            displayData={displayData}
-            addTask={this.props.addTask}
-            plotsData={this.props.plotsData}
-            plotsInfo={this.props.plotsInfo}
-            shapes={this.props.shapes}
-            showDialog={this.props.showDialog}
-            showWorkflowParametersDialog={
-              this.props.showWorkflowParametersDialog
-            }
-          />
-          {visibleList === 'todo' && <TodoTree list={todo} />}
-          <div className={styles.queueMessages}>
-            <div className={styles.queueMessagesTitle}>
-              <span
-                style={{ marginRight: '7px' }}
-                className="fas fa-lg fa-info-circle"
-              />
-              Log messages:
-            </div>
-            <div className={styles.queueMessagesBody}>
-              <UserMessage />
-            </div>
+
+          <div className={styles.queueBody}>
+            {loading && (
+              <div className={styles.loader} style={{ zIndex: '1000' }}>
+                <img src={loader} className="img-fluid" width="100" alt="" />
+              </div>
+            )}
+            <CurrentTree
+              show={visibleList === 'current'}
+              mounted={currentSampleID}
+              sampleList={sampleList}
+              checked={checked}
+              showForm={showForm}
+              displayData={displayData}
+              addTask={this.props.addTask}
+              plotsData={this.props.plotsData}
+              plotsInfo={this.props.plotsInfo}
+              shapes={this.props.shapes}
+              showDialog={this.props.showDialog}
+              showWorkflowParametersDialog={
+                this.props.showWorkflowParametersDialog
+              }
+            />
+            {visibleList === 'todo' && <TodoTree list={todo} />}
           </div>
         </div>
-      </div>
+
+        <div className={styles.logs}>
+          <div className={styles.logsHeader}>
+            <span
+              style={{ marginRight: '7px' }}
+              className="fas fa-lg fa-info-circle"
+            />
+            Log messages:
+          </div>
+          <div className={styles.logsBody}>
+            <UserMessage />
+          </div>
+        </div>
+      </Stack>
     );
   }
 }

@@ -1,7 +1,10 @@
 .nodeSample {
   font-size: 1em;
-  margin-bottom: 1rem;
   background-color: white;
+}
+
+.nodeSample:not(:last-child) {
+  margin-bottom: 1rem;
 }
 
 .taskHead {

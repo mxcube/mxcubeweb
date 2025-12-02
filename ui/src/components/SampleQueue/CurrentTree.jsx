@@ -111,8 +111,8 @@ export default class CurrentTree extends React.Component {
       return <div />;
     }
     return (
-      <div>
-        <div style={{ top: '6%', height: '69%' }} className={styles.listBody}>
+      <>
+        <div className={styles.listBody}>
           {sampleTasks.map((taskData, i) => {
             let task = null;
 
@@ -225,7 +225,7 @@ export default class CurrentTree extends React.Component {
             Duplicate this item
           </Item>
         </Menu>
-      </div>
+      </>
     );
   }
 }

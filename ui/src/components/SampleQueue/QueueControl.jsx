@@ -13,7 +13,7 @@ export default function QueueControl() {
   const showBusyIndicator = queueStatus === QUEUE_RUNNING ? 'inline' : 'none';
 
   return (
-    <Navbar className={styles.mTree}>
+    <Navbar className={styles.queueControl}>
       <Nav
         className="me-auto my-2 my-lg-0"
         style={{ maxHeight: '100px' }}

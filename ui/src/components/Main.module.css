@@ -7,7 +7,7 @@
 
 .main {
   flex: 1;
-  display: grid;
+  display: flex;
 }
 
 .readOnly {

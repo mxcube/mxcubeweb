@@ -75,6 +75,7 @@ function SampleViewContainer() {
           </DefaultErrorBoundary>
         </Col>
       </Row>
+
       <Row className="flex-grow-1 gx-3 py-3">
         <Col sm={2} xxl={1} className={styles.controllers}>
           <DefaultErrorBoundary>
@@ -123,6 +124,7 @@ function SampleViewContainer() {
             <MotorControls />
           </DefaultErrorBoundary>
         </Col>
+
         <Col sm={6}>
           <DefaultErrorBoundary>
             <ContextMenu />
@@ -135,12 +137,8 @@ function SampleViewContainer() {
             />
           </DefaultErrorBoundary>
         </Col>
-        <Col
-          sm={4}
-          xxl={5}
-          className={styles.queue}
-          style={{ display: 'flex' }}
-        >
+
+        <Col className={styles.queue} sm={4} xxl={5}>
           <DefaultErrorBoundary>
             <SampleQueueContainer />
           </DefaultErrorBoundary>
