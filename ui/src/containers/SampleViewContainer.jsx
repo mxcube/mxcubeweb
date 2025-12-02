@@ -1,5 +1,5 @@
 import { Col, Container, Row } from 'react-bootstrap';
-import { connect, useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { executeCommand, setAttribute } from '../actions/beamline';
 import { addShape } from '../actions/sampleview';
@@ -17,20 +17,24 @@ import DefaultErrorBoundary from './DefaultErrorBoundary';
 import SampleQueueContainer from './SampleQueueContainer';
 import styles from './SampleViewContainer.module.css';
 
-function SampleViewContainer(props) {
-  const {
-    uiproperties,
-    currentSampleID,
-    shapes = {},
-    mode,
-    sampleList,
-    defaultParameters,
-    groupFolder,
-    hardwareObjects,
-    sampleChangerContents,
-  } = props;
-
+function SampleViewContainer() {
   const dispatch = useDispatch();
+
+  const sampleList = useSelector((state) => state.sampleGrid.sampleList);
+  const currentSampleID = useSelector((state) => state.queue.currentSampleID);
+  const groupFolder = useSelector((state) => state.queue.groupFolder);
+  const hardwareObjects = useSelector(
+    (state) => state.beamline.hardwareObjects,
+  );
+  const defaultParameters = useSelector(
+    (state) => state.taskForm.defaultParameters,
+  );
+  const shapes = useSelector((state) => state.shapes.shapes) || {};
+  const uiproperties = useSelector((state) => state.uiproperties);
+  const mode = useSelector((state) => state.general.mode);
+  const sampleChangerContents = useSelector(
+    (state) => state.sampleChanger.contents,
+  );
 
   function getControlAvailability(name) {
     const available = uiproperties.sample_view_video_controls.components.find(
@@ -155,19 +159,4 @@ function SampleViewContainer(props) {
   );
 }
 
-function mapStateToProps(state) {
-  return {
-    sampleList: state.sampleGrid.sampleList,
-    currentSampleID: state.queue.currentSampleID,
-    groupFolder: state.queue.groupFolder,
-    hardwareObjects: state.beamline.hardwareObjects,
-    defaultParameters: state.taskForm.defaultParameters,
-    shapes: state.shapes.shapes,
-    remoteAccess: state.remoteAccess,
-    uiproperties: state.uiproperties,
-    mode: state.general.mode,
-    sampleChangerContents: state.sampleChanger.contents,
-  };
-}
-
-export default connect(mapStateToProps)(SampleViewContainer);
+export default SampleViewContainer;
