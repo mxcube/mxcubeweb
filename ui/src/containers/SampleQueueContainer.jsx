@@ -122,11 +122,8 @@ class SampleQueueContainer extends React.Component {
 
         <div className={styles.logs}>
           <div className={styles.logsHeader}>
-            <span
-              style={{ marginRight: '7px' }}
-              className="fas fa-lg fa-info-circle"
-            />
-            Log messages:
+            <span className="fas fa-md fa-info-circle me-2" />
+            Log messages
           </div>
           <div className={styles.logsBody}>
             <UserMessage />
