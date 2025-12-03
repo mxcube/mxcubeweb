@@ -8,13 +8,11 @@ import { QUEUE_RUNNING } from '../../constants';
 import TodoItem from './TodoItem';
 import styles from './Tree.module.css';
 
-export default function TodoTree(props) {
+function TodoTree(props) {
   const { list } = props;
 
   const dispatch = useDispatch();
-
   const queueStatus = useSelector((state) => state.queue.queueStatus);
-  const sampleList = useSelector((state) => state.sampleGrid.sampleList);
 
   const [searchWord, setSearchWord] = useState('');
 
@@ -23,8 +21,8 @@ export default function TodoTree(props) {
     dispatch(showTaskForm('AddSample'));
   }
 
-  const current_list = list.filter((sampleID) =>
-    String(sampleID).includes(searchWord),
+  const filteredList = list.filter((sample) =>
+    String(sample.sampleID).includes(searchWord),
   );
 
   return (
@@ -54,11 +52,12 @@ export default function TodoTree(props) {
         </div>
       </ListGroup.Item>
       <ListGroup.Item className={styles.listBody}>
-        {current_list.map((key) => {
-          const sampleData = sampleList[key];
-          return <TodoItem sampleData={sampleData} key={`Sample ${key}`} />;
-        })}
+        {filteredList.map((sample) => (
+          <TodoItem key={sample.sampleID} sampleData={sample} />
+        ))}
       </ListGroup.Item>
     </ListGroup>
   );
 }
+
+export default TodoTree;

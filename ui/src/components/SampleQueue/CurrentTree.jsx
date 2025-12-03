@@ -1,5 +1,10 @@
 import { Item, Menu } from 'react-contexify';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { showDialog } from '../../actions/general';
+import { addTask } from '../../actions/queue';
+import { showTaskForm } from '../../actions/taskForm';
+import { showWorkflowParametersDialog } from '../../actions/workflow';
 import CharacterisationTaskItem from './CharacterisationTaskItem';
 import EnergyScanTaskItem from './EnergyScanTaskItem';
 import TaskItem from './TaskItem';
@@ -8,34 +13,24 @@ import WorkflowTaskItem from './WorkflowTaskItem';
 import XRFTaskItem from './XRFTaskItem';
 
 function CurrentTree(props) {
-  const {
-    show,
-    sampleList,
-    mounted,
-    displayData,
-    shapes,
-    addTask,
-    checked,
-    plotsData,
-    plotsInfo,
-    showForm,
-    showDialog,
-    showWorkflowParametersDialog,
-  } = props;
+  const { sampleList, currentSample } = props;
+  const { sampleID: sampleId, tasks = [] } = currentSample;
+
+  const dispatch = useDispatch();
+
+  const checked = useSelector((state) => state.queue.checked);
+  const displayData = useSelector((state) => state.queueGUI.displayData);
+  const plotsData = useSelector((state) => state.beamline.plotsData);
+  const plotsInfo = useSelector((state) => state.beamline.plotsInfo);
+  const shapes = useSelector((state) => state.shapes);
 
   function getSelectedTasks() {
     const selectedTasks = [];
-    const taskList = sampleList[mounted] ? sampleList[mounted].tasks : [];
 
-    taskList.forEach((task, taskIdx) => {
+    tasks.forEach((task) => {
       const data = displayData[task.queueID];
-
       if (data && data.selected) {
-        const tData = sampleList[mounted].tasks[Number.parseInt(taskIdx, 10)];
-
-        if (tData) {
-          selectedTasks.push(tData);
-        }
+        selectedTasks.push(task);
       }
     });
 
@@ -43,11 +38,10 @@ function CurrentTree(props) {
   }
 
   function isInterleavedAvailable() {
-    let available = false;
     const selectedTasks = getSelectedTasks();
 
     // Interleaved is only available if more than one DataCollection task is selected
-    available = selectedTasks.length > 1;
+    let available = selectedTasks.length > 1;
 
     // Available if more than one item selected and only DataCollection tasks are selected.
     selectedTasks.forEach((task) => {
@@ -60,7 +54,7 @@ function CurrentTree(props) {
   }
 
   function duplicateTask(taskIndex) {
-    const task = sampleList[mounted].tasks[taskIndex];
+    const task = tasks[taskIndex];
 
     if (task) {
       const tpars = {
@@ -68,7 +62,7 @@ function CurrentTree(props) {
         label: task.label,
         ...task.parameters,
       };
-      addTask([task.sampleID], tpars, false);
+      dispatch(addTask([task.sampleID], tpars, false));
     }
   }
 
@@ -76,38 +70,27 @@ function CurrentTree(props) {
     const wedges = [];
     const taskIndexList = [];
 
-    Object.values(sampleList[mounted].tasks).forEach((task, taskIdx) => {
+    Object.values(tasks).forEach((task, taskIdx) => {
       if (displayData[task.queueID].selected) {
-        wedges.push(sampleList[mounted].tasks[Number.parseInt(taskIdx, 10)]);
+        wedges.push(tasks[Number.parseInt(taskIdx, 10)]);
         taskIndexList.push(taskIdx);
       }
     });
 
-    showForm(
-      'Interleaved',
-      [mounted],
-      { type: 'DataCollection', parameters: { taskIndexList, wedges } },
-      -1,
+    dispatch(
+      showTaskForm(
+        'Interleaved',
+        [sampleId],
+        { type: 'DataCollection', parameters: { taskIndexList, wedges } },
+        -1,
+      ),
     );
-  }
-
-  const sampleId = mounted;
-  let sampleData = {};
-  let sampleTasks = [];
-
-  if (sampleId) {
-    sampleData = sampleList[sampleId];
-    sampleTasks = sampleData ? sampleList[sampleId].tasks : [];
-  }
-
-  if (!show) {
-    return <div />;
   }
 
   return (
     <>
       <div className={styles.listBody}>
-        {sampleTasks.map((taskData, i) => {
+        {tasks.map((taskData, i) => {
           let task = null;
 
           switch (taskData.type) {
@@ -119,12 +102,14 @@ function CurrentTree(props) {
                   index={i}
                   id={`${taskData.queueID}`}
                   data={taskData}
-                  sampleId={sampleData.sampleID}
+                  sampleId={sampleId}
                   checked={checked}
-                  showForm={showForm}
+                  showForm={(...args) => dispatch(showTaskForm(...args))}
                   shapes={shapes}
-                  showDialog={showDialog}
-                  showWorkflowParametersDialog={showWorkflowParametersDialog}
+                  showDialog={(...args) => dispatch(showDialog(...args))}
+                  showWorkflowParametersDialog={(...args) => {
+                    dispatch(showWorkflowParametersDialog(...args));
+                  }}
                 />
               );
 
@@ -137,12 +122,12 @@ function CurrentTree(props) {
                   index={i}
                   id={`${taskData.queueID}`}
                   data={taskData}
-                  sampleId={sampleData.sampleID}
+                  sampleId={sampleId}
                   checked={checked}
-                  showForm={showForm}
+                  showForm={(...args) => dispatch(showTaskForm(...args))}
                   plotsData={plotsData}
                   plotsInfo={plotsInfo}
-                  showDialog={showDialog}
+                  showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
 
@@ -155,11 +140,11 @@ function CurrentTree(props) {
                   index={i}
                   id={`${taskData.queueID}`}
                   data={taskData}
-                  sampleId={sampleData.sampleID}
+                  sampleId={sampleId}
                   checked={checked}
-                  showForm={showForm}
+                  showForm={(...args) => dispatch(showTaskForm(...args))}
                   shapes={shapes}
-                  showDialog={showDialog}
+                  showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
 
@@ -172,13 +157,13 @@ function CurrentTree(props) {
                   index={i}
                   id={`${taskData.queueID}`}
                   data={taskData}
-                  sampleId={sampleData.sampleID}
+                  sampleId={sampleId}
                   checked={checked}
                   state={sampleList[taskData.sampleID].tasks[i].state}
-                  showForm={showForm}
+                  showForm={(...args) => dispatch(showTaskForm(...args))}
                   addTask={addTask}
                   shapes={shapes}
-                  showDialog={showDialog}
+                  showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
 
@@ -191,11 +176,11 @@ function CurrentTree(props) {
                   index={i}
                   id={`${taskData.queueID}`}
                   data={taskData}
-                  sampleId={sampleData.sampleID}
+                  sampleId={sampleId}
                   checked={checked}
-                  showForm={showForm}
+                  showForm={(...args) => dispatch(showTaskForm(...args))}
                   shapes={shapes}
-                  showDialog={showDialog}
+                  showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
             }
