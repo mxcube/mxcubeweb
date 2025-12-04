@@ -598,7 +598,7 @@ class AdapterResourceHandler(ResourceHandler):
             Callable: The view function.
         """
 
-        def _view_func(object_id: str, *args, **kwargs) -> any:  # noqa: ARG001
+        def _view_func(object_id: str, *_args, **_kwargs) -> any:
             # Validate object id
             if not valid_object_id(object_id):
                 msg = f"Invalid object id '{object_id}'"
