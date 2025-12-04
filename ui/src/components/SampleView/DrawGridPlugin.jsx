@@ -650,7 +650,6 @@ export default class DrawGridPlugin {
         const image = new fabric.Image(imageElement);
         image.scaleToHeight(height);
         image.scaleX = width / imageElement.naturalWidth;
-        image.set({ top, left });
         shapes.push(image);
       }
     }
