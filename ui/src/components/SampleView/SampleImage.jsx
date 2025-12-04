@@ -97,7 +97,7 @@ class SampleImage extends React.Component {
     this.canvas.on('selection:cleared', this.clearSelectionEvent);
     this.canvas.on('selection:updated', this.selectShapeEvent);
 
-    // Bind rigth click to function manually with javascript
+    // Bind right click to function manually with javascript
     const imageOverlay = document.querySelector('#insideWrapper');
     imageOverlay.addEventListener('contextmenu', this.rightClick, false);
     // Bind mouse scroll up/down to function manually with javascript
@@ -892,7 +892,7 @@ class SampleImage extends React.Component {
       }
     });
 
-    // Grid beeing defined (being drawn)
+    // Grid being defined (being drawn)
     if (this.drawGridPlugin.shapeGroup) {
       fabricSelectables.push(this.drawGridPlugin.shapeGroup);
     }

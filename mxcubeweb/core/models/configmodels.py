@@ -219,7 +219,7 @@ class MXCUBEAppConfigModel(BaseModel):
     USE_GET_SAMPLES_FROM_SC: bool = Field(
         True,
         description=(
-            "True to acticvate or be able to get samples from the sample changer, false otherwise"
+            "True to activate or be able to get samples from the sample changer, false otherwise"
         ),
     )
     mode: ModeEnum = Field(
