@@ -463,7 +463,7 @@ class SampleViewAdapter(AdapterBase):
 
         return {"clicksLeft": self.centring_clicks_left()}
 
-    def set_centring_method(self, method):
+    def set_centring_method(self, method: int) -> dict:
         if method == CENTRING_METHOD.LOOP:
             msg = "Using automatic loop centring when mounting samples"
             HWR.beamline.queue_manager.centring_method = CENTRING_METHOD.LOOP
