@@ -218,6 +218,12 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
 
       return { ...state, sampleList };
     }
+    case 'UPDATE_SAMPLE_STATE': {
+      const sampleList = { ...state.sampleList };
+      sampleList[action.sampleData.sampleID].sc_state = action.sampleData.state
+
+      return { ...state, sampleList };
+    }
     case 'SET_SAMPLE_ATTRIBUTE': {
       const sampleList = { ...state.sampleList };
       action.sampleIDList.forEach((sid) => {

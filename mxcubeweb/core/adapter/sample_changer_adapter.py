@@ -54,7 +54,7 @@ class SampleChangerAdapter(AdapterBase):
         sc.connect("stateChanged", self._sc_state_changed)
         sc.connect("isCollisionSafe", self._is_collision_safe)
         sc.connect("loadedSampleChanged", self._loaded_sample_changed)
-        sc.connect("contentsUpdated", self._sc_contents_update)
+        sc.connect("infoChanged", self._sample_state_update)
 
         if HWR.beamline.sample_changer_maintenance is not None:
             HWR.beamline.sample_changer_maintenance.connect(
@@ -106,6 +106,8 @@ class SampleChangerAdapter(AdapterBase):
                 namespace="/hwr",
             )
 
+            self._sc_contents_update()
+
             self._sc_load_ready(address)
         except Exception:
             logging.getLogger("HWR").exception("Error setting loaded sample")
@@ -128,8 +130,19 @@ class SampleChangerAdapter(AdapterBase):
 
         self.app.server.emit("sc", msg, namespace="/hwr")
 
-    def _sc_contents_update(self):
-        self.app.server.emit("sc_contents_update", {}, namespace="/hwr")
+    def _sample_state_update(self, sample):
+        sample_data = {
+            "sampleID": sample.get_address(),
+            "location": sample.get_address(),
+            "state": sample.state
+        }
+
+        self.app.server.emit(
+            "sc_sample_state_update",
+            {"sample": sample_data},
+            namespace="/hwr",
+        )
+
 
     def _sc_maintenance_update(self, *args):
         if len(args) == 3:

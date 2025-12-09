@@ -9,7 +9,7 @@ export default function SampleInformation({ sampleData = {} }) {
             <span className="col-sm-6">State :</span>
             <span className="col-sm-6">
               <strong>
-                {sampleData?.container_info?.state?.replaceAll('_', ' ')}
+                {sampleData?.sc_state?.replaceAll('_', ' ')}
               </strong>
             </span>
           </div>
@@ -24,19 +24,19 @@ export default function SampleInformation({ sampleData = {} }) {
           <div className="row">
             <span className="col-sm-6">Puck barcode :</span>
             <span className="col-sm-6">
-              {sampleData?.container_info?.puck_barcode}
+              {sampleData?.puck_barcode}
             </span>
           </div>
           <div className="row">
             <span className="col-sm-6">puck type :</span>
             <span className="col-sm-6">
-              {sampleData?.container_info?.puck_type}
+              {sampleData?.puck_type}
             </span>
           </div>
           <div className="row">
             <span className="col-sm-6">Sample barcode :</span>
             <span className="col-sm-6">
-              {sampleData?.container_info?.sample_barcode}
+              {sampleData?.sample_barcode}
             </span>
           </div>
           {sampleData.limsID && (

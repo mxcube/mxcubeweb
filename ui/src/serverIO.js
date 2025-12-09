@@ -33,10 +33,14 @@ import {
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
 import { addChatMessage, getRaState } from './actions/remoteAccess';
 import {
+  setContents,
   setLoadedSample,
   setSCGlobalState,
   setSCState,
 } from './actions/sampleChanger';
+import {
+  updateSampleState
+} from './actions/sampleGrid';
 import {
   saveMotorPosition,
   setBeamInfo,
@@ -428,6 +432,10 @@ class ServerIO {
 
     this.hwrSocket.on('harvester_contents_update', () => {
       dispatch(updateHarvesterContents());
+    });
+
+    this.hwrSocket.on('sc_sample_state_update', (data) => {
+      dispatch(updateSampleState(data.sample));
     });
   }
 

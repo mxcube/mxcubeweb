@@ -112,10 +112,10 @@ export default function SampleGridTableItem({
                 <div className={styles.sampleStateBadge}>
                   <Badge
                     bg={sampleStateBackground(
-                      sampleData?.container_info?.state,
+                      sampleData?.sc_state,
                     )}
                   >
-                    {sampleData?.container_info?.state?.replaceAll('_', ' ')}
+                    {sampleData?.sc_state?.replaceAll('_', ' ')}
                   </Badge>
                 </div>
               )}

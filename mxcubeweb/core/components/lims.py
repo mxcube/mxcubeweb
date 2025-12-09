@@ -192,9 +192,10 @@ class Lims(ComponentBase):
                 "code": sample_dm,
                 "loadable": True,
                 "state": state,
-                "container_info": (
-                    s.container_info if hasattr(s, "container_info") else {}
-                ),
+                "sc_state": s.state,
+                "puck_barcode": s.puck_barcode,
+                "puck_type": s.puck_type,
+                "sample_barcode": s.sample_barcode,
                 "image_url": s.get_image_url() or "",
                 "image_x": s.get_image_x() or "",
                 "image_y": s.get_image_y() or "",
