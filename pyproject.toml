@@ -37,7 +37,7 @@ graylog = ["graypy>=2.1.0"]
 requires-poetry = "2.2.1"  # Keep in sync with `.pre-commit-config.yaml` and `conda-environment.yml`
 
 [tool.poetry.dependencies]
-authlib = "^1.3.0"
+authlib = "^1.6.5"
 Flask = "^3.0.3"
 flask-limiter = { version = "^3.12" }
 flask-login = "^0.6.3"
@@ -55,7 +55,7 @@ scandir = "^1.10.0"
 sqlalchemy = "^2.0.37"
 tomli = { version = "^2.2.1", python = "<=3.10" }
 tzlocal = "^4.2"
-werkzeug = "^3.0.3"
+werkzeug = "^3.1.4"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.1.0"
