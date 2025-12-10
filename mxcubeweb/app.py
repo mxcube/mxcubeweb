@@ -212,79 +212,83 @@ class MXCUBEApplication:
                 return handler
         return None
 
-    @staticmethod
     def init_logging(log_file: str, log_level, enabled_logger_list) -> None:
-        """Initialize logging.
-
-        Params:
-            log_file: Path to log file.
-        """
         removeLoggingHandlers()
 
         fmt = "%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s"
-        console_formatter = ColorFormatter(fmt)
-        file_formatter = logging.Formatter(fmt)
+        file_fmt = logging.Formatter(fmt)
+        console_fmt = ColorFormatter(fmt)
+        log_level = (log_level or "INFO").upper()
+
+        file_handlers = {
+            "log_file_handler": {
+                "handler": None,
+                "path": log_file,
+            },
+            "uilog_file_handler": {
+                "handler": None,
+                "path": f"{Path(log_file).stem}_ui.log",
+            },
+            "access_file_handler": {
+                "handler": None,
+                "path": f"{Path(log_file).stem}_server_access.log",
+            },
+        }
 
         if log_file:
-            if not os.path.isfile(log_file):
-                fpt = open(log_file, "w")
-                fpt.write(" ")
-                fpt.close()
-            Path(log_file).touch()
+            for item in file_handlers.values():
+                Path(item["path"]).touch(exist_ok=True)
+                handler = TimedRotatingFileHandler(
+                    item["path"], when="midnight", backupCount=7
+                )
+                handler.setFormatter(file_fmt)
+                item["handler"] = handler
 
-            log_file_handler = TimedRotatingFileHandler(
-                log_file, when="midnight", backupCount=7
-            )
-            log_file_handler.setFormatter(file_formatter)
+        custom_handler = MX3LoggingHandler(MXCUBEApplication.server)
+        custom_handler.setLevel(log_level)
+        custom_handler.setFormatter(file_fmt)
 
-            uilog_file = f"{log_file[:-4]}_ui.log"
-            if not os.path.isfile(uilog_file):
-                fpt = open(uilog_file, "w")
-                fpt.write(" ")
-                fpt.close()
-            Path(uilog_file).touch()
-
-            uilog_file_handler = TimedRotatingFileHandler(
-                uilog_file, when="midnight", backupCount=7
-            )
-            uilog_file_handler.setFormatter(file_formatter)
-
-        log_level = "INFO" if not log_level else log_level.upper()
-
-        custom_log_handler = MX3LoggingHandler(MXCUBEApplication.server)
-        custom_log_handler.setLevel(log_level)
-        custom_log_handler.setFormatter(file_formatter)
         gelf_handler = MXCUBEApplication._get_graylog_handler(
             MXCUBEApplication.CONFIG, log_level
         )
 
-        _loggers = {
-            "hwr_logger": logging.getLogger("HWR"),
-            "server_logger": logging.getLogger("MX3.HWR"),
-            "user_logger": logging.getLogger("user_level_log"),
-            "queue_logger": logging.getLogger("queue_exec"),
-            "mx3_ui_logger": logging.getLogger("MX3.UI"),
-            "csp_logger": logging.getLogger("csp"),
+        stdout_handler = StreamHandler(sys.stdout)
+        stdout_handler.setFormatter(console_fmt)
+
+        logger_map = {
+            "hwr_logger": "HWR",
+            "server_logger": "MX3.HWR",
+            "user_logger": "user_level_log",
+            "queue_logger": "queue_exec",
+            "mx3_ui_logger": "MX3.UI",
+            "csp_logger": "csp",
+            "server_access_logger": "server_access",
         }
 
-        stdout_log_handler = StreamHandler(sys.stdout)
-        stdout_log_handler.setFormatter(console_formatter)
+        for attr, name in logger_map.items():
+            logger = logging.getLogger(name)
 
-        for logger_name, logger in _loggers.items():
-            if logger_name in enabled_logger_list:
-                logger.addHandler(custom_log_handler)
-                logger.addHandler(stdout_log_handler)
+            if attr in enabled_logger_list:
+                logger.setLevel(log_level)
+                logger.addHandler(custom_handler)
+                logger.addHandler(stdout_handler)
                 if gelf_handler:
                     logger.addHandler(gelf_handler)
-                logger.setLevel(log_level)
 
-                if log_file and "mx3_ui" in logger_name:
-                    logger.addHandler(uilog_file_handler)
-                elif log_file:
-                    logger.addHandler(log_file_handler)
+                if log_file:
+                    if attr == "server_access_logger":
+                        logger.addHandler(
+                            file_handlers["access_file_handler"]["handler"]
+                        )
+                    elif "mx3_ui" in attr:
+                        logger.addHandler(
+                            file_handlers["uilog_file_handler"]["handler"]
+                        )
+                    else:
+                        logger.addHandler(file_handlers["log_file_handler"]["handler"])
 
                 logger.propagate = False
-                setattr(MXCUBEApplication, logger_name, logger)
+                setattr(MXCUBEApplication, attr, logger)
             else:
                 logger.disabled = True
 
