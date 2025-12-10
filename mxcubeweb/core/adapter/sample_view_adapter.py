@@ -403,8 +403,6 @@ class SampleViewAdapter(AdapterBase):
 
         elif not self.centring_clicks_left():
             self.centring_reset_click_count()
-            HWR.beamline.diffractometer.cancel_centring_method()
-
             HWR.beamline.diffractometer.start_centring_method(
                 HWR.beamline.diffractometer.CENTRING_METHOD_MANUAL
             )
