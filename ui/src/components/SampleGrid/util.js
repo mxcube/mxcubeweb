@@ -16,15 +16,3 @@ export function sampleStateBackground(key) {
 
   return map[key] || 'secondary';
 }
-
-export function getSampleName(sampleData) {
-  let name = sampleData?.proteinAcronym || '';
-
-  if (sampleData?.sampleName && name) {
-    name += ` - ${sampleData?.sampleName}`;
-  } else {
-    name = sampleData?.sampleName || '';
-  }
-
-  return name;
-}

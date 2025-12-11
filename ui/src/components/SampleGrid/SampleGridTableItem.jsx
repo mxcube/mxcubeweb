@@ -11,10 +11,11 @@ import { BsCheck2Square, BsSquare } from 'react-icons/bs';
 import CopyToClipboard from '../../components/CopyToClipboard/CopyToClipboard';
 import { isCollected } from '../../constants';
 import containerStyles from '../../containers/SampleGridTableContainer.module.css';
+import { getSampleName } from '../../utils';
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './SampleGridTableItem.module.css';
 import SampleInformation from './SampleInformation';
-import { getSampleName, sampleStateBackground } from './util';
+import { sampleStateBackground } from './util';
 
 export default function SampleGridTableItem({
   sampleData = {},

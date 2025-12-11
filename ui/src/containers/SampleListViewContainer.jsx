@@ -40,6 +40,7 @@ import {
   SAMPLE_LIST_VIEW_MODES,
 } from '../constants';
 import loader from '../img/loader.gif';
+import { getSampleName } from '../utils';
 import QueueSettings from './QueueSettings';
 import SampleGridTableContainer from './SampleGridTableContainer';
 import styles from './SampleListViewContainer.module.css';
@@ -316,10 +317,8 @@ export default function SampleListViewContainer() {
     const sample = sampleList[key];
     let fi = false;
     if (sample) {
-      const sampleFilter =
-        `${sample.sampleName} ${sample.proteinAcronym}`.toLowerCase();
-
-      fi = sampleFilter.includes(filterOptions.text.toLowerCase());
+      const filterText = filterOptions.text.trim().toLowerCase();
+      fi = getSampleName(sample).toLowerCase().includes(filterText);
 
       // eslint-disable-next-line no-bitwise
       fi &= mutualExclusiveFilterOption(
@@ -357,7 +356,7 @@ export default function SampleListViewContainer() {
       filterOptions.notInQueue ||
       filterOptions.collected ||
       filterOptions.notCollected ||
-      filterOptions.text.length > 0 ||
+      filterOptions.text.trim().length > 0 ||
       filterOptions.cellFilter !== '' ||
       filterOptions.puckFilter !== ''
     );
@@ -367,7 +366,7 @@ export default function SampleListViewContainer() {
    * Applies filter defined by user
    */
   function sampleGridFilter(e) {
-    let filterValue = e.target.value.trim();
+    let filterValue = e.target.value;
     if (e.target.type === 'checkbox') {
       filterValue = e.target.checked;
     }

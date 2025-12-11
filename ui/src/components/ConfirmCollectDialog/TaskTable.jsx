@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { OverlayTrigger, Popover, Table } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
 
+import { getSampleName } from '../../utils';
 import TaskOverlayTable from './TaskOverlayTable';
 import styles from './TaskTable.module.css';
 
@@ -47,7 +48,6 @@ export default function TaskTable(props) {
                 : task.parameters;
 
             const sample = sampleList[task.sampleID];
-            const sampleName = `${sample.sampleName} - ${sample.proteinAcronym}`;
             const relativePath = parameters.fullPath.split(rootPath).pop();
 
             return (
@@ -70,7 +70,7 @@ export default function TaskTable(props) {
                 <tr id={task.queueID}>
                   <td>{task.label}</td>
                   <td>
-                    {sampleName} ({sample.location})
+                    {getSampleName(sample)} ({sample.location})
                   </td>
                   <td>
                     <b style={{ color: '#337ab7' }}>...{relativePath}</b>

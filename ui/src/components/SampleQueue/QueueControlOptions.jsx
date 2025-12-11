@@ -11,6 +11,7 @@ import {
 import { showConfirmCollectDialog } from '../../actions/queueGUI';
 import { unmountSample } from '../../actions/sampleChanger';
 import { QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED } from '../../constants';
+import { getSampleName } from '../../utils';
 
 export default function QueueControlOptions() {
   const dispatch = useDispatch();
@@ -39,79 +40,73 @@ export default function QueueControlOptions() {
     }
   }
 
-  switch (queueStatus) {
-    case QUEUE_RUNNING: {
-      return (
-        <div>
-          <Button
-            variant="danger"
-            style={{ marginRight: '0.6em' }}
-            onClick={() => dispatch(stopQueue())}
-          >
-            Stop
+  if (queueStatus === QUEUE_RUNNING) {
+    return (
+      <div>
+        <Button
+          variant="danger"
+          style={{ marginRight: '0.6em' }}
+          onClick={() => dispatch(stopQueue())}
+        >
+          Stop
+        </Button>
+        {currentSampleID && (
+          <Button variant="warning" onClick={() => dispatch(pauseQueue())}>
+            Pause
           </Button>
-          {currentSampleID && (
-            <Button variant="warning" onClick={() => dispatch(pauseQueue())}>
-              Pause
-            </Button>
-          )}
-        </div>
-      );
-    }
-    case QUEUE_STOPPED: {
-      let buttonText = 'Unmount';
-      let buttonStyle = 'primary';
-      // If there is a next sample in the queue, set the button text and style accordingly
-      if (currentSampleID) {
-        const idx = queue.indexOf(currentSampleID);
-        if (queue.length > idx + 1) {
-          const sampleData = sampleList[queue[idx + 1]] || {};
-          const sampleName = sampleData.sampleName || '';
-          const proteinAcronym = sampleData.proteinAcronym
-            ? `${sampleData.proteinAcronym} - `
-            : '';
-          buttonText = `Next Sample (${proteinAcronym}${sampleName})`;
-          buttonStyle = 'outline-secondary';
-        }
-      }
-
-      return (
-        <div>
-          <Button
-            variant="success"
-            style={{ marginRight: '0.6em' }}
-            onClick={() => dispatch(showConfirmCollectDialog())}
-          >
-            Run Queue
-          </Button>
-          {currentSampleID && (
-            <Button variant={buttonStyle} onClick={getNextSample}>
-              {buttonText}
-            </Button>
-          )}
-        </div>
-      );
-    }
-    case QUEUE_PAUSED: {
-      return (
-        <div>
-          <Button
-            variant="danger"
-            style={{ marginRight: '0.6em' }}
-            onClick={() => dispatch(stopQueue())}
-          >
-            Stop
-          </Button>
-          {currentSampleID && (
-            <Button variant="success" onClick={() => dispatch(resumeQueue())}>
-              Resume
-            </Button>
-          )}
-        </div>
-      );
-    }
-    default: {
-      return null;
-    }
+        )}
+      </div>
+    );
   }
+
+  if (queueStatus === QUEUE_STOPPED) {
+    const currentIndex = currentSampleID ? queue.indexOf(currentSampleID) : -1;
+    const nextSample =
+      queue.length > currentIndex + 1
+        ? sampleList[queue[currentIndex + 1]]
+        : undefined;
+
+    return (
+      <div>
+        <Button
+          variant="success"
+          style={{ marginRight: '0.6em' }}
+          onClick={() => dispatch(showConfirmCollectDialog())}
+        >
+          Run Queue
+        </Button>
+        {currentSampleID && (
+          <Button
+            variant={nextSample ? 'outline-secondary' : 'primary'}
+            onClick={getNextSample}
+          >
+            {nextSample
+              ? `Next Sample (${getSampleName(nextSample)})`
+              : 'Unmount'}
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  if (queueStatus === QUEUE_PAUSED) {
+    return (
+      <div>
+        <Button
+          variant="danger"
+          style={{ marginRight: '0.6em' }}
+          onClick={() => dispatch(stopQueue())}
+        >
+          Stop
+        </Button>
+        {currentSampleID && (
+          <Button variant="success" onClick={() => dispatch(resumeQueue())}>
+            Resume
+          </Button>
+        )}
+      </div>
+    );
+  }
+
+  return null;
 }

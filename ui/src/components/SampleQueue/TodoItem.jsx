@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 
 import { showList } from '../../actions/queueGUI';
 import { mountSample } from '../../actions/sampleChanger';
+import { getSampleName } from '../../utils';
 import styles from './Item.module.css';
 
 export default function TodoItem({ sampleData }) {
@@ -17,7 +18,7 @@ export default function TodoItem({ sampleData }) {
     dispatch(showList('current'));
   }
 
-  const { sampleID, sampleName = '', proteinAcronym = '' } = sampleData;
+  const { sampleID } = sampleData;
 
   return (
     <div className={styles.nodeSample}>
@@ -25,7 +26,7 @@ export default function TodoItem({ sampleData }) {
         <div className={styles.nodeName}>
           <p className="pt-1 me-auto">
             <b>{`${sampleID} `}</b>
-            {`${proteinAcronym} ${sampleName}`}
+            {`${getSampleName(sampleData)}`}
           </p>
 
           <Button

@@ -7,6 +7,7 @@ import CurrentTree from '../components/SampleQueue/CurrentTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
 import TodoTree from '../components/SampleQueue/TodoTree';
 import loader from '../img/loader.gif';
+import { getSampleName } from '../utils';
 import styles from './SampleQueueContainer.module.css';
 
 function SampleQueueContainer() {
@@ -30,9 +31,7 @@ function SampleQueueContainer() {
     : undefined;
 
   const currentTabLabel = currentSample
-    ? `Sample: ${
-        currentSample.proteinAcronym ? `${currentSample.proteinAcronym} - ` : ''
-      }${currentSample.sampleName}`
+    ? `Sample: ${getSampleName(currentSample)}`
     : 'Current';
 
   return (
