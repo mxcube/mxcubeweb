@@ -71,9 +71,12 @@ mxcube:
   # Mode, SSX-CHIP, SSX-INJECTOR, OSC
   mode: OSC
 
-  USE_GET_SAMPLES_FROM_SC: true
   # This is used to determine whether we can get samples from the sample changer
-  # if false, Only LIMS samples will be availble to fetch for the sample list
+  # if false, Only LIMS samples will be available to fetch for the sample list
+  USE_GET_SAMPLES_FROM_SC: true
+
+  # Sync samples with LIMS on proposal selection
+  AUTOSYNC_LIMS: false
 
   # Interval with which request to refresh token is made
   # by the client application.

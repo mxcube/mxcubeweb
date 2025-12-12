@@ -222,6 +222,11 @@ class MXCUBEAppConfigModel(BaseModel):
             "True to activate or be able to get samples from the sample changer, false otherwise"
         ),
     )
+
+    AUTOSYNC_LIMS: bool = Field(
+        False, description="True to synchronize samples with LIMS on proposal selection"
+    )
+
     mode: ModeEnum = Field(
         ModeEnum.OSC, description="MXCuBE mode OSC, SSX-CHIP or SSX-INJECTOR"
     )

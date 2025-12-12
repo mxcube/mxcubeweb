@@ -38,6 +38,13 @@ mxcube:
   # by the client application.
   SESSION_REFRESH_INTERVAL: 9000
 
+  # This is used to determine whether we can get samples from the sample changer
+  # if false, Only LIMS samples will be available to fetch for the sample list
+  USE_GET_SAMPLES_FROM_SC: true
+
+  # Sync samples with LIMS on proposal selection
+  AUTOSYNC_LIMS: false
+
   usermanager:
     class: UserManager
     inhouse_is_staff: true

@@ -177,6 +177,8 @@ The section has the following syntax:
       VIDEO_STREAM_PORT: <stream port>
       MXCUBE_STARTS_VIDEO_STREAM: <boolean>
       SESSION_REFRESH_INTERVAL: <refresh interval>
+      USE_GET_SAMPLES_FROM_SC: <boolean>
+      AUTOSYNC_LIMS: <boolean>
       usermanager:
         class: <class name>
         inhouse_is_staff: <boolean>
@@ -240,6 +242,19 @@ The interval in milliseconds at which the front-end makes
 requests to refresh the session.
 
 Default interval is ``9000`` milliseconds.
+
+``USE_GET_SAMPLES_FROM_SC``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Allow get samples from the sample changer.
+If ``False``, Only LIMS samples will be available to fetch for the sample list in the UI.
+
+Default value is ``True``
+
+``AUTOSYNC_LIMS``
+~~~~~~~~~~~~~~~~~
+Enable sync samples from LIMS on proposal selection.
+
+Default value is ``False``
 
 ``usermanager``
 ~~~~~~~~~~~~~~~

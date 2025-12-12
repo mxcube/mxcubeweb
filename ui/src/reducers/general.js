@@ -9,6 +9,7 @@ const INITIAL_STATE = {
   showConfirmClearQueueDialog: false,
   mode: 'OSC',
   useGetSamplesFromSC: true,
+  autosyncLims: false,
   serverVersion: '3',
   applicationFetched: false,
 };
@@ -42,6 +43,7 @@ function generalReducer(state = INITIAL_STATE, action = {}) {
         ...state,
         mode: action.data.general.mode,
         useGetSamplesFromSC: action.data.general.use_get_samples_from_sc,
+        autosyncLims: action.data.general.autosync_lims,
         serverVersion: action.data.general.version,
         enable2DPoints: action.data.general.enable_2d_points,
         meshResultFormat: action.data.general.mesh_result_format,
