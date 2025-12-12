@@ -7,6 +7,7 @@ import {
   selectProposal,
   signOut,
 } from '../../actions/login';
+import { getLimsSamples } from '../../actions/sampleGrid';
 import ActionButton from './ActionButton';
 import SessionTable from './SessionTable';
 import styles from './SessionTable.module.css';
@@ -21,8 +22,13 @@ function SelectProposal() {
   const dispatch = useDispatch();
 
   const login = useSelector((state) => state.login);
-  const { loginType, proposalList, selectedProposalID, showProposalsForm } =
-    login;
+  const {
+    loginType,
+    proposalList,
+    selectedProposalID,
+    showProposalsForm,
+    limsName,
+  } = login;
 
   const show =
     showProposalsForm || (loginType === 'User' && selectedProposalID === null);
@@ -43,6 +49,11 @@ function SelectProposal() {
 
   const defaultActiveTab =
     TAB_PRIORITY.find((tabId) => showTab[tabId]) ?? TAB_PRIORITY[0];
+
+  /**
+   * @type {boolean}
+   */
+  const autosyncLims = useSelector((state) => state.general.autosyncLims);
 
   const filteredSessions = proposalList.filter(
     ({ title, number, code }) =>
@@ -69,6 +80,14 @@ function SelectProposal() {
       dispatch(signOut());
     } else {
       dispatch(hideProposalsForm());
+    }
+  }
+
+  function handleSelectProposal(sessionId) {
+    dispatch(selectProposal(sessionId));
+
+    if (autosyncLims) {
+      dispatch(getLimsSamples(limsName[0].name));
     }
   }
 
@@ -159,7 +178,7 @@ function SelectProposal() {
       <Modal.Footer>
         <ActionButton
           selectedSession={selectedSession}
-          onClick={() => dispatch(selectProposal(selectedSessionId))}
+          onClick={() => handleSelectProposal(selectedSessionId)}
         />
         <Button
           variant="outline-secondary"
