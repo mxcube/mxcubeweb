@@ -1,39 +1,24 @@
 /* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/anchor-is-valid */
-/* eslint-disable react/no-unused-prop-types */
-
-import PropTypes from 'prop-types';
-import { Component } from 'react';
 import { OverlayTrigger, Popover } from 'react-bootstrap';
 
 import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
-export default class XRFTaskItem extends Component {
-  static propTypes = {
-    id: PropTypes.string.isRequired,
-    index: PropTypes.number.isRequired,
-  };
-
-  constructor(props) {
-    super(props);
-    this.showForm = this.showForm.bind(this);
-    this.pointIDString = this.pointIDString.bind(this);
-  }
-
-  showForm() {
-    const { data, sampleId } = this.props;
+function XRFTaskItem(props) {
+  function showForm() {
+    const { data, sampleId } = props;
     const { type, parameters } = data;
-    this.props.showForm(type, sampleId, data, parameters.shape);
+    props.showForm(type, sampleId, data, parameters.shape);
   }
 
-  pointIDString(parameters) {
+  function pointIDString(parameters) {
     let res = '';
 
     if (parameters.shape !== -1) {
       try {
-        res = `${this.props.shapes.shapes[parameters.shape].name}: `;
+        res = `${props.shapes.shapes[parameters.shape].name}: `;
       } catch {
         res = '';
       }
@@ -42,7 +27,7 @@ export default class XRFTaskItem extends Component {
     return `${res}`;
   }
 
-  path(parameters) {
+  function renderPath(parameters) {
     const value = parameters.fileName;
     const path = parameters.path || '';
 
@@ -72,28 +57,28 @@ export default class XRFTaskItem extends Component {
     );
   }
 
-  render() {
-    const { data } = this.props;
-    const { parameters } = data;
+  const { data } = props;
+  const { parameters } = data;
 
-    return (
-      <TaskItemContainer
-        index={this.props.index}
-        data={data}
-        pointIDString={this.pointIDString(parameters)}
-      >
-        <div className={styles.taskBody}>
-          <div>
-            <div style={{ border: '1px solid #DDD' }}>
-              <div style={{ padding: '0.5em' }} onClick={this.showForm}>
-                <b>Path:</b> {this.path(parameters)}
-                <br />
-                <b>Count time:</b> {parameters.countTime}
-              </div>
+  return (
+    <TaskItemContainer
+      index={props.index}
+      data={data}
+      pointIDString={pointIDString(parameters)}
+    >
+      <div className={styles.taskBody}>
+        <div>
+          <div style={{ border: '1px solid #DDD' }}>
+            <div style={{ padding: '0.5em' }} onClick={showForm}>
+              <b>Path:</b> {renderPath(parameters)}
+              <br />
+              <b>Count time:</b> {parameters.countTime}
             </div>
           </div>
         </div>
-      </TaskItemContainer>
-    );
-  }
+      </div>
+    </TaskItemContainer>
+  );
 }
+
+export default XRFTaskItem;

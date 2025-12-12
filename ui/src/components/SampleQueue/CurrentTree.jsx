@@ -91,12 +91,10 @@ function CurrentTree(props) {
     <>
       <div className={styles.listBody}>
         {tasks.map((taskData, i) => {
-          let task = null;
-
           switch (taskData.type) {
             case 'Workflow':
             case 'GphlWorkflow': {
-              task = (
+              return (
                 <WorkflowTaskItem
                   key={taskData.queueID}
                   index={i}
@@ -112,11 +110,9 @@ function CurrentTree(props) {
                   }}
                 />
               );
-
-              break;
             }
             case 'xrf_spectrum': {
-              task = (
+              return (
                 <XRFTaskItem
                   key={taskData.queueID}
                   index={i}
@@ -130,11 +126,9 @@ function CurrentTree(props) {
                   showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
-
-              break;
             }
             case 'energy_scan': {
-              task = (
+              return (
                 <EnergyScanTaskItem
                   key={taskData.queueID}
                   index={i}
@@ -147,11 +141,9 @@ function CurrentTree(props) {
                   showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
-
-              break;
             }
             case 'Characterisation': {
-              task = (
+              return (
                 <CharacterisationTaskItem
                   key={taskData.queueID}
                   index={i}
@@ -166,11 +158,9 @@ function CurrentTree(props) {
                   showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
-
-              break;
             }
             default: {
-              task = (
+              return (
                 <TaskItem
                   key={taskData.queueID}
                   index={i}
@@ -185,8 +175,6 @@ function CurrentTree(props) {
               );
             }
           }
-
-          return task;
         })}
       </div>
 
