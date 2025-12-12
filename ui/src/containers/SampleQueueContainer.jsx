@@ -67,10 +67,7 @@ function SampleQueueContainer() {
             </div>
           )}
           {visibleList === 'current' && currentSample && (
-            <CurrentTree
-              currentSample={currentSample}
-              sampleList={sampleList}
-            />
+            <CurrentTree currentSample={currentSample} />
           )}
           {visibleList === 'todo' && <TodoTree list={todo} />}
         </div>

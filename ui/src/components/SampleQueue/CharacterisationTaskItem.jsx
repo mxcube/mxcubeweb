@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/no-array-index-key */
 import { Button, Table } from 'react-bootstrap';
@@ -9,15 +8,18 @@ import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 function TaskItem(props) {
-  function getResult(_state, data) {
-    if (props.data.state !== TASK_COLLECTED) {
+  const { index, data, sampleId, pointID, shapes, showForm, addTask } = props;
+  const wedges = data.type === 'Interleaved' ? data.parameters.wedges : [data];
+
+  function getResult() {
+    if (data.state !== TASK_COLLECTED) {
       return <span />;
     }
 
-    return <div className={styles.resultBody}>{getDiffPlan(data)}</div>;
+    return <div className={styles.resultBody}>{getDiffPlan()}</div>;
   }
 
-  function getDiffPlan(data) {
+  function getDiffPlan() {
     let diffPlan = [];
     if (
       'diffractionPlan' in data &&
@@ -41,7 +43,6 @@ function TaskItem(props) {
   }
 
   function showDiffPlan() {
-    const { data, sampleId } = props;
     const tasks = data.diffractionPlan;
 
     // if there is a single wedge, display the form, otherwise, add all wedges as differente dc-s
@@ -50,29 +51,28 @@ function TaskItem(props) {
       delete data.diffractionPlan[0].sampleID;
       const [{ type, parameters }] = data.diffractionPlan;
 
-      props.showForm(type, sampleId, data.diffractionPlan[0], parameters.shape);
+      showForm(type, sampleId, data.diffractionPlan[0], parameters.shape);
     } else {
       tasks.forEach((t) => {
         const pars = {
           type: 'DataCollection',
           label: 'Data Collection',
           helical: false,
-          shape: props.pointID,
+          shape: pointID,
           ...t.parameters,
         };
 
-        props.addTask([sampleId], pars, false);
+        addTask([sampleId], pars, false);
       });
     }
   }
 
-  function showForm() {
-    const { data, sampleId } = props;
+  function handleParamsTableClick() {
     const { type, parameters } = data;
-    props.showForm(type, sampleId, data, parameters.shape);
+    showForm(type, sampleId, data, parameters.shape);
   }
 
-  function pointIDString(wedges) {
+  function pointIDString() {
     let res = '';
 
     wedges.forEach((wedge) => {
@@ -81,7 +81,7 @@ function TaskItem(props) {
         !res.includes(`${wedge.parameters.shape}`)
       ) {
         try {
-          res += `${props.shapes.shapes[wedge.parameters.shape].name} :`;
+          res += `${shapes.shapes[wedge.parameters.shape].name} :`;
         } catch {
           res = String(res);
         }
@@ -155,14 +155,11 @@ function TaskItem(props) {
     );
   }
 
-  const { data, state } = props;
-  const wedges = data.type === 'Interleaved' ? data.parameters.wedges : [data];
-
   return (
     <TaskItemContainer
-      index={props.index}
+      index={index}
       data={data}
-      pointIDString={pointIDString(wedges)}
+      pointIDString={pointIDString()}
     >
       <div className={styles.taskBody}>
         {wedges.map((wedge, i) => {
@@ -192,7 +189,7 @@ function TaskItem(props) {
                 striped
                 bordered
                 hover
-                onClick={showForm}
+                onClick={handleParamsTableClick}
                 className={styles.taskParametersTable}
               >
                 <thead>
@@ -212,7 +209,7 @@ function TaskItem(props) {
                 </thead>
                 <tbody>{wedgeParameters(wedge)}</tbody>
               </Table>
-              {getResult(state, data)}
+              {getResult()}
             </div>
           );
         })}

@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Button } from 'react-bootstrap';
 
@@ -7,12 +6,15 @@ import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 function WorkflowTaskItem(props) {
-  function pointIDString(parameters) {
+  const { index, data, shapes, showWorkflowParametersDialog } = props;
+  const { parameters } = data;
+
+  function pointIDString() {
     let res = '';
 
     if (parameters.shape !== -1) {
       try {
-        res = `${props.shapes.shapes[parameters.shape].name}: `;
+        res = `${shapes.shapes[parameters.shape].name}: `;
       } catch {
         res = '';
       }
@@ -21,7 +23,7 @@ function WorkflowTaskItem(props) {
     return res;
   }
 
-  function renderPath(parameters) {
+  function renderPath() {
     const path = parameters.path || '';
     const pathEndPart = path.slice(-40);
 
@@ -34,21 +36,17 @@ function WorkflowTaskItem(props) {
     );
   }
 
-  const { data } = props;
-
-  const { parameters } = data;
-
   return (
     <TaskItemContainer
-      index={props.index}
+      index={index}
       data={data}
-      pointIDString={pointIDString(parameters)}
+      pointIDString={pointIDString()}
     >
       <div className={styles.taskBody}>
         <div>
           <div className={styles.dataPath}>
             <b>Path:</b>
-            {renderPath(parameters)}
+            {renderPath()}
             <Button
               variant="outline-secondary"
               style={{ width: '3em' }}
@@ -63,7 +61,7 @@ function WorkflowTaskItem(props) {
               variant="outline-secondary"
               style={{ width: '3em' }}
               title="Open parameters dialog"
-              onClick={() => props.showWorkflowParametersDialog(null, true)}
+              onClick={() => showWorkflowParametersDialog(null, true)}
             >
               <i aria-hidden="true" className="fa fa-sliders-h" />
             </Button>

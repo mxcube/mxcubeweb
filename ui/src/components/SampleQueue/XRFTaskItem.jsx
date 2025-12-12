@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { OverlayTrigger, Popover } from 'react-bootstrap';
@@ -7,18 +6,19 @@ import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 function XRFTaskItem(props) {
-  function showForm() {
-    const { data, sampleId } = props;
-    const { type, parameters } = data;
-    props.showForm(type, sampleId, data, parameters.shape);
+  const { index, data, sampleId, shapes, showForm } = props;
+  const { type, parameters } = data;
+
+  function handleParamsTableClick() {
+    showForm(type, sampleId, data, parameters.shape);
   }
 
-  function pointIDString(parameters) {
+  function pointIDString() {
     let res = '';
 
     if (parameters.shape !== -1) {
       try {
-        res = `${props.shapes.shapes[parameters.shape].name}: `;
+        res = `${shapes.shapes[parameters.shape].name}: `;
       } catch {
         res = '';
       }
@@ -27,7 +27,7 @@ function XRFTaskItem(props) {
     return `${res}`;
   }
 
-  function renderPath(parameters) {
+  function renderPath() {
     const value = parameters.fileName;
     const path = parameters.path || '';
 
@@ -57,20 +57,17 @@ function XRFTaskItem(props) {
     );
   }
 
-  const { data } = props;
-  const { parameters } = data;
-
   return (
     <TaskItemContainer
-      index={props.index}
+      index={index}
       data={data}
-      pointIDString={pointIDString(parameters)}
+      pointIDString={pointIDString()}
     >
       <div className={styles.taskBody}>
         <div>
           <div style={{ border: '1px solid #DDD' }}>
-            <div style={{ padding: '0.5em' }} onClick={showForm}>
-              <b>Path:</b> {renderPath(parameters)}
+            <div style={{ padding: '0.5em' }} onClick={handleParamsTableClick}>
+              <b>Path:</b> {renderPath()}
               <br />
               <b>Count time:</b> {parameters.countTime}
             </div>

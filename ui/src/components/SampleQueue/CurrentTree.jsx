@@ -13,7 +13,7 @@ import WorkflowTaskItem from './WorkflowTaskItem';
 import XRFTaskItem from './XRFTaskItem';
 
 function CurrentTree(props) {
-  const { sampleList, currentSample } = props;
+  const { currentSample } = props;
   const { sampleID: sampleId, tasks = [] } = currentSample;
 
   const dispatch = useDispatch();
@@ -151,7 +151,6 @@ function CurrentTree(props) {
                   data={taskData}
                   sampleId={sampleId}
                   checked={checked}
-                  state={sampleList[taskData.sampleID].tasks[i].state}
                   showForm={(...args) => dispatch(showTaskForm(...args))}
                   addTask={addTask}
                   shapes={shapes}

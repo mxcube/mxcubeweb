@@ -1,4 +1,3 @@
-/* eslint-disable react/destructuring-assignment */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/no-array-index-key */
 import { Button, Table } from 'react-bootstrap';
@@ -8,21 +7,24 @@ import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 function TaskItem(props) {
-  function showForm() {
-    const { data, sampleId, shapes } = props;
+  const { data, index, shapes, sampleId, showForm } = props;
+  const wedges = data.type === 'Interleaved' ? data.parameters.wedges : [data];
+
+  function handleParamsTableClick() {
     const { type, parameters } = data;
+
     if (parameters.helical) {
-      props.showForm('Helical', sampleId, data, parameters.shape);
+      showForm('Helical', sampleId, data, parameters.shape);
     } else if (parameters.mesh) {
       const shape = shapes.shapes[parameters.shape];
       data.parameters.cell_count = shape.numCols * shape.numRows;
-      props.showForm('Mesh', sampleId, data, parameters.shape);
+      showForm('Mesh', sampleId, data, parameters.shape);
     } else {
-      props.showForm(type, sampleId, data, parameters.shape);
+      showForm(type, sampleId, data, parameters.shape);
     }
   }
 
-  function pointIDString(wedges) {
+  function pointIDString() {
     let res = '';
 
     wedges.forEach((wedge) => {
@@ -31,7 +33,7 @@ function TaskItem(props) {
         !res.includes(`${wedge.parameters.shape}`)
       ) {
         try {
-          res += `${props.shapes.shapes[wedge.parameters.shape].name}`;
+          res += `${shapes.shapes[wedge.parameters.shape].name}`;
         } catch {
           res = String(res);
         }
@@ -112,12 +114,9 @@ function TaskItem(props) {
     );
   }
 
-  const { data } = props;
-  const wedges = data.type === 'Interleaved' ? data.parameters.wedges : [data];
-
   return (
     <TaskItemContainer
-      index={props.index}
+      index={index}
       data={data}
       pointIDString={pointIDString(wedges)}
     >
@@ -150,7 +149,7 @@ function TaskItem(props) {
                 striped
                 bordered
                 hover
-                onClick={showForm}
+                onClick={handleParamsTableClick}
                 className={styles.taskParametersTable}
               >
                 <thead>
