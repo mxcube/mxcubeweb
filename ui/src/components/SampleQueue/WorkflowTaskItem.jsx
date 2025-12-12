@@ -9,6 +9,9 @@ function WorkflowTaskItem(props) {
   const { index, data, shapes, showWorkflowParametersDialog } = props;
   const { parameters } = data;
 
+  const path = parameters.path || '';
+  const pathEndPart = path.slice(-40);
+
   function pointIDString() {
     let res = '';
 
@@ -23,19 +26,6 @@ function WorkflowTaskItem(props) {
     return res;
   }
 
-  function renderPath() {
-    const path = parameters.path || '';
-    const pathEndPart = path.slice(-40);
-
-    return (
-      <TooltipTrigger id="wedge-path-tooltip" tooltipContent={path}>
-        <a style={{ flexGrow: 1 }}>
-          .../{pathEndPart.slice(pathEndPart.indexOf('/') + 1)}
-        </a>
-      </TooltipTrigger>
-    );
-  }
-
   return (
     <TaskItemContainer
       index={index}
@@ -46,7 +36,11 @@ function WorkflowTaskItem(props) {
         <div>
           <div className={styles.dataPath}>
             <b>Path:</b>
-            {renderPath()}
+            <TooltipTrigger id="wedge-path-tooltip" tooltipContent={path}>
+              <a style={{ flexGrow: 1 }}>
+                .../{pathEndPart.slice(pathEndPart.indexOf('/') + 1)}
+              </a>
+            </TooltipTrigger>
             <Button
               variant="outline-secondary"
               style={{ width: '3em' }}

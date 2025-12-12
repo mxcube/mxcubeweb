@@ -47,98 +47,45 @@ function TaskItem(props) {
     return `${res} `;
   }
 
-  function wedgePath(wedge) {
-    const { parameters } = wedge;
-    const value = parameters.fileName;
-    const path = parameters.path || '';
-    const pathEndPart = path.slice(-40);
-
-    return (
-      <TooltipTrigger
-        id="wedge-path-tooltip"
-        tooltipContent={
-          <>
-            {path}
-            {value}
-          </>
-        }
-      >
-        <a style={{ flexGrow: 1 }}>
-          .../{pathEndPart.slice(pathEndPart.indexOf('/') + 1)}
-          {value}
-        </a>
-      </TooltipTrigger>
-    );
-  }
-
-  function wedgeParameters(wedge) {
-    const { parameters } = wedge;
-    return (
-      <tr>
-        {parameters.osc_start !== null && (
-          <td>
-            <a>{parameters.osc_start.toFixed(2)}</a>
-          </td>
-        )}
-        {parameters.osc_range !== null && (
-          <td>
-            <a>{parameters.osc_range.toFixed(2)}</a>
-          </td>
-        )}
-        <td>
-          <a>{parameters.exp_time.toFixed(6)}</a>
-        </td>
-        <td>
-          <a>{parameters.num_images}</a>
-        </td>
-        <td>
-          <a>{parameters.transmission.toFixed(2)}</a>
-        </td>
-        <td>
-          <a>{parameters.resolution.toFixed(3)}</a>
-        </td>
-        <td>
-          <a>{parameters.energy.toFixed(4)}</a>
-        </td>
-        {parameters.kappa_phi !== null && (
-          <td>
-            <a>{parameters.kappa_phi.toFixed(2)}</a>
-          </td>
-        )}
-        {parameters.kappa !== null && (
-          <td>
-            <a>{parameters.kappa.toFixed(2)}</a>
-          </td>
-        )}
-      </tr>
-    );
-  }
-
   return (
     <TaskItemContainer
       index={index}
       data={data}
-      pointIDString={pointIDString(wedges)}
+      pointIDString={pointIDString()}
     >
       <div className={styles.taskBody}>
         {wedges.map((wedge, i) => {
-          const padding = i > 0 ? '1.5em' : '0.5em';
+          const { parameters } = wedge;
+          const { fileName, path = '' } = parameters;
+          const pathEndPart = path.slice(-40);
+
           return (
             <div key={`wedge-${i}`}>
               <div
                 className={styles.dataPath}
-                style={{
-                  paddingTop: padding,
-                }}
+                style={{ paddingTop: i > 0 ? '1.5em' : '0.5em' }}
               >
                 <b>Path:</b>
-                {wedgePath(wedge)}
+                <TooltipTrigger
+                  id="wedge-path-tooltip"
+                  tooltipContent={
+                    <>
+                      {path}
+                      {fileName}
+                    </>
+                  }
+                >
+                  <a style={{ flexGrow: 1 }}>
+                    .../{pathEndPart.slice(pathEndPart.indexOf('/') + 1)}
+                    {fileName}
+                  </a>
+                </TooltipTrigger>
                 <Button
                   variant="outline-secondary"
                   style={{ width: '3em' }}
                   title="Copy path"
                   onClick={() => {
-                    navigator.clipboard.writeText(`${wedge.parameters.path}`);
+                    navigator.clipboard.writeText(path);
                   }}
                 >
                   <i className="fa fa-copy" aria-hidden="true" />
@@ -154,24 +101,56 @@ function TaskItem(props) {
               >
                 <thead>
                   <tr>
-                    {wedge.parameters.osc_start !== null && (
-                      <th>Start &deg; </th>
-                    )}
-                    {wedge.parameters.osc_range !== null && (
-                      <th>Osc. &deg; </th>
-                    )}
+                    {parameters.osc_start !== null && <th>Start &deg; </th>}
+                    {parameters.osc_range !== null && <th>Osc. &deg; </th>}
                     <th>t (s)</th>
                     <th># Img</th>
                     <th>T (%)</th>
                     <th>Res. (&Aring;)</th>
                     <th>E (keV)</th>
-                    {wedge.parameters.kappa_phi !== null && (
-                      <th>&phi; &deg;</th>
-                    )}
-                    {wedge.parameters.kappa !== null && <th>&kappa; &deg;</th>}
+                    {parameters.kappa_phi !== null && <th>&phi; &deg;</th>}
+                    {parameters.kappa !== null && <th>&kappa; &deg;</th>}
                   </tr>
                 </thead>
-                <tbody>{wedgeParameters(wedge)}</tbody>
+                <tbody>
+                  <tr>
+                    {parameters.osc_start !== null && (
+                      <td>
+                        <a>{parameters.osc_start.toFixed(2)}</a>
+                      </td>
+                    )}
+                    {parameters.osc_range !== null && (
+                      <td>
+                        <a>{parameters.osc_range.toFixed(2)}</a>
+                      </td>
+                    )}
+                    <td>
+                      <a>{parameters.exp_time.toFixed(6)}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.num_images}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.transmission.toFixed(2)}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.resolution.toFixed(3)}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.energy.toFixed(4)}</a>
+                    </td>
+                    {parameters.kappa_phi !== null && (
+                      <td>
+                        <a>{parameters.kappa_phi.toFixed(2)}</a>
+                      </td>
+                    )}
+                    {parameters.kappa !== null && (
+                      <td>
+                        <a>{parameters.kappa.toFixed(2)}</a>
+                      </td>
+                    )}
+                  </tr>
+                </tbody>
               </Table>
             </div>
           );

@@ -7,40 +7,9 @@ import TooltipTrigger from '../TooltipTrigger';
 import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
-function TaskItem(props) {
+function CharacterisationTaskItem(props) {
   const { index, data, sampleId, pointID, shapes, showForm, addTask } = props;
   const wedges = data.type === 'Interleaved' ? data.parameters.wedges : [data];
-
-  function getResult() {
-    if (data.state !== TASK_COLLECTED) {
-      return <span />;
-    }
-
-    return <div className={styles.resultBody}>{getDiffPlan()}</div>;
-  }
-
-  function getDiffPlan() {
-    let diffPlan = [];
-    if (
-      'diffractionPlan' in data &&
-      Object.keys(data.diffractionPlan).length > 0
-    ) {
-      // it can be empty
-      diffPlan = (
-        <span className="float-end">
-          <Button
-            size="sm"
-            style={{ width: 'auto', marginTop: '-4px' }}
-            onClick={showDiffPlan}
-          >
-            <i className="fas fa-plus" />
-            Add Diffraction Plan
-          </Button>
-        </span>
-      );
-    }
-    return diffPlan;
-  }
 
   function showDiffPlan() {
     const tasks = data.diffractionPlan;
@@ -91,70 +60,6 @@ function TaskItem(props) {
     return `${res}`;
   }
 
-  function wedgePath(wedge) {
-    const { parameters } = wedge;
-    const value = parameters.fileName;
-    const path = parameters.path || '';
-    const pathEndPart = path.slice(-40);
-
-    return (
-      <TooltipTrigger
-        id="wedge-path-tooltip"
-        tooltipContent={
-          <>
-            {path}
-            {value}
-          </>
-        }
-      >
-        <a style={{ flexGrow: 1 }}>
-          .../{pathEndPart.slice(pathEndPart.indexOf('/') + 1)}
-          {value}
-        </a>
-      </TooltipTrigger>
-    );
-  }
-
-  function wedgeParameters(wedge) {
-    const { parameters } = wedge;
-
-    return (
-      <tr>
-        <td>
-          <a>{parameters.osc_start.toFixed(2)}</a>
-        </td>
-        <td>
-          <a>{parameters.osc_range.toFixed(2)}</a>
-        </td>
-        <td>
-          <a>{parameters.exp_time.toFixed(3)}</a>
-        </td>
-        <td>
-          <a>{parameters.num_images}</a>
-        </td>
-        <td>
-          <a>{parameters.transmission.toFixed(2)}</a>
-        </td>
-        <td>
-          <a>{parameters.resolution.toFixed(3)}</a>
-        </td>
-        <td>
-          <a>{parameters.energy.toFixed(4)}</a>
-        </td>
-        {parameters.kappa_phi !== null && (
-          <td>
-            <a>{parameters.kappa_phi.toFixed(2)}</a>
-          </td>
-        )}
-        {parameters.kappa !== null && (
-          <td>
-            <a>{parameters.kappa.toFixed(2)}</a>
-          </td>
-        )}
-      </tr>
-    );
-  }
-
   return (
     <TaskItemContainer
       index={index}
@@ -163,28 +68,43 @@ function TaskItem(props) {
     >
       <div className={styles.taskBody}>
         {wedges.map((wedge, i) => {
-          const padding = i > 0 ? '1.5em' : '0.5em';
+          const { parameters } = wedge;
+          const { fileName, path = '' } = parameters;
+          const pathEndPart = path.slice(-40);
+
           return (
             <div key={`wedge-${i}`}>
               <div
                 className={styles.dataPath}
-                style={{
-                  paddingTop: padding,
-                }}
+                style={{ paddingTop: i > 0 ? '1.5em' : '0.5em' }}
               >
                 <b>Path:</b>
-                {wedgePath(wedge)}
+                <TooltipTrigger
+                  id="wedge-path-tooltip"
+                  tooltipContent={
+                    <>
+                      {path}
+                      {fileName}
+                    </>
+                  }
+                >
+                  <a style={{ flexGrow: 1 }}>
+                    .../{pathEndPart.slice(pathEndPart.indexOf('/') + 1)}
+                    {fileName}
+                  </a>
+                </TooltipTrigger>
                 <Button
                   variant="outline-secondary"
                   style={{ width: '3em' }}
                   title="Copy path"
                   onClick={() => {
-                    navigator.clipboard.writeText(`${wedge.parameters.path}`);
+                    navigator.clipboard.writeText(path);
                   }}
                 >
                   <i className="fa fa-copy" aria-hidden="true" />
                 </Button>
               </div>
+
               <Table
                 striped
                 bordered
@@ -201,15 +121,64 @@ function TaskItem(props) {
                     <th>T (%)</th>
                     <th>Res. (&Aring;)</th>
                     <th>E (keV)</th>
-                    {wedge.parameters.kappa_phi !== null && (
-                      <th>&phi; &deg;</th>
-                    )}
-                    {wedge.parameters.kappa !== null && <th>&kappa; &deg;</th>}
+                    {parameters.kappa_phi !== null && <th>&phi; &deg;</th>}
+                    {parameters.kappa !== null && <th>&kappa; &deg;</th>}
                   </tr>
                 </thead>
-                <tbody>{wedgeParameters(wedge)}</tbody>
+                <tbody>
+                  <tr>
+                    <td>
+                      <a>{parameters.osc_start.toFixed(2)}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.osc_range.toFixed(2)}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.exp_time.toFixed(3)}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.num_images}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.transmission.toFixed(2)}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.resolution.toFixed(3)}</a>
+                    </td>
+                    <td>
+                      <a>{parameters.energy.toFixed(4)}</a>
+                    </td>
+                    {parameters.kappa_phi !== null && (
+                      <td>
+                        <a>{parameters.kappa_phi.toFixed(2)}</a>
+                      </td>
+                    )}
+                    {parameters.kappa !== null && (
+                      <td>
+                        <a>{parameters.kappa.toFixed(2)}</a>
+                      </td>
+                    )}
+                  </tr>
+                </tbody>
               </Table>
-              {getResult()}
+
+              {data.state === TASK_COLLECTED && (
+                <div className={styles.resultBody}>
+                  {'diffractionPlan' in data &&
+                    Object.keys(data.diffractionPlan).length > 0 && (
+                      <span className="float-end">
+                        <Button
+                          size="sm"
+                          style={{ width: 'auto', marginTop: '-4px' }}
+                          onClick={showDiffPlan}
+                        >
+                          <i className="fas fa-plus" />
+                          Add Diffraction Plan
+                        </Button>
+                      </span>
+                    )}
+                </div>
+              )}
             </div>
           );
         })}
@@ -218,4 +187,4 @@ function TaskItem(props) {
   );
 }
 
-export default TaskItem;
+export default CharacterisationTaskItem;

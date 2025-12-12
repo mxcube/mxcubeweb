@@ -9,6 +9,9 @@ function EnergyScanTaskItem(props) {
   const { index, data, sampleId, shapes, showForm } = props;
   const { type, parameters } = data;
 
+  const value = parameters.fileName;
+  const path = parameters.path || '';
+
   function handleParamsTableClick() {
     showForm(type, sampleId, data, parameters.shape);
   }
@@ -27,36 +30,6 @@ function EnergyScanTaskItem(props) {
     return res;
   }
 
-  function renderPath() {
-    const value = parameters.fileName;
-    const path = parameters.path || '';
-
-    return (
-      <OverlayTrigger
-        trigger="click"
-        placement="top"
-        rootClose
-        overlay={
-          <Popover
-            id="wedge-popover"
-            style={{ maxWidth: '2000px', width: 'auto' }}
-          >
-            <input
-              type="text"
-              onFocus={(e) => {
-                e.target.select();
-              }}
-              value={path}
-              size={path.length + 10}
-            />
-          </Popover>
-        }
-      >
-        <a onClick={(e) => e.stopPropagation()}>{value}</a>
-      </OverlayTrigger>
-    );
-  }
-
   return (
     <TaskItemContainer
       index={index}
@@ -67,7 +40,29 @@ function EnergyScanTaskItem(props) {
         <div>
           <div style={{ border: '1px solid #DDD' }}>
             <div style={{ padding: '0.5em' }} onClick={handleParamsTableClick}>
-              <b>Path:</b> {renderPath()}
+              <b>Path:</b>{' '}
+              <OverlayTrigger
+                trigger="click"
+                placement="top"
+                rootClose
+                overlay={
+                  <Popover
+                    id="wedge-popover"
+                    style={{ maxWidth: '2000px', width: 'auto' }}
+                  >
+                    <input
+                      type="text"
+                      size={path.length + 10}
+                      value={path}
+                      onFocus={(evt) => {
+                        evt.target.select();
+                      }}
+                    />
+                  </Popover>
+                }
+              >
+                <a onClick={(evt) => evt.stopPropagation()}>{value}</a>
+              </OverlayTrigger>
               <br />
               <b>Element:</b> {parameters.element}
               <br />
