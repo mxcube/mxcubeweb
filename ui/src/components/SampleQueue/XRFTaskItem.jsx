@@ -1,19 +1,24 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { OverlayTrigger, Popover } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { showTaskForm } from '../../actions/taskForm';
 import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 function XRFTaskItem(props) {
-  const { index, data, sampleId, shapes, showForm } = props;
+  const { index, data, sampleId } = props;
   const { type, parameters } = data;
 
   const value = parameters.fileName;
   const path = parameters.path || '';
 
+  const dispatch = useDispatch();
+  const shapes = useSelector((state) => state.shapes);
+
   function handleParamsTableClick() {
-    showForm(type, sampleId, data, parameters.shape);
+    dispatch(showTaskForm(type, sampleId, data, parameters.shape));
   }
 
   function pointIDString() {

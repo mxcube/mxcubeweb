@@ -1,26 +1,31 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/no-array-index-key */
 import { Button, Table } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { showTaskForm } from '../../actions/taskForm';
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 function TaskItem(props) {
-  const { data, index, shapes, sampleId, showForm } = props;
+  const { data, index, sampleId } = props;
   const wedges = data.type === 'Interleaved' ? data.parameters.wedges : [data];
+
+  const dispatch = useDispatch();
+  const shapes = useSelector((state) => state.shapes);
 
   function handleParamsTableClick() {
     const { type, parameters } = data;
 
     if (parameters.helical) {
-      showForm('Helical', sampleId, data, parameters.shape);
+      dispatch(showTaskForm('Helical', sampleId, data, parameters.shape));
     } else if (parameters.mesh) {
       const shape = shapes.shapes[parameters.shape];
       data.parameters.cell_count = shape.numCols * shape.numRows;
-      showForm('Mesh', sampleId, data, parameters.shape);
+      dispatch(showTaskForm('Mesh', sampleId, data, parameters.shape));
     } else {
-      showForm(type, sampleId, data, parameters.shape);
+      dispatch(showTaskForm(type, sampleId, data, parameters.shape));
     }
   }
 

@@ -1,15 +1,21 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 /* eslint-disable react/no-array-index-key */
 import { Button, Table } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { addTask } from '../../actions/queue';
+import { showTaskForm } from '../../actions/taskForm';
 import { TASK_COLLECTED } from '../../constants';
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 function CharacterisationTaskItem(props) {
-  const { index, data, sampleId, pointID, shapes, showForm, addTask } = props;
+  const { index, data, sampleId } = props;
   const wedges = data.type === 'Interleaved' ? data.parameters.wedges : [data];
+
+  const dispatch = useDispatch();
+  const shapes = useSelector((state) => state.shapes);
 
   function showDiffPlan() {
     const tasks = data.diffractionPlan;
@@ -20,25 +26,26 @@ function CharacterisationTaskItem(props) {
       delete data.diffractionPlan[0].sampleID;
       const [{ type, parameters }] = data.diffractionPlan;
 
-      showForm(type, sampleId, data.diffractionPlan[0], parameters.shape);
+      dispatch(
+        showTaskForm(type, sampleId, data.diffractionPlan[0], parameters.shape),
+      );
     } else {
       tasks.forEach((t) => {
         const pars = {
           type: 'DataCollection',
           label: 'Data Collection',
           helical: false,
-          shape: pointID,
           ...t.parameters,
         };
 
-        addTask([sampleId], pars, false);
+        dispatch(addTask([sampleId], pars, false));
       });
     }
   }
 
   function handleParamsTableClick() {
     const { type, parameters } = data;
-    showForm(type, sampleId, data, parameters.shape);
+    dispatch(showTaskForm(type, sampleId, data, parameters.shape));
   }
 
   function pointIDString() {

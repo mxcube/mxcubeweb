@@ -1,10 +1,8 @@
 import { Item, Menu } from 'react-contexify';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { showDialog } from '../../actions/general';
 import { addTask } from '../../actions/queue';
 import { showTaskForm } from '../../actions/taskForm';
-import { showWorkflowParametersDialog } from '../../actions/workflow';
 import CharacterisationTaskItem from './CharacterisationTaskItem';
 import EnergyScanTaskItem from './EnergyScanTaskItem';
 import TaskItem from './TaskItem';
@@ -17,12 +15,7 @@ function CurrentTree(props) {
   const { sampleID: sampleId, tasks = [] } = currentSample;
 
   const dispatch = useDispatch();
-
-  const checked = useSelector((state) => state.queue.checked);
   const displayData = useSelector((state) => state.queueGUI.displayData);
-  const plotsData = useSelector((state) => state.beamline.plotsData);
-  const plotsInfo = useSelector((state) => state.beamline.plotsInfo);
-  const shapes = useSelector((state) => state.shapes);
 
   function getSelectedTasks() {
     const selectedTasks = [];
@@ -98,16 +91,7 @@ function CurrentTree(props) {
                 <WorkflowTaskItem
                   key={taskData.queueID}
                   index={i}
-                  id={`${taskData.queueID}`}
                   data={taskData}
-                  sampleId={sampleId}
-                  checked={checked}
-                  showForm={(...args) => dispatch(showTaskForm(...args))}
-                  shapes={shapes}
-                  showDialog={(...args) => dispatch(showDialog(...args))}
-                  showWorkflowParametersDialog={(...args) => {
-                    dispatch(showWorkflowParametersDialog(...args));
-                  }}
                 />
               );
             }
@@ -116,14 +100,8 @@ function CurrentTree(props) {
                 <XRFTaskItem
                   key={taskData.queueID}
                   index={i}
-                  id={`${taskData.queueID}`}
                   data={taskData}
                   sampleId={sampleId}
-                  checked={checked}
-                  showForm={(...args) => dispatch(showTaskForm(...args))}
-                  plotsData={plotsData}
-                  plotsInfo={plotsInfo}
-                  showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
             }
@@ -132,13 +110,8 @@ function CurrentTree(props) {
                 <EnergyScanTaskItem
                   key={taskData.queueID}
                   index={i}
-                  id={`${taskData.queueID}`}
                   data={taskData}
                   sampleId={sampleId}
-                  checked={checked}
-                  showForm={(...args) => dispatch(showTaskForm(...args))}
-                  shapes={shapes}
-                  showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
             }
@@ -147,14 +120,8 @@ function CurrentTree(props) {
                 <CharacterisationTaskItem
                   key={taskData.queueID}
                   index={i}
-                  id={`${taskData.queueID}`}
                   data={taskData}
                   sampleId={sampleId}
-                  checked={checked}
-                  showForm={(...args) => dispatch(showTaskForm(...args))}
-                  addTask={addTask}
-                  shapes={shapes}
-                  showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
             }
@@ -163,13 +130,8 @@ function CurrentTree(props) {
                 <TaskItem
                   key={taskData.queueID}
                   index={i}
-                  id={`${taskData.queueID}`}
                   data={taskData}
                   sampleId={sampleId}
-                  checked={checked}
-                  showForm={(...args) => dispatch(showTaskForm(...args))}
-                  shapes={shapes}
-                  showDialog={(...args) => dispatch(showDialog(...args))}
                 />
               );
             }

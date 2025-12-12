@@ -1,16 +1,21 @@
 /* eslint-disable jsx-a11y/anchor-is-valid */
 import { Button } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 
+import { showWorkflowParametersDialog } from '../../actions/workflow';
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './Item.module.css';
 import TaskItemContainer from './TaskItemContainer';
 
 function WorkflowTaskItem(props) {
-  const { index, data, shapes, showWorkflowParametersDialog } = props;
+  const { index, data } = props;
   const { parameters } = data;
 
   const path = parameters.path || '';
   const pathEndPart = path.slice(-40);
+
+  const dispatch = useDispatch();
+  const shapes = useSelector((state) => state.shapes);
 
   function pointIDString() {
     let res = '';
@@ -55,7 +60,7 @@ function WorkflowTaskItem(props) {
               variant="outline-secondary"
               style={{ width: '3em' }}
               title="Open parameters dialog"
-              onClick={() => showWorkflowParametersDialog(null, true)}
+              onClick={() => dispatch(showWorkflowParametersDialog(null, true))}
             >
               <i aria-hidden="true" className="fa fa-sliders-h" />
             </Button>
