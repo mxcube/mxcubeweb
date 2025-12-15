@@ -213,6 +213,29 @@ class MXCUBEApplication:
 
     @staticmethod
     def init_logging(log_file: str, log_level, enabled_logger_list) -> None:
+        """Initializes and configures logging.
+
+        Sets up logging behavior including log file output, logging level,
+        and which loggers are enabled. This function should be called once
+        during application startup to ensure consistent logging across
+        all modules.
+
+        `uilog_file_handler`, `access_file_handler` and `csp_file_handler` are logged
+        to separate files with the suffixes: `_ui.log`, `_server_access.log` and
+        `_server_csp.log` if `log_file` is provided.
+
+        Args:
+            log_file (str): Path to the log file where log messages will be written.
+                            The path may be absolute or relative.
+            log_level: Logging severity level that determines which messages are
+                       recorded. Typically a constant from the standard `logging`
+                       module (e.g., `logging.INFO`, `logging.DEBUG`).
+            enabled_logger_list: Iterable of logger names to enable and configure.
+                                 Only the specified loggers will be active.
+
+        Returns:
+            None
+        """
         removeLoggingHandlers()
 
         fmt = "%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s"
