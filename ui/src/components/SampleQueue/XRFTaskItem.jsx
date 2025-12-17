@@ -10,9 +10,7 @@ import TaskItemContainer from './TaskItemContainer';
 function XRFTaskItem(props) {
   const { index, data, sampleId } = props;
   const { type, parameters } = data;
-
-  const value = parameters.fileName;
-  const path = parameters.path || '';
+  const { fileName, path = '' } = parameters;
 
   const dispatch = useDispatch();
   const shapes = useSelector((state) => state.shapes);
@@ -32,7 +30,7 @@ function XRFTaskItem(props) {
       }
     }
 
-    return `${res}`;
+    return res;
   }
 
   return (
@@ -66,7 +64,7 @@ function XRFTaskItem(props) {
                   </Popover>
                 }
               >
-                <a onClick={(evt) => evt.stopPropagation()}>{value}</a>
+                <a onClick={(evt) => evt.stopPropagation()}>{fileName}</a>
               </OverlayTrigger>
               <br />
               <b>Count time:</b> {parameters.countTime}
