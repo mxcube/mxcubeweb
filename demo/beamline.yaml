@@ -23,6 +23,7 @@ objects:
   - session: session.xml
   - data_publisher: data_publisher.xml
   - machine_info: machine_info.xml
+  - diffractometer: diffractometer_mockup.xml
   - detector: detector.xml
   - beam: beam.xml
   - transmission: transmission.xml
@@ -43,7 +44,6 @@ objects:
   # - harvester: harvester.xml
   # - harvester_maintenance: harvester_maintenance.xml
 
-  - diffractometer: minidiff.xml
   - lims: lims.xml
   - sample_view: sample_view.xml
   - queue_manager: queue.xml
@@ -154,10 +154,3 @@ configuration:
     ssx_chip_collection: true
     gphlworkflow: true
     test_collection: true
-
-    undulators:
-      - type: PPU35C_GAP
-        device_uri: //orion:10000/id/id/30
-
-      - type: PPU35D_GAP
-        device_uri: //orion:10000/id/id/30
