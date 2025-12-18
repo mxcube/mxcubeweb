@@ -386,6 +386,16 @@ export default connect((state) => {
       ].acq_parameters.osc_range;
   }
 
+  const {
+    cellA,
+    cellAlpha,
+    cellB,
+    cellBeta,
+    cellC,
+    cellGamma,
+    crystalSpaceGroup,
+  } = state.sampleGrid.sampleList[state.queue.currentSampleID];
+
   return {
     path: `${state.login.rootPath}/${subdir}`,
     filename: fname,
@@ -400,6 +410,13 @@ export default connect((state) => {
       energy: toFixed(state, 'energy'),
       transmission: toFixed(state, 'transmission'),
       osc_start: toFixed(state, 'diffractometer.phi', 'osc_start'),
+      cellA,
+      cellAlpha,
+      cellB,
+      cellBeta,
+      cellC,
+      cellGamma,
+      crystalSpaceGroup,
     },
   };
 })(DataCollectionForm);
