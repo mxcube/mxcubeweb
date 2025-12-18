@@ -65,10 +65,10 @@ export default function TaskItemContainer({
   }
 
   function taskHeaderOnClick(e) {
-    if (!e.ctrlKey) {
-      dispatch(collapseItem(data.queueID));
-    } else {
+    if (e.ctrlKey) {
       dispatch(selectItem(data.queueID));
+    } else {
+      dispatch(collapseItem(data.queueID));
     }
   }
 
@@ -140,10 +140,7 @@ export default function TaskItemContainer({
             />
           )}
         </div>
-        <Collapse
-          id={`collapse-${data.queueID}`}
-          in={Boolean(displayData.collapsed)}
-        >
+        <Collapse id={`collapse-${data.queueID}`} in={displayData.collapsed}>
           {children}
         </Collapse>
       </div>

@@ -17,34 +17,13 @@ function CurrentTree(props) {
   const dispatch = useDispatch();
   const displayData = useSelector((state) => state.queueGUI.displayData);
 
-  function getSelectedTasks() {
-    const selectedTasks = [];
+  const selectedTasks = tasks.filter((t) => displayData[t.queueID]?.selected);
 
-    tasks.forEach((task) => {
-      const data = displayData[task.queueID];
-      if (data && data.selected) {
-        selectedTasks.push(task);
-      }
-    });
-
-    return selectedTasks;
-  }
-
-  function isInterleavedAvailable() {
-    const selectedTasks = getSelectedTasks();
-
-    // Interleaved is only available if more than one DataCollection task is selected
-    let available = selectedTasks.length > 1;
-
-    // Available if more than one item selected and only DataCollection tasks are selected.
-    selectedTasks.forEach((task) => {
-      if (task.type !== 'DataCollection' || task.parameters.helical === true) {
-        available = false;
-      }
-    });
-
-    return available;
-  }
+  const isInterleavedAvailable =
+    selectedTasks.length > 1 &&
+    selectedTasks.every(
+      (t) => t.type === 'DataCollection' && !t.parameters.helical,
+    );
 
   function duplicateTask(taskIndex) {
     const task = tasks[taskIndex];
@@ -60,21 +39,17 @@ function CurrentTree(props) {
   }
 
   function showInterleavedDialog() {
-    const wedges = [];
-    const taskIndexList = [];
-
-    Object.values(tasks).forEach((task, taskIdx) => {
-      if (displayData[task.queueID].selected) {
-        wedges.push(tasks[Number.parseInt(taskIdx, 10)]);
-        taskIndexList.push(taskIdx);
-      }
-    });
-
     dispatch(
       showTaskForm(
         'Interleaved',
         [sampleId],
-        { type: 'DataCollection', parameters: { taskIndexList, wedges } },
+        {
+          type: 'DataCollection',
+          parameters: {
+            taskIndexList: selectedTasks.map((t) => t.taskIndex),
+            wedges: [...selectedTasks],
+          },
+        },
         -1,
       ),
     );
@@ -142,7 +117,7 @@ function CurrentTree(props) {
       <Menu id="currentSampleQueueContextMenu">
         <Item
           onClick={() => showInterleavedDialog()}
-          disabled={!isInterleavedAvailable()}
+          disabled={!isInterleavedAvailable}
         >
           Create interleaved data collection
         </Item>

@@ -88,16 +88,34 @@ function queueGUIReducer(state = INITIAL_STATE, action = {}) {
       return { ...state, showConfirmCollectDialog: action.show };
     }
     case 'COLLAPSE_ITEM': {
-      const displayData = { ...state.displayData };
-      displayData[action.queueID].collapsed ^= 1; // eslint-disable-line no-bitwise
+      const { displayData } = state;
+      const { queueID } = action;
 
-      return { ...state, displayData };
+      return {
+        ...state,
+        displayData: {
+          ...displayData,
+          [queueID]: {
+            ...displayData[queueID],
+            collapsed: !displayData[queueID].collapsed,
+          },
+        },
+      };
     }
     case 'SELECT_ITEM': {
-      const displayData = { ...state.displayData };
-      displayData[action.queueID].selected ^= 1; // eslint-disable-line no-bitwise
+      const { displayData } = state;
+      const { queueID } = action;
 
-      return { ...state, displayData };
+      return {
+        ...state,
+        displayData: {
+          ...displayData,
+          [queueID]: {
+            ...displayData[queueID],
+            selected: !displayData[queueID].selected,
+          },
+        },
+      };
     }
     case 'SET_INITIAL_STATE': {
       const sampleList = { ...action.data.queue.sampleList.sampleList };
