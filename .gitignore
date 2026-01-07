@@ -63,3 +63,4 @@ npm-debug.log*
 /dump.rdb
 /supervisord.pid
 log
+docker/arinax_md.tar
