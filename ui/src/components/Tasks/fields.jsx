@@ -2,7 +2,7 @@
 /* eslint-disable react/no-multi-comp */
 import './style.css';
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { TiTimes, TiWarning } from 'react-icons/ti';
 import { Field } from 'redux-form';
@@ -359,6 +359,7 @@ export function FieldsRow({ children }) {
 /**
  * @typedef {Object} CollapsableRowsProps
  * @property {React.ReactNode} children
+ * @property {boolean} [defaultCollapsed=true]
  */
 
 /**
@@ -366,8 +367,8 @@ export function FieldsRow({ children }) {
  * @param {CollapsableRowsProps} props
  * @returns {JSX.Element}
  */
-export function CollapsableRows({ children }) {
-  const [collapsed, setCollapsed] = useState(true);
+export function CollapsableRows({ children, defaultCollapsed = true }) {
+  const [collapsed, setCollapsed] = useState(defaultCollapsed);
 
   return (
     <div>
