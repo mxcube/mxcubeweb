@@ -45,3 +45,8 @@
   font-family: monospace;
   color: var(--bs-secondary);
 }
+
+.fieldInput :global(.form-control):read-only {
+  background-color: var(--bs-secondary-bg);
+  opacity: 1;
+}
