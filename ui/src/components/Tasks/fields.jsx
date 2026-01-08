@@ -2,7 +2,7 @@
 /* eslint-disable react/no-multi-comp */
 import './style.css';
 
-import React from 'react';
+import React, { useState } from 'react';
 import { Button, Col, Form, Row } from 'react-bootstrap';
 import { TiTimes, TiWarning } from 'react-icons/ti';
 import { Field } from 'redux-form';
@@ -356,43 +356,37 @@ export function FieldsRow({ children }) {
   );
 }
 
-export class CollapsableRows extends React.Component {
-  constructor(props) {
-    super(props);
+/**
+ * @typedef {Object} CollapsableRowsProps
+ * @property {React.ReactNode} children
+ */
 
-    this.state = { collapsed: true };
-  }
+/**
+ * CollapsableRows component
+ * @param {CollapsableRowsProps} props
+ * @returns {JSX.Element}
+ */
+export function CollapsableRows({ children }) {
+  const [collapsed, setCollapsed] = useState(true);
 
-  render() {
-    return (
-      <div>
-        <Row>
-          <Col sm={12}>
-            <center>
-              {this.state.collapsed ? (
-                <Button
-                  variant="link"
-                  onClick={() => {
-                    this.setState({ collapsed: false });
-                  }}
-                >
-                  Show more
-                </Button>
-              ) : (
-                <Button
-                  variant="link"
-                  onClick={() => {
-                    this.setState({ collapsed: true });
-                  }}
-                >
-                  Hide
-                </Button>
-              )}
-            </center>
-          </Col>
-        </Row>
-        {this.state.collapsed ? '' : this.props.children}
-      </div>
-    );
-  }
+  return (
+    <div>
+      <Row>
+        <Col sm={12}>
+          <center>
+            {collapsed ? (
+              <Button variant="link" onClick={() => setCollapsed(false)}>
+                Show more
+              </Button>
+            ) : (
+              <Button variant="link" onClick={() => setCollapsed(true)}>
+                Hide
+              </Button>
+            )}
+          </center>
+        </Col>
+      </Row>
+      {collapsed ? null : children}
+    </div>
+  );
 }
