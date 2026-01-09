@@ -18,8 +18,8 @@ export default function ArgusButton(props) {
   }
   const processes_info = argus.attributes.processes_info;
   const recording =
-    processes_info.running?.Recorder?.settings?.recording || false;
-  const running = processes_info.closable_running || false;
+    processes_info?.running?.Recorder?.settings?.recording || false;
+  const running = processes_info?.closable_running || false;
 
   function handleButtonClick() {
     onClick();

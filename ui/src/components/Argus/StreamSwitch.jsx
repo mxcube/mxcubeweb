@@ -12,7 +12,7 @@ export function StreamSwitch(props) {
   const [streammode, setStreammode] = useState('monitors');
 
   return (
-    cameras && (
+    cameras ? (
       <div style={{ textAlign: 'center' }}>
         {streammode === 'monitors' && (
           <StreamMonitors handleSourceSwitch={handleSourceSwitch} />
@@ -30,6 +30,6 @@ export function StreamSwitch(props) {
           Switch Stream Mode
         </button>
       </div>
-    )
+    ) : (<div></div>)
   );
 }
