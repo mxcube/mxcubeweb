@@ -56,7 +56,6 @@ class GenericTaskForm extends React.Component {
   get isFormValid() {
     return (
       this.props.valid &&
-      this.props.taskData.parameters.shape !== -1 &&
       this.state.rjsfErrors.length === 0
     );
   }
@@ -95,7 +94,7 @@ class GenericTaskForm extends React.Component {
       'selection',
       'experiment_name',
       'chip_type',
-      'beam_size',	
+      'beam_size',
     ];
 
     saveToLastUsedParameters(this.props.taskData.type, parameters, [
