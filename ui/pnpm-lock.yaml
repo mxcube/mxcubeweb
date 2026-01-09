@@ -14,6 +14,9 @@ importers:
       '@reduxjs/toolkit':
         specifier: 2.6.1
         version: 2.6.1(react-redux@7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2))(react@17.0.2)
+      '@remix-run/router':
+        specifier: ^1.23.2
+        version: 1.23.2
       '@rjsf/core':
         specifier: 5.13.1
         version: 5.13.1(@rjsf/utils@5.13.1(react@17.0.2))(react@17.0.2)
@@ -445,6 +448,10 @@ packages:
         optional: true
       react-redux:
         optional: true
+
+  '@remix-run/router@1.23.2':
+    resolution: {integrity: sha512-Ic6m2U/rMjTkhERIa/0ZtXJP17QUi2CbWE7cqx4J58M8aA3QTfW+2UlQ4psvTX9IO1RfNVhK3pcpdjej7L+t2w==}
+    engines: {node: '>=14.0.0'}
 
   '@remix-run/router@1.23.2':
     resolution: {integrity: sha512-Ic6m2U/rMjTkhERIa/0ZtXJP17QUi2CbWE7cqx4J58M8aA3QTfW+2UlQ4psvTX9IO1RfNVhK3pcpdjej7L+t2w==}
@@ -3666,6 +3673,8 @@ snapshots:
     optionalDependencies:
       react: 17.0.2
       react-redux: 7.2.9(react-dom@17.0.2(react@17.0.2))(react@17.0.2)
+
+  '@remix-run/router@1.23.2': {}
 
   '@remix-run/router@1.23.2': {}
 
