@@ -33,7 +33,7 @@ function AddSample() {
 
   useEffect(() => {
     // Timeout required when creating new sample from "Samples" page
-    setTimeout(() => setFocus('sampleName'), 0);
+    setTimeout(() => setFocus('proteinAcronym'), 0);
   }, [setFocus]);
 
   async function addAndMount(params) {
@@ -67,25 +67,6 @@ function AddSample() {
           <Modal.Title>New Sample</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Form.Group as={Row} className="mb-3" controlId="sampleName">
-            <Col sm={4}>
-              <Form.Label column>Sample name</Form.Label>
-            </Col>
-            <Col sm={8}>
-              <Form.Control
-                type="text"
-                {...register('sampleName', {
-                  required: REQUIRED_MSG,
-                  pattern: { value: PATTERN, message: PATTERN_MSG },
-                })}
-                isValid={isSubmitted && !errors.sampleName}
-                isInvalid={isSubmitted && !!errors.sampleName}
-              />
-              <Form.Control.Feedback type="invalid">
-                {errors.sampleName?.message}
-              </Form.Control.Feedback>
-            </Col>
-          </Form.Group>
           <Form.Group as={Row} className="mb-3" controlId="proteinAcronym">
             <Col sm={4}>
               <Form.Label column>Protein acronym</Form.Label>
@@ -102,6 +83,25 @@ function AddSample() {
               />
               <Form.Control.Feedback type="invalid">
                 {errors.proteinAcronym?.message}
+              </Form.Control.Feedback>
+            </Col>
+          </Form.Group>
+          <Form.Group as={Row} className="mb-3" controlId="sampleName">
+            <Col sm={4}>
+              <Form.Label column>Sample name</Form.Label>
+            </Col>
+            <Col sm={8}>
+              <Form.Control
+                type="text"
+                {...register('sampleName', {
+                  required: REQUIRED_MSG,
+                  pattern: { value: PATTERN, message: PATTERN_MSG },
+                })}
+                isValid={isSubmitted && !errors.sampleName}
+                isInvalid={isSubmitted && !!errors.sampleName}
+              />
+              <Form.Control.Feedback type="invalid">
+                {errors.sampleName?.message}
               </Form.Control.Feedback>
             </Col>
           </Form.Group>
