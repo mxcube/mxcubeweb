@@ -1,4 +1,8 @@
-.fieldTitle {
+.field {
+  margin-bottom: 1.5em;
+}
+
+.fieldTitle { 
   display: flex;
   align-items: center;
   gap: 0.5rem;

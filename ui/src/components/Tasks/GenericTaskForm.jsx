@@ -265,7 +265,7 @@ class GenericTaskForm extends React.Component {
             </Row>
             <Row>
               {this.props.useExperimentName ? (
-                <Col xs={6}>
+                <Col xs={6} style={{ marginBottom: '10px' }}>
                   <InputField
                     propName="experimentName"
                     label="Experiment Name"

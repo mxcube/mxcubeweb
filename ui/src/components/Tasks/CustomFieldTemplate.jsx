@@ -27,7 +27,7 @@ export default function CustomFieldTemplate(props) {
 
   const span = Number(uiSchema['ui:options']?.col) || 6;
   const gridClass = `col-${span}`;
-  const fieldClassNames = `${gridClass} ${classNames}`.trim();
+  const fieldClassNames = `${gridClass} ${classNames} ${styles.field}`.trim();
 
   if (schema.type === 'boolean') {
     return (
