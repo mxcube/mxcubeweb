@@ -95,6 +95,7 @@ class GenericTaskForm extends React.Component {
       'selection',
       'experiment_name',
       'chip_type',
+      'beam_size',	
     ];
 
     saveToLastUsedParameters(this.props.taskData.type, parameters, [
