@@ -76,7 +76,7 @@ function SampleQueueContainer() {
             <CurrentTree currentSample={currentSample} />
           )}
           {visibleList === 'todo' && <TodoTree list={todo} />}
-	  {visibleList === 'chip' && <SSXChipControl />}
+	        {visibleList === 'chip' && <SSXChip />}
         </div>
       </div>
 

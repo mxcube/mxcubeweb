@@ -4,6 +4,11 @@
 import 'fabric';
 import './ssxchipcontrol.css';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { createSelector } from '@reduxjs/toolkit';
+import { executeCommand, setAttribute } from '../actions/beamline';
+
+
 import React, { useEffect, useRef, useState } from 'react';
 import { Button, Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { contextMenu, Item, Menu, Separator } from 'react-contexify';
@@ -11,6 +16,23 @@ import { contextMenu, Item, Menu, Separator } from 'react-contexify';
 import MotorInput from '../MotorInput/MotorInput';
 
 const { fabric } = globalThis;
+
+const selectShapes = (state) => state.shapes;
+
+export const selectGrids = createSelector(
+  [selectShapes],
+  (shapes = {}) => {
+    const grids = {};
+
+    Object.values(shapes).forEach((shape) => {
+      if (shape.t === 'G') {
+        grids[shape.id] = shape;
+      }
+    });
+
+    return Object.values(grids);
+  }
+);
 
 function _GridData(fabricObject) {
   return {
@@ -374,7 +396,7 @@ function initFoilCanvas(gridList) {
   });
 
   // freeFormCanvas.on('mouse:up', (evnt) => {
-  //   props.onAddGrid(_GridData(freeFormCanvas.getActiveObject()));
+  //   handleAddGrid(_GridData(freeFormCanvas.getActiveObject()));
   //   freeFormCanvas.discardActiveObject();
   //   freeFormCanvas.renderAll();
   // });
@@ -404,7 +426,35 @@ export default function SSXChip(props) {
   const canvasRef = useRef(null);
   const detailCanvasRef = useRef(null);
   const freeFormCanvasRef = useRef(null);
-  const currentChipLayout = props.chipLayoutList[props.currentLayoutName];
+
+  const dispatch = useDispatch();
+  const gridList = useSelector(selectGrids);
+  const hardwareObjects = useSelector((state) => state.beamline.hardwareObjects);
+  const uiproperties = useSelector((state) => state.uiproperties.sample_view_motors);
+
+  const sampleVerticalUiProp = uiproperties.components.find(
+    (el) => el.role === 'sample_vertical',
+  );
+
+  const sampleHorizontalUiProp = uiproperties.components.find(
+    (el) => el.role === 'sample_horizontal',
+  );
+
+  const focus = uiproperties.components.find((el) => el.role === 'focus');
+
+  const sampleMotorVertical =
+    hardwareObjects[sampleVerticalUiProp.attribute];
+  const sampleMotorHorizontal =
+    hardwareObjects[sampleHorizontalUiProp.attribute];
+  const focusMotor = hardwareObjects[focus.attribute];
+
+
+  const headConfiguration =
+    hardwareObjects.diffractometer.attributes.head_configuration ?? {};
+
+  const chipLayoutList = headConfiguration.available;
+  const currentChipLayout = chipLayoutList[headConfiguration.current];
+
 
   const [chipState, setChipState] = useState({
     top_left_x: currentChipLayout.calibration_data.top_left[0],
@@ -419,7 +469,7 @@ export default function SSXChip(props) {
     bottom_right_x: currentChipLayout.calibration_data.bottom_right[0],
     bottom_right_y: currentChipLayout.calibration_data.bottom_right[1],
     bottom_right_z: currentChipLayout.calibration_data.bottom_right[2],
-    currentLayoutName: props.currentLayoutName,
+    currentLayoutName: currentLayoutName,
   });
 
   const [_canvas, setCanvas] = useState('');
@@ -441,22 +491,52 @@ export default function SSXChip(props) {
     setCalibratedPositions((prevState) => ({
       ...prevState,
       [name]: [
-        props.sampleMotorHorizontal.value,
-        props.sampleMotorVertical.value,
-        props.focusMotor.value,
+        sampleMotorHorizontal.value,
+        sampleMotorVertical.value,
+        focusMotor.value,
       ],
     }));
   }
 
+
+  function handleAddTask(triggerEvent) {
+    const sid = -1;
+
+    dispatch(
+      showTaskForm(
+        'Generic',
+        [currentSampleID],
+        {
+          parameters: {
+            ...defaultParameters.ssx_chip_collection.acq_parameters,
+            name: 'SSX Collection',
+            prefix: sampleData.defaultPrefix,
+            subdir: `${groupFolder}${sampleData.defaultSubDir}`,
+            cell_count: 0,
+            numRows: 0,
+            numCols: 0,
+            selection: triggerEvent.props.selection,
+          },
+          type: 'ssx_chip_collection',
+        },
+        sid,
+      ),
+    );
+  }
+
+  // function handleAddGrid(data) {
+  //   dispatch(addShape({ t: 'G', ...data }));
+  // }
+
   function initCanvas() {
-    const currentChipLayout = props.chipLayoutList[props.currentLayoutName];
+    const currentChipLayout = chipLayoutList[currentLayoutName];
     const holderType = currentChipLayout.holder_type;
     let canvas = null;
 
     if (holderType === 'KNOWN_GEOMETRY') {
       canvas = initChipCanvas(currentChipLayout);
     } else if (holderType === 'FREE_GEOMETRY') {
-      canvas = initFoilCanvas(props.gridList);
+      canvas = initFoilCanvas(gridList);
     }
 
     return canvas;
@@ -477,15 +557,15 @@ export default function SSXChip(props) {
   function handleSubmit(key, arg, e) {
     switch (key) {
       case 'move_to': {
-        props.setAttribute(
-          props.sampleMotorHorizontal.name,
+        dispatch(setAttribute(
+          sampleMotorHorizontal.name,
           chipState[`${arg}_x`],
-        );
-        props.setAttribute(
-          props.sampleMotorVertical.name,
+        ));
+        dispatch(setAttribute(
+          sampleMotorVertical.name,
           chipState[`${arg}_y`],
-        );
-        props.setAttribute(props.focusMotor.name, chipState[`${arg}_z`]);
+        ));
+        dispatch(setAttribute(focusMotor.name, chipState[`${arg}_z`]));
         break;
       }
       case 'top_left': {
@@ -523,7 +603,7 @@ export default function SSXChip(props) {
         break;
       }
       case 'set_layout': {
-        const currentChipLayout = props.chipLayoutList[e.target.value];
+        const currentChipLayout = chipLayoutList[e.target.value];
 
         setChipState({
           top_left_x: currentChipLayout.calibration_data.top_left[0],
@@ -539,24 +619,24 @@ export default function SSXChip(props) {
           currentLayoutName: e.target.value,
         });
 
-        props.sendExecuteCommand('diffractometer', 'diffractometer', 'set_chip_layout', {
+        dispatch(executeCommand('diffractometer', 'diffractometer', 'set_chip_layout', {
           layout_name: e.target.value,
-        });
+        }));
 
         break;
       }
       case 'apply': {
-        props.sendExecuteCommand(
+        dispatch(executeCommand(
           'diffractometer',
           'diffractometer',
           'use_position_for_calibration',
           { data: calibratedPositions },
-        );
+        ));
 
         break;
       }
       case 'ir_auto_focus': {
-        props.sendExecuteCommand('diffractometer', 'diffractometer', 'ir_auto_focus', {});
+        dispatch(executeCommand('diffractometer', 'diffractometer', 'ir_auto_focus', {}));
 
         break;
       }
@@ -599,7 +679,7 @@ export default function SSXChip(props) {
                           }
                           value={chipState.currentLayoutName}
                         >
-                          {props.availableChipLayoutList.map((item) => (
+                          {headConfiguration.available.map((item) => (
                             <option key={item} value={item}>
                               {item}
                             </option>
@@ -613,7 +693,9 @@ export default function SSXChip(props) {
               <div className={chipVisible}>
                 <div className="chip-canvas-container">
                   <canvas id="chip-canvas" ref={canvasRef} />
-                  <ChipContextMenu {...props} />
+                  <ChipContextMenu
+                    onAddTask={handleAddTask}
+                  />
                 </div>
                 <div className="chip-detial-canvas-container">
                   <canvas id="chip-detail-canvas" ref={detailCanvasRef} />
