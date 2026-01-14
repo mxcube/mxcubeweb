@@ -6,7 +6,7 @@ import UserMessage from '../components/Notify/UserMessage';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
 import TodoTree from '../components/SampleQueue/TodoTree';
-import SSXChipControl from '../components/SSXChip/SSXChipControl';
+import SSXChip from '../components/SSXChip/SSXChip';
 import loader from '../img/loader.gif';
 import { getSampleName } from '../utils';
 import styles from './SampleQueueContainer.module.css';
@@ -20,6 +20,8 @@ function SampleQueueContainer() {
   const sampleList = useSelector((state) => state.sampleGrid.sampleList);
   const visibleList = useSelector((state) => state.queueGUI.visibleList);
   const loading = useSelector((state) => state.queueGUI.loading);
+
+  const mode = useSelector((state) => state.general.mode);
 
   // Find samples in the queue that have not yet been collected
   const todo = sampleOrder
@@ -76,7 +78,7 @@ function SampleQueueContainer() {
             <CurrentTree currentSample={currentSample} />
           )}
           {visibleList === 'todo' && <TodoTree list={todo} />}
-	        {visibleList === 'chip' && <SSXChip />}
+          {visibleList === 'chip' && mode === 'SSX-CHIP' && <SSXChip />}
         </div>
       </div>
 
