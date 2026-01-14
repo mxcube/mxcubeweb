@@ -32,7 +32,7 @@ export default function CustomObjectFieldTemplate({
         return (
           <div key={group}>
             <FieldsHeader title={group} />
-            <CollapsableRows>
+            <CollapsableRows defaultCollapsed={false}>
               <div className="row">{fields.map(({ content }) => content)}</div>
             </CollapsableRows>
           </div>
