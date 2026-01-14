@@ -55,7 +55,7 @@ scandir = "^1.10.0"
 sqlalchemy = "^2.0.37"
 tomli = { version = "^2.2.1", python = "<=3.10" }
 tzlocal = "^4.2"
-werkzeug = "^3.1.4"
+werkzeug = "^3.1.5"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^4.1.0"
