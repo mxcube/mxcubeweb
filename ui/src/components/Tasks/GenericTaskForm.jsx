@@ -54,10 +54,7 @@ class GenericTaskForm extends React.Component {
   }
 
   get isFormValid() {
-    return (
-      this.props.valid &&
-      this.state.rjsfErrors.length === 0
-    );
+    return this.props.valid && this.state.rjsfErrors.length === 0;
   }
 
   clearCurrentJSFormParameters() {
