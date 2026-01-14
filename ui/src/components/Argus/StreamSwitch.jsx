@@ -11,25 +11,25 @@ export function StreamSwitch(props) {
   );
   const [streammode, setStreammode] = useState('monitors');
 
-  return (
-    cameras ? (
-      <div style={{ textAlign: 'center' }}>
-        {streammode === 'monitors' && (
-          <StreamMonitors handleSourceSwitch={handleSourceSwitch} />
-        )}
-        {streammode === 'dropdown' && (
-          <StreamDropdown handleSourceSwitch={handleSourceSwitch} />
-        )}
-        <button
-          type="button"
-          onClick={() => {
-            setStreammode(streammode === 'monitors' ? 'dropdown' : 'monitors');
-          }}
-          style={{ display: 'block', margin: '10px auto' }}
-        >
-          Switch Stream Mode
-        </button>
-      </div>
-    ) : (<div></div>)
+  return cameras ? (
+    <div style={{ textAlign: 'center' }}>
+      {streammode === 'monitors' && (
+        <StreamMonitors handleSourceSwitch={handleSourceSwitch} />
+      )}
+      {streammode === 'dropdown' && (
+        <StreamDropdown handleSourceSwitch={handleSourceSwitch} />
+      )}
+      <button
+        type="button"
+        onClick={() => {
+          setStreammode(streammode === 'monitors' ? 'dropdown' : 'monitors');
+        }}
+        style={{ display: 'block', margin: '10px auto' }}
+      >
+        Switch Stream Mode
+      </button>
+    </div>
+  ) : (
+    <div />
   );
 }
