@@ -61,11 +61,13 @@ function SampleQueueContainer() {
               <b>Queued Samples ({todo.length})</b>
             </Nav.Link>
           </Nav.Item>
-          <Nav.Item>
-            <Nav.Link eventKey="chip" className="queue-nav-link">
-              <i className="fas fa-braille" /> &nbsp; <b>Chip callibration</b>
-            </Nav.Link>
-          </Nav.Item>
+          {mode === 'SSX-CHIP' && (
+            <Nav.Item>
+              <Nav.Link eventKey="chip" className="queue-nav-link">
+                <i className="fas fa-braille" /> &nbsp; <b>Chip callibration</b>
+              </Nav.Link>
+            </Nav.Item>
+          )}
         </Nav>
 
         <div className={styles.queueBody}>
