@@ -108,7 +108,7 @@ def client():
 
     assert resp.status_code == 200
 
-    _SIO_TEST_CLIENT = server.flask_socketio.test_client(server)
+    _SIO_TEST_CLIENT = server.flask_socketio.test_client(server.flask)
 
     resp = client.get("/mxcube/api/v0.1/queue/")
 
