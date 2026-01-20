@@ -12,7 +12,6 @@ import { fetchImageData, fetchShapes } from '../api/sampleview';
 import { fetchAvailableWorkflows } from '../api/workflow';
 import { fetchGetAllActions } from './beamlineActions';
 import { applicationFetched, showErrorPanel } from './general';
-import { processFetchedChatMessages } from './remoteAccess';
 
 function setLoginInfo(loginInfo) {
   return {
@@ -161,20 +160,12 @@ export function getInitialState() {
         .catch(notify),
     ]);
 
-    dispatch(setInitialState(Object.assign({}, ...initialStateSlices)));
-
-    const chatMessagesData = initialStateSlices.find(
-      (slice) => slice.chatMessages,
+    const { user } = getState().login;
+    dispatch(
+      setInitialState(
+        Object.assign({}, { login: { user } }, ...initialStateSlices),
+      ),
     );
-    if (chatMessagesData?.chatMessages) {
-      const { user } = getState().login;
-      dispatch(
-        processFetchedChatMessages(
-          chatMessagesData.chatMessages.messages,
-          user.username,
-        ),
-      );
-    }
 
     dispatch(applicationFetched(true));
   };

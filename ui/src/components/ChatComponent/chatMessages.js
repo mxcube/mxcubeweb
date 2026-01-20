@@ -1,21 +1,12 @@
-function normalizeDateToISO(dateString) {
-  let normalizedDate = new Date().toISOString();
-  if (dateString) {
-    try {
-      const parsedDate = new Date(dateString);
-      if (!Number.isNaN(parsedDate.getTime())) {
-        normalizedDate = parsedDate.toISOString();
-      }
-    } catch {
-      // Ignore
-    }
-  }
-  return normalizedDate;
-}
-
 export function processChatMessageRecord(record, currentUsername) {
   const isSelf = record.username === currentUsername;
-  const normalizedDate = normalizeDateToISO(record.date);
+
+  let date = record.date ? new Date(record.date) : new Date();
+  if (Number.isNaN(date.getTime())) {
+    // eslint-disable-next-line no-console
+    console.error('Invalid date provided:', record.date);
+    date = new Date(); // Use current date as fallback
+  }
 
   return {
     id: record.id || `${isSelf ? 'u' : 'r'}-${Date.now()}-${Math.random()}`,
@@ -24,6 +15,6 @@ export function processChatMessageRecord(record, currentUsername) {
     message: record.message || '',
     isSelf,
     read: record.read !== undefined ? record.read : false,
-    date: normalizedDate,
+    date: date.toISOString(),
   };
 }
