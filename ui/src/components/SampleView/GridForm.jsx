@@ -98,7 +98,7 @@ export default function GridForm(props) {
           <td>
             {grid.numRows}x{grid.numCols}
           </td>
-          <td>{grid.motorPositions.phi.toFixed(2)}&deg;</td>
+          <td>{grid.motorPositions.omega.toFixed(2)}&deg;</td>
           <td>
             <Button
               size="sm"

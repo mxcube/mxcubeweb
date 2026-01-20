@@ -446,7 +446,7 @@ class SampleViewAdapter(AdapterBase):
                 logging.getLogger("user_level_log").info(
                     "Aborting current centring ..."
                 )
-                self._ho.cancel_centring()
+                self._ho.reject_centring()
             nb_clicks = HWR.beamline.config.click_centring_num_clicks
             msg = f"Centring using {nb_clicks}-click centring"
             logging.getLogger("user_level_log").info(msg)

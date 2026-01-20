@@ -193,12 +193,10 @@ class SampleChangerAdapter(AdapterBase):
                     and not HWR.beamline.diffractometer.in_plate_mode
                     and not self.app.harvester.mount_from_harvester()
                 ):
-                    HWR.beamline.diffractometer.reject_centring()
+                    HWR.beamline.sample_view.reject_centring()
                     msg = "Starting autoloop centring ..."
                     logging.getLogger("MX3.HWR").info(msg)
-                    HWR.beamline.diffractometer.start_centring_method(
-                        HWR.beamline.diffractometer.C3D_MODE
-                    )
+                    HWR.beamline.sample_view.start_auto_centring()
                 elif HWR.beamline.diffractometer.in_plate_mode:
                     msg = "Starting autoloop Focusing ..."
                     logging.getLogger("MX3.HWR").info(msg)
