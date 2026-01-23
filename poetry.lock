@@ -60,6 +60,60 @@ test = ["anyio[trio]", "coverage[toml] (>=7)", "exceptiongroup (>=1.2.0)", "hypo
 trio = ["trio (>=0.26.1)"]
 
 [[package]]
+name = "argon2-cffi"
+version = "25.1.0"
+description = "Argon2 for Python"
+optional = false
+python-versions = ">=3.8"
+groups = ["main"]
+files = [
+    {file = "argon2_cffi-25.1.0-py3-none-any.whl", hash = "sha256:fdc8b074db390fccb6eb4a3604ae7231f219aa669a2652e0f20e16ba513d5741"},
+    {file = "argon2_cffi-25.1.0.tar.gz", hash = "sha256:694ae5cc8a42f4c4e2bf2ca0e64e51e23a040c6a517a85074683d3959e1346c1"},
+]
+
+[package.dependencies]
+argon2-cffi-bindings = "*"
+
+[[package]]
+name = "argon2-cffi-bindings"
+version = "25.1.0"
+description = "Low-level CFFI bindings for Argon2"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-macosx_10_13_universal2.whl", hash = "sha256:3d3f05610594151994ca9ccb3c771115bdb4daef161976a266f0dd8aa9996b8f"},
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-macosx_10_13_x86_64.whl", hash = "sha256:8b8efee945193e667a396cbc7b4fb7d357297d6234d30a489905d96caabde56b"},
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-macosx_11_0_arm64.whl", hash = "sha256:3c6702abc36bf3ccba3f802b799505def420a1b7039862014a65db3205967f5a"},
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:a1c70058c6ab1e352304ac7e3b52554daadacd8d453c1752e547c76e9c99ac44"},
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:e2fd3bfbff3c5d74fef31a722f729bf93500910db650c925c2d6ef879a7e51cb"},
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-musllinux_1_2_aarch64.whl", hash = "sha256:c4f9665de60b1b0e99bcd6be4f17d90339698ce954cfd8d9cf4f91c995165a92"},
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-musllinux_1_2_x86_64.whl", hash = "sha256:ba92837e4a9aa6a508c8d2d7883ed5a8f6c308c89a4790e1e447a220deb79a85"},
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-win32.whl", hash = "sha256:84a461d4d84ae1295871329b346a97f68eade8c53b6ed9a7ca2d7467f3c8ff6f"},
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-win_amd64.whl", hash = "sha256:b55aec3565b65f56455eebc9b9f34130440404f27fe21c3b375bf1ea4d8fbae6"},
+    {file = "argon2_cffi_bindings-25.1.0-cp314-cp314t-win_arm64.whl", hash = "sha256:87c33a52407e4c41f3b70a9c2d3f6056d88b10dad7695be708c5021673f55623"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-macosx_10_9_universal2.whl", hash = "sha256:aecba1723ae35330a008418a91ea6cfcedf6d31e5fbaa056a166462ff066d500"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-macosx_10_9_x86_64.whl", hash = "sha256:2630b6240b495dfab90aebe159ff784d08ea999aa4b0d17efa734055a07d2f44"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-macosx_11_0_arm64.whl", hash = "sha256:7aef0c91e2c0fbca6fc68e7555aa60ef7008a739cbe045541e438373bc54d2b0"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:1e021e87faa76ae0d413b619fe2b65ab9a037f24c60a1e6cc43457ae20de6dc6"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:d3e924cfc503018a714f94a49a149fdc0b644eaead5d1f089330399134fa028a"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-musllinux_1_2_aarch64.whl", hash = "sha256:c87b72589133f0346a1cb8d5ecca4b933e3c9b64656c9d175270a000e73b288d"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-musllinux_1_2_x86_64.whl", hash = "sha256:1db89609c06afa1a214a69a462ea741cf735b29a57530478c06eb81dd403de99"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-win32.whl", hash = "sha256:473bcb5f82924b1becbb637b63303ec8d10e84c8d241119419897a26116515d2"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-win_amd64.whl", hash = "sha256:a98cd7d17e9f7ce244c0803cad3c23a7d379c301ba618a5fa76a67d116618b98"},
+    {file = "argon2_cffi_bindings-25.1.0-cp39-abi3-win_arm64.whl", hash = "sha256:b0fdbcf513833809c882823f98dc2f931cf659d9a1429616ac3adebb49f5db94"},
+    {file = "argon2_cffi_bindings-25.1.0-pp310-pypy310_pp73-macosx_10_15_x86_64.whl", hash = "sha256:6dca33a9859abf613e22733131fc9194091c1fa7cb3e131c143056b4856aa47e"},
+    {file = "argon2_cffi_bindings-25.1.0-pp310-pypy310_pp73-macosx_11_0_arm64.whl", hash = "sha256:21378b40e1b8d1655dd5310c84a40fc19a9aa5e6366e835ceb8576bf0fea716d"},
+    {file = "argon2_cffi_bindings-25.1.0-pp310-pypy310_pp73-manylinux_2_26_aarch64.manylinux_2_28_aarch64.whl", hash = "sha256:5d588dec224e2a83edbdc785a5e6f3c6cd736f46bfd4b441bbb5aa1f5085e584"},
+    {file = "argon2_cffi_bindings-25.1.0-pp310-pypy310_pp73-manylinux_2_26_x86_64.manylinux_2_28_x86_64.whl", hash = "sha256:5acb4e41090d53f17ca1110c3427f0a130f944b896fc8c83973219c97f57b690"},
+    {file = "argon2_cffi_bindings-25.1.0-pp310-pypy310_pp73-win_amd64.whl", hash = "sha256:da0c79c23a63723aa5d782250fbf51b768abca630285262fb5144ba5ae01e520"},
+    {file = "argon2_cffi_bindings-25.1.0.tar.gz", hash = "sha256:b957f3e6ea4d55d820e40ff76f450952807013d361a65d7f28acc0acbf29229d"},
+]
+
+[package.dependencies]
+cffi = {version = ">=1.0.1", markers = "python_version < \"3.14\""}
+
+[[package]]
 name = "async-timeout"
 version = "5.0.1"
 description = "Timeout context manager for asyncio programs"
@@ -215,14 +269,14 @@ css = ["tinycss2 (>=1.1.0,<1.5)"]
 
 [[package]]
 name = "blinker"
-version = "1.8.2"
+version = "1.9.0"
 description = "Fast, simple object-to-object and broadcast signaling"
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "blinker-1.8.2-py3-none-any.whl", hash = "sha256:1779309f71bf239144b9399d06ae925637cf6634cf6bd131104184531bf67c01"},
-    {file = "blinker-1.8.2.tar.gz", hash = "sha256:8f77b09d3bf7c795e969e9486f39c2c5e9c39d4ee07424be2bc594ece9642d83"},
+    {file = "blinker-1.9.0-py3-none-any.whl", hash = "sha256:ba0efaa9080b619ff2f3459d1d500c57bddea4a6b424b60a91141db6fd2f08bc"},
+    {file = "blinker-1.9.0.tar.gz", hash = "sha256:b4ce2265a7abece45e7cc896e98dbebe6cead56bcf805a3d23136d145f5445bf"},
 ]
 
 [[package]]
@@ -244,7 +298,6 @@ description = "Foreign Function Interface for Python calling C code."
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "platform_python_implementation != \"PyPy\""
 files = [
     {file = "cffi-1.17.1-cp310-cp310-macosx_10_9_x86_64.whl", hash = "sha256:df8b1c11f177bc2313ec4b2d46baec87a5f3e71fc8b45dab2ee7cae86d9aba14"},
     {file = "cffi-1.17.1-cp310-cp310-macosx_11_0_arm64.whl", hash = "sha256:8f2cdc858323644ab277e9bb925ad72ae0e67f69e804f4898c070998d50b1a67"},
@@ -876,22 +929,23 @@ files = [
 
 [[package]]
 name = "flask"
-version = "3.0.3"
+version = "3.1.2"
 description = "A simple framework for building complex web applications."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.9"
 groups = ["main"]
 files = [
-    {file = "flask-3.0.3-py3-none-any.whl", hash = "sha256:34e815dfaa43340d1d15a5c3a02b8476004037eb4840b34910c6e21679d288f3"},
-    {file = "flask-3.0.3.tar.gz", hash = "sha256:ceb27b0af3823ea2737928a4d99d125a06175b8512c445cbd9a9ce200ef76842"},
+    {file = "flask-3.1.2-py3-none-any.whl", hash = "sha256:ca1d8112ec8a6158cc29ea4858963350011b5c846a414cdb7a954aa9e967d03c"},
+    {file = "flask-3.1.2.tar.gz", hash = "sha256:bf656c15c80190ed628ad08cdfd3aaa35beb087855e2f494910aa3774cc4fd87"},
 ]
 
 [package.dependencies]
-blinker = ">=1.6.2"
+blinker = ">=1.9.0"
 click = ">=8.1.3"
-itsdangerous = ">=2.1.2"
-Jinja2 = ">=3.1.2"
-Werkzeug = ">=3.0.0"
+itsdangerous = ">=2.2.0"
+jinja2 = ">=3.1.2"
+markupsafe = ">=2.1.1"
+werkzeug = ">=3.1.0"
 
 [package.extras]
 async = ["asgiref (>=3.2)"]
@@ -938,24 +992,20 @@ Flask = ">=1.0.4"
 Werkzeug = ">=1.0.1"
 
 [[package]]
-name = "flask-mailman"
-version = "1.1.1"
-description = "Porting Django's email implementation to your Flask applications."
+name = "flask-mail"
+version = "0.10.0"
+description = "Flask extension for sending email"
 optional = false
-python-versions = "<4.0,>=3.7"
+python-versions = ">=3.8"
 groups = ["main"]
 files = [
-    {file = "flask_mailman-1.1.1-py3-none-any.whl", hash = "sha256:0a66ead606b2ec9e4371d727f82709c7a51270bc5306be57c9f4ce0ed29dbe57"},
-    {file = "flask_mailman-1.1.1.tar.gz", hash = "sha256:3bc1ffffbd655ba9e468946a5f02e9cc772594fe1e98ace636c2f6717419eefa"},
+    {file = "flask_mail-0.10.0-py3-none-any.whl", hash = "sha256:a451e490931bb3441d9b11ebab6812a16bfa81855792ae1bf9c1e1e22c4e51e7"},
+    {file = "flask_mail-0.10.0.tar.gz", hash = "sha256:44083e7b02bbcce792209c06252f8569dd5a325a7aaa76afe7330422bd97881d"},
 ]
 
 [package.dependencies]
-flask = ">=1.0"
-
-[package.extras]
-dev = ["bump2version", "pip", "pre-commit", "toml", "tox", "twine", "virtualenv"]
-doc = ["mkdocs", "mkdocs-autorefs", "mkdocs-include-markdown-plugin", "mkdocs-material", "mkdocs-material-extensions", "mkdocstrings"]
-test = ["aiosmtpd (>=1.4.4.post2,<2.0.0)", "black", "flake8", "isort", "pytest", "pytest-cov"]
+blinker = "*"
+flask = "*"
 
 [[package]]
 name = "flask-principal"
@@ -973,40 +1023,39 @@ blinker = "*"
 Flask = "*"
 
 [[package]]
-name = "flask-security-too"
-version = "5.4.3"
+name = "flask-security"
+version = "5.7.1"
 description = "Quickly add security features to your Flask application."
 optional = false
-python-versions = ">=3.8"
+python-versions = ">=3.10"
 groups = ["main"]
 files = [
-    {file = "Flask-Security-Too-5.4.3.tar.gz", hash = "sha256:62b19397e8d71a8d4cb8dc0d4409cc7a1497982549030396960aee518755e583"},
-    {file = "Flask_Security_Too-5.4.3-py3-none-any.whl", hash = "sha256:655bf7bd15bf78593d39b1db125d4e8255ae220ed008c6cb35f7466749e0d3af"},
+    {file = "flask_security-5.7.1-py3-none-any.whl", hash = "sha256:62cccbb057b87f04236037576f7c17475ce8e643c75dbafa7b2067a58b2fee5b"},
+    {file = "flask_security-5.7.1.tar.gz", hash = "sha256:3131289c5466c6c39ebe7414d03e1a3028388ee844de13a59d2e9dd4bd58e676"},
 ]
 
 [package.dependencies]
-bcrypt = {version = ">=4.0.1", optional = true, markers = "extra == \"common\""}
+argon2_cffi = {version = ">=23.1.0", optional = true, markers = "extra == \"common\""}
+bcrypt = {version = ">=4.2.1", optional = true, markers = "extra == \"common\""}
 bleach = {version = ">=6.0.0", optional = true, markers = "extra == \"common\""}
 email-validator = ">=2.0.0"
-Flask = ">=2.3.2"
-Flask-Login = ">=0.6.2"
-flask-mailman = {version = ">=0.3.0", optional = true, markers = "extra == \"common\""}
+Flask = ">=3.1.0"
+Flask-Login = ">=0.6.3"
+flask_mail = {version = ">=0.10.0", optional = true, markers = "extra == \"common\""}
 Flask-Principal = ">=0.4.0"
-flask-sqlalchemy = {version = ">=3.0.3", optional = true, markers = "extra == \"fsqla\""}
+flask_sqlalchemy = {version = ">=3.1.0", optional = true, markers = "extra == \"fsqla\""}
 Flask-WTF = ">=1.1.2"
-importlib-resources = ">=5.10.0"
+libpass = ">=1.9.3"
 markupsafe = ">=2.1.0"
-passlib = ">=1.7.4"
-sqlalchemy = {version = ">=2.0.12", optional = true, markers = "extra == \"fsqla\""}
-sqlalchemy-utils = {version = ">=0.41.1", optional = true, markers = "extra == \"fsqla\""}
+sqlalchemy = {version = ">=2.0.18", optional = true, markers = "extra == \"fsqla\""}
 wtforms = ">=3.0.0"
 
 [package.extras]
-babel = ["babel (>=2.12.1)", "flask-babel (>=3.1.0)"]
-common = ["bcrypt (>=4.0.1)", "bleach (>=6.0.0)", "flask-mailman (>=0.3.0)"]
-fsqla = ["flask-sqlalchemy (>=3.0.3)", "sqlalchemy (>=2.0.12)", "sqlalchemy-utils (>=0.41.1)"]
-low = ["Flask (==2.3.2)", "Flask-Babel (==3.1.0)", "Flask-Login (==0.6.2)", "Flask-Mailman (==0.3.0)", "Flask-SQLAlchemy (==3.0.3)", "Flask-WTF (==1.1.2)", "argon2-cffi (==21.3.0)", "authlib (==1.2.0)", "babel (==2.12.1)", "bcrypt (==4.0.1)", "bleach (==6.0.0)", "freezegun", "itsdangerous (==2.1.2)", "jinja2 (==3.1.2)", "markupsafe (==2.1.2)", "mongoengine (==0.27.0)", "mongomock (==4.1.2)", "peewee (==3.16.2)", "phonenumberslite (==8.13.11)", "pony (==0.7.16) ; python_version < \"3.11\"", "qrcode (==7.4.2)", "requests", "setuptools", "sqlalchemy (==2.0.12)", "sqlalchemy-utils (==0.41.1)", "webauthn (==2.0.0)", "werkzeug (==2.3.3)", "zxcvbn (==4.4.28)"]
-mfa = ["cryptography (>=40.0.2)", "phonenumberslite (>=8.13.11)", "qrcode (>=7.4.2)", "webauthn (>=2.0.0)"]
+babel = ["babel (>=2.12.1)", "flask_babel (>=4.0.0)"]
+common = ["argon2_cffi (>=23.1.0)", "bcrypt (>=4.2.1)", "bleach (>=6.0.0)", "flask_mail (>=0.10.0)"]
+fsqla = ["flask_sqlalchemy (>=3.1.0)", "sqlalchemy (>=2.0.18)"]
+low = ["Flask (==3.1.0)", "Flask-Babel (==4.0.0)", "Flask-Login (==0.6.3)", "Flask-Mail (==0.10.0)", "Flask-SQLAlchemy (==3.1.0)", "Flask-SQLAlchemy-Lite (==0.1.0)", "Flask-WTF (==1.1.2)", "argon2_cffi (==21.3.0)", "authlib (==1.2.0)", "babel (==2.12.1)", "bcrypt (==4.0.1)", "bleach (==6.0.0)", "freezegun", "itsdangerous (==2.2.0)", "jinja2 (==3.1.2)", "markupsafe (==2.1.2)", "mongoengine (==0.29.1)", "mongomock (==4.3.0)", "peewee (==3.17.9)", "phonenumberslite (==8.13.11)", "pony (==0.7.16) ; python_version < \"3.11\"", "qrcode (==7.4.2)", "requests", "sqlalchemy (==2.0.18)", "sqlalchemy-utils (==0.41.1)", "webauthn (==2.0.0)", "werkzeug (==3.1.0)", "zxcvbn (==4.4.28)"]
+mfa = ["cryptography (>=42.0.4)", "phonenumberslite (>=8.13.11)", "qrcode (>=7.4.2)", "webauthn (>=2.5.0)"]
 
 [[package]]
 name = "flask-socketio"
@@ -1513,26 +1562,6 @@ files = [
 ]
 
 [[package]]
-name = "importlib-resources"
-version = "6.4.5"
-description = "Read resources from Python packages"
-optional = false
-python-versions = ">=3.8"
-groups = ["main"]
-files = [
-    {file = "importlib_resources-6.4.5-py3-none-any.whl", hash = "sha256:ac29d5f956f01d5e4bb63102a5a19957f1b9175e45649977264a1416783bb717"},
-    {file = "importlib_resources-6.4.5.tar.gz", hash = "sha256:980862a1d16c9e147a59603677fa2aa5fd82b87f223b6cb870695bcfce830065"},
-]
-
-[package.extras]
-check = ["pytest-checkdocs (>=2.4)", "pytest-ruff (>=0.2.1) ; sys_platform != \"cygwin\""]
-cover = ["pytest-cov"]
-doc = ["furo", "jaraco.packaging (>=9.3)", "jaraco.tidelift (>=1.4)", "rst.linker (>=1.9)", "sphinx (>=3.5)", "sphinx-lint"]
-enabler = ["pytest-enabler (>=2.2)"]
-test = ["jaraco.test (>=5.4)", "pytest (>=6,!=8.1.*)", "zipp (>=3.17)"]
-type = ["pytest-mypy"]
-
-[[package]]
 name = "iniconfig"
 version = "2.0.0"
 description = "brain-dead simple config-ini parsing"
@@ -1751,6 +1780,23 @@ files = [
     {file = "kiwisolver-1.4.7-pp39-pypy39_pp73-win_amd64.whl", hash = "sha256:0c6c43471bc764fad4bc99c5c2d6d16a676b1abf844ca7c8702bdae92df01ee0"},
     {file = "kiwisolver-1.4.7.tar.gz", hash = "sha256:9893ff81bd7107f7b685d3017cc6583daadb4fc26e4a888350df530e41980a60"},
 ]
+
+[[package]]
+name = "libpass"
+version = "1.9.3"
+description = "Fork of passlib, a comprehensive password hashing framework supporting over 30 schemes"
+optional = false
+python-versions = ">=3.9"
+groups = ["main"]
+files = [
+    {file = "libpass-1.9.3-py3-none-any.whl", hash = "sha256:3cbeb14d22086660e92c30d787ea981973d67394e81c8c870e1a83cfe1c84353"},
+    {file = "libpass-1.9.3.tar.gz", hash = "sha256:7830b9323d9ba96a841ad698a8dec1d43a2b0b7f1c855c76772e7972c1c6d959"},
+]
+
+[package.extras]
+argon2 = ["argon2-cffi (>=18.2.0)"]
+bcrypt = ["bcrypt (>=3.1.0)"]
+totp = ["cryptography (>=43.0.1)"]
 
 [[package]]
 name = "limits"
@@ -2309,24 +2355,6 @@ files = [
 ]
 
 [[package]]
-name = "passlib"
-version = "1.7.4"
-description = "comprehensive password hashing framework supporting over 30 schemes"
-optional = false
-python-versions = "*"
-groups = ["main"]
-files = [
-    {file = "passlib-1.7.4-py2.py3-none-any.whl", hash = "sha256:aa6bca462b8d8bda89c70b382f0c298a20b5560af6cbfa2dce410c0a2fb669f1"},
-    {file = "passlib-1.7.4.tar.gz", hash = "sha256:defd50f72b65c5402ab2c573830a6978e5f202ad0d984793c8dde2c4152ebe04"},
-]
-
-[package.extras]
-argon2 = ["argon2-cffi (>=18.2.0)"]
-bcrypt = ["bcrypt (>=3.1.0)"]
-build-docs = ["cloud-sptheme (>=1.10.1)", "sphinx (>=1.6)", "sphinxcontrib-fulltoc (>=1.2.0)"]
-totp = ["cryptography"]
-
-[[package]]
 name = "pillow"
 version = "10.4.0"
 description = "Python Imaging Library (Fork)"
@@ -2551,7 +2579,6 @@ description = "C parser in Python"
 optional = false
 python-versions = ">=3.8"
 groups = ["main"]
-markers = "platform_python_implementation != \"PyPy\""
 files = [
     {file = "pycparser-2.22-py3-none-any.whl", hash = "sha256:c3702b6d3dd8c7abc1afa565d7e63d53a1d0bd86cdc24edd75470f4de499cfcc"},
     {file = "pycparser-2.22.tar.gz", hash = "sha256:491c8be9c040f5390f5bf44a5b07752bd07f56edf992381b05c701439eec10f6"},
@@ -3783,35 +3810,6 @@ pymysql = ["pymysql"]
 sqlcipher = ["sqlcipher3_binary"]
 
 [[package]]
-name = "sqlalchemy-utils"
-version = "0.41.2"
-description = "Various utility functions for SQLAlchemy."
-optional = false
-python-versions = ">=3.7"
-groups = ["main"]
-files = [
-    {file = "SQLAlchemy-Utils-0.41.2.tar.gz", hash = "sha256:bc599c8c3b3319e53ce6c5c3c471120bd325d0071fb6f38a10e924e3d07b9990"},
-    {file = "SQLAlchemy_Utils-0.41.2-py3-none-any.whl", hash = "sha256:85cf3842da2bf060760f955f8467b87983fb2e30f1764fd0e24a48307dc8ec6e"},
-]
-
-[package.dependencies]
-SQLAlchemy = ">=1.3"
-
-[package.extras]
-arrow = ["arrow (>=0.3.4)"]
-babel = ["Babel (>=1.3)"]
-color = ["colour (>=0.0.4)"]
-encrypted = ["cryptography (>=0.6)"]
-intervals = ["intervals (>=0.7.1)"]
-password = ["passlib (>=1.6,<2.0)"]
-pendulum = ["pendulum (>=2.0.5)"]
-phone = ["phonenumbers (>=5.9.2)"]
-test = ["Jinja2 (>=2.3)", "Pygments (>=1.2)", "backports.zoneinfo ; python_version < \"3.9\"", "docutils (>=0.10)", "flake8 (>=2.4.0)", "flexmock (>=0.9.7)", "isort (>=4.2.2)", "pg8000 (>=1.12.4)", "psycopg (>=3.1.8)", "psycopg2 (>=2.5.1)", "psycopg2cffi (>=2.8.1)", "pymysql", "pyodbc", "pytest (==7.4.4)", "python-dateutil (>=2.6)", "pytz (>=2014.2)"]
-test-all = ["Babel (>=1.3)", "Jinja2 (>=2.3)", "Pygments (>=1.2)", "arrow (>=0.3.4)", "backports.zoneinfo ; python_version < \"3.9\"", "colour (>=0.0.4)", "cryptography (>=0.6)", "docutils (>=0.10)", "flake8 (>=2.4.0)", "flexmock (>=0.9.7)", "furl (>=0.4.1)", "intervals (>=0.7.1)", "isort (>=4.2.2)", "passlib (>=1.6,<2.0)", "pendulum (>=2.0.5)", "pg8000 (>=1.12.4)", "phonenumbers (>=5.9.2)", "psycopg (>=3.1.8)", "psycopg2 (>=2.5.1)", "psycopg2cffi (>=2.8.1)", "pymysql", "pyodbc", "pytest (==7.4.4)", "python-dateutil", "python-dateutil (>=2.6)", "pytz (>=2014.2)"]
-timezone = ["python-dateutil"]
-url = ["furl (>=0.4.1)"]
-
-[[package]]
 name = "starlette"
 version = "0.50.0"
 description = "The little ASGI library that shines."
@@ -4512,4 +4510,4 @@ graylog = ["graypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "86897514e23b9af068f8d3ac6daa1193d8284f7358e15a1d750eb6871c2b38a3"
+content-hash = "5e6247450bc1e260168e424a70b761b4ea2ca8dd7bf925dee792d147101e82d2"

@@ -1,17 +1,14 @@
 import logging
 import os
-import traceback
 from pathlib import Path
 
 import flask_security
 import gevent
 import werkzeug
-from flask import (
-    Flask,
-    request,
-)
+from flask import Flask, redirect, request
 from flask_login import current_user
 from flask_socketio import SocketIO
+from werkzeug.exceptions import HTTPException
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 from mxcubeweb.core.components.user.database import (
@@ -45,9 +42,40 @@ class Server:
 
     @staticmethod
     def exception_handler(e):
-        err_msg = "Uncaught exception while calling %s" % request.path
-        logging.getLogger("exceptions").exception(err_msg)
-        return err_msg + ": " + traceback.format_exc(), 409
+        err_msg = "Error while calling %s" % request.path
+
+        if e.code == 404:
+            logging.getLogger("server_access").info(
+                f"URL {request.path} not found on servrer"
+            )
+        else:
+            logging.getLogger("server_access").exception(err_msg)
+
+        return "Not found", 404
+
+    @staticmethod
+    def flask_security_custom_unauthn_handler(*args, **kwargs):
+        return redirect("/login")
+
+    @staticmethod
+    def init_flask_security():
+        Server.flask.config.update(
+            SECURITY_LOGIN_URL=None,
+            SECURITY_REDIRECT_BEHAVIOR="spa",
+        )
+
+        Server.security = flask_security.Security()
+        Server.security.init_app(
+            Server.flask, Server.user_datastore, register_blueprint=False
+        )
+
+        Server.security.unauthz_handler(Server.flask_security_custom_unauthn_handler)
+        Server.security.unauthn_handler(Server.flask_security_custom_unauthn_handler)
+
+        # Make the valid_login_only decorator available on server object
+        Server.restrict = staticmethod(networkutils.auth_required)
+        Server.require_control = staticmethod(networkutils.require_control)
+        Server.ws_restrict = staticmethod(networkutils.ws_valid_login_only)
 
     @staticmethod
     def init(cmdline_options, cfg):
@@ -62,7 +90,7 @@ class Server:
         Server.flask.wsgi_app = ProxyFix(Server.flask.wsgi_app)
         Server.flask.config.from_object(cfg.flask)
 
-        Server.flask.register_error_handler(Exception, Server.exception_handler)
+        Server.flask.register_error_handler(HTTPException, Server.exception_handler)
 
         if cfg.flask.CSP_ENABLED:
             Server.flask.wsgi_app = CSPMiddleware(
@@ -93,14 +121,8 @@ class Server:
         else:
             Server.limiter = None
 
-        # the following test prevents Flask from initializing twice
-        # (because of the Reloader)
-        if not Server.flask.debug or os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-            # Make the valid_login_only decorator available on server object
-            Server.restrict = staticmethod(networkutils.auth_required)
-            Server.require_control = staticmethod(networkutils.require_control)
-            Server.ws_restrict = staticmethod(networkutils.ws_valid_login_only)
-            Server.route = staticmethod(Server.flask.route)
+        Server.init_flask_security()
+        Server.route = staticmethod(Server.flask.route)
 
     def _register_route(init_blueprint_fn, app, url_prefix):
         bp = init_blueprint_fn(app, Server, url_prefix)
@@ -114,10 +136,6 @@ class Server:
 
     @staticmethod
     def register_routes(mxcube):
-        Server.security = flask_security.Security(
-            Server.flask, Server.user_datastore, register_blueprint=False
-        )
-
         from mxcubeweb.routes.csp_report import init_route as init_csp_route
         from mxcubeweb.routes.harvester import init_route as init_harvester_route
         from mxcubeweb.routes.login import init_route as init_login_route

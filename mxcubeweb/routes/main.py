@@ -1,13 +1,10 @@
 import logging
-import time
-import traceback
 from datetime import datetime
 
 import flask_login
 from flask import (
     Blueprint,
     jsonify,
-    request,
 )
 from mxcubecore import HardwareRepository as HWR
 
@@ -65,21 +62,5 @@ def init_route(app, server, url_prefix):
         if not flask_login.current_user.is_anonymous:
             flask_login.current_user.last_request_timestamp = datetime.now()
             app.usermanager.update_user(flask_login.current_user)
-
-    @server.flask.errorhandler(Exception)
-    def exceptions(e):
-        tb = traceback.format_exc()
-        timestamp = time.strftime("[%Y-%b-%d %H:%M]")
-        logging.getLogger("MX3.HWR").debug(
-            "%s %s %s %s %s 501 INTERNAL SERVER ERROR\n%s",
-            timestamp,
-            request.remote_addr,
-            request.method,
-            request.scheme,
-            request.full_path,
-            tb,
-        )
-
-        return jsonify({"error": "Server error"}), 501
 
     return bp
