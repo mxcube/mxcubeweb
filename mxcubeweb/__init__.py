@@ -150,11 +150,11 @@ def build_server_and_config(test=False, argv=None):
 
         mxcube.init(
             server,
-            cmdline_options.allow_remote,
-            cmdline_options.ra_timeout,
-            cmdline_options.log_file,
-            cmdline_options.log_level,
-            cmdline_options.enabled_logger_list,
+            runtime_options.allow_remote,
+            runtime_options.ra_timeout,
+            runtime_options.log_file,
+            runtime_options.log_level,
+            runtime_options.enabled_logger_list,
             cfg,
         )
 
