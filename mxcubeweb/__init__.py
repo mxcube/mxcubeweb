@@ -17,7 +17,9 @@ from mxcubecore import HardwareRepository as HWR  # noqa: E402
 
 from mxcubeweb.app import MXCUBEApplication as mxcube  # noqa: E402
 from mxcubeweb.config import Config  # noqa: E402
-from mxcubeweb.server import Server as server  # noqa: E402
+
+from mxcubeweb.core.server.server import create_server  # noqa: E402
+from mxcubeweb.core.server.routes import register_routes  # noqa: E402
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()
@@ -144,7 +146,8 @@ def build_server_and_config(test=False, argv=None):
             if test_db.exists():
                 test_db.unlink()
 
-        server.init(cmdline_options, cfg)
+        server = create_server(cfg, cmdline_options)
+
         mxcube.init(
             server,
             cmdline_options.allow_remote,
@@ -155,7 +158,7 @@ def build_server_and_config(test=False, argv=None):
             cfg,
         )
 
-        server.register_routes(mxcube)
+        register_routes(server, mxcube, cfg)
     except Exception:
         traceback.print_exc()
         raise
@@ -166,7 +169,11 @@ def build_server_and_config(test=False, argv=None):
 def main():
     server, cfg = build_server_and_config()
     if server and cfg:
-        server.run(cfg)
+        try:
+            server.run(cfg)
+        finally:
+            server.close()
+
         return 0
     return 1
 

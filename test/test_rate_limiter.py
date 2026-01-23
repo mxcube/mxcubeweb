@@ -3,7 +3,7 @@ import json
 import pytest
 from flask import Flask, jsonify
 
-from mxcubeweb.core.server.limiter import init_limiter, rate_limit_error_handler
+from mxcubeweb.core.server.limiter import init_rate_limiter, rate_limit_error_handler
 
 
 @pytest.fixture
@@ -14,7 +14,7 @@ def limiter_app():
     app.config["RATELIMIT_STORAGE_URI"] = "memory://"
     app.config["RATELIMIT_HEADERS_ENABLED"] = True
 
-    init_limiter(app)
+    init_rate_limiter(app)
 
     @app.route("/test_rate_limit")
     def test_endpoint():
@@ -29,7 +29,7 @@ def test_rate_limiter_initialization():
 
     app.config["RATELIMIT_DEFAULT"] = "100 per day;10 per hour"
     app.config["RATELIMIT_STORAGE_URI"] = "memory://"
-    limiter = init_limiter(app)
+    limiter = init_rate_limiter(app)
 
     assert limiter is not None
     assert hasattr(limiter, "limit")

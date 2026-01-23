@@ -7,16 +7,19 @@ from flask_limiter.util import get_remote_address
 
 def rate_limit_error_handler(_):
     """Handler for rate limit errors."""
-    logging.warning("Rate limit exceeded")
-    return jsonify(
-        {
-            "error": "Too many requests",
-            "message": "Allowed number or requests reached. Try again later.",
-        }
-    ), 429
+    logging.getLogger("MX3.HWR").warning("Rate limit exceeded")
+    return (
+        jsonify(
+            {
+                "error": "Too many requests",
+                "message": "Allowed number or requests reached. Try again later.",
+            }
+        ),
+        429,
+    )
 
 
-def init_limiter(app):
+def init_rate_limiter(app):
     """Initialize the rate limiter."""
     limiter = Limiter(
         app=app,

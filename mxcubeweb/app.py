@@ -165,8 +165,6 @@ class MXCUBEApplication:
         MXCUBEApplication.log = Log(MXCUBEApplication, {})
 
         MXCUBEApplication.init_signal_handlers()
-        # Install server-side UI state storage
-        MXCUBEApplication.init_state_storage()
 
         msg = "MXCuBE initialized, it took %.1f seconds" % (
             time.time() - MXCUBEApplication.t0

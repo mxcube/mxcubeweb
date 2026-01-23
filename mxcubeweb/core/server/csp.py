@@ -56,3 +56,16 @@ class CSPMiddleware:
             parts.append(f"report-uri {self.report_uri}")
 
         return "; ".join(parts)
+
+
+def init_csp(flask, cfg):
+    if cfg.flask.CSP_ENABLED:
+        flask.wsgi_app = CSPMiddleware(
+            flask.wsgi_app,
+            {
+                "CSP_ENABLED": cfg.flask.CSP_ENABLED,
+                "CSP_POLICY": cfg.flask.CSP_POLICY,
+                "CSP_REPORT_ONLY": cfg.flask.CSP_REPORT_ONLY,
+                "CSP_REPORT_URI": cfg.flask.CSP_REPORT_URI,
+            },
+        )
