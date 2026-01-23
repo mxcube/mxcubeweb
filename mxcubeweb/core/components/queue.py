@@ -1316,9 +1316,7 @@ class Queue(ComponentBase):
 
         return dc_model, dc_entry
 
-    def _create_queue_entry(  # noqa: D417
-        self, task, task_name
-    ):
+    def _create_queue_entry(self, task, task_name):  # noqa: D417
         """Create a queue entry and its corresponding data model.
 
         Args:
@@ -1858,35 +1856,297 @@ class Queue(ComponentBase):
             except Exception:
                 HWR.beamline.queue_manager.emit("queue_execution_failed", (None,))
 
+    def collect_started(self, *args, **kwargs):
+        node = self.last_queue_node()
+
+        if not self.is_interleaved(node["node"]):
+            msg = {
+                "Signal": "collectStarted",
+                "Message": "Data collection has started",
+                "taskIndex": self.last_queue_node()["idx"],
+                "queueID": self.last_queue_node()["queue_id"],
+                "sample": self.last_queue_node()["sample"],
+                "state": RUNNING,
+                "progress": 0,
+            }
+
+            logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
+            self.app.server.emit("task", msg, namespace="/hwr")
+
+    def collect_oscillation_started(self, *args):
+        node = self.last_queue_node()
+
+        if not self.is_interleaved(node["node"]):
+            msg = {
+                "Signal": "collectOscillationStarted",
+                "Message": "Data collection oscillation has started",
+                "taskIndex": node["idx"],
+                "queueID": node["queue_id"],
+                "sample": node["sample"],
+                "state": RUNNING,
+                "progress": 0,
+            }
+
+            logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
+            self.app.server.emit("task", msg, namespace="/hwr")
+
+    def collect_oscillation_failed(  # noqa: PLR0913
+        self,
+        owner=None,
+        status=FAILED,
+        state=None,
+        lims_id="",
+        osc_id=None,
+        params=None,
+    ):
+        node = self.last_queue_node()
+
+        self.app.NODE_ID_TO_LIMS_ID[node["queue_id"]] = lims_id
+
+        if not self.app.queue.is_interleaved(node["node"]):
+            with contextlib.suppress(Exception):
+                HWR.beamline.get_dc(lims_id)
+
+            msg = {
+                "Signal": "collectOscillationFailed",
+                "Message": "Data collection oscillacion has failed",
+                "taskIndex": node["idx"],
+                "queueID": node["queue_id"],
+                "sample": node["sample"],
+                "state": FAILED,
+                "progress": 0,
+            }
+
+            logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
+            self.app.server.emit("task", msg, namespace="/hwr")
+
+    def collect_image_taken(self, frame):
+        try:
+            node = self.last_queue_node()
+        except IndexError:
+            node = None
+
+        if node and not self.is_interleaved(node["node"]):
+            progress = self.get_task_progress(node["node"], frame)
+
+            msg = {
+                "Signal": "collectImageTaken",
+                "Message": "Image acquired",
+                "taskIndex": node["idx"],
+                "queueID": node["queue_id"],
+                "sample": node["sample"],
+                "state": RUNNING if progress < 1 else COLLECTED,
+                "progress": progress,
+            }
+            logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
+            self.app.server.emit("task", msg, namespace="/hwr")
+
+    def collect_oscillation_finished(  # noqa: PLR0913
+        self, owner, status, state, lims_id, osc_id, params
+    ):
+        node = self.last_queue_node()
+        self.app.NODE_ID_TO_LIMS_ID[node["queue_id"]] = lims_id
+
+        if not self.is_interleaved(node["node"]):
+            msg = {
+                "Signal": "collectOscillationFinished",
+                "Message": "Data collection oscillacion has finished",
+                "taskIndex": node["idx"],
+                "queueID": node["queue_id"],
+                "sample": node["sample"],
+                "state": COLLECTED,
+                "progress": 1,
+            }
+
+            logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
+
+            self.app.server.emit("task", msg, namespace="/hwr")
+
+    def queue_execution_started(self, entry, queue_state=None):
+        state = queue_state if queue_state else self.queue_exec_state()
+        msg = {"Signal": state, "Message": "Queue execution started"}
+
+        self.app.server.emit("queue", msg, namespace="/hwr")
+
+    def collect_ended(self, owner, success, message):
+        node = self.last_queue_node()
+
+        if not self.is_interleaved(node["node"]):
+            state = COLLECTED if success else WARNING
+
+            msg = {
+                "Signal": "collectOscillationFinished",
+                "Message": message,
+                "taskIndex": node["idx"],
+                "queueID": node["queue_id"],
+                "sample": node["sample"],
+                "state": state,
+                "progress": 1,
+            }
+
+            logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
+            self.app.server.emit("task", msg, namespace="/hwr")
+
+    def energy_scan_finished(self, pk, ip, rm, sample):
+        self.app.server.emit(
+            "energy_scan_result",
+            {"pk": pk, "ip": ip, "rm": rm},
+            namespace="/hwr",
+        )
+
+    def queue_interleaved_started(self):
+        node = self.last_queue_node()
+
+        msg = {
+            "Signal": "queue_interleaved_started",
+            "Message": "Interleaved collection started",
+            "taskIndex": node["idx"],
+            "queueID": node["queue_id"],
+            "sample": node["sample"],
+            "state": RUNNING,
+            "progress": 0,
+        }
+
+        logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
+        self.app.server.emit("task", msg, namespace="/hwr")
+
+    def queue_interleaved_finished(self):
+        node = self.last_queue_node()
+
+        msg = {
+            "Signal": "queue_interleaved_finished",
+            "Message": "Interleaved collection ended",
+            "taskIndex": node["idx"],
+            "queueID": node["queue_id"],
+            "sample": node["sample"],
+            "state": COLLECTED,
+            "progress": 1,
+        }
+
+        logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
+        self.app.server.emit("task", msg, namespace="/hwr")
+
+    def queue_interleaved_sw_done(self, data):
+        node = self.last_queue_node()
+        progress = self.get_task_progress(node["node"], data)
+
+        msg = {
+            "Signal": "collectImageTaken",
+            "Message": "Image acquired",
+            "taskIndex": node["idx"],
+            "queueID": node["queue_id"],
+            "sample": node["sample"],
+            "state": RUNNING if progress < 1 else COLLECTED,
+            "progress": progress,
+        }
+
+        logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
+        self.app.server.emit("task", msg, namespace="/hwr")
+
+    def queue_execution_failed(self, entry):
+        msg = {
+            "Signal": self.queue_exec_state(),
+            "Message": "Queue execution stopped",
+        }
+
+        self.app.server.emit("queue", msg, namespace="/hwr")
+
+    def get_task_state(self, entry):
+        node_id = entry.get_data_model()._node_id
+        _, state = self.get_node_state(node_id)
+        node_index = self.node_index(entry.get_data_model())
+
+        return {
+            "Signal": "",
+            "Message": "",
+            "taskIndex": node_index["idx"],
+            "queueID": node_id,
+            "sample": node_index["sample"],
+            "state": state,
+            "progress": 1 if state == COLLECTED else 0,
+        }
+
+    def handle_auto_mount_next(self, entry):
+        model = entry.get_data_model()
+
+        if isinstance(model.get_parent(), qmo.TaskGroup):
+            auto_mount = self.get_auto_mount_sample()
+            tgroup = entry.get_data_model()
+            tgroup_list = entry.get_data_model().get_parent().get_children()
+
+            try:
+                last_gentry = tgroup_list.index(tgroup) == (len(tgroup_list) - 1)
+            except ValueError:
+                last_gentry = None
+
+            if not auto_mount and last_gentry:
+                msg = "Not mounting next sample automatically (Auto mount next)"
+                logging.getLogger("user_level_log").info(msg)
+
+    def queue_execution_entry_started(self, entry, message=None):
+        self.handle_auto_mount_next(entry)
+
+        if not self.is_interleaved(entry.get_data_model()):
+            self.app.server.emit("task", self.get_task_state(entry), namespace="/hwr")
+
+    def queue_execution_entry_finished(self, entry, message):
+        self.handle_auto_mount_next(entry)
+
+        if not self.is_interleaved(entry.get_data_model()):
+            self.app.server.emit("task", self.get_task_state(entry), namespace="/hwr")
+
+        self.queue_toggle_sample(entry)
+
+    def queue_execution_finished(self, entry, queue_state=None):
+        state = queue_state if queue_state else self.queue_exec_state()
+        msg = {"Signal": state, "Message": "Queue execution stopped"}
+
+        self.enable_sample_entries(self.app.TEMP_DISABLED, True)
+        self.app.TEMP_DISABLED = []
+
+        self.app.server.emit("queue", msg, namespace="/hwr")
+
+    def queue_execution_paused(self, state):
+        if state:
+            msg = {
+                "Signal": "QueuePaused",
+                "Message": "Queue execution paused",
+            }
+        else:
+            msg = {
+                "Signal": "QueueRunning",
+                "Message": "Queue execution paused",
+            }
+
+        self.app.server.emit("queue", msg, namespace="/hwr")
+
     def init_signals(self, queue):
         """Initialize queue hwobj related signals."""
-        from mxcubeweb.routes import signals
-
         HWR.beamline.collect.connect(
             HWR.beamline.collect,
             "collectStarted",
-            signals.collect_started,
+            self.collect_started,
         )
         HWR.beamline.collect.connect(
             HWR.beamline.collect,
             "collectOscillationStarted",
-            signals.collect_oscillation_started,
+            self.collect_oscillation_started,
         )
         HWR.beamline.collect.connect(
             HWR.beamline.collect,
             "collectOscillationFailed",
-            signals.collect_oscillation_failed,
+            self.collect_oscillation_failed,
         )
         HWR.beamline.collect.connect(
             HWR.beamline.collect,
             "collectImageTaken",
-            signals.collect_image_taken,
+            self.collect_image_taken,
         )
 
         HWR.beamline.collect.connect(
             HWR.beamline.collect,
             "collectOscillationFinished",
-            signals.collect_oscillation_finished,
+            self.collect_oscillation_finished,
         )
 
         queue.connect(queue, "child_added", self.queue_model_child_added)
@@ -1898,51 +2158,49 @@ class Queue(ComponentBase):
         )
 
         HWR.beamline.queue_manager.connect(
-            "queue_execute_started", signals.queue_execution_started
+            "queue_execute_started", self.queue_execution_started
         )
 
         HWR.beamline.queue_manager.connect(
             "queue_execution_finished",
-            signals.queue_execution_finished,
+            self.queue_execution_finished,
         )
 
         HWR.beamline.queue_manager.connect(
-            "queue_stopped", signals.queue_execution_finished
+            "queue_stopped", self.queue_execution_finished
         )
 
-        HWR.beamline.queue_manager.connect(
-            "queue_paused", signals.queue_execution_paused
-        )
+        HWR.beamline.queue_manager.connect("queue_paused", self.queue_execution_paused)
 
         HWR.beamline.queue_manager.connect(
             "queue_entry_execute_finished",
-            signals.queue_execution_entry_finished,
+            self.queue_execution_entry_finished,
         )
 
         HWR.beamline.queue_manager.connect(
             "queue_entry_execute_started",
-            signals.queue_execution_entry_started,
+            self.queue_execution_entry_started,
         )
 
-        HWR.beamline.queue_manager.connect("collectEnded", signals.collect_ended)
+        HWR.beamline.queue_manager.connect("collectEnded", self.collect_ended)
 
         HWR.beamline.queue_manager.connect(
             "queue_interleaved_started",
-            signals.queue_interleaved_started,
+            self.queue_interleaved_started,
         )
 
         HWR.beamline.queue_manager.connect(
             "queue_interleaved_finished",
-            signals.queue_interleaved_finished,
+            self.queue_interleaved_finished,
         )
 
         HWR.beamline.queue_manager.connect(
             "queue_interleaved_sw_done",
-            signals.queue_interleaved_sw_done,
+            self.queue_interleaved_sw_done,
         )
 
         HWR.beamline.queue_manager.connect(
-            "energy_scan_finished", signals.energy_scan_finished
+            "energy_scan_finished", self.energy_scan_finished
         )
 
     def queue_toggle_sample(self, entry):
@@ -2037,7 +2295,6 @@ class Queue(ComponentBase):
                 409: Queue could not be started
         """
         logging.getLogger("MX3.HWR").info("[QUEUE] Queue going to start")
-        from mxcubeweb.routes import signals
 
         try:
             # If auto mount sample is false, just run the sample
@@ -2053,7 +2310,7 @@ class Queue(ComponentBase):
                 HWR.beamline.queue_manager.execute()
 
         except Exception as ex:
-            signals.queue_execution_failed(ex)
+            self.queue_execution_failed(ex)
         else:
             logging.getLogger("MX3.HWR").info("[QUEUE] Queue started")
 
@@ -2303,9 +2560,7 @@ class Queue(ComponentBase):
         root_path = HWR.beamline.session.get_base_image_directory()
         return {"path": path, "rootPath": root_path}
 
-    def set_setting(  # noqa: D417
-        self, name_value: SimpleNameValue
-    ) -> tuple:
+    def set_setting(self, name_value: SimpleNameValue) -> tuple:  # noqa: D417
         """Set the setting (on the MXCUBEApplication object) with name to value.
 
         Args:
@@ -2333,3 +2588,17 @@ class Queue(ComponentBase):
             num_snapshots (int): number of snapshots to be taken
         """
         HWR.beamline.collect.number_of_snapshots = num_snapshots
+
+    def last_queue_node(self):
+        node = HWR.beamline.queue_manager._current_queue_entries[-1].get_data_model()
+
+        # Reference collections are orphans, the node we want is the
+        # characterisation not the reference collection itself
+        if "ref" in node.get_name():
+            parent = node.get_parent()
+            node = parent._children[0]
+
+        res = self.node_index(node)
+        res["node"] = node
+
+        return res

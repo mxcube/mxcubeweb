@@ -6,6 +6,10 @@ from mxcubecore import HardwareRepository as HWR
 from mxcubecore.HardwareObjects.Beamline import Beamline
 
 from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
+from mxcubeweb.core.components.queue import (
+    COLLECTED,
+    RUNNING,
+)
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
 resource_handler_config = ResourceHandlerConfigModel(
@@ -37,14 +41,27 @@ class BeamlineAdapter(ActuatorAdapterBase):
                 "GphlUpdateUiParameters", self._gphl_json_wf_update_ui_parameters
             )
 
-        from mxcubeweb.routes import signals
-
         if HWR.beamline.xrf_spectrum:
             HWR.beamline.xrf_spectrum.connect(
                 HWR.beamline.xrf_spectrum,
                 "xrf_task_progress",
-                signals.xrf_task_progress,
+                self.xrf_task_progress,
             )
+
+    def xrf_task_progress(self, task_id, progress):  # noqa: ARG002
+        node = self.app.queue.last_queue_node()
+
+        msg = {
+            "Signal": "XRFTaskUpdate",
+            "Message": "XRFTaskUpdate",
+            "taskIndex": node["idx"],
+            "queueID": node["queue_id"],
+            "sample": node["sample"],
+            "state": RUNNING if progress < 1 else COLLECTED,
+            "progress": progress,
+        }
+
+        self.app.server.emit("task", msg, namespace="/hwr")
 
     def _wf_parameters_needed(self, params):
         self.app.server.emit("workflowParametersDialog", params, namespace="/hwr")

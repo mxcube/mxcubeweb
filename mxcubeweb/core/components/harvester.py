@@ -4,6 +4,7 @@ import logging
 
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore.HardwareObjects.abstract.sample_changer import Crims
+from mxcubecore.HardwareObjects.Harvester import HarvesterState
 
 from mxcubeweb.core.components.component_base import ComponentBase
 
@@ -16,17 +17,21 @@ class Harvester(ComponentBase):
         self.harvester_device = HWR.beamline.harvester
 
     def init_signals(self):
-        from mxcubeweb.routes import signals
-
         """Initialize hwobj signals."""
         if HWR.beamline.harvester:
-            HWR.beamline.harvester.connect(
-                "stateChanged", signals.harvester_state_changed
-            )
+            HWR.beamline.harvester.connect("stateChanged", self.harvester_state_changed)
 
             HWR.beamline.harvester.connect(
-                "harvester_contents_update", signals.harvester_contents_update
+                "harvester_contents_update", self.harvester_contents_update
             )
+
+    def harvester_state_changed(self, *args):
+        new_state = args[0]
+        state_str = HarvesterState.STATE_DESC.get(new_state, "Unknown").upper()
+        self.app.server.emit("harvester_state", state_str, namespace="/hwr")
+
+    def harvester_contents_update(self):
+        self.app.server.emit("harvester_contents_update")
 
     def get_initial_state(self):
         if HWR.beamline.harvester_maintenance is not None:
