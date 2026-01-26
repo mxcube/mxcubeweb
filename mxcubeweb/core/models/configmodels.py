@@ -6,6 +6,35 @@ from typing import (
 )
 
 from pydantic import BaseModel, Field, validator
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class RuntimeOptions(BaseSettings):
+    hwr_directory: str
+    static_folder: str | None = Path.cwd() / "ui" / "build"
+    log_file: str = ""
+    log_level: str = ""
+    enabled_logger_list: list[str] = [
+        "exception_logger",
+        "hwr_logger",
+        "server_logger",
+        "user_logger",
+        "queue_logger",
+        "ui_logger",
+        "csp_logger",
+        "server_access_logger",
+    ]
+    allow_remote: bool = False
+    ra_timeout: bool = False
+    yaml_export_directory: str | None = None
+
+    # Pydantic-settings config
+    model_config = SettingsConfigDict(
+        env_prefix="MXCUBE_",  # env vars like MXCUBE_HWR_DIRECTORY
+        case_sensitive=False,
+        env_file=".env",  # automatically load .env file if present
+        env_file_encoding="utf-8",
+    )
 
 
 class FlaskConfigModel(BaseModel):

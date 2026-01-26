@@ -17,6 +17,7 @@ from mxcubecore import HardwareRepository as HWR  # noqa: E402
 
 from mxcubeweb.app import MXCUBEApplication as mxcube  # noqa: E402
 from mxcubeweb.config import Config  # noqa: E402
+from mxcubeweb.core.models.configmodels import RuntimeOptions  # noqa: E402
 
 from mxcubeweb.core.server.server import create_server  # noqa: E402
 from mxcubeweb.core.server.routes import register_routes  # noqa: E402
@@ -117,7 +118,8 @@ def parse_args(argv):
 
 
 def build_server_and_config(test=False, argv=None):
-    cmdline_options = parse_args(argv)
+    args = parse_args(argv)
+    runtime_options = RuntimeOptions(**vars(args))
 
     try:
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
@@ -125,7 +127,7 @@ def build_server_and_config(test=False, argv=None):
         # without continuously editing the main config files.
         # Note that the machinery was all there in the core already. rhfogh.
         HWR.init_hardware_repository(
-            cmdline_options.hwr_directory, cmdline_options.yaml_export_directory
+            runtime_options.hwr_directory, runtime_options.yaml_export_directory
         )
         config_path = HWR.get_hardware_repository().find_in_repository("mxcube-web")
 
@@ -146,7 +148,7 @@ def build_server_and_config(test=False, argv=None):
             if test_db.exists():
                 test_db.unlink()
 
-        server = create_server(cfg, cmdline_options)
+        server = create_server(cfg, runtime_options)
 
         mxcube.init(
             server,

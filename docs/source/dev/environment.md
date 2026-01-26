@@ -192,3 +192,39 @@ Use your favourite editor to start working with the code.
 Read the [contributing guidelines](project:/dev/contributing.md)
 and check that linting tools are set up correctly.
 There are settings [files](https://github.com/mxcube/mxcubeweb/tree/develop/.vscode) for Visual Studio Code in the repository.
+
+#### 9.5 Running with WSGI server like Gunicorn and .env
+
+The `mxcube-server` can read runtime options from a .env file. The runtime options
+are the same as the command line options but with the `MXCUBE` prefix.
+
+- MXCUBE_HWR_DIRECTORY
+- MXCUBE_STATIC_FOLDER
+- MXCUBE_LOG_FILE
+- MXCUBE_LOG_LEVEL
+- MXCUBE_ENABLED_LOGGER_LIST
+- MXCUBE_ALLOW_REMOTE
+- MXCUBE_RA_TIMEOUT
+- MXCUBE_YAML_EXPORT_DIRECTORY
+
+_Example .env file:_
+
+```
+MXCUBE_HWR_DIRECTORY="/full/path/to/mxcube/mxcubeweb/demo"
+MXCUBE_STATIC_FOLDER="/full/path/to/mxcube/mxcubeweb/ui/build/"
+MXCUBE_LOG_LEVEL=DEBUG
+MXCUBE_ALLOW_REMOTE=True
+```
+
+The server can be started with `gunicorn` like this:
+
+```
+gunicorn -k "geventwebsocket.gunicorn.workers.GeventWebSocketWorker" --workers 1 --bind 127.0.0.1:8081 wsgi:app
+```
+
+There are other alternatives to `gunicorn`.
+
+- [Waitress](https://docs.pylonsproject.org/projects/waitress/en/latest/)
+- [uWSGI](https://uwsgi-docs.readthedocs.io/)
+- [bjoern](https://pypi.org/project/bjoern/)
+- [mod_wsgi](https://modwsgi.readthedocs.io/)
