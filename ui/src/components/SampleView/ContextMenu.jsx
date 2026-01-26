@@ -43,9 +43,12 @@ export default function ContextMenu() {
   const sampleData = useSelector(
     (state) => state.sampleGrid.sampleList[sampleID],
   );
-  const { clickCentring } = useSelector((state) => state.sampleview);
+  const { clickCentring, imageRatio, pixelsPerMm, beamSize } = useSelector(
+    (state) => state.sampleview,
+  );
   const groupFolder = useSelector((state) => state.queue.groupFolder);
   const contextMenu = useSelector((state) => state.contextMenu);
+  const allShapes = useSelector((state) => state.shapes.shapes);
   const { sampleViewX, sampleViewY, shape, pageX, pageY, show } = contextMenu;
 
   const isDrawGridAvailable = useSelector(
@@ -289,6 +292,11 @@ export default function ContextMenu() {
           action: () => createLineOnCanvas(shape.id),
           key: 'create_line',
         },
+        {
+          text: 'Add Grid',
+          action: () => draw2DPointsGrid(shape.id),
+          key: 'create_grid',
+        },
         ...genericTasks.line,
       ],
       LINE: [
@@ -523,6 +531,54 @@ export default function ContextMenu() {
 
     const newLine = await dispatch(addShape({ t: 'L', refs: shape.id }));
     showModal(modal, wf, newLine);
+  }
+
+  function draw2DPointsGrid(refs) {
+    const [p1, p2] = refs.map((id) => allShapes[id]);
+    const [x1, y1] = p1.screenCoord;
+    const [x2, y2] = p2.screenCoord;
+    const left = Math.min(x1, x2);
+    const right = Math.max(x1, x2);
+    const top = Math.min(y1, y2);
+    const bottom = Math.max(y1, y2);
+    const width = right - left;
+    const height = bottom - top;
+    const [pixelsPerMMX, pixelsPerMMY] = pixelsPerMm;
+    // cells dimentions in micrometers:
+    const cellWidth = beamSize.x * 1000;
+    const cellHeight = beamSize.y * 1000;
+    const cellVSpace = 0;
+    const cellHSpace = 0;
+    // cells dimentions in pixels:
+    const cellWidthPx = (cellWidth / 1000) * imageRatio * pixelsPerMMX;
+    const cellHSpacePx = (cellHSpace / 1000) * imageRatio * pixelsPerMMX;
+    const cellHeightPx = (cellHeight / 1000) * imageRatio * pixelsPerMMY;
+    const cellVSpacePx = (cellVSpace / 1000) * imageRatio * pixelsPerMMY;
+    // total dimentions including spacing:
+    const cellTW = cellWidthPx + cellHSpacePx;
+    const cellTH = cellHeightPx + cellVSpacePx;
+    const numCols = Math.ceil((width * imageRatio) / cellTW);
+    const numRows = Math.ceil((height * imageRatio) / cellTH);
+    const gridData = {
+      result: '',
+      angle: 0,
+      cellCountFun: null,
+      selected: false,
+      id: null,
+      pixelsPerMMX,
+      pixelsPerMMY,
+      cellWidth,
+      cellHeight,
+      cellVSpace,
+      cellHSpace,
+      screenCoord: [left, top],
+      width,
+      height,
+      numCols,
+      numRows,
+    };
+    dispatch(toggleDrawGrid());
+    dispatch(addShape({ t: 'G', ...gridData }));
   }
 
   const options = menuOptions();
