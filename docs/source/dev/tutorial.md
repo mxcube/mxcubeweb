@@ -333,7 +333,7 @@ import NewComponent from '../components/NewComponent/NewComponent';
           <Nav className="me-3">
             <NewComponent
               name={
-                this.props.beamline.hardwareObjects['diffractometer.phi'].value
+                this.props.beamline.hardwareObjects['diffractometer.omega'].value
               }
               sendCurrentPhase={this.props.sampleViewActions.sendCurrentPhase}
             />
