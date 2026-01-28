@@ -501,7 +501,7 @@ export default connect((state) => {
   const { parameters } = state.taskForm.taskData;
 
   // Set number of images to 1 for 2D points
-  if (position.includes('2D')) {
+  if (typeof position === 'string' && position.includes('2D')) {
     parameters.num_images = 1;
   }
 
