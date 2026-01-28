@@ -82,19 +82,20 @@ class SampleViewAdapter(AdapterBase):
         # There is no current centered point shape when the centring is done
         # by software like Workflows, so we add one.
         if not shape:
-            try:
-                if args[0]:
-                    motors = args[1]["motors"]
-                    (x, y) = self._ho.motor_positions_to_screen(motors)
-                    self._centring_update_current_point(motors, x, y)
-                    shape = self._ho.get_shape(self._centring_point_id)
-            except Exception:
-                logging.getLogger("MX3.HWR").exception("Centring failed !")
+            if len(args) > 1 and isinstance(args[1], dict):
+                motor_positions = args[1].get("motors")
+            else:
+                motor_positions = self._ho.get_positions()
+            (x, y) = self._ho.motor_positions_to_screen(motor_positions)
+            self._centring_update_current_point(motor_positions, x, y)
+            shape = self._ho.get_shape(self._centring_point_id)
 
         if shape:
             shape.state = "SAVED"
             self._emit_shapes_updated()
             self._centring_point_id = None
+        else:
+            logging.getLogger("MX3.HWR").exception("Centring failed !")
 
     def _centring_update_current_point(self, motor_positions, x, y):
         point = self._ho.get_shape(self._centring_point_id)
@@ -146,10 +147,10 @@ class SampleViewAdapter(AdapterBase):
     def _centring_started(self, method, *args):  # noqa: ARG002
         msg = {"method": method}
 
-        if method in ["Computer automatic"]:
-            msg = {"method": qe.CENTRING_METHOD.LOOP}
-        else:
+        if method in ["Manual"]:
             msg = {"method": qe.CENTRING_METHOD.MANUAL}
+        else:
+            msg = {"method": qe.CENTRING_METHOD.LOOP}
 
         self.app.server.emit("sample_centring", msg, namespace="/hwr")
 
