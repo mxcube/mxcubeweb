@@ -40,3 +40,8 @@ mxcubeweb_version: "develop"
 # Local repository paths (used when use_local_repos is true)
 local_mxcubecore_path: "../../../mxcubecore"
 local_mxcubeweb_path: "../../../"
+local_bliss_path: "../../../bliss"
+
+# Bliss repository (used when use_local_repos is false)
+bliss_repo: "https://gitlab.esrf.fr/bliss/bliss.git"
+bliss_version: "master"

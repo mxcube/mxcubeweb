@@ -1,9 +1,0 @@
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY docker/ansible-docker/sample-changer_server.py /app/sample-changer_server.py
-
-EXPOSE 9001
-
-CMD ["python", "-u", "/app/sample-changer_server.py"]

@@ -1,9 +1,0 @@
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY minidiff_server.py /app/minidiff_server.py
-
-EXPOSE 9002
-
-CMD ["python", "-u", "/app/minidiff_server.py"]

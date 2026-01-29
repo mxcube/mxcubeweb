@@ -10,14 +10,41 @@
       ansible.builtin.systemd:
         name: "mxcubeweb-{{ vm_context }}"
         state: stopped
+      ignore_errors: true
 
-    - name: Display service status
+    - name: Stop Bliss REST service
+      ansible.builtin.systemd:
+        name: "bliss-rest-{{ vm_context }}"
+        state: stopped
+      ignore_errors: true
+
+    - name: Stop Bliss Demo Servers service
+      ansible.builtin.systemd:
+        name: "bliss-demo-servers-{{ vm_context }}"
+        state: stopped
+      ignore_errors: true
+
+    - name: Display MXCubeWeb service status
       ansible.builtin.systemd:
         name: "mxcubeweb-{{ vm_context }}"
-      register: service_status
+      register: mxcubeweb_status
+      ignore_errors: true
 
-    - name: Show service information
+    - name: Display Bliss REST service status
+      ansible.builtin.systemd:
+        name: "bliss-rest-{{ vm_context }}"
+      register: bliss_rest_status
+      ignore_errors: true
+
+    - name: Display Bliss Demo Servers service status
+      ansible.builtin.systemd:
+        name: "bliss-demo-servers-{{ vm_context }}"
+      register: bliss_demo_status
+      ignore_errors: true
+
+    - name: Show services information
       ansible.builtin.debug:
         msg:
-          - "Service: mxcubeweb-{{ vm_context }}"
-          - "Status: {{ service_status.status.ActiveState }}"
+          - "Service: mxcubeweb-{{ vm_context }} - Status: {{ mxcubeweb_status.status.ActiveState | default('not found') }}"
+          - "Service: bliss-rest-{{ vm_context }} - Status: {{ bliss_rest_status.status.ActiveState | default('not found') }}"
+          - "Service: bliss-demo-servers-{{ vm_context }} - Status: {{ bliss_demo_status.status.ActiveState | default('not found') }}"
