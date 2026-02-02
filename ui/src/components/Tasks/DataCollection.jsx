@@ -394,7 +394,7 @@ export default connect((state) => {
     cellC,
     cellGamma,
     crystalSpaceGroup,
-  } = state.sampleGrid.sampleList[state.queue.currentSampleID];
+  } = state.sampleGrid.sampleList[state.queue.currentSampleID] ?? {};
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
