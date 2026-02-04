@@ -4510,4 +4510,4 @@ graylog = ["graypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "5e6247450bc1e260168e424a70b761b4ea2ca8dd7bf925dee792d147101e82d2"
+content-hash = "35ce4222e8169ce422bddc9c897743dd7cfd52cc9830a2a9b9a9da82356ce420"
