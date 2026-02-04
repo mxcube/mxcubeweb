@@ -17,6 +17,7 @@ def test_beamline_get_all_attribute(client):
     expected = [
         "beam",
         "beam.aperture",
+        "beamline_actions",
         "cryo",
         "detector",
         "detector.detector_distance",
@@ -24,14 +25,13 @@ def test_beamline_get_all_attribute(client):
         "diffractometer.backlight",
         "diffractometer.backlightswitch",
         "diffractometer.beamstop",
-        "diffractometer.beamstop_distance",
         "diffractometer.capillary",
         "diffractometer.frontlight",
         "diffractometer.frontlightswitch",
         "diffractometer.kappa",
         "diffractometer.kappa_phi",
-        "diffractometer.phi",
-        "diffractometer.phix",
+        "diffractometer.omega",
+        "diffractometer.focus",
         "diffractometer.phiy",
         "diffractometer.phiz",
         "diffractometer.sampx",
@@ -44,10 +44,9 @@ def test_beamline_get_all_attribute(client):
         "machine_info",
         "resolution",
         "safety_shutter",
-        "transmission",
-        "beamline_actions",
         "sample_changer",
         "sample_view",
+        "transmission",
     ]
 
     assert isinstance(data["hardwareObjects"], dict)
