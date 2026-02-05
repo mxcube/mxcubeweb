@@ -23,20 +23,25 @@ export default function CheckboxWidget({
   const { description } = schema;
 
   return (
-    <div className={styles.wrapper}>
-      <Form.Check
-        id={id}
-        checked={Boolean(value)}
-        disabled={disabled || readonly}
-        onChange={(e) => onChange(e.target.checked)}
-        onBlur={(e) => onBlur(id, e.target.checked)}
-        onFocus={(e) => onFocus(id, e.target.checked)}
-      />
-      <label htmlFor={id} className={styles.label}>
-        {label}
-        {required && <span className="text-danger">*</span>}
-      </label>
-      {description && <FieldDescriptionTooltip description={description} />}
+    <div>
+      <div>
+        <label htmlFor={id} className={styles.label}>
+          {label}
+          {required && <span className="text-danger">*</span>}
+        </label>
+        {description && <FieldDescriptionTooltip description={description} />}
+      </div>
+      <div>
+        <Form.Check
+          id={id}
+          type="switch"
+          checked={Boolean(value)}
+          disabled={disabled || readonly}
+          onChange={(e) => onChange(e.target.checked)}
+          onBlur={(e) => onBlur(id, e.target.checked)}
+          onFocus={(e) => onFocus(id, e.target.checked)}
+        />
+      </div>
     </div>
   );
 }
