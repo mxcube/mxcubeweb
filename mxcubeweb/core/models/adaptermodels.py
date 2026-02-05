@@ -87,7 +87,10 @@ class SampleChangerCommandInputModel(BaseModel):
 
 
 class ChipCalibrationInputModel(BaseModel):
-    data: dict
+    top_left: list
+    top_right: list
+    bottom_left: list
+    bottom_right: list
 
 
 class FrontEndStackTraceModel(BaseModel):
