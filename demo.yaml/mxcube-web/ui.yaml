@@ -38,7 +38,7 @@ sample_view_motors:
       precision: 1
       suffix: °
     - label: X
-      attribute: diffractometer.phix
+      attribute: diffractometer.focus
       role: phix
       step: 0.1
       precision: 3
@@ -175,3 +175,11 @@ camera_setup:
       url: http://localhost:9090/mjpg/video.mjpg?streamprofile=mxcube
       width: 800
       height: 450
+
+session_picker:
+  id: session_picker
+  tabs:
+    active: true
+    scheduled: true
+    other_beamlines: true
+    all_sessions: false

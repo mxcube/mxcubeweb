@@ -43,7 +43,7 @@ objects:
   # - harvester: harvester.xml
   # - harvester_maintenance: harvester_maintenance.xml
 
-  - diffractometer: minidiff.yaml
+  - diffractometer: diffractometer_mockup.yaml
   - lims: lims.yaml
   - sample_view: sample_view.yaml
   - queue_manager: queue_manager.yaml

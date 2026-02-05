@@ -2,8 +2,7 @@
 ---
 class: MotorMockup.MotorMockup
 configuration:
-  GUIstep: 90
+  actuator_name: Omega
   exporter_address: 130.235.94.124:9001
-  motor_name: Omega
-  unit: 0.001
+  tolerance: 0.001
   username: Omega
