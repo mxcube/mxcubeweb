@@ -76,7 +76,7 @@ class DiffractometerAdapter(AdapterBase):
         return True
 
     def use_position_for_calibration(self, data: ChipCalibrationInputModel) -> bool:
-        return self._ho.use_position_for_calibration(data.data)
+        return self._ho.use_position_for_calibration(data.dict())
 
     def ir_auto_focus(self) -> bool:
         return self._ho.ir_auto_focus()
