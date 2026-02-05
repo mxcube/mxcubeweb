@@ -1,23 +1,27 @@
+%YAML 1.2
+---
 class: DiffractometerMockup.DiffractometerMockup
 objects:
-      omega: udiff_omega.yaml
-      kappa: udiff_kappa.yaml
-      kappa_phi: udiff_kappaphi.yaml
-      backlight: udiff_backlight.yaml
-      frontlight: udiff_frontlight.yaml
-      focus: udiff_phix.yaml
-      phiy: udiff_phiy.yaml
-      phiz: udiff_phiz.yaml
-      sampx: udiff_sampx.yaml
-      sampy: udiff_sampy.yaml
-      aperture: aperture.yaml
-      beamstop: beamstop.yaml
-      capillary: capillary.yaml
-      fshutter: fast_shutter.yaml
-      zoom: udiff_zoom.yaml
-      backlightswitch: udiff_backlightswitch.yaml
-      frontlightswitch: udiff_frontlightswitch.yaml
+  omega: udiff_omega.yaml
+  kappa: udiff_kappa.yaml
+  kappa_phi: udiff_kappaphi.yaml
+  backlight: udiff_backlight.yaml
+  frontlight: udiff_frontlight.yaml
+  focus: udiff_phix.yaml
+  phiy: udiff_phiy.yaml
+  phiz: udiff_phiz.yaml
+  sampx: udiff_sampx.yaml
+  sampy: udiff_sampy.yaml
+  aperture: aperture.yaml
+  beamstop: beamstop.yaml
+  capillary: capillary.yaml
+  fshutter: fast_shutter.yaml
+  zoom: udiff_zoom.yaml
+  backlightswitch: udiff_backlightswitch.yaml
+  frontlightswitch: udiff_frontlightswitch.yaml
 configuration:
   username: Mock Diffractometer
-  motors: [omega, kappa, kappa_phi, focus, phiy, phiz, sampx, sampy, backlight, frontlight]
-  nstate_equipment: [aperture, beamstop, capillary, fshutter, zoom, backlightswitch, frontlightswitch]
+  motors: [omega, kappa, kappa_phi, focus, phiy, phiz, sampx, sampy,
+           backlight, frontlight]
+  nstate_equipment: [aperture, beamstop, capillary, fshutter, zoom,
+                     backlightswitch, frontlightswitch]

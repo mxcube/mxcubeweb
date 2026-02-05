@@ -15,8 +15,8 @@
     "fix": "pnpm eslint --fix",
     "prettier": "prettier . --cache --check",
     "eslint": "eslint --max-warnings=0",
-    "e2e": "cypress run --e2e --browser chrome",
-    "cypress": "cypress open --e2e --browser chrome"
+    "e2e": "cypress run --e2e --browser firefox",
+    "cypress": "cypress open --e2e --browser firefox"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
