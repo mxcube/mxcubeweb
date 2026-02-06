@@ -45,3 +45,9 @@ local_bliss_path: "../../../bliss"
 # Bliss repository (used when use_local_repos is false)
 bliss_repo: "https://gitlab.esrf.fr/bliss/bliss.git"
 bliss_version: "master"
+
+# Docker images URLs for downloading pre-built images
+# arinax Docker image
+arinax_docker_image_url: "https://cloud.esrf.fr/public.php/dav/files/7qtFP5iP9jiPB2M"
+# flex Docker image
+flex_docker_image_url: "https://cloud.esrf.fr/public.php/dav/files/iAdyarEZmL9odxJ"

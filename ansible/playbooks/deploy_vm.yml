@@ -53,6 +53,14 @@
       changed_when: true
       tags: [conda, setup]
 
+    - name: Set ownership of miniconda directory
+      ansible.builtin.file:
+        path: "{{ install_base_path }}/miniconda"
+        owner: "{{ service_user }}"
+        recurse: true
+      when: not conda_installed.stat.exists
+      tags: [conda, setup]
+
     - name: Initialize conda for bash
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda init bash"
@@ -71,6 +79,7 @@
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda install mamba -n base -c conda-forge -y"
       become_user: "{{ service_user }}"
+      become: false
       when: not mamba_installed.stat.exists
       changed_when: false
       tags: [conda, mamba, bliss]
@@ -158,6 +167,14 @@
       changed_when: false
       tags: [conda, environment]
 
+    - name: Clean mamba cache before BLISS env creation
+      ansible.builtin.command:
+        cmd: "{{ install_base_path }}/miniconda/bin/mamba clean -a -y"
+      become_user: "{{ service_user }}"
+      become: false
+      changed_when: false
+      tags: [conda, environment, bliss, cache]
+
     - name: Create bliss conda environment using Makefile
       ansible.builtin.shell:
         cmd: |
@@ -171,8 +188,6 @@
         TMPDIR: /tmp
       become_user: "{{ service_user }}"
       become: false
-      register: bliss_env_result
-      failed_when: bliss_env_result.rc != 0
       tags: [conda, environment, bliss]
 
     - name: Install blissdemo in development mode
@@ -221,6 +236,48 @@
       tags: [ui, build, frontend, update]
 
     # Docker containers management
+
+    - name: Create directory for Docker images
+      ansible.builtin.file:
+        path: "{{ install_base_path }}/docker-images"
+        state: directory
+        owner: "{{ service_user }}"
+        mode: '0755'
+      tags: [docker, setup]
+
+    - name: Download arinax Docker image from WebDAV
+      ansible.builtin.get_url:
+        url: "{{ arinax_docker_image_url }}"
+        dest: "{{ install_base_path }}/docker-images/arinax.tar"
+        mode: '0644'
+        force: false
+      become_user: "{{ service_user }}"
+      when: arinax_docker_image_url is defined
+      tags: [docker, images]
+
+    - name: Download flex Docker image from WebDAV
+      ansible.builtin.get_url:
+        url: "{{ flex_docker_image_url }}"
+        dest: "{{ install_base_path }}/docker-images/flex.tar"
+        mode: '0644'
+        force: false
+      become_user: "{{ service_user }}"
+      when: flex_docker_image_url is defined
+      tags: [docker, images]
+
+    - name: Load arinax Docker image
+      ansible.builtin.command:
+        cmd: docker load -i "{{ install_base_path }}/docker-images/arinax.tar"
+      when: arinax_docker_image_url is defined
+      changed_when: true
+      tags: [docker, images]
+
+    - name: Load flex Docker image
+      ansible.builtin.command:
+        cmd: docker load -i "{{ install_base_path }}/docker-images/flex.tar"
+      when: flex_docker_image_url is defined
+      changed_when: true
+      tags: [docker, images]
 
     - name: Start Docker containers with docker-compose
       community.docker.docker_compose_v2:
