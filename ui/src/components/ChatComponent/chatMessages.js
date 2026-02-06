@@ -1,11 +1,9 @@
 export function processChatMessageRecord(record, currentUsername) {
   const isSelf = record.username === currentUsername;
 
-  let date = record.date ? new Date(record.date) : new Date();
+  const date = record.date ? new Date(record.date) : new Date();
   if (Number.isNaN(date.getTime())) {
-    // eslint-disable-next-line no-console
-    console.error('Invalid date provided:', record.date);
-    date = new Date(); // Use current date as fallback
+    throw new TypeError('Invalid date');
   }
 
   return {
