@@ -145,8 +145,6 @@ class Server:
             init_harvester_route, mxcube, f"{url_root_prefix}/harvester"
         )
 
-        ResourceHandlerFactory.register_with_server(Server.flask)
-
     @staticmethod
     def emit(*args, **kwargs):
         Server.flask_socketio.emit(*args, **kwargs)

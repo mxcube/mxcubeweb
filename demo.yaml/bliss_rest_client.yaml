@@ -1,0 +1,7 @@
+%YAML 1.2
+---
+
+class: Command.BlissRestCommand.BlissRestCommand
+url: http://localhost:5000
+session_name: demo_session
+timeout: 5

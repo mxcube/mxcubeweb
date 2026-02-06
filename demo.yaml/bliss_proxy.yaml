@@ -1,0 +1,12 @@
+%YAML 1.2
+---
+# BLISS Proxy - Generic access to all BLISS devices with a single file
+
+class: mxcubecore.HardwareObjects.BlissProxy.BlissProxy
+
+commands:
+  - name: bliss_rest
+    type: blissrest
+    url: http://localhost:5000
+    session_name: demo_session
+    timeout: 5
