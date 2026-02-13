@@ -1,7 +1,9 @@
 %YAML 1.2
 ---
-class: ExporterNStateMockup.ExporterNStateMockup
+class: ExporterNState.ExporterNState
 configuration:
-  use_hwstate: true
-  username: beamstop
-  values: '{"OUT": "OFF", "IN": "BEAM"}'
+  exporter_address: localhost:9002
+  state_channel_name: HardwareState
+  username: Beamstop
+  value_channel_name: BeamstopPosition
+  values: '{"IN": "BEAM", "OUT": "OFF", "PARK": "PARK", "TRANSFER": "TRANSFER"}'

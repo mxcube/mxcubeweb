@@ -1,9 +1,9 @@
 %YAML 1.2
 ---
-class: MicrodiffZoomMockup.MicrodiffZoomMockup
+class: MicrodiffZoom.MicrodiffZoom
 configuration:
-  exporter_address: 130.235.94.124:9001
-  motor_name: zoom
+  actuator_name: Zoom
+  exporter_address: localhost:9002
+  state_channel_name: ZoomState
   username: zoom
-  values: '{"LEVEL1": 1, "LEVEL2": 2, "LEVEL3": 3, "LEVEL4": 4, "LEVEL5": 5, "LEVEL6":
-    6}'
+  value_channel_name: CoaxialCameraZoomValue

@@ -1,0 +1,33 @@
+[Unit]
+Description=Bliss Demo Servers ({{ vm_context }})
+After=network.target
+Before=bliss-rest-{{ vm_context }}.service
+
+[Service]
+Type=simple
+User={{ service_user }}
+Group=esrfusers
+WorkingDirectory={{ install_base_path }}/bliss
+
+# Environment variables
+Environment="BEACON_HOST=localhost:10001"
+Environment="TANGO_HOST=localhost:10000"
+Environment="LIMA_SIMULATOR_CONDA_ENV=bliss_dev"
+Environment="LIMA2_SIMULATOR_CONDA_ENV=bliss_dev"
+Environment="MOSCA_SIMULATOR_CONDA_ENV=bliss_dev"
+
+# Start command - activate conda environment and run demo servers
+# Using --no-capture-output to preserve environment variables
+ExecStart={{ install_base_path }}/miniconda/bin/conda run --no-capture-output -n bliss_dev python -m blissdemo.apps.demo_servers
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bliss-demo-servers-{{ vm_context }}
+
+[Install]
+WantedBy=multi-user.target

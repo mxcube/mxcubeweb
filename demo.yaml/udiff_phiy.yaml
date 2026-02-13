@@ -1,9 +1,8 @@
 %YAML 1.2
 ---
-class: MotorMockup.MotorMockup
+class: ExporterMotor.ExporterMotor
 configuration:
-  direction: -1
-  exporter_address: 130.235.94.124:9001
-  motor_name: AlignmentY
-  unit: 1e-05
-  username: PhiY
+  actuator_name: AlignmentY
+  exporter_address: localhost:9002
+  tolerance: 0.01
+  username: phiy

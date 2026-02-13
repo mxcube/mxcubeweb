@@ -1,0 +1,51 @@
+---
+# Global variables for MXCubeWeb deployment
+
+service_user: "{{ lookup('env', 'USER') }}"
+service_group: "{{ lookup('env', 'USER') }}"
+
+install_base_path: "/opt/mxcube"
+
+mxcubeweb_config:
+  port: 8081
+
+  host: "0.0.0.0"
+
+conda_base_path: "{{ install_base_path }}/conda"
+conda_env_name: "mxcube"
+python_version: "3.10"
+
+conda_environments:
+  mxcube:
+    conda_packages:
+      - nodejs==20.*
+      - pnpm==9.*
+      - poetry==2.1.3
+      - openldap
+      - ffmpeg
+    pip_packages:
+      - gunicorn
+      - gevent
+
+# Set use_local_repos to true to copy from local paths instead of cloning from GitHub
+use_local_repos: true
+
+# GitHub repositories (used when use_local_repos is false)
+mxcubecore_repo: "https://github.com/mxcube/mxcubecore.git"
+mxcubecore_version: "develop"
+
+mxcubeweb_repo: "https://github.com/mxcube/mxcubeweb.git"
+mxcubeweb_version: "develop"
+
+# Local repository paths (used when use_local_repos is true)
+local_mxcubecore_path: "../../../mxcubecore"
+local_mxcubeweb_path: "../../../"
+local_bliss_path: "../../../bliss"
+
+# Bliss repository (used when use_local_repos is false)
+bliss_repo: "https://gitlab.esrf.fr/bliss/bliss.git"
+bliss_version: "master"
+
+# Docker images URLs for downloading pre-built images
+arinax_docker_image_url: "https://cloud.esrf.fr/public.php/dav/files/7qtFP5iP9jiPB2M"
+flex_docker_image_url: "https://cloud.esrf.fr/public.php/dav/files/iAdyarEZmL9odxJ"

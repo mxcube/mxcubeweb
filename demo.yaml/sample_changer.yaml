@@ -1,4 +1,8 @@
 %YAML 1.2
 ---
-class: SampleChangerMockup.SampleChangerMockup
-configuration: {}
+class: EMBLFlexHCD.EMBLFlexHCD
+
+configuration:
+  exporter_address: localhost:9001
+  sc3_pucks: False
+  username: sample_changer
