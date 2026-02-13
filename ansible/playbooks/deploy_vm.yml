@@ -281,7 +281,7 @@
 
     - name: Start Docker containers with docker-compose
       community.docker.docker_compose_v2:
-        project_src: "{{ install_base_path }}/mxcubeweb/docker"
+        project_src: "{{ install_base_path }}/mxcubeweb/ansible"
         state: present
       become_user: "{{ service_user }}"
       tags: [docker]
