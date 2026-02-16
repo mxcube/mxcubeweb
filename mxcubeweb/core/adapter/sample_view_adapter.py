@@ -394,7 +394,6 @@ class SampleViewAdapter(AdapterBase):
         return {}
 
     def click(self, x: float, y: float):
-
         if self._ho.current_centring_procedure:
             try:
                 self._ho.image_clicked(x, y)
