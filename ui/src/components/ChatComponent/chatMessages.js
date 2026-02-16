@@ -1,7 +1,19 @@
 export function processChatMessageRecord(record, currentUsername) {
   const isSelf = record.username === currentUsername;
 
-  const date = record.date ? new Date(record.date) : new Date();
+  let date;
+
+  if (record.date) {
+    date = new Date(record.date);
+    if (Number.isNaN(date.getTime()) && /^\d{2}:\d{2}$/u.test(record.date)) {
+      const [hours, minutes] = record.date.split(':');
+      date = new Date();
+      date.setHours(Number(hours), Number(minutes), 0, 0);
+    }
+  } else {
+    date = new Date();
+  }
+
   if (Number.isNaN(date.getTime())) {
     throw new TypeError('Invalid date');
   }
