@@ -394,9 +394,6 @@ class SampleViewAdapter(AdapterBase):
         return {}
 
     def click(self, x: float, y: float):
-        if self._error:
-            msg = "Error while centring, please try again"
-            raise RuntimeError(msg)
 
         if self._ho.current_centring_procedure:
             try:
