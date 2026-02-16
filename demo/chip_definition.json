@@ -2,8 +2,8 @@
     "current": "SMALL_FOIL",
     "available": {
         "OXFORD_CHIP": {
-            "head_type": "CHIP",
-            "holder_type": "KNOWN_GEOMETRY",
+            "head_type": "SSX",
+            "holder_type": "known_geometry",
             "holder_brand": "Oxford Chip",
             "holder_size": [
                 30.0,
@@ -71,8 +71,8 @@
             }
         },
         "SMALL_FOIL": {
-            "head_type": "CHIP",
-            "holder_type": "FREE_GEOMETRY",
+            "head_type": "SSX",
+            "holder_type": "free_geometry",
             "holder_brand": "FOIL",
             "holder_size": [
                 100.0,
@@ -98,8 +98,8 @@
             }
         },
         "BIG_FOIL": {
-            "head_type": "CHIP",
-            "holder_type": "FREE_GEOMETRY",
+            "head_type": "SSX",
+            "holder_type": "free_geometry",
             "holder_brand": "FOIL",
             "holder_size": [
                 100.0,
@@ -125,8 +125,8 @@
             }
         },
         "CUSTOM_FOIL": {
-            "head_type": "CHIP",
-            "holder_type": "FREE_GEOMETRY",
+            "head_type": "SSX",
+            "holder_type": "free_geometry",
             "holder_brand": "FOIL",
             "holder_size": [
                 100.0,

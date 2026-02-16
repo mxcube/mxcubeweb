@@ -2181,14 +2181,14 @@ tango = ["pytango (>=9.3.6,<10.0.0)"]
 
 [[package]]
 name = "mxcubecore"
-version = "1.419.0"
+version = "2.4.0"
 description = "Core libraries for the MXCuBE application"
 optional = false
 python-versions = "<3.12,>=3.10"
 groups = ["main"]
 files = [
-    {file = "mxcubecore-1.419.0-py3-none-any.whl", hash = "sha256:251996c1cb1b024cf12d79ae9fad3eed7d8815b1beb45804e0b89bb454fe589b"},
-    {file = "mxcubecore-1.419.0.tar.gz", hash = "sha256:e755727a055ed97f915119f26804e968a48792cb63d23bf8f6b32cb2308710cb"},
+    {file = "mxcubecore-2.4.0-py3-none-any.whl", hash = "sha256:e9f07119ba73595798cef7f5a88b1a7c55b678fe843f55ee0b90bd60469aafee"},
+    {file = "mxcubecore-2.4.0.tar.gz", hash = "sha256:d976a0e4521c253e29983e14fabd697c440d6eab4f6b89a27a9ff2b40366d17b"},
 ]
 
 [package.dependencies]
@@ -2202,7 +2202,7 @@ jsonschema = ">=4.17.1,<5.0.0"
 lucid3 = ">=3.0.0,<4.0.0"
 lxml = ">=4.9.1,<5.0.0"
 matplotlib = ">=3.6.2,<4.0.0"
-mxcube-video-streamer = ">=1.8.3"
+mxcube-video-streamer = ">=1.8.4"
 numpy = ">=1.23.5,<2.0.0"
 Pillow = ">=10.4.0,<11.0.0"
 psutil = ">=5.9.4,<6.0.0"
@@ -2210,7 +2210,7 @@ py4j = "0.10.9.9"
 pydantic = ">=2.8.2,<2.9.0"
 PyDispatcher = ">=2.0.6,<3.0.0"
 PyTango = ">=9.3.6,<10.0.0"
-python-ldap = ">=3.4.0,<4.0.0"
+python-ldap = ">=3.4.5,<4.0.0"
 requests = ">=2.31.0,<3.0.0"
 "ruamel.yaml" = ">=0.17.21,<0.18.0"
 scipy = ">=1.9.3,<2.0.0"
@@ -4510,4 +4510,4 @@ graylog = ["graypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "35ce4222e8169ce422bddc9c897743dd7cfd52cc9830a2a9b9a9da82356ce420"
+content-hash = "a2f18f43136044bfbe8954a070e54ecb89ebf9a9fa924d6dc702043536ed43bb"

@@ -83,7 +83,7 @@ class BeamlineActionInputModel(BaseModel):
 
 class SampleChangerCommandInputModel(BaseModel):
     cmd: str
-    arguments: str | None
+    arguments: str | float | None
 
 
 class FrontEndStackTraceModel(BaseModel):
