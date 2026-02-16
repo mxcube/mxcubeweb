@@ -2181,14 +2181,14 @@ tango = ["pytango (>=9.3.6,<10.0.0)"]
 
 [[package]]
 name = "mxcubecore"
-version = "2.1.0"
+version = "2.4.0"
 description = "Core libraries for the MXCuBE application"
 optional = false
 python-versions = "<3.12,>=3.10"
 groups = ["main"]
 files = [
-    {file = "mxcubecore-2.1.0-py3-none-any.whl", hash = "sha256:01d0436cbc0fbcc9b72e66d1d3428cdff3e94b26cefcc73c3d55f3bf0e71d3a0"},
-    {file = "mxcubecore-2.1.0.tar.gz", hash = "sha256:4ea0b53a2d10534e3b67eebf8b3d3be748c48da758231aa7804db95d5e41e159"},
+    {file = "mxcubecore-2.4.0-py3-none-any.whl", hash = "sha256:e9f07119ba73595798cef7f5a88b1a7c55b678fe843f55ee0b90bd60469aafee"},
+    {file = "mxcubecore-2.4.0.tar.gz", hash = "sha256:d976a0e4521c253e29983e14fabd697c440d6eab4f6b89a27a9ff2b40366d17b"},
 ]
 
 [package.dependencies]
@@ -4510,4 +4510,4 @@ graylog = ["graypy"]
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.10,<3.12"
-content-hash = "27bc2415d2cded312fab59b9d48dacb4315a349097cc7ef0005f85fe9e0c9805"
+content-hash = "a2f18f43136044bfbe8954a070e54ecb89ebf9a9fa924d6dc702043536ed43bb"
