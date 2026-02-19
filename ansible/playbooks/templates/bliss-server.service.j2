@@ -1,0 +1,25 @@
+[Unit]
+Description=Bliss Demo Servers ({{ vm_context }})
+After=network.target
+Before=bliss-session-{{ vm_context }}.service
+
+[Service]
+Type=simple
+User={{ service_user }}
+Group=esrfusers
+WorkingDirectory={{ install_base_path }}/bliss
+
+# Start command - activate conda environment and run demo servers
+ExecStart=/bin/bash -c 'HOSTNAME=$(hostname) && export BEACON_HOST=$HOSTNAME:10001 && export TANGO_HOST=$HOSTNAME:10000 && source {{ install_base_path }}/miniconda/bin/activate bliss_dev && python -m blissdemo.apps.demo_servers --no-detectors'
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bliss-server-{{ vm_context }}
+
+[Install]
+WantedBy=multi-user.target

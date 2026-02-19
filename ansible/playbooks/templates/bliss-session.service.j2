@@ -1,0 +1,28 @@
+[Unit]
+Description=Bliss Demo Session ({{ vm_context }})
+After=network.target bliss-server-{{ vm_context }}.service
+Wants=bliss-server-{{ vm_context }}.service
+
+[Service]
+Type=simple
+User={{ service_user }}
+Group=esrfusers
+WorkingDirectory={{ install_base_path }}/bliss
+
+# Start command - activate conda environment and run bliss demo session
+ExecStart=/bin/bash -c 'HOSTNAME=$(hostname) && export BEACON_HOST=$HOSTNAME:10001 && export TANGO_HOST=$HOSTNAME:10000 && source {{ install_base_path }}/miniconda/bin/activate bliss_dev && bliss-demo-session'
+
+# Give demo servers time to start
+ExecStartPre=/bin/sleep 10
+
+# Restart policy
+Restart=on-failure
+RestartSec=15
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=bliss-session-{{ vm_context }}
+
+[Install]
+WantedBy=multi-user.target

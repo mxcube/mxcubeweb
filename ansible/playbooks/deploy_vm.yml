@@ -245,7 +245,7 @@
         mode: '0755'
       tags: [docker, setup]
 
-    - name: Download arinax Docker image from WebDAV
+    - name: Download arinax Docker image
       ansible.builtin.get_url:
         url: "{{ arinax_docker_image_url }}"
         dest: "{{ install_base_path }}/docker-images/arinax.tar"
@@ -255,7 +255,7 @@
       when: arinax_docker_image_url is defined
       tags: [docker, images]
 
-    - name: Download flex Docker image from WebDAV
+    - name: Download flex Docker image
       ansible.builtin.get_url:
         url: "{{ flex_docker_image_url }}"
         dest: "{{ install_base_path }}/docker-images/flex.tar"
@@ -303,34 +303,34 @@
         daemon_reload: true
       tags: [service, systemd]
 
-    # Bliss REST API services
-    - name: Create bliss demo servers systemd service
+    # Bliss services
+    - name: Create bliss server systemd service
       ansible.builtin.template:
-        src: templates/bliss-demo-servers.service.j2
-        dest: "/etc/systemd/system/bliss-demo-servers-{{ vm_context }}.service"
+        src: templates/bliss-server.service.j2
+        dest: "/etc/systemd/system/bliss-server-{{ vm_context }}.service"
         mode: '0644'
       notify: Reload systemd
       tags: [service, systemd, bliss]
 
-    - name: Create bliss REST API systemd service
+    - name: Create bliss session systemd service
       ansible.builtin.template:
-        src: templates/bliss-rest.service.j2
-        dest: "/etc/systemd/system/bliss-rest-{{ vm_context }}.service"
+        src: templates/bliss-session.service.j2
+        dest: "/etc/systemd/system/bliss-session-{{ vm_context }}.service"
         mode: '0644'
       notify: Reload systemd
       tags: [service, systemd, bliss]
 
-    - name: Enable and start Bliss demo servers service
+    - name: Enable and start Bliss server service
       ansible.builtin.systemd:
-        name: "bliss-demo-servers-{{ vm_context }}"
+        name: "bliss-server-{{ vm_context }}"
         enabled: true
         state: started
         daemon_reload: true
       tags: [service, systemd, bliss]
 
-    - name: Enable and start Bliss REST API service
+    - name: Enable and start Bliss session service
       ansible.builtin.systemd:
-        name: "bliss-rest-{{ vm_context }}"
+        name: "bliss-session-{{ vm_context }}"
         enabled: true
         state: started
         daemon_reload: true
@@ -342,8 +342,8 @@
           - " Deployment complete for {{ vm_context }}"
           - " Installation path: {{ install_base_path }}"
           - " MXCubeWeb service: mxcubeweb-{{ vm_context }}"
-          - " Bliss demo servers: bliss-demo-servers-{{ vm_context }}"
-          - " Bliss REST API: bliss-rest-{{ vm_context }}"
+          - " Bliss server: bliss-server-{{ vm_context }}"
+          - " Bliss session: bliss-session-{{ vm_context }}"
           - " Check status: systemctl status mxcubeweb-{{ vm_context }}"
           - " View logs: journalctl -u mxcubeweb-{{ vm_context }} -f"
           - " Bliss REST API: http://{{ ansible_hostname }}:5000/api"
