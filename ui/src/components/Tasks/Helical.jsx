@@ -311,7 +311,7 @@ export default connect((state) => {
       resolution: toFixed(state, 'resolution'),
       energy: toFixed(state, 'energy'),
       transmission: toFixed(state, 'transmission'),
-      osc_start: toFixed(state, 'diffractometer.phi', 'osc_start'),
+      osc_start: toFixed(state, 'diffractometer.omega', 'osc_start'),
     },
   };
 })(HelicalForm);

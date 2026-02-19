@@ -386,6 +386,9 @@ export default connect((state) => {
       ].acq_parameters.osc_range;
   }
 
+  const currentSampleId =
+    state.taskForm.sampleIds.length === 1 ? state.taskForm.sampleIds[0] : null;
+
   const {
     cellA,
     cellAlpha,
@@ -394,7 +397,7 @@ export default connect((state) => {
     cellC,
     cellGamma,
     crystalSpaceGroup,
-  } = state.sampleGrid.sampleList[state.queue.currentSampleID] ?? {};
+  } = state.sampleGrid.sampleList[currentSampleId] ?? {};
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -416,7 +419,7 @@ export default connect((state) => {
       cellBeta,
       cellC,
       cellGamma,
-      crystalSpaceGroup,
+      space_group: crystalSpaceGroup,
     },
   };
 })(DataCollectionForm);

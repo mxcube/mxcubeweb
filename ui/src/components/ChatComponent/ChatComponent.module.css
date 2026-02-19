@@ -25,16 +25,9 @@
   user-select: none;
 }
 
-.widgetContainerOpen {
+.widgetContainer[data-open] {
+  display: flex;
   bottom: 90px;
-}
-
-.widgetContainerClosed {
-  bottom: 20px;
-}
-
-.hidden {
-  display: none;
 }
 
 .conversationContainer {
@@ -153,18 +146,13 @@
   height: 60px;
   border-radius: 50%;
   background-color: #35cce6;
-  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M21 15a2 2 0 0 1-2 2H8l-5 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: 28px 28px;
-  display: block;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  color: white;
   box-shadow: 0 2px 10px 1px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease;
-}
-
-.launcherIconOpen {
-  background-image: url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='white' d='M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z'/%3E%3C/svg%3E");
-  transform: rotate(90deg);
 }
 
 .badge {

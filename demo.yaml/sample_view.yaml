@@ -2,6 +2,10 @@
 ---
 class: SampleView.SampleView
 configuration:
+  centring_motors: ["omega", "phiy", "phiz", "sampx", "sampy"]
+  motor_directions: {"phiy": -1}
+  centring_reference_position: {"phiz": 0.099}
+  rotation_reference: {"name": "phiz", "script": "Change_AlignmentZ"}
   hide_grid_threshold: 5
 objects:
   camera: md_camera.yaml

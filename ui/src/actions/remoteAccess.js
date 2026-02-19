@@ -12,7 +12,6 @@ import {
   sendUpdateNickname,
   sendUpdateTimeoutGivesControl,
 } from '../api/remoteAccess';
-import { processChatMessageRecord } from '../components/ChatComponent/chatMessages';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
 import { showWaitDialog } from './waitDialog';
@@ -110,22 +109,8 @@ export function updateTimeoutGivesControl(timeoutGivesControl) {
   };
 }
 
-export function setChatMessages(messages) {
-  return { type: 'SET_CHAT_MESSAGES', messages };
-}
-
 export function addChatMessage(message) {
   return { type: 'ADD_CHAT_MESSAGE', message };
-}
-
-export function processFetchedChatMessages(fetchedMessages, username) {
-  return (dispatch) => {
-    const built = fetchedMessages.map((entry) =>
-      processChatMessageRecord(entry, username),
-    );
-
-    dispatch(setChatMessages(built));
-  };
 }
 
 export function sendChatMessage(message, username) {
@@ -147,13 +132,8 @@ export function sendChatMessage(message, username) {
 }
 
 export function markAllAsRead() {
-  return async (dispatch, getState) => {
-    const { messages } = getState().remoteAccess;
-
-    const updatedMessages = messages.map((msg) => ({ ...msg, read: true }));
-
-    dispatch(setChatMessages(updatedMessages));
-
+  return async (dispatch) => {
+    dispatch({ type: 'MARK_ALL_READ' });
     await sendSetAllMessagesRead();
   };
 }

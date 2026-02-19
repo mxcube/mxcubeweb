@@ -20,7 +20,7 @@ sample_view_motors:
   id: sample_view_motors
   components:
     - label: Omega
-      attribute: diffractometer.phi
+      attribute: diffractometer.omega
       role: omega
       step: 90
       precision: 2
@@ -38,7 +38,7 @@ sample_view_motors:
       precision: 1
       suffix: °
     - label: X
-      attribute: diffractometer.phix
+      attribute: diffractometer.focus
       role: phix
       step: 0.1
       precision: 3

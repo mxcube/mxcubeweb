@@ -43,12 +43,12 @@ function warn(values, props) {
   }
 
   const phiPrecision =
-    props.components.find((el) => el.attribute === 'diffractometer.phi')
+    props.components.find((el) => el.attribute === 'diffractometer.omega')
       ?.precision ?? 2;
 
   if (
     Number.parseFloat(
-      props.beamline.hardwareObjects['diffractometer.phi'].value.toFixed(
+      props.beamline.hardwareObjects['diffractometer.omega'].value.toFixed(
         phiPrecision,
       ),
     ) !==

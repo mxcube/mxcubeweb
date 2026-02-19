@@ -103,7 +103,7 @@ const INITIAL_STATE = {
   },
   // motors: {
   //   focus: { position: 0, state: 0, limits: [0, 1] },
-  //   phi: { position: 0, state: 0, limits: [0, 1] },
+  //   omega: { position: 0, state: 0, limits: [0, 1] },
   //   phiy: { position: 0, state: 0, limits: [0, 1] },
   //   phiz: { position: 0, state: 0, limits: [0, 1] },
   //   sampx: { position: 0, state: 0, limits: [0, 1] },
