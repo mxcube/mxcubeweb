@@ -220,7 +220,7 @@ function sampleGridReducer(state = INITIAL_STATE, action = {}) {
     }
     case 'UPDATE_SAMPLE_STATE': {
       const sampleList = { ...state.sampleList };
-      sampleList[action.sampleData.sampleID].sc_state = action.sampleData.state
+      sampleList[action.sampleData.sampleID].sc_state = action.sampleData.state;
 
       return { ...state, sampleList };
     }

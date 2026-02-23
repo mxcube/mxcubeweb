@@ -106,8 +106,6 @@ class SampleChangerAdapter(AdapterBase):
                 namespace="/hwr",
             )
 
-            self._sc_contents_update()
-
             self._sc_load_ready(address)
         except Exception:
             logging.getLogger("HWR").exception("Error setting loaded sample")
@@ -130,19 +128,19 @@ class SampleChangerAdapter(AdapterBase):
 
         self.app.server.emit("sc", msg, namespace="/hwr")
 
-    def _sample_state_update(self, sample):
-        sample_data = {
-            "sampleID": sample.get_address(),
-            "location": sample.get_address(),
-            "state": sample.state
-        }
+    def _sample_state_update(self, sample=None):
+        if sample:
+            sample_data = {
+                "sampleID": sample.get_address(),
+                "location": sample.get_address(),
+                "state": sample.state,
+            }
 
-        self.app.server.emit(
-            "sc_sample_state_update",
-            {"sample": sample_data},
-            namespace="/hwr",
-        )
-
+            self.app.server.emit(
+                "sc_sample_state_update",
+                {"sample": sample_data},
+                namespace="/hwr",
+            )
 
     def _sc_maintenance_update(self, *args):
         if len(args) == 3:

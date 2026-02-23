@@ -33,14 +33,11 @@ import {
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
 import { addChatMessage, getRaState } from './actions/remoteAccess';
 import {
-  setContents,
   setLoadedSample,
   setSCGlobalState,
   setSCState,
 } from './actions/sampleChanger';
-import {
-  updateSampleState
-} from './actions/sampleGrid';
+import { updateSampleState } from './actions/sampleGrid';
 import {
   saveMotorPosition,
   setBeamInfo,

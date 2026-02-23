@@ -8,9 +8,7 @@ export default function SampleInformation({ sampleData = {} }) {
           <div className="row">
             <span className="col-sm-6">State :</span>
             <span className="col-sm-6">
-              <strong>
-                {sampleData?.sc_state?.replaceAll('_', ' ')}
-              </strong>
+              <strong>{sampleData?.sc_state?.replaceAll('_', ' ')}</strong>
             </span>
           </div>
           <div className="row">
@@ -23,21 +21,15 @@ export default function SampleInformation({ sampleData = {} }) {
           </div>
           <div className="row">
             <span className="col-sm-6">Puck barcode :</span>
-            <span className="col-sm-6">
-              {sampleData?.puck_barcode}
-            </span>
+            <span className="col-sm-6">{sampleData?.puck_barcode}</span>
           </div>
           <div className="row">
             <span className="col-sm-6">puck type :</span>
-            <span className="col-sm-6">
-              {sampleData?.puck_type}
-            </span>
+            <span className="col-sm-6">{sampleData?.puck_type}</span>
           </div>
           <div className="row">
             <span className="col-sm-6">Sample barcode :</span>
-            <span className="col-sm-6">
-              {sampleData?.sample_barcode}
-            </span>
+            <span className="col-sm-6">{sampleData?.sample_barcode}</span>
           </div>
           {sampleData.limsID && (
             <>
