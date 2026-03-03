@@ -42,6 +42,7 @@
   animation: fade 2s 2s forwards;
   opacity: 1;
   font-weight: bold;
+  white-space: pre-line;
 }
 
 .videoCanvasWrapper {

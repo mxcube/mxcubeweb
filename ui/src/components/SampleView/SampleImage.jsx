@@ -60,7 +60,6 @@ class SampleImage extends React.Component {
     this.configureGrid = this.configureGrid.bind(this);
     this.updateGridResults = this.updateGridResults.bind(this);
     this.selectedGrid = this.selectedGrid.bind(this);
-    this.centringMessage = this.centringMessage.bind(this);
     this.selectShape = this.selectShape.bind(this);
     this.deSelectShape = this.deSelectShape.bind(this);
     this.clearSelection = this.clearSelection.bind(this);
@@ -737,25 +736,6 @@ class SampleImage extends React.Component {
     this.props.updateShapes([grid]);
   }
 
-  centringMessage() {
-    let result = null;
-
-    if (this.props.videoMessageOverlay.show) {
-      result = (
-        <div
-          dangerouslySetInnerHTML={{
-            __html: this.props.videoMessageOverlay.msg,
-          }}
-          key={this.props.clickCentringClicksLeft}
-          id="video-message-overlay"
-          className={styles.videoMessageOverlay}
-        />
-      );
-    }
-
-    return result;
-  }
-
   renderSampleView() {
     const {
       imageRatio,
@@ -892,7 +872,15 @@ class SampleImage extends React.Component {
             </div>
 
             <SampleControls canvas={this.canvas} />
-            <div>{this.centringMessage()}</div>
+            {this.props.videoMessageOverlay.show && (
+              <div
+                key={this.props.clickCentringClicksLeft}
+                id="video-message-overlay"
+                className={styles.videoMessageOverlay}
+              >
+                {this.props.videoMessageOverlay.msg}
+              </div>
+            )}
           </div>
         </div>
       </div>
