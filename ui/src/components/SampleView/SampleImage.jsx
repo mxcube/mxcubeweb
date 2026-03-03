@@ -533,20 +533,20 @@ class SampleImage extends React.Component {
       const [cellIdxX, cellIdxY] = this.drawGridPlugin.getClickedCellIndex(
         shapeData,
         option.target,
-        option.pointer,
+        option.e,
       );
 
       const imgNum = this.drawGridPlugin.countCells(
         shapeData.cellCountFun,
-        cellIdxY,
         cellIdxX,
+        cellIdxY,
         shapeData.numRows,
         shapeData.numCols,
       );
 
       const { resultDataPath } = shapeData;
       if (resultDataPath !== undefined) {
-        this.props.displayImage(`${resultDataPath}&img_num=${imgNum}`);
+        this.props.displayImage(resultDataPath, imgNum);
       }
     }
   }
