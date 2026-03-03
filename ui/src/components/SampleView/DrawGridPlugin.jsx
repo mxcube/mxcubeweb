@@ -536,7 +536,7 @@ export default class DrawGridPlugin {
     ) {
       for (let nh = 0; nh < row; nh++) {
         for (let nw = 0; nw < col; nw++) {
-          const index = nw + nh * col + 1;
+          const index = this.countCells(gd.cellCountFun, nw, nh, row, col);
           if (result[index] !== undefined) {
             fillingMatrix[nw][nh] = this.heatMapColorForValue(
               gd,
