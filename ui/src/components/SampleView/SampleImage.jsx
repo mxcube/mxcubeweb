@@ -894,7 +894,8 @@ function mapStateToProps(state) {
     hardwareObjects: state.beamline.hardwareObjects,
     contextMenuVisible: state.contextMenu.show,
     shapes: state.shapes.shapes,
-    cellCounting: state.taskForm.defaultParameters.mesh.cell_counting,
+    cellCounting:
+      state.taskForm.defaultParameters.mesh.acq_parameters.cell_counting,
     busy: state.queue.queueStatus === QUEUE_RUNNING,
     meshResultFormat: state.general.meshResultFormat,
     imageRatio: state.sampleview.sourceScale * state.sampleview.imageRatio, // <=== IMPORTANT!
