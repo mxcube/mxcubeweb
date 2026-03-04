@@ -13,7 +13,7 @@ function validate(values, props) {
   // here we update the resolution limits based on the energy the typed in the form,
   // the limits come from a table sent by the client
 
-  const validFname = /^[\w#\-[\]{}]+$/u.test(props.filename);
+  const validFname = /^[\w-]+$/u.test(props.prefix);
 
   const emptyField = 'field is empty';
 
