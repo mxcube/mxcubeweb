@@ -2,6 +2,7 @@ from typing import ClassVar
 
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore.HardwareObjects.abstract import AbstractDetector
+from pydantic import BaseModel, Field, FilePath
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
@@ -10,6 +11,11 @@ resource_handler_config = ResourceHandlerConfigModel(
     commands=["display_image"],
     attributes=["data", "get_value"],
 )
+
+
+class DisplayImageParams(BaseModel):
+    path: FilePath = Field(description="Path to images' masterfile")
+    img_num: int = Field(description="Index of the image to display")
 
 
 class DetectorAdapter(AdapterBase):
@@ -36,9 +42,10 @@ class DetectorAdapter(AdapterBase):
     def state(self):
         return self._ho.get_state().name.upper()
 
-    def display_image(self, path: str, img_num) -> dict:
+    def display_image(self, params: DisplayImageParams) -> dict:
         """Notify ADXV and/or Braggy of the image to display."""
         res = {"image_url": ""}
+        path, img_num = str(params.path), params.img_num
 
         if path:
             fpath, img = HWR.beamline.detector.get_actual_file_path(path, img_num)

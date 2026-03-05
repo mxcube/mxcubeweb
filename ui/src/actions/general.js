@@ -42,7 +42,7 @@ export function displayImage(path, imgNum) {
       'detector',
       'detector',
       'display_image',
-      { path, imgNum },
+      { path, img_num: imgNum },
     );
     window.open(data.image_url, 'braggy');
   };
