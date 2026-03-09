@@ -161,6 +161,9 @@ class SampleChangerAdapter(AdapterBase):
         )
 
     def _mount_sample(self, sample: SampleInputModel):
+        # Clear sample view from shapes beore mounting the new sample, to avoid
+        # unnecessary updates to shapes while the sample is being un-mounted.
+        HWR.beamline.sample_view.clear_all()
         sc = HWR.beamline.sample_changer
         res = False
 
@@ -213,20 +216,13 @@ class SampleChangerAdapter(AdapterBase):
             logging.getLogger("MX3.HWR").exception("[SC] sample could not be mounted")
             raise RuntimeError(str(ex)) from ex
         else:
-            # Clean up if the new sample was mounted or the current sample was
-            # unmounted and the new one, for some reason, failed to mount
-            if res or (not res and not sc.get_loaded_sample()):
-                HWR.beamline.sample_view.clear_all()
-
+            if sid and current_queue.get(sid, False):
                 # We remove the current sample from the queue, if we are moving
                 # from one sample to another and the current sample is in the queue
 
-                if sid and current_queue.get(sid, False):
-                    node_id = current_queue[sid]["queueID"]
-                    self.app.queue.set_enabled_entry(node_id, False)  # noqa: FBT003
-                    self.app.queue.queue_toggle_sample(
-                        self.app.queue.get_entry(node_id)[1]
-                    )
+                node_id = current_queue[sid]["queueID"]
+                self.app.queue.set_enabled_entry(node_id, False)  # noqa: FBT003
+                self.app.queue.queue_toggle_sample(self.app.queue.get_entry(node_id)[1])
         finally:
             self._sc_load_ready(sample.location)
 
