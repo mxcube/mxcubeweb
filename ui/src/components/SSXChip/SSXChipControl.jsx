@@ -50,11 +50,11 @@ export default class SSXChipControl extends React.Component {
     const chipLayoutList = headConfiguration.available;
 
     const sampleVerticalUiProp = this.props.uiproperties.components.find(
-      (el) => el.role === 'sample_vertical',
+      (el) => el.role === 'sample_lateral',
     );
 
     const sampleHorizontalUiProp = this.props.uiproperties.components.find(
-      (el) => el.role === 'sample_horizontal',
+      (el) => el.role === 'sample_focus',
     );
 
     return (

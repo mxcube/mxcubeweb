@@ -580,10 +580,10 @@ export default class SSXChip extends React.Component {
                   <h5>Current position:</h5>
                   <Row>
                     <Col className="col-sm-auto pe-0">
-                      <MotorInput role="sample_vertical" />
+                      <MotorInput role="sample_lateral" />
                     </Col>
                     <Col className="col-sm-auto pe-0">
-                      <MotorInput role="sample_horizontal" />
+                      <MotorInput role="sample_focus" />
                     </Col>
                   </Row>
                 </div>

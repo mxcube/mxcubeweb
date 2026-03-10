@@ -115,8 +115,8 @@ const INITIAL_STATE = {
   //   kappa: { position: 0, state: 0, limits: [0, 1] },
   //   kappa_phi: { position: 0, state: 0, limits: [0, 1] },
   //   zoom: { position: 0, state: 0, limits: [0, 1] },
-  //   sample_horizontal: { position: 0, state: 0, limits: [0, 1] },
-  //   sample_vertical: { position: 0, state: 0, limits: [0, 1] },
+  //   sample_focus: { position: 0, state: 0, limits: [0, 1] },
+  //   sample_lateral: { position: 0, state: 0, limits: [0, 1] },
   //   beamstop_distance: { position: 0, state: 0, limits: [0, 1] }
   // },
   beamlineActionsList: [],

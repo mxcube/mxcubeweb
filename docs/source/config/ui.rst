@@ -162,8 +162,8 @@ Common roles are:
 * phiz
 * sampx
 * sampy
-* sample_horizontal
-* sample_vertical
+* sample_focus
+* sample_lateral
 * zoom
 * focus
 

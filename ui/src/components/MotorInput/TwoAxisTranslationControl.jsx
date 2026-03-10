@@ -67,11 +67,11 @@ function TwoAxisTranslationControl(props) {
             <Popover.Header as="h3">Sample alignment motors</Popover.Header>
             <Popover.Body>
               <MotorInput
-                role="sample_vertical"
+                role="sample_lateral"
                 idPrefix="TwoAxisTranslationControl"
               />
               <MotorInput
-                role="sample_horizontal"
+                role="sample_focus"
                 idPrefix="TwoAxisTranslationControl"
               />
             </Popover.Body>

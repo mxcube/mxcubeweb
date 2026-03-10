@@ -17,10 +17,10 @@ function MotorControls() {
   );
 
   const verticalMotorProps = motorsProps.find(
-    (c) => c.role === 'sample_vertical',
+    (c) => c.role === 'sample_lateral',
   );
   const horizontalMotorProps = motorsProps.find(
-    (c) => c.role === 'sample_horizontal',
+    (c) => c.role === 'sample_focus',
   );
 
   if (!verticalMotorProps || !horizontalMotorProps) {
