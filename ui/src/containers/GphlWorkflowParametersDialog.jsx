@@ -240,7 +240,7 @@ function GphlWorkflowParametersDialog(props) {
       <Form
         noValidate
         validated={validated}
-        className="m-3"
+        className="m-1"
         onSubmit={(e) => handleSubmit(e)}
       >
         {ui_schema
@@ -249,9 +249,9 @@ function GphlWorkflowParametersDialog(props) {
                 <div
                   className={`${validatedIndexingTable ? styles[rowKey] : ''} ${
                     styles.boxTitle
-                  } mb-5`}
+                  } mb-2`}
                 >
-                  <div className={`${styles.title} p-2`}>
+                  <div className={`${styles.title} p-1`}>
                     {rowKey === 'reffiles'
                       ? schema.properties.reffiles?.title
                       : rowKey === 'indexing_solution'
@@ -292,20 +292,26 @@ function GphlWorkflowParametersDialog(props) {
                         <Col key={ColKey} sm>
                           {ui_schema[rowKey][ColKey]['ui:order'].map(
                             (fieldKey) => (
-                              <Row key={fieldKey} className="mb-3">
-                                <Form.Group as={Col} sm>
-                                  <Form.Label>
-                                    {schema.properties[fieldKey].type !==
-                                      'boolean' &&
-                                      schema.properties[fieldKey].title}
-                                  </Form.Label>
+                              <Form.Group
+                                as={Row}
+                                key={fieldKey}
+                                className="mb-1 align-items-center"
+                              >
+                                <Form.Label
+                                  column
+                                  sm="auto"
+                                  className="text-end pe-1"
+                                  style={{ minWidth: '7rem' }}
+                                >
+                                  {schema.properties[fieldKey].title}
+                                </Form.Label>
+                                <Col>
                                   {schema.properties[fieldKey].type ===
                                   'boolean' ? (
                                     <Form.Check
                                       type="checkbox"
                                       name={fieldKey}
                                       id={fieldKey}
-                                      label={schema.properties[fieldKey].title}
                                       onChange={(e) => handleChange(e)}
                                       checked={formState[fieldKey]}
                                       data-highlight={
@@ -385,8 +391,8 @@ function GphlWorkflowParametersDialog(props) {
                                   <Form.Control.Feedback type="invalid">
                                     {errors ? errors[fieldKey] : null}
                                   </Form.Control.Feedback>
-                                </Form.Group>
-                              </Row>
+                                </Col>
+                              </Form.Group>
                             ),
                           )}
                         </Col>
@@ -420,7 +426,7 @@ function GphlWorkflowParametersDialog(props) {
         <Modal.Title>{formName}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <div className="m-3" id="form-holder">
+        <div className="m-1" id="form-holder">
           {renderFormRow}
         </div>
       </Modal.Body>
