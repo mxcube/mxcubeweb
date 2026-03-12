@@ -291,15 +291,20 @@ function GphlWorkflowParametersDialog(props) {
                       ui_schema[rowKey]['ui:order']?.map((ColKey) => (
                         <Col key={ColKey} sm className={styles.fieldGrid}>
                           {ui_schema[rowKey][ColKey]['ui:order'].map(
-                            (fieldKey) => (
+                            (fieldKey) => {
+                              const fieldTitle = schema.properties[fieldKey].title;
+                              const isEnumNoLabel = !fieldTitle && schema.properties[fieldKey].enum;
+                              return (
                               <Fragment key={fieldKey}>
+                                {!isEnumNoLabel && (
                                 <Form.Label
                                   htmlFor={fieldKey}
-                                  className={`${styles.fieldLabel} text-start`}
+                                  className={`${styles.fieldLabel} text-end`}
                                 >
-                                  {schema.properties[fieldKey].title}
+                                  {fieldTitle}
                                 </Form.Label>
-                                <div>
+                                )}
+                                <div style={isEnumNoLabel ? { gridColumn: '1 / -1' } : undefined}>
                                   {schema.properties[fieldKey].type ===
                                   'boolean' ? (
                                     <Form.Check
@@ -387,7 +392,8 @@ function GphlWorkflowParametersDialog(props) {
                                   </Form.Control.Feedback>
                                 </div>
                               </Fragment>
-                            ),
+                            );
+                            }
                           )}
                         </Col>
                       ))
@@ -415,7 +421,7 @@ function GphlWorkflowParametersDialog(props) {
   }
 
   return (
-    <Modal show={show} onHide={handleAbort} backdrop="static">
+    <Modal show={show} onHide={handleAbort} backdrop="static" contentClassName={styles.resizableModalContent}>
       <Modal.Header closeButton>
         <Modal.Title>{formName}</Modal.Title>
       </Modal.Header>

@@ -31,7 +31,10 @@
 }
 
 .indexingTableC > tbody tr[data-selected] {
+  background-color: #1a6fc4 !important;
+  color: white !important;
   border: 2px dashed #208ff7 !important;
+  font-weight: bold;
 }
 
 .indexingTableC > thead,
@@ -77,6 +80,26 @@
 .fieldLabel {
   white-space: nowrap;
   padding-top: 0.375rem;
+  text-align: right;
+  justify-self: end;
+}
+
+.fieldGrid input[type='number']::-webkit-outer-spin-button,
+.fieldGrid input[type='number']::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.fieldGrid input[type='number'] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.resizableModalContent {
+  resize: both;
+  overflow: auto;
+  min-width: 300px;
+  min-height: 200px;
 }
 
 [data-highlight='HIGHLIGHT'] {
