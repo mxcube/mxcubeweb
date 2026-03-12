@@ -12,6 +12,10 @@
 
 /* .gphlFormRowBox > .crystal_data,
 .gphlFormRowBox > .parameters{ */
+.gphlFormRowBox {
+  margin-bottom: 1rem;
+}
+
 .gphlFormRowBox > .indexing_solution {
   border: #e74444 2.5px dotted !important;
 }
@@ -30,11 +34,14 @@
   width: 100%;
 }
 
-.indexingTableC > tbody tr[data-selected] {
+.indexingTableC > tbody tr[data-selected] td {
   background-color: #1a6fc4 !important;
   color: white !important;
-  border: 2px dashed #208ff7 !important;
   font-weight: bold;
+}
+
+.indexingTableC td[data-cell-highlight='HIGHLIGHT'] {
+  background: #15e684a1;
 }
 
 .indexingTableC > thead,
@@ -69,10 +76,9 @@
   border: none !important;
 }
 
-.fieldGrid {
+.fieldsRow {
   display: grid;
-  grid-template-columns: max-content 1fr;
-  column-gap: 0.5rem;
+  column-gap: 0.75rem;
   row-gap: 0.25rem;
   align-items: center;
 }
@@ -84,13 +90,13 @@
   justify-self: end;
 }
 
-.fieldGrid input[type='number']::-webkit-outer-spin-button,
-.fieldGrid input[type='number']::-webkit-inner-spin-button {
+.fieldsRow input[type='number']::-webkit-outer-spin-button,
+.fieldsRow input[type='number']::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.fieldGrid input[type='number'] {
+.fieldsRow input[type='number'] {
   -moz-appearance: textfield;
   appearance: textfield;
 }

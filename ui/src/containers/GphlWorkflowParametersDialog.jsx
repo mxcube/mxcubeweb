@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { Fragment, useCallback, useEffect, useState } from 'react';
-import { Button, Col, Form, Modal, Row, Stack, Table } from 'react-bootstrap';
+import { useCallback, useEffect, useState } from 'react';
+import { Button, Form, Modal, Row, Stack, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -33,15 +33,15 @@ function renderIndexingTable(indexingTable, selected, onSelectRow) {
             <tr
               key={tdContent}
               data-selected={selected.includes(index) || undefined}
-              data-highlight={
-                indexingTable.highlights[index]
-                  ? indexingTable.highlights[index][0]
-                  : undefined
-              }
               onClick={() => onSelectRow(index, tdContent)}
             >
               <td className="text-center">{index + 1}</td>
-              <td className={`${styles.specialTdTh} text-center`}>
+              <td
+                className={`${styles.specialTdTh} text-center`}
+                data-cell-highlight={
+                  indexingTable.highlights[index]?.[0] || undefined
+                }
+              >
                 <pre className="align-items-center">{tdContent}</pre>
               </td>
               <td className={styles.specialTdTh} />
@@ -236,6 +236,117 @@ function GphlWorkflowParametersDialog(props) {
 
     formName = schema.title;
 
+    function renderGridFields(rowKey) {
+      const colKeys = ui_schema[rowKey]['ui:order'] || [];
+      if (colKeys.length === 0) return null;
+      const maxFieldRows = Math.max(
+        ...colKeys.map((ck) => ui_schema[rowKey][ck]['ui:order'].length),
+      );
+      const items = [];
+      for (let rowIdx = 0; rowIdx < maxFieldRows; rowIdx++) {
+        for (const ColKey of colKeys) {
+          const fieldKey = ui_schema[rowKey][ColKey]['ui:order'][rowIdx];
+          if (!fieldKey) {
+            items.push(<span key={`${ColKey}-${rowIdx}-el`} />);
+            items.push(<span key={`${ColKey}-${rowIdx}-ev`} />);
+          } else {
+            const fieldTitle = schema.properties[fieldKey].title;
+            const isEnumNoLabel = !fieldTitle && schema.properties[fieldKey].enum;
+            if (!isEnumNoLabel) {
+              items.push(
+                <Form.Label
+                  key={`${fieldKey}-label`}
+                  htmlFor={fieldKey}
+                  className={`${styles.fieldLabel} text-end`}
+                >
+                  {fieldTitle}
+                </Form.Label>,
+              );
+            }
+            items.push(
+              <div
+                key={`${fieldKey}-value`}
+                style={isEnumNoLabel ? { gridColumn: 'span 2' } : undefined}
+              >
+                {schema.properties[fieldKey].type === 'boolean' ? (
+                  <Form.Check
+                    type="checkbox"
+                    name={fieldKey}
+                    id={fieldKey}
+                    onChange={(e) => handleChange(e)}
+                    checked={formState[fieldKey]}
+                    data-highlight={
+                      schema.properties[fieldKey].highlight || undefined
+                    }
+                  />
+                ) : schema.properties[fieldKey].enum ? (
+                  <Form.Select
+                    name={fieldKey}
+                    id={fieldKey}
+                    value={formState[fieldKey]}
+                    onChange={(e) => handleChange(e)}
+                    data-highlight={
+                      schema.properties[fieldKey].highlight || undefined
+                    }
+                  >
+                    {schema.properties[fieldKey].enum.map((val) => (
+                      <option key={val} value={val}>
+                        {val}
+                      </option>
+                    ))}
+                  </Form.Select>
+                ) : schema.properties[fieldKey].type === 'textarea' ? (
+                  <Form.Control
+                    name={fieldKey}
+                    id={fieldKey}
+                    onChange={(e) => handleChange(e)}
+                    data-highlight={
+                      schema.properties[fieldKey].highlight || undefined
+                    }
+                    type={schema.properties[fieldKey].type}
+                    as="textarea"
+                    defaultValue={formState[fieldKey]}
+                    readOnly={schema.properties[fieldKey].readOnly}
+                    disabled={schema.properties[fieldKey].readOnly}
+                  />
+                ) : (
+                  <Form.Control
+                    name={fieldKey}
+                    id={fieldKey}
+                    onChange={(e) => handleChange(e)}
+                    data-highlight={
+                      schema.properties[fieldKey].highlight || undefined
+                    }
+                    type={schema.properties[fieldKey].type}
+                    required
+                    step="any"
+                    min={schema.properties[fieldKey].minimum || 'any'}
+                    max={schema.properties[fieldKey].maximum || 'any'}
+                    defaultValue={formState[fieldKey]}
+                    readOnly={schema.properties[fieldKey].readOnly}
+                    disabled={schema.properties[fieldKey].readOnly}
+                  />
+                )}
+                <Form.Control.Feedback type="invalid">
+                  {errors ? errors[fieldKey] : null}
+                </Form.Control.Feedback>
+              </div>,
+            );
+          }
+        }
+      }
+      return (
+        <div
+          className={styles.fieldsRow}
+          style={{
+            gridTemplateColumns: `repeat(${colKeys.length}, max-content 1fr)`,
+          }}
+        >
+          {items}
+        </div>
+      );
+    }
+
     renderFormRow = (
       <Form
         noValidate
@@ -288,115 +399,7 @@ function GphlWorkflowParametersDialog(props) {
                         {schema.properties[rowKey].default}
                       </pre>
                     ) : (
-                      ui_schema[rowKey]['ui:order']?.map((ColKey) => (
-                        <Col key={ColKey} sm className={styles.fieldGrid}>
-                          {ui_schema[rowKey][ColKey]['ui:order'].map(
-                            (fieldKey) => {
-                              const fieldTitle = schema.properties[fieldKey].title;
-                              const isEnumNoLabel = !fieldTitle && schema.properties[fieldKey].enum;
-                              return (
-                              <Fragment key={fieldKey}>
-                                {!isEnumNoLabel && (
-                                <Form.Label
-                                  htmlFor={fieldKey}
-                                  className={`${styles.fieldLabel} text-end`}
-                                >
-                                  {fieldTitle}
-                                </Form.Label>
-                                )}
-                                <div style={isEnumNoLabel ? { gridColumn: '1 / -1' } : undefined}>
-                                  {schema.properties[fieldKey].type ===
-                                  'boolean' ? (
-                                    <Form.Check
-                                      type="checkbox"
-                                      name={fieldKey}
-                                      id={fieldKey}
-                                      onChange={(e) => handleChange(e)}
-                                      checked={formState[fieldKey]}
-                                      data-highlight={
-                                        schema.properties[fieldKey].highlight ||
-                                        undefined
-                                      }
-                                    />
-                                  ) : schema.properties[fieldKey].enum ? (
-                                    <Form.Select
-                                      name={fieldKey}
-                                      id={fieldKey}
-                                      value={formState[fieldKey]}
-                                      onChange={(e) => handleChange(e)}
-                                      data-highlight={
-                                        schema.properties[fieldKey].highlight ||
-                                        undefined
-                                      }
-                                    >
-                                      {schema.properties[fieldKey].enum.map(
-                                        (val) => (
-                                          <option key={val} value={val}>
-                                            {val}
-                                          </option>
-                                        ),
-                                      )}
-                                    </Form.Select>
-                                  ) : // Generic any other textarea
-                                  schema.properties[fieldKey].type ===
-                                    'textarea' ? (
-                                    <Form.Control
-                                      name={fieldKey}
-                                      id={fieldKey}
-                                      onChange={(e) => handleChange(e)}
-                                      data-highlight={
-                                        schema.properties[fieldKey].highlight ||
-                                        undefined
-                                      }
-                                      type={schema.properties[fieldKey].type}
-                                      as="textarea"
-                                      defaultValue={formState[fieldKey]}
-                                      readOnly={
-                                        schema.properties[fieldKey].readOnly
-                                      }
-                                      disabled={
-                                        schema.properties[fieldKey].readOnly
-                                      }
-                                    />
-                                  ) : (
-                                    <Form.Control
-                                      name={fieldKey}
-                                      id={fieldKey}
-                                      onChange={(e) => handleChange(e)}
-                                      data-highlight={
-                                        schema.properties[fieldKey].highlight ||
-                                        undefined
-                                      }
-                                      type={schema.properties[fieldKey].type}
-                                      required
-                                      step="any"
-                                      min={
-                                        schema.properties[fieldKey].minimum ||
-                                        'any'
-                                      }
-                                      max={
-                                        schema.properties[fieldKey].maximum ||
-                                        'any'
-                                      }
-                                      defaultValue={formState[fieldKey]}
-                                      readOnly={
-                                        schema.properties[fieldKey].readOnly
-                                      }
-                                      disabled={
-                                        schema.properties[fieldKey].readOnly
-                                      }
-                                    />
-                                  )}
-                                  <Form.Control.Feedback type="invalid">
-                                    {errors ? errors[fieldKey] : null}
-                                  </Form.Control.Feedback>
-                                </div>
-                              </Fragment>
-                            );
-                            }
-                          )}
-                        </Col>
-                      ))
+                      renderGridFields(rowKey)
                     )}
                   </Row>
                 </div>
