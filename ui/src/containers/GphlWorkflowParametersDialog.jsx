@@ -88,9 +88,13 @@ function GphlWorkflowParametersDialog(props) {
   const tbodyRef = useRef(null);
 
   const updateTableHeight = useCallback(() => {
-    if (!tbodyRef.current || !modalBodyRef.current) return;
+    if (!tbodyRef.current || !modalBodyRef.current) {
+      return
+    };
     const modalContent = modalBodyRef.current.closest('.modal-content');
-    if (!modalContent) return;
+    if (!modalContent) {
+      return
+    };
     const modalHeight = modalContent.clientHeight;
     const naturalHeight = tbodyRef.current.scrollHeight;
     const targetHeight = Math.min(Math.round(modalHeight * 0.3), naturalHeight);
@@ -100,9 +104,13 @@ function GphlWorkflowParametersDialog(props) {
   }, []);
 
   useEffect(() => {
-    if (!show || !modalBodyRef.current) return;
+    if (!show || !modalBodyRef.current) {
+      return
+    };
     const modalContent = modalBodyRef.current.closest('.modal-content');
-    if (!modalContent) return;
+    if (!modalContent) {
+      return
+    };
     const observer = new ResizeObserver(updateTableHeight);
     observer.observe(modalContent);
     return () => observer.disconnect();
@@ -262,7 +270,9 @@ function GphlWorkflowParametersDialog(props) {
 
     function renderGridFields(rowKey) {
       const colKeys = ui_schema[rowKey]['ui:order'] || [];
-      if (colKeys.length === 0) return null;
+      if (colKeys.length === 0) {
+        return null
+      };
       const maxFieldRows = Math.max(
         ...colKeys.map((ck) => ui_schema[rowKey][ck]['ui:order'].length),
       );
