@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Form, Modal, Row, Stack, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -13,7 +13,7 @@ import styles from './WorkflowParametersDialog.module.css';
 
 const uiOptions = 'ui:options';
 
-function renderIndexingTable(indexingTable, selected, onSelectRow) {
+function renderIndexingTable(indexingTable, selected, onSelectRow, tbodyRef) {
   return (
     <Table bordered responsive className={styles.indexingTableC}>
       <thead>
@@ -27,7 +27,7 @@ function renderIndexingTable(indexingTable, selected, onSelectRow) {
           <th className={styles.specialTdTh}> </th>
         </tr>
       </thead>
-      <tbody>
+      <tbody ref={tbodyRef}>
         {indexingTable.content.map((tdContents) =>
           tdContents.map((tdContent, index) => (
             <tr
@@ -83,6 +83,30 @@ function GphlWorkflowParametersDialog(props) {
   const [validated, setValidated] = useState(false);
   const [validatedIndexingTable, setValidatedIndexingTable] = useState(false);
   const [selected, setSelected] = useState([]);
+
+  const modalBodyRef = useRef(null);
+  const tbodyRef = useRef(null);
+
+  const updateTableHeight = useCallback(() => {
+    if (!tbodyRef.current || !modalBodyRef.current) return;
+    const modalContent = modalBodyRef.current.closest('.modal-content');
+    if (!modalContent) return;
+    const modalHeight = modalContent.clientHeight;
+    const naturalHeight = tbodyRef.current.scrollHeight;
+    const targetHeight = Math.min(Math.round(modalHeight * 0.3), naturalHeight);
+    tbodyRef.current.style.height = `${targetHeight}px`;
+    tbodyRef.current.style.overflowY =
+      targetHeight < naturalHeight ? 'auto' : 'hidden';
+  }, []);
+
+  useEffect(() => {
+    if (!show || !modalBodyRef.current) return;
+    const modalContent = modalBodyRef.current.closest('.modal-content');
+    if (!modalContent) return;
+    const observer = new ResizeObserver(updateTableHeight);
+    observer.observe(modalContent);
+    return () => observer.disconnect();
+  }, [show, schema, updateTableHeight]);
 
   const _initFormState = useCallback(() => {
     const dataDict = {};
@@ -309,6 +333,24 @@ function GphlWorkflowParametersDialog(props) {
                     readOnly={schema.properties[fieldKey].readOnly}
                     disabled={schema.properties[fieldKey].readOnly}
                   />
+                ) : schema.properties[fieldKey].type === 'spinbox' ? (
+                  <Form.Control
+                    className={styles.spinboxInput}
+                    name={fieldKey}
+                    id={fieldKey}
+                    onChange={(e) => handleChange(e)}
+                    data-highlight={
+                      schema.properties[fieldKey].highlight || undefined
+                    }
+                    type="number"
+                    required
+                    step={schema.properties[fieldKey].stepsize ?? 1}
+                    min={schema.properties[fieldKey].lowerBound ?? undefined}
+                    max={schema.properties[fieldKey].upperBound ?? undefined}
+                    defaultValue={formState[fieldKey]}
+                    readOnly={schema.properties[fieldKey].readOnly}
+                    disabled={schema.properties[fieldKey].readOnly}
+                  />
                 ) : (
                   <Form.Control
                     name={fieldKey}
@@ -369,13 +411,14 @@ function GphlWorkflowParametersDialog(props) {
                       ? schema.properties.indexing_solution?.title
                       : ui_schema[rowKey]['ui:title']}
                   </div>
-                  <Row>
+                  <Row className="mx-0">
                     {rowKey === 'indexing_solution' ? (
                       ui_schema[rowKey]['ui:widget']?.includes('table') &&
                       renderIndexingTable(
                         ui_schema[rowKey][uiOptions],
                         selected,
                         onSelectRow,
+                        tbodyRef,
                       )
                     ) : rowKey === 'reffiles' ? (
                       // Specific textarea for "reffiles"
@@ -428,7 +471,7 @@ function GphlWorkflowParametersDialog(props) {
       <Modal.Header closeButton>
         <Modal.Title>{formName}</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body ref={modalBodyRef}>
         <div className="m-1" id="form-holder">
           {renderFormRow}
         </div>
