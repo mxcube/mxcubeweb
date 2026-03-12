@@ -31,7 +31,7 @@
 }
 
 .indexingTableC {
-  width: 100%;
+  width: fit-content;
 }
 
 .indexingTableC > tbody tr[data-selected] td {
@@ -53,7 +53,6 @@
 }
 
 .indexingTableC > tbody {
-  height: 200px;
   overflow-y: auto;
 }
 
@@ -90,13 +89,13 @@
   justify-self: end;
 }
 
-.fieldsRow input[type='number']::-webkit-outer-spin-button,
-.fieldsRow input[type='number']::-webkit-inner-spin-button {
+.fieldsRow input[type='number']:not(.spinboxInput)::-webkit-outer-spin-button,
+.fieldsRow input[type='number']:not(.spinboxInput)::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
 
-.fieldsRow input[type='number'] {
+.fieldsRow input[type='number']:not(.spinboxInput) {
   -moz-appearance: textfield;
   appearance: textfield;
 }
@@ -122,4 +121,14 @@
 
 [data-highlight='CHANGED'] {
   background-color: #ffff0063 !important;
+}
+
+.spinboxInput::-webkit-outer-spin-button,
+.spinboxInput::-webkit-inner-spin-button {
+  -webkit-appearance: auto;
+}
+
+.spinboxInput {
+  -moz-appearance: auto;
+  appearance: auto;
 }
