@@ -85,6 +85,34 @@ function GphlWorkflowParametersDialog(props) {
   const [selected, setSelected] = useState([]);
 
   const tbodyRef = useRef(null);
+  const indexingRowRef = useRef(null);
+
+  useEffect(() => {
+    if (!show || !indexingRowRef.current) {
+      return undefined;
+    }
+    const modalContent = indexingRowRef.current.closest('.modal-content');
+    if (!modalContent) {
+      return undefined;
+    }
+    const initialHeight = modalContent.clientHeight;
+    indexingRowRef.current.style.maxHeight = `${Math.round(initialHeight * 0.35)}px`;
+    const observer = new ResizeObserver((entries) => {
+      if (!indexingRowRef.current) {
+        return;
+      }
+      const newHeight = entries[0].contentRect.height;
+      indexingRowRef.current.style.maxHeight =
+        newHeight > initialHeight ? '' : `${Math.round(newHeight * 0.35)}px`;
+    });
+    observer.observe(modalContent);
+    return () => {
+      observer.disconnect();
+      if (indexingRowRef.current) {
+        indexingRowRef.current.style.maxHeight = '';
+      }
+    };
+  }, [show, schema]);
 
   const _initFormState = useCallback(() => {
     const dataDict = {};
@@ -370,12 +398,16 @@ function GphlWorkflowParametersDialog(props) {
       <Form
         noValidate
         validated={validated}
-        className={`m-1 ${styles.formHolder}`}
+        className={`m-1 ${styles.formHolder} ${styles.formPaddedTop}`}
         onSubmit={(e) => handleSubmit(e)}
       >
         {ui_schema
           ? ui_schema['ui:order'].map((rowKey) => (
-              <Row key={rowKey} className={`${styles.gphlFormRowBox}${rowKey === 'indexing_solution' ? ` ${styles.indexingRow}` : ''}`}>
+              <Row
+                key={rowKey}
+                ref={rowKey === 'indexing_solution' ? indexingRowRef : undefined}
+                className={`${styles.gphlFormRowBox}${rowKey === 'indexing_solution' ? ` ${styles.indexingRow}` : ''}`}
+              >
                 <div
                   className={`${validatedIndexingTable ? styles[rowKey] : ''} ${
                     styles.boxTitle

@@ -134,9 +134,14 @@
   overflow: hidden;
 }
 
-/* Indexing solution row: 35% initial height, grows to fill space, shrinks first */
+/* Padding so the first box's title label (top: -0.7em) is not clipped */
+.formPaddedTop {
+  padding-top: 0.75em;
+}
+
+/* Indexing solution row: grows/shrinks freely; JS enforces 35% initial max-height */
 .gphlFormRowBox.indexingRow {
-  flex: 1 1 35%;
+  flex: 1 1 auto;
   min-height: 0;
   overflow: hidden;
   padding-top: 0.75em;
@@ -148,14 +153,14 @@
   height: 100%;
 }
 
-/* boxTitle inside the indexing row: flex column to let the table fill remaining space */
+/* boxTitle inside the indexing row: flex column to let the table fill remaining space.
+   No overflow:hidden here — the title (top:-0.7em) must be visible above the border. */
 .gphlFormRowBox.indexingRow .boxTitle {
   display: flex;
   flex-direction: column;
   height: 100%;
   width: 100%;
   margin-bottom: 0 !important;
-  overflow: hidden;
 }
 
 /* Inner Bootstrap Row (containing the table) fills remaining height after the title label */
