@@ -87,6 +87,16 @@ function GphlWorkflowParametersDialog(props) {
   const tbodyRef = useRef(null);
   const indexingRowRef = useRef(null);
 
+  const setTbodyHeight = useCallback(() => {
+    if (!tbodyRef.current || !indexingRowRef.current) {
+      return;
+    }
+    const rowRect = indexingRowRef.current.getBoundingClientRect();
+    const tbodyRect = tbodyRef.current.getBoundingClientRect();
+    const available = rowRect.bottom - tbodyRect.top;
+    tbodyRef.current.style.height = available > 0 ? `${Math.round(available)}px` : '';
+  }, []);
+
   useEffect(() => {
     if (!show || !indexingRowRef.current) {
       return undefined;
@@ -97,6 +107,7 @@ function GphlWorkflowParametersDialog(props) {
     }
     const initialHeight = modalContent.clientHeight;
     indexingRowRef.current.style.maxHeight = `${Math.round(initialHeight * 0.35)}px`;
+    setTbodyHeight();
     const observer = new ResizeObserver((entries) => {
       if (!indexingRowRef.current) {
         return;
@@ -104,6 +115,7 @@ function GphlWorkflowParametersDialog(props) {
       const newHeight = entries[0].contentRect.height;
       indexingRowRef.current.style.maxHeight =
         newHeight > initialHeight ? '' : `${Math.round(newHeight * 0.35)}px`;
+      setTbodyHeight();
     });
     observer.observe(modalContent);
     return () => {
@@ -112,7 +124,7 @@ function GphlWorkflowParametersDialog(props) {
         indexingRowRef.current.style.maxHeight = '';
       }
     };
-  }, [show, schema]);
+  }, [show, schema, setTbodyHeight]);
 
   const _initFormState = useCallback(() => {
     const dataDict = {};

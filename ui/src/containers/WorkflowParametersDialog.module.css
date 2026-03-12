@@ -33,9 +33,6 @@
 
 .indexingTableC {
   width: fit-content;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .indexingTableC > tbody tr[data-selected] td {
@@ -56,14 +53,8 @@
   display: block;
 }
 
-.indexingTableC > thead {
-  flex: 0 0 auto;
-}
-
 .indexingTableC > tbody {
   overflow-y: auto;
-  flex: 1 1 auto;
-  min-height: 0;
 }
 
 .indexingTableC > tbody td,
@@ -148,31 +139,8 @@
   margin-bottom: 0;
 }
 
-/* Bootstrap Row wrapper inside the indexing row must fill the row's height */
-.gphlFormRowBox.indexingRow > .row {
-  height: 100%;
-}
-
-/* boxTitle inside the indexing row: flex column to let the table fill remaining space.
-   No overflow:hidden here — the title (top:-0.7em) must be visible above the border. */
 .gphlFormRowBox.indexingRow .boxTitle {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  width: 100%;
   margin-bottom: 0 !important;
-}
-
-/* Inner Bootstrap Row (containing the table) fills remaining height after the title label */
-.gphlFormRowBox.indexingRow .boxTitle > .row {
-  flex: 1 1 auto;
-  min-height: 0;
-  overflow: hidden;
-}
-
-/* table-responsive wrapper must fill its row */
-.gphlFormRowBox.indexingRow .table-responsive {
-  height: 100%;
 }
 
 /* Buttons row must not shrink */
