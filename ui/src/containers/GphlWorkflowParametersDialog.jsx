@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useCallback, useEffect, useState } from 'react';
+import { Fragment, useCallback, useEffect, useState } from 'react';
 import { Button, Col, Form, Modal, Row, Stack, Table } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -289,23 +289,17 @@ function GphlWorkflowParametersDialog(props) {
                       </pre>
                     ) : (
                       ui_schema[rowKey]['ui:order']?.map((ColKey) => (
-                        <Col key={ColKey} sm>
+                        <Col key={ColKey} sm className={styles.fieldGrid}>
                           {ui_schema[rowKey][ColKey]['ui:order'].map(
                             (fieldKey) => (
-                              <Form.Group
-                                as={Row}
-                                key={fieldKey}
-                                className="mb-1 align-items-center"
-                              >
+                              <Fragment key={fieldKey}>
                                 <Form.Label
-                                  column
-                                  sm="auto"
-                                  className="text-end pe-1"
-                                  style={{ minWidth: '7rem' }}
+                                  htmlFor={fieldKey}
+                                  className={`${styles.fieldLabel} text-start`}
                                 >
                                   {schema.properties[fieldKey].title}
                                 </Form.Label>
-                                <Col>
+                                <div>
                                   {schema.properties[fieldKey].type ===
                                   'boolean' ? (
                                     <Form.Check
@@ -391,8 +385,8 @@ function GphlWorkflowParametersDialog(props) {
                                   <Form.Control.Feedback type="invalid">
                                     {errors ? errors[fieldKey] : null}
                                   </Form.Control.Feedback>
-                                </Col>
-                              </Form.Group>
+                                </div>
+                              </Fragment>
                             ),
                           )}
                         </Col>
