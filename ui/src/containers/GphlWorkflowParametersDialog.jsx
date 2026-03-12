@@ -105,12 +105,12 @@ function GphlWorkflowParametersDialog(props) {
 
   useEffect(() => {
     if (!show || !modalBodyRef.current) {
-      return
-    };
+      return undefined;
+    }
     const modalContent = modalBodyRef.current.closest('.modal-content');
     if (!modalContent) {
-      return
-    };
+      return undefined;
+    }
     const observer = new ResizeObserver(updateTableHeight);
     observer.observe(modalContent);
     return () => observer.disconnect();
@@ -268,11 +268,93 @@ function GphlWorkflowParametersDialog(props) {
 
     formName = schema.title;
 
-    function renderGridFields(rowKey) {
+    const renderFieldControl = (fieldKey, isEnumNoLabel) => {
+      const fieldProps = schema.properties[fieldKey];
+      const highlight = fieldProps.highlight || undefined;
+      return (
+        <div
+          key={`${fieldKey}-value`}
+          style={isEnumNoLabel ? { gridColumn: 'span 2' } : undefined}
+        >
+          {fieldProps.type === 'boolean' ? (
+            <Form.Check
+              type="checkbox"
+              name={fieldKey}
+              id={fieldKey}
+              onChange={(e) => handleChange(e)}
+              checked={formState[fieldKey]}
+              data-highlight={highlight}
+            />
+          ) : fieldProps.enum ? (
+            <Form.Select
+              name={fieldKey}
+              id={fieldKey}
+              value={formState[fieldKey]}
+              onChange={(e) => handleChange(e)}
+              data-highlight={highlight}
+            >
+              {fieldProps.enum.map((val) => (
+                <option key={val} value={val}>
+                  {val}
+                </option>
+              ))}
+            </Form.Select>
+          ) : fieldProps.type === 'textarea' ? (
+            <Form.Control
+              name={fieldKey}
+              id={fieldKey}
+              onChange={(e) => handleChange(e)}
+              data-highlight={highlight}
+              type={fieldProps.type}
+              as="textarea"
+              defaultValue={formState[fieldKey]}
+              readOnly={fieldProps.readOnly}
+              disabled={fieldProps.readOnly}
+            />
+          ) : fieldProps.type === 'spinbox' ? (
+            <Form.Control
+              className={styles.spinboxInput}
+              name={fieldKey}
+              id={fieldKey}
+              onChange={(e) => handleChange(e)}
+              data-highlight={highlight}
+              type="number"
+              required
+              step={fieldProps.stepsize ?? 1}
+              min={fieldProps.lowerBound ?? undefined}
+              max={fieldProps.upperBound ?? undefined}
+              defaultValue={formState[fieldKey]}
+              readOnly={fieldProps.readOnly}
+              disabled={fieldProps.readOnly}
+            />
+          ) : (
+            <Form.Control
+              name={fieldKey}
+              id={fieldKey}
+              onChange={(e) => handleChange(e)}
+              data-highlight={highlight}
+              type={fieldProps.type}
+              required
+              step="any"
+              min={fieldProps.minimum || 'any'}
+              max={fieldProps.maximum || 'any'}
+              defaultValue={formState[fieldKey]}
+              readOnly={fieldProps.readOnly}
+              disabled={fieldProps.readOnly}
+            />
+          )}
+          <Form.Control.Feedback type="invalid">
+            {errors ? errors[fieldKey] : null}
+          </Form.Control.Feedback>
+        </div>
+      );
+    };
+
+    const renderGridFields = (rowKey) => {
       const colKeys = ui_schema[rowKey]['ui:order'] || [];
       if (colKeys.length === 0) {
-        return null
-      };
+        return null;
+      }
       const maxFieldRows = Math.max(
         ...colKeys.map((ck) => ui_schema[rowKey][ck]['ui:order'].length),
       );
@@ -281,8 +363,7 @@ function GphlWorkflowParametersDialog(props) {
         for (const ColKey of colKeys) {
           const fieldKey = ui_schema[rowKey][ColKey]['ui:order'][rowIdx];
           if (!fieldKey) {
-            items.push(<span key={`${ColKey}-${rowIdx}-el`} />);
-            items.push(<span key={`${ColKey}-${rowIdx}-ev`} />);
+            items.push(<span key={`${ColKey}-${rowIdx}-el`} />, <span key={`${ColKey}-${rowIdx}-ev`} />);
           } else {
             const fieldTitle = schema.properties[fieldKey].title;
             const isEnumNoLabel = !fieldTitle && schema.properties[fieldKey].enum;
@@ -297,93 +378,7 @@ function GphlWorkflowParametersDialog(props) {
                 </Form.Label>,
               );
             }
-            items.push(
-              <div
-                key={`${fieldKey}-value`}
-                style={isEnumNoLabel ? { gridColumn: 'span 2' } : undefined}
-              >
-                {schema.properties[fieldKey].type === 'boolean' ? (
-                  <Form.Check
-                    type="checkbox"
-                    name={fieldKey}
-                    id={fieldKey}
-                    onChange={(e) => handleChange(e)}
-                    checked={formState[fieldKey]}
-                    data-highlight={
-                      schema.properties[fieldKey].highlight || undefined
-                    }
-                  />
-                ) : schema.properties[fieldKey].enum ? (
-                  <Form.Select
-                    name={fieldKey}
-                    id={fieldKey}
-                    value={formState[fieldKey]}
-                    onChange={(e) => handleChange(e)}
-                    data-highlight={
-                      schema.properties[fieldKey].highlight || undefined
-                    }
-                  >
-                    {schema.properties[fieldKey].enum.map((val) => (
-                      <option key={val} value={val}>
-                        {val}
-                      </option>
-                    ))}
-                  </Form.Select>
-                ) : schema.properties[fieldKey].type === 'textarea' ? (
-                  <Form.Control
-                    name={fieldKey}
-                    id={fieldKey}
-                    onChange={(e) => handleChange(e)}
-                    data-highlight={
-                      schema.properties[fieldKey].highlight || undefined
-                    }
-                    type={schema.properties[fieldKey].type}
-                    as="textarea"
-                    defaultValue={formState[fieldKey]}
-                    readOnly={schema.properties[fieldKey].readOnly}
-                    disabled={schema.properties[fieldKey].readOnly}
-                  />
-                ) : schema.properties[fieldKey].type === 'spinbox' ? (
-                  <Form.Control
-                    className={styles.spinboxInput}
-                    name={fieldKey}
-                    id={fieldKey}
-                    onChange={(e) => handleChange(e)}
-                    data-highlight={
-                      schema.properties[fieldKey].highlight || undefined
-                    }
-                    type="number"
-                    required
-                    step={schema.properties[fieldKey].stepsize ?? 1}
-                    min={schema.properties[fieldKey].lowerBound ?? undefined}
-                    max={schema.properties[fieldKey].upperBound ?? undefined}
-                    defaultValue={formState[fieldKey]}
-                    readOnly={schema.properties[fieldKey].readOnly}
-                    disabled={schema.properties[fieldKey].readOnly}
-                  />
-                ) : (
-                  <Form.Control
-                    name={fieldKey}
-                    id={fieldKey}
-                    onChange={(e) => handleChange(e)}
-                    data-highlight={
-                      schema.properties[fieldKey].highlight || undefined
-                    }
-                    type={schema.properties[fieldKey].type}
-                    required
-                    step="any"
-                    min={schema.properties[fieldKey].minimum || 'any'}
-                    max={schema.properties[fieldKey].maximum || 'any'}
-                    defaultValue={formState[fieldKey]}
-                    readOnly={schema.properties[fieldKey].readOnly}
-                    disabled={schema.properties[fieldKey].readOnly}
-                  />
-                )}
-                <Form.Control.Feedback type="invalid">
-                  {errors ? errors[fieldKey] : null}
-                </Form.Control.Feedback>
-              </div>,
-            );
+            items.push(renderFieldControl(fieldKey, isEnumNoLabel));
           }
         }
       }
@@ -397,7 +392,7 @@ function GphlWorkflowParametersDialog(props) {
           {items}
         </div>
       );
-    }
+    };
 
     renderFormRow = (
       <Form
