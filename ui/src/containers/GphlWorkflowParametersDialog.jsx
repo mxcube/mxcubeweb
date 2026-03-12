@@ -84,37 +84,7 @@ function GphlWorkflowParametersDialog(props) {
   const [validatedIndexingTable, setValidatedIndexingTable] = useState(false);
   const [selected, setSelected] = useState([]);
 
-  const modalBodyRef = useRef(null);
   const tbodyRef = useRef(null);
-
-  const updateTableHeight = useCallback(() => {
-    if (!tbodyRef.current || !modalBodyRef.current) {
-      return
-    }
-    const modalContent = modalBodyRef.current.closest('.modal-content');
-    if (!modalContent) {
-      return
-    }
-    const modalHeight = modalContent.clientHeight;
-    const naturalHeight = tbodyRef.current.scrollHeight;
-    const targetHeight = Math.min(Math.round(modalHeight * 0.3), naturalHeight);
-    tbodyRef.current.style.height = `${targetHeight}px`;
-    tbodyRef.current.style.overflowY =
-      targetHeight < naturalHeight ? 'auto' : 'hidden';
-  }, []);
-
-  useEffect(() => {
-    if (!show || !modalBodyRef.current) {
-      return undefined;
-    }
-    const modalContent = modalBodyRef.current.closest('.modal-content');
-    if (!modalContent) {
-      return undefined;
-    }
-    const observer = new ResizeObserver(updateTableHeight);
-    observer.observe(modalContent);
-    return () => observer.disconnect();
-  }, [show, schema, updateTableHeight]);
 
   const _initFormState = useCallback(() => {
     const dataDict = {};
@@ -478,7 +448,7 @@ function GphlWorkflowParametersDialog(props) {
       <Modal.Header closeButton>
         <Modal.Title>{formName}</Modal.Title>
       </Modal.Header>
-      <Modal.Body ref={modalBodyRef} className={styles.modalBody}>
+      <Modal.Body className={styles.modalBody}>
         <div className={`m-1 ${styles.formHolder}`} id="form-holder">
           {renderFormRow}
         </div>
