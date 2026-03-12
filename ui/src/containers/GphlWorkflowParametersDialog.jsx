@@ -90,11 +90,11 @@ function GphlWorkflowParametersDialog(props) {
   const updateTableHeight = useCallback(() => {
     if (!tbodyRef.current || !modalBodyRef.current) {
       return
-    };
+    }
     const modalContent = modalBodyRef.current.closest('.modal-content');
     if (!modalContent) {
       return
-    };
+    }
     const modalHeight = modalContent.clientHeight;
     const naturalHeight = tbodyRef.current.scrollHeight;
     const targetHeight = Math.min(Math.round(modalHeight * 0.3), naturalHeight);
@@ -365,6 +365,7 @@ function GphlWorkflowParametersDialog(props) {
               <Form.Label
                 key={`${fieldKey}-label`}
                 htmlFor={fieldKey}
+                column={false}
                 className={`${styles.fieldLabel} text-end`}
               >
                 {fieldTitle}
@@ -399,12 +400,12 @@ function GphlWorkflowParametersDialog(props) {
       <Form
         noValidate
         validated={validated}
-        className="m-1"
+        className={`m-1 ${styles.formHolder}`}
         onSubmit={(e) => handleSubmit(e)}
       >
         {ui_schema
           ? ui_schema['ui:order'].map((rowKey) => (
-              <Row key={rowKey} className={`${styles.gphlFormRowBox}`}>
+              <Row key={rowKey} className={`${styles.gphlFormRowBox}${rowKey === 'indexing_solution' ? ` ${styles.indexingRow}` : ''}`}>
                 <div
                   className={`${validatedIndexingTable ? styles[rowKey] : ''} ${
                     styles.boxTitle
@@ -455,7 +456,7 @@ function GphlWorkflowParametersDialog(props) {
               </Row>
             ))
           : null}
-        <Stack direction="horizontal" gap={3}>
+        <Stack direction="horizontal" gap={3} className={styles.buttonStack}>
           <div className="ms-auto">
             <Button variant="success" disabled={validated} type="submit">
               Continue{' '}
@@ -477,8 +478,8 @@ function GphlWorkflowParametersDialog(props) {
       <Modal.Header closeButton>
         <Modal.Title>{formName}</Modal.Title>
       </Modal.Header>
-      <Modal.Body ref={modalBodyRef}>
-        <div className="m-1" id="form-holder">
+      <Modal.Body ref={modalBodyRef} className={styles.modalBody}>
+        <div className={`m-1 ${styles.formHolder}`} id="form-holder">
           {renderFormRow}
         </div>
       </Modal.Body>

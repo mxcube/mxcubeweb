@@ -14,6 +14,7 @@
 .gphlFormRowBox > .parameters{ */
 .gphlFormRowBox {
   margin-bottom: 1rem;
+  flex-shrink: 0;
 }
 
 .gphlFormRowBox > .indexing_solution {
@@ -105,6 +106,35 @@
   overflow: auto;
   min-width: 300px;
   min-height: 200px;
+}
+
+/* Modal body: constrained flex column so children can shrink proportionally */
+.modalBody {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Form wrapper and form itself: fill available height as flex column */
+.formHolder {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Indexing solution row shrinks before other rows when modal is resized */
+.gphlFormRowBox.indexingRow {
+  flex-shrink: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Buttons row must not shrink */
+.buttonStack {
+  flex-shrink: 0;
 }
 
 [data-highlight='HIGHLIGHT'] {
