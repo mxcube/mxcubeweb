@@ -260,6 +260,133 @@ function GphlWorkflowParametersDialog(props) {
     [selected, handleIndexingTableChange],
   );
 
+  function renderFieldControl(fieldKey, isEnumNoLabel) {
+    const fieldProps = schema.properties[fieldKey];
+    const highlight = fieldProps.highlight || undefined;
+    return (
+      <div
+        key={`${fieldKey}-value`}
+        style={isEnumNoLabel ? { gridColumn: 'span 2' } : undefined}
+      >
+        {fieldProps.type === 'boolean' ? (
+          <Form.Check
+            type="checkbox"
+            name={fieldKey}
+            id={fieldKey}
+            onChange={(e) => handleChange(e)}
+            checked={formState[fieldKey]}
+            data-highlight={highlight}
+          />
+        ) : fieldProps.enum ? (
+          <Form.Select
+            name={fieldKey}
+            id={fieldKey}
+            value={formState[fieldKey]}
+            onChange={(e) => handleChange(e)}
+            data-highlight={highlight}
+          >
+            {fieldProps.enum.map((val) => (
+              <option key={val} value={val}>
+                {val}
+              </option>
+            ))}
+          </Form.Select>
+        ) : fieldProps.type === 'textarea' ? (
+          <Form.Control
+            name={fieldKey}
+            id={fieldKey}
+            onChange={(e) => handleChange(e)}
+            data-highlight={highlight}
+            type={fieldProps.type}
+            as="textarea"
+            defaultValue={formState[fieldKey]}
+            readOnly={fieldProps.readOnly}
+            disabled={fieldProps.readOnly}
+          />
+        ) : fieldProps.type === 'spinbox' ? (
+          <Form.Control
+            className={styles.spinboxInput}
+            name={fieldKey}
+            id={fieldKey}
+            onChange={(e) => handleChange(e)}
+            data-highlight={highlight}
+            type="number"
+            required
+            step={fieldProps.stepsize ?? 1}
+            min={fieldProps.lowerBound ?? undefined}
+            max={fieldProps.upperBound ?? undefined}
+            defaultValue={formState[fieldKey]}
+            readOnly={fieldProps.readOnly}
+            disabled={fieldProps.readOnly}
+          />
+        ) : (
+          <Form.Control
+            name={fieldKey}
+            id={fieldKey}
+            onChange={(e) => handleChange(e)}
+            data-highlight={highlight}
+            type={fieldProps.type}
+            required
+            step="any"
+            min={fieldProps.minimum || 'any'}
+            max={fieldProps.maximum || 'any'}
+            defaultValue={formState[fieldKey]}
+            readOnly={fieldProps.readOnly}
+            disabled={fieldProps.readOnly}
+          />
+        )}
+        <Form.Control.Feedback type="invalid">
+          {errors ? errors[fieldKey] : null}
+        </Form.Control.Feedback>
+      </div>
+    );
+  }
+
+  function renderGridFields(rowKey) {
+    const uiSchema = formData.ui_schema;
+    const colKeys = uiSchema[rowKey]['ui:order'] || [];
+    if (colKeys.length === 0) {
+      return null;
+    }
+    const maxFieldRows = Math.max(
+      ...colKeys.map((ck) => uiSchema[rowKey][ck]['ui:order'].length),
+    );
+    const items = [];
+    for (let rowIdx = 0; rowIdx < maxFieldRows; rowIdx++) {
+      for (const ColKey of colKeys) {
+        const fieldKey = uiSchema[rowKey][ColKey]['ui:order'][rowIdx];
+        if (!fieldKey) {
+          items.push(<span key={`${ColKey}-${rowIdx}-el`} />, <span key={`${ColKey}-${rowIdx}-ev`} />);
+        } else {
+          const fieldTitle = schema.properties[fieldKey].title;
+          const isEnumNoLabel = !fieldTitle && schema.properties[fieldKey].enum;
+          if (!isEnumNoLabel) {
+            items.push(
+              <Form.Label
+                key={`${fieldKey}-label`}
+                htmlFor={fieldKey}
+                className={`${styles.fieldLabel} text-end`}
+              >
+                {fieldTitle}
+              </Form.Label>,
+            );
+          }
+          items.push(renderFieldControl(fieldKey, isEnumNoLabel));
+        }
+      }
+    }
+    return (
+      <div
+        className={styles.fieldsRow}
+        style={{
+          gridTemplateColumns: `repeat(${colKeys.length}, max-content 1fr)`,
+        }}
+      >
+        {items}
+      </div>
+    );
+  }
+
   let formName = '';
   let renderFormRow = '';
 
@@ -267,132 +394,6 @@ function GphlWorkflowParametersDialog(props) {
     const { ui_schema } = formData;
 
     formName = schema.title;
-
-    const renderFieldControl = (fieldKey, isEnumNoLabel) => {
-      const fieldProps = schema.properties[fieldKey];
-      const highlight = fieldProps.highlight || undefined;
-      return (
-        <div
-          key={`${fieldKey}-value`}
-          style={isEnumNoLabel ? { gridColumn: 'span 2' } : undefined}
-        >
-          {fieldProps.type === 'boolean' ? (
-            <Form.Check
-              type="checkbox"
-              name={fieldKey}
-              id={fieldKey}
-              onChange={(e) => handleChange(e)}
-              checked={formState[fieldKey]}
-              data-highlight={highlight}
-            />
-          ) : fieldProps.enum ? (
-            <Form.Select
-              name={fieldKey}
-              id={fieldKey}
-              value={formState[fieldKey]}
-              onChange={(e) => handleChange(e)}
-              data-highlight={highlight}
-            >
-              {fieldProps.enum.map((val) => (
-                <option key={val} value={val}>
-                  {val}
-                </option>
-              ))}
-            </Form.Select>
-          ) : fieldProps.type === 'textarea' ? (
-            <Form.Control
-              name={fieldKey}
-              id={fieldKey}
-              onChange={(e) => handleChange(e)}
-              data-highlight={highlight}
-              type={fieldProps.type}
-              as="textarea"
-              defaultValue={formState[fieldKey]}
-              readOnly={fieldProps.readOnly}
-              disabled={fieldProps.readOnly}
-            />
-          ) : fieldProps.type === 'spinbox' ? (
-            <Form.Control
-              className={styles.spinboxInput}
-              name={fieldKey}
-              id={fieldKey}
-              onChange={(e) => handleChange(e)}
-              data-highlight={highlight}
-              type="number"
-              required
-              step={fieldProps.stepsize ?? 1}
-              min={fieldProps.lowerBound ?? undefined}
-              max={fieldProps.upperBound ?? undefined}
-              defaultValue={formState[fieldKey]}
-              readOnly={fieldProps.readOnly}
-              disabled={fieldProps.readOnly}
-            />
-          ) : (
-            <Form.Control
-              name={fieldKey}
-              id={fieldKey}
-              onChange={(e) => handleChange(e)}
-              data-highlight={highlight}
-              type={fieldProps.type}
-              required
-              step="any"
-              min={fieldProps.minimum || 'any'}
-              max={fieldProps.maximum || 'any'}
-              defaultValue={formState[fieldKey]}
-              readOnly={fieldProps.readOnly}
-              disabled={fieldProps.readOnly}
-            />
-          )}
-          <Form.Control.Feedback type="invalid">
-            {errors ? errors[fieldKey] : null}
-          </Form.Control.Feedback>
-        </div>
-      );
-    };
-
-    const renderGridFields = (rowKey) => {
-      const colKeys = ui_schema[rowKey]['ui:order'] || [];
-      if (colKeys.length === 0) {
-        return null;
-      }
-      const maxFieldRows = Math.max(
-        ...colKeys.map((ck) => ui_schema[rowKey][ck]['ui:order'].length),
-      );
-      const items = [];
-      for (let rowIdx = 0; rowIdx < maxFieldRows; rowIdx++) {
-        for (const ColKey of colKeys) {
-          const fieldKey = ui_schema[rowKey][ColKey]['ui:order'][rowIdx];
-          if (!fieldKey) {
-            items.push(<span key={`${ColKey}-${rowIdx}-el`} />, <span key={`${ColKey}-${rowIdx}-ev`} />);
-          } else {
-            const fieldTitle = schema.properties[fieldKey].title;
-            const isEnumNoLabel = !fieldTitle && schema.properties[fieldKey].enum;
-            if (!isEnumNoLabel) {
-              items.push(
-                <Form.Label
-                  key={`${fieldKey}-label`}
-                  htmlFor={fieldKey}
-                  className={`${styles.fieldLabel} text-end`}
-                >
-                  {fieldTitle}
-                </Form.Label>,
-              );
-            }
-            items.push(renderFieldControl(fieldKey, isEnumNoLabel));
-          }
-        }
-      }
-      return (
-        <div
-          className={styles.fieldsRow}
-          style={{
-            gridTemplateColumns: `repeat(${colKeys.length}, max-content 1fr)`,
-          }}
-        >
-          {items}
-        </div>
-      );
-    };
 
     renderFormRow = (
       <Form
