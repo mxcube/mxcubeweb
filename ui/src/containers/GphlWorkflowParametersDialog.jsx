@@ -89,11 +89,11 @@ function GphlWorkflowParametersDialog(props) {
 
   const updateTableHeight = useCallback(() => {
     if (!tbodyRef.current || !modalBodyRef.current) {
-      return
+      return;
     }
     const modalContent = modalBodyRef.current.closest('.modal-content');
     if (!modalContent) {
-      return
+      return;
     }
     const modalHeight = modalContent.clientHeight;
     const naturalHeight = tbodyRef.current.scrollHeight;
@@ -356,7 +356,10 @@ function GphlWorkflowParametersDialog(props) {
       for (const ColKey of colKeys) {
         const fieldKey = uiSchema[rowKey][ColKey]['ui:order'][rowIdx];
         if (!fieldKey) {
-          items.push(<span key={`${ColKey}-${rowIdx}-el`} />, <span key={`${ColKey}-${rowIdx}-ev`} />);
+          items.push(
+            <span key={`${ColKey}-${rowIdx}-el`} />,
+            <span key={`${ColKey}-${rowIdx}-ev`} />,
+          );
         } else {
           const fieldTitle = schema.properties[fieldKey].title;
           const isEnumNoLabel = !fieldTitle && schema.properties[fieldKey].enum;
@@ -405,7 +408,12 @@ function GphlWorkflowParametersDialog(props) {
       >
         {ui_schema
           ? ui_schema['ui:order'].map((rowKey) => (
-              <Row key={rowKey} className={`${styles.gphlFormRowBox}${rowKey === 'indexing_solution' ? ` ${styles.indexingRow}` : ''}`}>
+              <Row
+                key={rowKey}
+                className={`${styles.gphlFormRowBox}${
+                  rowKey === 'indexing_solution' ? ` ${styles.indexingRow}` : ''
+                }`}
+              >
                 <div
                   className={`${validatedIndexingTable ? styles[rowKey] : ''} ${
                     styles.boxTitle
@@ -474,7 +482,12 @@ function GphlWorkflowParametersDialog(props) {
   }
 
   return (
-    <Modal show={show} onHide={handleAbort} backdrop="static" contentClassName={styles.resizableModalContent}>
+    <Modal
+      show={show}
+      onHide={handleAbort}
+      backdrop="static"
+      contentClassName={styles.resizableModalContent}
+    >
       <Modal.Header closeButton>
         <Modal.Title>{formName}</Modal.Title>
       </Modal.Header>
