@@ -13,6 +13,7 @@
 /* .gphlFormRowBox > .crystal_data,
 .gphlFormRowBox > .parameters{ */
 .gphlFormRowBox {
+  padding-top: 1rem;
   margin-bottom: 1rem;
   flex-shrink: 0;
 }
