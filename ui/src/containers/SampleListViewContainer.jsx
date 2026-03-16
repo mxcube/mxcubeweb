@@ -29,7 +29,6 @@ import {
   filterAction,
   getLimsSamples,
   getSamplesList,
-  selectSamplesAction,
   showGenericContextMenu,
 } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
@@ -513,11 +512,6 @@ export default function SampleListViewContainer() {
       dispatch(showGenericContextMenu(true, contextMenuID, e.pageX, e.pageY));
     }
 
-    const samplesListKeys = Object.keys(sampleList).filter((key) =>
-      applyFilter(key),
-    );
-
-    dispatch(selectSamplesAction(samplesListKeys));
     e.stopPropagation();
   }
 
@@ -859,7 +853,7 @@ export default function SampleListViewContainer() {
                 variant="outline-secondary"
                 className={styles.actionBtn}
                 title="Context Menu to Add DC or Workflow to all filtered Samples Options"
-                disabled={Object.keys(sampleList).length === 0}
+                disabled={Object.keys(selected).length === 0}
                 onClick={(e) => {
                   displayContextMenu(e, 'samples-grid-table-context-menu-cell');
                 }}
