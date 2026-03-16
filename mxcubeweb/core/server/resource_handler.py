@@ -36,7 +36,7 @@ def validate_input_str(input_string: str) -> bool:
     Returns:
         bool: True if the string is valid, False otherwise.
     """
-    pattern = r"^[a-zA-Z0-9._]*$"
+    pattern = r"^[a-zA-Z0-9._, ]*$"
     return bool(re.match(pattern, input_string))
 
 

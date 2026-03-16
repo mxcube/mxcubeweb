@@ -12,6 +12,12 @@
 
 /* .gphlFormRowBox > .crystal_data,
 .gphlFormRowBox > .parameters{ */
+.gphlFormRowBox {
+  padding-top: 1rem;
+  margin-bottom: 1rem;
+  flex-shrink: 0;
+}
+
 .gphlFormRowBox > .indexing_solution {
   border: #e74444 2.5px dotted !important;
 }
@@ -27,11 +33,17 @@
 }
 
 .indexingTableC {
-  width: 100%;
+  width: fit-content;
 }
 
-.indexingTableC > tbody tr[data-selected] {
-  border: 2px dashed #208ff7 !important;
+.indexingTableC > tbody tr[data-selected] td {
+  background-color: #1a6fc4 !important;
+  color: white !important;
+  font-weight: bold;
+}
+
+.indexingTableC td[data-cell-highlight='HIGHLIGHT'] {
+  background: #15e684a1;
 }
 
 .indexingTableC > thead,
@@ -43,7 +55,6 @@
 }
 
 .indexingTableC > tbody {
-  height: 200px;
   overflow-y: auto;
 }
 
@@ -52,8 +63,79 @@
   width: 5%;
 }
 
+.indexingTableC thead th,
+.indexingTableC tbody td {
+  padding: 2px 4px;
+}
+
+.indexingTableC pre {
+  margin: 0;
+  padding: 0;
+}
+
 .specialTdTh {
   border: none !important;
+}
+
+.fieldsRow {
+  display: grid;
+  column-gap: 0.75rem;
+  row-gap: 0.25rem;
+  align-items: center;
+}
+
+.fieldLabel {
+  white-space: nowrap;
+  padding-top: 0.375rem;
+  text-align: right;
+  justify-self: end;
+}
+
+.fieldsRow input[type='number']:not(.spinboxInput)::-webkit-outer-spin-button,
+.fieldsRow input[type='number']:not(.spinboxInput)::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.fieldsRow input[type='number']:not(.spinboxInput) {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
+.resizableModalContent {
+  resize: both;
+  overflow: auto;
+  min-width: 300px;
+  min-height: 200px;
+}
+
+/* Modal body: constrained flex column so children can shrink proportionally */
+.modalBody {
+  min-height: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Form wrapper and form itself: fill available height as flex column */
+.formHolder {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Indexing solution row shrinks before other rows when modal is resized */
+.gphlFormRowBox.indexingRow {
+  flex-shrink: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* Buttons row must not shrink */
+.buttonStack {
+  flex-shrink: 0;
 }
 
 [data-highlight='HIGHLIGHT'] {
@@ -70,4 +152,14 @@
 
 [data-highlight='CHANGED'] {
   background-color: #ffff0063 !important;
+}
+
+.spinboxInput::-webkit-outer-spin-button,
+.spinboxInput::-webkit-inner-spin-button {
+  -webkit-appearance: auto;
+}
+
+.spinboxInput {
+  -moz-appearance: auto;
+  appearance: auto;
 }
