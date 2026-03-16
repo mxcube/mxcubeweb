@@ -47,8 +47,10 @@ export function startBeamlineAction(cmdName, parameters, showOutput = true) {
     }
 
     sendExecuteCommand('beamlineaction', 'beamline_actions', 'run_action', {
-      cmd: cmdName,
-      parameters,
+      value: {
+        cmd: cmdName,
+        parameters,
+      },
     });
   };
 }
