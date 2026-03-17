@@ -3,7 +3,7 @@ import './main.css';
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import 'react-contexify/ReactContexify.css';
 
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import { Provider } from 'react-redux';
 
 import App from './components/App';
@@ -20,4 +20,5 @@ function Root() {
   );
 }
 
-ReactDOM.render(<Root />, document.querySelector('#root'));
+const root = createRoot(document.querySelector('#root'));
+root.render(<Root />);
