@@ -367,11 +367,11 @@ class SampleViewAdapter(AdapterBase):
         if sid:
             shape = self._ho.get_shape(sid)
             cp = shape.get_centred_position()
-            phi_value = round(float(cp.as_dict().get("omega", None)), 3)
+            omega_value = round(float(cp.as_dict().get("omega", None)), 3)
 
-            if phi_value:
+            if omega_value:
                 try:
-                    HWR.beamline.diffractometer.centringPhi.set_value(phi_value)
+                    HWR.beamline.diffractometer.omega.set_value(omega_value)
                 except Exception as e:
                     msg = "Rotate to shape failed"
                     raise RuntimeError(msg) from e
