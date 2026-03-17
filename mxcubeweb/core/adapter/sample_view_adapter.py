@@ -1,5 +1,6 @@
 import io
 import logging
+from threading import Lock
 from typing import ClassVar
 
 from flask import send_file
@@ -54,6 +55,8 @@ class SampleViewAdapter(AdapterBase):
         self._click_limit = int(HWR.beamline.config.click_centring_num_clicks or 3)
         self._centring_point_id = None
         self._error = False
+        self._click_lock = Lock()
+        self._click_in_progress = False
 
         self._ho.connect("shapesChanged", self._emit_shapes_updated)
         self._ho.connect("newGridResult", self._handle_grid_result)
@@ -394,28 +397,37 @@ class SampleViewAdapter(AdapterBase):
             logging.getLogger("user_level_log").info("User canceled centring")
             self._ho.cancel_centring()
             self.centring_remove_current_point()
+            self._click_in_progress = False
         except Exception:  # noqa: BLE001
             logging.getLogger("MX3.HWR").warning("Canceling centring failed")
 
         return {}
 
     def click(self, x: float, y: float):
+        with self._click_lock:
+            if self._click_in_progress:
+                return {"clicksLeft": self.centring_clicks_left()}
+
+            self._click_in_progress = True
+
         if self._ho.current_centring_procedure:
             try:
-                self._ho.image_clicked(x, y)
                 self.centring_click()
-            except Exception:
+                self._ho.image_clicked(x, y)
+                HWR.beamline.diffractometer.wait_status_ready()
+            except Exception as ex:
                 logging.getLogger("MX3.HWR").exception("")
-                return {"clicksLeft": -1}
-
-        elif not self.centring_clicks_left():
+                msg = "Error while centring, please try again"
+                self._click_in_progress = False
+                raise RuntimeError(msg) from ex
+        else:
             self.centring_reset_click_count()
             self._ho.cancel_centring()
-
             self._ho.start_manual_centring(
                 HWR.beamline.config.click_centring_num_clicks
             )
 
+        self._click_in_progress = False
         return {"clicksLeft": self.centring_clicks_left()}
 
     def accept_centring(self):
@@ -450,6 +462,7 @@ class SampleViewAdapter(AdapterBase):
                     "Aborting current centring ..."
                 )
                 self._ho.reject_centring()
+                self._click_in_progress = False
             nb_clicks = HWR.beamline.config.click_centring_num_clicks
             msg = f"Centring using {nb_clicks}-click centring"
             logging.getLogger("user_level_log").info(msg)

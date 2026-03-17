@@ -160,20 +160,20 @@ export function rotateToShape(sid) {
 
 export function recordCentringClick(x, y) {
   return async (dispatch) => {
-    let json = {}
+    let json = {};
 
     try {
       json = await sendRecordCentringClick(x, y);
     } catch {
       dispatch(showErrorPanel(true, 'Error while centring, please try again'));
       await dispatch(abortCentring());
-      return;	
+      return;
     }
 
     const { clicksLeft } = json;
     dispatch(centringClicksLeft(clicksLeft));
 
-    let msg = `${general.clickCentringNumClicks}-Click Centring: \n`;
+    let msg = `Click Centring: \n`;
     if (clicksLeft === 0) {
       msg += 'Save centring or clicking on screen to restart';
     } else if (clicksLeft === -1) {
