@@ -367,7 +367,7 @@ class SampleViewAdapter(AdapterBase):
         if sid:
             shape = self._ho.get_shape(sid)
             cp = shape.get_centred_position()
-            phi_value = round(float(cp.as_dict().get("phi", None)), 3)
+            phi_value = round(float(cp.as_dict().get("omega", None)), 3)
 
             if phi_value:
                 try:
