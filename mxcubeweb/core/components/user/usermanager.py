@@ -264,7 +264,7 @@ class BaseUserManager(ComponentBase):
         try:
             self._login(login_id, password)
         except Exception as e:
-            self._signout()
+            self._signout(sso_data=sso_data)
             logging.getLogger("MX3.HWR").error(str(e))
             raise e
         else:
@@ -287,7 +287,7 @@ class BaseUserManager(ComponentBase):
             logging.getLogger("MX3.HWR").info(msg)
 
     # Abstract method to be implemented by concrete implementation
-    def _signout(self):
+    def _signout(self, sso_data={}):
         pass
 
     def signout(self) -> None:
