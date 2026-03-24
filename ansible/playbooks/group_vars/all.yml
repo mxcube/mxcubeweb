@@ -2,18 +2,12 @@
 # Global variables for MXCubeWeb deployment
 
 service_user: "{{ lookup('env', 'USER') }}"
-service_group: "{{ lookup('env', 'USER') }}"
 
 install_base_path: "/opt/mxcube"
 
 mxcubeweb_config:
   port: 8081
-
   host: "0.0.0.0"
-
-conda_base_path: "{{ install_base_path }}/conda"
-conda_env_name: "mxcube"
-python_version: "3.10"
 
 conda_environments:
   mxcube:
@@ -26,6 +20,7 @@ conda_environments:
     pip_packages:
       - gunicorn
       - gevent
+      - blissclient
 
 # Set use_local_repos to true to copy from local paths instead of cloning from GitHub
 use_local_repos: true

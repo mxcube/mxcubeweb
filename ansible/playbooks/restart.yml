@@ -1,29 +1,94 @@
 ---
-# Playbook to restart MXCubeWeb services
+# Playbook to restart all MXCubeWeb and BLISS services
 
-- name: Restart MXCubeWeb services
+- name: Restart all services
   hosts: mxcube_vms
   become: true
 
   tasks:
-    - name: Restart MXCubeWeb service
+    # ------------------------------------------------------------------
+    # Stop everything in reverse dependency order
+    # ------------------------------------------------------------------
+    - name: Stop MXCubeWeb
       ansible.builtin.systemd:
         name: "mxcubeweb-{{ vm_context }}"
-        state: restarted
+        state: stopped
+      ignore_errors: true
+
+    - name: Stop BLISS session service
+      ansible.builtin.systemd:
+        name: "bliss-session-{{ vm_context }}"
+        state: stopped
+      ignore_errors: true
+
+    - name: Stop BLISS server service
+      ansible.builtin.systemd:
+        name: "bliss-server-{{ vm_context }}"
+        state: stopped
+      ignore_errors: true
+
+    - name: Wait for services to stop
+      ansible.builtin.wait_for:
+        timeout: 5
+
+    # ------------------------------------------------------------------
+    # Start in dependency order: demo-servers → rest → mxcubeweb
+    # ------------------------------------------------------------------
+    - name: Start BLISS server service
+      ansible.builtin.systemd:
+        name: "bliss-server-{{ vm_context }}"
+        state: started
         daemon_reload: true
 
-    - name: Wait for service to be ready
+    - name: Wait for BLISS server to be ready (10s)
       ansible.builtin.wait_for:
         timeout: 10
 
-    - name: Display service status
+    - name: Start BLISS session service
+      ansible.builtin.systemd:
+        name: "bliss-session-{{ vm_context }}"
+        state: started
+        daemon_reload: true
+
+    - name: Wait for BLISS REST API to be ready on port 5000
+      ansible.builtin.wait_for:
+        host: localhost
+        port: 5000
+        timeout: 90
+
+    - name: Start MXCubeWeb
       ansible.builtin.systemd:
         name: "mxcubeweb-{{ vm_context }}"
-      register: service_status
+        state: started
+        daemon_reload: true
 
-    - name: Show service information
+    - name: Wait for MXCubeWeb to be ready on port 8081
+      ansible.builtin.wait_for:
+        host: localhost
+        port: 8081
+        timeout: 120
+      ignore_errors: true
+
+    # ------------------------------------------------------------------
+    # Status report
+    # ------------------------------------------------------------------
+    - name: Get status of all services
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+      register: service_statuses
+      loop:
+        - "bliss-server-{{ vm_context }}"
+        - "bliss-session-{{ vm_context }}"
+        - "mxcubeweb-{{ vm_context }}"
+
+    - name: Show service statuses
+      ansible.builtin.debug:
+        msg: "{{ item.item }}: {{ item.status.ActiveState }}"
+      loop: "{{ service_statuses.results }}"
+
+    - name: Show log commands
       ansible.builtin.debug:
         msg:
-          - "Service: mxcubeweb-{{ vm_context }}"
-          - "Status: {{ service_status.status.ActiveState }}"
-          - "Check logs: journalctl -u mxcubeweb-{{ vm_context }} -f"
+          - "BLISS server  : journalctl -u bliss-server-{{ vm_context }} -f"
+          - "BLISS session : journalctl -u bliss-session-{{ vm_context }} -f"
+          - "MXCubeWeb     : journalctl -u mxcubeweb-{{ vm_context }} -f"

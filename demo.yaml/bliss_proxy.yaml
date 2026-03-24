@@ -1,12 +1,8 @@
 %YAML 1.2
 ---
-# BLISS Proxy - Generic access to all BLISS devices with a single file
+# BLISS Proxy - Generic access to all BLISS devices via the blissclient REST API
 
 class: mxcubecore.HardwareObjects.BlissProxy.BlissProxy
 
-commands:
-  - name: bliss_rest
-    type: blissrest
-    url: http://localhost:5000
-    session_name: demo_session
-    timeout: 5
+configuration:
+  blissapi_url: http://localhost:5000

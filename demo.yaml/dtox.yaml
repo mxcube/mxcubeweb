@@ -1,8 +1,7 @@
 %YAML 1.2
 ---
-class: MotorMockup.MotorMockup
+class: BlissMotor.BlissMotor
 configuration:
-  default_limits: (150, 500)
-  default_value: 200
-  motor_name: DtoX
+  actuator_name: robx
+  blissapi_url: http://localhost:5000
   username: Detector distance
