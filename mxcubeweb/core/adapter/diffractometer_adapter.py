@@ -4,8 +4,8 @@ from mxcubecore.HardwareObjects import GenericDiffractometer, MiniDiff
 from mxcubecore.HardwareObjects.abstract import AbstractDiffractometer
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
-from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 from mxcubeweb.core.models.adaptermodels import ChipCalibrationInputModel
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
 resource_handler_config = ResourceHandlerConfigModel(
     commands=[
