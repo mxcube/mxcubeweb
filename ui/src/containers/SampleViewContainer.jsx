@@ -6,6 +6,7 @@ import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
 import ApertureInput from '../components/SampleView/ApertureInput';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import MotorControls from '../components/SampleView/MotorControls';
+import { NStateSelect } from '../components/SampleView/NStateSelect';
 import PhaseInput from '../components/SampleView/PhaseInput';
 import SampleImage from '../components/SampleView/SampleImage';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -22,6 +23,9 @@ function getShapes(shapes, type) {
 function SampleViewContainer() {
   const shapes = useSelector((state) => state.shapes.shapes) || {};
   const uiproperties = useSelector((state) => state.uiproperties);
+  const hardwareObjects = useSelector(
+    (state) => state.beamline.hardwareObjects,
+  );
   const sampleChangerContents = useSelector(
     (state) => state.sampleChanger.contents,
   );
@@ -30,12 +34,18 @@ function SampleViewContainer() {
     return null;
   }
 
-  const phaseControl = uiproperties.sample_view?.components?.find(
-    (c) => c.attribute === 'phase_control',
+  const { components } = uiproperties?.sample_view ?? [];
+
+  const phaseControl = components.find((c) => c.attribute === 'phase_control');
+  const beamSize = components.find((c) => c.attribute === 'beam_size');
+
+  const nStates = new Set(
+    Object.entries(hardwareObjects)
+      .filter(([_, ho]) => ho.type === 'NSTATE')
+      .map(([name, _]) => name),
   );
-  const beamSize = uiproperties.sample_view?.components.find(
-    (c) => c.attribute === 'beam_size',
-  );
+  const nStatesComponents =
+    components.filter((component) => nStates.has(component.attribute)) ?? [];
 
   const points = getShapes(shapes, 'P');
   const twoDPoints = getShapes(shapes, '2DP');
@@ -82,6 +92,23 @@ function SampleViewContainer() {
                 <ApertureInput />
               </div>
             )}
+            {nStatesComponents.map((component) => (
+              <div
+                className={motorInputStyles.container}
+                key={component.attribute}
+              >
+                <label
+                  className={motorInputStyles.label}
+                  htmlFor={component.attribute}
+                >
+                  {component.label || component.attribute}
+                </label>
+                <NStateSelect
+                  name={component.attribute}
+                  id={component.attribute}
+                />
+              </div>
+            ))}
             {sampleChangerContents.name === 'PlateManipulator' && (
               <PlateManipulator inPopover />
             )}
@@ -112,5 +139,4 @@ function SampleViewContainer() {
     </Container>
   );
 }
-
 export default SampleViewContainer;
