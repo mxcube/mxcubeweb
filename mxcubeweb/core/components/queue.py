@@ -433,15 +433,13 @@ class Queue(ComponentBase):
             logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
             self.app.server.emit("task", msg, namespace="/hwr")
 
-    def collect_image_taken(self, frame):
+    def detector_image_saved(self, progress):
         try:
             node = self.last_queue_node()
         except IndexError:
             node = None
 
         if node and not self.is_interleaved(node["node"]):
-            progress = self.get_task_progress(node["node"], frame)
-
             msg = {
                 "Signal": "collectImageTaken",
                 "Message": "Image acquired",
@@ -451,7 +449,6 @@ class Queue(ComponentBase):
                 "state": RUNNING if progress < 1 else COLLECTED,
                 "progress": progress,
             }
-            logging.getLogger("HWR").debug(f"[TASK CALLBACK] {msg}")
             self.app.server.emit("task", msg, namespace="/hwr")
 
     def collect_oscillation_finished(  # noqa: PLR0913
@@ -650,10 +647,11 @@ class Queue(ComponentBase):
             "collectOscillationFailed",
             self.collect_oscillation_failed,
         )
+
         HWR.beamline.collect.connect(
-            HWR.beamline.collect,
-            "collectImageTaken",
-            self.collect_image_taken,
+            HWR.beamline.detector,
+            "progress",
+            self.detector_image_saved,
         )
 
         HWR.beamline.collect.connect(
