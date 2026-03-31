@@ -40,7 +40,7 @@ export function renderChip(
     }),
   );
 
-  // Add lables
+  // Add labels
 
   for (let ci = 0; ci < cols; ci++) {
     let label = (ci + 1).toString();
