@@ -24,7 +24,7 @@ export default function SampleInformation({ sampleData = {} }) {
             <span className="col-sm-6">{sampleData?.puck_barcode}</span>
           </div>
           <div className="row">
-            <span className="col-sm-6">puck type :</span>
+            <span className="col-sm-6">Puck type :</span>
             <span className="col-sm-6">{sampleData?.puck_type}</span>
           </div>
           <div className="row">

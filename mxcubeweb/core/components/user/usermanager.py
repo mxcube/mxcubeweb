@@ -132,7 +132,7 @@ class BaseUserManager(ComponentBase):
     def update_active_users(self) -> None:
         """Check if any user have been inactive for longer than session lifetime.
 
-        If so, deactivate the user in datastore and emit the relvant signals
+        If so, deactivate the user in datastore and emit the relevant signals
         ``userChanged`` and ``observersChanged`` to the client.
         """
         for _u in User.query.all():
@@ -173,7 +173,7 @@ class BaseUserManager(ComponentBase):
                     self.db_set_in_control(_u, False)
 
             # If new login and new observer login, clear nickname
-            # so that the user get an opertunity to set one
+            # so that the user get an opportunity to set one
             if new_login:
                 current_user.nickname = ""
 
@@ -254,7 +254,7 @@ class BaseUserManager(ComponentBase):
 
         Create new session for the user if it does not exist. Activate user in
         data store. If a sample is loaded in sample changer but not mounted,
-        mount it and update the smaple list. Try update the operator.
+        mount it and update the sample list. Try update the operator.
 
         Args:
             login_id: The username.
@@ -325,7 +325,7 @@ class BaseUserManager(ComponentBase):
         return current_user.is_authenticated()
 
     def force_signout_user(self, username: str) -> None:
-        """Force signout of the annonymous or non operating user.
+        """Force signout of the anonymous or non operating user.
 
         Args:
             username: username of the user to be signed out.
@@ -344,7 +344,7 @@ class BaseUserManager(ComponentBase):
 
         Login information to be displayed in the application such as:
         * synchrotron and beamline names
-        * user infromation
+        * user information
         * proposals list
         * selected proposal
         * and so on
