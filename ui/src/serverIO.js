@@ -294,7 +294,7 @@ class ServerIO {
         const msg = `${numClicks}-Click Centring: \nSelect centered position or center`;
         dispatch(videoMessageOverlay(true, msg));
       } else {
-        const msg = 'Auto loop centering: \n Save position or re-center';
+        const msg = 'Auto loop centring: \n Save position or re-center';
         dispatch(videoMessageOverlay(true, msg));
       }
     });
