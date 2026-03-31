@@ -144,7 +144,7 @@ export function initChipCanvas(currentChipLayout) {
   const [blockSizeX] = chipConfig.block_size;
   const [blockSizeY] = chipConfig.block_size;
   const rowLabels = chipConfig.row_labels;
-  const colLabels = chipConfig.column_lables;
+  const colLabels = chipConfig.column_labels;
 
   const [offset] = chipConfig.block_spacing;
   const [spacing] = chipConfig.block_spacing;
