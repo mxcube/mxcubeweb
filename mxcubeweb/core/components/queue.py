@@ -1814,8 +1814,6 @@ class Queue(ComponentBase):
         HWR.beamline.queue_manager.set_pause(False)
 
         if tindex in ["undefined", "None", "null", None]:
-            node_id = current_queue[sid]["queueID"]
-
             # The queue does not run the mount defined by the sample entry if it has no
             # tasks, so in order function as expected; just mount the sample
             if (
