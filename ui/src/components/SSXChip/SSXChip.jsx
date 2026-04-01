@@ -314,7 +314,7 @@ export default function SSXChip() {
                 </div>
                 <div className={styles.chipCanvasContainer}>
                   <canvas
-                    aria-label="chip-detials-canvas"
+                    aria-label="chip-details-canvas"
                     id="chip-detail-canvas"
                     ref={detailCanvasRef}
                   />
@@ -329,7 +329,7 @@ export default function SSXChip() {
                   />
                 </div>
               </div>
-              <Row style={{ 'padding-top': 10 }}>
+              <Row style={{ paddingTop: 10 }}>
                 <h5>Move to:</h5>
                 <Col className="col-sm-auto pe-0">
                   {['top_left', 'top_right', 'bottom_left', 'bottom_right'].map(
@@ -337,8 +337,8 @@ export default function SSXChip() {
                       <Button
                         variant="outline-secondary"
                         style={{
-                          'text-transform': 'capitalize',
-                          'margin-right': 10,
+                          textTransform: 'capitalize',
+                          marginRight: 10,
                         }}
                         onClick={(e) => handleSubmit('move_to', e, name)}
                       >
@@ -348,7 +348,7 @@ export default function SSXChip() {
                   )}
                 </Col>
               </Row>
-              <Row style={{ 'padding-top': 10 }}>
+              <Row style={{ paddingTop: 10 }}>
                 <h5>Current position:</h5>
                 <Col className="col-sm-auto pe-0">
                   <MotorInput role="sample_horizontal" />
@@ -370,7 +370,7 @@ export default function SSXChip() {
           <Card>
             <Card.Body>
               <Row>
-                <h5>Chip calibratation:</h5>
+                <h5>Chip calibration:</h5>
               </Row>
               <Row>
                 <Col className="col-sm-auto pe-0">
@@ -378,7 +378,7 @@ export default function SSXChip() {
                     style={{ 'margin-right': 10 }}
                     onClick={(e) => handleSubmit('ir_auto_focus', e)}
                   >
-                    IR Auto foucs
+                    IR Auto focus
                   </Button>
                 </Col>
               </Row>
