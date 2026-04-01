@@ -72,7 +72,7 @@ function warn(values, props) {
       5
   ) {
     warnings.osc_range =
-      'The given oscillation range might be to large for this centering';
+      'The given oscillation range might be to large for this centring';
   }
 
   return warnings;

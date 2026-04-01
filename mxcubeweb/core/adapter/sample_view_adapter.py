@@ -131,7 +131,7 @@ class SampleViewAdapter(AdapterBase):
         if self.app.lims.get_current_sample().get("sampleID", "") == "":
             return
 
-        # If centering is valid add the point, otherwise remove it
+        # If centring is valid add the point, otherwise remove it
         if centring_status["valid"]:
             motor_positions = centring_status["motors"]
             motor_positions.pop("zoom", None)
@@ -470,9 +470,9 @@ class SampleViewAdapter(AdapterBase):
             self._ho.start_manual_centring(nb_clicks)
         else:
             logging.getLogger("user_level_log").warning(
-                "Diffractometer is busy, cannot start centering"
+                "Diffractometer is busy, cannot start centring"
             )
-            msg = "Diffractometer is busy, cannot start centering"
+            msg = "Diffractometer is busy, cannot start centring"
             raise RuntimeError(msg)
 
         return {"clicksLeft": self.centring_clicks_left()}
