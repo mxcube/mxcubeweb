@@ -1,0 +1,23 @@
+---
+
+sample_view_video_controls:
+  id: sample_view_video_controls
+  components:
+    - id: snapshot
+      show: true
+    - id: draw_grid
+      show: true
+      show_vspace: false
+      show_hspace: true
+    - id: click_centring
+      show: true
+    - id: focus
+      show: true
+    - id: zoom
+      show: true
+    - id: backlight
+      show: true
+    - id: frontlight
+      show: true
+    - id: video_size
+      show: true

@@ -1,0 +1,9 @@
+---
+
+session_picker:
+  id: session_picker
+  tabs:
+    active: true
+    scheduled: true
+    other_beamlines: true
+    all_sessions: false

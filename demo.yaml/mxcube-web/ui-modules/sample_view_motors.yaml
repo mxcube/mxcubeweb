@@ -1,0 +1,71 @@
+---
+
+sample_view_motors:
+  id: sample_view_motors
+  components:
+    - label: Omega
+      attribute: diffractometer.omega
+      role: omega
+      step: 90
+      precision: 2
+      suffix: °
+    - label: Kappa
+      attribute: diffractometer.kappa
+      role: kappa
+      step: 0.1
+      precision: 1
+      suffix: °
+    - label: Kappa Phi
+      attribute: diffractometer.kappa_phi
+      role: kappa_phi
+      step: 0.1
+      precision: 1
+      suffix: °
+    - label: X
+      attribute: diffractometer.focus
+      role: focus
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Y
+      attribute: diffractometer.phiy
+      role: phiy
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Z
+      attribute: diffractometer.phiz
+      role: phiz
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Samp-X
+      attribute: diffractometer.sampx
+      role: sampx
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Samp-Y
+      attribute: diffractometer.sampy
+      role: sampy
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Sample Horizontal
+      attribute: diffractometer.phiy
+      role: sample_horizontal
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Sample Vertical
+      attribute: diffractometer.phiz
+      role: sample_vertical
+      step: 0.1
+      precision: 3
+      suffix: mm
+    - label: Focus
+      attribute: diffractometer.focus
+      role: sample_focus
+      step: 0.1
+      precision: 3
+      suffix: mm

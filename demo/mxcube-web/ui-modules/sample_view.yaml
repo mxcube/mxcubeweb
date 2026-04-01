@@ -1,0 +1,9 @@
+---
+
+sample_view:
+  id: sample_view
+  components:
+    - attribute: phase_control
+      label: Phase Control
+    - attribute: beam_size
+      label: Beam size

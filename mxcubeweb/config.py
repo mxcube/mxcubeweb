@@ -1,6 +1,8 @@
 import logging
 import os
+import pathlib
 import sys
+import time
 
 import ruamel.yaml
 from pydantic import (
@@ -57,6 +59,60 @@ class ConfigLoader:
 
         return model
 
+    @staticmethod
+    def load_ui_index(index_path: str) -> dict:
+        """Load an ui.yaml and merge the referenced "module" files."""
+        yaml = ruamel.yaml.YAML()
+        with open(index_path) as f:
+            ui_index = yaml.load(f)
+
+        merged: dict = {}
+
+        if not isinstance(ui_index, dict):
+            return merged
+
+        # New format (version 1.0.0) uses a top-level 'modules' mapping
+        # while the legacy format (version 0) has no modules section
+        modules = ui_index.get("modules")
+
+        # If modules are defined (version 1.0.0 and greater), load and merge
+        # them into the ui_index.
+        if modules is not None:
+            base_dir = pathlib.Path(index_path).parent
+
+            for rel in modules.values():
+                module_path = base_dir / rel
+
+                if not pathlib.Path(module_path).exists():
+                    logging.getLogger("HWR").warning(
+                        f"Module file not found: {module_path}"
+                    )
+                    continue
+
+                with open(module_path) as mf:
+                    data = yaml.load(mf)
+
+                    if isinstance(data, dict):
+                        merged.update(data)
+
+            return merged
+
+        # Legacy format, the ui.yaml already contains module directly in the
+        # ui.yaml file.
+        logging.getLogger("HWR").warning(
+            "ui.yaml appears to be in legacy format. "
+            "The new version 1 format (with 'modules') is preferred. "
+            "Loading legacy file for compatibility. "
+            "The script in demo/mxcube-web/scripts/convert_ui_yaml.py can be used to "
+            "convert to the new format."
+        )
+
+        for i in range(3, 0, -1):
+            print(f"Sleeping for {i} seconds")
+            time.sleep(1)
+
+        return ui_index
+
 
 class Config:
     CONFIG_ROOT_PATH: str = ""
@@ -79,4 +135,18 @@ class Config:
 
     def load_config(self, component_name, schema):
         fpath = os.path.join(Config.CONFIG_ROOT_PATH, f"{component_name}.yaml")
+        index_path = os.path.join(Config.CONFIG_ROOT_PATH, "ui.yaml")
+        if component_name == "ui" and pathlib.Path(index_path).exists():
+            data = ConfigLoader.load_ui_index(index_path)
+            data = ConfigLoader.walk_and_resolve(data)
+
+            try:
+                model = schema.parse_obj(data)
+            except ValidationError:
+                logging.getLogger("HWR").error(f"Validation error in {index_path}:")
+                logging.getLogger("HWR").exception("")
+                sys.exit(-1)
+
+            return model
+
         return ConfigLoader().load(path=fpath, schema=schema)
