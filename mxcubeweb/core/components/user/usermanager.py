@@ -316,14 +316,6 @@ class BaseUserManager(ComponentBase):
 
         self.app.server.emit("observersChanged", namespace="/hwr")
 
-    def is_authenticated(self) -> bool:
-        """Check if the current user is authenticated.
-
-        Returns:
-            ``True`` if the current user is authenticated.
-        """
-        return current_user.is_authenticated()
-
     def force_signout_user(self, username: str) -> None:
         """Force signout of the anonymous or non operating user.
 
