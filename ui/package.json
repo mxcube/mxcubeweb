@@ -4,8 +4,8 @@
   "private": true,
   "type": "module",
   "engines": {
-    "node": "18.x || 20.x",
-    "pnpm": "9.x"
+    "node": "22.x || 24.x",
+    "pnpm": "10.x"
   },
   "scripts": {
     "start": "vite",

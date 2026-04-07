@@ -1,0 +1,19 @@
+%YAML 1.2
+---
+# Enforce Node and pnpm versions specified in `engines` field of `package.json`
+engineStrict: true
+
+# Fail install if any dependency has unreviewed build scripts
+strictDepBuilds: true
+onlyBuiltDependencies:
+  - '@fortawesome/fontawesome-free'
+  - '@swc/core'
+  - 'canvas'
+  - 'cypress'
+  - 'esbuild'
+
+# Save exact dependency versions in `package.json`
+savePrefix: ''
+
+# Only allow releases that are at least 24 hours old to be installed
+minimumReleaseAge: 1440
