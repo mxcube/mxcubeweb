@@ -1,6 +1,5 @@
 /* eslint-disable react/destructuring-assignment */
-import 'fabric';
-
+import { ActiveSelection, Canvas, Group, Point } from 'fabric';
 import React from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
@@ -24,6 +23,7 @@ import {
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
+import { GridGroup } from './FabricObjects/gridGroup.js';
 import GridForm from './GridForm';
 import styles from './SampleImage.module.css';
 import {
@@ -36,9 +36,11 @@ import {
 } from './shapes';
 import VideoPlayer from './VideoPlayer';
 
-const { fabric } = globalThis;
-fabric.Group.prototype.hasControls = false;
-fabric.Group.prototype.hasBorders = false;
+Group.ownDefaults = {
+  ...Group.ownDefaults,
+  hasControls: false,
+  hasBorders: false,
+};
 
 class SampleImage extends React.Component {
   constructor(props) {
@@ -75,11 +77,12 @@ class SampleImage extends React.Component {
 
   componentDidMount() {
     // Create fabric and set image background to sample
-    this.canvas = new fabric.Canvas('canvas', {
+    this.canvas = new Canvas('canvas', {
       defaultCursor: 'crosshair',
       altSelectionKey: 'altKey',
       selectionKey: 'ctrlKey',
       preserveObjectStacking: true,
+      stopContextMenu: false,
     });
 
     this.drawGridPlugin.canvas = this.canvas;
@@ -343,17 +346,37 @@ class SampleImage extends React.Component {
     document.querySelector('#insideWrapper').style.height = `${h}px`;
   }
 
+  getShapeType(obj) {
+    if (this.props.points[obj.id]) {
+      return this.props.points[obj.id].state;
+    }
+
+    if (this.props.twoDPoints[obj.id]) {
+      return this.props.twoDPoints[obj.id].state;
+    }
+
+    if (this.props.lines[obj.id]) {
+      return 'LINE';
+    }
+
+    if (this.props.grids[obj.id]) {
+      return 'GridGroupSaved';
+    }
+
+    return 'UNKNOWN';
+  }
+
   rightClick(e) {
     e.preventDefault();
 
     const group = this.canvas.getActiveObject();
-    const clickPoint = new fabric.Point(e.offsetX, e.offsetY);
+    const clickPoint = new Point(e.offsetX, e.offsetY);
     let ctxMenuObj;
     let objectFound = false;
     // Existing selection clicked
     if (
       group &&
-      group.type === 'activeSelection' &&
+      group instanceof ActiveSelection &&
       group.containsPoint(clickPoint)
     ) {
       const shapes = group.getObjects();
@@ -437,7 +460,10 @@ class SampleImage extends React.Component {
         ) {
           objectFound = true;
           this.selectShape([obj], e.ctrlKey);
-          ctxMenuObj = obj;
+          ctxMenuObj = {
+            type: this.getShapeType(obj),
+            id: obj.id,
+          };
         }
       });
       if (!objectFound) {
@@ -447,7 +473,7 @@ class SampleImage extends React.Component {
 
             this.selectShape([obj], e.ctrlKey);
 
-            if (obj.type === 'GridGroup') {
+            if (obj instanceof GridGroup) {
               let gridData = this.props.grids[obj.id];
               if (gridData) {
                 const cellCenter = this.drawGridPlugin.getClickedCell(
@@ -467,7 +493,10 @@ class SampleImage extends React.Component {
                 ctxMenuObj = { type: 'GridGroup', gridData, id: obj.id };
               }
             } else {
-              ctxMenuObj = obj;
+              ctxMenuObj = {
+                type: this.getShapeType(obj),
+                id: obj.id,
+              };
             }
           }
         });
@@ -512,9 +541,9 @@ class SampleImage extends React.Component {
       this.canvas.selection = false; // Disable group selection
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);
     } else if (option.target && !(option.e.shiftKey || option.e.ctrlKey)) {
-      if (option.target.type === 'activeSelection') {
+      if (option.target instanceof ActiveSelection) {
         const group = this.canvas.getActiveObject();
-        const clickPoint = new fabric.Point(option.e.offsetX, option.e.offsetY);
+        const clickPoint = new Point(option.e.offsetX, option.e.offsetY);
 
         group.getObjects().forEach((obj) => {
           if (!objectFound && obj.containsPoint(clickPoint) && obj.selectable) {
@@ -825,7 +854,7 @@ class SampleImage extends React.Component {
       }
     });
 
-    const sel = new fabric.ActiveSelection(aShapes, {
+    const sel = new ActiveSelection(aShapes, {
       canvas: this.canvas,
       hasRotatingPoint: false,
       lockMovementX: true,

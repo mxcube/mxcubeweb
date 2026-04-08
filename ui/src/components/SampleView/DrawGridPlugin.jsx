@@ -1,212 +1,8 @@
-import 'fabric';
+import { Ellipse, FabricImage, FabricText, Point } from 'fabric';
 
-const TAU = Math.PI * 2;
-
-const { fabric } = globalThis;
-
-/**
- * @typedef {Object} GridOptions
- * @property {number} cellRows - The number of rows in the grid.
- * @property {number} cellCols - The number of columns in the grid.
- * @property {number} cellWidth - The width of each cell in the grid.
- * @property {number} cellHeight - The height of each cell in the grid.
- * @property {number} cellHSpace - The horizontal space between cells.
- * @property {number} cellVSpace - The vertical space between cells.
- * @property {string} color - Color of the grid lines.
- * @property {number} cellTW - The total width of each cell, including the horizontal space.
- * @property {number} cellTH - The total height of each cell, including the vertical space.
- * @property {boolean} [selected = false] - Whether the grid is selected.
- */
-/**
- * A custom Fabric.js object representing a grid.
- * @typedef {fabric.IObjectOptions & GridOptions} Grid
- * @extends fabric.Object
- */
-const Grid = fabric.util.createClass(fabric.Object, {
-  type: 'Grid',
-  selected: false,
-
-  /**
-   * Initializes the Grid object.
-   *
-   * @param {GridOptions & fabric.IObjectOptions} gridOptions
-   */
-  initialize(gridOptions) {
-    this.callSuper('initialize', gridOptions);
-    this.selected = !!this.selected;
-    this.cacheProperties.push('selected');
-  },
-
-  /**
-   * Renders the grid on the canvas.
-   *
-   * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
-   * @private
-   */
-  _render(ctx) {
-    if (this.selected) {
-      this._drawInnerGridLines(ctx);
-    }
-    this._drawOuterBorder(ctx);
-  },
-
-  /**
-   * Draws the inner grid lines.
-   *
-   * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
-   * @private
-   */
-  _drawInnerGridLines(ctx) {
-    const lineColor = 'rgba(136, 255, 91, 0.5)';
-    // eslint-disable-next-line no-param-reassign
-    ctx.strokeStyle = lineColor;
-    const [left, right, top, bottom] = [
-      -this.width / 2,
-      this.width / 2,
-      -this.height / 2,
-      this.height / 2,
-    ];
-    if (inSmallCellSizeMode(this.cellTW, this.cellTH)) {
-      /* we don't draw inner lines for small cells, to reduce visual clutter */
-      return;
-    }
-    // Draw horizontal lines
-    for (let row = 1; row < this.cellRows; row++) {
-      const y = top + row * this.cellTH;
-      ctx.beginPath();
-      ctx.moveTo(left, y);
-      ctx.lineTo(right, y);
-      ctx.stroke();
-    }
-
-    // Draw vertical lines
-    for (let col = 1; col < this.cellCols; col++) {
-      const x = left + col * this.cellTW;
-      ctx.beginPath();
-      ctx.moveTo(x, top);
-      ctx.lineTo(x, bottom);
-      ctx.stroke();
-    }
-  },
-
-  /**
-   * Draws the outer border of the grid.
-   *
-   * @param {CanvasRenderingContext2D} ctx - The canvas rendering context.
-   * @private
-   */
-  _drawOuterBorder(ctx) {
-    // eslint-disable-next-line no-param-reassign
-    ctx.strokeStyle = this.color;
-    if (!this.selected) {
-      ctx.setLineDash([5, 5]);
-    } else {
-      ctx.setLineDash([]);
-    }
-
-    ctx.strokeRect(-this.width / 2, -this.height / 2, this.width, this.height);
-  },
-});
-
-/**
- * Based on cell width and height in pixels,
- * decide if we should do drawing in 'small cell size' mode.
- *
- *  returns true if 'small cell size' mode should be used, false otherwise
- */
-function inSmallCellSizeMode(cellWidth, cellHeight) {
-  const MIN_CELL_PIXELS_SIZE = 6;
-  return cellWidth < MIN_CELL_PIXELS_SIZE || cellHeight < MIN_CELL_PIXELS_SIZE;
-}
-
-/**
- * Fabric Shape for drawing grid (defined by GridData)
- * @typedef {fabric.Group & { id?: string }} GridGroup
- */
-const GridGroup = fabric.util.createClass(fabric.Group, {
-  type: 'GridGroup',
-
-  initialize(objects, options = {}) {
-    this.callSuper('initialize', objects, options);
-    this.id = options.id;
-  },
-});
-/**
- * Custom Fabric shape, for displaying grid scan results.
- *
- * This is an optimization for drawing grids with large number of
- * cells. Using one single custom fabric object for drawing results for
- * all cells is faster, then having a per cell fabric object.
- *
- * Another optimization is to switch to drawing rectangles instead of ellipses,
- * when cells are small. When cell's are a handful of pixels large, there is no
- * noticeable visual difference between a rectangle and an ellipse. However, it
- * appears that drawing rectangles is much faster.
- *
- */
-const GridResult = fabric.util.createClass(fabric.Object, {
-  type: 'GridResult',
-
-  initialize(objects, options = {}) {
-    this.callSuper('initialize', objects, options);
-    const { cellTW, cellTH, cellColumns, cellRows } = objects;
-    const width = cellTW * cellColumns;
-    const height = cellTH * cellRows;
-    this.set({ width, height });
-  },
-
-  _render(ctx) {
-    if (inSmallCellSizeMode(this.cellTW, this.cellTH)) {
-      //
-      // the cells are small, draw them as rectangles
-      //
-
-      const xOffset = -this.width / 2 + this.cellTH / 2;
-      const yOffset = -this.height / 2 + this.cellTW / 2;
-      const width = this.cellTW - this.cellHSpace;
-      const height = this.cellTH - this.cellVSpace;
-
-      for (let y = 0; y < this.cellRows; y += 1) {
-        for (let x = 0; x < this.cellColumns; x += 1) {
-          ctx.beginPath();
-          ctx.fillStyle = this.fillingMatrix[x][y]; // eslint-disable-line no-param-reassign
-          ctx.fillRect(
-            xOffset + x * this.cellTW,
-            yOffset + y * this.cellTH,
-            width,
-            height,
-          );
-        }
-      }
-    } else {
-      //
-      // normal cells, draw them as ellipses
-      //
-
-      const xOffset = -this.width / 2 + this.cellTW / 2;
-      const yOffset = -this.height / 2 + this.cellTH / 2;
-      const width = (this.cellTW - this.cellHSpace) / 2;
-      const height = (this.cellTH - this.cellVSpace) / 2;
-
-      for (let y = 0; y < this.cellRows; y += 1) {
-        for (let x = 0; x < this.cellColumns; x += 1) {
-          ctx.beginPath();
-          ctx.fillStyle = this.fillingMatrix[x][y]; // eslint-disable-line no-param-reassign
-          ctx.ellipse(
-            xOffset + x * this.cellTW,
-            yOffset + y * this.cellTH,
-            width,
-            height,
-            0,
-            0,
-            TAU,
-          );
-          ctx.fill();
-        }
-      }
-    }
-  },
-});
+import { Grid } from './FabricObjects/grid';
+import { GridGroup } from './FabricObjects/gridGroup';
+import { GridResult } from './FabricObjects/gridResult';
 /**
  * @typedef {Object} GridData
  * @property {[number, number]} screenCoord
@@ -411,7 +207,7 @@ export default class DrawGridPlugin {
    * Sart drawing grid
    *
    * @param {Object} options
-   * @param {FabricCanvas} canvas
+   * @param {Canvas} canvas
    * @param {boolean} snapToGrid - True if grid is defined by whole cells,
    *                               false if fractions of a cell is allowed
    */
@@ -428,7 +224,7 @@ export default class DrawGridPlugin {
   /**
    * Updates current grid while drawing
    *
-   * @param {FabricCanvas} canvas
+   * @param {Canvas} canvas
    * @param {float} x - bottom x coordinate of grid, (mouse x position)
    * @param {float} y - bottom y coordinate of grid, (mouse y position)
    */
@@ -471,7 +267,7 @@ export default class DrawGridPlugin {
   /**
    * Repaint current grid
    *
-   * @param {FabricCanvas} canvas
+   * @param {Canvas} canvas
    */
   repaint(canvas) {
     const shape = this.shapeFromGridData(this.gridData);
@@ -631,7 +427,7 @@ export default class DrawGridPlugin {
             // eslint-disable-next-line max-depth
             if (this.include_cell_labels) {
               shapes.push(
-                new fabric.Text(cellCount, {
+                new FabricText(cellCount, {
                   left: left + cellHSpace / 2 + cellTW * nw + cellWidth / 2,
                   top: top + cellVSpace / 2 + cellTH * nh + cellHeight / 2,
                   originX: 'center',
@@ -647,7 +443,7 @@ export default class DrawGridPlugin {
       } else if (gridData.result && gridData.result.length > 0) {
         const imageElement = document.createElement('img');
         imageElement.src = `data:image/png;base64,${gridData.result}`;
-        const image = new fabric.Image(imageElement);
+        const image = new FabricImage(imageElement);
         image.scaleToHeight(height);
         image.scaleX = width / imageElement.naturalWidth;
         shapes.push(image);
@@ -656,12 +452,14 @@ export default class DrawGridPlugin {
 
     if (gridData.name) {
       shapes.push(
-        new fabric.Text(gridData.name, {
-          left: width,
-          top: height,
+        new FabricText(gridData.name, {
+          left: width / 2,
+          top: height / 2,
           fill: color,
           fontFamily: 'Helvetica',
           fontSize: 18,
+          originX: 'left',
+          originY: 'top',
         }),
       );
     }
@@ -680,6 +478,8 @@ export default class DrawGridPlugin {
       id: gd.id,
       top,
       left,
+      originX: 'left',
+      originY: 'top',
     });
     return { shapeGroup, gridData };
   }
@@ -692,10 +492,10 @@ export default class DrawGridPlugin {
   }
 
   onCellMouseOver(options, canvas) {
-    if (options.target && options.target.get('type') === 'GridGroup') {
+    if (options.target && options.target instanceof GridGroup) {
       options.target.forEachObject((obj) => {
-        if (obj.get('type') === 'ellipse') {
-          const mpoint = new fabric.Point(options.e.offsetX, options.e.offsetY);
+        if (obj instanceof Ellipse) {
+          const mpoint = new Point(options.e.offsetX, options.e.offsetY);
 
           if (obj.containsPoint(mpoint, null, true) && obj.cell) {
             this.clearMouseOverGridLabel(canvas);
@@ -703,7 +503,7 @@ export default class DrawGridPlugin {
             const objCenterX = obj.aCoords.tl.x + obj.width / 2;
 
             this.mouseOverGridLabel.push(
-              new fabric.Ellipse({
+              new Ellipse({
                 left: objCenterX,
                 top: options.e.offsetY - 25,
                 width: 40,
@@ -724,7 +524,7 @@ export default class DrawGridPlugin {
                 rx: 20,
                 ry: 20,
               }),
-              new fabric.Text(obj.cell, {
+              new FabricText(obj.cell, {
                 left: objCenterX,
                 top: options.e.offsetY - 25,
                 originX: 'center',

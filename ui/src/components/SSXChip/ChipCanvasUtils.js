@@ -1,8 +1,6 @@
-import 'fabric';
+import { ActiveSelection, Canvas, FabricText, Rect } from 'fabric';
 
 import { showContextMenu } from './ChipContextMenu';
-
-const { fabric } = globalThis;
 
 export function renderChip(
   chipSizeX,
@@ -19,7 +17,7 @@ export function renderChip(
   const objects = [];
 
   objects.push(
-    new fabric.Rect({
+    new Rect({
       top: 0,
       left: 0,
       width: chipSizeX,
@@ -35,7 +33,7 @@ export function renderChip(
       lockSkewingY: true,
       lockRotation: true,
       hoverCursor: 'arrow',
-      type: 'CHIP',
+      customType: 'CHIP',
       objectIndex: [],
     }),
   );
@@ -50,7 +48,7 @@ export function renderChip(
     }
 
     objects.push(
-      new fabric.Text(label, {
+      new FabricText(label, {
         top: offset / 2,
         left:
           ci * (blockSizeX + spacing) + offset + blockSizeX + blockSizeX / 4,
@@ -69,7 +67,7 @@ export function renderChip(
         lockSkewingY: true,
         lockRotation: true,
         hoverCursor: 'pointer',
-        type: 'BLOCK',
+        customType: 'BLOCK',
       }),
     );
   }
@@ -82,7 +80,7 @@ export function renderChip(
     }
 
     objects.push(
-      new fabric.Text(label, {
+      new FabricText(label, {
         top: ri * (blockSizeY + spacing) + offset + blockSizeY,
         left: offset / 2,
         fontSize: blockSizeX * 0.7,
@@ -100,7 +98,7 @@ export function renderChip(
         lockSkewingY: true,
         lockRotation: true,
         hoverCursor: 'pointer',
-        type: 'BLOCK',
+        customType: 'BLOCK',
       }),
     );
   }
@@ -108,7 +106,7 @@ export function renderChip(
   for (let ri = 0; ri < rows; ri++) {
     for (let ci = 0; ci < cols; ci++) {
       objects.push(
-        new fabric.Rect({
+        new Rect({
           top: ri * (blockSizeY + spacing) + offset + blockSizeY,
           left: ci * (blockSizeX + spacing) + offset + blockSizeX,
           width: blockSizeX,
@@ -126,7 +124,7 @@ export function renderChip(
           lockSkewingY: true,
           lockRotation: true,
           hoverCursor: 'pointer',
-          type: 'BLOCK',
+          customType: 'BLOCK',
           objectIndex: [ri, ci],
         }),
       );
@@ -155,7 +153,7 @@ export function initChipCanvas(currentChipLayout) {
   const canvasWidth = numCols * (blockSizeX + spacing) + offset + blockSizeX;
   const canvasHeight = numRows * (blockSizeY + spacing) + offset + blockSizeY;
 
-  const chipCanvas = new fabric.Canvas('chip-canvas', {
+  const chipCanvas = new Canvas('chip-canvas', {
     width: canvasWidth,
     height: canvasHeight,
     backgroundColor: '#CCC',
@@ -167,7 +165,7 @@ export function initChipCanvas(currentChipLayout) {
     renderOnAddRemove: false,
   });
 
-  const detailCanvas = new fabric.Canvas('chip-detail-canvas', {
+  const detailCanvas = new Canvas('chip-detail-canvas', {
     width: canvasWidth,
     height: canvasHeight,
     backgroundColor: '#CCC',
@@ -185,11 +183,11 @@ export function initChipCanvas(currentChipLayout) {
     if (event.button === 3) {
       let selection = [];
 
-      if (object.type === 'BLOCK') {
+      if (object.customType === 'BLOCK') {
         selection.push(object.objectIndex);
       }
 
-      if (object.type === 'activeSelection') {
+      if (object instanceof ActiveSelection) {
         selection = object._objects.map((o) => o.objectIndex);
       }
 
@@ -250,7 +248,7 @@ export function initChipCanvas(currentChipLayout) {
 }
 
 export function initFoilCanvas(gridList) {
-  const freeFormCanvas = new fabric.Canvas('chip-free-form-canvas', {
+  const freeFormCanvas = new Canvas('chip-free-form-canvas', {
     width: 300,
     height: 300,
     backgroundColor: '#CCC',
@@ -270,7 +268,7 @@ export function initFoilCanvas(gridList) {
     }
     freeFormCanvas.discardActiveObject();
 
-    const rect = new fabric.Rect({
+    const rect = new Rect({
       left: pointer.x,
       top: pointer.y,
       originX: 'left',
@@ -309,7 +307,7 @@ export function initFoilCanvas(gridList) {
 
   gridList.forEach((gridData) => {
     freeFormCanvas.add(
-      new fabric.Rect({
+      new Rect({
         left: gridData.screenCoord[1],
         top: gridData.screenCoord[0],
         originX: 'left',

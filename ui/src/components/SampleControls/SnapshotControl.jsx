@@ -1,3 +1,4 @@
+import { FabricImage } from 'fabric';
 import { useCallback, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
 import { useSelector } from 'react-redux';
@@ -5,8 +6,6 @@ import { useSelector } from 'react-redux';
 import { sendTakeSnapshot } from '../../api/sampleview';
 import styles from './SampleControls.module.css';
 import { download } from './utils';
-
-const { fabric } = globalThis;
 
 function SnapshotControl(props) {
   const { canvas } = props;
@@ -27,7 +26,7 @@ function SnapshotControl(props) {
 
   const takeSnapshot = useCallback(async () => {
     const img = document.querySelector('#sample-img');
-    const fimg = new fabric.Image(img);
+    const fimg = new FabricImage(img);
     fimg.scale(ratio);
 
     canvas.setBackgroundImage(fimg);

@@ -1,9 +1,7 @@
-import 'fabric';
-
-const { fabric } = globalThis;
+import { Circle, Ellipse, FabricText, Path, Rect, Triangle } from 'fabric';
 
 export function makeRectangle(posX, posY, sizeX, sizeY, color) {
-  return new fabric.Rect({
+  return new Rect({
     left: posX,
     top: posY,
     originX: 'center',
@@ -19,7 +17,7 @@ export function makeRectangle(posX, posY, sizeX, sizeY, color) {
 }
 
 export function makeElipse(posX, posY, sizeX, sizeY, color) {
-  return new fabric.Ellipse({
+  return new Ellipse({
     left: posX,
     top: posY,
     originX: 'center',
@@ -41,11 +39,11 @@ export function makeCircle(
   radius,
   color,
   id,
-  type,
+  customType,
   text,
   strokeWidth,
 ) {
-  return new fabric.Circle({
+  return new Circle({
     radius,
     strokeWidth,
     stroke: color,
@@ -59,7 +57,7 @@ export function makeCircle(
     lockScalingX: true,
     lockScalingY: true,
     hoverCursor: 'pointer',
-    type,
+    customType,
     originX: 'center',
     originY: 'center',
     hasRotatingPoint: false,
@@ -81,11 +79,11 @@ export function makeLine(
   select,
   id,
   text,
-  type,
+  customType,
   hover = 'crosshair',
 ) {
-  return new fabric.Line([x1, y1, x2, y2], {
-    fill: col,
+  return new Path(`M ${x1} ${y1} L ${x2} ${y2}`, {
+    fill: null,
     stroke: col,
     defaultColor: col,
     strokeWidth: wid,
@@ -96,8 +94,7 @@ export function makeLine(
     lockScalingFlip: true,
     lockScalingX: true,
     lockScalingY: true,
-    hasRotatingPoint: false,
-    type,
+    customType,
     selectable: select,
     hoverCursor: hover,
     hasControls: false,
@@ -107,15 +104,21 @@ export function makeLine(
   });
 }
 
-export function makeArrow(line, col, _select, _id, hover = 'crosshair') {
-  const dist = Math.hypot(line.x1 - line.x2, line.y1 - line.y2);
-  const angledeg =
-    (Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180) / Math.PI;
-  const deltaX = dist * 0.99 * Math.cos((angledeg * Math.PI) / 180);
-  const deltaY = dist * 0.99 * Math.sin((angledeg * Math.PI) / 180);
-  return new fabric.Triangle({
-    left: line.get('x1') - deltaX,
-    top: line.get('y1') - deltaY,
+export function makeArrow(path, col, _select, _id, hover = 'crosshair') {
+  const commands = path.path;
+
+  if (!commands || commands.length < 2) {
+    return null;
+  }
+  const [startPoint, ...rest] = commands;
+  const [, x1, y1] = startPoint;
+  const last = rest[rest.length - 1];
+  const [, x2, y2] = last;
+
+  const angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+  return new Triangle({
+    left: x2,
+    top: y2,
     fill: col,
     stroke: col,
     defaultColor: col,
@@ -127,19 +130,28 @@ export function makeArrow(line, col, _select, _id, hover = 'crosshair') {
     lockScalingY: true,
     hasRotatingPoint: false,
     pointType: 'arrow_start',
-    angle: angledeg - 90,
+    angle: angle + 90,
     width: 7,
     height: 10,
     hoverCursor: hover,
   });
 }
 
-export function makeAnchor(line, col, _select, _id, hover = 'crosshair') {
-  const angledeg =
-    (Math.atan2(line.y1 - line.y2, line.x1 - line.x2) * 180) / Math.PI;
-  return new fabric.Rect({
-    left: line.get('x1'),
-    top: line.get('y1'),
+export function makeAnchor(path, col, _select, _id, hover = 'crosshair') {
+  const commands = path.path;
+
+  if (!commands || commands.length < 2) {
+    return null;
+  }
+  const [startPoint, ...rest] = commands;
+  const [, x1, y1] = startPoint;
+  const last = rest[rest.length - 1];
+  const [, x2, y2] = last;
+
+  const angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+  return new Rect({
+    left: x1,
+    top: y1,
     fill: col,
     stroke: col,
     defaultColor: col,
@@ -151,7 +163,7 @@ export function makeAnchor(line, col, _select, _id, hover = 'crosshair') {
     lockScalingY: true,
     hasRotatingPoint: false,
     pointType: 'arrow_start',
-    angle: angledeg - 90,
+    angle: angle + 90,
     width: 7,
     height: 2,
     hoverCursor: hover,
@@ -159,7 +171,7 @@ export function makeAnchor(line, col, _select, _id, hover = 'crosshair') {
 }
 
 export function makeText(x, y, fontSize, color, text) {
-  return new fabric.Text(text, {
+  return new FabricText(text, {
     fontSize,
     fill: color,
     stroke: color,
@@ -169,6 +181,8 @@ export function makeText(x, y, fontSize, color, text) {
     hoverCursor: 'crosshair',
     hasBorders: false,
     fontFamily: 'Arial',
+    originX: 'left',
+    originY: 'top',
   });
 }
 
@@ -265,9 +279,19 @@ export function makeDistanceLine(p1, p2, iR, ppMm, color, width) {
   ];
 }
 
-export function makePoint(x, y, id, color, type, name, strokeWidth) {
+export function makePoint(x, y, id, color, customType, name, strokeWidth) {
   const text = makeText(x + 10, y - 25, 14, color, name);
-  const circle = makeCircle(x, y, true, 10, color, id, type, text, strokeWidth);
+  const circle = makeCircle(
+    x,
+    y,
+    true,
+    10,
+    color,
+    id,
+    customType,
+    text,
+    strokeWidth,
+  );
   return [circle, text];
 }
 
