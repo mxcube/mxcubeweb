@@ -75,6 +75,10 @@ function warn(values, props) {
       'The given oscillation range might be to large for this centring';
   }
 
+  if (!values.prefix) {
+    warnings.prefix = 'Prefix is empty';
+  }
+
   return warnings;
 }
 

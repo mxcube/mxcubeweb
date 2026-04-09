@@ -10,18 +10,16 @@ function validate(values, props) {
   }
   const currEnergy = Number.parseFloat(values.energy);
   const currTransmission = Number.parseFloat(values.transmission);
-  // here we update the resolution limits based on the energy the typed in the form,
-  // the limits come from a table sent by the client
-
-  const validFname = /^[\w#\-[\]{}]+$/u.test(props.filename);
 
   const emptyField = 'field is empty';
 
-  if (!validFname) {
+  const validPrefix = !values.prefix || /^[\w-]+$/u.test(values.prefix);
+
+  if (!validPrefix) {
     errors.prefix = INVALID_CHAR_MSG;
   }
 
-  if (props.subdir && !/^[\w\-/{}]+$/u.test(props.subdir)) {
+  if (values.subdir && !/^[\w\-/{}]+$/u.test(values.subdir)) {
     errors.subdir = INVALID_CHAR_MSG;
   }
 
