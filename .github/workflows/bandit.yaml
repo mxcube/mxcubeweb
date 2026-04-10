@@ -1,6 +1,6 @@
 ---
 
-name: Bandit and SonarQube
+name: Bandit
 
 "on":
   pull_request: null
