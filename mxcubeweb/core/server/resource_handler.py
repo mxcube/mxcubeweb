@@ -2,6 +2,7 @@ import contextlib
 import logging
 import re
 from collections.abc import Callable
+from enum import Enum
 from functools import reduce
 from typing import ClassVar
 
@@ -391,6 +392,15 @@ class ResourceHandler:
         msg += f" on: {request.url}"
         raise TypeError(msg)
 
+    def convert(self, obj):
+        if isinstance(obj, Enum):
+            return obj.value
+        if isinstance(obj, dict):
+            return {k: self.convert(v) for k, v in obj.items()}
+        if isinstance(obj, list):
+            return [self.convert(v) for v in obj]
+        return obj
+
     def _handle_view_result(self, result: object) -> dict | Response:
         """Handle the result of a view function.
 
@@ -410,7 +420,7 @@ class ResourceHandler:
                 result = result.dict()
             elif isinstance(result, dict):
                 # If it's already a dictionary, it's ready for JSON serialization
-                pass
+                result = {key: self.convert(value) for key, value in result.items()}
             elif hasattr(result, "__dict__"):
                 # If the result has __dict__ attribute (e.g., an object), convert to
                 # dict
@@ -430,7 +440,6 @@ class ResourceHandler:
                     ),
                     500,
                 )
-
             # Return the result as JSON (mime-type: application/json, code: 200)
             return jsonify(result)
         except Exception:

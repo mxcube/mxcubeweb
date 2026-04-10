@@ -25,3 +25,4 @@ configuration:
            backlight, frontlight]
   nstate_equipment: [aperture, beamstop, capillary, fshutter, zoom,
                      backlightswitch, frontlightswitch]
+  chip_definition_file: chip_definition.json
