@@ -420,10 +420,10 @@ function GphlWorkflowParametersDialog(props) {
                   } mb-2`}
                 >
                   <div className={`${styles.title} p-1`}>
-                    {rowKey === 'reffiles'
-                      ? schema.properties.reffiles?.title
-                      : rowKey === 'indexing_solution'
+                    {rowKey === 'indexing_solution'
                       ? schema.properties.indexing_solution?.title
+                      : schema.properties[rowKey]?.type === 'textarea'
+                      ? schema.properties[rowKey]?.title
                       : ui_schema[rowKey]['ui:title']}
                   </div>
                   <Row className="mx-0">
@@ -435,23 +435,20 @@ function GphlWorkflowParametersDialog(props) {
                         onSelectRow,
                         tbodyRef,
                       )
-                    ) : rowKey === 'reffiles' ? (
-                      // Specific textarea for "reffiles"
-                      schema.properties.reffiles.type === 'textarea' && (
-                        <Form.Control
-                          name="reffiles"
-                          id="reffiles"
-                          onChange={(e) => handleChange(e)}
-                          data-highlight={
-                            schema.properties.reffiles.highlight || undefined
-                          }
-                          type={schema.properties.reffiles.type}
-                          as="textarea"
-                          defaultValue={formState.reffiles}
-                          readOnly={schema.properties.reffiles.readOnly}
-                          disabled={schema.properties.reffiles.readOnly}
-                        />
-                      )
+                    ) : schema.properties[rowKey]?.type === 'textarea' ? (
+                      <Form.Control
+                        name={rowKey}
+                        id={rowKey}
+                        onChange={(e) => handleChange(e)}
+                        data-highlight={
+                          schema.properties[rowKey].highlight || undefined
+                        }
+                        type={schema.properties[rowKey].type}
+                        as="textarea"
+                        defaultValue={formState[rowKey]}
+                        readOnly={schema.properties[rowKey].readOnly}
+                        disabled={schema.properties[rowKey].readOnly}
+                      />
                     ) : rowKey === '_info' ? (
                       <pre className="p-2">
                         {schema.properties[rowKey].default}
