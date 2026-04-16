@@ -263,6 +263,7 @@ function GphlWorkflowParametersDialog(props) {
   function renderFieldControl(fieldKey, isEnumNoLabel) {
     const fieldProps = schema.properties[fieldKey];
     const highlight = fieldProps.highlight || undefined;
+    const isInvalidated = fieldProps.invalidated === true;
     return (
       <div
         key={`${fieldKey}-value`}
@@ -276,6 +277,7 @@ function GphlWorkflowParametersDialog(props) {
             onChange={(e) => handleChange(e)}
             checked={formState[fieldKey]}
             data-highlight={highlight}
+            isInvalid={isInvalidated}
           />
         ) : fieldProps.enum ? (
           <Form.Select
@@ -284,6 +286,7 @@ function GphlWorkflowParametersDialog(props) {
             value={formState[fieldKey]}
             onChange={(e) => handleChange(e)}
             data-highlight={highlight}
+            isInvalid={isInvalidated}
           >
             {fieldProps.enum.map((val) => (
               <option key={val} value={val}>
@@ -302,6 +305,7 @@ function GphlWorkflowParametersDialog(props) {
             defaultValue={formState[fieldKey]}
             readOnly={fieldProps.readOnly}
             disabled={fieldProps.readOnly}
+            isInvalid={isInvalidated}
           />
         ) : fieldProps.type === 'spinbox' ? (
           <Form.Control
@@ -318,6 +322,7 @@ function GphlWorkflowParametersDialog(props) {
             defaultValue={formState[fieldKey]}
             readOnly={fieldProps.readOnly}
             disabled={fieldProps.readOnly}
+            isInvalid={isInvalidated}
           />
         ) : (
           <Form.Control
@@ -333,6 +338,7 @@ function GphlWorkflowParametersDialog(props) {
             defaultValue={formState[fieldKey]}
             readOnly={fieldProps.readOnly}
             disabled={fieldProps.readOnly}
+            isInvalid={isInvalidated}
           />
         )}
         <Form.Control.Feedback type="invalid">
@@ -391,6 +397,11 @@ function GphlWorkflowParametersDialog(props) {
     );
   }
 
+  const hasInvalidatedFields = Boolean(
+    schema &&
+      Object.values(schema.properties).some((p) => p.invalidated === true),
+  );
+
   let formName = '';
   let renderFormRow = '';
 
@@ -448,6 +459,7 @@ function GphlWorkflowParametersDialog(props) {
                         defaultValue={formState[rowKey]}
                         readOnly={schema.properties[rowKey].readOnly}
                         disabled={schema.properties[rowKey].readOnly}
+                        isInvalid={schema.properties[rowKey].invalidated === true}
                       />
                     ) : rowKey === '_info' ? (
                       <pre className="p-2">
@@ -463,7 +475,7 @@ function GphlWorkflowParametersDialog(props) {
           : null}
         <Stack direction="horizontal" gap={3} className={styles.buttonStack}>
           <div className="ms-auto">
-            <Button variant="success" disabled={validated} type="submit">
+            <Button variant="success" disabled={validated || hasInvalidatedFields} type="submit">
               Continue{' '}
             </Button>
           </div>
