@@ -79,8 +79,7 @@ function GphlWorkflowParametersDialog(props) {
 
   const [schema, setSchema] = useState(null);
   const [formState, setFormState] = useState({});
-  const [errors, setErrors] = useState();
-  const [validated, setValidated] = useState(false);
+  const [invalidFields, setInvalidFields] = useState({});
   const [validatedIndexingTable, setValidatedIndexingTable] = useState(false);
   const [selected, setSelected] = useState([]);
 
@@ -168,6 +167,7 @@ function GphlWorkflowParametersDialog(props) {
     if (show) {
       const initialDataDict = _initFormState();
       setFormState(initialDataDict);
+      setInvalidFields({});
     }
   }, [show, _initFormState]);
 
@@ -179,9 +179,11 @@ function GphlWorkflowParametersDialog(props) {
   }, [fetchUpdated, handleFormDataUpdated, resetUpdatedGphlWParameters]);
 
   function handleSubmit(e) {
-    const form = e.currentTarget;
-    if (form.checkValidity() === false || formState?.indexing_solution === '') {
-      setValidated(true);
+    if (
+      Object.keys(invalidFields).length > 0 ||
+      hasInvalidatedFields ||
+      formState?.indexing_solution === ''
+    ) {
       e.preventDefault();
       e.stopPropagation();
     } else {
@@ -198,8 +200,21 @@ function GphlWorkflowParametersDialog(props) {
   }
 
   async function handleChange(e) {
-    const error = {};
     const key = e.target.name;
+    const isValid = e.target.checkValidity();
+
+    const newInvalidFields = { ...invalidFields };
+    if (!isValid) {
+      newInvalidFields[key] = e.target.validationMessage;
+    } else {
+      delete newInvalidFields[key];
+    }
+    setInvalidFields(newInvalidFields);
+
+    if (!isValid) {
+      return;
+    }
+
     const val =
       e.target.type === 'number'
         ? Number(e.target.value)
@@ -207,22 +222,12 @@ function GphlWorkflowParametersDialog(props) {
         ? e.target.checked
         : e.target.value;
 
-    const form = e.currentTarget;
-
-    if (form.checkValidity() === false) {
-      error[key] = e.target.validationMessage;
-      setValidated(true);
-    } else {
-      setValidated(false);
-      const newFormState = { ...formState };
-      newFormState[key] = removeExtraDecimal(val, typeof val);
-      const signal = formData.ui_schema[uiOptions].return_signal;
-      const parameter = { signal, instruction: key, data: newFormState };
-      await updateGphlWorkflowParameters(parameter);
-      setFormState(newFormState);
-    }
-
-    setErrors({ ...errors, [key]: error[key] });
+    const newFormState = { ...formState };
+    newFormState[key] = removeExtraDecimal(val, typeof val);
+    const signal = formData.ui_schema[uiOptions].return_signal;
+    const parameter = { signal, instruction: key, data: newFormState };
+    await updateGphlWorkflowParameters(parameter);
+    setFormState(newFormState);
   }
 
   const handleIndexingTableChange = useCallback(
@@ -252,7 +257,6 @@ function GphlWorkflowParametersDialog(props) {
       } else {
         newSelected = [index];
         setValidatedIndexingTable(false);
-        setValidated(false);
       }
       setSelected(newSelected);
       handleIndexingTableChange(updatedValue);
@@ -264,6 +268,7 @@ function GphlWorkflowParametersDialog(props) {
     const fieldProps = schema.properties[fieldKey];
     const highlight = fieldProps.highlight || undefined;
     const isInvalidated = fieldProps.invalidated === true;
+    const isInvalid = isInvalidated || Boolean(invalidFields[fieldKey]);
     return (
       <div
         key={`${fieldKey}-value`}
@@ -277,7 +282,7 @@ function GphlWorkflowParametersDialog(props) {
             onChange={(e) => handleChange(e)}
             checked={formState[fieldKey]}
             data-highlight={highlight}
-            isInvalid={isInvalidated}
+            isInvalid={isInvalid}
           />
         ) : fieldProps.enum ? (
           <Form.Select
@@ -286,7 +291,7 @@ function GphlWorkflowParametersDialog(props) {
             value={formState[fieldKey]}
             onChange={(e) => handleChange(e)}
             data-highlight={highlight}
-            isInvalid={isInvalidated}
+            isInvalid={isInvalid}
           >
             {fieldProps.enum.map((val) => (
               <option key={val} value={val}>
@@ -305,7 +310,7 @@ function GphlWorkflowParametersDialog(props) {
             defaultValue={formState[fieldKey]}
             readOnly={fieldProps.readOnly}
             disabled={fieldProps.readOnly}
-            isInvalid={isInvalidated}
+            isInvalid={isInvalid}
           />
         ) : fieldProps.type === 'spinbox' ? (
           <Form.Control
@@ -322,7 +327,7 @@ function GphlWorkflowParametersDialog(props) {
             defaultValue={formState[fieldKey]}
             readOnly={fieldProps.readOnly}
             disabled={fieldProps.readOnly}
-            isInvalid={isInvalidated}
+            isInvalid={isInvalid}
           />
         ) : (
           <Form.Control
@@ -338,11 +343,11 @@ function GphlWorkflowParametersDialog(props) {
             defaultValue={formState[fieldKey]}
             readOnly={fieldProps.readOnly}
             disabled={fieldProps.readOnly}
-            isInvalid={isInvalidated}
+            isInvalid={isInvalid}
           />
         )}
         <Form.Control.Feedback type="invalid">
-          {errors ? errors[fieldKey] : null}
+          {invalidFields[fieldKey] || null}
         </Form.Control.Feedback>
       </div>
     );
@@ -401,6 +406,8 @@ function GphlWorkflowParametersDialog(props) {
     schema &&
       Object.values(schema.properties).some((p) => p.invalidated === true),
   );
+  const hasErrors =
+    Object.keys(invalidFields).length > 0 || hasInvalidatedFields;
 
   let formName = '';
   let renderFormRow = '';
@@ -413,7 +420,6 @@ function GphlWorkflowParametersDialog(props) {
     renderFormRow = (
       <Form
         noValidate
-        validated={validated}
         className={`m-1 ${styles.formHolder}`}
         onSubmit={(e) => handleSubmit(e)}
       >
@@ -475,7 +481,7 @@ function GphlWorkflowParametersDialog(props) {
           : null}
         <Stack direction="horizontal" gap={3} className={styles.buttonStack}>
           <div className="ms-auto">
-            <Button variant="success" disabled={validated || hasInvalidatedFields} type="submit">
+            <Button variant="success" disabled={hasErrors} type="submit">
               Continue{' '}
             </Button>
           </div>
