@@ -201,17 +201,37 @@ function GphlWorkflowParametersDialog(props) {
 
   async function handleChange(e) {
     const key = e.target.name;
-    const isValid = e.target.checkValidity();
+    const fieldProps = schema.properties[key];
+
+    let errorMsg = null;
+
+    if (e.target.type === 'number') {
+      const rawValue = e.target.value;
+      if (rawValue === '') {
+        errorMsg = 'Please fill in this field.';
+      } else {
+        const numValue = Number(rawValue);
+        const min = fieldProps.minimum ?? fieldProps.lowerBound;
+        const max = fieldProps.maximum ?? fieldProps.upperBound;
+        if (min !== undefined && numValue < min) {
+          errorMsg = `Value must be greater than or equal to ${min}.`;
+        } else if (max !== undefined && numValue > max) {
+          errorMsg = `Value must be less than or equal to ${max}.`;
+        }
+      }
+    } else if (!e.target.checkValidity()) {
+      errorMsg = e.target.validationMessage;
+    }
 
     const newInvalidFields = { ...invalidFields };
-    if (!isValid) {
-      newInvalidFields[key] = e.target.validationMessage;
+    if (errorMsg) {
+      newInvalidFields[key] = errorMsg;
     } else {
       delete newInvalidFields[key];
     }
     setInvalidFields(newInvalidFields);
 
-    if (!isValid) {
+    if (errorMsg) {
       return;
     }
 
