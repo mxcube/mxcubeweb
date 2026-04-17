@@ -333,8 +333,8 @@ function GphlWorkflowParametersDialog(props) {
             type={fieldProps.type}
             required
             step="any"
-            min={fieldProps.minimum || 'any'}
-            max={fieldProps.maximum || 'any'}
+            min={fieldProps.minimum ?? 'any'}
+            max={fieldProps.maximum ?? 'any'}
             defaultValue={formState[fieldKey]}
             readOnly={fieldProps.readOnly}
             disabled={fieldProps.readOnly}
