@@ -4,17 +4,14 @@ target-version = "py310"
 [format]
 docstring-code-format = true
 
-
 [lint]
 ignore = [
-    "ANN",  # flake8-annotations: ignored, too many hits (1322)
-    "COM812",  # Ruff recommends to ignore this linter rule when using its formatter
-    "D1",  # Allow missing docstrings
-    "PLR2004",  # magic-value-comparison: ignored, too many hits
-    "G004", # Allow uses of f-strings to format logging messages
+    "S4", # Ingore all suspicious import errors
+    "B028", # Allow to use the Python standard for warnings (oneline) instead of giving explicit stacklevel
 ]
+
 select = [
-    "ALL",
+    "E", "F", "B", "I", "S"
 ]
 
 [lint.pep8-naming]
@@ -24,233 +21,55 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 [lint.per-file-ignores]
 "mxcubeweb/__init__.py" = [
     "E501",
-    "FBT002",
-    "N813",
-    "PTH109",
-]
-"mxcubeweb/__version__.py" = [
-    "PTH123",
 ]
 "mxcubeweb/app.py" = [
-    "BLE001",
     "I001",
-    "N806",
-    "PLR0913",
-    "PTH113",
-    "PTH123",
-    "RUF012",
-    "SIM115",
-]
-"mxcubeweb/config.py" = [
-    "PTH118",
-    "PTH123",
-    "TRY400",
 ]
 "mxcubeweb/core/adapter/actuator_adapter.py" = [
     "B904",
 ]
 "mxcubeweb/core/adapter/adapter_base.py" = [
-    "ARG002",
     "B904",
-    "RUF012",
-    "SLF001",
-    "TRY400",
-    "UP031",
-]
-"mxcubeweb/core/adapter/beamline_action_adapter.py" = [
-    "BLE001",
-]
-"mxcubeweb/core/adapter/beamline_adapter.py" = [
-    "TRY400",
-]
-"mxcubeweb/core/adapter/data_publisher_adapter.py" = [
-    "RUF012",
-]
-"mxcubeweb/core/adapter/diffractometer_adapter.py" = [
-    "RUF012",
-]
-"mxcubeweb/core/adapter/machine_info_adapter.py" = [
-    "ARG002",
 ]
 "mxcubeweb/core/adapter/motor_adapter.py" = [
     "B904",
 ]
-"mxcubeweb/core/adapter/nstate_adapter.py" = [
-    "BLE001",
-    "TRY400",
-]
-"mxcubeweb/core/adapter/wavelength_adapter.py" = [
-    "ARG002",
-]
-"mxcubeweb/core/components/chat.py" = [
-    "ARG002",
-    "DTZ005",
-    "PERF401",
-]
 "mxcubeweb/core/components/component_base.py" = [
 ]
-"mxcubeweb/core/components/harvester.py" = [
-    "BLE001",
-    "N803",
-    "N806",
-    "TRY300",
-]
 "mxcubeweb/core/components/lims.py" = [
-    "BLE001",
     "E501",
-    "FBT002",
-    "FURB188",
-    "G002",
-    "UP031",
 ]
 "mxcubeweb/core/components/queue.py" = [
-    "A005",
-    "ARG002",
     "B010",
-    "BLE001",
-    "C901",
     "E501",
-    "ERA001",
-    "FBT002",
-    "FBT003",
-    "FIX002",
-    "G001",
-    "G002",
-    "N806",
-    "PERF401",
-    "PLR0912",
-    "PLR0915",
-    "PLR1704",
-    "PLR1714",
-    "PLR5501",
-    "PLW0127",
-    "PLW2901",
-    "PTH113",
-    "PTH118",
-    "SLF001",
-    "TD002",
-    "TD003",
-    "UP030",
-    "UP031",
-    "UP032",
 ]
 "mxcubeweb/core/components/sampleview.py" = [
-    "ARG002",
-    "BLE001",
     "E501",
-    "PLR5501",
-    "TRY203",
-    "UP031",
-]
-"mxcubeweb/core/components/user/database.py" = [
-    "DTZ005",
 ]
 "mxcubeweb/core/components/user/usermanager.py" = [
-    "ARG002",
     "B006",
-    "C901",
-    "DTZ005",
-    "ERA001",
-    "FBT001",
-    "FBT002",
-    "FBT003",
-    "TRY201",
-    "TRY203",
-    "TRY400",
-    "UP031",
-]
-"mxcubeweb/core/models/adaptermodels.py" = [
-    "FBT003",
-    "N815",
 ]
 "mxcubeweb/core/models/configmodels.py" = [
     "E501",
-    "FBT003",
 ]
 "mxcubeweb/core/models/generic.py" = [
     "E501",
-    "FBT003",
-]
-"mxcubeweb/core/models/usermodels.py" = [
-    "FBT003",
-]
-"mxcubeweb/core/util/convertutils.py" = [
-    "FBT002",
-    "PLW2901",
 ]
 "mxcubeweb/core/util/fsutils.py" = [
     "B006",
-    "PTH122",
-]
-"mxcubeweb/core/util/networkutils.py" = [
-    "BLE001",
-    "G002",
-    "N802",
-    "N803",
-    "N806",
-    "TRY400",
-    "UP031",
 ]
 "mxcubeweb/logging_handler.py" = [
     "B018",
-    "SLF001",
-]
-"mxcubeweb/routes/login.py" = [
-    "BLE001",
-    "C901",
-    "UP031",
-]
-"mxcubeweb/routes/main.py" = [
-    "ARG001",
-    "DTZ005",
-]
-"mxcubeweb/routes/queue.py" = [
-    "A005",
-    "BLE001",
-    "PLR0915",
-    "TRY300",
-]
-"mxcubeweb/routes/ra.py" = [
-    "ARG001",
-    "PLR0915",
 ]
 "mxcubeweb/routes/samplecentring.py" = [
-    "BLE001",
     "E501",
-    "PLR0915",
-    "TRY301",
 ]
 "mxcubeweb/routes/signals.py" = [
-    "ARG001",
     "B006",
-    "BLE001",
-    "FBT003",
-    "G003",
-    "N803",
-    "N813",
-    "N816",
-    "PLR0913",
-    "SLF001",
-    "TRY400",
-]
-"mxcubeweb/server.py" = [
-    "ARG004",
-    "N805",
-    "PTH118",
-    "PTH120",
-    "UP031",
-]
-"mxcubeweb/state_storage.py" = [
-    "ARG001",
-    "N813",
 ]
 "test/conftest.py" = [
     "E402",
     "E501",
-    "PLW0603",
-    "PTH100",
-    "PTH118",
-    "PTH120",
     "S101",  # "Use of `assert` detected": ignored because tests do rely on `assert`
 ]
 "test/test_*.py" = [
@@ -258,10 +77,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
     "S101",  # "Use of `assert` detected": ignored because tests do rely on `assert`
 ]
 "test/test_authn.py" = [
-    "ARG001",
-    "ERA001",
-    "PLR2044",
-    "PTH107",
     "S108",
 ]
 "test/test_diffractometer_routes.py" = [
@@ -269,7 +84,6 @@ extend-ignore-names = ["HWR"] # To avoid "N814": Camelcase `HardwareRepository` 
 ]
 "test/test_queue_routes.py" = [
     "E501",
-    "UP032",
 ]
 
 
