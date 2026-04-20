@@ -151,9 +151,9 @@ function CharacterisationTaskItem(props) {
         </Table>
 
         {data.state === TASK_COLLECTED && (
-          <div className={styles.resultBody}>
+          <div className={`${styles.resultBody} text-end`}>
             {diffractionPlan && diffractionPlan.length > 0 && (
-              <span className="float-end">
+              <span>
                 <Button
                   size="sm"
                   style={{ width: 'auto', marginTop: '-4px' }}
