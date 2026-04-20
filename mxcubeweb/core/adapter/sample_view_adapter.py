@@ -444,6 +444,7 @@ class SampleViewAdapter(AdapterBase):
                 logging.getLogger("MX3.HWR").exception("")
                 msg = "Error while centring, please try again"
                 self._click_in_progress = False
+                self._ho.cancel_centring()
                 raise RuntimeError(msg) from ex
         else:
             self.centring_reset_click_count()
