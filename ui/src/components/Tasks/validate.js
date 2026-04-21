@@ -13,7 +13,7 @@ function validate(values, props) {
 
   const emptyField = 'field is empty';
 
-  const validPrefix = !values.prefix || /^[\w-]+$/u.test(values.prefix);
+  const validPrefix = !values.prefix || /^[\w#\-[\]{}]+$/u.test(values.prefix);
 
   if (!validPrefix) {
     errors.prefix = INVALID_CHAR_MSG;
