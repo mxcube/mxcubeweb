@@ -95,6 +95,7 @@ class Lims(ComponentBase):
         # proposal_number is the session identifier
         self.select_session(proposal_number)
         self.app.usermanager.update_active_users()
+        self.app.server.emit("sessionsChanged", namespace="/hwr")
         return {}
 
     def get_proposal(self):
@@ -314,11 +315,13 @@ class Lims(ComponentBase):
             session_id: This is a identifier that could be proposal name or
                 ``session_id`` depending of the type of LIMS login type.
         """
-        logging.getLogger("MX3.HWR").debug("select_session session_id=%s" % session_id)
-
         # Selecting the active session in the LIMS object
         try:
             session = HWR.beamline.lims.set_active_session_by_id(session_id)
+            logging.getLogger("MX3.HWR").debug(
+                "select_session session_id=%s" % session_id
+            )
+
         except Exception as exc:
             logging.getLogger("MX3.HWR").exception(
                 "No session candidate. Force signout."
