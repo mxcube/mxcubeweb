@@ -204,7 +204,6 @@ are the same as the command line options but with the `MXCUBE` prefix.
 - MXCUBE_LOG_LEVEL
 - MXCUBE_ENABLED_LOGGER_LIST
 - MXCUBE_ALLOW_REMOTE
-- MXCUBE_RA_TIMEOUT
 - MXCUBE_YAML_EXPORT_DIRECTORY
 
 _Example .env file:_

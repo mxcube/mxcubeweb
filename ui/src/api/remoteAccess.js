@@ -10,10 +10,6 @@ export function sendUpdateAllowRemote(allow) {
   return endpoint.post({ allow }, '/allow_remote').res();
 }
 
-export function sendUpdateTimeoutGivesControl(timeoutGivesControl) {
-  return endpoint.post({ timeoutGivesControl }, '/timeout_gives_control').res();
-}
-
 export function sendUpdateNickname(name) {
   return endpoint.post({ name }, '/update_user_nickname').res();
 }

@@ -97,15 +97,6 @@ def parse_args(argv):
     )
 
     opt_parser.add_argument(
-        "-t",
-        "--ra-timeout",
-        action="store_true",
-        dest="ra_timeout",
-        help="Timeout gives control",
-        default=False,
-    )
-
-    opt_parser.add_argument(
         "--export-yaml-config",
         dest="yaml_export_directory",
         type=Path,
@@ -153,7 +144,6 @@ def build_server_and_config(test=False, argv=None):
         mxcube.init(
             server,
             runtime_options.allow_remote,
-            runtime_options.ra_timeout,
             runtime_options.log_file,
             runtime_options.log_level,
             runtime_options.enabled_logger_list,

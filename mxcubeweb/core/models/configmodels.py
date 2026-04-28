@@ -25,7 +25,6 @@ class RuntimeOptions(BaseSettings):
         "server_access_logger",
     ]
     allow_remote: bool = False
-    ra_timeout: bool = False
     yaml_export_directory: str | None = None
 
     # Pydantic-settings config

@@ -10,7 +10,6 @@ import {
   sendTakeControl,
   sendUpdateAllowRemote,
   sendUpdateNickname,
-  sendUpdateTimeoutGivesControl,
 } from '../api/remoteAccess';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
@@ -99,13 +98,6 @@ export function updateAllowRemote(allow) {
   return async (dispatch) => {
     await sendUpdateAllowRemote(allow);
     dispatch({ type: 'SET_ALLOW_REMOTE', allow });
-  };
-}
-
-export function updateTimeoutGivesControl(timeoutGivesControl) {
-  return async (dispatch) => {
-    await sendUpdateTimeoutGivesControl(timeoutGivesControl);
-    dispatch({ type: 'SET_TIMEOUT_GIVES_CONTROL', timeoutGivesControl });
   };
 }
 

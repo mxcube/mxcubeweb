@@ -5,7 +5,6 @@ const INITIAL_STATE = {
   sid: null,
   observers: [],
   allowRemote: false,
-  timeoutGivesControl: false,
   messages: [],
 };
 
@@ -19,7 +18,6 @@ export default function remoteAccessReducer(
         ...state,
         observers: action.data.observers,
         allowRemote: action.data.allowRemote,
-        timeoutGivesControl: action.data.timeoutGivesControl,
         operator: action.data.operator,
       };
     }
@@ -28,9 +26,6 @@ export default function remoteAccessReducer(
     }
     case 'SET_ALLOW_REMOTE': {
       return { ...state, allowRemote: action.allow };
-    }
-    case 'SET_TIMEOUT_GIVES_CONTROL': {
-      return { ...state, timeoutGivesControl: action.timeoutGivesControl };
     }
     case 'ADD_CHAT_MESSAGE': {
       return {
@@ -55,7 +50,6 @@ export default function remoteAccessReducer(
         observers: action.data.remoteAccess.observers,
         sid: action.data.remoteAccess.sid,
         allowRemote: action.data.remoteAccess.allowRemote,
-        timeoutGivesControl: action.data.remoteAccess.timeoutGivesControl,
         operator: action.data.remoteAccess.operator,
         messages,
       };

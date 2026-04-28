@@ -21,7 +21,6 @@ server = create_server(cfg, cmdline_options=runtime_options)
 mxcube.init(
     server,
     runtime_options.allow_remote,
-    runtime_options.ra_timeout,
     runtime_options.log_file,
     runtime_options.log_level,
     runtime_options.enabled_logger_list,

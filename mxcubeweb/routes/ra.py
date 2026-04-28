@@ -1,8 +1,6 @@
-import gevent
 from flask import (
     Blueprint,
     Response,
-    copy_current_request_context,
     jsonify,
     make_response,
     request,
@@ -19,17 +17,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/request_control", methods=["POST"])
     @server.restrict
     def request_control():
-        @copy_current_request_context
-        def handle_timeout_gives_control(sid, timeout=30):
-            gevent.sleep(timeout)
-
-            if app.TIMEOUT_GIVES_CONTROL and current_user.requests_control:
-                # Pass control to user if still waiting
-                toggle_operator(
-                    current_user.username,
-                    "Timeout expired, you have control",
-                )
-
         # Is someone already asking for control
         for observer in app.usermanager.get_observers():
             if observer.requests_control and observer.username != current_user.username:
@@ -42,12 +29,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
         app.usermanager.update_user(current_user)
 
         server.emit("observersChanged", namespace="/hwr")
-
-        gevent.spawn(
-            handle_timeout_gives_control,
-            current_user.username,
-            timeout=10,
-        )
 
         return make_response("", 200)
 
@@ -130,7 +111,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
         data = {
             "observers": [_u.todict() for _u in app.usermanager.get_observers()],
             "allowRemote": app.ALLOW_REMOTE,
-            "timeoutGivesControl": app.TIMEOUT_GIVES_CONTROL,
             "operator": operator.todict() if operator else None,
         }
 
@@ -145,14 +125,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
             server.emit("forceSignoutObservers", {}, namespace="/hwr")
 
         app.ALLOW_REMOTE = allow
-
-        return Response(status=200)
-
-    @bp.route("/timeout_gives_control", methods=["POST"])
-    @server.restrict
-    def timeout_gives_control():
-        control = request.get_json().get("timeoutGivesControl")
-        app.TIMEOUT_GIVES_CONTROL = control
 
         return Response(status=200)
 

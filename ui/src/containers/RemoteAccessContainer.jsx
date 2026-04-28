@@ -1,10 +1,7 @@
 import { Card, Col, Container, Form, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  updateAllowRemote,
-  updateTimeoutGivesControl,
-} from '../actions/remoteAccess';
+import { updateAllowRemote } from '../actions/remoteAccess';
 import RequestControlForm from '../components/RemoteAccess/RequestControlForm';
 import UserList from '../components/RemoteAccess/UserList';
 
@@ -37,15 +34,6 @@ function RemoteAccessContainer() {
                 checked={remoteAccess.allowRemote}
                 label="Enable remote access"
                 id="allow-remote"
-              />
-              <Form.Check
-                type="checkbox"
-                onChange={(e) =>
-                  dispatch(updateTimeoutGivesControl(e.target.checked))
-                }
-                checked={remoteAccess.timeoutGivesControl}
-                label="Timeout gives control"
-                id="timeout-gives-control"
               />
             </Card.Body>
           </Card>
