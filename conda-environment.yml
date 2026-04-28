@@ -23,6 +23,7 @@ dependencies:
   # Make sure that a C compiler is available on the system,
   # as it is NOT provided as a dependency in this Conda environment file.
   - openldap
+  - attrs >=21.3.0
 
 
   # Development dependencies
