@@ -21,9 +21,7 @@ class DisplayImageParams(BaseModel):
 class DetectorAdapter(AdapterBase):
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractDetector.AbstractDetector]
 
-    def __init__(  # noqa: D417
-        self, ho, role, app
-    ):
+    def __init__(self, ho, role, app):  # noqa: D417
         """Initialize.
 
         Args:
@@ -52,10 +50,10 @@ class DetectorAdapter(AdapterBase):
             HWR.beamline.collect.adxv_notify(fpath, img)
             fpath = HWR.beamline.session.get_path_with_proposal_as_root(fpath)
 
-            if self.app.config.braggy.USE_BRAGGY:
+            if self.app.CONFIG.braggy is not None and self.app.CONFIG.braggy.USE_BRAGGY:
                 res = {
                     "image_url": (
-                        f"{self.app.config.braggy.BRAGGY_URL}/"
+                        f"{self.app.CONFIG.braggy.BRAGGY_URL}/"
                         f"?file={fpath}/image_${img_num}.h5.dataset"
                     )
                 }
