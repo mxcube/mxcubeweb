@@ -15,15 +15,15 @@
         state: stopped
       ignore_errors: true
 
-    - name: Stop BLISS session service
+    - name: Stop BLISS REST service
       ansible.builtin.systemd:
-        name: "bliss-session-{{ vm_context }}"
+        name: "bliss-rest-{{ vm_context }}"
         state: stopped
       ignore_errors: true
 
-    - name: Stop BLISS server service
+    - name: Stop BLISS demo servers
       ansible.builtin.systemd:
-        name: "bliss-server-{{ vm_context }}"
+        name: "bliss-demo-servers-{{ vm_context }}"
         state: stopped
       ignore_errors: true
 
@@ -32,21 +32,44 @@
         timeout: 5
 
     # ------------------------------------------------------------------
+    # Kill stale BLISS processes not managed by systemd (e.g. tmux-based
+    # bliss shell sessions started before the systemd services were set up).
+    # These orphan processes hold port 5000 and prevent bliss-rest from
+    # binding at startup. This can happen after a first-time deploy or
+    # after a manual "bliss -s demo_session" invocation.
+    # ------------------------------------------------------------------
+    - name: Kill stale BLISS shell sessions
+      ansible.builtin.shell: pkill -f "bliss.shell.main" || true
+      ignore_errors: true
+
+    - name: Kill any remaining process holding port 5000
+      ansible.builtin.shell: fuser -k 5000/tcp || true
+      ignore_errors: true
+
+    - name: Wait for port 5000 to be released
+      ansible.builtin.wait_for:
+        host: localhost
+        port: 5000
+        state: absent
+        timeout: 15
+      ignore_errors: true
+
+    # ------------------------------------------------------------------
     # Start in dependency order: demo-servers → rest → mxcubeweb
     # ------------------------------------------------------------------
-    - name: Start BLISS server service
+    - name: Start BLISS demo servers
       ansible.builtin.systemd:
-        name: "bliss-server-{{ vm_context }}"
+        name: "bliss-demo-servers-{{ vm_context }}"
         state: started
         daemon_reload: true
 
-    - name: Wait for BLISS server to be ready (10s)
+    - name: Wait for demo servers to be ready (10s)
       ansible.builtin.wait_for:
         timeout: 10
 
-    - name: Start BLISS session service
+    - name: Start BLISS REST service
       ansible.builtin.systemd:
-        name: "bliss-session-{{ vm_context }}"
+        name: "bliss-rest-{{ vm_context }}"
         state: started
         daemon_reload: true
 
@@ -54,7 +77,7 @@
       ansible.builtin.wait_for:
         host: localhost
         port: 5000
-        timeout: 90
+        timeout: 60
 
     - name: Start MXCubeWeb
       ansible.builtin.systemd:
@@ -67,7 +90,6 @@
         host: localhost
         port: 8081
         timeout: 120
-      ignore_errors: true
 
     # ------------------------------------------------------------------
     # Status report
@@ -77,8 +99,8 @@
         name: "{{ item }}"
       register: service_statuses
       loop:
-        - "bliss-server-{{ vm_context }}"
-        - "bliss-session-{{ vm_context }}"
+        - "bliss-demo-servers-{{ vm_context }}"
+        - "bliss-rest-{{ vm_context }}"
         - "mxcubeweb-{{ vm_context }}"
 
     - name: Show service statuses
@@ -89,6 +111,6 @@
     - name: Show log commands
       ansible.builtin.debug:
         msg:
-          - "BLISS server  : journalctl -u bliss-server-{{ vm_context }} -f"
-          - "BLISS session : journalctl -u bliss-session-{{ vm_context }} -f"
-          - "MXCubeWeb     : journalctl -u mxcubeweb-{{ vm_context }} -f"
+          - "BLISS demo servers : journalctl -u bliss-demo-servers-{{ vm_context }} -f"
+          - "BLISS REST         : journalctl -u bliss-rest-{{ vm_context }} -f"
+          - "MXCubeWeb          : journalctl -u mxcubeweb-{{ vm_context }} -f"

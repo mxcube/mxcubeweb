@@ -1,9 +1,8 @@
 %YAML 1.2
 ---
-class: ExporterNState.ExporterNState
+class: BlissNState.BlissNState
 configuration:
-  exporter_address: localhost:9002
-  state_channel_name: HardwareState
+  actuator_name: beamstop
+  type: actuator
   username: Beamstop
-  value_channel_name: BeamstopPosition
   values: '{"IN": "BEAM", "OUT": "OFF", "PARK": "PARK", "TRANSFER": "TRANSFER"}'

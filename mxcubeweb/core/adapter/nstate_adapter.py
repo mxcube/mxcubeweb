@@ -75,7 +75,22 @@ class NStateAdapter(ActuatorAdapterBase):
             RuntimeError: Timeout while setting the value.
             StopItteration: When a value change was interrupted (abort/cancel).
         """
-        self._ho.set_value(self._ho.VALUES[value.value])
+        # Reject missing or empty/whitespace-only values
+        raw_val = getattr(value, "value", None)
+        if not value or raw_val is None or (isinstance(raw_val, str) and raw_val.strip() == ""):
+            logging.getLogger("MX3.HWR").error("NStateAdapter.set_value called with empty value")
+            raise ValueError("No state provided")
+
+        try:
+            self._ho.set_value(self._ho.VALUES[value.value])
+        except KeyError:
+            logging.getLogger("MX3.HWR").error(
+                "NStateAdapter.set_value: invalid state '%s' for %s",
+                value.value,
+                getattr(self._ho, "name", "<unknown>"),
+            )
+            raise ValueError(f"Invalid state: {value.value}")
+
         return self.get_value()
 
     def get_value(self) -> StrValueModel:

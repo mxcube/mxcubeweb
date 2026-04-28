@@ -1,7 +1,7 @@
 %YAML 1.2
 ---
-class: ShutterMockup.ShutterMockup
+class: BlissShutter.BlissShutter
 configuration:
-  actuator_name: safety_shutter
-  username: SafetyShutter
-  values: '{"OPEN": "open", "CLOSED": "closed"}'
+  actuator_name: beam_shutter
+  type: tango
+  username: Safety shutter

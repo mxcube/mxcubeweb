@@ -3,3 +3,4 @@
 class: ResolutionMockup.ResolutionMockup
 configuration:
   username: Resolution
+  default_limits: [0.5, 50.0]

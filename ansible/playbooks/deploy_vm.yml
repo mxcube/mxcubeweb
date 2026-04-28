@@ -159,13 +159,26 @@
       when: not use_local_repos
       tags: [git, repositories, bliss, update]
 
+    - name: Check if mxcubeweb conda env exists
+      ansible.builtin.stat:
+        path: "{{ install_base_path }}/miniconda/envs/mxcubeweb"
+      register: mxcubeweb_env
+      tags: [conda, environment]
+
     - name: Create mxcubeweb conda environment from conda-environment.yml
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda env create --file {{ install_base_path }}/mxcubeweb/conda-environment.yml"
       become_user: "{{ service_user }}"
       become: false
-      changed_when: false
+      changed_when: true
+      when: not mxcubeweb_env.stat.exists
       tags: [conda, environment]
+
+    - name: Check if bliss_dev conda env exists
+      ansible.builtin.stat:
+        path: "{{ install_base_path }}/miniconda/envs/bliss_dev"
+      register: bliss_dev_env
+      tags: [conda, environment, bliss]
 
     - name: Clean mamba cache before BLISS env creation
       ansible.builtin.command:
@@ -173,6 +186,7 @@
       become_user: "{{ service_user }}"
       become: false
       changed_when: false
+      when: not bliss_dev_env.stat.exists
       tags: [conda, environment, bliss, cache]
 
     - name: Create bliss conda environment using Makefile
@@ -188,6 +202,8 @@
         TMPDIR: /tmp
       become_user: "{{ service_user }}"
       become: false
+      changed_when: true
+      when: not bliss_dev_env.stat.exists
       tags: [conda, environment, bliss]
 
     - name: Install blissdemo in development mode
@@ -233,6 +249,22 @@
       changed_when: false
       tags: [ui, dependencies, frontend, update]
 
+    - name: Check if UI rebuild is needed
+      ansible.builtin.shell: |
+        BUILD="{{ install_base_path }}/mxcubeweb/ui/build/index.html"
+        if [ ! -f "$BUILD" ]; then
+          echo "needed"
+          exit 0
+        fi
+        if find {{ install_base_path }}/mxcubeweb/ui/src -newer "$BUILD" -type f | grep -q .; then
+          echo "needed"
+        else
+          echo "skip"
+        fi
+      register: ui_build_check
+      changed_when: false
+      tags: [ui, build, frontend, update]
+
     - name: Build UI
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb pnpm --prefix ui build"
@@ -240,7 +272,8 @@
         chdir: "{{ install_base_path }}/mxcubeweb"
       become_user: "{{ service_user }}"
       become: false
-      changed_when: false
+      changed_when: true
+      when: ui_build_check.stdout == "needed"
       tags: [ui, build, frontend, update]
 
     # Docker containers management
@@ -302,6 +335,18 @@
         mode: '0644'
       notify: Reload systemd
       tags: [service, systemd]
+
+    - name: Kill stale BLISS shell sessions
+      ansible.builtin.shell: pkill -TERM -f 'bliss.shell.main' 2>/dev/null; true
+      changed_when: false
+      failed_when: false
+      tags: [service, systemd, bliss]
+
+    - name: Kill any remaining process holding port 5000
+      ansible.builtin.shell: fuser -k 5000/tcp 2>/dev/null; true
+      changed_when: false
+      ignore_errors: true
+      tags: [service, systemd, bliss]
 
     - name: Enable and start MXCubeWeb service
       ansible.builtin.systemd:

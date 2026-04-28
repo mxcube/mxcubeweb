@@ -3,5 +3,6 @@
 class: BlissMotor.BlissMotor
 configuration:
   actuator_name: robx
-  blissapi_url: http://localhost:5000
   username: Detector distance
+  low_limit: 100.0
+  high_limit: 1000.0

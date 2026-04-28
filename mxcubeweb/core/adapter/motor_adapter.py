@@ -66,7 +66,7 @@ class MotorAdapter(ActuatorAdapterBase):
         except (TypeError, AttributeError):
             value = 0.0
 
-        return FloatValueModel(value=value)
+        return FloatValueModel(value=value if value is not None else 0.0)
 
     def state(self):
         """Get the state.

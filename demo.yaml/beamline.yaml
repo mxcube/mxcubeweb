@@ -49,6 +49,7 @@ objects:
   - sample_view: sample_view.yaml
   - queue_manager: queue_manager.yaml
   - queue_model: queue_model.yaml
+  
 
   # Procedures:
   - beamline_actions: beamline_actions.yaml

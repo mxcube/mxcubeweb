@@ -1,7 +1,7 @@
 %YAML 1.2
 ---
-class: ShutterMockup.ShutterMockup
+class: BlissShutter.BlissShutter
 configuration:
-  actuator_name: fast_shutter
-  username: fast_shutter
-  values: '{"OPEN": "open", "CLOSED": "closed"}'
+  actuator_name: sample_shutter
+  type: tango
+  username: Fast shutter

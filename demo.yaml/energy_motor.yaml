@@ -1,0 +1,8 @@
+%YAML 1.2
+---
+class: BlissMotor.BlissMotor
+configuration:
+  actuator_name: energy
+  username: Energy motor
+  low_limit: 5.0
+  high_limit: 200.0

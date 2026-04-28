@@ -17,6 +17,9 @@ export function fetchAttribute(objectType, objectId, attributeName) {
 }
 
 export function sendSetValue(objectId, objectType, value) {
+  if (value === undefined || value === null || (typeof value === 'string' && value.trim() === '')) {
+    return Promise.resolve();
+  }
   return sendExecuteCommand(objectType, objectId, 'set_value', { value });
 }
 
