@@ -26,19 +26,21 @@ function SnapshotControl(props) {
 
   const takeSnapshot = useCallback(async () => {
     const img = document.querySelector('#sample-img');
-    const fimg = new FabricImage(img);
+    const fimg = new FabricImage(img, { originX: 'left', originY: 'top' });
     fimg.scale(ratio);
 
-    canvas.setBackgroundImage(fimg);
-    canvas.renderAll();
+    const previousBG = canvas.backgroundImage;
+
+    canvas.backgroundImage = fimg;
+    canvas.requestRenderAll();
 
     const imgDataURI = canvas.toDataURL({
       format: 'jpeg',
       backgroundColor: null,
     });
 
-    canvas.setBackgroundImage(0);
-    canvas.renderAll();
+    canvas.backgroundImage = previousBG;
+    canvas.requestRenderAll();
 
     const filename = `${proposal}-${currentSampleName}.jpeg`;
     const processedImgBlob = await sendTakeSnapshot(imgDataURI);
