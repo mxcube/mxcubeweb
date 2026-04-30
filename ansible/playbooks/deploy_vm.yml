@@ -230,6 +230,16 @@
       changed_when: false
       tags: [python, dependencies, mxcubeweb, update]
 
+    - name: Install mxcubecore in editable mode (no-deps)
+      ansible.builtin.command:
+        cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb pip install -e . --no-deps"
+      args:
+        chdir: "{{ install_base_path }}/mxcubecore"
+      become_user: "{{ service_user }}"
+      become: false
+      changed_when: false
+      tags: [python, dependencies, mxcubecore, update]
+
     - name: Install extra pip packages in mxcubeweb env
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb pip install {{ conda_environments.mxcube.pip_packages | join(' ') }}"

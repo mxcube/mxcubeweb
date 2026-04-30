@@ -275,7 +275,7 @@ class ResourceHandler:
                     {export['attr']} with {validated_data}"
             )
             result = handler_func(**validated_data)
-        except Exception:
+        except Exception as ex:
             server_access_log.debug(
                 f"{current_user.username} calling {handler_obj.__class__.__name__}.\
                     {export['attr']} error"
@@ -287,7 +287,7 @@ class ResourceHandler:
             error = (
                 f"Error when calling {handler_obj.__class__.__name__}.{export['attr']}"
             )
-            return jsonify({"error": error}), 500
+            return jsonify({"error": error, "details": str(ex)}), 500
         else:
             # Handle and serialize the result
             server_access_log.debug(
@@ -404,6 +404,9 @@ class ResourceHandler:
             if isinstance(result, Response):
                 # If it's already a Flask Response, return it directly
                 return result
+            # Commands like stop()/abort() legitimately return None
+            if result is None:
+                return jsonify({})
             # Check if the result is a Pydantic model or any other serializable object
             if isinstance(result, BaseModel):
                 # Convert Pydantic model to a dict

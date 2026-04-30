@@ -18,6 +18,8 @@ export default function InOutSwitch(props) {
     openText,
     openValue,
     offValue,
+    // allValues: optional array of all valid state names (enables multi-state)
+    allValues,
     optionsOverlay,
     invertBgColor = false,
     labelText,
@@ -69,63 +71,96 @@ export default function InOutSwitch(props) {
 
   let msgBgStyle = 'warning';
 
-  let btn = (
-    <Button variant="outline-secondary" size="sm" disabled>
-      ---
-    </Button>
-  );
+  // Multi-state: build a button for each state that is not the current value.
+  // Binary (no allValues): keep the original toggle logic.
+  let btn;
 
-  switch (value) {
-    case openValue:
-    case 'READY': {
+  if (value === 'MOVING') {
+    btn = (
+      <Spinner animation="border" variant="warning">
+        <span className="visually-hidden">MOVING...</span>
+      </Spinner>
+    );
+  } else if (allValues && allValues.length > 2) {
+    // Determine badge colour based on position in the allValues list.
+    const idx = allValues.indexOf(value);
+    if (idx === 0) {
       msgBgStyle = invertBgColor ? 'danger' : 'success';
-      btn = (
-        <Button
-          variant="outline-secondary"
-          size="sm"
-          onClick={() => handleSwitch(offValue)}
-        >
-          Set: {offText}
-        </Button>
-      );
-      break;
-    }
-    case offValue:
-    case 'DISABLED':
-    case 'CLOSED': {
+    } else if (idx === 1) {
       msgBgStyle = invertBgColor ? 'success' : 'danger';
-      btn = (
-        <Button
-          variant="outline-secondary"
-          size="sm"
-          onClick={() => handleSwitch(openValue)}
-        >
-          Set: {openText}
-        </Button>
-      );
-      break;
+    } else {
+      msgBgStyle = 'warning';
     }
-    case 'UNUSABLE': {
-      btn = (
-        <Button
-          variant="outline-secondary"
-          size="sm"
-          onClick={() => handleSwitch(offValue)}
-        >
-          Set: {offText}
-        </Button>
-      );
-      break;
+
+    // Show one button per available target (excluding the current state).
+    btn = (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25em' }}>
+        {allValues
+          .filter((v) => v !== value)
+          .map((v) => (
+            <Button
+              key={v}
+              variant="outline-secondary"
+              size="sm"
+              onClick={() => handleSwitch(v)}
+            >
+              Set: {v}
+            </Button>
+          ))}
+      </div>
+    );
+  } else {
+    // Original binary toggle logic.
+    btn = (
+      <Button variant="outline-secondary" size="sm" disabled>
+        ---
+      </Button>
+    );
+
+    switch (value) {
+      case openValue:
+      case 'READY': {
+        msgBgStyle = invertBgColor ? 'danger' : 'success';
+        btn = (
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => handleSwitch(offValue)}
+          >
+            Set: {offText}
+          </Button>
+        );
+        break;
+      }
+      case offValue:
+      case 'DISABLED':
+      case 'CLOSED': {
+        msgBgStyle = invertBgColor ? 'success' : 'danger';
+        btn = (
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => handleSwitch(openValue)}
+          >
+            Set: {openText}
+          </Button>
+        );
+        break;
+      }
+      case 'UNUSABLE': {
+        btn = (
+          <Button
+            variant="outline-secondary"
+            size="sm"
+            onClick={() => handleSwitch(offValue)}
+          >
+            Set: {offText}
+          </Button>
+        );
+        break;
+      }
+      // No default
     }
-    case 'MOVING': {
-      btn = (
-        <Spinner animation="border" variant="warning">
-          <span className="visually-hidden">MOVING...</span>
-        </Spinner>
-      );
-      break;
-    }
-    // No default
   }
 
   return (

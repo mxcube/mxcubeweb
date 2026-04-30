@@ -70,13 +70,12 @@ else
     ssh ${VM_HOST} "sudo systemctl start mxcubeweb-mxcube_vm1"
 fi
 
-echo "Waiting for mxcubeweb and video streamer to be ready..."
+echo "Waiting for mxcubeweb to be ready..."
 MAX_WAIT=60
 WAITED=0
 while [ $WAITED -lt $MAX_WAIT ]; do
-    if ssh ${VM_HOST} "ss -tlnp | grep -q :${REMOTE_PORT}" && \
-       ssh ${VM_HOST} "ss -tlnp | grep -q :8000"; then
-        echo "All services are ready!"
+    if ssh ${VM_HOST} "ss -tlnp | grep -q :${REMOTE_PORT}"; then
+        echo "MXCubeWeb is ready!"
         break
     fi
     echo -n "."
@@ -86,9 +85,18 @@ done
 
 if [ $WAITED -ge $MAX_WAIT ]; then
     echo ""
-    echo "Warning: Some services may not be fully started after ${MAX_WAIT}s"
+    echo "Warning: mxcubeweb did not start after ${MAX_WAIT}s"
 else
     echo ""
+fi
+
+# Check video streamer (optional — does not block startup)
+if ssh ${VM_HOST} "ss -tlnp | grep -q :8000" 2>/dev/null; then
+    VIDEO_STREAMER_UP=true
+    echo "Video streamer is ready on port 8000."
+else
+    VIDEO_STREAMER_UP=false
+    echo "Video streamer not detected on port 8000 — skipping (optional)."
 fi
 
 # Ask if user wants to create SSH tunnel
@@ -105,16 +113,22 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
 
     echo ""
     echo "Creating SSH tunnels..."
-    echo "MXCubeWeb - Local port: ${LOCAL_PORT} "
-    echo "Video Streamer - Local port: 8000"
+    echo "MXCubeWeb      - Local port: ${LOCAL_PORT}"
     echo "Bliss REST API - Local port: ${BLISS_LOCAL_PORT}"
+    if [ "${VIDEO_STREAMER_UP}" = true ]; then
+        echo "Video Streamer - Local port: 8000"
+    fi
     echo "MXCubeWeb URL: http://localhost:${LOCAL_PORT}"
     echo "Bliss API URL: http://localhost:${BLISS_LOCAL_PORT}/api/info"
     echo ""
     echo "Use scripts/stop.sh to stop the tunnels and close the application"
     echo ""
 
-    ssh -N -L ${LOCAL_PORT}:localhost:${REMOTE_PORT} -L 8000:localhost:8000 -L ${BLISS_LOCAL_PORT}:localhost:${BLISS_REMOTE_PORT} ${VM_HOST}
+    if [ "${VIDEO_STREAMER_UP}" = true ]; then
+        ssh -N -L ${LOCAL_PORT}:localhost:${REMOTE_PORT} -L 8000:localhost:8000 -L ${BLISS_LOCAL_PORT}:localhost:${BLISS_REMOTE_PORT} ${VM_HOST}
+    else
+        ssh -N -L ${LOCAL_PORT}:localhost:${REMOTE_PORT} -L ${BLISS_LOCAL_PORT}:localhost:${BLISS_REMOTE_PORT} ${VM_HOST}
+    fi
 else
     echo ""
     echo "No SSH tunnel created."

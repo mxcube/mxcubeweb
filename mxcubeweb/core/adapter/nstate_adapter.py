@@ -46,15 +46,17 @@ class NStateAdapter(ActuatorAdapterBase):
         self.value_change(v)
 
     def _get_valid_states(self):
+        # If the hardware object declares COMMANDABLE_VALUES, use that list
+        # to restrict UI-visible commands (e.g. shutter exposes OPEN/CLOSED
+        # only, even though VALUES also contains MOVING/DISABLE/FAULT for
+        # state-reporting purposes).
+        commandable = getattr(self._ho, "COMMANDABLE_VALUES", None)
+        if commandable is not None:
+            return [n for n in commandable if n != "UNKNOWN"]
+
         state_names = [v.name for v in self._ho.VALUES]
         if "UNKNOWN" in state_names:
             state_names.remove("UNKNOWN")
-
-        return state_names
-
-    def _get_available_states(self):
-        state_names = self._get_valid_states()
-        state_names.remove(self._ho.get_value().name)
 
         return state_names
 

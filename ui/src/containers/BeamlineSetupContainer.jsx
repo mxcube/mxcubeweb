@@ -57,15 +57,17 @@ function BeamlineSetupContainer() {
           const uiprop = find(beamlineProperties, { attribute: key });
 
           if (uiprop !== undefined && uiprop.value_type === 'NSTATE') {
+            const cmds = hardwareObjects[key].commands || [];
             // eslint-disable-next-line max-depth
             if (uiprop.label === 'Beamstop') {
               acts.push(
                 <Nav.Item key={key} className="ms-3">
                   <InOutSwitch
-                    openText={hardwareObjects[key].commands[0]}
-                    offText={hardwareObjects[key].commands[1]}
-                    openValue={hardwareObjects[key].commands[0]}
-                    offValue={hardwareObjects[key].commands[1]}
+                    openText={cmds[0]}
+                    offText={cmds[1]}
+                    openValue={cmds[0]}
+                    offValue={cmds[1]}
+                    allValues={cmds.length > 2 ? cmds : undefined}
                     invertBgColor={uiprop.invert_color_semantics}
                     labelText={uiprop.label}
                     pkey={key}
@@ -81,10 +83,11 @@ function BeamlineSetupContainer() {
               acts.push(
                 <Nav.Item key={key} className="ms-3">
                   <InOutSwitch
-                    openText={hardwareObjects[key].commands[0]}
-                    offText={hardwareObjects[key].commands[1]}
-                    openValue={hardwareObjects[key].commands[0]}
-                    offValue={hardwareObjects[key].commands[1]}
+                    openText={cmds[0]}
+                    offText={cmds[1]}
+                    openValue={cmds[0]}
+                    offValue={cmds[1]}
+                    allValues={cmds.length > 2 ? cmds : undefined}
                     invertBgColor={uiprop.invert_color_semantics}
                     labelText={uiprop.label}
                     pkey={key}
