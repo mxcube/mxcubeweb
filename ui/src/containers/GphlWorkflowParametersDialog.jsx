@@ -66,6 +66,22 @@ function removeExtraDecimal(value, type) {
   return value;
 }
 
+function validateNumber(rawValue, fieldProps) {
+  if (rawValue === '') {
+    return 'Please fill in this field.';
+  }
+  const numValue = Number(rawValue);
+  const min = fieldProps.minimum ?? fieldProps.lowerBound;
+  const max = fieldProps.maximum ?? fieldProps.upperBound;
+  if (min !== undefined && numValue < min) {
+    return `Value must be greater than or equal to ${min}.`;
+  }
+  if (max !== undefined && numValue > max) {
+    return `Value must be less than or equal to ${max}.`;
+  }
+  return null;
+}
+
 function GphlWorkflowParametersDialog(props) {
   const {
     formData,
@@ -206,19 +222,7 @@ function GphlWorkflowParametersDialog(props) {
     let errorMsg = null;
 
     if (e.target.type === 'number') {
-      const rawValue = e.target.value;
-      if (rawValue === '') {
-        errorMsg = 'Please fill in this field.';
-      } else {
-        const numValue = Number(rawValue);
-        const min = fieldProps.minimum ?? fieldProps.lowerBound;
-        const max = fieldProps.maximum ?? fieldProps.upperBound;
-        if (min !== undefined && numValue < min) {
-          errorMsg = `Value must be greater than or equal to ${min}.`;
-        } else if (max !== undefined && numValue > max) {
-          errorMsg = `Value must be less than or equal to ${max}.`;
-        }
-      }
+      errorMsg = validateNumber(e.target.value, fieldProps);
     } else if (!e.target.checkValidity()) {
       errorMsg = e.target.validationMessage;
     }
