@@ -485,7 +485,9 @@ function GphlWorkflowParametersDialog(props) {
                         defaultValue={formState[rowKey]}
                         readOnly={schema.properties[rowKey].readOnly}
                         disabled={schema.properties[rowKey].readOnly}
-                        isInvalid={schema.properties[rowKey].invalidated === true}
+                        isInvalid={
+                          schema.properties[rowKey].invalidated === true
+                        }
                       />
                     ) : rowKey === '_info' ? (
                       <pre className="p-2">
