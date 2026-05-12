@@ -50,7 +50,6 @@ pydantic = ">=2.8.2,<2.9.0"
 pytz = "^2022.6"
 requests = "^2.33.0"
 "ruamel.yaml" = "^0.17.21"
-scandir = "^1.10.0"
 sqlalchemy = "^2.0.37"
 tomli = { version = "^2.2.1", python = "<=3.10" }
 tzlocal = "^4.2"
