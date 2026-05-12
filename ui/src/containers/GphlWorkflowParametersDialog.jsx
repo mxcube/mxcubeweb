@@ -1,6 +1,8 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Form, Modal, Row, Stack, Table } from 'react-bootstrap';
+
+import { DraggableModal } from '../components/DraggableModal';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
 
@@ -10,6 +12,8 @@ import {
   updateGphlWorkflowParametersDialog,
 } from '../actions/workflow';
 import styles from './WorkflowParametersDialog.module.css';
+
+const DEFAULT_DIALOG_POSITION = { x: -100, y: 100 };
 
 const uiOptions = 'ui:options';
 
@@ -523,11 +527,11 @@ function GphlWorkflowParametersDialog(props) {
   }
 
   return (
-    <Modal
+    <DraggableModal
       show={show}
       onHide={handleAbort}
-      backdrop="static"
       contentClassName={styles.resizableModalContent}
+      defaultpos={DEFAULT_DIALOG_POSITION}
     >
       <Modal.Header closeButton>
         <Modal.Title>{formName}</Modal.Title>
@@ -538,7 +542,7 @@ function GphlWorkflowParametersDialog(props) {
         </div>
       </Modal.Body>
       <Modal.Footer />
-    </Modal>
+    </DraggableModal>
   );
 }
 

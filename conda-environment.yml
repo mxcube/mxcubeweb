@@ -14,6 +14,7 @@ dependencies:
 
   - ffmpeg  # Not directly used by mxcube, but necessary for the video-streamer
   - python >=3.10,<3.12  # Make sure it matches `pyproject.toml`
+  - pip
 
   # `openldap` is necessary for `python-ldap` but can not be installed by pip or Poetry.
   # Note also that on PyPI `python-ldap` is only available as *sdist*, not as *wheel*,
