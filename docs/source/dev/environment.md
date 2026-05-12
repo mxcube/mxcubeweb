@@ -56,7 +56,7 @@ conda env create --file conda-environment.yml --name another_name
 
 To switch to a specific Python version inside the conda environment,
 one can additionally use a command such as the following after environment creation,
-for example for Python 3.9:
+for example for Python 3.10:
 
 ```
 conda install --name mxcubeweb 'python=3.9'
