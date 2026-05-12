@@ -59,7 +59,7 @@ one can additionally use a command such as the following after environment creat
 for example for Python 3.10:
 
 ```
-conda install --name mxcubeweb 'python=3.9'
+conda install --name mxcubeweb 'python=3.10'
 ```
 
 ### 4. Activate the environment
