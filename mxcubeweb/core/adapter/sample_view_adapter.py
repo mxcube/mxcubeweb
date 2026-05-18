@@ -176,7 +176,9 @@ class SampleViewAdapter(AdapterBase):
 
     def _handle_grid_result(self, shape):
         self.app.server.emit(
-            "grid_result_available", {"shape": shape}, namespace="/hwr"
+            "grid_result_available",
+            {"shape": to_camel(shape.as_dict())},
+            namespace="/hwr",
         )
 
     def centring_clicks_left(self):
