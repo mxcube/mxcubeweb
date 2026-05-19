@@ -89,7 +89,7 @@ configuration:
       osc_range: 0.1
       num_passes: 1
       first_image: 1
-      overlap: 0
+      offset: 0
       num_images: 1
       detector_mode: 1  # Remove as not in practice used ?
       inverse_beam: false
@@ -108,7 +108,7 @@ configuration:
       # Defaults for characterisation. Missing values are taken from default
       exp_time: 0.05  # exposure time
       osc_range: 1
-      overlap: -89
+      offset: -89
       num_images: 4
       shutterless: false
       detector_mode_list: ["0", "C18", "C2"]
