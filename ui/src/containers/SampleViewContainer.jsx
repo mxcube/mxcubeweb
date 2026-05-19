@@ -6,7 +6,7 @@ import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
 import ApertureInput from '../components/SampleView/ApertureInput';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import MotorControls from '../components/SampleView/MotorControls';
-import { NStateSelect } from '../components/SampleView/NStateSelect';
+import { NStateHOInput } from '../components/SampleView/NStateHOInput';
 import PhaseInput from '../components/SampleView/PhaseInput';
 import SampleImage from '../components/SampleView/SampleImage';
 import BeamlineSetupContainer from './BeamlineSetupContainer';
@@ -78,7 +78,7 @@ function SampleViewContainer() {
                 <label className={motorInputStyles.label} htmlFor="PhaseInput">
                   {phaseControl.label}
                 </label>
-                <PhaseInput />
+                <PhaseInput tooltip={phaseControl.tooltip} />
               </div>
             )}
             {beamSize !== undefined && (
@@ -89,7 +89,7 @@ function SampleViewContainer() {
                 >
                   {beamSize.label}
                 </label>
-                <ApertureInput />
+                <ApertureInput tooltip={beamSize.tooltip} />
               </div>
             )}
             {nStatesComponents.map((component) => (
@@ -103,9 +103,10 @@ function SampleViewContainer() {
                 >
                   {component.label || component.attribute}
                 </label>
-                <NStateSelect
+                <NStateHOInput
                   name={component.attribute}
                   id={component.attribute}
+                  tooltip={component.tooltip}
                 />
               </div>
             ))}

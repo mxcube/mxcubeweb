@@ -79,20 +79,31 @@ The section has the following syntax:
     sample_view:
       id: sample_view
       components:
-        - attribute: <attribute id>
-          label: <label>
-
+        - attribute: phase_control
+          label: Phase Control
+          tooltip: >
+            Use this widget to trigger a concerted change
+            in the diffractomer devices to reach the  desired phase.
+        - attribute: beam_size
+          label: Beam size
+          tooltip: >
+            Use this widget to trim the beam just before it
+            hits the sample.
+        - attribute: diffractometer.zoom
+          label: Zoom
 
 The ``components`` key contains a list of auxiliary control widget specifications.
 Each widget specification has the following keys:
 
-+-----------+-------------------------------------+
-| key       | purpose                             |
-+===========+=====================================+
-| attribute | attribute id                        |
-+-----------+-------------------------------------+
-| label     | widget's text label                 |
-+-----------+-------------------------------------+
++-----------------+-------------------------------+
+| key             | purpose                       |
++=================+===============================+
+| attribute       | attribute id                  |
++-----------------+-------------------------------+
+| label           | widget's text label           |
++-----------------+-------------------------------+
+| description     | optional hover tooltip text   |
++-----------------+-------------------------------+
 
 Below is an example showing all auxiliary controls of the ``sample_view`` section:
 

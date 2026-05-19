@@ -109,6 +109,7 @@ class UIComponentModel(BaseModel):
     object_type: str | None = None
     format: str | None = None
     invert_color_semantics: bool | None = None
+    tooltip: str | None = None
 
 
 class _UICameraConfigModel(BaseModel):

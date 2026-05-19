@@ -10,6 +10,10 @@ function TooltipTrigger(props) {
     inModal = false,
   } = props;
 
+  if (!tooltipContent) {
+    return children;
+  }
+
   return (
     <OverlayTrigger
       rootClose={rootClose} // ensures whether focus is removed from child (and tooltip closed) when clicking anywhere else

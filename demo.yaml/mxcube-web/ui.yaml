@@ -13,8 +13,14 @@ sample_view:
   components:
     - attribute: phase_control
       label: Phase Control
+      tooltip: >
+        Use this widget to trigger a concerted change
+        in the diffractomer devices to reach the  desired phase.
     - attribute: beam_size
       label: Beam size
+      tooltip: >
+        Use this widget to trim the beam just before it
+        hits the sample.
 
 sample_view_motors:
   id: sample_view_motors
