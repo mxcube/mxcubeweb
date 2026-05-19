@@ -220,7 +220,7 @@ default_char_acq_params = {
         "opt_sad": False,
         "osc_range": 1,
         "osc_total_range": 0.0,
-        "offset": -89,
+        "offset": 89,
         "permitted_phi_end": 360,
         "permitted_phi_start": 0.0,
         "prefixTemplate": "{PREFIX}_{POSITION}",

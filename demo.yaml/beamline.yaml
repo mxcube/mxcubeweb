@@ -108,7 +108,7 @@ configuration:
       # Defaults for characterisation. Missing values are taken from default
       exp_time: 0.05  # exposure time
       osc_range: 1
-      offset: -89
+      offset: 89
       num_images: 4
       shutterless: false
       detector_mode_list: ["0", "C18", "C2"]
