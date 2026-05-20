@@ -180,7 +180,7 @@ class Characterisation extends React.Component {
                     list={this.props.detector_mode_list}
                   />
                 )}
-                <InputField propName="offset" label="Overlap" />
+                <InputField propName="offset" label="Offset" />
               </FieldsRow>
             </CollapsableRows>
           </Form>
