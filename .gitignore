@@ -2,6 +2,9 @@
 __pycache__/
 *.py[cod]
 
+# Ansible vault 
+ansible/playbooks/group_vars/vault.yml
+
 src/static/build/.module-cache/
 # C extensions
 *.so

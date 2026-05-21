@@ -31,9 +31,9 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
     DEPLOY_TYPE=${DEPLOY_TYPE:-1}
 
     if [[ $DEPLOY_TYPE == "2" ]]; then
-        "${SCRIPT_ROOT}/deploy.sh"
+        "${SCRIPT_ROOT}/deploy.sh" -K
     else
-        "${SCRIPT_ROOT}/deploy.sh" --quick
+        "${SCRIPT_ROOT}/deploy.sh" --quick -K
     fi
 
     if [ $? -ne 0 ]; then
@@ -41,6 +41,13 @@ if [[ $REPLY =~ ^[Yy]$ ]]; then
         exit 1
     fi
     echo ""
+fi
+
+# Ensure bliss services have a fresh process (beacon CWD can become stale after tmpdir cleanup)
+if ssh ${VM_HOST} "systemctl is-active --quiet bliss-server-mxcube_vm1" 2>/dev/null; then
+    echo "Restarting bliss-server to ensure fresh Beacon process..."
+    ssh ${VM_HOST} "sudo systemctl restart bliss-server-mxcube_vm1"
+    sleep 5
 fi
 
 echo "Waiting for BLISS REST API to be ready on ${VM_HOST}:${BLISS_REMOTE_PORT}..."
@@ -59,6 +66,16 @@ echo ""
 
 if [ $WAITED -ge $MAX_WAIT ]; then
     echo "Warning: BLISS REST API not reachable after ${MAX_WAIT}s — mxcubeweb may fail to connect."
+    echo "--- Bliss SERVER service status ---"
+    ssh ${VM_HOST} "systemctl status bliss-server-mxcube_vm1 --no-pager -l" || true
+    echo "--- Last 50 bliss-server log lines ---"
+    ssh ${VM_HOST} "sudo journalctl -u bliss-server-mxcube_vm1 -n 50 --no-pager 2>/dev/null || journalctl -u bliss-server-mxcube_vm1 -n 50 --no-pager" || true
+    echo "--- Bliss SESSION service status ---"
+    ssh ${VM_HOST} "systemctl status bliss-session-mxcube_vm1 --no-pager -l" || true
+    echo "--- Last 50 bliss-session log lines ---"
+    ssh ${VM_HOST} "sudo journalctl -u bliss-session-mxcube_vm1 -n 50 --no-pager 2>/dev/null || journalctl -u bliss-session-mxcube_vm1 -n 50 --no-pager" || true
+    echo "--- Beacon port check ---"
+    ssh ${VM_HOST} "ss -tlnp | grep -E '10001|10000|5000'" || true
 fi
 
 echo "Checking mxcubeweb service status on ${VM_HOST}..."
@@ -71,21 +88,25 @@ else
 fi
 
 echo "Waiting for mxcubeweb to be ready..."
-MAX_WAIT=60
+MAX_WAIT=120
 WAITED=0
 while [ $WAITED -lt $MAX_WAIT ]; do
-    if ssh ${VM_HOST} "ss -tlnp | grep -q :${REMOTE_PORT}"; then
+    if ssh ${VM_HOST} "systemctl is-active --quiet mxcubeweb-mxcube_vm1 && ss -tlnp | grep -q :${REMOTE_PORT}"; then
         echo "MXCubeWeb is ready!"
         break
     fi
     echo -n "."
-    sleep 2
-    WAITED=$((WAITED + 2))
+    sleep 5
+    WAITED=$((WAITED + 5))
 done
 
 if [ $WAITED -ge $MAX_WAIT ]; then
     echo ""
     echo "Warning: mxcubeweb did not start after ${MAX_WAIT}s"
+    echo "--- Service status ---"
+    ssh ${VM_HOST} "systemctl status mxcubeweb-mxcube_vm1 --no-pager -l" || true
+    echo "--- Last 30 log lines ---"
+    ssh ${VM_HOST} "journalctl -u mxcubeweb-mxcube_vm1 -n 30 --no-pager" || true
 else
     echo ""
 fi

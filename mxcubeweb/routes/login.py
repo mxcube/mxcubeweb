@@ -42,13 +42,21 @@ def init_route(app, server, url_prefix):
         try:
             app.usermanager.login(login_id, password)
         except Exception:
-            msg = "[LOGIN] User %s could not login" % login_id
-            logging.getLogger("MX3.HWR").exception(msg)
+            logging.getLogger("server_access").warning(
+                "[LOGIN] FAILED   user=%s ip=%s",
+                login_id,
+                networkutils.remote_addr(),
+            )
             res = make_response(
                 jsonify({"msg": "Authentication failed"}),
                 200,
             )
         else:
+            logging.getLogger("server_access").info(
+                "[LOGIN] SUCCESS  user=%s ip=%s",
+                login_id,
+                networkutils.remote_addr(),
+            )
             res = make_response(jsonify({"msg": ""}), 200)
 
         return res
@@ -77,6 +85,11 @@ def init_route(app, server, url_prefix):
     @server.restrict
     def signout():
         """Signout from MXCuBE Web and reset the session."""
+        logging.getLogger("server_access").info(
+            "[LOGOUT] user=%s ip=%s",
+            current_user.username if current_user.is_authenticated else "unknown",
+            networkutils.remote_addr(),
+        )
         app.usermanager.signout()
         return make_response(jsonify(""), 200)
 

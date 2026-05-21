@@ -75,9 +75,22 @@
       register: mamba_installed
       tags: [conda, mamba, setup]
 
+    - name: Accept Anaconda Terms of Service
+      ansible.builtin.command:
+        cmd: "{{ install_base_path }}/miniconda/bin/conda tos accept --override-channels --channel {{ item }}"
+      loop:
+        - "https://repo.anaconda.com/pkgs/main"
+        - "https://repo.anaconda.com/pkgs/r"
+      become_user: "{{ service_user }}"
+      become: false
+      changed_when: false
+      tags: [conda, mamba, setup]
+
     - name: Install mamba in base environment
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda install mamba -n base -c conda-forge -y"
+      environment:
+        CONDA_SOLVER: classic
       become_user: "{{ service_user }}"
       become: false
       when: not mamba_installed.stat.exists
@@ -165,13 +178,24 @@
       register: mxcubeweb_env
       tags: [conda, environment]
 
+    - name: Clean mamba cache before mxcubeweb env creation
+      ansible.builtin.command:
+        cmd: "{{ install_base_path }}/miniconda/bin/mamba clean -a -y"
+      become_user: "{{ service_user }}"
+      become: false
+      changed_when: false
+      when: not mxcubeweb_env.stat.exists
+      tags: [conda, environment]
+
     - name: Create mxcubeweb conda environment from conda-environment.yml
       ansible.builtin.command:
-        cmd: "{{ install_base_path }}/miniconda/bin/conda env create --file {{ install_base_path }}/mxcubeweb/conda-environment.yml"
+        cmd: "{{ install_base_path }}/miniconda/bin/mamba env create --file {{ install_base_path }}/mxcubeweb/conda-environment.yml"
       become_user: "{{ service_user }}"
       become: false
       changed_when: true
       when: not mxcubeweb_env.stat.exists
+      async: 3600
+      poll: 30
       tags: [conda, environment]
 
     - name: Check if bliss_dev conda env exists
@@ -204,6 +228,8 @@
       become: false
       changed_when: true
       when: not bliss_dev_env.stat.exists
+      async: 1000
+      poll: 60
       tags: [conda, environment, bliss]
 
     - name: Install blissdemo in development mode
@@ -219,6 +245,18 @@
       become: false
       changed_when: false
       tags: [conda, environment, bliss, update]
+
+    - name: Fix ownership of mxcubeweb conda env (ensure service_user can write site-packages)
+      ansible.builtin.shell:
+        cmd: "chown -R {{ service_user }} {{ install_base_path }}/miniconda/envs/mxcubeweb"
+      changed_when: false
+      tags: [python, dependencies, mxcubeweb, update]
+
+    - name: Remove stale virtualenv xonsh activation scripts
+      ansible.builtin.file:
+        path: "{{ install_base_path }}/miniconda/envs/mxcubeweb/lib/python3.11/site-packages/virtualenv/activation/xonsh"
+        state: absent
+      tags: [python, dependencies, mxcubeweb, update]
 
     - name: Install Mxcubeweb dependencies with Poetry
       ansible.builtin.command:
@@ -257,6 +295,8 @@
       become_user: "{{ service_user }}"
       become: false
       changed_when: false
+      async: 1800
+      poll: 30
       tags: [ui, dependencies, frontend, update]
 
     - name: Check if UI rebuild is needed
@@ -284,6 +324,8 @@
       become: false
       changed_when: true
       when: ui_build_check.stdout == "needed"
+      async: 1800
+      poll: 30
       tags: [ui, build, frontend, update]
 
     # Docker containers management
@@ -330,11 +372,18 @@
       changed_when: true
       tags: [docker, images]
 
+    - name: Add service_user to docker group
+      ansible.builtin.user:
+        name: "{{ service_user }}"
+        groups: docker
+        append: true
+      tags: [docker, setup]
+
     - name: Start Docker containers with docker-compose
       community.docker.docker_compose_v2:
         project_src: "{{ install_base_path }}/mxcubeweb/ansible"
         state: present
-      become_user: "{{ service_user }}"
+      become: true
       tags: [docker]
 
     # Systemd service
@@ -383,19 +432,19 @@
       notify: Reload systemd
       tags: [service, systemd, bliss]
 
-    - name: Enable and start Bliss server service
+    - name: Enable and restart Bliss server service
       ansible.builtin.systemd:
         name: "bliss-server-{{ vm_context }}"
         enabled: true
-        state: started
+        state: restarted
         daemon_reload: true
       tags: [service, systemd, bliss]
 
-    - name: Enable and start Bliss session service
+    - name: Enable and restart Bliss session service
       ansible.builtin.systemd:
         name: "bliss-session-{{ vm_context }}"
         enabled: true
-        state: started
+        state: restarted
         daemon_reload: true
       tags: [service, systemd, bliss]
 

@@ -21,9 +21,11 @@ def rate_limit_error_handler(_):
 
 def init_rate_limiter(app):
     """Initialize the rate limiter."""
+    enabled = app.config.get("RATE_LIMITER_ENABLED", True)
     limiter = Limiter(
         app=app,
         key_func=get_remote_address,
+        enabled=enabled,
         default_limits=app.config.get(
             "RATELIMIT_DEFAULT", "150000 per day;6000 per hour"
         ).split(";"),

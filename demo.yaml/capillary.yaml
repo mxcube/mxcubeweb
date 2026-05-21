@@ -1,9 +1,8 @@
 %YAML 1.2
 ---
-class: ExporterNState.ExporterNState
+class: BlissNState.BlissNState
 configuration:
-  exporter_address: localhost:9002
-  state_channel_name: HardwareState
+  actuator_name: capillary
+  type: motor
   username: Capillary
-  value_channel_name: CapillaryPosition
-  values: '{"IN": "BEAM", "OUT": "OFF"}'
+  values: '{"BEAM": "BEAM", "PARK": "PARK", "OFF": "OFF"}'

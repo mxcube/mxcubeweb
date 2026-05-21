@@ -9,7 +9,11 @@ server:
   DEBUG: false
 
   ALLOWED_CORS_ORIGINS: []
+  HOST: "0.0.0.0"
+  PORT: 8081
   USER_DB_PATH: /tmp/mxcube-user.db
+
+  RATELIMIT_DEFAULT: "150000 per day;6000 per hour;20 per minute"
 
 sso:
   USE_SSO: false

@@ -272,7 +272,9 @@ class MXCUBEApplication:
             }
 
             for item in file_handlers.values():
-                Path(item["path"]).touch(exist_ok=True)
+                p = Path(item["path"])
+                p.touch(mode=0o600, exist_ok=True)
+                p.chmod(0o600)
                 handler = TimedRotatingFileHandler(
                     item["path"], when="midnight", backupCount=7
                 )
