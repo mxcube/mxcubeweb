@@ -258,6 +258,15 @@
         state: absent
       tags: [python, dependencies, mxcubeweb, update]
 
+
+    - name: Fix attrs in mxcubeweb env (required by pip/poetry)
+      ansible.builtin.command:
+        cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb pip install --force-reinstall 'attrs>=22.1.0'"
+      become_user: "{{ service_user }}"
+      become: false
+      changed_when: false
+      tags: [python, dependencies, mxcubeweb, update]
+
     - name: Install Mxcubeweb dependencies with Poetry
       ansible.builtin.command:
         cmd: "{{ install_base_path }}/miniconda/bin/conda run -n mxcubeweb poetry install"

@@ -4,7 +4,7 @@
 mxcube_vms:
   hosts:
     mxcube_vm1:
-      ansible_host: mxcube-test-1 #cl1.esrf.fr
+      ansible_host: cl1.esrf.fr #mxcube-test-1 
       ansible_python_interpreter: /usr/bin/python3
       vm_context: "mxcube_vm1"
 

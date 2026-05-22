@@ -21,6 +21,8 @@ conda_environments:
       - gunicorn
       - gevent
       - blissclient
+      - marshmallow  # required by blissclient
+      - aiohttp
 
 # Set use_local_repos to true to copy from local paths instead of cloning from GitHub
 use_local_repos: true

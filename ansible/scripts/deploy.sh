@@ -47,7 +47,15 @@ if [ "$QUICK" = true ]; then
     echo "(quick mode: skipping system packages and Docker image downloads)"
     ansible-playbook -i "${INVENTORY}" "${PLAYBOOK}" --skip-tags "system,docker" "${EXTRA_ARGS[@]}"
 else
-    ansible-playbook -i "${INVENTORY}" "${PLAYBOOK}" "${EXTRA_ARGS[@]}"
+    # Pass -K (ask for sudo password) only if the user has not already set up
+    # passwordless sudo via setup_ssh.sh.  We probe with a quick ad-hoc task;
+    # if it fails we add --ask-become-pass automatically.
+    if ansible -i "${INVENTORY}" all -m command -a "true" --become --timeout 10 -q 2>/dev/null; then
+        ansible-playbook -i "${INVENTORY}" "${PLAYBOOK}" "${EXTRA_ARGS[@]}"
+    else
+        echo "Sudo requires a password on the target — you will be prompted once."
+        ansible-playbook -i "${INVENTORY}" "${PLAYBOOK}" --ask-become-pass "${EXTRA_ARGS[@]}"
+    fi
 fi
 
 echo "=== Deploy finished ==="

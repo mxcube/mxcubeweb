@@ -63,6 +63,24 @@ for HOST in $HOSTS; do
     else
         echo "Failed to copy SSH key to ${TARGET_HOST}"
     fi
+
+    # Configure passwordless sudo for the user so Ansible 'become: true' works
+    # without requiring --ask-become-pass on every deploy.
+    SUDOERS_LINE="${TARGET_USER} ALL=(ALL) NOPASSWD: ALL"
+    SUDOERS_FILE="/etc/sudoers.d/mxcube-ansible"
+    echo "Configuring passwordless sudo for ${TARGET_USER} on ${TARGET_HOST}..."
+    SSH_CMD="ssh -t ${SSH_PORT_ARG} ${TARGET_USER}@${TARGET_HOST}"
+    if $SSH_CMD "sudo grep -qF 'NOPASSWD' /etc/sudoers /etc/sudoers.d/* 2>/dev/null" 2>/dev/null; then
+        echo "  Already configured — skipping."
+    else
+        echo "  Enter the sudo password for ${TARGET_USER}@${TARGET_HOST} when prompted:"
+        if $SSH_CMD "echo '${SUDOERS_LINE}' | sudo tee ${SUDOERS_FILE} > /dev/null && sudo chmod 440 ${SUDOERS_FILE} && sudo visudo -c -q"; then
+            echo "  ✓ Passwordless sudo configured (${SUDOERS_FILE})"
+        else
+            echo "  ✗ Failed to configure passwordless sudo — you will need to pass the sudo"
+            echo "    password manually: ./deploy.sh -K  (prompts once at deploy time)"
+        fi
+    fi
     echo ""
 done
 

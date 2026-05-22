@@ -13,9 +13,6 @@ Environment="PYTHONPATH={{ install_base_path }}/mxcubecore:{{ install_base_path 
 Environment="MXCUBE_HOST={{ mxcubeweb_config.host }}"
 Environment="MXCUBE_PORT={{ mxcubeweb_config.port }}"
 
-# Remove stale SQLite DB lock before starting (run as root to handle any file owner)
-ExecStartPre=+/bin/rm -f /tmp/mxcube-user.db
-
 # Start command - activate conda environment and run mxcubeweb-server
 ExecStart=/bin/bash -c 'source {{ install_base_path }}/miniconda/bin/activate mxcubeweb && mxcubeweb-server -r {{ install_base_path }}/mxcubeweb/demo.yaml/ --static-folder {{ install_base_path }}/mxcubeweb/ui/build/ -L debug'
 
