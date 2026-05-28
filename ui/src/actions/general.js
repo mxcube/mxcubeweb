@@ -44,6 +44,8 @@ export function displayImage(path, imgNum) {
       'display_image',
       { path, img_num: imgNum },
     );
-    window.open(data.image_url, 'braggy');
+    if (data.image_url) {
+      window.open(data.image_url, 'braggy');
+    }
   };
 }
