@@ -1,3 +1,4 @@
+from mxcubecore.model.nstate import NStateOption
 from pydantic import (
     BaseModel,
     Field,
@@ -47,7 +48,10 @@ class HOActuatorValueChangeModel(BaseModel):
 
 
 class HOBeamValueModel(BaseModel):
-    apertureList: list[str] = Field([0], description="List of available apertures")
+    apertureList: list[str | int | NStateOption] = Field(
+        [0],
+        description="List of available apertures",
+    )
     currentAperture: str = Field(0, description="Current aperture label")
     position: tuple[float, float] = Field((0, 0), description="Beam position on OAV")
     shape: str = Field("ellipse", descrption="Beam shape")

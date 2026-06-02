@@ -44,7 +44,7 @@ class BeamAdapter(ActuatorAdapterBase):
         """
         beam_ho = self._ho
 
-        aperture_list = beam_ho.get_available_size()["values"]
+        aperture_list = beam_ho.get_available_size_options()
         current_aperture = beam_ho.get_value()[-1]
 
         return aperture_list, current_aperture

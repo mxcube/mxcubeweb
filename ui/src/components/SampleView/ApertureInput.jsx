@@ -5,13 +5,12 @@ import { NStateSelect } from './NStateSelect';
 
 /**
  * @typedef {Object} Props
- * @property {string?} tooltip - Optional hover tooltip text.
+ * @property {string} [tooltip] - Optional hover tooltip text.
  *
  * @param {Props} props
  */
 function ApertureInput({ tooltip }) {
   const dispatch = useDispatch();
-
   return (
     <NStateSelect
       id="ApertureInput"
