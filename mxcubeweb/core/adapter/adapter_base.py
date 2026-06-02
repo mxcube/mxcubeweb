@@ -60,6 +60,7 @@ class AdapterBase:
         self._type = type(self).__name__.replace("Adapter", "").upper()
         self._unique = True
         self._msg = ""
+        self._ho_exported_commands = []
 
         cls_name = self.__class__.__name__.lower()
 
@@ -74,6 +75,15 @@ class AdapterBase:
 
         if resource_handler_config:
             _name = resource_handler_config.name or cls_name
+            commands = list(resource_handler_config.commands)
+
+            # Add exported attributes from underlaying HardwareObject to commands,
+            # the Adapter takes presedence over the HardwareObject, ignore attributes
+            # that are already defined as commands in the Adapter.
+            for cmd_name in self._ho.exported_attributes:
+                if cmd_name not in commands:
+                    commands.append(cmd_name)
+                    self._ho_exported_commands.append(cmd_name)
 
             ResourceHandlerFactory.create_or_get(
                 name=_name,
@@ -82,7 +92,7 @@ class AdapterBase:
                 handler_dict=self.ADAPTER_DICT[cls_name],
                 app=self.app,
                 exports=resource_handler_config.exports,
-                commands=resource_handler_config.commands,
+                commands=commands,
                 attributes=resource_handler_config.attributes,
             )
 
@@ -267,20 +277,22 @@ class AdapterBase:
         # needs to be defined as a command in the ResourceHandlerConfigModel
         # to be exported.
 
-        configured_exported = self._ho.exported_attributes.keys()
-
         rh = ResourceHandlerFactory.get_handler(self.__class__.__name__.lower())
 
         if rh:
             for export in rh.commands:
-                attr = getattr(self, export["attr"], None)
+                attr = getattr(self, export["attr"], None) or getattr(
+                    self._ho, export["attr"], None
+                )
 
                 if inspect.ismethod(attr):
                     model = self._model_from_typehint(attr)
                     exported_methods[export["attr"]] = {
                         "signature": model["signature"],
                         "schema": model["args"].schema_json(),
-                        "display": export["attr"] in configured_exported,
+                        # Only display methods actually expoerted, not the ones that
+                        # are "overriden" by the Adapter but not explicitly exported.
+                        "display": export["attr"] in self._ho_exported_commands,
                     }
 
         return exported_methods

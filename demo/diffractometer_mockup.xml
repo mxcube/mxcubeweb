@@ -21,4 +21,6 @@
     <object href="/udiff_frontlightswitch" role="frontlightswitch"/>
     <object href="/udiff_zoom" role="zoom"/>
   </nstate_equipment>
+
+  <exports>["abort"]</exports>
 </object>

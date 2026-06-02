@@ -227,6 +227,18 @@ class ResourceHandler:
             Callable: The view function.
         """
 
+    def _get_handler_function(self, handler_obj: object, attr_name: str):
+        """Get a method on the adapter or its underlying HO."""
+        if hasattr(handler_obj, attr_name):
+            return getattr(handler_obj, attr_name)
+
+        ho = getattr(handler_obj, "_ho", None)
+
+        if ho is not None and hasattr(ho, attr_name):
+            return getattr(ho, attr_name)
+
+        return None
+
     def _validate_params_and_call_handler_func(
         self,
         export: dict[str, str],
@@ -242,7 +254,21 @@ class ResourceHandler:
             The result of the handler function call or an error response.
         """
         # Get the method and its annotations
-        handler_func = getattr(handler_obj, export["attr"])
+        handler_func = self._get_handler_function(handler_obj, export["attr"])
+        # handler_func = getattr(handler_obj, export["attr"])
+        if handler_func is None:
+            return (
+                jsonify(
+                    {
+                        "error": (
+                            f"Method '{export['attr']}' not found on object"
+                            f" '{handler_obj.__class__.__name__}'"
+                        )
+                    }
+                ),
+                404,
+            )
+
         annotations = handler_func.__annotations__
         http_method = export["method"]
 
@@ -299,7 +325,7 @@ class ResourceHandler:
     def _assert_valid_type_arguments(self, export):
         """Ensure the method referenced in the export uses Pydantic arguments."""
         obj = next(iter(self._handler_dict.values()))
-        assert_valid_type_arguments(getattr(obj, export["attr"]))
+        assert_valid_type_arguments(self._get_handler_function(obj, export["attr"]))
 
     def _create_openapi_doc_for_view(self, route, export):
         """Add OpenAPI documentation for a route."""
@@ -307,7 +333,7 @@ class ResourceHandler:
         # any will do for documentation purpose
         http_method = export["method"]
         obj = next(iter(self._handler_dict.values()))
-        view_func = getattr(obj, export["attr"])
+        view_func = self._get_handler_function(obj, export["attr"])
         annotations = view_func.__annotations__
 
         # Add OpenAPI documentation root for route
@@ -634,7 +660,7 @@ class AdapterResourceHandler(ResourceHandler):
                 return jsonify({"error": msg}), 404
 
             # We ensure that the object has the desired method
-            if not hasattr(obj, export["attr"]):
+            if not self._get_handler_function(obj, export["attr"]):
                 return (
                     jsonify(
                         {
