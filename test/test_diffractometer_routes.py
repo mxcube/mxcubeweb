@@ -52,7 +52,9 @@ def test_set_aperture(client):
 
     original_aperture = data["value"]["currentAperture"]
 
-    ap = data["value"]["apertureList"][0]
+    # apertureList entries are NStateOption objects ({"value", "label", ...}),
+    # the underlying hardware object's set_value expects the plain string value
+    ap = data["value"]["apertureList"][0]["value"]
 
     # make sure we are testing a change of aperture
     assert ap != original_aperture
@@ -62,6 +64,7 @@ def test_set_aperture(client):
         data=json.dumps({"value": ap}),
         content_type="application/json",
     )
+    assert resp.status_code == 200
 
     resp = client.get(
         "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
@@ -79,8 +82,10 @@ def test_set_aperture(client):
         data=json.dumps({"value": original_aperture}),
         content_type="application/json",
     )
+    assert resp.status_code == 200
     # wait until aperture changes the value
-    aperture_value_changed.wait()
+    aperture_value_changed.wait(timeout=10)
+    assert aperture_value_changed.is_set(), "valueChanged signal was not emitted"
 
     resp = client.get(
         "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
