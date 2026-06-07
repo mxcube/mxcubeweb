@@ -1,0 +1,8 @@
+%YAML 1.2
+---
+class: ActuatorMockup.ActuatorMockup
+configuration:
+  actuator_name: Cryo
+  default_value: 200
+  read_only: true
+  username: Cryo

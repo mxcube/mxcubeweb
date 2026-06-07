@@ -1,0 +1,10 @@
+%YAML 1.2
+---
+class: ExporterNStateMockup.ExporterNStateMockup
+configuration:
+  default_value: false
+  exporter_address: wid30bmd:9001
+  use_hwstate: true
+  username: frontlight_switch
+  value_channel_name: FrontLightIsOn
+  values: '{"IN": True, "OUT": False}'

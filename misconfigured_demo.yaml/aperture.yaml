@@ -1,0 +1,5 @@
+%YAML 1.2
+---
+class: ApertureMockup.ApertureMockup
+configuration:
+  diameter_size_list: '[10, 20, 50, 100, 150]'

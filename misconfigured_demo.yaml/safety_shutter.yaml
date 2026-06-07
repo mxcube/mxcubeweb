@@ -1,0 +1,7 @@
+%YAML 1.2
+---
+class: ShutterMockup.ShutterMockup
+configuration:
+  actuator_name: safety_shutter
+  username: SafetyShutter
+  values: '{"OPEN": "open", "CLOSED": "closed"}'

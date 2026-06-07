@@ -1,0 +1,18 @@
+%YAML 1.2
+---
+class: Gphl.CollectEmulator.CollectEmulator
+configuration:
+  directory_prefix: emulator
+  environment_variables:
+    OMP_NUM_THREADS: 6
+    OMP_STACKSIZE: 1G
+    OMP_THREAD_LIMIT: 6
+  simcal_options:
+    hkl-scale: 1.0
+    memory-pool: 6
+  simcal_parameters:
+    background: 1.0
+    gen_mode: 0
+    n_rays: 2001
+    orient_mode: 1
+    sim_mode: 1

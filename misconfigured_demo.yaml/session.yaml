@@ -1,0 +1,40 @@
+%YAML 1.2
+---
+class: Session.Session
+configuration:
+  beamline_name: mxcubewebtest
+  email_extension: esrf.fr
+  endstation_name: mxcubewebtest
+  feedback_email: test@...
+  file_info:
+    archive_base_directory: /tmp
+    archive_folder: pyarch
+    base_directory: /tmp
+    precision: 4
+    processed_data_base_directory: /tmp
+    processed_data_folder_name: PROCESSED_DATA
+    raw_data_folder_name: RAW_DATA
+  inhouse_users:
+    proposal:
+      - code: idtest
+        number: 0
+      - code: opid
+        number: 291
+      - code: mxihr
+        number: 1
+      - code: mxihr
+        number: 2
+      - code: mxihr
+        number: 3
+      - code: mxihr
+        number: 4
+      - code: mxihr
+        number: 5
+      - code: mxihr
+        number: 6
+  proposals:
+    proposal:
+      - code: ifx
+        gui: fx
+        ispyb: fx
+  synchrotron_name: ESRF

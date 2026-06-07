@@ -1,0 +1,26 @@
+%YAML 1.2
+---
+class: DetectorMockup.DetectorMockup
+configuration:
+  beam:
+    ax: 0.0
+    ay: 0.0402
+    bx: 1565.715
+    by: 1702.058
+  exports: '["restart"]'
+  fileSuffix: cbf
+  hasShutterless: true
+  height: 3269
+  humidityThreshold: 20.0
+  manufacturer: DECTRIS
+  model: 9M
+  px: 0.075
+  py: 0.075
+  tempThreshold: 33.5
+  tolerance: 0.2
+  type: Eiger2
+  username: detector
+  width: 3110
+  roi_mode_list: '["0", "C18", "C12", "C2"]'
+objects:
+  detector_distance: dtox.yaml

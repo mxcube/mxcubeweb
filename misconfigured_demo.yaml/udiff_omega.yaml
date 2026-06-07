@@ -1,0 +1,8 @@
+%YAML 1.2
+---
+class: MotorMockup.MotorMockup
+configuration:
+  actuator_name: Omega
+  exporter_address: 130.235.94.124:9001
+  tolerance: 0.001
+  username: Omega

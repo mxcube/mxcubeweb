@@ -1,0 +1,4 @@
+#!/bin/sh
+
+${GPHL_INSTALLATION}/aP_wf_rotcal "$@" </dev/null &
+[ "$?" -eq 0 ] && echo " NORMAL termination" || echo " ERROR: Unable to start aP_wf_rotcal"

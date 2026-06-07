@@ -1,0 +1,610 @@
+! Fortran namelist file defining fixed strategies.
+! Note that the data are organised in objects, referred to internally by the 'xyz_id' fields
+!
+! See namelist specification and examples below for details
+!
+! The 'group_no' field serves to specify acquisition order of sweeps;
+! sweeps with the same group number must share teh same orientation
+
+&sdcp_goniostat_setting_list
+id= 'gset01'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 0.0 0.0
+/
+
+&sdcp_detector_setting_list
+id= 'dset01'
+!detector_axis_settings= 291.0
+!detector_axis_settings= 260.96
+! Matches 2.3A resolution at 1.0A wavelength
+detector_axis_settings= 470.00
+/
+
+&beam_setting_list
+id= 'bset01'
+! Standard ESRF ID30B wavelength, matching 12.7 keV
+lambda= 0.97625196850393714
+/
+
+! ################### 6deg/5 characteristation strategy
+
+&sdcp_strategy_list
+strategy_name= 'Char_6_5_multitrigger'
+type= 'geometric'
+allowed_widths= 0.02 0.03 0.04 0.05 0.06 0.08 0.1 0.12 0.15 0.2 0.3 0.4
+default_width_idx= 6
+/
+
+&stratcal_sweep_list
+repeat= 5
+offset= 45.0
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 1.2
+start_deg= 0.0
+/
+
+! ################### 4deg/4 characteristation strategy
+
+&sdcp_strategy_list
+strategy_name= 'Char_4_by_10_multitrigger'
+type= 'geometric'
+allowed_widths= 0.1
+default_width_idx= 0
+/
+
+&stratcal_sweep_list
+repeat= 4
+offset= 90.0
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 1.0
+start_deg= 0.0
+/
+
+! ################### One 24deg sweep
+
+&sdcp_strategy_list
+strategy_name= 'Char_24deg'
+type= 'geometric'
+allowed_widths= 0.02 0.03 0.04 0.05 0.06 0.08 0.1 0.12 0.15 0.2 0.3 0.4
+default_width_idx= 6
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 24.0
+start_deg= 0.0
+/
+
+! ################### 6deg/5 characteristation strategy sweepOverlap
+
+&sdcp_strategy_list
+strategy_name= 'Characterisation_6_5'
+type= 'geometric'
+allowed_widths= 0.02 0.03 0.04 0.05 0.06 0.08 0.1 0.12 0.15 0.2 0.3 0.4
+default_width_idx= 6
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 1.2
+start_deg= 0.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 1.2
+start_deg= 60.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 1.2
+start_deg= 90.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 1.2
+start_deg= 120.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 1.2
+start_deg= 180.0
+/
+
+! ################### 12deg/5 characteristation strategy
+
+&sdcp_strategy_list
+strategy_name= 'TEST_Characterisation_12_5'
+type= 'geometric'
+allowed_widths= 0.02 0.03 0.04 0.05 0.06 0.08 0.1 0.12 0.15 0.2 0.3 0.4
+default_width_idx= 6
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 2.4
+start_deg= 0.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 2.4
+start_deg= 60.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 2.4
+start_deg= 90.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 2.4
+start_deg= 120.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 2.4
+start_deg= 180.0
+/
+
+! ################### 12deg/4 characteristation strategy
+
+&sdcp_strategy_list
+strategy_name= 'TEST_Characterisation_12_4'
+type= 'geometric'
+allowed_widths= 0.02 0.03 0.04 0.05 0.06 0.08 0.1 0.12 0.15 0.2 0.3 0.4
+default_width_idx= 6
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 3.0
+start_deg= 0.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 3.0
+start_deg= 60.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 3.0
+start_deg= 120.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 3.0
+start_deg= 180.0
+/
+
+! ################### 12deg/3 characteristation strategy
+
+&sdcp_strategy_list
+strategy_name= 'TEST_Characterisation_12_3'
+type= 'geometric'
+allowed_widths= 0.02 0.03 0.04 0.05 0.06 0.08 0.1 0.12 0.15 0.2 0.3 0.4
+default_width_idx= 6
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 4.0
+start_deg= 0.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 4.0
+start_deg= 90.0
+/
+
+&stratcal_sweep_list
+goniostat_setting_id= 'gset01'
+detector_setting_id= 'dset01'
+beam_setting_id= 'bset01'
+length_deg= 4.0
+start_deg= 180.0
+/
+
+!##################### Settings used for diffractometer calibration strategies
+
+&beam_setting_list
+id= 'dcalbset'
+lambda= 0.97625196850393714
+/
+
+!&sdcp_detector_setting_list
+!id= 'dcaldset'
+!detector_axis_settings= 260.96
+!/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk0_p0'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 0.0 0.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk0_p180'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 0.0 180.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk45_p90'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 45.0 90.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk45_p270'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 45.0 270.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk90_p0'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 90.0 0.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk90_p180'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 90.0 180.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk135_p90'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 135.0 90.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk135_p270'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 135.0 270.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk180_p0'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 180.0 0.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk180_p180'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 180.0 180.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk225_p90'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 225.0 90.0
+/
+
+&sdcp_goniostat_setting_list
+id= 'dcalgsetk225_p270'
+scan_axis_name= 'phi'
+goniostat_axis_settings= 0.0 225.0 270.0
+/
+
+!################## Short diffractometer calibration ################
+
+&sdcp_strategy_list
+strategy_name= 'DiffractCal_short'
+type= 'geometric'
+allowed_widths= 0.05 0.1 0.15 0.2
+default_width_idx= 0
+/
+
+&stratcal_sweep_list
+group_no= 1
+goniostat_setting_id= 'dcalgsetk0_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 0
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 1
+goniostat_setting_id= 'dcalgsetk0_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 180
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 2
+goniostat_setting_id= 'dcalgsetk90_p180'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 60
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 2
+goniostat_setting_id= 'dcalgsetk90_p180'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 240
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 3
+goniostat_setting_id= 'dcalgsetk180_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 60
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 3
+goniostat_setting_id= 'dcalgsetk180_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 240
+length_deg= 60
+/
+
+
+
+!################## Long diffractometer calibration ################
+
+&sdcp_strategy_list
+strategy_name= 'DiffractCal_full'
+type= 'geometric'
+allowed_widths= 0.05 0.1 0.15 0.2
+default_width_idx= 0
+/
+
+&stratcal_sweep_list
+group_no= 1
+goniostat_setting_id= 'dcalgsetk0_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 0
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 1
+goniostat_setting_id= 'dcalgsetk0_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 180
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 2
+goniostat_setting_id= 'dcalgsetk45_p90'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 60
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 2
+goniostat_setting_id= 'dcalgsetk45_p90'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 240
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 3
+goniostat_setting_id= 'dcalgsetk45_p270'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 120
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 3
+goniostat_setting_id= 'dcalgsetk45_p270'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 300
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 4
+goniostat_setting_id= 'dcalgsetk90_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 0
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 4
+goniostat_setting_id= 'dcalgsetk90_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 180
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 5
+goniostat_setting_id= 'dcalgsetk90_p180'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 60
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 5
+goniostat_setting_id= 'dcalgsetk90_p180'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 240
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 6
+goniostat_setting_id= 'dcalgsetk135_p90'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 120
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 6
+goniostat_setting_id= 'dcalgsetk135_p90'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 300
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 7
+goniostat_setting_id= 'dcalgsetk135_p270'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 0
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 7
+goniostat_setting_id= 'dcalgsetk135_p270'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 180
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 8
+goniostat_setting_id= 'dcalgsetk180_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 60
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 8
+goniostat_setting_id= 'dcalgsetk180_p0'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 240
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 9
+goniostat_setting_id= 'dcalgsetk180_p180'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 120
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 9
+goniostat_setting_id= 'dcalgsetk180_p180'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 300
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 10
+goniostat_setting_id= 'dcalgsetk225_p90'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 0
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 10
+goniostat_setting_id= 'dcalgsetk225_p90'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 180
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 11
+goniostat_setting_id= 'dcalgsetk225_p270'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 60
+length_deg= 60
+/
+
+&stratcal_sweep_list
+group_no= 11
+goniostat_setting_id= 'dcalgsetk225_p270'
+detector_setting_id= 'dset01'
+beam_setting_id= 'dcalbset'
+start_deg= 240
+length_deg= 60
+/
