@@ -7,10 +7,7 @@ from mxcubeweb.core.adapter.adapter_base import (
     ActuatorAdapterBase,
     default_resource_handler_config,
 )
-from mxcubeweb.core.models.adaptermodels import (
-    HOBeamModel,
-    HOBeamValueModel,
-)
+from mxcubeweb.core.models.adaptermodels import HOBeamModel, HOBeamValueModel
 
 
 class BeamAdapter(ActuatorAdapterBase):

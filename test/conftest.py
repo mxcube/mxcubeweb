@@ -5,22 +5,17 @@ from gevent import monkey
 monkey.patch_all(thread=False)
 
 
-from pathlib import Path  # noqa: I001
-
-
 import atexit
 import copy
 import json
 import os
 import sys
+from pathlib import Path  # noqa: I001
 
 import psutil
 import pytest
-from .input_parameters import (
-    test_sample_1,
-    test_sample_5,
-    test_task,
-)
+
+from .input_parameters import test_sample_1, test_sample_5, test_task
 
 MXCUBE_ROOT = os.path.abspath(
     os.path.join(os.path.dirname(os.path.realpath(__file__)), "../")

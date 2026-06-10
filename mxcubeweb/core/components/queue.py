@@ -16,14 +16,9 @@ from mxcubecore.model.queue_model_enumerables import CENTRING_METHOD
 from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
 
 from mxcubeweb.core.components.component_base import ComponentBase
-from mxcubeweb.core.models.adaptermodels import (
-    SampleInputModel,
-)
+from mxcubeweb.core.models.adaptermodels import SampleInputModel
 from mxcubeweb.core.models.generic import SimpleNameValue
-from mxcubeweb.core.util.convertutils import (
-    str_to_camel,
-    str_to_snake,
-)
+from mxcubeweb.core.util.convertutils import str_to_camel, str_to_snake
 
 # Important: same constants as in constants.js
 QUEUE_PAUSED = "QueuePaused"

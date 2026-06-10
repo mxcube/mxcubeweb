@@ -22,7 +22,6 @@ def register_routes(server, mxcube_app, cfg):  # noqa: ARG001
     _register_route(
         server, init_harvester_route, mxcube_app, f"{url_root_prefix}/harvester"
     )
-
     ResourceHandlerFactory.register_with_server(server.flask)
 
 

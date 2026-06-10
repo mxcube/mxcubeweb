@@ -1,7 +1,4 @@
-from pydantic import (
-    BaseModel,
-    Field,
-)
+from pydantic import BaseModel, Field
 
 from mxcubeweb.core.models.configmodels import ModeEnum
 

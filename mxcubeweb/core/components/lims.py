@@ -8,10 +8,7 @@ from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore.model.lims_session import LimsSessionManager
 
 from mxcubeweb.core.components.component_base import ComponentBase
-from mxcubeweb.core.components.queue import (
-    COLLECTED,
-    UNCOLLECTED,
-)
+from mxcubeweb.core.components.queue import COLLECTED, UNCOLLECTED
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
 VALID_SAMPLE_NAME_REGEXP = re.compile("^[a-zA-Z0-9:+_-]+$")

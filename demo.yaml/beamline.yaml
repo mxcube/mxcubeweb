@@ -28,6 +28,7 @@ objects:
   - beam: beam.yaml
   - transmission: transmission.yaml
   - flux: flux.yaml
+  - dose_rate: dose_rate.yaml
   - cryo: cryo.yaml
   - energy: energy.yaml
   - resolution: resolution.yaml

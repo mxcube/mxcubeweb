@@ -1,14 +1,6 @@
 import logging
 
-from flask import (
-    Blueprint,
-    jsonify,
-    make_response,
-    redirect,
-    request,
-    session,
-    url_for,
-)
+from flask import Blueprint, jsonify, make_response, redirect, request, session, url_for
 from flask_login import current_user
 
 from mxcubeweb.core.util import networkutils

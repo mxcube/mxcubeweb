@@ -7,10 +7,7 @@ from typing import ClassVar
 
 from flask import Blueprint, Response, jsonify, request
 from flask_login import current_user
-from pydantic import (
-    BaseModel,
-    ValidationError,
-)
+from pydantic import BaseModel, ValidationError
 
 from mxcubeweb.core.server.openapidoc import OpenAPISpec
 

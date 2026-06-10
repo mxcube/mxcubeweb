@@ -6,20 +6,11 @@ import typing
 from typing import Any, ClassVar
 
 import gevent
-from pydantic import (
-    Field,
-    ValidationError,
-    create_model,
-)
+from pydantic import Field, ValidationError, create_model
 
-from mxcubeweb.core.models.adaptermodels import (
-    HOActuatorModel,
-    HOModel,
-)
+from mxcubeweb.core.models.adaptermodels import HOActuatorModel, HOModel
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
-from mxcubeweb.core.server.resource_handler import (
-    ResourceHandlerFactory,
-)
+from mxcubeweb.core.server.resource_handler import ResourceHandlerFactory
 
 default_resource_handler_config = ResourceHandlerConfigModel(
     commands=[

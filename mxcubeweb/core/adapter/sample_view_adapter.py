@@ -12,10 +12,7 @@ from mxcubecore.queue_entry.base_queue_entry import CENTRING_METHOD
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
 from mxcubeweb.core.models.adaptermodels import Base64StrModel, ListOfShapesModel
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
-from mxcubeweb.core.util.convertutils import (
-    from_camel,
-    to_camel,
-)
+from mxcubeweb.core.util.convertutils import from_camel, to_camel
 
 logger = logging.getLogger("MX3.HWR")
 

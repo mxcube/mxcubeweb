@@ -1,9 +1,6 @@
 import pytz
 import tzlocal
-from flask_security import (
-    RoleMixin,
-    UserMixin,
-)
+from flask_security import RoleMixin, UserMixin
 from sqlalchemy import (
     JSON,
     Boolean,
@@ -15,10 +12,7 @@ from sqlalchemy import (
     Text,
     Unicode,
 )
-from sqlalchemy.orm import (
-    backref,
-    relationship,
-)
+from sqlalchemy.orm import backref, relationship
 
 from mxcubeweb.core.components.user.database import Base
 

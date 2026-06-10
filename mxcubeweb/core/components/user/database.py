@@ -2,11 +2,7 @@ import datetime
 
 from flask_security import SQLAlchemySessionUserDatastore
 from sqlalchemy import create_engine
-from sqlalchemy.orm import (
-    declarative_base,
-    scoped_session,
-    sessionmaker,
-)
+from sqlalchemy.orm import declarative_base, scoped_session, sessionmaker
 
 Base = declarative_base()
 

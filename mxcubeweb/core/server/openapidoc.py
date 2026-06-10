@@ -1,9 +1,7 @@
 import re
 
 from flask import Blueprint, jsonify
-from pydantic import (
-    BaseModel,
-)
+from pydantic import BaseModel
 
 DEFAULT_RESPONSES = {
     "200": {"description": "Success"},

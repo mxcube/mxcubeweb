@@ -1,11 +1,6 @@
 import json
 
-from flask import (
-    Blueprint,
-    Response,
-    jsonify,
-    request,
-)
+from flask import Blueprint, Response, jsonify, request
 from mxcubecore import HardwareRepository as HWR
 
 from mxcubeweb.core.models.generic import SimpleNameValue

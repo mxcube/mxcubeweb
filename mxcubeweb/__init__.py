@@ -2,8 +2,6 @@ from gevent import monkey
 
 monkey.patch_all(thread=False)
 
-from mxcubeweb.core.models.configmodels import FlaskConfigModel  # noqa: I001 E402
-
 # Disabling E402 (module level import not at top of file)
 # for the lines below as we are monkey patching
 import argparse  # noqa: E402
@@ -17,10 +15,12 @@ from mxcubecore import HardwareRepository as HWR  # noqa: E402
 
 from mxcubeweb.app import MXCUBEApplication as mxcube  # noqa: E402
 from mxcubeweb.config import Config  # noqa: E402
-from mxcubeweb.core.models.configmodels import RuntimeOptions  # noqa: E402
-
-from mxcubeweb.core.server.server import create_server  # noqa: E402
+from mxcubeweb.core.models.configmodels import (  # noqa: E402
+    FlaskConfigModel,  # noqa: I001 E402
+    RuntimeOptions,  # noqa: E402
+)
 from mxcubeweb.core.server.routes import register_routes  # noqa: E402
+from mxcubeweb.core.server.server import create_server  # noqa: E402
 
 sys.modules["Qub"] = mock.Mock()
 sys.modules["Qub.CTools"] = mock.Mock()

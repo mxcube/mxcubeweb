@@ -2,9 +2,7 @@ import logging
 import sys
 import traceback
 
-from mxcubecore import (
-    HardwareRepository as HWR,
-)
+from mxcubecore import HardwareRepository as HWR
 from mxcubecore.utils.conversion import make_table
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase

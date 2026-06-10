@@ -1,0 +1,7 @@
+---
+class: DoseRateMockup.DoseRateMockup
+configuration:
+  actuator_name: doserate
+  username: Radiation Dose Rate
+  read_only: true
+  default_limits: (0,500)  # MGy/s

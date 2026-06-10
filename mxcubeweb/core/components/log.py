@@ -4,9 +4,7 @@ import logging
 from mxcubeweb import logging_handler
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.adaptermodels import FrontEndStackTraceModel
-from mxcubeweb.core.models.configmodels import (
-    ResourceHandlerConfigModel,
-)
+from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
 hwr_logger = logging.getLogger("MX3.HWR")
 

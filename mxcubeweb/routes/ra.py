@@ -1,10 +1,4 @@
-from flask import (
-    Blueprint,
-    Response,
-    jsonify,
-    make_response,
-    request,
-)
+from flask import Blueprint, Response, jsonify, make_response, request
 from flask_login import current_user
 
 DISCONNECT_HANDLED = True

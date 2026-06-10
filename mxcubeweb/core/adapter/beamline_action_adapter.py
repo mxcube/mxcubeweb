@@ -4,16 +4,10 @@ from typing import ClassVar
 
 from mxcubecore.BaseHardwareObjects import HardwareObject
 from mxcubecore.HardwareObjects.BeamlineActions import BeamlineActions
-from pydantic import (
-    BaseModel,
-)
+from pydantic import BaseModel
 
 from mxcubeweb.core.adapter.adapter_base import AdapterBase
-from mxcubeweb.core.components.queue import (
-    FAILED,
-    READY,
-    RUNNING,
-)
+from mxcubeweb.core.components.queue import FAILED, READY, RUNNING
 from mxcubeweb.core.models.adaptermodels import (
     BeamlineActionInputModel,
     HOActuatorValueChangeModel,

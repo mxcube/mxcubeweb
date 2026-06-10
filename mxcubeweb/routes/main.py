@@ -2,10 +2,7 @@ import logging
 from datetime import datetime
 
 import flask_login
-from flask import (
-    Blueprint,
-    jsonify,
-)
+from flask import Blueprint, jsonify
 from mxcubecore import HardwareRepository as HWR
 
 from mxcubeweb import __version__

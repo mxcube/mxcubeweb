@@ -1,9 +1,7 @@
 import importlib
 import logging
 
-from mxcubeweb.core.server.resource_handler import (
-    ResourceHandlerFactory,
-)
+from mxcubeweb.core.server.resource_handler import ResourceHandlerFactory
 
 
 class ComponentBase:

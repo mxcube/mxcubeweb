@@ -1,6 +1,7 @@
 import { Button } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { executeCommand } from '../../actions/beamline';
 import {
   pauseQueue,
   resumeQueue,
@@ -85,6 +86,20 @@ export default function QueueControlOptions() {
               : 'Unmount'}
           </Button>
         )}
+        <Button
+          variant="success"
+          style={{ marginRight: '0.6em' }}
+          onClick={() =>
+            dispatch(
+              executeCommand('doserate', 'dose_rate', 'my_function', {
+                arg1: 1,
+                arg2: 2,
+              }),
+            )
+          }
+        >
+          Call My Function
+        </Button>
       </div>
     );
   }

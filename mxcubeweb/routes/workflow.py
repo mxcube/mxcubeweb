@@ -1,9 +1,4 @@
-from flask import (
-    Blueprint,
-    Response,
-    jsonify,
-    request,
-)
+from flask import Blueprint, Response, jsonify, request
 
 
 def init_route(app, server, url_prefix):
