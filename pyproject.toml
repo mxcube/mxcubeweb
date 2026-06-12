@@ -34,7 +34,7 @@ dynamic = [
 graylog = ["graypy>=2.1.0"]
 
 [tool.poetry]
-requires-poetry = "2.2.1"  # Keep in sync with `.pre-commit-config.yaml` and `conda-environment.yml`
+requires-poetry = "2.4.1"  # Keep in sync with `.pre-commit-config.yaml` and `conda-environment.yml`
 
 [tool.poetry.dependencies]
 authlib = "^1.6.12"
