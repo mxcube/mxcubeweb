@@ -41,20 +41,20 @@ class GenericTaskForm extends React.Component {
     this.jsformData = {};
   }
 
-  submitAddToQueue() {
-    this.props.handleSubmit(this.addToQueue.bind(this, false))();
-  }
-
-  submitRunNow() {
-    this.props.handleSubmit(this.addToQueue.bind(this, true))();
-  }
-
   get jsFormStorageKey() {
     return `current${this.props.taskData.type}Parameters`;
   }
 
   get isFormValid() {
     return this.props.valid && this.state.rjsfErrors.length === 0;
+  }
+
+  submitAddToQueue() {
+    this.props.handleSubmit(this.addToQueue.bind(this, false))();
+  }
+
+  submitRunNow() {
+    this.props.handleSubmit(this.addToQueue.bind(this, true))();
   }
 
   clearCurrentJSFormParameters() {
