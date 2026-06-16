@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux';
 
 import {
   showGphlWorkflowParametersDialog,
-  updateGphlWorkflowParameters,
+  updateGphlWorkflowParameters as updateGphlWorkflowParametersAction,
   updateGphlWorkflowParametersDialog,
 } from '../actions/workflow';
 import { DraggableModal } from '../components/DraggableModal';
@@ -91,7 +91,7 @@ function GphlWorkflowParametersDialog(props) {
     show,
     updatedFormData,
     handleHide,
-    updateGphlWorkflowParameters, // eslint-disable-line no-shadow
+    updateGphlWorkflowParameters,
     resetUpdatedGphlWParameters,
     fetchUpdated,
   } = props;
@@ -558,7 +558,7 @@ function mapDispatchToProps(dispatch) {
       dispatch,
     ),
     updateGphlWorkflowParameters: bindActionCreators(
-      updateGphlWorkflowParameters,
+      updateGphlWorkflowParametersAction,
       dispatch,
     ),
     resetUpdatedGphlWParameters: bindActionCreators(
