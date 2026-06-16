@@ -230,12 +230,8 @@ function GphlWorkflowParametersDialog(props) {
       errorMsg = e.target.validationMessage;
     }
 
-    const newInvalidFields = { ...invalidFields };
-    if (errorMsg) {
-      newInvalidFields[key] = errorMsg;
-    } else {
-      delete newInvalidFields[key];
-    }
+    const { [key]: _removed, ...rest } = invalidFields;
+    const newInvalidFields = errorMsg ? { ...rest, [key]: errorMsg } : rest;
     setInvalidFields(newInvalidFields);
 
     if (errorMsg) {

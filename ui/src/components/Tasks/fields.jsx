@@ -14,11 +14,10 @@ export function getLastUsedParameters(type, newParams) {
 }
 
 export function saveToLastUsedParameters(formName, parameters, exclude = []) {
-  const params = { ...parameters };
-
-  exclude.forEach((paramName) => {
-    delete params[paramName];
-  });
+  const excluded = new Set(exclude);
+  const params = Object.fromEntries(
+    Object.entries(parameters).filter(([key]) => !excluded.has(key)),
+  );
 
   localStorage.setItem(`last${formName}Parameters`, JSON.stringify(params));
 }
