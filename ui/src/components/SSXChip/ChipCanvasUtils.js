@@ -14,9 +14,7 @@ export function renderChip(
   rowLabels = [],
   colLabels = [],
 ) {
-  const objects = [];
-
-  objects.push(
+  const objects = [
     new Rect({
       top: 0,
       left: 0,
@@ -36,7 +34,7 @@ export function renderChip(
       customType: 'CHIP',
       objectIndex: [],
     }),
-  );
+  ];
 
   // Add labels
 

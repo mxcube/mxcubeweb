@@ -352,8 +352,10 @@ export function addTask(sampleIDs, parameters, runNow) {
           }
         }
 
-        const sample = { ...state.sampleGrid.sampleList[sampleID] };
-        sample.tasks = [task];
+        const sample = {
+          ...state.sampleGrid.sampleList[sampleID],
+          tasks: [task],
+        };
         samples.push(sample);
       });
     });

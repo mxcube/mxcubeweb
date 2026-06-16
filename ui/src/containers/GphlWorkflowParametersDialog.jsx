@@ -249,8 +249,10 @@ function GphlWorkflowParametersDialog(props) {
         ? e.target.checked
         : e.target.value;
 
-    const newFormState = { ...formState };
-    newFormState[key] = removeExtraDecimal(val, typeof val);
+    const newFormState = {
+      ...formState,
+      [key]: removeExtraDecimal(val, typeof val),
+    };
     const signal = formData.ui_schema[uiOptions].return_signal;
     const parameter = { signal, instruction: key, data: newFormState };
     await updateGphlWorkflowParameters(parameter);
@@ -259,8 +261,7 @@ function GphlWorkflowParametersDialog(props) {
 
   const handleIndexingTableChange = useCallback(
     async (value) => {
-      const newFormState = { ...formState };
-      newFormState.indexing_solution = value;
+      const newFormState = { ...formState, indexing_solution: value };
       setFormState(newFormState);
       const signal = formData.ui_schema[uiOptions].return_signal;
       const parameter = {

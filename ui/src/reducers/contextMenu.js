@@ -27,12 +27,13 @@ function contextMenuReducer(state = INITIAL_STATE, action = {}) {
       };
     }
     case 'SHOW_GENERIC_CONTEXT_MENU': {
-      const genericContextMenu = { ...state.genericContextMenu };
-
-      genericContextMenu.id = action.id;
-      genericContextMenu.show = action.show;
-      genericContextMenu.x = action.x;
-      genericContextMenu.y = action.y;
+      const genericContextMenu = {
+        ...state.genericContextMenu,
+        id: action.id,
+        show: action.show,
+        x: action.x,
+        y: action.y,
+      };
 
       return { ...state, genericContextMenu };
     }

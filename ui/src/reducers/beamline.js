@@ -337,8 +337,7 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
           end: false,
         },
       };
-      const plotsData = { ...state.plotsData };
-      plotsData[plotId] = [];
+      const plotsData = { ...state.plotsData, [plotId]: [] };
 
       return {
         ...state,
@@ -352,8 +351,7 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
       if (action.fullDataSet) {
         plotsData[action.id] = action.data;
       } else {
-        const plotData = [...plotsData[action.id]];
-        plotData.push(...action.data);
+        const plotData = [...plotsData[action.id], ...action.data];
         plotsData[action.id] = plotData;
       }
       return { ...state, plotsData };
