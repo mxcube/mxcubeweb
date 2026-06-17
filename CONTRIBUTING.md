@@ -154,7 +154,9 @@ code base:
 
 ### Type hints
 
-We strongly encourage the usage of type hints
+We strongly encourage the usage of type hints. For the Python codebase they can be realised using the built-in type hint system.
+For the web front-end, it is considered best practice to write new code using TypeScript.
+In case of modifications to existing JavaScript files specifying type information using JSDoc as described [here](https://www.typescriptlang.org/docs/handbook/jsdoc-supported-types.html) is also advised.
 
 ### Naming convention
 
