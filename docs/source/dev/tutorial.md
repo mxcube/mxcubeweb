@@ -8,7 +8,7 @@ Useful links:
 
 - React Developer Tools: [installation](https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi) and [usage](https://react.dev/learn/react-developer-tools)
 - Redux DevTools: [installation](https://chrome.google.com/webstore/detail/redux-devtools/lmhkpmbekcpmknklioeibfkpmmfibljd) and [usage](https://github.com/reduxjs/redux-devtools)
-- Swagger link once `mxcubeweb` is running: <http://localhost:8081/apidocs/docs_swagger/>
+- Swagger link once `mxcubeweb` is running: <http://localhost:8081/apidocs/docs_swagger>
 
 ![Swagger UI](assets/swagger.png)
 
@@ -31,6 +31,21 @@ Edit the XML so MXCuBE is aware of the new action:
 </object>
 ```
 
+Or edit the YAML if using the `demo.yml` folder:
+
+```yaml
+%YAML 1.2
+---
+class: BeamlineActionsMockup.BeamlineActionsMockup
+configuration:
+  commands: "
+  [
+    {'type': 'controller', 'name': 'SuperAction',
+    'command': 'HardwareObjects.mockup.BeamlineActionsMockup.SuperAction'},
+    ...
+  ]"
+```
+
 And implement the actual action in `mxcubecore/mxcubecore/HardwareObjects/mockup/BeamlineActionsMockup.py`:
 
 ```python
@@ -42,7 +57,7 @@ class SuperAction:
 
         logging.getLogger("HWR").info("Setting diff to transfer")
 
-        HWR.beamline.diffractometer.set_phase("Transfer")
+        HWR.beamline.diffractometer.set_phase("TRANSFER")
         gevent.sleep(3)
         logging.getLogger("HWR").info("Restarting detector")
 
@@ -62,9 +77,9 @@ We add the method to the hardware object:
 
 ```python
     def trigger(self, exp_time: float ) -> None:
-        self.update_state(HardwareObjectState.BUSY)
-        time.sleep(exp_time)
-        self.update_state(HardwareObjectState.READY)
+      self.update_state(HardwareObjectState.BUSY)
+      time.sleep(exp_time)
+      self.update_state(HardwareObjectState.READY)
 ```
 
 and define as exportable in the detector.xml
@@ -164,10 +179,24 @@ with the `humidity.xml`:
 </object>
 ```
 
+or the `humidity.yaml` if you are using `demo.yaml`:
+
+```yaml
+%YAML 1.2
+---
+class: HumidityControllerMockup.HumidityControllerMockup
+```
+
 and an extra line in `mxcubeweb/demo/beamline_config.yml`:
 
 ```yaml
     - humidity: humidity.xml
+```
+
+or in `mxcubeweb/demo.yaml/beamline.yaml`:
+
+```yaml
+    - humidity: humidity.yaml
 ```
 
 And we need to let the beamline class know about it:
@@ -176,27 +205,19 @@ And we need to let the beamline class know about it:
 
 ```python
     @property
-    def humidity(self):
-        """Humidity control Hardware object
-
-        Returns:
-            Optional[AbstractMachineInfo]:
-        """
-        return self._objects.get("humidity")
-
-    __content_roles.append("humidity")
+    def humidity(self) -> HardwareObject | None:
+      return self.get_object_by_role("humidity")
 ```
 
 And finally, let the UI know that there is a new hardware object that needs rendering.
 
-In `ui.yaml`:
+In `ui.yaml` under `sample_view`:
 
 ```yaml
-    - label: Humidity
-      attribute: humidity
-      precision: 2
-      suffix: "%"
-      format: expo
+    - attribute: humidity
+      label: Humidity
+      tooltip: >
+        Use this widget to set the humidity
 ```
 
 This made the UI provide the functionality out of the box,
@@ -204,49 +225,37 @@ but we did not really play with web development.
 The extra dropdown menu gives us some extra knowledge.
 
 First, we need to create the React component.
-Create the new file `mxcubeweb/ui/src/components/SampleView/HumidityInput.js`:
+Create the new file `mxcubeweb/ui/src/components/SampleView/HumidityInput.jsx`:
 
 ```jsx
-import '../MotorInput/motor.css';
-import '../input.css';
-import cx from 'classnames';
+import { useDispatch, useSelector } from 'react-redux';
+import { changeHumidity } from '../../actions/sampleview';
+import { NStateSelect } from './NStateSelect';
 
-export default class HumidityInput extends React.Component {
-  constructor(props) {
-    super(props);
-    this.sendHumidity = this.sendHumidity.bind(this);
-    this.humidityList = [20, 30, 40];
-  }
+const HUMIDITY_LIST = [20, 30, 40];
 
-  sendHumidity(event) {
-    if (event.target.value !== 'Unknown') {
-      this.props.sendHumidity(event.target.value);
-    }
-  }
+/**
+ * @typedef {Object} Props
+ * @property {string?} tooltip - Optional hover tooltip text.
+ *
+ * @param {Props} props
+ */
+export default function HumidityInput({ tooltip }) {
+  const dispatch = useDispatch();
 
-  render() {
-    const inputCSS = cx('form-control input-sm', {
-      'input-bg-moving': this.props.state !== 'READY',
-      'input-bg-ready': this.props.state === 'READY',
-    });
-
-    console.log('render humidity', this.props);
-    return (
-      <div className="motor-input-container">
-        <select
-          className={inputCSS}
-          onChange={this.sendHumidity}
-          value={this.props.humidity}
-        >
-          {this.humidityList.map((option) => (
-            <option key={option} value={option}>
-              {option}
-            </option>
-          ))}
-        </select>
-      </div>
-    );
-  }
+  return (
+    <NStateSelect
+      id="HumidityInput"
+      value={useSelector((state) => state.sampleview.currentHumidity)}
+      options={HUMIDITY_LIST}
+      isBusy={useSelector(
+        (state) =>
+          state.beamline.hardwareObjects.humidity?.state === 'BUSY',
+      )}
+      onSelect={(value) => dispatch(changeHumidity(parseFloat(value)))}
+      tooltip={tooltip}
+    />
+  );
 }
 ```
 
@@ -257,23 +266,18 @@ Now we need to call this component in `mxcubeweb/ui/src/containers/SampleViewCon
 import HumidityInput from '../components/SampleView/HumidityInput';
 
 // and
-    const humidityInput = (
-      <div>
-        <p className="motor-name">Humidity Control:</p>
-        <HumidityInput
-          humidityList={this.props.sampleViewState.humidityList}
-          sendHumidity={this.props.sampleViewActions.sendHumidity}
-          state={diffractometerHo.state}
-        />
-      </div>
-    );
+  const humidity = components.find((c) => c.attribute === 'humidity');
 
-// and
-              {process.env.REACT_APP_PHASECONTROL === 'true'
-                ? phaseControl
-                : null}
-              {humidityInput}
-          {apertureControl}
+
+// and between phase control and beam size
+            {humidity !== undefined && (
+              <div className={motorInputStyles.container}>
+                <label className={motorInputStyles.label} htmlFor="HumidityInput">
+                  {humidity.label}
+                </label>
+                <HumidityInput tooltip={humidity.tooltip} />
+              </div>)
+            }
 ```
 
 Just find your way through the code. ;)
@@ -283,19 +287,43 @@ We still need to define what happens when we select an option.
 if we had created it first in `mxcubeweb/ui/src/actions/sampleview.js`:
 
 ```jsx
-export function sendHumidity(humidity) {
-  return function () {
-    fetch('/mxcube/api/v0.1/beamline/actuator/value/humidity', {
-      method: 'PUT',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-type': 'application/json',
-      },
-      body: JSON.stringify({ name: 'humidity', value: humidity }),
+export function setHumidity(humidity) {
+  return { type: 'SET_HUMIDITY', humidity}
+}
+
+export function changeHumidity(humidity) {
+  return async (dispatch) => {
+    await sendExecuteCommand('actuator', 'humidity', 'set_value', {
+      value: humidity
     });
+    dispatch(setHumidity(humidity))
   };
 }
+```
+
+We will also need to set the 'SET_HUMIDITY' case in the `mxcubeweb/ui/src/reducers/sampleview.js`
+
+```js
+    // set initial state:
+    const INITIAL_STATE = {
+        ...
+        currentHumidity: 0,
+        ...
+    }
+
+    ...
+    case 'SET_HUMIDITY': {
+      return { ...state, currentHumidity: action.humidity }
+    }
+    ...
+    case 'SET_INITIAL_STATE': {
+      return {
+        ...state,
+        ...
+        currentHumidity: action.data.humidity,
+        ...
+      };
+    }
 ```
 
 ## Exercise 5: New React component from scratch
@@ -305,17 +333,27 @@ Don't pay too much attention to the functionality.
 
 ```jsx
 import { Button } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 
-function NewComponent(props) {
+/**
+ * @typedef {Object} Props
+ * @property {string} name - Name to display in the component.
+ * @property {function(string): void} sendCurrentPhase - Set current phase to the given value
+ *
+ * @param {Props} props
+ */
+function NewComponent({ name, sendCurrentPhase }) {
+  const dispatch = useDispatch();
+
   return (
     <div>
       <Button
         variant="danger"
-        onClick={() => props.sendCurrentPhase('Transfer')}
+        onClick={() => dispatch(sendCurrentPhase('TRANSFER'))}
       >
         boo
       </Button>
-      <h1>Hello, {props.name}</h1>
+      <h1>Hello, {name}</h1>
     </div>
   );
 }
@@ -327,14 +365,13 @@ And in `BeamlineSetupContainer.jsx` add the following lines:
 
 ```jsx
 import NewComponent from '../components/NewComponent/NewComponent';
+import { changeCurrentPhase } from '../actions/sampleview';
 
-// in the render method:
-
-          <Nav className="me-3">
-            <NewComponent
-              name={
-                this.props.beamline.hardwareObjects['diffractometer.omega'].value
-              }
-              sendCurrentPhase={this.props.sampleViewActions.sendCurrentPhase}
-            />
+// in the return:
+        <Nav className="me-3">
+          <NewComponent
+            name={hardwareObjects['diffractometer.omega'].value}
+            sendCurrentPhase={changeCurrentPhase}
+          />
+        </Nav>
 ```

@@ -90,6 +90,9 @@ pnpm --prefix ui build
 # to the demo and build directories
 # (that is why there is an extra `$(pwd)` in the command).
 mxcubeweb-server -r $(pwd)/mxcubeweb/demo/ --static-folder $(pwd)/mxcubeweb/ui/build/ -L debug
+
+# Or for the YAML version of the demo:
+mxcubeweb-server -r $(pwd)/mxcubeweb/demo.yml/ --static-folder $(pwd)/mxcubeweb/ui/build/ -L debug
 ```
 
 _Running the above should give something similar to_
