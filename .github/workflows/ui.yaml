@@ -39,16 +39,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/setup-pnpm/node_modules/.bin/store
             ~/.cache/Cypress
-          key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+            ~/setup-pnpm/node_modules/.bin/store
+          key: cache-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-
 
       - name: Install UI dependencies
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
 
       - name: Run Prettier
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui prettier"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui prettier"
 
   lint:
     name: JS-Lint
@@ -73,17 +73,17 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/setup-pnpm/node_modules/.bin/store
             ~/.cache/Cypress
-          key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+            ~/setup-pnpm/node_modules/.bin/store
+          key: cache-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-
 
       - name: Install UI dependencies
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
 
       - name: Run ESLint
         # fail on warnings
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui eslint --max-warnings=0"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui eslint --max-warnings=0"
 
   e2e:
     name: E2E-Test
@@ -130,22 +130,22 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            ~/setup-pnpm/node_modules/.bin/store
             ~/.cache/Cypress
-          key: cache-${{ runner.os }}-${{ hashFiles('pnpm-lock.yaml') }}
+            ~/setup-pnpm/node_modules/.bin/store
+          key: cache-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
           restore-keys: ${{ runner.os }}-
 
       - name: Install UI dependencies
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
 
       - name: Build UI
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui build"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui build"
 
       - name: Start MXCuBE-Web server (XML config)
         run: |
           ${MAMBA_EXE} run --name mxcubeweb mxcubeweb-server -r ./demo/ --static-folder $(pwd)/ui/build/ -L debug &
-          ${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui exec wait-on http://127.0.0.1:8081
-          ${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui e2e
+          ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui exec wait-on http://127.0.0.1:8081
+          ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui e2e
         env:
           CYPRESS_BASE_URL: http://127.0.0.1:8081
 
@@ -153,8 +153,8 @@ jobs:
         run: |
           pkill -f mxcubeweb-server || true
           ${MAMBA_EXE} run --name mxcubeweb mxcubeweb-server -r ./demo.yaml/ --static-folder $(pwd)/ui/build/ -L debug &
-          ${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui exec wait-on http://127.0.0.1:8081
-          ${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui e2e
+          ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui exec wait-on http://127.0.0.1:8081
+          ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui e2e
         env:
           CYPRESS_BASE_URL: http://127.0.0.1:8081
 
@@ -191,7 +191,7 @@ jobs:
           post-cleanup: "all"
 
       - name: Update pnpm-lock.yaml
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install --lockfile-only"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install --lockfile-only"
 
       - name: Commit changes (if lockfile updated)
         env:
