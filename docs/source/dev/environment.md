@@ -79,8 +79,8 @@ poetry install
 ### 6. Install the front-end dependencies and build the UI
 
 ```
-pnpm --prefix ui install
-pnpm --prefix ui build
+pnpm --dir ui install
+pnpm --dir ui build
 ```
 
 ### 7. Running the application (server)
@@ -165,7 +165,7 @@ conda activate mxcubeweb
 mxcubeweb-server -r $(pwd)/mxcubeweb/demo/ --static-folder $(pwd)/mxcubeweb/ui/build/ --log-level debug
 
 # In another terminal, from the root directory of `mxcubeweb`
-pnpm --prefix ui start
+pnpm --dir ui start
 ```
 
 The above will automatically open a browser with the URL: <http://localhost:5173>
@@ -183,7 +183,7 @@ The above will automatically open a browser with the URL: <http://localhost:5173
 Keep both the backend and front-end servers running then run the following command in a third terminal, from the root directory of the project:
 
 ```
-pnpm --prefix ui e2e
+pnpm --dir ui e2e
 ```
 
 The result should look like this:

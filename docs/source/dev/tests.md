@@ -34,7 +34,7 @@ The end-to-end tests are located in the `ui/cypress/e2e` folder and organised in
 To run all the tests consecutively in a headless browser environment, start both the backend and front-end servers in separate terminals, and then run the following command from the root of the project:
 
 ```
-pnpm --prefix ui e2e
+pnpm --dir ui e2e
 ```
 
 This should give you a result similar to this:
@@ -46,7 +46,7 @@ The default browser for this process is chosen to be [Firefox](https://www.mozil
 Another possibility is to use the [Cypress App](https://www.cypress.io/app) to run the tests. This gives you some additional possibilities such as choosing the browser environment, run only specific specs or using an interactive debugging mode. To run the Cypress App, run the following command:
 
 ```
-pnpm --prefix ui cypress
+pnpm --dir ui cypress
 ```
 
 ![cypress_app](assets/cypress_client.png)
@@ -54,8 +54,8 @@ pnpm --prefix ui cypress
 If you'd like to run Cypress against the front-end production build of MXCuBE-Web, like in the CI, run the following:
 
 ```
-pnpm --prefix ui build
-CYPRESS_BASE_URL="http://127.0.0.1:8081" pnpm --prefix ui e2e
+pnpm --dir ui build
+CYPRESS_BASE_URL="http://127.0.0.1:8081" pnpm --dir ui e2e
 ```
 
 ### Best Practices

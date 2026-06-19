@@ -40,7 +40,7 @@ The codebase is formatted with [Prettier](https://prettier.io/), linted with [ES
 - `pnpm dlx <pkg-name>` - fetch a package from the registry and run its default
   command binary (equivalent to `npx <pkg-name>`)
 
-> You can run all `pnpm` commands from the root of the repository with `pnpm --prefix ui <cmd>`.
+> You can run all `pnpm` commands from the root of the repository with `pnpm --dir ui <cmd>`.
 
 ## Guidelines
 
