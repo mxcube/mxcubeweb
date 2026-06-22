@@ -100,7 +100,7 @@ class FrontEndStackTraceModel(BaseModel):
 
 class SampleInputModel(BaseModel):
     location: str
-    sample_name: str = Field(default="", alias="sampleName")
+    sample_name: str = Field(default="", alias="sampleName", pattern=r"^[\w+\-:]*$")
     sample_id: str = Field(default="", alias="sampleID")
 
     class Config:
