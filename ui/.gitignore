@@ -8,6 +8,9 @@
 # production
 /build/
 
+# typescript
+*.tsbuildinfo
+
 # environment
 /.env.local
 /.env.*.local

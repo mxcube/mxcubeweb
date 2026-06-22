@@ -85,6 +85,40 @@ jobs:
         # fail on warnings
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui eslint --max-warnings=0"
 
+  lint-tsc:
+    name: JS-Lint-TSC
+    runs-on: ubuntu-latest
+
+    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
+    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Conda environment
+        uses: mamba-org/setup-micromamba@v2
+        with:
+          micromamba-version: 1.5.10-0
+          environment-file: conda-environment.yml
+          cache-environment: true
+          post-cleanup: "all"
+
+      - name: Cache UI dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/setup-pnpm/node_modules/.bin/store
+            ~/.cache/Cypress
+          key: cache-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
+          restore-keys: ${{ runner.os }}-
+
+      - name: Install UI dependencies
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
+
+      - name: Run tsc
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui lint:tsc"
+
   e2e:
     name: E2E-Test
     runs-on: ubuntu-latest
