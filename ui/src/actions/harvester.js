@@ -1,7 +1,6 @@
 import {
   sendAbortHarvester,
   sendCalibratePin,
-  sendDataCollectionInfoToCrims,
   sendHarvestAndLoadCrystal,
   sendHarvestCrystal,
   sendHarvesterCommand,
@@ -68,21 +67,6 @@ export function harvestAndLoadCrystal(xtalUUID, successCb = null) {
     } catch (error) {
       dispatch(showErrorPanel(true, error.response.headers.get('message')));
       throw new Error('Server refused to harvest or load crystal');
-    }
-  };
-}
-
-export function sendDataCollectionToCrims() {
-  return async (dispatch) => {
-    try {
-      const contents = await sendDataCollectionInfoToCrims();
-      dispatch(setContents(contents));
-
-      // temporary use ErrorPanel to display success message
-      dispatch(showErrorPanel(true, 'Succesfully sent DC to Crims'));
-    } catch (error) {
-      dispatch(showErrorPanel(true, error.response.headers.get('message')));
-      throw new Error('Server refused to send DC to Crims');
     }
   };
 }

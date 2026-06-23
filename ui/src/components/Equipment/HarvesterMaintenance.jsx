@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   calibratePin,
   sendCommand,
-  sendDataCollectionToCrims,
   validateCalibration,
 } from '../../actions/harvester';
 import InOutSwitch from '../InOutSwitch/InOutSwitch';
@@ -125,19 +124,6 @@ export default function HarvesterMaintenance() {
                   </Col>
                 </>
               )}
-            </Row>
-            <hr />
-            <Row className="mt-2">
-              <Col sm={6}>
-                <Button
-                  className="mt-1"
-                  variant="outline-secondary"
-                  onClick={() => dispatch(sendDataCollectionToCrims())}
-                  title="TEST : Send latest Data collection Group and to Crims"
-                >
-                  Send Data to Crims
-                </Button>
-              </Col>
             </Row>
           </Card.Body>
         </Card>

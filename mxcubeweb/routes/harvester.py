@@ -81,15 +81,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
             return jsonify(app.harvester.get_harvester_contents())
         return None
 
-    @bp.route("/send_data_collection_info_to_crims", methods=["GET"])
-    @server.require_control
-    @server.restrict
-    def send_data_collection_info_to_crims():
-        ret = app.harvester.send_data_collection_info_to_crims()
-        if ret:
-            return jsonify(app.harvester.get_harvester_contents())
-        return None
-
     @bp.route("/validate_calibration", methods=["POST"])
     @server.restrict
     def validate_calibration():
