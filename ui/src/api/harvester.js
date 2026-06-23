@@ -24,10 +24,6 @@ export function sendCalibratePin() {
   return endpoint.get('/calibrate').safeJson();
 }
 
-export function sendDataCollectionInfoToCrims() {
-  return endpoint.get('/send_data_collection_info_to_crims').safeJson();
-}
-
 export function sendValidateCalibration(validated) {
   return endpoint
     .post(JSON.stringify(validated), '/validate_calibration')
