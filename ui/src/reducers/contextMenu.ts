@@ -1,21 +1,26 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+interface Shape {
+  type: string;
+}
+
+interface GenericContextMenu {
+  id: string;
+  show: boolean;
+  x: number;
+  y: number;
+}
 interface ContextMenuState {
   show: boolean;
-  shape: { type: string };
+  shape: Shape;
   pageX: number;
   pageY: number;
   sampleViewX: number;
   sampleViewY: number;
-  genericContextMenu: {
-    id: string;
-    show: boolean;
-    x: number;
-    y: number;
-  };
+  genericContextMenu: GenericContextMenu;
 }
 
-const INITIAL_STATE = {
+const INITIAL_STATE: ContextMenuState = {
   show: false,
   shape: { type: 'NONE' },
   pageX: 0,
@@ -28,7 +33,7 @@ const INITIAL_STATE = {
     x: 0,
     y: 0,
   },
-} satisfies ContextMenuState as ContextMenuState;
+};
 
 const contextMenuSlice = createSlice({
   name: 'contextMenu',
@@ -38,7 +43,7 @@ const contextMenuSlice = createSlice({
       state,
       action: PayloadAction<{
         show: boolean;
-        shape: { type: string };
+        shape: Shape;
         pageX: number;
         pageY: number;
         sampleViewX: number;
@@ -55,15 +60,7 @@ const contextMenuSlice = createSlice({
         sampleViewY: action.payload.sampleViewY,
       };
     },
-    showGenericContextMenu(
-      state,
-      action: PayloadAction<{
-        id: string;
-        show: boolean;
-        x: number;
-        y: number;
-      }>,
-    ) {
+    showGenericContextMenu(state, action: PayloadAction<GenericContextMenu>) {
       const genericContextMenu = {
         ...state.genericContextMenu,
         id: action.payload.id,
