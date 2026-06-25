@@ -7,16 +7,13 @@ const middleware = [
   ...(import.meta.env.VITE_REDUX_LOGGER_ENABLED === 'true'
     ? [createLogger()]
     : []),
-];
+] as const;
+
 
 export const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) => [
-    ...getDefaultMiddleware({
-      immutableCheck: false,
-    }),
-    ...middleware,
-  ],
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ immutableCheck: false }).concat(...middleware),
 });
 
 // Enable Hot Module Replacement for reducers
