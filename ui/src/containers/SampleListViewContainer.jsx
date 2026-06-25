@@ -38,9 +38,7 @@ import {
   SAMPLE_LIST_VIEW_MODES,
 } from '../constants';
 import loader from '../img/loader.gif';
-import {
-  showGenericContextMenu,
-} from '../reducers/contextMenu';
+import { showGenericContextMenu } from '../reducers/contextMenu';
 import { getSampleName } from '../utils';
 import QueueSettings from './QueueSettings';
 import SampleGridTableContainer from './SampleGridTableContainer';

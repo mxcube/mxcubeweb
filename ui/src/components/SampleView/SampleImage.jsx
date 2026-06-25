@@ -20,7 +20,7 @@ import {
   updateShapes,
 } from '../../actions/sampleview.js';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
-import { showContextMenu } from '../../reducers/contextMenu.js'
+import { showContextMenu } from '../../reducers/contextMenu.js';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
 import { GridGroup } from './FabricObjects/gridGroup.js';
