@@ -1196,14 +1196,7 @@ class Queue(ComponentBase):
         params = task_data["parameters"]
         acq.acquisition_parameters.set_from_dict(params)
 
-        processing_params = model.processing_parameters
-        processing_params.space_group = params.get("space_group", "")
-        processing_params.cell_a = params.get("cellA", "")
-        processing_params.cell_alpha = params.get("cellAlpha", "")
-        processing_params.cell_b = params.get("cellB", "")
-        processing_params.cell_beta = params.get("cellBeta", "")
-        processing_params.cell_c = params.get("cellC", "")
-        processing_params.cell_gamma = params.get("cellGamma", "")
+        self._set_processing_params(model.processing_parameters, params)
 
         ftype = HWR.beamline.detector.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
@@ -1218,12 +1211,7 @@ class Queue(ComponentBase):
 
         self.app.lims.apply_template(params, sample_model, acq.path_template)
 
-        if params["prefix"]:
-            acq.path_template.base_prefix = params["prefix"]
-        else:
-            acq.path_template.base_prefix = HWR.beamline.session.get_default_prefix(
-                sample_model
-            )
+        self._set_default_prefix(acq.path_template, params, sample_model)
 
         run_number_dir_parts = (
             params.get("subdir", "").strip("/").split("/")[-1].split("_")
@@ -1348,18 +1336,11 @@ class Queue(ComponentBase):
         params = task_data["parameters"]
         model.parameters = params
         model.path_template.set_from_dict(params)
-        model.path_template.base_prefix = params["prefix"]
         model.path_template.num_files = 0
         model.path_template.precision = "0" + str(qmo.PathTemplate.precision)
 
         self.app.lims.apply_template(params, sample_model, model.path_template)
-
-        if params["prefix"]:
-            model.path_template.base_prefix = params["prefix"]
-        else:
-            model.path_template.base_prefix = HWR.beamline.session.get_default_prefix(
-                sample_model
-            )
+        self._set_default_prefix(model.path_template, params, sample_model)
 
         full_path = os.path.join(
             HWR.beamline.session.get_base_image_directory(),
@@ -1442,13 +1423,7 @@ class Queue(ComponentBase):
         model.path_template.set_from_dict(params)
         model.path_template.suffix = ftype
         model.path_template.precision = "0" + str(qmo.PathTemplate.precision)
-
-        if params["prefix"]:
-            model.path_template.base_prefix = params["prefix"]
-        else:
-            model.path_template.base_prefix = HWR.beamline.session.get_default_prefix(
-                sample_model
-            )
+        self._set_default_prefix(model.path_template, params, sample_model)
 
         full_path, process_path = HWR.beamline.session.get_full_paths(
             params.get("subdir", ""), "xrf"
@@ -1484,13 +1459,7 @@ class Queue(ComponentBase):
         model.path_template.set_from_dict(params)
         model.path_template.suffix = ftype
         model.path_template.precision = "0" + str(qmo.PathTemplate.precision)
-
-        if params["prefix"]:
-            model.path_template.base_prefix = params["prefix"]
-        else:
-            model.path_template.base_prefix = HWR.beamline.session.get_default_prefix(
-                sample_model
-            )
+        self._set_default_prefix(model.path_template, params, sample_model)
 
         full_path, process_path = HWR.beamline.session.get_full_paths(
             params.get("subdir", ""), "energy_scan"
@@ -1620,6 +1589,42 @@ class Queue(ComponentBase):
 
         return escan_model, escan_entry
 
+    def _create_and_enqueue_task_group(self, parent_model, parent_entry, group_model=None):
+        """Create and enqueue a task group wrapper for a task model."""
+        if group_model is None:
+            group_model = qmo.TaskGroup()
+
+        group_model.set_origin(ORIGIN_MX3)
+        group_model.set_enabled(True)
+        HWR.beamline.queue_model.add_child(parent_model, group_model)
+
+        group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
+        group_entry.set_enabled(True)
+        parent_entry.enqueue(group_entry)
+
+        return group_model, group_entry
+
+    def _attach_model_to_group(self, group_model, group_entry, model, entry):
+        HWR.beamline.queue_model.add_child(group_model, model)
+        group_entry.enqueue(entry)
+
+    def _set_processing_params(self, processing_params, params):
+        processing_params.space_group = params.get("space_group", "")
+        processing_params.cell_a = params.get("cellA", "")
+        processing_params.cell_alpha = params.get("cellAlpha", "")
+        processing_params.cell_b = params.get("cellB", "")
+        processing_params.cell_beta = params.get("cellBeta", "")
+        processing_params.cell_c = params.get("cellC", "")
+        processing_params.cell_gamma = params.get("cellGamma", "")
+
+    def _set_default_prefix(self, path_template, params, sample_model):
+        prefix = params.get("prefix", "")
+        path_template.base_prefix = (
+            prefix
+            if prefix
+            else HWR.beamline.session.get_default_prefix(sample_model)
+        )
+
     def add_characterisation(self, node_id, task):
         """Add a data characterisation task to the sample with id: <id>.
 
@@ -1652,16 +1657,10 @@ class Queue(ComponentBase):
         # A characterisation has two TaskGroups one for the characterisation itself
         # and its reference collection and one for the resulting diffraction plans.
         # But we only create a reference group if there is a result !
-        refgroup_model = qmo.TaskGroup()
-        refgroup_model.set_origin(ORIGIN_MX3)
-
-        HWR.beamline.queue_model.add_child(sample_model, refgroup_model)
-        HWR.beamline.queue_model.add_child(refgroup_model, char_model)
-        refgroup_entry = qe.TaskGroupQueueEntry(Mock(), refgroup_model)
-
-        refgroup_entry.set_enabled(True)
-        sample_entry.enqueue(refgroup_entry)
-        refgroup_entry.enqueue(char_entry)
+        refgroup_model, refgroup_entry = self._create_and_enqueue_task_group(
+            sample_model, sample_entry
+        )
+        self._attach_model_to_group(refgroup_model, refgroup_entry, char_model, char_entry)
 
         char_model.set_enabled(task["checked"])
         char_entry.set_enabled(task["checked"])
@@ -1681,16 +1680,10 @@ class Queue(ComponentBase):
         dc_model, dc_entry = self._create_dc()
         self.set_dc_params(dc_model, dc_entry, task, sample_model)
 
-        group_model = qmo.TaskGroup()
-        group_model.set_origin(ORIGIN_MX3)
-        group_model.set_enabled(True)
-        HWR.beamline.queue_model.add_child(sample_model, group_model)
-        HWR.beamline.queue_model.add_child(group_model, dc_model)
-
-        group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
-        group_entry.set_enabled(True)
-        sample_entry.enqueue(group_entry)
-        group_entry.enqueue(dc_entry)
+        group_model, group_entry = self._create_and_enqueue_task_group(
+            sample_model, sample_entry
+        )
+        self._attach_model_to_group(group_model, group_entry, dc_model, dc_entry)
 
         return dc_model._node_id
 
@@ -1709,14 +1702,7 @@ class Queue(ComponentBase):
         acq = model.acquisitions[0]
         params = task["parameters"]
 
-        processing_params = model.processing_parameters
-        processing_params.space_group = params.get("space_group", "")
-        processing_params.cell_a = params.get("cellA", "")
-        processing_params.cell_alpha = params.get("cellAlpha", "")
-        processing_params.cell_b = params.get("cellB", "")
-        processing_params.cell_beta = params.get("cellBeta", "")
-        processing_params.cell_c = params.get("cellC", "")
-        processing_params.cell_gamma = params.get("cellGamma", "")
+        self._set_processing_params(model.processing_parameters, params)
 
         ftype = HWR.beamline.detector.get_property("file_suffix")
         ftype = ftype if ftype else ".?"
@@ -1729,12 +1715,7 @@ class Queue(ComponentBase):
         acq.path_template.suffix = ftype
         acq.path_template.precision = "0" + str(qmo.PathTemplate.precision)
 
-        if params["prefix"]:
-            acq.path_template.base_prefix = params["prefix"]
-        else:
-            acq.path_template.base_prefix = HWR.beamline.session.get_default_prefix(
-                sample_model
-            )
+        self._set_default_prefix(acq.path_template, params, sample_model)
 
         full_path, process_path = HWR.beamline.session.get_full_paths(
             # Note that 'experiment_name' field can either be omitted, set to None
@@ -1750,16 +1731,10 @@ class Queue(ComponentBase):
 
         model.shape = params["shape"]
 
-        group_model = qmo.TaskGroup()
-        group_model.set_origin(ORIGIN_MX3)
-        group_model.set_enabled(True)
-        HWR.beamline.queue_model.add_child(sample_model, group_model)
-        HWR.beamline.queue_model.add_child(group_model, model)
-
-        group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
-        group_entry.set_enabled(True)
-        sample_entry.enqueue(group_entry)
-        group_entry.enqueue(entry)
+        group_model, group_entry = self._create_and_enqueue_task_group(
+            sample_model, sample_entry
+        )
+        self._attach_model_to_group(group_model, group_entry, model, entry)
 
         return model._node_id
 
@@ -1783,24 +1758,16 @@ class Queue(ComponentBase):
                 wf_model,
                 dc_entry,
                 task,
-                parent_model.get_sample_node(),
+                sample_model,
             )
         else:
             wf_model, dc_entry = self._create_wf()
-
-        group_model = qmo.TaskGroup()
-        group_model.set_origin(ORIGIN_MX3)
-        group_model.set_enabled(True)
-        HWR.beamline.queue_model.add_child(parent_model, group_model)
-        HWR.beamline.queue_model.add_child(group_model, wf_model)
-
-        if task["parameters"]["wfpath"] != "Gphl":
             self.set_wf_params(wf_model, dc_entry, task, sample_model)
 
-        group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
-        group_entry.set_enabled(True)
-        parent_entry.enqueue(group_entry)
-        group_entry.enqueue(dc_entry)
+        group_model, group_entry = self._create_and_enqueue_task_group(
+            parent_model, parent_entry
+        )
+        self._attach_model_to_group(group_model, group_entry, wf_model, dc_entry)
 
         return wf_model._node_id
 
@@ -1815,15 +1782,10 @@ class Queue(ComponentBase):
         """
         sample_model, sample_entry = self.get_entry(node_id)
 
-        group_model = qmo.TaskGroup()
-        group_model.set_origin(ORIGIN_MX3)
-        group_model.set_enabled(True)
+        group_model, group_entry = self._create_and_enqueue_task_group(
+            sample_model, sample_entry
+        )
         group_model.interleave_num_images = task["parameters"]["swNumImages"]
-
-        group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
-        group_entry.set_enabled(True)
-        sample_entry.enqueue(group_entry)
-        HWR.beamline.queue_model.add_child(sample_model, group_model)
 
         wc = 0
 
@@ -1856,16 +1818,10 @@ class Queue(ComponentBase):
         xrf_model, xrf_entry = self._create_xrf(sample_model)
         self.set_xrf_params(xrf_model, xrf_entry, task, sample_model)
 
-        group_model = qmo.TaskGroup()
-        group_model.set_origin(ORIGIN_MX3)
-        group_model.set_enabled(True)
-        HWR.beamline.queue_model.add_child(sample_model, group_model)
-        HWR.beamline.queue_model.add_child(group_model, xrf_model)
-
-        group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
-        group_entry.set_enabled(True)
-        sample_entry.enqueue(group_entry)
-        group_entry.enqueue(xrf_entry)
+        group_model, group_entry = self._create_and_enqueue_task_group(
+            sample_model, sample_entry
+        )
+        self._attach_model_to_group(group_model, group_entry, xrf_model, xrf_entry)
 
         return xrf_model._node_id
 
@@ -1882,16 +1838,10 @@ class Queue(ComponentBase):
         escan_model, escan_entry = self._create_energy_scan(sample_model)
         self.set_energy_scan_params(escan_model, escan_entry, task, sample_model)
 
-        group_model = qmo.TaskGroup()
-        group_model.set_origin(ORIGIN_MX3)
-        group_model.set_enabled(True)
-        HWR.beamline.queue_model.add_child(sample_model, group_model)
-        HWR.beamline.queue_model.add_child(group_model, escan_model)
-
-        group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
-        group_entry.set_enabled(True)
-        sample_entry.enqueue(group_entry)
-        group_entry.enqueue(escan_entry)
+        group_model, group_entry = self._create_and_enqueue_task_group(
+            sample_model, sample_entry
+        )
+        self._attach_model_to_group(group_model, group_entry, escan_model, escan_entry)
 
         return escan_model._node_id
 
