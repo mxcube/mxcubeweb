@@ -16,10 +16,6 @@ export function clearSampleGrid() {
   return { type: 'CLEAR_SAMPLE_GRID' };
 }
 
-export function showGenericContextMenu(show, id, x = 0, y = 0) {
-  return { type: 'SHOW_GENERIC_CONTEXT_MENU', show, id, x, y };
-}
-
 export function addSamplesToList(samplesData) {
   return (dispatch, getState) => {
     // find last manually mounted sample id

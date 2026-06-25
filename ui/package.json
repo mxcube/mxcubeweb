@@ -56,6 +56,8 @@
     "@types/react": "18.3.3",
     "@types/react-dom": "18.3.7",
     "@types/react-redux": "7.1.33",
+    "@types/redux-form": "8.3.11",
+    "@types/redux-logger": "3.0.13",
     "@vitejs/plugin-react-swc": "3.8.0",
     "cypress": "15.17.0",
     "cypress-terminal-report": "6.1.2",

@@ -23,6 +23,8 @@ export const store = configureStore({
 // https://vitejs.dev/guide/api-hmr
 if (import.meta.hot) {
   import.meta.hot.accept('./reducers/index.js', (nextReducer) => {
-    store.replaceReducer(nextReducer.default);
+    store.replaceReducer(nextReducer?.default);
   });
 }
+
+export type RootState = ReturnType<typeof store.getState>;

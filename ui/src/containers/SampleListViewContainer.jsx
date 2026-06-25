@@ -29,7 +29,6 @@ import {
   filterAction,
   getLimsSamples,
   getSamplesList,
-  showGenericContextMenu,
 } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import TooltipTrigger from '../components/TooltipTrigger';
@@ -39,6 +38,9 @@ import {
   SAMPLE_LIST_VIEW_MODES,
 } from '../constants';
 import loader from '../img/loader.gif';
+import {
+  showGenericContextMenu,
+} from '../reducers/contextMenu';
 import { getSampleName } from '../utils';
 import QueueSettings from './QueueSettings';
 import SampleGridTableContainer from './SampleGridTableContainer';

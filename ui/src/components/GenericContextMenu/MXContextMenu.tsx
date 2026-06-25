@@ -2,16 +2,17 @@ import { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { showGenericContextMenu } from '../../actions/sampleGrid';
+import { showGenericContextMenu } from '../../reducers/contextMenu';
+import { type RootState } from '../../store';
 import styles from './MXContextMenu.module.css';
 
-export default function MXContextMenu(props) {
+export default function MXContextMenu(props: React.PropsWithChildren) {
   const { children } = props;
   const { show, x, y, id } = useSelector(
-    (state) => state.contextMenu.genericContextMenu,
+    (state: RootState) => state.contextMenu.genericContextMenu,
   );
   const dispatch = useDispatch();
-  const menuRef = useRef(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
@@ -31,7 +32,7 @@ export default function MXContextMenu(props) {
 
   useEffect(() => {
     function hideContextMenu() {
-      dispatch(showGenericContextMenu(false, null, 0, 0));
+      dispatch(showGenericContextMenu({ id: '', show: false, x: 0, y: 0 }));
     }
     document.addEventListener('click', hideContextMenu);
     return () => {

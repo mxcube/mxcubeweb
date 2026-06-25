@@ -13,11 +13,11 @@ import {
   measureDistance,
   moveToBeam,
   moveToPoint,
-  showContextMenu,
   stopClickCentring,
   toggleDrawGrid,
 } from '../../actions/sampleview';
 import { showTaskForm } from '../../actions/taskForm';
+import { showContextMenu } from '../../reducers/contextMenu'
 import { getLastUsedParameters } from '../Tasks/fields';
 
 const BESPOKE_TASK_NAMES = new Set([

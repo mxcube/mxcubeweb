@@ -37,25 +37,6 @@ export function setMotorStep(role, value) {
   return { type: 'SET_MOTOR_STEP', role, value };
 }
 
-export function showContextMenu(
-  show,
-  shape,
-  pageX,
-  pageY,
-  sampleViewX,
-  sampleViewY,
-) {
-  return {
-    type: 'SHOW_CONTEXT_MENU',
-    show,
-    shape,
-    pageX,
-    pageY,
-    sampleViewX,
-    sampleViewY,
-  };
-}
-
 export function setPixelsPerMm(pixelsPerMm) {
   return { type: 'SET_PIXELS_PER_MM', pixelsPerMm };
 }
