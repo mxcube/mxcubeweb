@@ -21,7 +21,6 @@ import { deleteTask } from '../actions/queue';
 import { mountSample, unmountSample } from '../actions/sampleChanger';
 import {
   selectSamplesAction,
-  showGenericContextMenu,
 } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import MXContextMenu from '../components/GenericContextMenu/MXContextMenu';
@@ -30,6 +29,9 @@ import SampleGridTableItem from '../components/SampleGrid/SampleGridTableItem';
 import { TaskItem } from '../components/SampleGrid/TaskItem';
 import TooltipTrigger from '../components/TooltipTrigger';
 import { isCollected, QUEUE_RUNNING, QUEUE_STOPPED } from '../constants';
+import {
+  showGenericContextMenu,
+} from '../reducers/contextMenu';
 import SampleFlexView from './SampleFlexView';
 import styles from './SampleGridTableContainer.module.css';
 
