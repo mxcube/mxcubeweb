@@ -7,21 +7,22 @@ const middleware = [
   ...(import.meta.env.VITE_REDUX_LOGGER_ENABLED === 'true'
     ? [createLogger()]
     : []),
-] as const;
-
+];
 
 export const store = configureStore({
   reducer: rootReducer,
-  middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware({ immutableCheck: false }).concat(...middleware),
+  middleware: (getDefaultMiddleware) => [
+    ...getDefaultMiddleware({
+      immutableCheck: false,
+    }),
+    ...middleware,
+  ],
 });
 
 // Enable Hot Module Replacement for reducers
 // https://vitejs.dev/guide/api-hmr
 if (import.meta.hot) {
   import.meta.hot.accept('./reducers/index.js', (nextReducer) => {
-    store.replaceReducer(nextReducer?.default);
+    store.replaceReducer(nextReducer.default);
   });
 }
-
-export type RootState = ReturnType<typeof store.getState>;

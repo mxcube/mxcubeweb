@@ -19,9 +19,7 @@ import { bindActionCreators } from 'redux';
 import { showDialog } from '../actions/general';
 import { deleteTask } from '../actions/queue';
 import { mountSample, unmountSample } from '../actions/sampleChanger';
-import {
-  selectSamplesAction,
-} from '../actions/sampleGrid';
+import { selectSamplesAction } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import MXContextMenu from '../components/GenericContextMenu/MXContextMenu';
 import SampleCircleView from '../components/SampleGrid/SampleCircleView';
@@ -29,9 +27,7 @@ import SampleGridTableItem from '../components/SampleGrid/SampleGridTableItem';
 import { TaskItem } from '../components/SampleGrid/TaskItem';
 import TooltipTrigger from '../components/TooltipTrigger';
 import { isCollected, QUEUE_RUNNING, QUEUE_STOPPED } from '../constants';
-import {
-  showGenericContextMenu,
-} from '../reducers/contextMenu';
+import { showGenericContextMenu } from '../reducers/contextMenu';
 import SampleFlexView from './SampleFlexView';
 import styles from './SampleGridTableContainer.module.css';
 

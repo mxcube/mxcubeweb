@@ -3,7 +3,7 @@ import { Dropdown } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { showGenericContextMenu } from '../../reducers/contextMenu';
-import { type RootState } from '../../store';
+import { type RootState } from '../../ts-store';
 import styles from './MXContextMenu.module.css';
 
 export default function MXContextMenu(props: React.PropsWithChildren) {
