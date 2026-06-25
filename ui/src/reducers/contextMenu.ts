@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 interface Shape {
@@ -50,26 +51,15 @@ const contextMenuSlice = createSlice({
         sampleViewY: number;
       }>,
     ) {
-      return {
-        ...state,
-        show: action.payload.show,
-        shape: action.payload.shape,
-        pageX: action.payload.pageX,
-        pageY: action.payload.pageY,
-        sampleViewX: action.payload.sampleViewX,
-        sampleViewY: action.payload.sampleViewY,
-      };
+      state.show = action.payload.show;
+      state.shape = action.payload.shape;
+      state.pageX = action.payload.pageX;
+      state.pageY = action.payload.pageY;
+      state.sampleViewX = action.payload.sampleViewX;
+      state.sampleViewY = action.payload.sampleViewY;
     },
     showGenericContextMenu(state, action: PayloadAction<GenericContextMenu>) {
-      const genericContextMenu = {
-        ...state.genericContextMenu,
-        id: action.payload.id,
-        show: action.payload.show,
-        x: action.payload.x,
-        y: action.payload.y,
-      };
-
-      return { ...state, genericContextMenu };
+      state.genericContextMenu = action.payload;
     },
   },
 });
