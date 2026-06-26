@@ -78,10 +78,10 @@ jobs:
           install-poetry: "false"
 
       - name: Install UI dependencies
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
 
       - name: Run tsc
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui lint:tsc"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui lint:tsc"
 
   e2e:
     name: E2E-Test
