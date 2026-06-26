@@ -1034,99 +1034,6 @@ class Queue(ComponentBase):
         """
         return self._qs.queue_add_item(item_list)
 
-        self._queue_add_item_rec(item_list, None)
-
-        # Handling interleaved data collections, swap interleave task with
-        # the first of the data collections that are used as wedges, and then
-        # remove all collections that were used as wedges
-        for task in item_list[0]["tasks"]:
-            if task["type"] == "Interleaved" and task["parameters"].get(
-                "taskIndexList", False
-            ):
-                current_queue = self.queue_to_dict()
-
-                sid = task["sampleID"]
-                interleaved_tindex = len(current_queue[sid]["tasks"]) - 1
-
-                tindex_list = sorted(task["parameters"]["taskIndexList"])
-
-                # Swap first "wedge task" and the actual interleaved collection
-                # so that the interleaved task is the first task
-                self.swap_task_entry(sid, interleaved_tindex, tindex_list[0])
-
-                # We remove the swapped wedge index from the list, (now pointing
-                # at the interleaved collection) and add its new position
-                # (last task item) to the list.
-                tindex_list = tindex_list[1:]
-                tindex_list.append(interleaved_tindex)
-
-                # The delete operation can be done all in one call if we make sure
-                # that we remove the items starting from the end (not altering
-                # previous indices)
-                for ti in reversed(tindex_list):
-                    self.delete_entry_at([[sid, int(ti)]])
-
-        return self.queue_to_dict()
-
-    def _queue_add_item_rec(self, item_list, sample_node_id=None):
-        """Add the queue items in item_list to the queue.
-
-        Adds the queue items in item_list to the queue. The items in the list can
-        be either samples and or tasks. Samples are only added if they are not
-        already in the queue  and tasks are appended to the end of an
-        (already existing) sample. A task is ignored if the sample is not already
-        in the queue.
-
-        The items in item_list are dictionaries with the following structure:
-
-        { "type": "Sample | DataCollection | Characterisation",
-        "sampleID": sid
-        ... task or sample specific data
-        }
-
-        Each item (dictionary) describes either a sample or a task.
-        """
-        for item in item_list:
-            item_t = item["type"]
-            # If the item is a sample, then add it and its tasks.
-            # Otherwise, get the node id for the sample of the
-            # new task and append it to the sample.
-            sample_id = str(item["sampleID"])
-
-            if item_t == "Sample":
-                # Do not add samples that are already in the queue
-                if not item.get("queueID", False):
-                    sample_node_id = self.add_sample(sample_id, item)
-                else:
-                    self.set_enabled_entry(item["queueID"], True)
-                    sample_node_id = item["queueID"]
-
-                tasks = item.get("tasks")
-
-                if tasks:
-                    self._queue_add_item_rec(tasks, sample_node_id)
-
-            else:
-                if not sample_node_id:
-                    sample_node_id = item.get("sampleQueueID", None)
-
-            if item_t == "DataCollection":
-                self.add_data_collection(sample_node_id, item)
-            elif item_t == "Interleaved":
-                self.add_interleaved(sample_node_id, item)
-            elif item_t == "Characterisation":
-                self.add_characterisation(sample_node_id, item)
-            elif item_t == "Workflow" or item_t == "GphlWorkflow":
-                self.add_workflow(sample_node_id, item)
-            elif item_t == "xrf_spectrum":
-                self.add_xrf_scan(sample_node_id, item)
-            elif item_t == "energy_scan":
-                self.add_energy_scan(sample_node_id, item)
-            elif item_t == "Sample":
-                pass
-            else:
-                self.add_queue_entry(sample_node_id, item, item_t)
-
     def add_sample(self, sample_id, item):
         """Add a sample with sample id <sample_id> the queue.
 
@@ -1589,7 +1496,9 @@ class Queue(ComponentBase):
 
         return escan_model, escan_entry
 
-    def _create_and_enqueue_task_group(self, parent_model, parent_entry, group_model=None):
+    def _create_and_enqueue_task_group(
+        self, parent_model, parent_entry, group_model=None
+    ):
         """Create and enqueue a task group wrapper for a task model."""
         if group_model is None:
             group_model = qmo.TaskGroup()
@@ -1620,9 +1529,7 @@ class Queue(ComponentBase):
     def _set_default_prefix(self, path_template, params, sample_model):
         prefix = params.get("prefix", "")
         path_template.base_prefix = (
-            prefix
-            if prefix
-            else HWR.beamline.session.get_default_prefix(sample_model)
+            prefix if prefix else HWR.beamline.session.get_default_prefix(sample_model)
         )
 
     def add_characterisation(self, node_id, task):
@@ -1660,7 +1567,9 @@ class Queue(ComponentBase):
         refgroup_model, refgroup_entry = self._create_and_enqueue_task_group(
             sample_model, sample_entry
         )
-        self._attach_model_to_group(refgroup_model, refgroup_entry, char_model, char_entry)
+        self._attach_model_to_group(
+            refgroup_model, refgroup_entry, char_model, char_entry
+        )
 
         char_model.set_enabled(task["checked"])
         char_entry.set_enabled(task["checked"])
