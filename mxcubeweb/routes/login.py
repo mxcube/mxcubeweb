@@ -109,11 +109,31 @@ def init_route(app, server, url_prefix):
 
     @bp.route("/send_feedback", methods=["POST"])
     @server.restrict
-    def send_feedback():
-        sender_data = request.get_json()
-        sender_data["LOGGED_IN_USER"] = current_user.nickname
-        networkutils.send_feedback(sender_data)
-        return make_response("", 200)
+    def send_feedback_route():
+        data = request.get_json(silent=True)
+        if not isinstance(data, dict):
+            return "", 400
+
+        content = data.get("content", "")
+        sender = data.get("sender", "")
+
+        try:
+            content = networkutils.validate_content(
+                content, networkutils.MAX_CONTENT_LEN
+            )
+            sender_email = networkutils.validate_email(sender) if sender else None
+        except ValueError:
+            return "", 400
+
+        networkutils.send_feedback(
+            {
+                "content": content.strip(),
+                "sender": sender_email,
+                "LOGGED_IN_USER": current_user.nickname,
+            }
+        )
+
+        return "", 200
 
     @bp.route("/refresh_session", methods=["GET"])
     @server.restrict

@@ -1,18 +1,41 @@
-import email.utils
 import functools
 import logging
-import os
 import smtplib
 import socket
 import time
-from email.mime.text import MIMEText
-from email.utils import make_msgid
+from email.message import EmailMessage
+from email.utils import formatdate, make_msgid, parseaddr
+from html.parser import HTMLParser
 
 import flask
 import flask_security
 import flask_socketio
 from flask_login import current_user
 from mxcubecore import HardwareRepository as HWR
+
+
+class _HTMLTagDetector(HTMLParser):
+    def __init__(self):
+        super().__init__()
+        self.found_tag = False
+
+    def handle_starttag(self, tag, attrs):
+        self.found_tag = True
+
+    def handle_startendtag(self, tag, attrs):
+        self.found_tag = True
+
+    def handle_endtag(self, tag):
+        self.found_tag = True
+
+    def handle_comment(self, data):
+        self.found_tag = True
+
+    def handle_decl(self, decl):
+        self.found_tag = True
+
+    def handle_pi(self, data):
+        self.found_tag = True
 
 
 def auth_required(fun):
@@ -142,69 +165,71 @@ def ws_valid_login_only(f):
     return wrapped
 
 
-def send_mail(_from, to, subject, content):
-    smtp = smtplib.SMTP("smtp", smtplib.SMTP_PORT)
-    date = email.utils.formatdate(localtime=True)
+def send_feedback(sender_data):
+    local_user = reject_header_value(sender_data.get("LOGGED_IN_USER", "unknown_user"))
+    bl_name = reject_header_value(
+        HWR.beamline.session.beamline_name or "unknown-beamline"
+    )
 
-    msg = MIMEText(content)
+    from_addr = validate_email(
+        HWR.beamline.session.get_property("from_email", "")
+        or f"noreply@{HWR.beamline.session.get_property('email_extension', '')}"
+    )
+
+    feedback_to = validate_email(
+        HWR.beamline.session.get_property("feedback_email", "")
+    )
+
+    sender_email = sender_data.get("sender")
+    subject = reject_header_value(f"[MX3 FEEDBACK] {local_user} on {bl_name}")
+    content = sender_data["content"]
+
+    msg = EmailMessage()
     msg["Subject"] = subject
-    msg["From"] = _from
-    msg["To"] = to
-    msg["Date"] = date
+    msg["From"] = from_addr
+    msg["To"] = feedback_to
+    msg["Date"] = formatdate(localtime=True)
     msg["Message-ID"] = make_msgid()
 
-    email_msg = msg.as_string()
+    if sender_email:
+        msg["Reply-To"] = sender_email
 
-    try:
-        error_dict = smtp.sendmail(_from, to.split(","), email_msg)
+    msg.set_content(content)
 
-        if error_dict:
-            msg = "Could not send mail to %s, content %s, error was: %s"
-            msg = msg % (to, content, str(error_dict))
-            logging.getLogger().error(msg)
-        else:
-            msg = "Feedback sent to %s, msg: \n %s" % (to, content)
-            logging.getLogger("MX3.HWR").info(msg)
-
-    except smtplib.SMTPException as e:
-        msg = "Could not send mail to %s, content %s, error was: %s"
-        logging.getLogger().error(msg % (to, content, str(e)))
-    finally:
-        smtp.quit()
+    with smtplib.SMTP("smtp", smtplib.SMTP_PORT, timeout=10) as smtp:
+        smtp.send_message(msg)
 
 
-def send_feedback(sender_data):
-    bl_name = HWR.beamline.session.beamline_name
-    local_user = sender_data.get("LOGGED_IN_USER", "")
+def reject_header_value(value: str) -> str:
+    value = (value or "").strip()
+    if "\r" in value or "\n" in value:
+        raise ValueError("Invalid header value")
+    return value
 
-    if not bl_name:
-        try:
-            bl_name = os.environ["BEAMLINENAME"].lower()
-        except KeyError:
-            bl_name = "unknown-beamline"
 
-    if not local_user:
-        try:
-            local_user = os.environ["USER"].lower()
-        except KeyError:
-            local_user = "unknown_user"
+def validate_content(value: str, max_length: int = 5000) -> str:
+    if not isinstance(value, str) or not value.strip():
+        raise ValueError("Invalid content")
 
-    _from = HWR.beamline.session.get_property("from_email", "")
+    content = value.strip()
+    if len(content) > max_length:
+        raise ValueError("Invalid content")
+    if "\x00" in content:
+        raise ValueError("Invalid content")
 
-    if not _from:
-        _from = "%s@%s" % (
-            local_user,
-            HWR.beamline.session.get_property("email_extension", ""),
-        )
+    if "<" in content:
+        parser = _HTMLTagDetector()
+        parser.feed(content)
+        parser.close()
+        if parser.found_tag:
+            raise ValueError("Invalid content")
 
-    # Sender information provided by user
-    _sender = sender_data.get("sender", "")
-    to = HWR.beamline.session.get_property("feedback_email", "") + ",%s" % _sender
-    subject = "[MX3 FEEDBACK] %s (%s) on %s" % (
-        local_user,
-        _sender,
-        bl_name,
-    )
-    content = sender_data.get("content", "")
+    return content
 
-    send_mail(_from, to, subject, content)
+
+def validate_email(value: str) -> str:
+    value = reject_header_value(value)
+    name, addr = parseaddr(value)
+    if not addr or "@" not in addr:
+        raise ValueError("Invalid email")
+    return value
