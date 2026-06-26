@@ -162,6 +162,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         return make_response("", 200)
 
     @bp.route("/chat", methods=["POST"])
+    @server.restrict
     def append_message():
         message = request.get_json().get("message", "")
         username = request.get_json().get("username", "")
