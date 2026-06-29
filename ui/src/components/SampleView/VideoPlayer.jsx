@@ -1,10 +1,12 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { JSMpeg } from './jsmpeg.min.js';
 import styles from './VideoPlayer.module.css';
 
 export default function VideoPlayer(props) {
   const { width, height, format, source } = props;
+
+  const [hiddenReason, setHiddenReason] = useState(null);
 
   const canvasRef = useRef(null);
 
@@ -22,6 +24,20 @@ export default function VideoPlayer(props) {
       decodeFirstFrame: false,
       preserveDrawingBuffer: true,
       protocols: [],
+    });
+
+    const { socket } = player.source;
+    if (!socket) {
+      return () => {};
+    }
+
+    socket.addEventListener('message', (event) => {
+      if (typeof event.data === 'string') {
+        setHiddenReason(event.data);
+        return;
+      }
+
+      setHiddenReason(null);
     });
 
     player.play();
@@ -43,13 +59,19 @@ export default function VideoPlayer(props) {
 
   if (format === 'MPEG1') {
     return (
-      <canvas
-        ref={canvasRef}
-        id="sample-img"
-        className={styles.video}
-        aria-hidden="true"
-        tabIndex={-1}
-      />
+      <div className={styles.videoWrapper}>
+        {hiddenReason && (
+          <div className={styles.hiddenVideo}>{hiddenReason}</div>
+        )}
+
+        <canvas
+          ref={canvasRef}
+          id="sample-img"
+          className={styles.video}
+          aria-hidden="true"
+          tabIndex={-1}
+        />
+      </div>
     );
   }
 
