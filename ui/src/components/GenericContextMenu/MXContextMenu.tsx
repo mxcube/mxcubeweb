@@ -1,15 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { showGenericContextMenu } from '../../reducers/contextMenu';
-import { type RootState } from '../../ts-store';
+import { useAppSelector } from '../../ts-store';
 import styles from './MXContextMenu.module.css';
 
 export default function MXContextMenu(props: React.PropsWithChildren) {
   const { children } = props;
-  const { show, x, y, id } = useSelector(
-    (state: RootState) => state.contextMenu.genericContextMenu,
+  const { show, x, y, id } = useAppSelector(
+    (state) => state.contextMenu.genericContextMenu,
   );
   const dispatch = useDispatch();
   const menuRef = useRef<HTMLDivElement>(null);
