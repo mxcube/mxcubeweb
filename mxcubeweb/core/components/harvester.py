@@ -2,9 +2,11 @@ from __future__ import annotations
 
 import logging
 
+import gevent
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore.HardwareObjects.abstract.sample_changer import Crims
 from mxcubecore.HardwareObjects.Harvester import HarvesterState
+from mxcubecore.queue_entry.data_collection import DataCollectionQueueEntry
 
 from mxcubeweb.core.components.component_base import ComponentBase
 
@@ -25,6 +27,10 @@ class Harvester(ComponentBase):
                 "harvester_contents_update", self.harvester_contents_update
             )
 
+            HWR.beamline.queue_manager.connect(
+                "queue_entry_execute_finished", self.queue_entry_execute_finished
+            )
+
     def harvester_state_changed(self, *args):
         new_state = args[0]
         state_str = HarvesterState.STATE_DESC.get(new_state, "Unknown").upper()
@@ -32,6 +38,14 @@ class Harvester(ComponentBase):
 
     def harvester_contents_update(self):
         self.app.server.emit("harvester_contents_update")
+
+    def queue_entry_execute_finished(self, entry, status):
+        """Forward a finished data collection to CRIMS, since the sample
+        came from the Harvester."""
+        if not isinstance(entry, DataCollectionQueueEntry) or status != "Successful":
+            return
+
+        gevent.spawn(self._send_collection_to_crims, entry.get_data_model())
 
     def get_initial_state(self):
         if HWR.beamline.harvester_maintenance is not None:
@@ -139,7 +153,8 @@ class Harvester(ComponentBase):
                 }
                 crystal_list.append(lst)
         except Exception:
-            logging.getLogger("user_level_log").exception("Could not get Crystal List")
+            logging.getLogger("user_level_log").error("Could not get Crystal List")
+            logging.getLogger("HWR").exception("")
 
         return crystal_list
 
@@ -147,48 +162,46 @@ class Harvester(ComponentBase):
         try:
             return HWR.beamline.harvester_maintenance.get_global_state()
         except Exception:
-            logging.getLogger("user_level_log").exception("Could not get global state")
+            logging.getLogger("user_level_log").error("Could not get global state")
+            logging.getLogger("HWR").exception("")
             return "OFFLINE", "OFFLINE", "OFFLINE"
 
-    def send_data_collection_info_to_crims(self) -> bool:
-        """Send Data collected to CRIMS.
+    def _send_collection_to_crims(self, data_model) -> None:
+        """Send a single data collection's info to CRIMS.
 
-        Returns:
-            bool: Whether the request failed (``False``) or not (``True``).
+        Args:
+            data_model: The `DataCollection` queue model object to report.
         """
-        dataCollectionGroupId = ""
-        crystal_uuid = ""
-
         try:
-            rest_token = HWR.beamline.lims.get_rest_token()
-            proposal = HWR.beamline.session.get_proposal()
-
             crims_url = self.harvester_device.crims_upload_url
             crims_key = self.harvester_device.crims_upload_key
 
-            queue_entries = HWR.beamline.queue_model.get_all_dc_queue_entries()
-            dc_id = ""
-            for qe in queue_entries:
-                dataCollectionGroupId = qe.get_data_model().lims_group_id
-                crystal_uuid = (
-                    qe.get_data_model().get_sample_node().crystals[0].crystal_uuid
-                )
-                dc_id = qe.get_data_model().id
+            crystal_uuid = data_model.get_sample_node().crystals[0].crystal_uuid
+            sample_name = data_model.get_sample_node().name
+            instrument_name = HWR.beamline.session.beamline_name
+            facility_name = HWR.beamline.session.synchrotron_name
+            investigation_id = HWR.beamline.session.session_id
 
-                Crims.send_data_collection_info_to_crims(
-                    crims_url,
+            sent = Crims.send_data_collection_info_to_crims(
+                crims_url,
+                crystal_uuid,
+                sample_name,
+                instrument_name,
+                facility_name,
+                investigation_id,
+                crims_key,
+            )
+            if not sent:
+                logging.getLogger("user_level_log").warning(
+                    "Data collection was not sent to CRIMS: crystal=%s sample=%s",
                     crystal_uuid,
-                    dataCollectionGroupId,
-                    dc_id,
-                    proposal,
-                    rest_token,
-                    crims_key,
+                    sample_name,
                 )
-            return True
         except Exception:
-            msg = "Could not send data collection to crims"
-            logging.getLogger("user_level_log").exception(msg)
-            return False
+            logging.getLogger("user_level_log").error(
+                "Could not send data collection to CRIMS"
+            )
+            logging.getLogger("HWR").exception("")
 
     def get_sample_by_id(self, sampleID: str):
         samples_list = HWR.beamline.sample_changer.get_sample_list()
