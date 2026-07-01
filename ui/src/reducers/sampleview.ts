@@ -80,6 +80,8 @@ interface SampleViewState {
   beamSize: Point2D;
   phaseList: string[];
   drawGrid: boolean;
+  drawGridWithClicks: boolean;
+  drawGridWithClicksCoords: Point2D;
   videoMessageOverlay: VideoOverlayState;
 }
 
@@ -106,6 +108,8 @@ const INITIAL_STATE: SampleViewState = {
   beamSize: { x: 0, y: 0 },
   phaseList: [],
   drawGrid: false,
+  drawGridWithClicks: false,
+  drawGridWithClicksCoords: { x: 0, y: 0 },
   videoMessageOverlay: { show: false, msg: '' },
 };
 
@@ -124,6 +128,12 @@ const sampleViewSlice = createSlice({
     },
     drawGrid(state) {
       state.drawGrid = !state.drawGrid;
+      state.drawGridWithClicks = false;
+      state.drawGridWithClicksCoords = { x: 0, y: 0 };
+    },
+    drawGridWithClicks(state, action: PayloadAction<Point2D | undefined>) {
+      state.drawGridWithClicks = !state.drawGridWithClicks;
+      state.drawGridWithClicksCoords = action.payload ?? { x: 0, y: 0 };
     },
     measureDistance(state, action: PayloadAction<boolean>) {
       state.measureDistance = action.payload;
@@ -203,6 +213,7 @@ export const {
   startClickCentring,
   stopClickCentring,
   drawGrid,
+  drawGridWithClicks,
   measureDistance,
   addDistancePoint,
   saveImageSize,

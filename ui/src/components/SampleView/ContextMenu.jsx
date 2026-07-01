@@ -12,6 +12,7 @@ import {
   moveToBeam,
   moveToPoint,
   toggleDrawGrid,
+  toggleDrawGridWithClicks,
 } from '../../actions/sampleview';
 import { showTaskForm } from '../../actions/taskForm';
 import { hideMenu } from '../../reducers/contextMenu';
@@ -46,7 +47,9 @@ export default function ContextMenu() {
   const sampleData = useAppSelector(
     (state) => state.sampleGrid.sampleList[sampleID],
   );
-  const { clickCentring } = useAppSelector((state) => state.sampleview);
+  const { clickCentring, drawGrid, drawGridWithClicks } = useAppSelector(
+    (state) => state.sampleview,
+  );
   const groupFolder = useAppSelector((state) => state.queue.groupFolder);
   const contextMenu = useAppSelector((state) => state.contextMenu);
   const { pageX, pageY, sampleViewX, sampleViewY, shape } =
@@ -309,7 +312,17 @@ export default function ContextMenu() {
         genericTasks.line.length > 0 ? { text: 'divider', key: 3 } : {},
         { text: 'Delete Line', action: () => removeShape(), key: 4 },
       ],
-      GridGroup: [{ text: 'Save Grid', action: () => saveGrid(), key: 1 }],
+      GridGroup: [
+        { text: 'Save Grid', action: () => saveGrid(), key: 1 },
+        drawGrid &&
+          drawGridWithClicks && {
+            text: 'End drawing',
+            action: () => {
+              dispatch(toggleDrawGridWithClicks());
+            },
+            key: 2,
+          },
+      ],
       GridGroupSaved: [
         enableNativeMesh
           ? {
@@ -353,14 +366,22 @@ export default function ContextMenu() {
           },
           key: 3,
         },
+        drawGrid &&
+          !drawGridWithClicks && {
+            text: 'Start drawing',
+            action: () => {
+              dispatch(toggleDrawGridWithClicks(sampleViewX, sampleViewY));
+            },
+            key: 4,
+          },
         ...(enable2DPoints
           ? [
-              { text: 'divider', key: 4 },
+              { text: 'divider', key: 5 },
               availableMethods.has('datacollection')
                 ? {
                     text: 'Data Collection (Limited OSC)',
                     action: () => createPointAndShowModal('DataCollection'),
-                    key: 5,
+                    key: 6,
                   }
                 : {},
               availableMethods.has('characterisation')
@@ -370,17 +391,17 @@ export default function ContextMenu() {
                       createPointAndShowModal('Characterisation', {
                         num_imags: 1,
                       }),
-                    key: 6,
+                    key: 7,
                   }
                 : {},
               {
                 text: 'Create 2D Point',
                 action: () => createTwoDPoint(),
-                key: 7,
+                key: 8,
               },
             ]
           : []),
-        { text: 'divider', key: 8 },
+        { text: 'divider', key: 9 },
         ...genericTasks.none,
       ],
     };
