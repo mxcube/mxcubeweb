@@ -56,6 +56,16 @@ jobs:
           cache-environment: true
           post-cleanup: "all"
 
+      # Install the project into Poetry's own virtualenv, NOT the Conda env.
+      # As a result, poetry uses conda environment it has been installed to
+      # instead of creating it's own one.
+      # Poetry documentation heavily discourages such use case, as  may lead
+      # to hard to debug errors.
+      - name: Create Poetry virtualenv
+        run: >-
+          "${MAMBA_EXE}" run --name mxcubeweb
+          poetry env use python${{ matrix.python-version }}
+
       - name: Install MXCuBE
         run: "${MAMBA_EXE} run --name mxcubeweb poetry install"
 
