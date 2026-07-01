@@ -46,11 +46,18 @@ jobs:
           environment-file: "conda-environment.yml"
           micromamba-version: 1.5.10-0
 
+      - name: Create Poetry virtualenv
+        run: >-
+          "${MAMBA_EXE}" run --name mxcubeweb sh -c
+          'poetry env use "$(command -v python)"'
+
       - name: "Install dependencies with Poetry"
         run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only=docs,main"
 
       - name: "Build documentation with Sphinx"
-        run: "${MAMBA_EXE} run --name mxcubeweb make --directory=./docs/ html"
+        run: >-
+          "${MAMBA_EXE}" run --name mxcubeweb poetry
+          run make --directory=./docs/ html
 
       - name: "Upload artifact for GitHub Pages"
         # This could potentially be run only when we intent to deploy...

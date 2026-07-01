@@ -157,6 +157,11 @@ jobs:
           cache-environment: true
           post-cleanup: "all"
 
+      - name: Create Poetry virtualenv
+        run: >-
+          "${MAMBA_EXE}" run --name mxcubeweb sh -c
+          'poetry env use "$(command -v python)"'
+
       - name: Install MXCuBE
         run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only main"
 
@@ -177,7 +182,7 @@ jobs:
 
       - name: Start MXCuBE-Web server (XML config)
         run: |
-          ${MAMBA_EXE} run --name mxcubeweb mxcubeweb-server -r ./demo/ --static-folder $(pwd)/ui/build/ -L debug &
+          ${MAMBA_EXE} run --name mxcubeweb poetry run mxcubeweb-server -r ./demo/ --static-folder $(pwd)/ui/build/ -L debug &
           ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui exec wait-on http://127.0.0.1:8081
           ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui e2e
         env:
@@ -186,7 +191,7 @@ jobs:
       - name: Start MXCuBE-Web server (YAML config)
         run: |
           pkill -f mxcubeweb-server || true
-          ${MAMBA_EXE} run --name mxcubeweb mxcubeweb-server -r ./demo.yaml/ --static-folder $(pwd)/ui/build/ -L debug &
+          ${MAMBA_EXE} run --name mxcubeweb poetry run mxcubeweb-server -r ./demo.yaml/ --static-folder $(pwd)/ui/build/ -L debug &
           ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui exec wait-on http://127.0.0.1:8081
           ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui e2e
         env:
