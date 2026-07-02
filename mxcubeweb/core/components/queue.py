@@ -3,7 +3,6 @@ import itertools
 import json
 import logging
 import os
-import re
 from functools import reduce
 from unittest.mock import Mock
 
@@ -19,7 +18,11 @@ from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.adaptermodels import (
     SampleInputModel,
 )
-from mxcubeweb.core.models.generic import ALLOWED_APP_SETTINGS, SettingNameValue
+from mxcubeweb.core.models.generic import (
+    ALLOWED_APP_SETTINGS,
+    GroupFolderModel,
+    SettingNameValue,
+)
 from mxcubeweb.core.util.convertutils import (
     str_to_camel,
     str_to_snake,
@@ -40,6 +43,7 @@ UNCOLLECTED = 0x0
 READY = 0
 
 ORIGIN_MX3 = "MX3"
+
 
 class Queue(ComponentBase):
     def __init__(self, app, config):
@@ -2544,15 +2548,13 @@ class Queue(ComponentBase):
 
         raise ValueError(msg)
 
-    def set_group_folder(self, path):
-        if path and path[0] in ["/", "."]:
-            path = path[1:]
+    def set_group_folder(self, group_folder: GroupFolderModel):
+        path = group_folder.path
 
         if path and path[-1] != "/":
             path += "/"
 
-        path = "".join([c for c in path if re.match(r"^[a-zA-Z0-9_/-]*$", c)])
-
+        logging.getLogger("MX3.HWR").info(f"[QUEUE] Setting group folder to {path}")
         HWR.beamline.session.set_user_group(path)
         root_path = HWR.beamline.session.get_base_image_directory()
         return {"path": path, "rootPath": root_path}
@@ -2569,12 +2571,22 @@ class Queue(ComponentBase):
         """
         name = str_to_snake(name_value.name).upper()
 
-        if name in ALLOWED_APP_SETTINGS and hasattr(self.app, name):
-            logging.getLogger("HWR").debug(f"Setting application setting {name} to {name_value.value}")
-            setattr(self.app, name, name_value.value)
-            result = name, name_value.value
+        if name in ALLOWED_APP_SETTINGS.keys() and hasattr(self.app, name):
+            logging.getLogger("HWR").debug(
+                f"Setting application setting {name} to {name_value.value}"
+            )
+            expected_type = ALLOWED_APP_SETTINGS[name]
+            val = name_value.value
+
+            try:
+                conv = expected_type(val)
+            except Exception as exc:
+                raise ValueError(f"Invalid value for setting {name}: {val!r}") from exc
+            else:
+                setattr(self.app, name, conv)
+                result = name, conv
         else:
-            result = ()
+            raise ValueError(f"Invalid setting {name}")
 
         return result
 

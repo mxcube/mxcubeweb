@@ -1,3 +1,5 @@
+import re
+
 from pydantic import (
     BaseModel,
     Field,
@@ -7,10 +9,10 @@ from pydantic import (
 from mxcubeweb.core.models.configmodels import ModeEnum
 
 ALLOWED_APP_SETTINGS = {
-    "AUTO_ADD_DIFFPLAN",
-    "REMEMBER_PARAMETERS_BETWEEN_SAMPLES",
-    "AUTO_MOUNT_SAMPLE",
-    "ALLOW_REMOTE",
+    "AUTO_ADD_DIFFPLAN": bool,
+    "REMEMBER_PARAMETERS_BETWEEN_SAMPLES": bool,
+    "AUTO_MOUNT_SAMPLE": bool,
+    "ALLOW_REMOTE": bool,
 }
 
 
@@ -25,6 +27,7 @@ class SimpleNameValue(BaseModel):
     # It's important to have str before bool, to avoid issue with bool being casted to string
     value: bool | str | int
 
+
 class SettingNameValue(BaseModel):
     name: str
     # It's important to have str before bool, to avoid issue with bool being casted to string
@@ -33,10 +36,45 @@ class SettingNameValue(BaseModel):
     @field_validator("name")
     @classmethod
     def validate_name(cls, value: str) -> str:
-        if setting_name_to_constant(value) not in ALLOWED_APP_SETTINGS:
+        if setting_name_to_constant(value) not in ALLOWED_APP_SETTINGS.keys():
             raise ValueError(f"Setting {value!r} is not allowed")
 
         return value
+
+
+class GroupFolderModel(BaseModel):
+    path: str = ""
+
+    @field_validator("path")
+    @classmethod
+    def validate_path(cls, path: str) -> str:
+        """Validate a path without requiring it to exist."""
+        if not isinstance(path, str):
+            raise ValueError("Path must be a string")
+
+        if "\x00" in path:
+            raise ValueError("Path contains a null byte")
+
+        path = path.strip()
+
+        if not path:
+            return ""
+
+        if "//" in path:
+            raise ValueError("Path contains consecutive slashes")
+
+        parts = path.split("/")
+
+        if any(part == ".." for part in parts):
+            raise ValueError("Relative path traversal is not allowed")
+
+        invalid_char = re.search(r"[^a-zA-Z0-9_/-]", path)
+        if invalid_char:
+            raise ValueError(
+                f"Path contains invalid character: {invalid_char.group(0)!r}"
+            )
+
+        return path
 
 
 class AppSettingsModel(BaseModel):
