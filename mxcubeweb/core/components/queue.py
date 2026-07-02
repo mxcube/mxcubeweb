@@ -19,7 +19,7 @@ from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.adaptermodels import (
     SampleInputModel,
 )
-from mxcubeweb.core.models.generic import SimpleNameValue
+from mxcubeweb.core.models.generic import ALLOWED_APP_SETTINGS, SettingNameValue
 from mxcubeweb.core.util.convertutils import (
     str_to_camel,
     str_to_snake,
@@ -40,7 +40,6 @@ UNCOLLECTED = 0x0
 READY = 0
 
 ORIGIN_MX3 = "MX3"
-
 
 class Queue(ComponentBase):
     def __init__(self, app, config):
@@ -2558,7 +2557,7 @@ class Queue(ComponentBase):
         root_path = HWR.beamline.session.get_base_image_directory()
         return {"path": path, "rootPath": root_path}
 
-    def set_setting(self, name_value: SimpleNameValue) -> tuple:  # noqa: D417
+    def set_setting(self, name_value: SettingNameValue) -> tuple:  # noqa: D417
         """Set the setting (on the MXCUBEApplication object) with name to value.
 
         Args:
@@ -2570,8 +2569,8 @@ class Queue(ComponentBase):
         """
         name = str_to_snake(name_value.name).upper()
 
-        if hasattr(self.app, name):
-            logging.getLogger("HWR").debug(f"Setting {name} to {name_value.value}")
+        if name in ALLOWED_APP_SETTINGS and hasattr(self.app, name):
+            logging.getLogger("HWR").debug(f"Setting application setting {name} to {name_value.value}")
             setattr(self.app, name, name_value.value)
             result = name, name_value.value
         else:
