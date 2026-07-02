@@ -42,39 +42,41 @@ class SettingNameValue(BaseModel):
         return value
 
 
+def validate_path(path: str) -> str:
+    """Validate a path without requiring it to exist."""
+    if not isinstance(path, str):
+        raise ValueError("Path must be a string")
+
+    if "\x00" in path:
+        raise ValueError("Path contains a null byte")
+
+    path = path.strip()
+
+    if not path:
+        return ""
+
+    if "//" in path:
+        raise ValueError("Path contains consecutive slashes")
+
+    parts = path.split("/")
+
+    if any(part == ".." for part in parts):
+        raise ValueError("Relative path traversal is not allowed")
+
+    invalid_char = re.search(r"[^a-zA-Z0-9_/-]", path)
+    if invalid_char:
+        raise ValueError(f"Path contains invalid character: {invalid_char.group(0)!r}")
+
+    return path
+
+
 class GroupFolderModel(BaseModel):
     path: str = ""
 
     @field_validator("path")
     @classmethod
     def validate_path(cls, path: str) -> str:
-        """Validate a path without requiring it to exist."""
-        if not isinstance(path, str):
-            raise ValueError("Path must be a string")
-
-        if "\x00" in path:
-            raise ValueError("Path contains a null byte")
-
-        path = path.strip()
-
-        if not path:
-            return ""
-
-        if "//" in path:
-            raise ValueError("Path contains consecutive slashes")
-
-        parts = path.split("/")
-
-        if any(part == ".." for part in parts):
-            raise ValueError("Relative path traversal is not allowed")
-
-        invalid_char = re.search(r"[^a-zA-Z0-9_/-]", path)
-        if invalid_char:
-            raise ValueError(
-                f"Path contains invalid character: {invalid_char.group(0)!r}"
-            )
-
-        return path
+        return validate_path(path)
 
 
 class AppSettingsModel(BaseModel):

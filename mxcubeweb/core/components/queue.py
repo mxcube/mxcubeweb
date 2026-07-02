@@ -3,7 +3,6 @@ import itertools
 import json
 import logging
 import os
-from functools import reduce
 import re
 from unittest.mock import Mock
 
@@ -25,6 +24,9 @@ from mxcubeweb.core.models.generic import (
     GroupFolderModel,
     SettingNameValue,
 )
+from mxcubeweb.core.models.generic import (
+    validate_path as validate_path_value,
+)
 from mxcubeweb.core.util.convertutils import (
     str_to_camel,
     str_to_snake,
@@ -45,6 +47,89 @@ UNCOLLECTED = 0x0
 READY = 0
 
 ORIGIN_MX3 = "MX3"
+
+
+VALID_PREFIX_TEMPLATE_FIELDS = ("{PREFIX}", "{POSITION}")
+VALID_SUBDIR_TEMPLATE_FIELDS = ("{ACRONYM}", "{NAME}", "{POSITION}")
+
+
+def validate_safe_string(value: str | None, field_name: str) -> str | None:
+    if value is None:
+        return None
+
+    if not isinstance(value, str):
+        raise ValueError(f"{field_name} must be a string")
+
+    value = value.strip()
+
+    invalid_char = re.search(r"[^a-zA-Z0-9:+_ -]", value)
+    if invalid_char:
+        raise ValueError(
+            f"{field_name} contains invalid character: {invalid_char.group(0)!r}"
+        )
+
+    return value
+
+
+def validate_safe_template_prefix(value: str) -> str:
+    if not isinstance(value, str):
+        raise ValueError("prefix must be a string")
+
+    value = value.strip()
+    literal_value = value
+
+    for field in VALID_PREFIX_TEMPLATE_FIELDS:
+        literal_value = literal_value.replace(field, "")
+
+    validate_safe_string(literal_value, "prefix")
+    return value
+
+
+def validate_safe_template_subdir(value: str) -> str:
+    if not isinstance(value, str):
+        raise ValueError("subdir must be a string")
+
+    value = value.strip()
+    literal_value = value
+
+    for field in VALID_SUBDIR_TEMPLATE_FIELDS:
+        literal_value = literal_value.replace(field, "")
+
+    invalid_template = re.search(r"\{[^{}]*\}", literal_value)
+    if invalid_template:
+        raise ValueError(
+            f"subdir contains invalid template variable: {invalid_template.group(0)!r}"
+        )
+
+    for part in literal_value.split("/"):
+        validate_safe_string(part, "subdir")
+
+    return value
+
+
+def validate_position(value: str | int) -> str | int:
+    if value in ("", None):
+        return ""
+
+    if value == -1:
+        return value
+
+    if not isinstance(value, str):
+        raise ValueError("shape must be -1 or a single letter followed by a digit")
+
+    value = value.strip()
+
+    if value == "-1":
+        return value
+
+    if not re.fullmatch(r"[a-zA-Z][0-9]", value):
+        raise ValueError("shape must be -1 or a single letter followed by a digit")
+
+    return value
+
+
+def validate_path(path: str) -> str:
+    return validate_path_value(path)
 
 
 class TaskDataPathModel(BaseModel):
@@ -77,6 +162,38 @@ class TaskDataPathModel(BaseModel):
         "use_enum_values": True,
     }
 
+    @field_validator("directory", "path", "process_directory", "xds_dir", mode="before")
+    @classmethod
+    def validate_path_fields(cls, value: str) -> str:
+        return validate_path(value)
+
+    @field_validator(
+        "base_prefix",
+        "mad_prefix",
+        "reference_image_prefix",
+        "wedge_prefix",
+        "suffix",
+        mode="before",
+    )
+    @classmethod
+    def validate_safe_string_fields(cls, value: str, info) -> str:
+        return validate_safe_string(value, info.field_name)
+
+    @field_validator("prefix", mode="before")
+    @classmethod
+    def validate_prefix(cls, value: str) -> str:
+        return validate_safe_template_prefix(value)
+
+    @field_validator("subdir", mode="before")
+    @classmethod
+    def validate_subdir(cls, value: str) -> str:
+        return validate_safe_template_subdir(value)
+
+    @field_validator("shape", mode="before")
+    @classmethod
+    def validate_shape(cls, value: str | int) -> str | int:
+        return validate_position(value)
+
 
 class XRFParameters(TaskDataPathModel):
     # From mxcbecore xrf:
@@ -87,6 +204,11 @@ class EnergyScanParameters(TaskDataPathModel):
     # From mxcbecore energy scan:
     element: str = ""
     edge: str = ""
+
+    @field_validator("element", "edge", mode="before")
+    @classmethod
+    def validate_energy_scan_strings(cls, value: str, info) -> str:
+        return validate_safe_string(value, info.field_name)
 
 
 class DataCollectionParameters(TaskDataPathModel):
@@ -121,6 +243,17 @@ class DataCollectionParameters(TaskDataPathModel):
     # From mxcubeweb"
     helical: bool = False
     mesh: bool = False
+
+    @field_validator(
+        "detector_binning_mode",
+        "cell_counting",
+        "mesh_center",
+        "cell_spacing",
+        mode="before",
+    )
+    @classmethod
+    def validate_safe_string_fields(cls, value: str | None, info) -> str | None:
+        return validate_safe_string(value, info.field_name)
 
 
 class CharacterisationParameters(DataCollectionParameters):
@@ -158,6 +291,13 @@ class CharacterisationParameters(DataCollectionParameters):
     beta: float = 0
     gamma: float = 0
 
+    @field_validator(
+        "experiment_type", "strategy_program", "space_group", mode="before"
+    )
+    @classmethod
+    def validate_characterisation_strings(cls, value: str, info) -> str:
+        return validate_safe_string(value, info.field_name)
+
     @field_validator("strategy_complexity", mode="before")
     @classmethod
     def strategy_complexity_to_int(cls, value: int | str) -> str:
@@ -180,6 +320,11 @@ class QueueNodeModel(BaseModel):
     checked: bool = False
     state: int = UNCOLLECTED
 
+    @field_validator("type", mode="before")
+    @classmethod
+    def validate_type(cls, value: str) -> str:
+        return validate_safe_string(value, "type")
+
 
 class TaskNodeModel(QueueNodeModel):
     label: str = ""
@@ -193,6 +338,11 @@ class TaskNodeModel(QueueNodeModel):
     diffractionPlan: list["TaskNodeModel"] | None = None  # noqa: N815
     diffractionPlanID: int | None = None  # noqa: N815
     name: str | None = None
+
+    @field_validator("sampleID", "name", mode="before")
+    @classmethod
+    def validate_task_strings(cls, value: str | None, info) -> str | None:
+        return validate_safe_string(value, info.field_name)
 
 
 class DataCollectionNodeModel(TaskNodeModel):
@@ -227,6 +377,19 @@ class SampleNode(QueueNodeModel):
         | XRFNodeModel
         | EnergyScanNodeModel
     ]
+
+    @field_validator("sampleID", "code", "location", "defaultPrefix", mode="before")
+    @classmethod
+    def validate_sample_safe_strings(cls, value: str | None, info) -> str | None:
+        return validate_safe_string(value, info.field_name)
+
+    @field_validator("sampleName", "proteinAcronym", mode="before")
+    @classmethod
+    def validate_sample_strings(cls, value: str, info) -> str:
+        if value is None and info.field_name == "proteinAcronym":
+            return ""
+
+        return validate_safe_string(value, info.field_name)
 
 
 class QueueSerializer:
@@ -266,6 +429,8 @@ class QueueSerializer:
                     proteinAcronym=n.crystals[0].protein_acronym,
                     defaultPrefix=self.app.lims.get_default_prefix(n),
                     defaultSubDir=self.app.lims.get_default_subdir(n),
+                    cell_no=getattr(n, "cell_no", 0),
+                    puck_no=getattr(n, "puck_no", 1),
                     checked=n.is_enabled(),
                     state=self.get_node_state(n._node_id)[1],
                     tasks=self._queue_to_dict_rec(n),
@@ -358,6 +523,21 @@ class QueueSerializer:
 
         return enabled, state
 
+    def _subdir_from_path(self, path: str) -> str:
+        try:
+            base_path = HWR.beamline.session.get_base_image_directory()
+            rel_path = os.path.relpath(path, base_path)
+
+            if rel_path not in (".", "..") and not rel_path.startswith(f"..{os.sep}"):
+                return rel_path.strip(os.sep).replace(os.sep, "/")
+
+        except (TypeError, ValueError) as ex:
+            raise RuntimeError(
+                "Could not de-serialize subdir from path: %s" % path
+            ) from ex
+
+        raise RuntimeError("Could not de-serialize subdir from path: %s" % path)
+
     def _handle_char_node(self, sample_node, node) -> TaskNodeModel:
         enabled, state = self.get_node_state(node._node_id)
         originID, tasks = self._handle_diffraction_plan(node, sample_node)
@@ -388,6 +568,7 @@ class QueueSerializer:
         enabled, state = self.get_node_state(node._node_id)
         parameters = node.as_dict()
         parameters["shape"] = getattr(node, "shape", "")
+        parameters["subdir"] = self._subdir_from_path(parameters["path"])
 
         pt = node.acquisitions[0].path_template
 
@@ -428,6 +609,7 @@ class QueueSerializer:
         parameters = node.parameters.copy()
         parameters.update(node.path_template.as_dict())
         parameters["path"] = parameters["directory"]
+        parameters["subdir"] = self._subdir_from_path(parameters["path"])
         pt = node.path_template
         parameters["fileName"] = pt.get_image_file_name().replace(
             "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
@@ -452,6 +634,7 @@ class QueueSerializer:
         pt = node.path_template
         parameters = pt.as_dict()
         parameters["path"] = parameters["directory"]
+        parameters["subdir"] = self._subdir_from_path(parameters["path"])
         parameters["strategy_name"] = node.strategy_name
         parameters["label"] = f"GΦL {parameters['strategy_name']}"
         parameters["shape"] = node.shape
@@ -479,6 +662,7 @@ class QueueSerializer:
         parameters = {"countTime": node.count_time, "shape": str(node.shape)}
         parameters.update(node.path_template.as_dict())
         parameters["path"] = parameters["directory"]
+        parameters["subdir"] = self._subdir_from_path(parameters["path"])
         pt = node.path_template
         parameters["prefix"] = pt.get_prefix()
         parameters["fileName"] = pt.get_image_file_name().replace(
@@ -509,6 +693,7 @@ class QueueSerializer:
         }
         parameters.update(node.path_template.as_dict())
         parameters["path"] = parameters["directory"]
+        parameters["subdir"] = self._subdir_from_path(parameters["path"])
         pt = node.path_template
         parameters["prefix"] = pt.get_prefix()
         parameters["fileName"] = pt.get_image_file_name().replace(
@@ -627,14 +812,16 @@ class QueueSerializer:
             self.app.queue.add_queue_entry(parent_node_id, item.dict(), item.type)
 
         # Print the queue after adding an item for easier debugging
-        try:
-            self.pretty_print_queue(
-                f"Added item type={item.type} parent={parent_node_id}"
-            )
-        except Exception:
-            logging.getLogger("MX3.HWR").exception(
-                "Failed to pretty print queue after adding item"
-            )
+
+        if self.app.server.flask.debug:
+            try:
+                self.pretty_print_queue(
+                    f"Added item type={item.type} parent={parent_node_id}"
+                )
+            except Exception:
+                logging.getLogger("MX3.HWR").exception(
+                    "Failed to pretty print queue after adding item"
+                )
 
     def queue_add_item(self, item_list):
         """Add queue items to the queue.
@@ -1052,6 +1239,8 @@ class Queue(ComponentBase):
         # Explicitly set parameters that are not sent by the client
         sample_model.loc_str = sample_id
         sample_model.free_pin_mode = item["location"] == "Manual"
+        sample_model.cell_no = item.get("cell_no", 0)
+        sample_model.puck_no = item.get("puck_no", 1)
         sample_model.set_name(item["sampleName"])
         sample_model.name = item["sampleName"]
 

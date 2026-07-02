@@ -317,7 +317,7 @@ class Lims(ComponentBase):
         if "{" in params.get("prefix", ""):
             sample = self.app.SAMPLE_LIST["sampleList"].get(sample_model.loc_str, {})
             prefix = self.get_default_prefix(sample)
-            shape = params["shape"] if params["shape"] > 0 else ""
+            shape = params.get("shape") or ""
             params["prefix"] = params["prefix"].format(PREFIX=prefix, POSITION=shape)
 
             if params["prefix"].endswith("_"):
