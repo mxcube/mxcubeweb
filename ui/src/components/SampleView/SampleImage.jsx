@@ -173,7 +173,7 @@ class SampleImage extends React.Component {
       this.canvas.add(this.centringHorizontalLine);
     }
 
-    if (options.e.buttons > 0 && this.drawGridPlugin.drawing) {
+    if (options.e.buttons === 1 && this.drawGridPlugin.drawing) {
       this.drawGridPlugin.update(
         this.canvas,
         options.e.layerX,
@@ -519,6 +519,9 @@ class SampleImage extends React.Component {
   }
 
   leftClick(option) {
+    if (option.e.buttons !== 1) {
+      return;
+    }
     this.canvas.selection = true; // Enable group selection
     let objectFound = false;
     this.drawGridPlugin.clearMouseOverGridLabel(this.canvas);
