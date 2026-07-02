@@ -175,6 +175,13 @@ jobs:
       - name: Build UI
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui build"
 
+      - name: Install Cypress
+        run: |
+          if ! ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui exec cypress verify; then
+            ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui exec cypress install
+            ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui exec cypress verify
+          fi
+
       - name: Start MXCuBE-Web server (XML config)
         run: |
           ${MAMBA_EXE} run --name mxcubeweb mxcubeweb-server -r ./demo/ --static-folder $(pwd)/ui/build/ -L debug &
