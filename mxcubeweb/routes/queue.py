@@ -8,7 +8,7 @@ from flask import (
 )
 from mxcubecore import HardwareRepository as HWR
 
-from mxcubeweb.core.models.generic import SettingNameValue
+from mxcubeweb.core.models.generic import GroupFolderModel, SettingNameValue
 
 
 # Disabling C901 function is too complex (19)
@@ -306,9 +306,9 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def set_group_folder():
-        path = request.get_json().get("path", "")
+        group_folder = GroupFolderModel(**request.get_json())
 
-        resp = jsonify(app.queue.set_group_folder(path))
+        resp = jsonify(app.queue.set_group_folder(group_folder))
         resp.status_code = 200
 
         return resp
@@ -335,7 +335,10 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def set_setting():
-        result = app.queue.set_setting(SettingNameValue(**request.json))
+        try:
+            result = app.queue.set_setting(SettingNameValue(**request.json))
+        except ValueError:
+            return Response(status=409)
 
         return jsonify({result[0]: result[1]}) if result else Response(status=409)
 
