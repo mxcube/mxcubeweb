@@ -1,15 +1,42 @@
 from pydantic import (
     BaseModel,
     Field,
+    field_validator,
 )
 
 from mxcubeweb.core.models.configmodels import ModeEnum
+
+ALLOWED_APP_SETTINGS = {
+    "AUTO_ADD_DIFFPLAN",
+    "REMEMBER_PARAMETERS_BETWEEN_SAMPLES",
+    "AUTO_MOUNT_SAMPLE",
+    "ALLOW_REMOTE",
+}
+
+
+def setting_name_to_constant(name: str) -> str:
+    return "".join(
+        f"_{char}" if char.isupper() else char.upper() for char in name
+    ).lstrip("_")
 
 
 class SimpleNameValue(BaseModel):
     name: str
     # It's important to have str before bool, to avoid issue with bool being casted to string
     value: bool | str | int
+
+class SettingNameValue(BaseModel):
+    name: str
+    # It's important to have str before bool, to avoid issue with bool being casted to string
+    value: bool | str | int
+
+    @field_validator("name")
+    @classmethod
+    def validate_name(cls, value: str) -> str:
+        if setting_name_to_constant(value) not in ALLOWED_APP_SETTINGS:
+            raise ValueError(f"Setting {value!r} is not allowed")
+
+        return value
 
 
 class AppSettingsModel(BaseModel):

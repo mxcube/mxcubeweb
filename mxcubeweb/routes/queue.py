@@ -8,7 +8,7 @@ from flask import (
 )
 from mxcubecore import HardwareRepository as HWR
 
-from mxcubeweb.core.models.generic import SimpleNameValue
+from mxcubeweb.core.models.generic import SettingNameValue
 
 
 # Disabling C901 function is too complex (19)
@@ -335,7 +335,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.require_control
     @server.restrict
     def set_setting():
-        result = app.queue.set_setting(SimpleNameValue(**request.json))
+        result = app.queue.set_setting(SettingNameValue(**request.json))
 
         return jsonify({result[0]: result[1]}) if result else Response(status=409)
 
