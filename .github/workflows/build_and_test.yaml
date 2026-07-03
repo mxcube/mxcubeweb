@@ -38,39 +38,16 @@ jobs:
           - 6379:6379
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v5
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install MXCuBE server for ${{ matrix.python-version }}
+        uses: ./.github/actions/install_server
         with:
           python-version: ${{ matrix.python-version }}
 
-      # Pin micromamba version because of following issue:
-      # https://github.com/mamba-org/setup-micromamba/issues/225
-      - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v2
-        with:
-          create-args: >-
-            python=${{ matrix.python-version }}
-          micromamba-version: 1.5.10-0
-          environment-file: conda-environment.yml
-          cache-environment: true
-          post-cleanup: "all"
-
-      # Install the project into Poetry's own virtualenv, NOT the Conda env.
-      # As a result, poetry uses conda environment it has been installed to
-      # instead of creating it's own one.
-      # Poetry documentation heavily discourages such use case, as  may lead
-      # to hard to debug errors.
-      - name: Create Poetry virtualenv
-        run: >-
-          "${MAMBA_EXE}" run --name mxcubeweb
-          poetry env use python${{ matrix.python-version }}
-
-      - name: Install MXCuBE
-        run: "${MAMBA_EXE} run --name mxcubeweb poetry install"
-
       - name: Linting & Code Quality
-        run: "${MAMBA_EXE} run --name mxcubeweb poetry run pre-commit run --all-files"
+        run: poetry run pre-commit run --all-files
 
       - name: Test with pytest
-        run: "${MAMBA_EXE} run --name mxcubeweb poetry run pytest"
+        run: poetry run pytest

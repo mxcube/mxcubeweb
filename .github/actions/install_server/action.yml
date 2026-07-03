@@ -1,0 +1,64 @@
+---
+name: Install MXCuBE server
+description: Sets up environments for Conda and Poetry, then install server app.
+
+inputs:
+  python-version:
+    description: Python version used by MXCuBE.
+    required: true
+    default: "3.11"
+  environment-file:
+    description: File specifying conda environments
+    default: conda-environment.yml
+  poetry-version:
+    description: Version of poetry to use
+    default: 2.4.1
+  micromamba-version:
+    description: Version of micromamba to use
+    default: 1.5.10-0
+  install-poetry:
+    description: >-
+      Install Poetry and the MXCuBE server package on top of the Conda env.
+      Set to "false" for jobs that only need Conda-provided tools (e.g. pnpm/node).
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Set up Conda environment
+      uses: mamba-org/setup-micromamba@v2
+      with:
+        create-args: >-
+          python=${{ inputs.python-version }}
+        micromamba-version: ${{ inputs.micromamba-version }}
+        environment-file: ${{ inputs.environment-file }}
+        cache-environment: true
+        post-cleanup: "all"
+        # We need to install poetry so that it is available from outside of the
+        # micromamba environment. Currently it is not feasible, as poetry does
+        # always choose ot use currently active environment, even if config flags are
+        # set to create a virtualenv inside project.
+        # https://github.com/python-poetry/poetry/issues/4055
+        # Using pipx is reccomended by poetry devs, as it creates a venv for each tool.
+    - name: Install Poetry
+      if: inputs.install-poetry == 'true'
+      shell: bash
+      run: |
+        pipx install "poetry==${{ inputs.poetry-version }}"
+
+    - name: Cache Poetry environment
+      if: inputs.install-poetry == 'true'
+      uses: actions/cache@v4
+      with:
+        path: .venv
+        key: >-
+          poetry-${{ runner.os }}-py${{ inputs.python-version }}-
+          ${{ hashFiles('poetry.lock', inputs.environment-file) }}
+
+    - name: Install MXCuBE
+      if: inputs.install-poetry == 'true'
+      shell: bash
+      run: |
+        CONDA_PY="$("${MAMBA_EXE}" run --name mxcubeweb bash -c 'command -v python')"
+        poetry env use "$CONDA_PY"
+        poetry install

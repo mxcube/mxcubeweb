@@ -46,13 +46,16 @@ jobs:
           environment-file: "conda-environment.yml"
           micromamba-version: 1.5.10-0
 
-      - name: Create Poetry virtualenv
-        run: >-
-          "${MAMBA_EXE}" run --name mxcubeweb sh -c
-          'poetry env use "$(command -v python)"'
+      - name: Install Poetry
+        shell: bash
+        run: |
+          pipx install poetry==2.4.1
 
       - name: "Install dependencies with Poetry"
-        run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only=docs,main"
+        run: |
+          CONDA_PY="$("${MAMBA_EXE}" run --name mxcubeweb bash -c 'command -v python')"
+          poetry env use "$CONDA_PY"
+          poetry install --only=docs,main
 
       - name: "Build documentation with Sphinx"
         run: >-
