@@ -28,21 +28,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v2
+        uses: ./.github/actions/install_server
         with:
-          micromamba-version: 1.5.10-0
-          environment-file: conda-environment.yml
-          cache-environment: true
-          post-cleanup: "all"
-
-      - name: Cache UI dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/Cypress
-            ~/setup-pnpm/node_modules/.bin/store
-          key: cache-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-
+          install-poetry: "false"
 
       - name: Install UI dependencies
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
@@ -62,21 +50,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v2
+        uses: ./.github/actions/install_server
         with:
-          micromamba-version: 1.5.10-0
-          environment-file: conda-environment.yml
-          cache-environment: true
-          post-cleanup: "all"
-
-      - name: Cache UI dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/Cypress
-            ~/setup-pnpm/node_modules/.bin/store
-          key: cache-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-
+          install-poetry: "false"
 
       - name: Install UI dependencies
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
@@ -97,21 +73,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v2
+        uses: ./.github/actions/install_server
         with:
-          micromamba-version: 1.5.10-0
-          environment-file: conda-environment.yml
-          cache-environment: true
-          post-cleanup: "all"
-
-      - name: Cache UI dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/setup-pnpm/node_modules/.bin/store
-            ~/.cache/Cypress
-          key: cache-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-
+          install-poetry: "false"
 
       - name: Install UI dependencies
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --prefix ui install"
@@ -149,30 +113,8 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v2
-        with:
-          micromamba-version: 1.5.10-0
-          environment-file: conda-environment.yml
-          cache-environment: true
-          post-cleanup: "all"
-
-      - name: Create Poetry virtualenv
-        run: >-
-          "${MAMBA_EXE}" run --name mxcubeweb sh -c
-          'poetry env use "$(command -v python)"'
-
       - name: Install MXCuBE
-        run: "${MAMBA_EXE} run --name mxcubeweb poetry install --only main"
-
-      - name: Cache UI dependencies
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.cache/Cypress
-            ~/setup-pnpm/node_modules/.bin/store
-          key: cache-${{ runner.os }}-${{ hashFiles('ui/pnpm-lock.yaml') }}
-          restore-keys: ${{ runner.os }}-
+        uses: ./.github/actions/install_server
 
       - name: Install UI dependencies
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
@@ -182,7 +124,7 @@ jobs:
 
       - name: Start MXCuBE-Web server (XML config)
         run: |
-          ${MAMBA_EXE} run --name mxcubeweb poetry run mxcubeweb-server -r ./demo/ --static-folder $(pwd)/ui/build/ -L debug &
+          poetry run mxcubeweb-server -r ./demo/ --static-folder $(pwd)/ui/build/ -L debug &
           ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui exec wait-on http://127.0.0.1:8081
           ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui e2e
         env:
@@ -191,7 +133,7 @@ jobs:
       - name: Start MXCuBE-Web server (YAML config)
         run: |
           pkill -f mxcubeweb-server || true
-          ${MAMBA_EXE} run --name mxcubeweb poetry run mxcubeweb-server -r ./demo.yaml/ --static-folder $(pwd)/ui/build/ -L debug &
+          poetry run mxcubeweb-server -r ./demo.yaml/ --static-folder $(pwd)/ui/build/ -L debug &
           ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui exec wait-on http://127.0.0.1:8081
           ${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui e2e
         env:
