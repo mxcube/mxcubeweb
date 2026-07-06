@@ -5,10 +5,16 @@ import flask_login
 from flask import (
     Blueprint,
     jsonify,
+    request,
 )
 from mxcubecore import HardwareRepository as HWR
 
 from mxcubeweb import __version__
+from mxcubeweb.core.util import networkutils
+
+_access_log = logging.getLogger("server_access")
+
+_IGNORED_PATHS = ("/login_info", "/refresh_session")
 
 
 def init_route(app, server, url_prefix):
@@ -62,5 +68,22 @@ def init_route(app, server, url_prefix):
         if not flask_login.current_user.is_anonymous:
             flask_login.current_user.last_request_timestamp = datetime.now()
             app.usermanager.update_user(flask_login.current_user)
+
+    @server.flask.after_request
+    def after_request(response):
+        if (
+            not flask_login.current_user.is_anonymous
+            and request.path not in _IGNORED_PATHS
+            and not request.path.startswith("/static")
+        ):
+            _access_log.info(
+                "[REQUEST] user=%s ip=%s method=%s path=%s status=%s",
+                flask_login.current_user.username,
+                networkutils.remote_addr(),
+                request.method,
+                request.path,
+                response.status_code,
+            )
+        return response
 
     return bp
