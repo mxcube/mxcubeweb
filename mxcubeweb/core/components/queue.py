@@ -14,7 +14,7 @@ from mxcubecore.model import queue_model_enumerables as qme
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore.model.queue_model_enumerables import CENTRING_METHOD
 from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.adaptermodels import (
@@ -364,13 +364,38 @@ class EnergyScanNodeModel(TaskNodeModel):
     parameters: EnergyScanParameters
 
 
-TaskNodeUnion = Annotated[
+def build_task_node_model(value: object):
+    if not isinstance(value, dict):
+        return value
+
+    normalized = dict(value)
+    task_type = normalized.get("type")
+
+    if task_type == "Interleaved":
+        normalized["type"] = "DataCollection"
+        return DataCollectionNodeModel.model_validate(normalized)
+
+    if task_type == "Characterisation":
+        return CharacterisationNodeModel.model_validate(normalized)
+
+    if task_type == "xrf_spectrum":
+        return XRFNodeModel.model_validate(normalized)
+
+    if task_type == "energy_scan":
+        return EnergyScanNodeModel.model_validate(normalized)
+
+    if task_type in {"Workflow", "GphlWorkflow"}:
+        return DataCollectionNodeModel.model_validate(normalized)
+
+    return DataCollectionNodeModel.model_validate(normalized)
+
+
+TaskNodeUnion = (
     DataCollectionNodeModel
     | CharacterisationNodeModel
     | XRFNodeModel
-    | EnergyScanNodeModel,
-    Field(discriminator="type"),
-]
+    | EnergyScanNodeModel
+)
 
 
 class SampleNode(QueueNodeModel):
@@ -384,6 +409,20 @@ class SampleNode(QueueNodeModel):
     defaultPrefix: str | None = ""  # noqa: N815
     defaultSubDir: str | None = ""  # noqa: N815
     tasks: list[TaskNodeUnion]
+
+    @model_validator(mode="before")
+    @classmethod
+    def validate_tasks(cls, value):
+        if isinstance(value, dict):
+            tasks = value.get("tasks")
+            if isinstance(tasks, list):
+                normalized = dict(value)
+                normalized["tasks"] = [
+                    build_task_node_model(task) for task in tasks
+                ]
+                return normalized
+
+        return value
 
     @field_validator("sampleID", "code", "location", "defaultPrefix", mode="before")
     @classmethod
