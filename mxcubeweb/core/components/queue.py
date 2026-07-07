@@ -63,7 +63,7 @@ def validate_safe_string(value: str | None, field_name: str) -> str | None:
 
     value = value.strip()
 
-    invalid_char = re.search(r"[^a-zA-Z0-9:+_ -]", value)
+    invalid_char = re.search(r"[^a-zA-Z0-9:+_. -]", value)
     if invalid_char:
         raise ValueError(
             f"{field_name} contains invalid character: {invalid_char.group(0)!r}"
