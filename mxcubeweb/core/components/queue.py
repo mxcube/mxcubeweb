@@ -214,6 +214,63 @@ class EnergyScanParameters(TaskDataPathModel):
         return validate_safe_string(value, info.field_name)
 
 
+class WorkflowParameters(TaskDataPathModel):
+    beam_size: str | None = None
+    cell_count: int | None = None
+    doc: str = ""
+    label: str = ""
+    name: str | None = None
+    numCols: int = 0  # noqa: N815
+    numRows: int = 0  # noqa: N815
+    requires: str | None = None
+    type: str = ""
+    wfname: str = ""
+    wfpath: str = ""
+
+    @field_validator(
+            "wfname",
+            "wfpath",
+            "type",
+            "requires",
+            "name",
+            "label",
+            "doc",
+            "beam_size", 
+            mode="before"
+    )
+    @classmethod
+    def validate_energy_scan_strings(cls, value: str, info) -> str:
+        return validate_safe_string(value, info.field_name)
+
+
+
+def normalize_mesh_range(value):
+    if value in (None, "", []):
+        return {}
+    
+    if isinstance(value, float) or isinstance(value, int):
+        return {
+            "horizontal_range": 0,
+            "vertical_range": 0,
+        }
+
+    if isinstance(value, dict):
+        return {
+            "horizontal_range": float(value.get("horizontal_range", 0)),
+            "vertical_range": float(value.get("vertical_range", 0)),
+        }
+
+    if isinstance(value, (list, tuple)):
+        if len(value) != 2:
+            raise ValueError("mesh_range must contain two values")
+        return {
+            "horizontal_range": float(value[0]),
+            "vertical_range": float(value[1]),
+        }
+
+    raise ValueError("mesh_range must be a dictionary with horizontal/vertical ranges")
+
+
 class DataCollectionParameters(TaskDataPathModel):
     # From mxcubecore Datacollection, osc, mesh, helical
     first_image: int = Field(0, description="First image number")
@@ -234,24 +291,29 @@ class DataCollectionParameters(TaskDataPathModel):
     take_snapshots: int = 0
     detector_binning_mode: str | None = None
     detector_roi_mode: int = 0
-    mesh_range: float = 0
+    mesh_range: dict[str, float] = {}
     num_triggers: int = 0
     num_images_per_trigger: int = 0
     cell_counting: str | None = None
     mesh_center: str | None = None
-    cell_spacing: str | None = None
+    cell_spacing: tuple[float, float] | None = None
     sub_wedge_size: int = 10
     disable_processing: bool = False
+
 
     # From mxcubeweb"
     helical: bool = False
     mesh: bool = False
 
+    @field_validator("mesh_range", mode="before")
+    @classmethod
+    def validate_mesh_range(cls, value):
+        return normalize_mesh_range(value)
+
     @field_validator(
         "detector_binning_mode",
         "cell_counting",
         "mesh_center",
-        "cell_spacing",
         mode="before",
     )
     @classmethod
@@ -364,6 +426,10 @@ class EnergyScanNodeModel(TaskNodeModel):
     parameters: EnergyScanParameters
 
 
+class WorkflowNodeModel(TaskNodeModel):
+    parameters: WorkflowParameters
+
+
 def build_task_node_model(value: object):
     if not isinstance(value, dict):
         return value
@@ -385,7 +451,7 @@ def build_task_node_model(value: object):
         return EnergyScanNodeModel.model_validate(normalized)
 
     if task_type in {"Workflow", "GphlWorkflow"}:
-        return DataCollectionNodeModel.model_validate(normalized)
+        return WorkflowNodeModel.model_validate(normalized)
 
     return DataCollectionNodeModel.model_validate(normalized)
 
@@ -395,6 +461,7 @@ TaskNodeUnion = (
     | CharacterisationNodeModel
     | XRFNodeModel
     | EnergyScanNodeModel
+    | WorkflowNodeModel
 )
 
 
@@ -663,7 +730,7 @@ class QueueSerializer:
         parameters["fullPath"] = os.path.join(
             parameters["path"], parameters["fileName"]
         )
-        return DataCollectionNodeModel(
+        return WorkflowNodeModel(
             label=parameters["label"],
             type="Workflow",
             name=node._type,
@@ -841,9 +908,7 @@ class QueueSerializer:
             self.app.queue.add_characterisation(parent_node_id, item.dict())
 
         elif item.type in ("Workflow", "GphlWorkflow"):
-            wf_node_id = self.app.queue.add_workflow(parent_node_id, item.dict())
-            for task in item.tasks or []:
-                self._queue_add_item_rec(wf_node_id, task)
+            self.app.queue.add_workflow(parent_node_id, item.dict())
 
         elif item.type == "Interleaved":
             self.app.queue.add_interleaved(parent_node_id, item.dict())
