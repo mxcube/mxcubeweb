@@ -222,8 +222,8 @@ class DataCollectionParameters(TaskDataPathModel):
     osc_range: float = Field(0, description="Oscillation range per image")
     osc_total_range: float = 0
     overlap: float = 0
-    kappa: float = 0
-    kappa_phi: float = 0
+    kappa: float | None = 0
+    kappa_phi: float | None = 0
     exp_time: float = Field(0, description="Exposure time in seconds")
     num_lines: int = 1
     energy: float = Field(0, description="Energy in keV")
