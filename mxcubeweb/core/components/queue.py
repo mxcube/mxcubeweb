@@ -4,6 +4,7 @@ import json
 import logging
 import os
 import re
+from typing import Annotated
 from unittest.mock import Mock
 
 from mxcubecore import HardwareRepository as HWR
@@ -363,6 +364,15 @@ class EnergyScanNodeModel(TaskNodeModel):
     parameters: EnergyScanParameters
 
 
+TaskNodeUnion = Annotated[
+    DataCollectionNodeModel
+    | CharacterisationNodeModel
+    | XRFNodeModel
+    | EnergyScanNodeModel,
+    Field(discriminator="type"),
+]
+
+
 class SampleNode(QueueNodeModel):
     sampleID: str  # noqa: N815
     code: str | None = None
@@ -373,12 +383,7 @@ class SampleNode(QueueNodeModel):
     proteinAcronym: str | None = ""  # noqa: N815
     defaultPrefix: str | None = ""  # noqa: N815
     defaultSubDir: str | None = ""  # noqa: N815
-    tasks: list[
-        DataCollectionNodeModel
-        | CharacterisationNodeModel
-        | XRFNodeModel
-        | EnergyScanNodeModel
-    ]
+    tasks: list[TaskNodeUnion]
 
     @field_validator("sampleID", "code", "location", "defaultPrefix", mode="before")
     @classmethod
