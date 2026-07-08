@@ -121,7 +121,9 @@ class SampleImage extends React.Component {
       drawGridWithClicksCoords,
       imageRatio,
       sampleVerticalMotorValue,
+      sampleVerticalMotorState,
       sampleHorizontalMotorValue,
+      sampleHorizontalMotorState,
       pixelsPerMm,
       width,
     } = this.props;
@@ -137,25 +139,44 @@ class SampleImage extends React.Component {
       this.drawGridPlugin.endDrawing();
     }
 
-    // When drawing with clicks and motors move,
-    // shift the grid's start corner to follow the sample
+    // In case motors move while drawing with clicks shift the grid's start corner
     if (this.drawGridPlugin.drawing && drawGridWithClicks) {
-      const prevV = prevProps.sampleVerticalMotorValue;
-      const prevH = prevProps.sampleHorizontalMotorValue;
+      // Record the starting position of the grid before motors moved
       if (
-        prevV !== undefined &&
-        prevH !== undefined &&
-        (sampleVerticalMotorValue !== prevV ||
-          sampleHorizontalMotorValue !== prevH)
+        prevProps.sampleHorizontalMotorState === 'READY' &&
+        sampleHorizontalMotorState === 'BUSY'
       ) {
-        const deltaX =
-          (sampleHorizontalMotorValue - prevH) * pixelsPerMm[0] * imageRatio;
-        const deltaY =
-          -(sampleVerticalMotorValue - prevV) * pixelsPerMm[1] * imageRatio;
-        this.drawGridPlugin.currentTopLeftX += deltaX;
-        this.drawGridPlugin.currentTopLeftY += deltaY;
-        this.prevLayerX += deltaX;
-        this.prevLayerY += deltaY;
+        this.motorOriginH = prevProps.sampleHorizontalMotorValue;
+      }
+      if (
+        prevProps.sampleVerticalMotorState === 'READY' &&
+        sampleVerticalMotorState === 'BUSY'
+      ) {
+        this.motorOriginV = prevProps.sampleVerticalMotorValue;
+      }
+      // Calculate deltas and update canvas when motors have stopped
+      const deltaX = this.calculateMotorDelta(
+        prevProps.sampleHorizontalMotorState,
+        sampleHorizontalMotorState,
+        this.motorOriginH,
+        sampleHorizontalMotorValue,
+        imageRatio,
+        pixelsPerMm[0],
+      );
+      const deltaY = this.calculateMotorDelta(
+        prevProps.sampleVerticalMotorState,
+        sampleVerticalMotorState,
+        this.motorOriginV,
+        sampleVerticalMotorValue,
+        imageRatio,
+        pixelsPerMm[1],
+        -1,
+      );
+      if (deltaX !== undefined || deltaY !== undefined) {
+        this.drawGridPlugin.currentTopLeftX += deltaX ?? 0;
+        this.drawGridPlugin.currentTopLeftY += deltaY ?? 0;
+        this.prevLayerX += deltaX ?? 0;
+        this.prevLayerY += deltaY ?? 0;
         this.drawGridPlugin.update(
           this.canvas,
           this.prevLayerX,
@@ -191,6 +212,21 @@ class SampleImage extends React.Component {
     imageOverlay.removeEventListener('contextmenu', this.rightClick);
     imageOverlay.removeEventListener('wheel', this.wheel);
     imageOverlay.removeEventListener('dblclick', this.goToBeam);
+  }
+
+  calculateMotorDelta(
+    prevState,
+    state,
+    originPosition,
+    position,
+    imageRatio,
+    pxPerMm,
+    sign = 1,
+  ) {
+    if (prevState === 'BUSY' && state === 'READY') {
+      return sign * (position - originPosition) * pxPerMm * imageRatio;
+    }
+    return undefined;
   }
 
   onMouseMove(options) {
@@ -1005,8 +1041,12 @@ function mapStateToProps(state) {
     videoMessageOverlay: state.sampleview.videoMessageOverlay,
     sampleVerticalMotorValue:
       state.beamline.hardwareObjects[verticalMotorAttr]?.value ?? 0,
+    sampleVerticalMotorState:
+      state.beamline.hardwareObjects[verticalMotorAttr]?.state ?? null,
     sampleHorizontalMotorValue:
       state.beamline.hardwareObjects[horizontalMotorAttr]?.value ?? 0,
+    sampleHorizontalMotorState:
+      state.beamline.hardwareObjects[horizontalMotorAttr]?.state ?? null,
   };
 }
 
