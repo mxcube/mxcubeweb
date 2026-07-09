@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import re
-from typing import Annotated
 from unittest.mock import Mock
 
 from mxcubecore import HardwareRepository as HWR
@@ -14,7 +13,7 @@ from mxcubecore.model import queue_model_enumerables as qme
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore.model.queue_model_enumerables import CENTRING_METHOD
 from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, Field, ValidationError, field_validator, model_validator
 
 from mxcubeweb.core.components.component_base import ComponentBase
 from mxcubeweb.core.models.adaptermodels import (
@@ -123,9 +122,7 @@ def validate_position(value: str | int) -> str | int:
     if value == "-1":
         return value
 
-    if re.fullmatch(r"2DP(?:[0-9]+)?", value) or re.fullmatch(
-        r"[a-zA-Z][0-9]", value
-    ):
+    if re.fullmatch(r"2DP(?:[0-9]+)?", value) or re.fullmatch(r"[a-zA-Z][0-9]", value):
         return value
 
     raise ValueError("shape must be -1 or a single letter followed by a digit")
@@ -228,26 +225,25 @@ class WorkflowParameters(TaskDataPathModel):
     wfpath: str = ""
 
     @field_validator(
-            "wfname",
-            "wfpath",
-            "type",
-            "requires",
-            "name",
-            "label",
-            "doc",
-            "beam_size", 
-            mode="before"
+        "wfname",
+        "wfpath",
+        "type",
+        "requires",
+        "name",
+        "label",
+        "doc",
+        "beam_size",
+        mode="before",
     )
     @classmethod
     def validate_energy_scan_strings(cls, value: str, info) -> str:
         return validate_safe_string(value, info.field_name)
 
 
-
 def normalize_mesh_range(value):
     if value in (None, "", [], ()):
         return {}
-    
+
     if isinstance(value, float) or isinstance(value, int):
         return {
             "horizontal_range": 0,
@@ -299,7 +295,6 @@ class DataCollectionParameters(TaskDataPathModel):
     cell_spacing: tuple[float, float] | None = None
     sub_wedge_size: int = 10
     disable_processing: bool = False
-
 
     # From mxcubeweb"
     helical: bool = False
@@ -484,9 +479,7 @@ class SampleNode(QueueNodeModel):
             tasks = value.get("tasks")
             if isinstance(tasks, list):
                 normalized = dict(value)
-                normalized["tasks"] = [
-                    build_task_node_model(task) for task in tasks
-                ]
+                normalized["tasks"] = [build_task_node_model(task) for task in tasks]
                 return normalized
 
         return value
@@ -952,7 +945,13 @@ class QueueSerializer:
 
         Each item (dictionary) describes either a sample or a task.
         """
-        parsed_items = [SampleNode.model_validate(i) for i in item_list]
+        try:
+            parsed_items = [SampleNode.model_validate(i) for i in item_list]
+        except ValidationError:
+            logging.getLogger("MX3.QUEUE").exception(
+                "Failed to validate queue item(s): %s" % item_list
+            )
+            raise
         for item in parsed_items:
             self._queue_add_item_rec(None, item)
 
