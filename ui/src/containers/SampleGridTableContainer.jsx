@@ -1,5 +1,5 @@
 import cx from 'classnames';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Button, Col, Dropdown, Row, Table } from 'react-bootstrap';
 import Collapsible from 'react-collapsible';
 import { BiMenu } from 'react-icons/bi';
@@ -138,7 +138,7 @@ export default function SampleGridTableContainer(props) {
     (state) => state.taskForm.defaultParameters,
   );
   const availableMethods = new Set(Object.keys(defaultParameters));
-  const selectionRubberBand = document.querySelector('#selectionRubberBand');
+  const selectionRubberBandRef = useRef(null);
 
   const {
     addSelectedSamplesToQueue,
@@ -175,10 +175,10 @@ export default function SampleGridTableContainer(props) {
       if (e.key === 'Escape') {
         dispatch(selectSamplesAction(Object.keys(sampleList), false));
         setRubberBandVisible(false);
-        selectionRubberBand.style.display = 'none';
+        selectionRubberBandRef.current.style.display = 'none';
       }
     },
-    [dispatch, sampleList, selectionRubberBand],
+    [dispatch, sampleList],
   );
 
   useEffect(() => {
@@ -255,6 +255,7 @@ export default function SampleGridTableContainer(props) {
    */
   function onMouseDown(e) {
     e.preventDefault();
+    const selectionRubberBand = selectionRubberBandRef.current;
     selectionRubberBand.style.top = `${e.clientY}px`;
     selectionRubberBand.style.left = `${e.clientX}px`;
     selectionRubberBand.style.width = 0;
@@ -277,6 +278,7 @@ export default function SampleGridTableContainer(props) {
    */
   function onMouseMove(e) {
     if (rubberBandVisible) {
+      const selectionRubberBand = selectionRubberBandRef.current;
       selectionRubberBand.style.display = 'block';
       selectionRubberBand.style.width = `${
         e.clientX - selectionRubberBand.offsetLeft
@@ -300,11 +302,11 @@ export default function SampleGridTableContainer(props) {
         // `sampleItem.key` may include a column (:), so we can't use `querySelector`
         // //eslint-disable-next-line unicorn/prefer-query-selector
         const sampleElement = document.getElementById(sampleItem.key);
-        return checkForOverlap(selectionRubberBand, sampleElement);
+        return checkForOverlap(selectionRubberBandRef.current, sampleElement);
       })
       .map((sampleItem) => sampleItem.key);
 
-    selectionRubberBand.style.display = 'none';
+    selectionRubberBandRef.current.style.display = 'none';
     setRubberBandVisible(false);
 
     // If several samples selected call the handler, otherwise rely on
@@ -971,7 +973,11 @@ export default function SampleGridTableContainer(props) {
         onMouseMove={onMouseMove}
         xs="auto"
       >
-        <div className={styles.selectionRubberBand} id="selectionRubberBand" />
+        <div
+          ref={selectionRubberBandRef}
+          className={styles.selectionRubberBand}
+          id="selectionRubberBand"
+        />
         {getManualSamples()}
         {viewMode === 'Graphical View' ? (
           <>
