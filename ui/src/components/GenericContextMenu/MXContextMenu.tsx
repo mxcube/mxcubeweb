@@ -2,15 +2,15 @@ import { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
 
-import { showGenericContextMenu } from '../../reducers/contextMenu';
+import { hideMenu } from '../../reducers/contextMenu';
 import { useAppSelector } from '../../ts-store';
 import styles from './MXContextMenu.module.css';
 
 export default function MXContextMenu(props: React.PropsWithChildren) {
   const { children } = props;
-  const { show, x, y, id } = useAppSelector(
-    (state) => state.contextMenu.genericContextMenu,
-  );
+  const contextMenu = useAppSelector((state) => state.contextMenu);
+  const show = contextMenu.type === 'Generic';
+  const { id, x, y } = show ? contextMenu : { id: '', x: 0, y: 0 };
   const dispatch = useDispatch();
   const menuRef = useRef<HTMLDivElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
@@ -31,12 +31,12 @@ export default function MXContextMenu(props: React.PropsWithChildren) {
   }, [show, x, y]);
 
   useEffect(() => {
-    function hideContextMenu() {
-      dispatch(showGenericContextMenu({ id: '', show: false, x: 0, y: 0 }));
+    function onDocumentClick() {
+      dispatch(hideMenu());
     }
-    document.addEventListener('click', hideContextMenu);
+    document.addEventListener('click', onDocumentClick);
     return () => {
-      document.removeEventListener('click', hideContextMenu);
+      document.removeEventListener('click', onDocumentClick);
     };
   }, [dispatch]);
 

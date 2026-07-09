@@ -20,7 +20,7 @@ import {
   updateShapes,
 } from '../../actions/sampleview.js';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
-import { showContextMenu } from '../../reducers/contextMenu.js';
+import { showShapeMenu } from '../../reducers/contextMenu.js';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
 import { GridGroup } from './FabricObjects/gridGroup.js';
@@ -508,14 +508,13 @@ class SampleImage extends React.Component {
     }
 
     const { imageRatio } = this.props;
-    this.props.showContextMenu(
-      true,
-      ctxMenuObj,
-      e.pageX,
-      e.pageY,
-      e.offsetX / imageRatio,
-      e.offsetY / imageRatio,
-    );
+    this.props.showShapeMenu({
+      shape: ctxMenuObj,
+      pageX: e.pageX,
+      pageY: e.pageY,
+      sampleViewX: e.offsetX / imageRatio,
+      sampleViewY: e.offsetY / imageRatio,
+    });
   }
 
   leftClick(option) {
@@ -924,7 +923,7 @@ function mapStateToProps(state) {
   return {
     uiproperties: state.uiproperties,
     hardwareObjects: state.beamline.hardwareObjects,
-    contextMenuVisible: state.contextMenu.show,
+    contextMenuVisible: state.contextMenu.type === 'Shape',
     shapes: state.shapes.shapes,
     cellCounting:
       state.taskForm.defaultParameters.mesh.acq_parameters.cell_counting,
@@ -954,7 +953,7 @@ function mapDispatchToProps(dispatch) {
     displayImage: bindActionCreators(displayImage, dispatch),
     setImageRatio: bindActionCreators(setImageRatio, dispatch),
     setOverlay: bindActionCreators(setOverlay, dispatch),
-    showContextMenu: bindActionCreators(showContextMenu, dispatch),
+    showShapeMenu: bindActionCreators(showShapeMenu, dispatch),
     addDistancePoint: bindActionCreators(addDistancePoint, dispatch),
     toggleDrawGrid: bindActionCreators(toggleDrawGrid, dispatch),
     rotateToShape: bindActionCreators(rotateToShape, dispatch),
