@@ -245,7 +245,7 @@ class WorkflowParameters(TaskDataPathModel):
 
 
 def normalize_mesh_range(value):
-    if value in (None, "", []):
+    if value in (None, "", [], ()):
         return {}
     
     if isinstance(value, float) or isinstance(value, int):
