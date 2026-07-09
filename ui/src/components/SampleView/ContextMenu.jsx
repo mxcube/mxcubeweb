@@ -17,7 +17,8 @@ import {
   toggleDrawGrid,
 } from '../../actions/sampleview';
 import { showTaskForm } from '../../actions/taskForm';
-import { showContextMenu } from '../../reducers/contextMenu';
+import { hideMenu } from '../../reducers/contextMenu';
+import { useAppSelector } from '../../ts-store';
 import { getLastUsedParameters } from '../Tasks/fields';
 
 const BESPOKE_TASK_NAMES = new Set([
@@ -45,8 +46,11 @@ export default function ContextMenu() {
   );
   const { clickCentring } = useSelector((state) => state.sampleview);
   const groupFolder = useSelector((state) => state.queue.groupFolder);
-  const contextMenu = useSelector((state) => state.contextMenu);
-  const { sampleViewX, sampleViewY, shape, pageX, pageY, show } = contextMenu;
+  const contextMenu = useAppSelector((state) => state.contextMenu);
+  const { pageX, pageY, sampleViewX, sampleViewY, shape } =
+    contextMenu.type === 'Shape'
+      ? contextMenu
+      : { pageX: 0, pageY: 0, sampleViewX: 0, sampleViewY: 0 };
 
   const isDrawGridAvailable = useSelector(
     (state) =>
@@ -533,12 +537,12 @@ export default function ContextMenu() {
       className="position-absolute"
       style={{ top: `${pageY}px`, left: `${pageX}px` }}
       role="menu"
-      show={show}
+      show={contextMenu.type === 'Shape'}
       autoClose
       onToggle={(nextShow) => {
         if (!nextShow) {
           // Hide menu when clicking outside or selecting option
-          dispatch(showContextMenu(false));
+          dispatch(hideMenu());
         }
       }}
     >

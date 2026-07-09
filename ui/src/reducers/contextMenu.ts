@@ -1,70 +1,54 @@
-/* eslint-disable no-param-reassign */
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 interface Shape {
   type: string;
 }
 
-interface GenericContextMenu {
-  id: string;
-  show: boolean;
-  x: number;
-  y: number;
+interface NoMenu {
+  type: 'None';
 }
-interface ContextMenuState {
-  show: boolean;
+
+interface ShapeMenu {
+  type: 'Shape';
   shape: Shape;
   pageX: number;
   pageY: number;
   sampleViewX: number;
   sampleViewY: number;
-  genericContextMenu: GenericContextMenu;
 }
 
-const INITIAL_STATE: ContextMenuState = {
-  show: false,
-  shape: { type: 'NONE' },
-  pageX: 0,
-  pageY: 0,
-  sampleViewX: 0,
-  sampleViewY: 0,
-  genericContextMenu: {
-    id: '',
-    show: false,
-    x: 0,
-    y: 0,
-  },
-};
+interface GenericMenu {
+  type: 'Generic';
+  id: string;
+  x: number;
+  y: number;
+}
+
+type ContextMenuState = NoMenu | ShapeMenu | GenericMenu;
 
 const contextMenuSlice = createSlice({
   name: 'contextMenu',
-  initialState: INITIAL_STATE,
+  initialState: (): ContextMenuState => ({ type: 'None' }),
   reducers: {
-    showContextMenu(
-      state,
-      action: PayloadAction<{
-        show: boolean;
-        shape: Shape;
-        pageX: number;
-        pageY: number;
-        sampleViewX: number;
-        sampleViewY: number;
-      }>,
-    ) {
-      state.show = action.payload.show;
-      state.shape = action.payload.shape;
-      state.pageX = action.payload.pageX;
-      state.pageY = action.payload.pageY;
-      state.sampleViewX = action.payload.sampleViewX;
-      state.sampleViewY = action.payload.sampleViewY;
+    showShapeMenu(
+      _state,
+      action: PayloadAction<Omit<ShapeMenu, 'type'>>,
+    ): ContextMenuState {
+      return { type: 'Shape', ...action.payload };
     },
-    showGenericContextMenu(state, action: PayloadAction<GenericContextMenu>) {
-      state.genericContextMenu = action.payload;
+    showGenericMenu(
+      _state,
+      action: PayloadAction<Omit<GenericMenu, 'type'>>,
+    ): ContextMenuState {
+      return { type: 'Generic', ...action.payload };
+    },
+    hideMenu(): ContextMenuState {
+      return { type: 'None' };
     },
   },
 });
 
-export const { showContextMenu, showGenericContextMenu } =
+export const { showShapeMenu, showGenericMenu, hideMenu } =
   contextMenuSlice.actions;
 
 export default contextMenuSlice.reducer;

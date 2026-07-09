@@ -38,7 +38,7 @@ import {
   SAMPLE_LIST_VIEW_MODES,
 } from '../constants';
 import loader from '../img/loader.gif';
-import { showGenericContextMenu } from '../reducers/contextMenu';
+import { showGenericMenu } from '../reducers/contextMenu';
 import { getSampleName } from '../utils';
 import QueueSettings from './QueueSettings';
 import SampleGridTableContainer from './SampleGridTableContainer';
@@ -509,7 +509,7 @@ export default function SampleListViewContainer() {
 
   function displayContextMenu(e, contextMenuID) {
     if (queue.queueStatus !== QUEUE_RUNNING) {
-      dispatch(showGenericContextMenu(true, contextMenuID, e.pageX, e.pageY));
+      dispatch(showGenericMenu({ id: contextMenuID, x: e.pageX, y: e.pageY }));
     }
 
     e.stopPropagation();

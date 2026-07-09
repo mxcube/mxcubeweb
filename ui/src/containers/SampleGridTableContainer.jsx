@@ -27,7 +27,8 @@ import SampleGridTableItem from '../components/SampleGrid/SampleGridTableItem';
 import { TaskItem } from '../components/SampleGrid/TaskItem';
 import TooltipTrigger from '../components/TooltipTrigger';
 import { isCollected, QUEUE_RUNNING, QUEUE_STOPPED } from '../constants';
-import { showGenericContextMenu } from '../reducers/contextMenu';
+import { hideMenu, showGenericMenu } from '../reducers/contextMenu';
+import { useAppSelector } from '../ts-store';
 import SampleFlexView from './SampleFlexView';
 import styles from './SampleGridTableContainer.module.css';
 
@@ -131,9 +132,7 @@ export default function SampleGridTableContainer(props) {
   );
   const queue = useSelector((state) => state.queue);
   const sampleChanger = useSelector((state) => state.sampleChanger);
-  const contextMenu = useSelector(
-    (state) => state.contextMenu.genericContextMenu,
-  );
+  const contextMenu = useAppSelector((state) => state.contextMenu);
   const workflows = useSelector((state) => state.workflow.workflows);
   const defaultParameters = useSelector(
     (state) => state.taskForm.defaultParameters,
@@ -262,8 +261,8 @@ export default function SampleGridTableContainer(props) {
     selectionRubberBand.style.height = 0;
     setRubberBandVisible(true);
 
-    if (contextMenu.show) {
-      dispatch(showGenericContextMenu(false, null, 0, 0));
+    if (contextMenu.type === 'Generic') {
+      dispatch(hideMenu());
       setRubberBandVisible(false);
       selectionRubberBand.style.display = 'none';
     }
@@ -453,7 +452,7 @@ export default function SampleGridTableContainer(props) {
     e.preventDefault();
     setRubberBandVisible(false);
     if (queue.queueStatus !== QUEUE_RUNNING) {
-      dispatch(showGenericContextMenu(true, contextMenuID, e.pageX, e.pageY));
+      dispatch(showGenericMenu({ id: contextMenuID, x: e.pageX, y: e.pageY }));
     } // else TODO Show Alert
 
     selectItemUnderCursor(e, sampleID);
@@ -461,7 +460,7 @@ export default function SampleGridTableContainer(props) {
 
   function displayPuckCellContextMenu(e, contextMenuID, cellID, puckID) {
     if (queue.queueStatus !== QUEUE_RUNNING) {
-      dispatch(showGenericContextMenu(true, contextMenuID, e.pageX, e.pageY));
+      dispatch(showGenericMenu({ id: contextMenuID, x: e.pageX, y: e.pageY }));
     } // else TODO Show Alert
 
     const [selectedList] = getSampleListFilteredByCellPuck(
