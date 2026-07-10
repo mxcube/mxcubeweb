@@ -379,7 +379,7 @@ class CharacterisationParameters(DataCollectionParameters):
                 "FEW",
                 "MANY",
             ][value]
-        except ValueError:
+        except (IndexError, TypeError):
             return "SINGLE"
 
 
