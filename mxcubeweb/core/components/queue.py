@@ -1094,7 +1094,7 @@ class Queue(ComponentBase):
             "sample_node": sample_model,
         }
 
-    def queue_to_dict(self, node=None, include_lims_data=False):
+    def queue_to_dict(self, node=None):
         """Returns the dictionary representation of the queue.
 
         :param TaskNode node: list of Node objects to get representation for,
@@ -1120,7 +1120,7 @@ class Queue(ComponentBase):
         """
         return self._qs.queue_to_dict(node)
 
-    def queue_to_json(self, node=None, include_lims_data=False):
+    def queue_to_json(self, node=None):
         """Return the json representation of the queue.
 
         :param TaskNode node: list of Node objects to get representation for,
@@ -1186,7 +1186,7 @@ class Queue(ComponentBase):
                     queueStatus: one of [QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED]
                 }
         """
-        queue = self.queue_to_dict(include_lims_data=True)
+        queue = self.queue_to_dict()
         sample_order = queue.get("sample_order", [])
         try:
             current = self.app.lims.get_current_sample().get("sampleID", "")
