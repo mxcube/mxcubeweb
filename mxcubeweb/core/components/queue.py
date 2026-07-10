@@ -304,6 +304,11 @@ class DataCollectionParameters(TaskDataPathModel):
     helical: bool = False
     mesh: bool = False
 
+    # Only set for Interleaved data collections
+    taskIndexList: list[int] | None = None  # noqa: N815
+    wedges: list[dict] = []
+    swNumImages: int = 0  # noqa: N815
+
     @field_validator("mesh_range", mode="before")
     @classmethod
     def validate_mesh_range(cls, value):
@@ -437,8 +442,14 @@ def build_task_node_model(value: object):
     task_type = normalized.get("type")
 
     if task_type == "Interleaved":
+        # Interleaved tasks are shaped like a DataCollection (plus wedges/
+        # taskIndexList), so validate against that schema, but restore the
+        # original type afterwards so downstream routing (add_interleaved,
+        # the interleave swap logic) still recognizes it as "Interleaved".
         normalized["type"] = "DataCollection"
-        return DataCollectionNodeModel.model_validate(normalized)
+        model = DataCollectionNodeModel.model_validate(normalized)
+        model.type = "Interleaved"
+        return model
 
     if task_type == "Characterisation":
         return CharacterisationNodeModel.model_validate(normalized)
@@ -976,7 +987,7 @@ class QueueSerializer:
 
                 # Swap first "wedge task" and the actual interleaved collection
                 # so that the interleaved task is the first task
-                self.swap_task_entry(sid, interleaved_tindex, tindex_list[0])
+                self.app.queue.swap_task_entry(sid, interleaved_tindex, tindex_list[0])
 
                 # We remove the swapped wedge index from the list, (now pointing
                 # at the interleaved collection) and add its new position
@@ -988,7 +999,7 @@ class QueueSerializer:
                 # that we remove the items starting from the end (not altering
                 # previous indices)
                 for ti in reversed(tindex_list):
-                    self.delete_entry_at([[sid, int(ti)]])
+                    self.app.queue.delete_entry_at([[sid, int(ti)]])
 
         return self.queue_to_dict()
 
