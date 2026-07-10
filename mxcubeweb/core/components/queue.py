@@ -115,17 +115,21 @@ def validate_position(value: str | int) -> str | int:
         return value
 
     if not isinstance(value, str):
-        raise ValueError("shape must be -1 or a single letter followed by a digit")
+        raise ValueError(
+            "shape must be -1 or a single letter followed by one or more digits"
+        )
 
     value = value.strip()
 
     if value == "-1":
         return value
 
-    if re.fullmatch(r"2DP(?:[0-9]+)?", value) or re.fullmatch(r"[a-zA-Z][0-9]", value):
+    if re.fullmatch(r"2DP(?:[0-9]+)?", value) or re.fullmatch(
+        r"[a-zA-Z][0-9]+", value
+    ):
         return value
 
-    raise ValueError("shape must be -1 or a single letter followed by a digit")
+    raise ValueError("shape must be -1 or a single letter followed by one or more digits")
 
 
 def validate_path(path: str) -> str:
