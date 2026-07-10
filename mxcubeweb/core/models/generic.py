@@ -63,7 +63,7 @@ def validate_path(path: str) -> str:
     if any(part == ".." for part in parts):
         raise ValueError("Relative path traversal is not allowed")
 
-    invalid_char = re.search(r"[^a-zA-Z0-9_/-]", path)
+    invalid_char = re.search(r"[^a-zA-Z0-9_/:. -]", path)
     if invalid_char:
         raise ValueError(f"Path contains invalid character: {invalid_char.group(0)!r}")
 
