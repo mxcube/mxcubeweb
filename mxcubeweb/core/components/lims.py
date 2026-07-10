@@ -247,7 +247,7 @@ class Lims(ComponentBase):
 
     def synch_sample_list_with_queue(self, current_queue=None):
         if not current_queue:
-            current_queue = self.app.queue.queue_to_dict(include_lims_data=True)
+            current_queue = self.app.queue.queue_to_dict()
 
         current_queue.get("sample_order", [])
 

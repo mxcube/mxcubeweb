@@ -109,7 +109,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
                 200: On success
                 409: On error, could not retrieve queue
         """
-        resp = jsonify(app.queue.queue_to_dict(include_lims_data=True))
+        resp = jsonify(app.queue.queue_to_dict())
         resp.status_code = 200
         return resp
 
