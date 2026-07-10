@@ -300,6 +300,15 @@ class DataCollectionParameters(TaskDataPathModel):
     sub_wedge_size: int = 10
     disable_processing: bool = False
 
+    # Unit cell parameters, sent by the frontend as cellA/cellB/cellC/
+    # cellAlpha/cellBeta/cellGamma
+    cellA: float = 0  # noqa: N815
+    cellB: float = 0  # noqa: N815
+    cellC: float = 0  # noqa: N815
+    cellAlpha: float = 0  # noqa: N815
+    cellBeta: float = 0  # noqa: N815
+    cellGamma: float = 0  # noqa: N815
+
     # From mxcubeweb"
     helical: bool = False
     mesh: bool = False
