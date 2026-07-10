@@ -23,7 +23,6 @@ const INITIAL_STATE = {
   drawGrid: false,
   videoMessageOverlay: { show: false, msg: '' },
   savedPointId: '',
-  selectedShapes: [],
 };
 
 // eslint-disable-next-line complexity
@@ -37,9 +36,6 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
     }
     case 'STOP_CLICK_CENTRING': {
       return { ...state, clickCentring: false };
-    }
-    case 'CLEAR_SELECTED_SHAPES': {
-      return { ...state, selectedShapes: [] };
     }
     case 'DRAW_GRID': {
       let { selectedGrids } = state;
@@ -99,33 +95,12 @@ function sampleViewReducer(state = INITIAL_STATE, action = {}) {
         videoMessageOverlay: { show: action.show, msg: action.msg },
       };
     }
-    case 'UPDATE_SHAPES': {
-      let selectedShapes = [...state.selectedShapes];
-
-      action.shapes.forEach((shape) => {
-        // Shape was selected, or shape was de-selected, add or remove to selectedShapes
-        if (shape.selected && !state.selectedShapes.includes(shape.id)) {
-          selectedShapes.push(shape.id);
-        } else if (!shape.selected && state.selectedShapes.includes(shape.id)) {
-          selectedShapes = selectedShapes.filter((id) => id !== shape.id);
-        }
-      });
-
-      return { ...state, selectedShapes };
-    }
-    case 'DELETE_SHAPE': {
-      const selectedShapes = state.selectedShapes.filter(
-        (id) => id !== action.id,
-      );
-      return { ...state, selectedShapes };
-    }
     case 'SET_CURRENT_SAMPLE': {
       return {
         ...state,
         distancePoints: [],
         gridList: [],
         gridCount: 0,
-        selectedShapes: [],
       };
     }
     case 'CLEAR_QUEUE': {

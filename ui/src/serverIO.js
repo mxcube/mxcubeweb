@@ -44,10 +44,8 @@ import {
   setBeamInfo,
   setCurrentPhase,
   setPixelsPerMm,
-  setShapes,
   startClickCentringAction,
   updateMotorState,
-  updateShapesAction,
   videoMessageOverlay,
 } from './actions/sampleview';
 import { setEnergyScanResult } from './actions/taskResults';
@@ -59,6 +57,7 @@ import {
 } from './actions/workflow';
 import { processChatMessageRecord } from './components/ChatComponent/chatMessages';
 import { CLICK_CENTRING } from './constants';
+import { setShapes, updateShapes } from './reducers/shapes';
 import { store } from './store';
 
 const { dispatch } = store;
@@ -167,7 +166,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('grid_result_available', (data) => {
-      dispatch(updateShapesAction([data.shape]));
+      dispatch(updateShapes([data.shape]));
     });
 
     this.hwrSocket.on('energy_scan_result', (data) => {

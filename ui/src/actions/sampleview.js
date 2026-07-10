@@ -11,6 +11,11 @@ import {
   sendSetVideoSize,
   sendStartClickCentring,
 } from '../api/sampleview';
+import {
+  addShape as addShapeAction,
+  deleteShape as deleteShapeAction,
+  updateShapes as updateShapesAction,
+} from '../reducers/shapes';
 import { showErrorPanel } from './general';
 
 export function setBeamInfo(info) {
@@ -23,10 +28,6 @@ export function setCurrentPhase(phase) {
 
 export function setImageRatio(clientWidth) {
   return { type: 'SET_IMAGE_RATIO', clientWidth };
-}
-
-export function setOverlay(level) {
-  return { type: 'SET_OVERLAY', level };
 }
 
 function setAperture(size) {
@@ -57,22 +58,6 @@ export function stopClickCentring() {
   return { type: 'STOP_CLICK_CENTRING' };
 }
 
-function clearSelectedShapes() {
-  return { type: 'CLEAR_SELECTED_SHAPES' };
-}
-
-function addShapeAction(shape) {
-  return { type: 'ADD_SHAPE', shape };
-}
-
-export function updateShapesAction(shapes) {
-  return { type: 'UPDATE_SHAPES', shapes };
-}
-
-function deleteShapeAction(id) {
-  return { type: 'DELETE_SHAPE', id };
-}
-
 export function videoMessageOverlay(show, msg) {
   return { type: 'SHOW_VIDEO_MESSAGE_OVERLAY', show, msg };
 }
@@ -101,10 +86,6 @@ export function saveMotorPosition(name, value) {
 
 export function updateMotorState(name, value) {
   return { type: 'UPDATE_MOTOR_STATE', name, value };
-}
-
-export function setShapes(shapes) {
-  return { type: 'SET_SHAPES', shapes };
 }
 
 export function toggleDrawGrid() {
@@ -218,20 +199,18 @@ export function deleteShape(id) {
   };
 }
 
-function unselectShapes(shapes) {
+function unselectShapes() {
   return (dispatch, getState) => {
-    const state = getState();
+    const { shapes, login } = getState();
 
-    if (state.login.user.inControl) {
-      const _shapes = [];
-      if (shapes.shapes !== undefined) {
-        const keys = Object.keys(shapes.shapes);
-        keys.forEach((k) => {
-          const aux = shapes.shapes[k];
-          aux.selected = false;
-          _shapes.push(aux);
-        });
-        dispatch(updateShapes(_shapes));
+    if (login.user.inControl) {
+      const deselectedShapes = Object.values(shapes.shapes).map((shape) => ({
+        ...shape,
+        selected: false,
+      }));
+
+      if (deselectedShapes.length > 0) {
+        dispatch(updateShapes(deselectedShapes));
       }
     }
   };
@@ -256,9 +235,8 @@ export function toggleCentring() {
 
 function startClickCentring() {
   return async (dispatch, getState) => {
-    const { queue, shapes, general } = getState();
-    dispatch(clearSelectedShapes());
-    dispatch(unselectShapes(shapes));
+    const { queue, general } = getState();
+    dispatch(unselectShapes());
 
     if (!queue.currentSampleID) {
       dispatch(showErrorPanel(true, 'There is no sample mounted'));
@@ -283,7 +261,7 @@ function startClickCentring() {
 
 export function abortCentring() {
   return async (dispatch) => {
-    dispatch(clearSelectedShapes());
+    dispatch(unselectShapes());
 
     await sendAbortCentring();
     dispatch(stopClickCentring());
