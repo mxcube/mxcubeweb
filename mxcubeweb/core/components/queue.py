@@ -866,7 +866,7 @@ class QueueSerializer:
         parameters["path"] = pt.directory
         parameters["subdir"] = os.path.join(
             *parameters["path"].split(
-                self.app.HWR.beamline.session.raw_data_folder_name
+                HWR.beamline.session.raw_data_folder_name
             )[1:]
         ).lstrip("/")
         parameters["fileName"] = pt.get_image_file_name().replace(
