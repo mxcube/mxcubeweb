@@ -15,12 +15,12 @@ import {
   recordCentringClick,
   rotateToShape,
   setImageRatio,
-  setOverlay,
   toggleDrawGrid,
   updateShapes,
 } from '../../actions/sampleview.js';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import { showShapeMenu } from '../../reducers/contextMenu.js';
+import { selectSelectedShapeIds, setOverlay } from '../../reducers/shapes.js';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
 import { GridGroup } from './FabricObjects/gridGroup.js';
@@ -666,13 +666,12 @@ class SampleImage extends React.Component {
       const shape = s;
 
       if (shapeData && include) {
-        shape.active = !shapeData.selected;
-        shapeData.selected = !shapeData.selected;
-        updatedShapes.push(shapeData);
+        const selected = !shapeData.selected;
+        shape.active = selected;
+        updatedShapes.push({ ...shapeData, selected });
       } else if (shapeData && !shapeData.selected) {
         shape.active = true;
-        shapeData.selected = true;
-        updatedShapes.push(shapeData);
+        updatedShapes.push({ ...shapeData, selected: true });
       }
     });
 
@@ -690,8 +689,7 @@ class SampleImage extends React.Component {
 
       if (shapeData && shapeData.selected && !include) {
         shape.active = false;
-        shapeData.selected = false;
-        updatedShapes.push(shapeData);
+        updatedShapes.push({ ...shapeData, selected: false });
       }
     });
 
@@ -721,13 +719,9 @@ class SampleImage extends React.Component {
 
     // Single selection if shapes are NOT to be included i.e control key is
     // NOT pressed
-    Object.values(this.props.shapes).forEach((s) => {
-      if (s.selected) {
-        const shapeData = this.props.shapes[s.id];
-        if (shapeData) {
-          shapeData.selected = false;
-          updatedShapes.push(shapeData);
-        }
+    Object.values(this.props.shapes).forEach((shapeData) => {
+      if (shapeData.selected) {
+        updatedShapes.push({ ...shapeData, selected: false });
       }
     });
 
@@ -938,7 +932,7 @@ function mapStateToProps(state) {
     height: state.sampleview.height,
     sourceScale: state.sampleview.sourceScale,
     drawGrid: state.sampleview.drawGrid,
-    selectedShapes: state.sampleview.selectedShapes,
+    selectedShapes: selectSelectedShapeIds(state),
     pixelsPerMm: state.sampleview.pixelsPerMm,
     beamPosition: state.sampleview.beamPosition,
     beamShape: state.sampleview.beamShape,
