@@ -315,7 +315,7 @@ class DataCollectionParameters(TaskDataPathModel):
 
     # Only set for Interleaved data collections
     taskIndexList: list[int] | None = None  # noqa: N815
-    wedges: list[dict] = []
+    wedges: list["DataCollectionNodeModel"] = []
     swNumImages: int = 0  # noqa: N815
 
     @field_validator("mesh_range", mode="before")
