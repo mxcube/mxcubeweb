@@ -124,12 +124,12 @@ def validate_position(value: str | int) -> str | int:
     if value == "-1":
         return value
 
-    if re.fullmatch(r"2DP(?:[0-9]+)?", value) or re.fullmatch(
-        r"[a-zA-Z][0-9]+", value
-    ):
+    if re.fullmatch(r"2DP(?:[0-9]+)?", value) or re.fullmatch(r"[a-zA-Z][0-9]+", value):
         return value
 
-    raise ValueError("shape must be -1 or a single letter followed by one or more digits")
+    raise ValueError(
+        "shape must be -1 or a single letter followed by one or more digits"
+    )
 
 
 def validate_path(path: str) -> str:
@@ -865,9 +865,7 @@ class QueueSerializer:
         pt = node.acquisitions[0].path_template
         parameters["path"] = pt.directory
         parameters["subdir"] = os.path.join(
-            *parameters["path"].split(
-                HWR.beamline.session.raw_data_folder_name
-            )[1:]
+            *parameters["path"].split(HWR.beamline.session.raw_data_folder_name)[1:]
         ).lstrip("/")
         parameters["fileName"] = pt.get_image_file_name().replace(
             "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
