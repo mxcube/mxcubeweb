@@ -72,6 +72,7 @@ class SampleImage extends React.Component {
     this.drawGridPlugin.setGridResultFormat(props.meshResultFormat);
     this._keyPressed = null;
     this.removeShapes = this.removeShapes.bind(this);
+    this.resizeGrid = this.resizeGrid.bind(this);
   }
 
   componentDidMount() {
@@ -181,6 +182,11 @@ class SampleImage extends React.Component {
     }
 
     this.drawGridPlugin.onCellMouseOver(options, this.canvas);
+  }
+
+  resizeGrid(rows, cols) {
+    const gridData = this.selectedGrid();
+    this.drawGridPlugin.resize(this.canvas, gridData, rows, cols);
   }
 
   onMouseUp() {
@@ -731,6 +737,7 @@ class SampleImage extends React.Component {
     });
 
     if (updatedShapes.length > 0) {
+      this.drawGridPlugin.reset();
       this.props.updateShapes(updatedShapes);
     }
   }
@@ -893,6 +900,7 @@ class SampleImage extends React.Component {
               rotateTo={this.props.rotateToShape}
               selectGrid={this.selectShape}
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
+              resizeGrid={this.resizeGrid}
             />
             <div className={styles.videoCanvasWrapper}>
               <VideoPlayer />
