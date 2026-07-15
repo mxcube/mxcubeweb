@@ -41,6 +41,7 @@ export default function GridForm(props) {
     setGridOverlayOpacity,
     show,
     toggleVisibility,
+    resizeGrid,
   } = props;
 
   const draggableRef = useRef(null);
@@ -96,7 +97,7 @@ export default function GridForm(props) {
           </td>
           <td>{grid.numRows * grid.numCols}</td>
           <td>
-            {grid.numRows}x{grid.numCols}
+            {grid.numRows} x {grid.numCols}
           </td>
           <td>{grid.motorPositions.omega.toFixed(2)}&deg;</td>
           <td>
@@ -177,7 +178,39 @@ export default function GridForm(props) {
         )}
         <td />
         <td />
-        <td />
+        <td className="align-items-center d-flex gap-1">
+          <Form onSubmit={(event) => event.preventDefault()}>
+            <Form.Control
+              key={selectedGrids[0] ?? 'new-grid-rows'}
+              style={{ width: '50px' }}
+              type="text"
+              defaultValue={
+                selectedGrids.length > 0
+                  ? gridList[selectedGrids[0]].numRows
+                  : 10
+              }
+              onChange={(e) => {
+                resizeGrid(e.target.value, null);
+              }}
+            />
+          </Form>
+          x
+          <Form onSubmit={(event) => event.preventDefault()}>
+            <Form.Control
+              key={selectedGrids[0] ?? 'new-grid-cols'}
+              style={{ width: '50px' }}
+              type="text"
+              defaultValue={
+                selectedGrids.length > 0
+                  ? gridList[selectedGrids[0]].numCols
+                  : 10
+              }
+              onChange={(e) => {
+                resizeGrid(null, e.target.value);
+              }}
+            />
+          </Form>
+        </td>
         <td />
         <td />
         <td />
@@ -208,7 +241,7 @@ export default function GridForm(props) {
       cancel="form"
     >
       <Row className={styles.gridForm} ref={draggableRef}>
-        <Col xs={8}>
+        <Col xs={10}>
           <Table striped hover responsive className={styles.gridTable}>
             <thead>
               <tr>
@@ -217,7 +250,7 @@ export default function GridForm(props) {
                 {show_vspace && <th>V-Space (µm)</th>}
                 <th>Dim (µm)</th>
                 <th>#Cells</th>
-                <th>R x C</th>
+                <th className="flex-fill">R x C</th>
                 <th>&Omega;</th>
                 <th />
                 <th />
@@ -227,7 +260,7 @@ export default function GridForm(props) {
             <tbody>{getGridControls()}</tbody>
           </Table>
         </Col>
-        <Col xs={4} style={{ marginTop: '20px' }}>
+        <Col xs={2} style={{ marginTop: '20px' }}>
           <Form>
             <Form.Group className="mb-2" as={Row}>
               <Col sm="4">
