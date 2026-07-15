@@ -5,8 +5,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setAttribute } from '../../actions/beamline';
 import { stopBeamlineAction } from '../../actions/beamlineActions';
 import { showErrorPanel } from '../../actions/general';
-import { setMotorStep } from '../../actions/sampleview';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
+import { setMotorStep } from '../../reducers/uiproperties';
 import BaseMotorInput from './BaseMotorInput';
 import styles from './MotorInput.module.css';
 
@@ -96,7 +96,9 @@ function MotorInput(props) {
               defaultValue={step}
               disabled={disabled}
               onChange={(evt) =>
-                dispatch(setMotorStep(role, Number(evt.target.value)))
+                dispatch(
+                  setMotorStep({ role, value: Number(evt.target.value) }),
+                )
               }
             />
             <span className={styles.unit}>{suffix}</span>
