@@ -2,12 +2,9 @@ import { useState } from 'react';
 import { Button, Form, Modal, Tab, Tabs } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  hideProposalsForm,
-  selectProposal,
-  signOut,
-} from '../../actions/login';
+import { selectProposal, signOut } from '../../actions/login';
 import { getLimsSamples } from '../../actions/sampleGrid';
+import { hideProposalsForm } from '../../reducers/login';
 import ActionButton from './ActionButton';
 import SessionTable from './SessionTable';
 import styles from './SessionTable.module.css';

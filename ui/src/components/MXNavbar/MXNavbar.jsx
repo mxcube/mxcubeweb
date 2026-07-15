@@ -4,7 +4,8 @@ import { BsList } from 'react-icons/bs';
 import { useDispatch, useSelector } from 'react-redux';
 import { NavLink, useLocation } from 'react-router-dom';
 
-import { showProposalsForm, signOut } from '../../actions/login';
+import { signOut } from '../../actions/login';
+import { showProposalsForm } from '../../reducers/login';
 import styles from './MXNavbar.module.css';
 
 function MXNavbar() {

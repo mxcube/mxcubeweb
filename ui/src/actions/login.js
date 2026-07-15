@@ -10,27 +10,13 @@ import { fetchAvailableTasks, fetchQueueState } from '../api/queue';
 import { fetchChatMessages, fetchRemoteAccessState } from '../api/remoteAccess';
 import { fetchImageData, fetchShapes } from '../api/sampleview';
 import { fetchAvailableWorkflows } from '../api/workflow';
+import {
+  hideProposalsForm,
+  setLoginInfo,
+  signOut as signOutAction,
+} from '../reducers/login';
 import { fetchGetAllActions } from './beamlineActions';
 import { applicationFetched, showErrorPanel } from './general';
-
-function setLoginInfo(loginInfo) {
-  return {
-    type: 'SET_LOGIN_INFO',
-    loginInfo,
-  };
-}
-
-export function showProposalsForm() {
-  return {
-    type: 'SHOW_PROPOSALS_FORM',
-  };
-}
-
-export function hideProposalsForm() {
-  return {
-    type: 'HIDE_PROPOSALS_FORM',
-  };
-}
 
 function setInitialState(data) {
   return { type: 'SET_INITIAL_STATE', data };
@@ -71,7 +57,7 @@ export function logIn(proposal, password) {
 
 export function signOut() {
   return async (dispatch) => {
-    dispatch(setLoginInfo({ loggedIn: false })); // disconnect sockets before actually logging out (cf. `App.jsx`)
+    dispatch(signOutAction()); // disconnect sockets before actually logging out (cf. `App.jsx`)
     dispatch(applicationFetched(false));
 
     try {

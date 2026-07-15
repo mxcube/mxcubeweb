@@ -1,4 +1,5 @@
 /* eslint-disable promise/prefer-await-to-callbacks */
+import { setLoginInfo } from '../reducers/login';
 import { store } from '../store';
 import baseApi from './apiBase';
 import { fetchLoginInfo } from './loginBase';
@@ -9,7 +10,7 @@ const api = baseApi
     // User got logged out somehow: refetch login info to update local state and redirect to login page.
     // Don't use `getLoginInfo` action to avoid import cycle.
     const loginInfo = await fetchLoginInfo();
-    store.dispatch({ type: 'SET_LOGIN_INFO', loginInfo });
+    store.dispatch(setLoginInfo(loginInfo));
     throw error;
   });
 
