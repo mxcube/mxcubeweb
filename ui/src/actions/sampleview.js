@@ -34,10 +34,6 @@ function setAperture(size) {
   return { type: 'SET_APERTURE', size };
 }
 
-export function setMotorStep(role, value) {
-  return { type: 'SET_MOTOR_STEP', role, value };
-}
-
 export function setPixelsPerMm(pixelsPerMm) {
   return { type: 'SET_PIXELS_PER_MM', pixelsPerMm };
 }
