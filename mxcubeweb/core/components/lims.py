@@ -185,7 +185,7 @@ class Lims(ComponentBase):
                 "sampleID": s.get_address(),
                 "location": s.get_address(),
                 "sampleName": s.get_name() or "Sample-%s" % s.get_address(),
-                "crystalUUID": s.get_id() or s.get_address(),
+                "crystalUUID": sample_dm,
                 "proteinAcronym": (
                     s.proteinAcronym if hasattr(s, "proteinAcronym") else ""
                 ),
