@@ -18,7 +18,6 @@ import {
   setHarvesterState,
   updateHarvesterContents,
 } from './actions/harvester';
-import { addLogRecord } from './actions/logger';
 import { getLoginInfo, signOut } from './actions/login';
 import {
   addDiffractionPlanAction,
@@ -57,6 +56,7 @@ import {
 } from './actions/workflow';
 import { processChatMessageRecord } from './components/ChatComponent/chatMessages';
 import { CLICK_CENTRING } from './constants';
+import { addLogRecord } from './reducers/logger';
 import { setShapes, updateShapes } from './reducers/shapes';
 import { store } from './store';
 
