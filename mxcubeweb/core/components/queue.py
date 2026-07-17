@@ -607,23 +607,21 @@ class QueueSerializer:
             q = self.queue_to_dict()
             # Prefer devtools.debug for nice printing of pydantic models
             try:
-                from devtools import debug as _debug
+                from devtools import debug
 
                 header = msg or "Queue state after addition:"
                 print(f"[QueueSerializer] {header}")
-                _debug(q)
+                debug(q)
                 return
             except Exception:
-                import json as _json
+                import json
 
-                pretty = _json.dumps(q, indent=2, sort_keys=True, ensure_ascii=False)
+                pretty = json.dumps(q, indent=2, sort_keys=True, ensure_ascii=False)
                 header = msg or "Queue state after addition:"
                 print(f"[QueueSerializer] {header}\n{pretty}")
         except Exception as e:
             try:
-                import logging as _logging
-
-                _logging.getLogger("MX3.QUEUE").exception(
+                logging.getLogger("MX3.QUEUE").exception(
                     "Failed to pretty print queue: %s", e
                 )
             except Exception:
