@@ -231,7 +231,7 @@ class SampleChangerAdapter(AdapterBase):
                 # from one sample to another and the current sample is in the queue
 
                 node_id = current_queue[sid]["queueID"]
-                self.app.queue.set_enabled_entry(node_id, False)  # noqa: FBT003
+                self.app.queue.enable_entry(node_id, False)  # noqa: FBT003
                 self.app.queue.queue_toggle_sample(self.app.queue.get_entry(node_id)[1])
         finally:
             self._sc_load_ready(sample.location)
