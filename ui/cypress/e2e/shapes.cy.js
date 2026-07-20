@@ -24,6 +24,34 @@ function menuItem(text) {
   return cy.contains('.dropdown-item', text);
 }
 
+// The canvas is repainted from Redux state asynchronously after a shape is
+// added/removed, slightly after the triggering network request resolves.
+// Right-clicking too early can therefore miss the (still unpainted) shape
+// and fall back to the wrong context menu. Retry the right click until the
+// expected menu item shows up, closing any stale context menu between attempts.
+function rightClickAwaitMenuItem(x, y, text, attemptsLeft = 15) {
+  rightClickCanvas(x, y);
+
+  cy.get('body').then(($body) => {
+    const found = $body
+      .find('.dropdown-item')
+      // eslint-disable-next-line unicorn/no-useless-iterator-to-array
+      .toArray()
+      .some((el) => el.textContent.includes(text));
+
+    if (found) {
+      return;
+    }
+
+    if (attemptsLeft <= 0) {
+      throw new Error(`"${text}" menu item never appeared`);
+    }
+    cy.get('body').type('{esc}');
+    cy.wait(100);
+    rightClickAwaitMenuItem(x, y, text, attemptsLeft - 1);
+  });
+}
+
 function create2DPoint(x, y) {
   rightClickCanvas(x, y);
   clickMenuItem('Create 2D Point');
@@ -52,14 +80,12 @@ describe('Shapes', () => {
     create2DPoint(x, y);
 
     // Right-clicking the point itself now shows its own menu
-    rightClickCanvas(x, y);
-    menuItem('Delete Point').should('exist');
+    rightClickAwaitMenuItem(x, y, 'Delete Point');
     clickMenuItem('Delete Point');
     cy.wait('@deleteShape');
 
     // Point is gone: right-clicking the same spot falls back to the empty-canvas menu
-    rightClickCanvas(x, y);
-    menuItem('Create 2D Point').should('exist');
+    rightClickAwaitMenuItem(x, y, 'Create 2D Point');
     menuItem('Delete Point').should('not.exist');
   });
 
@@ -81,8 +107,7 @@ describe('Shapes', () => {
     cy.wait('@updateShapes');
 
     // Right-clicking within the selection offers to connect the two points
-    rightClickCanvas(MIDPOINT.x, MIDPOINT.y);
-    menuItem('Add Line').should('exist');
+    rightClickAwaitMenuItem(MIDPOINT.x, MIDPOINT.y, 'Add Line');
     clickMenuItem('Add Line');
     cy.wait('@updateShapes');
 
@@ -92,8 +117,7 @@ describe('Shapes', () => {
     cy.get('.upper-canvas').click(20, 20);
 
     // Line now exists: right-clicking its midpoint shows the line's own menu
-    rightClickCanvas(MIDPOINT.x, MIDPOINT.y);
-    menuItem('Delete Line').should('exist');
+    rightClickAwaitMenuItem(MIDPOINT.x, MIDPOINT.y, 'Delete Line');
     clickMenuItem('Delete Line');
     cy.wait('@deleteShape');
   });
