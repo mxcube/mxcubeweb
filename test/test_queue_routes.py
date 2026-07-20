@@ -8,7 +8,6 @@ from .input_parameters import (
     default_mesh_params,
     default_xrf_parameters,
     test_edit_task,
-    test_task,
 )
 
 
@@ -188,43 +187,6 @@ def test_queue_enable_item(client):
     resp = client.get("/mxcube/api/v0.1/queue/")
     assert resp.status_code == 200
     assert json.loads(resp.data).get("1:05")["checked"] == False
-
-
-def test_queue_swap_task_item(client):
-    """Test if we can swap tasks in a sample in queue.
-
-    Two tasks are added with a different param and then swaped and tested.
-    """
-    resp = client.get("/mxcube/api/v0.1/queue/")
-    assert resp.status_code == 200
-    assert len(json.loads(resp.data).get("1:05")["tasks"]) == 1
-
-    queue_id = json.loads(resp.data).get("1:05")["queueID"]
-    task_to_add = copy.deepcopy(test_task)
-    task_to_add["queueID"] = queue_id
-    task_to_add["tasks"][0]["sampleQueueID"] = queue_id
-    task_to_add["tasks"][0]["parameters"]["kappa"] = 90
-
-    resp = client.post(
-        "/mxcube/api/v0.1/queue/",
-        data=json.dumps([task_to_add]),
-        content_type="application/json",
-    )
-    assert resp.status_code == 200
-
-    resp = client.get("/mxcube/api/v0.1/queue/")
-    assert resp.status_code == 200
-    assert len(json.loads(resp.data).get("1:05")["tasks"]) == 2
-
-    resp = client.post(
-        ("/mxcube/api/v0.1/queue/{}/{}/{}/swap").format("1:05", 0, 1),
-        content_type="application/json",
-    )
-    assert resp.status_code == 200
-
-    resp = client.get("/mxcube/api/v0.1/queue/")
-    assert resp.status_code == 200
-    assert json.loads(resp.data).get("1:05")["tasks"][0]["parameters"]["kappa"] == 90
 
 
 def assert_and_remove_keys_with_random_value(parameters):

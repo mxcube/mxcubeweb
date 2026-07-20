@@ -4,7 +4,6 @@ import json
 import logging
 import os
 import re
-from unittest.mock import Mock
 
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import queue_entry as qe
@@ -1060,7 +1059,7 @@ class QueueBuilder:
         """
         # Sample is already in the queue, just enable it (incase it was disabled)
         if item.get("queueID", -1) != -1:
-            self.app.queue.set_enabled_entry(item["queueID"], True)
+            self.app.queue.enable_entry(item["queueID"], True)
             return item["queueID"]
 
         sample_model = qmo.Sample()
@@ -1461,7 +1460,7 @@ class QueueBuilder:
 
         return dc_model
 
-    def _create_queue_entry(self, task, task_name):  # noqa: D417
+    def _create_queue_entry(self, task: dict, task_name):  # noqa: D417
         """Create the data model for a queue entry.
 
         Its corresponding QueueEntry is created and enqueued automatically
@@ -1469,7 +1468,7 @@ class QueueBuilder:
         Queue.queue_model_child_added.
 
         Args:
-            task (dict): Collection parameters
+            task: Collection parameters
         Return:
             The data model.
         """
@@ -1831,39 +1830,7 @@ class Queue(ComponentBase):
         :returns: dictionary on the form:
                 {'sample': sample, 'idx': index, 'queue_id': node_id}
         """
-        sample, index, sample_model = None, None, None
-
-        # RootNode nothing to return
-        if isinstance(node, qmo.RootNode):
-            sample = None
-        # For samples simply return the sampleID
-        elif isinstance(node, qmo.Sample):
-            sample = node.loc_str
-        # TaskGroup just return the sampleID
-        elif node.get_parent():
-            # NB under GPhL workflow, nodes do not have predictable distance
-            # to their sample node
-            sample_model = node.get_sample_node()
-
-            sample = sample_model.loc_str
-            task_groups = sample_model.get_children()
-            tlist = []
-
-            for group in task_groups:
-                if group.interleave_num_images:
-                    tlist.append(group)
-                else:
-                    tlist.extend(group.get_children())
-
-            with contextlib.suppress(Exception):
-                index = tlist.index(node)
-
-        return {
-            "sample": sample,
-            "idx": index,
-            "queue_id": node._node_id,
-            "sample_node": sample_model,
-        }
+        return HWR.beamline.queue_model.node_index(node)
 
     def queue_to_dict(self, node: qmo.TaskNode | None = None):
         """Returns the dictionary representation of the queue.
@@ -1926,21 +1893,15 @@ class Queue(ComponentBase):
                 where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
                 {'sample': sample, 'idx': index, 'queue_id': node_id}
         """
-        if node_id is None:
-            return True, UNCOLLECTED
-        node, entry = self.get_entry(node_id)
-
-        enabled = node.is_enabled()
-        curr_entry = HWR.beamline.queue_manager.get_current_entry()
-        running = HWR.beamline.queue_manager.is_executing() and (
-            curr_entry == entry or curr_entry == entry._parent_container
+        enabled, is_executed, running, status = (
+            HWR.beamline.queue_manager.get_entry_status(node_id)
         )
 
-        if entry.status == QUEUE_ENTRY_STATUS.FAILED:
+        if status == QUEUE_ENTRY_STATUS.FAILED:
             state = FAILED
-        elif node.is_executed() or entry.status == QUEUE_ENTRY_STATUS.SUCCESS:
+        elif is_executed or status == QUEUE_ENTRY_STATUS.SUCCESS:
             state = COLLECTED
-        elif running or entry.status == QUEUE_ENTRY_STATUS.RUNNING:
+        elif running or status == QUEUE_ENTRY_STATUS.RUNNING:
             state = RUNNING
         else:
             state = UNCOLLECTED
@@ -2016,46 +1977,10 @@ class Queue(ComponentBase):
         :param _id: Node id of node to retrieve
         :returns: The tuple model, entry or the root node and QueueManger if _id is None
         """
-        if _id is None:
-            dummy_variable = "Cannot retrieve entry without a node id"
-            raise ValueError(dummy_variable)
-        model = HWR.beamline.queue_model.get_node(int(_id))
-        entry = HWR.beamline.queue_manager.get_entry_with_model(model)
-        return model, entry
-
-    def set_enabled_entry(self, qid, enabled):
-        model, entry = self.get_entry(qid)
-        model.set_enabled(enabled)
-        entry.set_enabled(enabled)
-
-    def delete_entry(self, entry):
-        """Helper function that deletes an entry and its model from the queue."""
-        parent_entry = entry.get_container()
-        parent_entry.dequeue(entry)
-        model = entry.get_data_model()
-        HWR.beamline.queue_model.del_child(model.get_parent(), model)
-        logging.getLogger("MX3.HWR").info(
-            "[DELETE QUEUE] FROM:\n%s " % model.get_parent().get_name()
-        )
+        return HWR.beamline.queue_manager.get_entry(_id)
 
     def delete_entry_at(self, item_pos_list):
-        current_queue = self.queue_to_dict()
-
-        for sid, tindex in item_pos_list:
-            if tindex in ["undefined", None]:
-                node_id = current_queue[sid]["queueID"]
-                _, entry = self.get_entry(node_id)
-            else:
-                node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
-                _, entry = self.get_entry(node_id)
-
-                # Get the TaskGroup of the item, there is currently only one
-                # task per TaskGroup so we have to remove the entire TaskGroup
-                # with its task.
-                if not isinstance(entry, qe.TaskGroupQueueEntry):
-                    entry = entry.get_container()
-
-            self.delete_entry(entry)
+        return HWR.beamline.queue_manager.delete_entry_at(item_pos_list)
 
     def enable_entry(self, id_or_qentry: int | qe.BaseQueueEntry, flag: bool):
         """Helper function that sets the enabled flag for the entry and its model.
@@ -2068,13 +1993,7 @@ class Queue(ComponentBase):
         :param id_or_qentry: Node id of model or QueueEntry object
         :param flag: True for enabled False for disabled
         """
-        if isinstance(id_or_qentry, qe.BaseQueueEntry):
-            id_or_qentry.set_enabled(flag)
-            id_or_qentry.get_data_model().set_enabled(flag)
-        else:
-            model, entry = self.get_entry(id_or_qentry)
-            entry.set_enabled(flag)
-            model.set_enabled(flag)
+        return HWR.beamline.queue_manager.enable_entry(id_or_qentry, flag)
 
     def swap_task_entry(self, sid: str, ti1: int, ti2: int):
         """Swap order of two queue entries in the queue, with the same sample as parent.
@@ -2086,22 +2005,7 @@ class Queue(ComponentBase):
         :param ti1: Position of task1 (old position)
         :param ti2: Position of task2 (new position)
         """
-        current_queue = self.queue_to_dict()
-
-        node_id = current_queue[sid]["queueID"]
-        smodel, sentry = self.get_entry(node_id)
-
-        # Swap the order in the queue model
-        ti2_temp_model = smodel.get_children()[ti2]
-        smodel._children[ti2] = smodel._children[ti1]
-        smodel._children[ti1] = ti2_temp_model
-
-        # Swap queue entry order
-        ti2_temp_entry = sentry._queue_entry_list[ti2]
-        sentry._queue_entry_list[ti2] = sentry._queue_entry_list[ti1]
-        sentry._queue_entry_list[ti1] = ti2_temp_entry
-
-        logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
+        HWR.beamline.queue_manager.swap_task_entry(sid, ti1, ti2)
 
     def queue_add_item(self, item_list):
         """Add queue items to the queue.
@@ -2305,29 +2209,7 @@ class Queue(ComponentBase):
 
         :returns: MxCuBE QueueModel Object
         """
-        from mxcubecore import HardwareRepository as HWR
-
-        # queue = pickle.loads(self.app.mxcubecore.empty_queue)
-        # queue.diffraction_plan = {}
-        HWR.beamline.queue_model.diffraction_plan = {}
-        HWR.beamline.queue_model.clear_model("ispyb")
-        HWR.beamline.queue_model.clear_model("free-pin")
-        HWR.beamline.queue_model.clear_model("plate")
-        HWR.beamline.queue_model.select_model("ispyb")
-
-    def _get_parent_entry_for_child_added(self, parent):
-        if parent is HWR.beamline.queue_model.get_model_root():
-            return HWR.beamline.queue_manager
-
-        node_id = parent._node_id
-        if node_id is None:
-            raise ValueError(
-                "Trying to add a child ({child}) to a parent ",
-                "({parent}) that is not in the queue",
-            )
-
-        _, parent_entry = self.get_entry(parent._node_id)
-        return parent_entry
+        return HWR.beamline.queue_model.clear_queue()
 
     def queue_model_child_added(self, parent, child):
         """Listen to the addition of models to the queue model ('child_added').
@@ -2336,25 +2218,7 @@ class Queue(ComponentBase):
         QueueBuilder only ever calls add_child() to place a model in the
         tree, it never constructs or enqueues an entry itself.
         """
-        entry_cls = qe.MODEL_QUEUE_ENTRY_MAPPINGS.get(type(child))
-
-        if entry_cls is None:
-            logging.getLogger("MX3.HWR").warning(
-                "No QueueEntry class for model type %s" % type(child)
-            )
-            return
-
-        parent_entry = self._get_parent_entry_for_child_added(parent)
-        entry = entry_cls(Mock(), child)
-        self.enable_entry(entry, True)
-
-        # DataCollection children (e.g. diffraction-plan collections) can be
-        # added to a TaskGroup that was just created for them and is not yet
-        # enabled - enable the parent entry too in that case.
-        if isinstance(child, qmo.DataCollection):
-            self.enable_entry(parent_entry, True)
-
-        parent_entry.enqueue(entry)
+        return HWR.beamline.queue_model.queue_model_child_added(parent, child)
 
     def notify_task_added(self, parent, child):
         """Notify the client when a DataCollection is added to the queue
@@ -2406,19 +2270,7 @@ class Queue(ComponentBase):
         :param autoadd: True autoadd, False wait for user
         """
         self.app.AUTO_ADD_DIFFPLAN = autoadd
-        current_queue = self.queue_to_dict()
-
-        if "sample_order" in current_queue:
-            current_queue.pop("sample_order")
-
-        sampleIDs = list(current_queue.keys())
-        for sample in sampleIDs:
-            # this would be a sample
-            tasks = current_queue[sample]["tasks"]
-            for t in tasks:
-                if t["type"] == "Characterisation":
-                    _, entry = self.get_entry(t["queueID"])
-                    entry.auto_add_diff_plan = autoadd
+        HWR.beamline.queue_manager.set_auto_add_diff_plan(autoadd)
 
     def execute_entry_with_id(self, sid: str, tindex: int | None = None):
         """Execute the entry at position (sampleID, task index) in queue.
@@ -2827,11 +2679,7 @@ class Queue(ComponentBase):
             self.app.server.emit("queue", msg, namespace="/hwr")
 
     def enable_sample_entries(self, sample_id_list, flag):
-        current_queue = self.queue_to_dict()
-
-        for sample_id in sample_id_list:
-            sample_data = current_queue[sample_id]
-            self.enable_entry(sample_data["queueID"], flag)
+        return HWR.beamline.queue_manager.enable_sample_entries(sample_id_list, flag)
 
     def set_auto_mount_sample(self, automount: bool):
         """Set auto mount next flag.
@@ -2979,37 +2827,13 @@ class Queue(ComponentBase):
         return self._qb.queue_update_item(sqid, tqid, data)
 
     def queue_enable_item(self, qid_list, enabled):
-        for qid in qid_list:
-            self.set_enabled_entry(qid, enabled)
-
-    def update_sample(self, sid, params):
-        sample_node = HWR.beamline.queue_model.get_node(sid)
-
-        if sample_node:
-            sample_entry = HWR.beamline.queue_manager.get_entry_with_model(sample_node)
-            # TODO: update here the model with the new 'params'
-            # missing lines...
-            sample_entry.set_data_model(sample_node)
-            logging.getLogger("MX3.HWR").info("[QUEUE] sample updated")
-        else:
-            msg = "[QUEUE] Sample with id %s not in queue, can't update" % sid
-            logging.getLogger("MX3.HWR").error(msg)
-            raise ValueError(msg)
+        return HWR.beamline.queue_manager.enable_entry(qid_list, enabled)
 
     def add_centring(self, _id, params):
         return self._qb.add_centring(_id, params)
 
     def update_dependent_field(self, task_name, data):
-        try:
-            queue_entry = qe.get_queue_entry_from_task_name(task_name)
-            data_model = getattr(queue_entry, "DATA_MODEL", None)
-            new_data = json.dumps(data_model.update_dependent_fields(data))
-        except Exception:
-            logging.getLogger("MX3.HWR").exception(
-                f"Could not update depedant fields for {task_name}"
-            )
-
-        return new_data
+        return HWR.beamline.queue_model.update_dependent_field(task_name, data)
 
     def get_default_task_parameters(self, task_name):
         acq_parameters = HWR.beamline.get_default_acquisition_parameters(
@@ -3177,20 +3001,9 @@ class Queue(ComponentBase):
         """Set the number of snapshots to take during data collection.
 
         Args:
-            num_snapshots (int): number of snapshots to be taken
+            num_snapshots: number of snapshots to be taken
         """
         HWR.beamline.collect.number_of_snapshots = num_snapshots
 
     def last_queue_node(self):
-        node = HWR.beamline.queue_manager._current_queue_entries[-1].get_data_model()
-
-        # Reference collections are orphans, the node we want is the
-        # characterisation not the reference collection itself
-        if "ref" in node.get_name():
-            parent = node.get_parent()
-            node = parent._children[0]
-
-        res = self.node_index(node)
-        res["node"] = node
-
-        return res
+        return HWR.beamline.queue_manager.last_queue_node()

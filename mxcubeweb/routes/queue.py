@@ -1,5 +1,3 @@
-import json
-
 from flask import (
     Blueprint,
     Response,
@@ -131,11 +129,11 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/<sid>/<tindex>/execute", methods=["PUT"])
     @server.require_control
     @server.restrict
-    def execute_entry_with_id(sid, tindex):
+    def execute_entry_with_id(sid: str, tindex: int):
         """Execute the entry at position (sampleID, task index) in queue.
 
-        :param str sid: sampleID
-        :param int tindex: task index of task within sample with id sampleID
+        :param sid: sampleID
+        :param tindex: task index of task within sample with id sampleID
 
         :statuscode: 200, no error
                     409, queue entry could not be executed
@@ -220,43 +218,6 @@ def init_route(app, server, url_prefix):  # noqa: C901
         )
 
         return Response(status=200)
-
-    @bp.route("/<sid>/<ti1>/<ti2>/swap", methods=["POST"])
-    @server.require_control
-    @server.restrict
-    def queue_swap_task_item(sid, ti1, ti2):
-        app.queue.swap_task_entry(sid, int(ti1), int(ti2))
-        server.emit(
-            "queue", {"Signal": "update", "message": "observers"}, namespace="/hwr"
-        )
-
-        return Response(status=200)
-
-    @bp.route("/<sample_id>", methods=["PUT"])
-    @server.require_control
-    @server.restrict
-    def update_sample(sample_id):
-        """Update a sample info.
-
-        :parameter node_id: entry identifier, integer. It can be a sample
-            or a task within a sample
-        :request Content-Type: application/json, object containing the
-            parameter(s) to be updated, any parameter not sent will
-            not be modified.
-        :statuscode: 200: no error
-        :statuscode: 409: sample info could not be updated, possibly because
-            the given sample does not exist in the queue
-        """
-        params = json.loads(request.data)
-        node_id = int(sample_id)
-
-        try:
-            app.queue.update_sample(node_id, params)
-            resp = jsonify({"QueueId": node_id})
-            resp.status_code = 200
-            return resp
-        except Exception:
-            return Response(status=409)
 
     @bp.route("/available_tasks", methods=["GET"])
     @server.restrict
