@@ -8,7 +8,6 @@ from unittest.mock import Mock
 
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore import queue_entry as qe
-from mxcubecore.HardwareObjects.Gphl import GphlQueueEntry
 from mxcubecore.model import queue_model_enumerables as qme
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore.model.queue_model_enumerables import CENTRING_METHOD
@@ -1009,11 +1008,12 @@ class QueueSerializer:
         return self.queue_to_dict()
 
 
-class Queue(ComponentBase):
-    def __init__(self, app, config):
-        super().__init__(app, config)
-        self.init_queue_settings()
-        self._qs = QueueSerializer(app)
+class QueueBuilder:
+    """Creates queue models the creation of queue entries are handled
+    in queue_model_child_added event handler"""
+
+    def __init__(self, app):
+        self.app = app
 
     def build_prefix_path_dict(self, path_list):
         prefix_path_dict = {}
@@ -1052,305 +1052,6 @@ class Queue(ComponentBase):
 
         return pt.run_number
 
-    def node_index(self, node):
-        """Get the position (index) in the queue, sample and node id of node <node>.
-
-        :returns: dictionary on the form:
-                {'sample': sample, 'idx': index, 'queue_id': node_id}
-        """
-        sample, index, sample_model = None, None, None
-
-        # RootNode nothing to return
-        if isinstance(node, qmo.RootNode):
-            sample = None
-        # For samples simply return the sampleID
-        elif isinstance(node, qmo.Sample):
-            sample = node.loc_str
-        # TaskGroup just return the sampleID
-        elif node.get_parent():
-            # NB under GPhL workflow, nodes do not have predictable distance
-            # to their sample node
-            sample_model = node.get_sample_node()
-
-            sample = sample_model.loc_str
-            task_groups = sample_model.get_children()
-            tlist = []
-
-            for group in task_groups:
-                if group.interleave_num_images:
-                    tlist.append(group)
-                else:
-                    tlist.extend(group.get_children())
-
-            with contextlib.suppress(Exception):
-                index = tlist.index(node)
-
-        return {
-            "sample": sample,
-            "idx": index,
-            "queue_id": node._node_id,
-            "sample_node": sample_model,
-        }
-
-    def queue_to_dict(self, node=None):
-        """Returns the dictionary representation of the queue.
-
-        :param TaskNode node: list of Node objects to get representation for,
-                            queue root used if nothing is passed.
-
-        :returns: dictionary on the form:
-                { sampleID_1:{ sampleID_1: sid_1,
-                                queueID: qid_1,
-                                location: location_n
-                                tasks: [task1, ... taskn]},
-                                .
-                                .
-                                .
-                    sampleID_N:{ sampleID_N: sid_N,
-                                queueID: qid_N,
-                                location: location_n,
-                                tasks: [task1, ... taskn]}
-
-                where the contents of task is a dictionary, the content depends on
-                the TaskNode type (DataCollection, Chracterisation, Sample). The
-                task dict can be directly used with the set_from_dict methods of
-                the corresponding node.
-        """
-        return self._qs.queue_to_dict(node)
-
-    def queue_to_json(self, node=None):
-        """Return the json representation of the queue.
-
-        :param TaskNode node: list of Node objects to get representation for,
-                            queue root used if nothing is passed.
-
-        :returns: json str on the form:
-                [ { sampleID_1: sid_1,
-                    queueID: qid_1,
-                    location: location_n
-                    tasks: [task1, ... taskn]},
-                    .
-                    .
-                    .
-                    { sampleID_N: sid_N,
-                    queueID: qid_N,
-                    location: location_n,
-                    tasks: [task1, ... taskn]} ]
-
-                where the contents of task is a dictionary, the content depends on
-                the TaskNode type (Datacollection, Chracterisation, Sample). The
-                task dict can be directly used with the set_from_dict methods of
-                the corresponding node.
-        """
-        return self._qs.queue_to_json(node)
-
-    def get_node_state(self, node_id):
-        """Get the state of the given node.
-
-        :param TaskNode node: Node to get state for
-
-        :returns: tuple containing (enabled, state)
-                where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
-                {'sample': sample, 'idx': index, 'queue_id': node_id}
-        """
-        if node_id is None:
-            return True, UNCOLLECTED
-        node, entry = self.get_entry(node_id)
-
-        enabled = node.is_enabled()
-        curr_entry = HWR.beamline.queue_manager.get_current_entry()
-        running = HWR.beamline.queue_manager.is_executing() and (
-            curr_entry == entry or curr_entry == entry._parent_container
-        )
-
-        if entry.status == QUEUE_ENTRY_STATUS.FAILED:
-            state = FAILED
-        elif node.is_executed() or entry.status == QUEUE_ENTRY_STATUS.SUCCESS:
-            state = COLLECTED
-        elif running or entry.status == QUEUE_ENTRY_STATUS.RUNNING:
-            state = RUNNING
-        else:
-            state = UNCOLLECTED
-
-        return (enabled, state)
-
-    def get_queue_state(self):
-        """Return the dictionary representation of the current queue and its state.
-
-        :returns: dictionary on the form:
-                {
-                    loaded: ID of currently loaded sample,
-                    queue: same format as queue_to_dict() but without sample_order,
-                    queueStatus: one of [QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED]
-                }
-        """
-        queue = self.queue_to_dict()
-        sample_order = queue.get("sample_order", [])
-        try:
-            current = self.app.lims.get_current_sample().get("sampleID", "")
-        except Exception as ex:
-            logging.getLogger("MX3.HWR").warning(
-                "Error retrieving current sample, {0}".format(ex.message)
-            )
-            current = ""
-
-        settings = {}
-
-        for setting_name in [
-            "REMEMBER_PARAMETERS_BETWEEN_SAMPLES",
-            "AUTO_ADD_DIFFPLAN",
-        ]:
-            settings[str_to_camel(setting_name)] = getattr(self.app, setting_name)
-
-        res = {
-            "current": current,
-            "autoMountNext": self.get_auto_mount_sample(),
-            "groupFolder": HWR.beamline.session.get_group_name(),
-            "queue": sample_order,
-            "sampleList": self.app.lims.sample_list_get(current_queue=queue),
-            "queueStatus": self.queue_exec_state(),
-            "numSnapshots": HWR.beamline.collect.get_property(
-                "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
-            ),
-            "centringMethod": HWR.beamline.queue_manager.centring_method,
-        }
-
-        self.app.queue.set_num_snapshots(
-            res.get("numSnapshots", self.app.DEFAULT_NUM_SNAPSHOTS)
-        )
-
-        res.update(settings)
-        return res
-
-    def queue_exec_state(self):
-        """Queue execution state.
-
-        :returns: The queue execution state, one of QUEUE_STOPPED, QUEUE_PAUSED
-        or QUEUE_RUNNING
-        """
-        state = QUEUE_STOPPED
-
-        if HWR.beamline.queue_manager.is_paused():
-            state = QUEUE_PAUSED
-        elif HWR.beamline.queue_manager.is_executing():
-            state = QUEUE_RUNNING
-
-        return state
-
-    def get_entry(self, _id):
-        """Retrieve the model and the queue entry for the model node with id <id>.
-
-        :param int _id: Node id of node to retrieve
-        :returns: The tuple model, entry or the root node and QueueManger if _id is None
-        :rtype: Tuple
-        """
-        if _id is None:
-            dummy_variable = "Cannot retrieve entry without a node id"
-            raise ValueError(dummy_variable)
-        model = HWR.beamline.queue_model.get_node(int(_id))
-        entry = HWR.beamline.queue_manager.get_entry_with_model(model)
-        return model, entry
-
-    def set_enabled_entry(self, qid, enabled):
-        model, entry = self.get_entry(qid)
-        model.set_enabled(enabled)
-        entry.set_enabled(enabled)
-
-    def delete_entry(self, entry):
-        """Helper function that deletes an entry and its model from the queue."""
-        parent_entry = entry.get_container()
-        parent_entry.dequeue(entry)
-        model = entry.get_data_model()
-        HWR.beamline.queue_model.del_child(model.get_parent(), model)
-        logging.getLogger("MX3.HWR").info(
-            "[DELETE QUEUE] FROM:\n%s " % model.get_parent().get_name()
-        )
-
-    def delete_entry_at(self, item_pos_list):
-        current_queue = self.queue_to_dict()
-
-        for sid, tindex in item_pos_list:
-            if tindex in ["undefined", None]:
-                node_id = current_queue[sid]["queueID"]
-                _, entry = self.get_entry(node_id)
-            else:
-                node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
-                _, entry = self.get_entry(node_id)
-
-                # Get the TaskGroup of the item, there is currently only one
-                # task per TaskGroup so we have to remove the entire TaskGroup
-                # with its task.
-                if not isinstance(entry, qe.TaskGroupQueueEntry):
-                    entry = entry.get_container()
-
-            self.delete_entry(entry)
-
-    def enable_entry(self, id_or_qentry, flag):
-        """Helper function that sets the enabled flag for the entry and its model.
-
-        Helper function that sets the enabled flag to <flag> for the entry and associated model.
-        Takes either the model node id or the QueueEntry object.
-
-        Sets enabled flag on both the entry and model.
-
-        :param object id_or_qentry: Node id of model or QueueEntry object
-        :param bool flag: True for enabled False for disabled
-        """
-        if isinstance(id_or_qentry, qe.BaseQueueEntry):
-            id_or_qentry.set_enabled(flag)
-            id_or_qentry.get_data_model().set_enabled(flag)
-        else:
-            model, entry = self.get_entry(id_or_qentry)
-            entry.set_enabled(flag)
-            model.set_enabled(flag)
-
-    def swap_task_entry(self, sid, ti1, ti2):
-        """Swap order of two queue entries in the queue, with the same sample as parent.
-
-        Swaps order of two queue entries in the queue, with the same sample <sid>
-        as parent.
-
-        :param str sid: Sample id
-        :param int ti1: Position of task1 (old position)
-        :param int ti2: Position of task2 (new position)
-        """
-        current_queue = self.queue_to_dict()
-
-        node_id = current_queue[sid]["queueID"]
-        smodel, sentry = self.get_entry(node_id)
-
-        # Swap the order in the queue model
-        ti2_temp_model = smodel.get_children()[ti2]
-        smodel._children[ti2] = smodel._children[ti1]
-        smodel._children[ti1] = ti2_temp_model
-
-        # Swap queue entry order
-        ti2_temp_entry = sentry._queue_entry_list[ti2]
-        sentry._queue_entry_list[ti2] = sentry._queue_entry_list[ti1]
-        sentry._queue_entry_list[ti1] = ti2_temp_entry
-
-        logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
-
-    def queue_add_item(self, item_list):
-        """Add queue items to the queue.
-
-        Add the queue items in item_list to the queue. The items in the list can
-        be either samples and or tasks. Samples are only added if they are not
-        already in the queue  and tasks are appended to the end of an
-        (already existing) sample. A task is ignored if the sample is not already
-        in the queue.
-
-        The items in item_list are dictionaries with the following structure:
-
-        { "type": "Sample | DataCollection | Characterisation",
-        "sampleID": sid
-        ... task or sample specific data
-        }
-
-        Each item (dictionary) describes either a sample or a task.
-        """
-        return self._qs.queue_add_item(item_list)
-
     def add_sample(self, sample_id, item):
         """Add a sample with sample id <sample_id> the queue.
 
@@ -1359,7 +1060,7 @@ class Queue(ComponentBase):
         """
         # Sample is already in the queue, just enable it (incase it was disabled)
         if item.get("queueID", -1) != -1:
-            self.set_enabled_entry(item["queueID"], True)
+            self.app.queue.set_enabled_entry(item["queueID"], True)
             return item["queueID"]
 
         sample_model = qmo.Sample()
@@ -1387,13 +1088,11 @@ class Queue(ComponentBase):
             item["defaultSubDir"] = self.app.lims.get_default_subdir(item)
             self.app.lims.sample_list_update_sample(sample_id, item)
 
-        sample_entry = qe.SampleQueueEntry(view=Mock(), data_model=sample_model)
-        self.enable_entry(sample_entry, True)
-
+        # The matching SampleQueueEntry is created and enqueued automatically
+        # by Queue.queue_model_child_added
         HWR.beamline.queue_model.add_child(
             HWR.beamline.queue_model.get_model_root(), sample_model
         )
-        HWR.beamline.queue_manager.enqueue(sample_entry)
 
         return sample_model._node_id
 
@@ -1709,14 +1408,14 @@ class Queue(ComponentBase):
         entry.set_enabled(task_data["checked"])
 
     def _create_dc(self):
-        """Create a data collection model and its corresponding queue entry.
+        """Create a data collection model.
 
-        Creates a data collection model and its corresponding queue entry from
-        a dict with collection parameters.
+        Its corresponding DataCollectionQueueEntry is created and enqueued
+        automatically once the model is added to the tree - see
+        Queue.queue_model_child_added.
 
-        :param dict task: Collection parameters
-        :returns: The tuple (model, entry)
-        :rtype: Tuple
+        :returns: The data collection model.
+        :rtype: DataCollection
         """
         dc_model = qmo.DataCollection()
         dc_model.set_origin(ORIGIN_MX3)
@@ -1725,17 +1424,19 @@ class Queue(ComponentBase):
             "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
         )
 
-        dc_entry = qe.DataCollectionQueueEntry(Mock(), dc_model)
-
-        return dc_model, dc_entry
+        return dc_model
 
     def _create_queue_entry(self, task, task_name):  # noqa: D417
-        """Create a queue entry and its corresponding data model.
+        """Create the data model for a queue entry.
+
+        Its corresponding QueueEntry is created and enqueued automatically
+        once the model is added to the tree - see
+        Queue.queue_model_child_added.
 
         Args:
             task (dict): Collection parameters
         Return:
-            (tuple): (model, entry)
+            The data model.
         """
         if not task["parameters"]["osc_range"]:
             task["parameters"]["osc_range"] = None
@@ -1750,75 +1451,63 @@ class Queue(ComponentBase):
             legacy_parameters=task["parameters"],
         )
 
-        entry = entry_cls(Mock(), entry_cls.QMO(task_data=data))
-        entry.set_enabled(True)
-
-        model = entry.get_data_model()
+        model = entry_cls.QMO(task_data=data)
         model.set_origin(ORIGIN_MX3)
 
-        return model, entry
+        return model
 
     def _create_wf(self):
         """Create a workflow model.
 
-        :returns: The tuple (model, entry)
-        :rtype: Tuple
+        :returns: The workflow model.
+        :rtype: Workflow
         """
-        dc_model = qmo.Workflow()
-        dc_model.set_origin(ORIGIN_MX3)
-        dc_entry = qe.GenericWorkflowQueueEntry(Mock(), dc_model)
+        wf_model = qmo.Workflow()
+        wf_model.set_origin(ORIGIN_MX3)
 
-        return dc_model, dc_entry
+        return wf_model
 
     def _create_gphl_wf(self):
         """Create a gphl workflow model.
 
-        :returns: The tuple (model, entry)
-        :rtype: Tuple
+        :returns: The GPhL workflow model.
+        :rtype: GphlWorkflow
         """
-        from mxcubecore.HardwareObjects.Gphl.GphlQueueEntry import (
-            GphlWorkflowQueueEntry,
-        )
+        wf_model = qmo.GphlWorkflow()
+        wf_model.set_origin(ORIGIN_MX3)
 
-        dc_model = qmo.GphlWorkflow()
-        dc_model.set_origin(ORIGIN_MX3)
-        dc_entry = GphlWorkflowQueueEntry(view=Mock(), data_model=dc_model)
-
-        return dc_model, dc_entry
+        return wf_model
 
     def _create_xrf(self, sample_model):
         """Create a XRFSpectrum model.
 
         :param dict task: Collection parameters
-        :returns: The tuple (model, entry)
-        :rtype: Tuple
+        :returns: The XRFSpectrum model.
+        :rtype: XRFSpectrum
         """
         xrf_model = qmo.XRFSpectrum(sample=sample_model)
         xrf_model.set_origin(ORIGIN_MX3)
-        xrf_entry = qe.XrfSpectrumQueueEntry(Mock(), xrf_model)
 
-        return xrf_model, xrf_entry
+        return xrf_model
 
     def _create_energy_scan(self, sample_model):
-        """Create an energy scan model and its corresponding queue entry.
-
-        Create an energy scan model and its corresponding queue entry from
-        a dict with collection parameters.
+        """Create an energy scan model.
 
         :param dict task: Collection parameters
-        :returns: The tuple (model, entry)
-        :rtype: Tuple
+        :returns: The energy scan model.
+        :rtype: EnergyScan
         """
         escan_model = qmo.EnergyScan(sample=sample_model)
         escan_model.set_origin(ORIGIN_MX3)
-        escan_entry = qe.EnergyScanQueueEntry(Mock(), escan_model)
 
-        return escan_model, escan_entry
+        return escan_model
 
-    def _create_and_enqueue_task_group(
-        self, parent_model, parent_entry, group_model=None
-    ):
-        """Create and enqueue a task group wrapper for a task model."""
+    def _create_and_enqueue_task_group(self, parent_model, group_model=None):
+        """Create a task group and add it as a child of parent_model.
+
+        The matching TaskGroupQueueEntry is created and enqueued
+        automatically, see Queue.queue_model_child_added.
+        """
         if group_model is None:
             group_model = qmo.TaskGroup()
 
@@ -1826,15 +1515,21 @@ class Queue(ComponentBase):
         group_model.set_enabled(True)
         HWR.beamline.queue_model.add_child(parent_model, group_model)
 
-        group_entry = qe.TaskGroupQueueEntry(Mock(), group_model)
-        group_entry.set_enabled(True)
-        parent_entry.enqueue(group_entry)
+        group_entry = HWR.beamline.queue_manager.get_entry_with_model(group_model)
 
         return group_model, group_entry
 
-    def _attach_model_to_group(self, group_model, group_entry, model, entry):
+    def _attach_model_to_group(self, group_model, model):
+        """Add model as a child of group_model.
+
+        The matching QueueEntry is created and enqueued automatically, see
+        Queue.queue_model_child_added.
+
+        :returns: The automatically created QueueEntry for model.
+        """
         HWR.beamline.queue_model.add_child(group_model, model)
-        group_entry.enqueue(entry)
+
+        return HWR.beamline.queue_manager.get_entry_with_model(model)
 
     def _set_processing_params(self, processing_params, params):
         processing_params.space_group = params.get("space_group", "")
@@ -1860,35 +1555,32 @@ class Queue(ComponentBase):
         :returns: The queue id of the Data collection
         :rtype: int
         """
-        sample_model, sample_entry = self.get_entry(node_id)
+        sample_model, sample_entry = self.app.queue.get_entry(node_id)
         params = task["parameters"]
 
-        refdc_model, _ = self._create_dc()
+        refdc_model = self._create_dc()
         refdc_model.acquisitions[0].path_template.reference_image_prefix = "ref"
         refdc_model.set_name("refdc")
         char_params = qmo.CharacterisationParameters().set_from_dict(params)
 
         char_model = qmo.Characterisation(refdc_model, char_params)
-
         char_model.set_origin(ORIGIN_MX3)
-        char_entry = qe.CharacterisationGroupQueueEntry(Mock(), char_model)
+
+        # A characterisation has two TaskGroups one for the characterisation itself
+        # and its reference collection and one for the resulting diffraction plans.
+        # But we only create a reference group if there is a result !
+        refgroup_model, refgroup_entry = self._create_and_enqueue_task_group(
+            sample_model
+        )
+        char_entry = self._attach_model_to_group(refgroup_model, char_model)
         char_entry.queue_model = HWR.beamline.queue_model
+
         # Set the characterisation and reference collection parameters
         self.set_char_params(char_model, char_entry, task, sample_model)
 
         # the default value is True, here we adapt to mxcube Web needs
         char_model.auto_add_diff_plan = self.app.AUTO_ADD_DIFFPLAN
         char_entry.auto_add_diff_plan = self.app.AUTO_ADD_DIFFPLAN
-
-        # A characterisation has two TaskGroups one for the characterisation itself
-        # and its reference collection and one for the resulting diffraction plans.
-        # But we only create a reference group if there is a result !
-        refgroup_model, refgroup_entry = self._create_and_enqueue_task_group(
-            sample_model, sample_entry
-        )
-        self._attach_model_to_group(
-            refgroup_model, refgroup_entry, char_model, char_entry
-        )
 
         char_model.set_enabled(task["checked"])
         char_entry.set_enabled(task["checked"])
@@ -1904,14 +1596,12 @@ class Queue(ComponentBase):
         :returns: The queue id of the data collection
         :rtype: int
         """
-        sample_model, sample_entry = self.get_entry(node_id)
-        dc_model, dc_entry = self._create_dc()
-        self.set_dc_params(dc_model, dc_entry, task, sample_model)
+        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
+        dc_model = self._create_dc()
 
-        group_model, group_entry = self._create_and_enqueue_task_group(
-            sample_model, sample_entry
-        )
-        self._attach_model_to_group(group_model, group_entry, dc_model, dc_entry)
+        group_model, _group_entry = self._create_and_enqueue_task_group(sample_model)
+        dc_entry = self._attach_model_to_group(group_model, dc_model)
+        self.set_dc_params(dc_model, dc_entry, task, sample_model)
 
         return dc_model._node_id
 
@@ -1923,8 +1613,8 @@ class Queue(ComponentBase):
             task (dict): task data
             task_name (str): The task name
         """
-        sample_model, sample_entry = self.get_entry(node_id)
-        model, entry = self._create_queue_entry(task, task_name)
+        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
+        model = self._create_queue_entry(task, task_name)
         model.set_origin(ORIGIN_MX3)
 
         acq = model.acquisitions[0]
@@ -1959,10 +1649,8 @@ class Queue(ComponentBase):
 
         model.shape = params["shape"]
 
-        group_model, group_entry = self._create_and_enqueue_task_group(
-            sample_model, sample_entry
-        )
-        self._attach_model_to_group(group_model, group_entry, model, entry)
+        group_model, _group_entry = self._create_and_enqueue_task_group(sample_model)
+        self._attach_model_to_group(group_model, model)
 
         return model._node_id
 
@@ -1978,10 +1666,14 @@ class Queue(ComponentBase):
         :returns: The queue id of the data collection
         :rtype: int
         """
-        parent_model, parent_entry = self.get_entry(node_id)
+        parent_model, _parent_entry = self.app.queue.get_entry(node_id)
         sample_model = parent_model.get_sample_node()
+
+        group_model, _group_entry = self._create_and_enqueue_task_group(parent_model)
+
         if task["parameters"]["wfpath"] == "Gphl":
-            wf_model, dc_entry = self._create_gphl_wf()
+            wf_model = self._create_gphl_wf()
+            dc_entry = self._attach_model_to_group(group_model, wf_model)
             self.set_gphl_wf_params(
                 wf_model,
                 dc_entry,
@@ -1989,13 +1681,9 @@ class Queue(ComponentBase):
                 sample_model,
             )
         else:
-            wf_model, dc_entry = self._create_wf()
+            wf_model = self._create_wf()
+            dc_entry = self._attach_model_to_group(group_model, wf_model)
             self.set_wf_params(wf_model, dc_entry, task, sample_model)
-
-        group_model, group_entry = self._create_and_enqueue_task_group(
-            parent_model, parent_entry
-        )
-        self._attach_model_to_group(group_model, group_entry, wf_model, dc_entry)
 
         return wf_model._node_id
 
@@ -2008,18 +1696,17 @@ class Queue(ComponentBase):
         :returns: The queue id of the data collection
         :rtype: int
         """
-        sample_model, sample_entry = self.get_entry(node_id)
+        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
 
-        group_model, group_entry = self._create_and_enqueue_task_group(
-            sample_model, sample_entry
-        )
+        group_model, _group_entry = self._create_and_enqueue_task_group(sample_model)
         group_model.interleave_num_images = task["parameters"]["swNumImages"]
 
         wc = 0
 
         for wedge in task["parameters"]["wedges"]:
             wc = wc + 1
-            dc_model, dc_entry = self._create_dc()
+            dc_model = self._create_dc()
+            dc_entry = self._attach_model_to_group(group_model, dc_model)
             self.set_dc_params(dc_model, dc_entry, wedge, sample_model)
 
             # Add wedge prefix to path
@@ -2027,9 +1714,6 @@ class Queue(ComponentBase):
 
             # Disable snapshots for sub-wedges
             dc_model.acquisitions[0].acquisition_parameters.take_snapshots = False
-
-            HWR.beamline.queue_model.add_child(group_model, dc_model)
-            group_entry.enqueue(dc_entry)
 
         return group_model._node_id
 
@@ -2042,14 +1726,12 @@ class Queue(ComponentBase):
         :returns: The queue id of the data collection
         :rtype: int
         """
-        sample_model, sample_entry = self.get_entry(node_id)
-        xrf_model, xrf_entry = self._create_xrf(sample_model)
-        self.set_xrf_params(xrf_model, xrf_entry, task, sample_model)
+        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
+        xrf_model = self._create_xrf(sample_model)
 
-        group_model, group_entry = self._create_and_enqueue_task_group(
-            sample_model, sample_entry
-        )
-        self._attach_model_to_group(group_model, group_entry, xrf_model, xrf_entry)
+        group_model, _group_entry = self._create_and_enqueue_task_group(sample_model)
+        xrf_entry = self._attach_model_to_group(group_model, xrf_model)
+        self.set_xrf_params(xrf_model, xrf_entry, task, sample_model)
 
         return xrf_model._node_id
 
@@ -2062,16 +1744,507 @@ class Queue(ComponentBase):
         :returns: The queue id of the data collection
         :rtype: int
         """
-        sample_model, sample_entry = self.get_entry(node_id)
-        escan_model, escan_entry = self._create_energy_scan(sample_model)
+        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
+        escan_model = self._create_energy_scan(sample_model)
+
+        group_model, _group_entry = self._create_and_enqueue_task_group(sample_model)
+        escan_entry = self._attach_model_to_group(group_model, escan_model)
         self.set_energy_scan_params(escan_model, escan_entry, task, sample_model)
 
-        group_model, group_entry = self._create_and_enqueue_task_group(
-            sample_model, sample_entry
-        )
-        self._attach_model_to_group(group_model, group_entry, escan_model, escan_entry)
-
         return escan_model._node_id
+
+    def queue_update_item(self, sqid, tqid, data):
+        model, entry = self.app.queue.get_entry(tqid)
+        sample_model, _ = self.app.queue.get_entry(sqid)
+
+        if data["type"] == "DataCollection":
+            self.set_dc_params(model, entry, data, sample_model)
+        elif data["type"] == "Characterisation":
+            self.set_char_params(model, entry, data, sample_model)
+
+        logging.getLogger("MX3.HWR").info(
+            "[QUEUE] is:\n%s " % self.app.queue.queue_to_json()
+        )
+
+        return model
+
+    def add_centring(self, _id, params):
+        msg = "[QUEUE] centring add requested with data: " + str(params)
+        logging.getLogger("MX3.HWR").info(msg)
+
+        # The matching SampleCentringQueueEntry is created and enqueued
+        # automatically by Queue.queue_model_child_added, listening for the
+        # "child_added" signal - no need to build/enqueue it here.
+        cent_node = qmo.SampleCentring()
+        new_node = HWR.beamline.queue_model.add_child_at_id(int(_id), cent_node)
+
+        logging.getLogger("MX3.HWR").info("[QUEUE] centring added to sample")
+
+        return {
+            "QueueId": new_node,
+            "Type": "Centring",
+            "Params": params,
+        }
+
+
+class Queue(ComponentBase):
+    def __init__(self, app, config):
+        super().__init__(app, config)
+        self.init_queue_settings()
+        self._qs = QueueSerializer(app)
+        self._qb = QueueBuilder(app)
+
+    def build_prefix_path_dict(self, path_list):
+        return self._qb.build_prefix_path_dict(path_list)
+
+    def get_run_number(self, pt):
+        return self._qb.get_run_number(pt)
+
+    def node_index(self, node):
+        """Get the position (index) in the queue, sample and node id of node <node>.
+
+        :returns: dictionary on the form:
+                {'sample': sample, 'idx': index, 'queue_id': node_id}
+        """
+        sample, index, sample_model = None, None, None
+
+        # RootNode nothing to return
+        if isinstance(node, qmo.RootNode):
+            sample = None
+        # For samples simply return the sampleID
+        elif isinstance(node, qmo.Sample):
+            sample = node.loc_str
+        # TaskGroup just return the sampleID
+        elif node.get_parent():
+            # NB under GPhL workflow, nodes do not have predictable distance
+            # to their sample node
+            sample_model = node.get_sample_node()
+
+            sample = sample_model.loc_str
+            task_groups = sample_model.get_children()
+            tlist = []
+
+            for group in task_groups:
+                if group.interleave_num_images:
+                    tlist.append(group)
+                else:
+                    tlist.extend(group.get_children())
+
+            with contextlib.suppress(Exception):
+                index = tlist.index(node)
+
+        return {
+            "sample": sample,
+            "idx": index,
+            "queue_id": node._node_id,
+            "sample_node": sample_model,
+        }
+
+    def queue_to_dict(self, node=None):
+        """Returns the dictionary representation of the queue.
+
+        :param TaskNode node: list of Node objects to get representation for,
+                            queue root used if nothing is passed.
+
+        :returns: dictionary on the form:
+                { sampleID_1:{ sampleID_1: sid_1,
+                                queueID: qid_1,
+                                location: location_n
+                                tasks: [task1, ... taskn]},
+                                .
+                                .
+                                .
+                    sampleID_N:{ sampleID_N: sid_N,
+                                queueID: qid_N,
+                                location: location_n,
+                                tasks: [task1, ... taskn]}
+
+                where the contents of task is a dictionary, the content depends on
+                the TaskNode type (DataCollection, Chracterisation, Sample). The
+                task dict can be directly used with the set_from_dict methods of
+                the corresponding node.
+        """
+        return self._qs.queue_to_dict(node)
+
+    def queue_to_json(self, node=None):
+        """Return the json representation of the queue.
+
+        :param TaskNode node: list of Node objects to get representation for,
+                            queue root used if nothing is passed.
+
+        :returns: json str on the form:
+                [ { sampleID_1: sid_1,
+                    queueID: qid_1,
+                    location: location_n
+                    tasks: [task1, ... taskn]},
+                    .
+                    .
+                    .
+                    { sampleID_N: sid_N,
+                    queueID: qid_N,
+                    location: location_n,
+                    tasks: [task1, ... taskn]} ]
+
+                where the contents of task is a dictionary, the content depends on
+                the TaskNode type (Datacollection, Chracterisation, Sample). The
+                task dict can be directly used with the set_from_dict methods of
+                the corresponding node.
+        """
+        return self._qs.queue_to_json(node)
+
+    def get_node_state(self, node_id):
+        """Get the state of the given node.
+
+        :param TaskNode node: Node to get state for
+
+        :returns: tuple containing (enabled, state)
+                where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
+                {'sample': sample, 'idx': index, 'queue_id': node_id}
+        """
+        if node_id is None:
+            return True, UNCOLLECTED
+        node, entry = self.get_entry(node_id)
+
+        enabled = node.is_enabled()
+        curr_entry = HWR.beamline.queue_manager.get_current_entry()
+        running = HWR.beamline.queue_manager.is_executing() and (
+            curr_entry == entry or curr_entry == entry._parent_container
+        )
+
+        if entry.status == QUEUE_ENTRY_STATUS.FAILED:
+            state = FAILED
+        elif node.is_executed() or entry.status == QUEUE_ENTRY_STATUS.SUCCESS:
+            state = COLLECTED
+        elif running or entry.status == QUEUE_ENTRY_STATUS.RUNNING:
+            state = RUNNING
+        else:
+            state = UNCOLLECTED
+
+        return (enabled, state)
+
+    def get_queue_state(self):
+        """Return the dictionary representation of the current queue and its state.
+
+        :returns: dictionary on the form:
+                {
+                    loaded: ID of currently loaded sample,
+                    queue: same format as queue_to_dict() but without sample_order,
+                    queueStatus: one of [QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED]
+                }
+        """
+        queue = self.queue_to_dict()
+        sample_order = queue.get("sample_order", [])
+        try:
+            current = self.app.lims.get_current_sample().get("sampleID", "")
+        except Exception as ex:
+            logging.getLogger("MX3.HWR").warning(
+                "Error retrieving current sample, {0}".format(ex.message)
+            )
+            current = ""
+
+        settings = {}
+
+        for setting_name in [
+            "REMEMBER_PARAMETERS_BETWEEN_SAMPLES",
+            "AUTO_ADD_DIFFPLAN",
+        ]:
+            settings[str_to_camel(setting_name)] = getattr(self.app, setting_name)
+
+        res = {
+            "current": current,
+            "autoMountNext": self.get_auto_mount_sample(),
+            "groupFolder": HWR.beamline.session.get_group_name(),
+            "queue": sample_order,
+            "sampleList": self.app.lims.sample_list_get(current_queue=queue),
+            "queueStatus": self.queue_exec_state(),
+            "numSnapshots": HWR.beamline.collect.get_property(
+                "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
+            ),
+            "centringMethod": HWR.beamline.queue_manager.centring_method,
+        }
+
+        self.app.queue.set_num_snapshots(
+            res.get("numSnapshots", self.app.DEFAULT_NUM_SNAPSHOTS)
+        )
+
+        res.update(settings)
+        return res
+
+    def queue_exec_state(self):
+        """Queue execution state.
+
+        :returns: The queue execution state, one of QUEUE_STOPPED, QUEUE_PAUSED
+        or QUEUE_RUNNING
+        """
+        state = QUEUE_STOPPED
+
+        if HWR.beamline.queue_manager.is_paused():
+            state = QUEUE_PAUSED
+        elif HWR.beamline.queue_manager.is_executing():
+            state = QUEUE_RUNNING
+
+        return state
+
+    def get_entry(self, _id):
+        """Retrieve the model and the queue entry for the model node with id <id>.
+
+        :param int _id: Node id of node to retrieve
+        :returns: The tuple model, entry or the root node and QueueManger if _id is None
+        :rtype: Tuple
+        """
+        if _id is None:
+            dummy_variable = "Cannot retrieve entry without a node id"
+            raise ValueError(dummy_variable)
+        model = HWR.beamline.queue_model.get_node(int(_id))
+        entry = HWR.beamline.queue_manager.get_entry_with_model(model)
+        return model, entry
+
+    def set_enabled_entry(self, qid, enabled):
+        model, entry = self.get_entry(qid)
+        model.set_enabled(enabled)
+        entry.set_enabled(enabled)
+
+    def delete_entry(self, entry):
+        """Helper function that deletes an entry and its model from the queue."""
+        parent_entry = entry.get_container()
+        parent_entry.dequeue(entry)
+        model = entry.get_data_model()
+        HWR.beamline.queue_model.del_child(model.get_parent(), model)
+        logging.getLogger("MX3.HWR").info(
+            "[DELETE QUEUE] FROM:\n%s " % model.get_parent().get_name()
+        )
+
+    def delete_entry_at(self, item_pos_list):
+        current_queue = self.queue_to_dict()
+
+        for sid, tindex in item_pos_list:
+            if tindex in ["undefined", None]:
+                node_id = current_queue[sid]["queueID"]
+                _, entry = self.get_entry(node_id)
+            else:
+                node_id = current_queue[sid]["tasks"][int(tindex)]["queueID"]
+                _, entry = self.get_entry(node_id)
+
+                # Get the TaskGroup of the item, there is currently only one
+                # task per TaskGroup so we have to remove the entire TaskGroup
+                # with its task.
+                if not isinstance(entry, qe.TaskGroupQueueEntry):
+                    entry = entry.get_container()
+
+            self.delete_entry(entry)
+
+    def enable_entry(self, id_or_qentry, flag):
+        """Helper function that sets the enabled flag for the entry and its model.
+
+        Helper function that sets the enabled flag to <flag> for the entry and associated model.
+        Takes either the model node id or the QueueEntry object.
+
+        Sets enabled flag on both the entry and model.
+
+        :param object id_or_qentry: Node id of model or QueueEntry object
+        :param bool flag: True for enabled False for disabled
+        """
+        if isinstance(id_or_qentry, qe.BaseQueueEntry):
+            id_or_qentry.set_enabled(flag)
+            id_or_qentry.get_data_model().set_enabled(flag)
+        else:
+            model, entry = self.get_entry(id_or_qentry)
+            entry.set_enabled(flag)
+            model.set_enabled(flag)
+
+    def swap_task_entry(self, sid, ti1, ti2):
+        """Swap order of two queue entries in the queue, with the same sample as parent.
+
+        Swaps order of two queue entries in the queue, with the same sample <sid>
+        as parent.
+
+        :param str sid: Sample id
+        :param int ti1: Position of task1 (old position)
+        :param int ti2: Position of task2 (new position)
+        """
+        current_queue = self.queue_to_dict()
+
+        node_id = current_queue[sid]["queueID"]
+        smodel, sentry = self.get_entry(node_id)
+
+        # Swap the order in the queue model
+        ti2_temp_model = smodel.get_children()[ti2]
+        smodel._children[ti2] = smodel._children[ti1]
+        smodel._children[ti1] = ti2_temp_model
+
+        # Swap queue entry order
+        ti2_temp_entry = sentry._queue_entry_list[ti2]
+        sentry._queue_entry_list[ti2] = sentry._queue_entry_list[ti1]
+        sentry._queue_entry_list[ti1] = ti2_temp_entry
+
+        logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
+
+    def queue_add_item(self, item_list):
+        """Add queue items to the queue.
+
+        Add the queue items in item_list to the queue. The items in the list can
+        be either samples and or tasks. Samples are only added if they are not
+        already in the queue  and tasks are appended to the end of an
+        (already existing) sample. A task is ignored if the sample is not already
+        in the queue.
+
+        The items in item_list are dictionaries with the following structure:
+
+        { "type": "Sample | DataCollection | Characterisation",
+        "sampleID": sid
+        ... task or sample specific data
+        }
+
+        Each item (dictionary) describes either a sample or a task.
+        """
+        return self._qs.queue_add_item(item_list)
+
+    def add_sample(self, sample_id, item):
+        """Add a sample with sample id <sample_id> the queue.
+
+        :param str sample_id: Sample id (often sample changer location)
+        :returns: SampleQueueEntry
+        """
+        return self._qb.add_sample(sample_id, item)
+
+    def get_folder_tag(self, params):
+        return self._qb.get_folder_tag(params)
+
+    def set_dc_params(self, model, entry, task_data, sample_model):
+        """Helper method that sets the data collection parameters for a DataCollection.
+
+        :param DataCollectionQueueModel: The model to set parameters of
+        :param DataCollectionQueueEntry: The queue entry of the model
+        :param dict task_data: Dictionary with new parameters
+        """
+        return self._qb.set_dc_params(model, entry, task_data, sample_model)
+
+    def set_gphl_wf_params(self, model, entry, task_data, sample_model):
+        """Helper method that sets the parameters for a GPhL workflow task.
+
+        :param queue_model_objectsGphlWorkflow: The model to set parameters of
+        :param GphlWorkflowQueueEntry: The queue entry of the model
+        :param dict task_data: Dictionary with new parameters
+        :param dict sample_model: The Sample queueModelObject
+        """
+        return self._qb.set_gphl_wf_params(model, entry, task_data, sample_model)
+
+    def set_wf_params(self, model, entry, task_data, sample_model):
+        """Helper method that sets the parameters for a workflow task.
+
+        :param WorkflowQueueModel: The model to set parameters of
+        :param GenericWorkflowQueueEntry: The queue entry of the model
+        :param dict task_data: Dictionary with new parameters
+        """
+        return self._qb.set_wf_params(model, entry, task_data, sample_model)
+
+    def set_char_params(self, model, entry, task_data, sample_model):
+        """Helper method that sets the characterisation parameters.
+
+        Helper method that sets the characterisation parameters for a Characterisation.
+
+        :param CharacterisationQueueModel: The mode to set parameters of
+        :param CharacterisationQueueEntry: The queue entry of the model
+        :param dict task_data: Dictionary with new parameters
+        """
+        return self._qb.set_char_params(model, entry, task_data, sample_model)
+
+    def set_xrf_params(self, model, entry, task_data, sample_model):
+        """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
+
+        :param XRFSpectrum QueueModel: The model to set parameters of
+        :param XrfSpectrumQueueEntry: The queue entry of the model
+        :param dict task_data: Dictionary with new parameters
+        """
+        return self._qb.set_xrf_params(model, entry, task_data, sample_model)
+
+    def set_energy_scan_params(self, model, entry, task_data, sample_model):
+        """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
+
+        :param EnergyScan QueueModel: The model to set parameters of
+        :param EnergyScanQueueEntry: The queue entry of the model
+        :param dict task_data: Dictionary with new parameters
+        """
+        return self._qb.set_energy_scan_params(model, entry, task_data, sample_model)
+
+    def add_characterisation(self, node_id, task):
+        """Add a data characterisation task to the sample with id: <id>.
+
+        :param int id: id of the sample to which the task belongs
+        :param dict task: Task data (parameters)
+
+        :returns: The queue id of the Data collection
+        :rtype: int
+        """
+        return self._qb.add_characterisation(node_id, task)
+
+    def add_data_collection(self, node_id, task):
+        """Add a data collection task to the sample with id: <id>.
+
+        :param int id: id of the sample to which the task belongs
+        :param dict task: task data
+
+        :returns: The queue id of the data collection
+        :rtype: int
+        """
+        return self._qb.add_data_collection(node_id, task)
+
+    def add_queue_entry(self, node_id, task, task_name):
+        """Add a queue entry to the sample with id <node_id>.
+
+        Args:
+            node_id (int): id of the sample to which the task belongs
+            task (dict): task data
+            task_name (str): The task name
+        """
+        return self._qb.add_queue_entry(node_id, task, task_name)
+
+    def add_workflow(self, node_id, task):
+        """Add a worklfow task to the parent node with id: <id>.
+
+        For adding GPhL Auto workflow, call with node_id==parent_node_id
+        and all required parameters in task["parameters"]
+
+        :param int node_id: id of the parent node to which the task belongs
+        :param dict task: task data
+
+        :returns: The queue id of the data collection
+        :rtype: int
+        """
+        return self._qb.add_workflow(node_id, task)
+
+    def add_interleaved(self, node_id, task):
+        """Add a interleaved data collection task to the sample with id: <id>.
+
+        :param int node_id: id of the sample to which the task belongs
+        :param dict task: task data
+
+        :returns: The queue id of the data collection
+        :rtype: int
+        """
+        return self._qb.add_interleaved(node_id, task)
+
+    def add_xrf_scan(self, node_id, task):
+        """Add a XRF Scan task to the sample with id: <id>.
+
+        :param int id: id of the sample to which the task belongs
+        :param dict task: task data
+
+        :returns: The queue id of the data collection
+        :rtype: int
+        """
+        return self._qb.add_xrf_scan(node_id, task)
+
+    def add_energy_scan(self, node_id, task):
+        """Add a energy scan task to the sample with id: <id>.
+
+        :param int id: id of the sample to which the task belongs
+        :param dict task: task data
+
+        :returns: The queue id of the data collection
+        :rtype: int
+        """
+        return self._qb.add_energy_scan(node_id, task)
 
     def clear_queue(self):
         """Create a new queue.
@@ -2088,69 +2261,60 @@ class Queue(ComponentBase):
         HWR.beamline.queue_model.clear_model("plate")
         HWR.beamline.queue_model.select_model("ispyb")
 
-    def queue_model_child_added(self, parent, child):
-        """Listen to the addition of elements to the queue model ('child_added').
-
-        Add the corresponding entries to the queue if they are not already
-        added. Handles for instance the addition of reference collections for
-        characterisations and workflows.
-        """
+    def _get_parent_entry_for_child_added(self, parent):
         if parent is HWR.beamline.queue_model.get_model_root():
-            parent_entry = HWR.beamline.queue_manager
-        else:
-            node_id = parent._node_id
-            if node_id is not None:
-                _, parent_entry = self.get_entry(parent._node_id)
-            else:
-                dummy_variable = (
-                    "Trying to add child {child} to unenqueued parent {parent}"
-                )
-                raise ValueError(dummy_variable)
+            return HWR.beamline.queue_manager
 
-        # Origin is ORIGIN_MX3 if task comes from MXCuBE-3
-        if child.get_origin() != ORIGIN_MX3:
-            if isinstance(child, qmo.DataCollection):
-                dc_entry = qe.DataCollectionQueueEntry(Mock(), child)
+        node_id = parent._node_id
+        if node_id is None:
+            raise ValueError(
+                "Trying to add a child ({child}) to a parent ",
+                "({parent}) that is not in the queue",
+            )
 
-                self.enable_entry(dc_entry, True)
-                self.enable_entry(parent_entry, True)
-                parent_entry.enqueue(dc_entry)
-                sample = parent.get_sample_node()
+        _, parent_entry = self.get_entry(parent._node_id)
+        return parent_entry
 
-                task = self._qs._handle_dc_node(sample, child)
+    def queue_model_child_added(self, parent, child):
+        """Listen to the addition of models to the queue model ('child_added').
 
-                self.app.server.emit(
-                    "add_task", {"tasks": [task.dict()]}, namespace="/hwr"
-                )
+        This is the single place a QueueEntry is created for a model node:
+        QueueBuilder only ever calls add_child() to place a model in the
+        tree, it never constructs or enqueues an entry itself.
+        """
+        entry_cls = qe.MODEL_QUEUE_ENTRY_MAPPINGS.get(type(child))
 
-            elif isinstance(child, qmo.TaskGroup):
-                dcg_entry = qe.TaskGroupQueueEntry(Mock(), child)
-                self.enable_entry(dcg_entry, True)
-                parent_entry.enqueue(dcg_entry)
+        if entry_cls is None:
+            logging.getLogger("MX3.HWR").warning(
+                "No QueueEntry class for model type %s" % type(child)
+            )
+            return
 
-            elif isinstance(child, qmo.SampleCentring):
-                # Added rhfogh 20211001
-                entry = qe.SampleCentringQueueEntry(Mock(), child)
-                self.enable_entry(entry, True)
-                parent_entry.enqueue(entry)
+        parent_entry = self._get_parent_entry_for_child_added(parent)
+        entry = entry_cls(Mock(), child)
+        self.enable_entry(entry, True)
 
-            elif isinstance(child, qmo.XrayCentring2):
-                # Added rhfogh 20211001
-                entry = qe.XrayCentring2QueueEntry(Mock(), child)
-                self.enable_entry(entry, True)
-                parent_entry.enqueue(entry)
+        # DataCollection children (e.g. diffraction-plan collections) can be
+        # added to a TaskGroup that was just created for them and is not yet
+        # enabled - enable the parent entry too in that case.
+        if isinstance(child, qmo.DataCollection):
+            self.enable_entry(parent_entry, True)
 
-            elif isinstance(child, qmo.GphlWorkflow):
-                # Added olofsvensson 20220504
-                entry = GphlQueueEntry.GphlWorkflowQueueEntry(Mock(), child)
-                self.enable_entry(entry, True)
-                parent_entry.enqueue(entry)
+        parent_entry.enqueue(entry)
 
-            elif isinstance(child, qmo.DelayTask):
-                # Added rhfogh 20220331
-                entry = qe.DelayQueueEntry(Mock(), child)
-                self.enable_entry(entry, True)
-                parent_entry.enqueue(entry)
+    def notify_task_added(self, parent, child):
+        """Notify the client when a DataCollection is added to the queue
+        model outside the of QueueBuilder (MXCuBE) (diffraction-plan collection)
+        """
+        if child.get_origin() == ORIGIN_MX3 or not isinstance(
+            child, qmo.DataCollection
+        ):
+            return
+
+        sample = parent.get_sample_node()
+        task = self._qs._handle_dc_node(sample, child)
+
+        self.app.server.emit("add_task", {"tasks": [task.dict()]}, namespace="/hwr")
 
     def queue_model_diff_plan_available(self, char, collection_list):
         cols = []
@@ -2546,6 +2710,7 @@ class Queue(ComponentBase):
         )
 
         queue.connect(queue, "child_added", self.queue_model_child_added)
+        queue.connect(queue, "child_added", self.notify_task_added)
 
         queue.connect(
             queue,
@@ -2758,17 +2923,7 @@ class Queue(ComponentBase):
         self.queue_add_item(json_queue)
 
     def queue_update_item(self, sqid, tqid, data):
-        model, entry = self.get_entry(tqid)
-        sample_model, _ = self.get_entry(sqid)
-
-        if data["type"] == "DataCollection":
-            self.set_dc_params(model, entry, data, sample_model)
-        elif data["type"] == "Characterisation":
-            self.set_char_params(model, entry, data, sample_model)
-
-        logging.getLogger("MX3.HWR").info("[QUEUE] is:\n%s " % self.queue_to_json())
-
-        return model
+        return self._qb.queue_update_item(sqid, tqid, data)
 
     def queue_enable_item(self, qid_list, enabled):
         for qid in qid_list:
@@ -2789,27 +2944,7 @@ class Queue(ComponentBase):
             raise ValueError(msg)
 
     def add_centring(self, _id, params):
-        msg = "[QUEUE] centring add requested with data: " + str(params)
-        logging.getLogger("MX3.HWR").info(msg)
-
-        cent_node = qmo.SampleCentring()
-        cent_entry = qe.SampleCentringQueueEntry()
-        cent_entry.set_data_model(cent_node)
-        cent_entry.set_queue_controller(self.app.mxcubecore.qm)
-        node = HWR.beamline.queue_model.get_node(int(_id))
-        entry = HWR.beamline.queue_manager.get_entry_with_model(node)
-        entry._set_background_color = Mock()
-
-        new_node = HWR.beamline.queue_model.add_child_at_id(int(_id), cent_node)
-        entry.enqueue(cent_entry)
-
-        logging.getLogger("MX3.HWR").info("[QUEUE] centring added to sample")
-
-        return {
-            "QueueId": new_node,
-            "Type": "Centring",
-            "Params": params,
-        }
+        return self._qb.add_centring(_id, params)
 
     def update_dependent_field(self, task_name, data):
         try:
