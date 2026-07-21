@@ -46,7 +46,6 @@ READY = 0
 
 ORIGIN_MX3 = "MX3"
 
-
 VALID_PREFIX_TEMPLATE_FIELDS = ("{PREFIX}", "{POSITION}")
 VALID_SUBDIR_TEMPLATE_FIELDS = ("{ACRONYM}", "{NAME}", "{POSITION}")
 
@@ -521,8 +520,11 @@ class SampleNode(QueueNodeModel):
 
 
 class QueueSerializer:
-    def __init__(self, app):
-        self.app = app
+    """Serializes the queue. Depends only on mxcubecore (HWR.beamline.*)
+    and its sibling QueueBuilder - no self.app reference."""
+
+    def __init__(self, builder):
+        self.builder = builder
 
     def queue_to_dict(self, node=None) -> list[dict]:
         if node is None:
@@ -539,6 +541,25 @@ class QueueSerializer:
 
         return queue_dict
 
+    def _build_sample_node(self, n) -> SampleNode:
+        """Builds the SampleNode representation of the Sample model <n>."""
+        return SampleNode(
+            sampleID=n.loc_str,
+            queueID=n._node_id,
+            code=n.code,
+            type="Sample",
+            location="Manual" if n.free_pin_mode else n.loc_str,
+            sampleName=n.get_name(),
+            proteinAcronym=n.crystals[0].protein_acronym,
+            defaultPrefix=self.builder.get_default_prefix(n),
+            defaultSubDir=self.builder.get_default_subdir(n),
+            cell_no=getattr(n, "cell_no", 0),
+            puck_no=getattr(n, "puck_no", 1),
+            checked=n.is_enabled(),
+            state=self.get_node_state(n._node_id)[1],
+            tasks=self._queue_to_dict_rec(n),
+        )
+
     def _queue_to_dict_rec(self, node) -> list[QueueNodeModel]:
         result = []
         node_list = node if isinstance(node, list) else node.get_children()
@@ -547,23 +568,7 @@ class QueueSerializer:
             sample_node = n.get_sample_node() if hasattr(n, "get_sample_node") else None
 
             if isinstance(n, qmo.Sample):
-                sample = SampleNode(
-                    sampleID=n.loc_str,
-                    queueID=n._node_id,
-                    code=n.code,
-                    type="Sample",
-                    location="Manual" if n.free_pin_mode else n.loc_str,
-                    sampleName=n.get_name(),
-                    proteinAcronym=n.crystals[0].protein_acronym,
-                    defaultPrefix=self.app.lims.get_default_prefix(n),
-                    defaultSubDir=self.app.lims.get_default_subdir(n),
-                    cell_no=getattr(n, "cell_no", 0),
-                    puck_no=getattr(n, "puck_no", 1),
-                    checked=n.is_enabled(),
-                    state=self.get_node_state(n._node_id)[1],
-                    tasks=self._queue_to_dict_rec(n),
-                )
-                result.append(sample)
+                result.append(self._build_sample_node(n))
 
             elif isinstance(n, qmo.Characterisation):
                 result.append(self._handle_char_node(sample_node, n))
@@ -630,7 +635,7 @@ class QueueSerializer:
         if node_id is None:
             return True, UNCOLLECTED
 
-        node, entry = self.app.queue.get_entry(node_id)
+        node, entry = HWR.beamline.queue_manager.get_entry(node_id)
 
         enabled = node.is_enabled()
         curr_entry = HWR.beamline.queue_manager.get_current_entry()
@@ -683,7 +688,7 @@ class QueueSerializer:
             checked=node.is_enabled(),
             sampleID=sample_node.loc_str,
             sampleQueueID=sample_node._node_id,
-            taskIndex=self.app.queue.node_index(node)["idx"],
+            taskIndex=HWR.beamline.queue_model.node_index(node)["idx"],
             queueID=node._node_id,
             state=state,
             diffractionPlan=tasks if isinstance(tasks, list) else None,
@@ -725,7 +730,7 @@ class QueueSerializer:
             sampleQueueID=sample_node._node_id,
             # node._node_id and taskIndex are None for reference collections for an
             # characterisation, we should default handle this case in mxcubecore
-            taskIndex=self.app.queue.node_index(node)["idx"] or 0,
+            taskIndex=HWR.beamline.queue_model.node_index(node)["idx"] or 0,
             queueID=node._node_id or -1,
             state=state,
         )
@@ -750,7 +755,7 @@ class QueueSerializer:
             parameters=parameters,
             checked=node.is_enabled(),
             sampleID=sample_node.loc_str,
-            taskIndex=self.app.queue.node_index(node)["idx"],
+            taskIndex=HWR.beamline.queue_model.node_index(node)["idx"],
             queueID=node._node_id,
             state=state,
         )
@@ -777,7 +782,7 @@ class QueueSerializer:
             checked=node.is_enabled(),
             sampleID=sample_node.loc_str,
             sampleQueueID=sample_node._node_id,
-            taskIndex=self.app.queue.node_index(node)["idx"],
+            taskIndex=HWR.beamline.queue_model.node_index(node)["idx"],
             queueID=node._node_id,
             state=state,
         )
@@ -805,7 +810,7 @@ class QueueSerializer:
             checked=node.is_enabled(),
             sampleID=sample_node.loc_str,
             sampleQueueID=sample_node._node_id,
-            taskIndex=self.app.queue.node_index(node)["idx"],
+            taskIndex=HWR.beamline.queue_model.node_index(node)["idx"],
             queueID=node._node_id,
             state=state,
         )
@@ -836,7 +841,7 @@ class QueueSerializer:
             checked=node.is_enabled(),
             sampleID=sample_node.loc_str,
             sampleQueueID=sample_node._node_id,
-            taskIndex=self.app.queue.node_index(node)["idx"],
+            taskIndex=HWR.beamline.queue_model.node_index(node)["idx"],
             queueID=node._node_id,
             state=state,
         )
@@ -854,7 +859,7 @@ class QueueSerializer:
             checked=node.is_enabled(),
             sampleID=sample_node.loc_str,
             sampleQueueID=sample_node._node_id,
-            taskIndex=self.app.queue.node_index(node)["idx"],
+            taskIndex=HWR.beamline.queue_model.node_index(node)["idx"],
             queueID=node._node_id,
             state=state,
         )
@@ -886,13 +891,13 @@ class QueueSerializer:
             checked=node.is_enabled(),
             sampleID=sample_node.loc_str,
             sampleQueueID=sample_node._node_id,
-            taskIndex=self.app.queue.node_index(node)["idx"],
+            taskIndex=HWR.beamline.queue_model.node_index(node)["idx"],
             queueID=node._node_id,
             state=state,
         )
 
     def _handle_diffraction_plan(self, node, sample_node):
-        model, _ = self.app.queue.get_entry(node._node_id)
+        model, _ = HWR.beamline.queue_manager.get_entry(node._node_id)
         originID = model.get_origin()
         tasks = []
         if len(model.diffraction_plan) > 0:
@@ -907,35 +912,35 @@ class QueueSerializer:
 
     def _queue_add_item_rec(self, parent_node_id: int | None, item: SampleNode):
         if item.type == "Sample":
-            sample_node_id = self.app.queue.add_sample(item.sampleID, item.dict())
+            sample_node_id = self.builder.add_sample(item.sampleID, item.dict())
 
             for task in item.tasks or []:
                 self._queue_add_item_rec(sample_node_id, task)
 
         elif item.type == "DataCollection":
-            self.app.queue.add_data_collection(parent_node_id, item.dict())
+            self.builder.add_data_collection(parent_node_id, item.dict())
 
         elif item.type == "Characterisation":
-            self.app.queue.add_characterisation(parent_node_id, item.dict())
+            self.builder.add_characterisation(parent_node_id, item.dict())
 
         elif item.type in ("Workflow", "GphlWorkflow"):
-            self.app.queue.add_workflow(parent_node_id, item.dict())
+            self.builder.add_workflow(parent_node_id, item.dict())
 
         elif item.type == "Interleaved":
-            self.app.queue.add_interleaved(parent_node_id, item.dict())
+            self.builder.add_interleaved(parent_node_id, item.dict())
 
         elif item.type == "xrf_spectrum":
-            self.app.queue.add_xrf_scan(parent_node_id, item.dict())
+            self.builder.add_xrf_scan(parent_node_id, item.dict())
 
         elif item.type == "energy_scan":
-            self.app.queue.add_energy_scan(parent_node_id, item.dict())
+            self.builder.add_energy_scan(parent_node_id, item.dict())
 
         else:
-            self.app.queue.add_queue_entry(parent_node_id, item.dict(), item.type)
+            self.builder.add_queue_entry(parent_node_id, item.dict(), item.type)
 
         # Print the queue after adding an item for easier debugging
 
-        if self.app.server.flask.debug:
+        if logging.getLogger("MX3.QUEUE").isEnabledFor(logging.DEBUG):
             try:
                 self.pretty_print_queue(
                     f"Added item type={item.type} parent={parent_node_id}"
@@ -990,7 +995,9 @@ class QueueSerializer:
 
                 # Swap first "wedge task" and the actual interleaved collection
                 # so that the interleaved task is the first task
-                self.app.queue.swap_task_entry(sid, interleaved_tindex, tindex_list[0])
+                HWR.beamline.queue_manager.swap_task_entry(
+                    sid, interleaved_tindex, tindex_list[0]
+                )
 
                 # We remove the swapped wedge index from the list, (now pointing
                 # at the interleaved collection) and add its new position
@@ -1002,7 +1009,7 @@ class QueueSerializer:
                 # that we remove the items starting from the end (not altering
                 # previous indices)
                 for ti in reversed(tindex_list):
-                    self.app.queue.delete_entry_at([[sid, int(ti)]])
+                    HWR.beamline.queue_manager.delete_entry_at([[sid, int(ti)]])
 
         return self.queue_to_dict()
 
@@ -1010,9 +1017,6 @@ class QueueSerializer:
 class QueueBuilder:
     """Creates queue models the creation of queue entries are handled
     in queue_model_child_added event handler"""
-
-    def __init__(self, app):
-        self.app = app
 
     def build_prefix_path_dict(self, path_list):
         prefix_path_dict = {}
@@ -1051,6 +1055,81 @@ class QueueBuilder:
 
         return pt.run_number
 
+    def get_default_prefix(self, sample_data, generic_name=False):
+        """Thin pass-through to HWR.beamline.session.get_default_prefix.
+
+        Kept as its own method (rather than called inline) so
+        apply_template can call it as self.get_default_prefix(...).
+        """
+        return HWR.beamline.session.get_default_prefix(sample_data, generic_name)
+
+    def get_default_subdir(self, sample_data):
+        """Thin pass-through to HWR.beamline.session.get_default_subdir."""
+        return HWR.beamline.session.get_default_subdir(sample_data)
+
+    def apply_template(self, params, sample_model, path_template):
+        # Apply subdir template if used:
+        if "{" in params.get("subdir", ""):
+            if sample_model.crystals[0].protein_acronym:
+                params["subdir"] = params["subdir"].format(
+                    NAME=sample_model.get_name(),
+                    ACRONYM=sample_model.crystals[0].protein_acronym,
+                )
+            else:
+                stripped = params["subdir"][0 : params["subdir"].find("{")]
+                params["subdir"] = stripped + sample_model.get_name()
+
+            # The template was only applied partially if subdir ends with '-'
+            # probably because either acronym or protein name is null in LIMS
+            if params["subdir"].endswith("-"):
+                params["subdir"] = sample_model.get_name()
+
+        # Making sure that there are no ":" left from the sample name incase
+        # no synchronisation with LIMS was done
+        params["subdir"] = params["subdir"].replace(":", "-")
+
+        if "{" in params.get("prefix", ""):
+            # sample_model is already the authoritative, up-to-date copy of
+            # this sample's identity (see the design doc's step 4 item 2
+            # investigation: every path that refreshes the web UI's sample
+            # list also syncs onto sample_model before this can run), so
+            # read directly from it instead of the web-only sample list.
+            prefix = self.get_default_prefix(sample_model)
+            shape = params.get("shape") or ""
+            params["prefix"] = params["prefix"].format(PREFIX=prefix, POSITION=shape)
+
+            if params["prefix"].endswith("_"):
+                params["prefix"] = params["prefix"][:-1]
+
+        # mxcube web passes entire prefix as prefix, including reference, mad and wedge
+        # prefix. So we strip those before setting the actual base_prefix.
+        params["prefix"] = self.strip_prefix(path_template, params["prefix"])
+
+    def strip_prefix(self, pt, prefix):
+        """Strip the reference, wedge and mad prefix from a given prefix.
+
+        For example,
+        remove ``ref-`` from the beginning
+        and ``_w[n]`` and ``-pk``, ``-ip``, ``-ipp`` from the end.
+
+        :param PathTemplate pt: path template used to create the prefix
+        :param str prefix: prefix from the client
+        :returns: stripped prefix
+        """
+        if (
+            pt.reference_image_prefix
+            and pt.reference_image_prefix == prefix[0 : len(pt.reference_image_prefix)]
+        ):
+            prefix = prefix[len(pt.reference_image_prefix) + 1 :]
+
+        if pt.wedge_prefix and pt.wedge_prefix == prefix[-len(pt.wedge_prefix) :]:
+            prefix = prefix[: -(len(pt.wedge_prefix) + 1)]
+
+        if pt.mad_prefix and pt.mad_prefix == prefix[-len(pt.mad_prefix) :]:
+            prefix = prefix[: -(len(pt.mad_prefix) + 1)]
+
+        return prefix
+
     def add_sample(self, sample_id: str, item):
         """Add a sample with sample id <sample_id> the queue.
 
@@ -1059,7 +1138,7 @@ class QueueBuilder:
         """
         # Sample is already in the queue, just enable it (incase it was disabled)
         if item.get("queueID", -1) != -1:
-            self.app.queue.enable_entry(item["queueID"], True)
+            HWR.beamline.queue_manager.enable_entry(item["queueID"], True)
             return item["queueID"]
 
         sample_model = qmo.Sample()
@@ -1081,11 +1160,6 @@ class QueueBuilder:
             sample_model.location = component.get_coords()
         else:
             sample_model.location = tuple(map(int, item["location"].split(":")))
-
-        # Manually added sample, make sure that i'ts on the server side sample list
-        if item["location"] == "Manual":
-            item["defaultSubDir"] = self.app.lims.get_default_subdir(item)
-            self.app.lims.sample_list_update_sample(sample_id, item)
 
         # The matching SampleQueueEntry is created and enqueued automatically
         # by Queue.queue_model_child_added
@@ -1139,7 +1213,7 @@ class QueueBuilder:
         acq.path_template.suffix = ftype
         acq.path_template.precision = "0" + str(qmo.PathTemplate.precision)
 
-        self.app.lims.apply_template(params, sample_model, acq.path_template)
+        self.apply_template(params, sample_model, acq.path_template)
 
         self._set_default_prefix(acq.path_template, params, sample_model)
 
@@ -1247,7 +1321,7 @@ class QueueBuilder:
         :param sample_model: The Sample queueModelObject
         """
         params = task_data["parameters"]
-        self.app.lims.apply_template(params, sample_model, model.path_template)
+        self.apply_template(params, sample_model, model.path_template)
 
         # params include only path_template-related parametes and strategy_name
         model.init_from_task_data(sample_model, params)
@@ -1281,7 +1355,7 @@ class QueueBuilder:
         model.path_template.num_files = 0
         model.path_template.precision = "0" + str(qmo.PathTemplate.precision)
 
-        self.app.lims.apply_template(params, sample_model, model.path_template)
+        self.apply_template(params, sample_model, model.path_template)
         self._set_default_prefix(model.path_template, params, sample_model)
 
         full_path = os.path.join(
@@ -1455,7 +1529,7 @@ class QueueBuilder:
         dc_model.set_origin(ORIGIN_MX3)
         dc_model.center_before_collect = True
         dc_model.take_snapshots = HWR.beamline.collect.get_property(
-            "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
+            "num_snapshots", HWR.beamline.collect.number_of_snapshots
         )
 
         return dc_model
@@ -1584,7 +1658,7 @@ class QueueBuilder:
 
         :returns: The queue id of the Data collection
         """
-        sample_model, sample_entry = self.app.queue.get_entry(node_id)
+        sample_model, sample_entry = HWR.beamline.queue_manager.get_entry(node_id)
         params = task["parameters"]
 
         refdc_model = self._create_dc()
@@ -1608,8 +1682,8 @@ class QueueBuilder:
         self.set_char_params(char_model, char_entry, task, sample_model)
 
         # the default value is True, here we adapt to mxcube Web needs
-        char_model.auto_add_diff_plan = self.app.AUTO_ADD_DIFFPLAN
-        char_entry.auto_add_diff_plan = self.app.AUTO_ADD_DIFFPLAN
+        char_model.auto_add_diff_plan = HWR.beamline.queue_manager.auto_add_diff_plan
+        char_entry.auto_add_diff_plan = HWR.beamline.queue_manager.auto_add_diff_plan
 
         char_model.set_enabled(task["checked"])
         char_entry.set_enabled(task["checked"])
@@ -1624,7 +1698,7 @@ class QueueBuilder:
 
         :returns: The queue id of the data collection
         """
-        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
+        sample_model, _sample_entry = HWR.beamline.queue_manager.get_entry(node_id)
         dc_model = self._create_dc()
 
         group_model, _group_entry = self._create_and_enqueue_task_group(sample_model)
@@ -1641,7 +1715,7 @@ class QueueBuilder:
             task: task data
             task_name: The task name
         """
-        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
+        sample_model, _sample_entry = HWR.beamline.queue_manager.get_entry(node_id)
         model = self._create_queue_entry(task, task_name)
         model.set_origin(ORIGIN_MX3)
 
@@ -1693,7 +1767,7 @@ class QueueBuilder:
 
         :returns: The queue id of the data collection
         """
-        parent_model, _parent_entry = self.app.queue.get_entry(node_id)
+        parent_model, _parent_entry = HWR.beamline.queue_manager.get_entry(node_id)
         sample_model = parent_model.get_sample_node()
 
         group_model, _group_entry = self._create_and_enqueue_task_group(parent_model)
@@ -1722,7 +1796,7 @@ class QueueBuilder:
 
         :returns: The queue id of the data collection
         """
-        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
+        sample_model, _sample_entry = HWR.beamline.queue_manager.get_entry(node_id)
 
         group_model, _group_entry = self._create_and_enqueue_task_group(sample_model)
         group_model.interleave_num_images = task["parameters"]["swNumImages"]
@@ -1751,7 +1825,7 @@ class QueueBuilder:
 
         :returns: The queue id of the data collection
         """
-        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
+        sample_model, _sample_entry = HWR.beamline.queue_manager.get_entry(node_id)
         xrf_model = self._create_xrf(sample_model)
 
         group_model, _group_entry = self._create_and_enqueue_task_group(sample_model)
@@ -1768,7 +1842,7 @@ class QueueBuilder:
 
         :returns: The queue id of the data collection
         """
-        sample_model, _sample_entry = self.app.queue.get_entry(node_id)
+        sample_model, _sample_entry = HWR.beamline.queue_manager.get_entry(node_id)
         escan_model = self._create_energy_scan(sample_model)
 
         group_model, _group_entry = self._create_and_enqueue_task_group(sample_model)
@@ -1778,17 +1852,13 @@ class QueueBuilder:
         return escan_model._node_id
 
     def queue_update_item(self, sqid, tqid, data):
-        model, entry = self.app.queue.get_entry(tqid)
-        sample_model, _ = self.app.queue.get_entry(sqid)
+        model, entry = HWR.beamline.queue_manager.get_entry(tqid)
+        sample_model, _ = HWR.beamline.queue_manager.get_entry(sqid)
 
         if data["type"] == "DataCollection":
             self.set_dc_params(model, entry, data, sample_model)
         elif data["type"] == "Characterisation":
             self.set_char_params(model, entry, data, sample_model)
-
-        logging.getLogger("MX3.HWR").info(
-            "[QUEUE] is:\n%s " % self.app.queue.queue_to_json()
-        )
 
         return model
 
@@ -1815,8 +1885,8 @@ class Queue(ComponentBase):
     def __init__(self, app, config):
         super().__init__(app, config)
         self.init_queue_settings()
-        self._qs = QueueSerializer(app)
-        self._qb = QueueBuilder(app)
+        self._qb = QueueBuilder()
+        self._qs = QueueSerializer(self._qb)
 
     def build_prefix_path_dict(self, path_list):
         return self._qb.build_prefix_path_dict(path_list)
@@ -1932,9 +2002,12 @@ class Queue(ComponentBase):
 
         for setting_name in [
             "REMEMBER_PARAMETERS_BETWEEN_SAMPLES",
-            "AUTO_ADD_DIFFPLAN",
         ]:
             settings[str_to_camel(setting_name)] = getattr(self.app, setting_name)
+
+        settings[str_to_camel("AUTO_ADD_DIFFPLAN")] = (
+            HWR.beamline.queue_manager.auto_add_diff_plan
+        )
 
         res = {
             "current": current,
@@ -1944,13 +2017,13 @@ class Queue(ComponentBase):
             "sampleList": self.app.lims.sample_list_get(current_queue=queue),
             "queueStatus": self.queue_exec_state(),
             "numSnapshots": HWR.beamline.collect.get_property(
-                "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
+                "num_snapshots", HWR.beamline.collect.number_of_snapshots
             ),
             "centringMethod": HWR.beamline.queue_manager.centring_method,
         }
 
         self.app.queue.set_num_snapshots(
-            res.get("numSnapshots", self.app.DEFAULT_NUM_SNAPSHOTS)
+            res.get("numSnapshots", HWR.beamline.collect.number_of_snapshots)
         )
 
         res.update(settings)
@@ -2034,6 +2107,20 @@ class Queue(ComponentBase):
         :returns: SampleQueueEntry
         """
         return self._qb.add_sample(sample_id, item)
+
+    def notify_sample_added(self, sample):
+        """Register a manually-added ("free pin") sample in the mxcubeweb
+        sample list.
+
+        Connected to QueueModel's "sample_added" signal (see init_signals)
+        rather than called inline from add_sample, so this fires no matter
+        which code path added the sample.
+        """
+        if not sample.free_pin_mode:
+            return
+
+        sample_dict = self._qs._build_sample_node(sample).model_dump()
+        self.app.lims.sample_list_update_sample(sample.loc_str, sample_dict)
 
     def get_folder_tag(self, params):
         return self._qb.get_folder_tag(params)
@@ -2618,6 +2705,10 @@ class Queue(ComponentBase):
         queue.connect(queue, "child_added", self.queue_model_child_added)
         queue.connect(queue, "child_added", self.notify_task_added)
 
+        # sample_added is emitted by add_child after child_added, once this
+        # sample's QueueEntry already exists (see queue_model_child_added).
+        queue.connect(queue, "sample_added", self.notify_sample_added)
+
         queue.connect(
             queue,
             "diff_plan_available",
@@ -2729,9 +2820,6 @@ class Queue(ComponentBase):
     def init_queue_settings(self):
         self.app.AUTO_MOUNT_SAMPLE = HWR.beamline.collect.get_property(
             "auto_mount_sample", False
-        )
-        self.app.AUTO_ADD_DIFFPLAN = HWR.beamline.collect.get_property(
-            "auto_add_diff_plan", False
         )
         # Change value of the parameter, without changing the hardware object property.
         # This allows to properly reset the value on logout when invoking init_queue_settings.
@@ -2874,7 +2962,7 @@ class Queue(ComponentBase):
                 "take_dark_current": True,
                 "skip_existing_images": False,
                 "take_snapshots": HWR.beamline.collect.get_property(
-                    "num_snapshots", self.app.DEFAULT_NUM_SNAPSHOTS
+                    "num_snapshots", HWR.beamline.collect.number_of_snapshots
                 ),
                 "helical": False,
                 "mesh": False,

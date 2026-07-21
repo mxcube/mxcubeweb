@@ -9,7 +9,6 @@ from pydantic import (
 from mxcubeweb.core.models.configmodels import ModeEnum
 
 ALLOWED_APP_SETTINGS = {
-    "AUTO_ADD_DIFFPLAN": bool,
     "REMEMBER_PARAMETERS_BETWEEN_SAMPLES": bool,
     "AUTO_MOUNT_SAMPLE": bool,
     "ALLOW_REMOTE": bool,
