@@ -293,65 +293,6 @@ class Lims(ComponentBase):
 
         return self.app.SAMPLE_LIST["sampleList"].get(loc, {})
 
-    def apply_template(self, params, sample_model, path_template):
-        # Apply subdir template if used:
-        if "{" in params.get("subdir", ""):
-            if sample_model.crystals[0].protein_acronym:
-                params["subdir"] = params["subdir"].format(
-                    NAME=sample_model.get_name(),
-                    ACRONYM=sample_model.crystals[0].protein_acronym,
-                )
-            else:
-                stripped = params["subdir"][0 : params["subdir"].find("{")]
-                params["subdir"] = stripped + sample_model.get_name()
-
-            # The template was only applied partially if subdir ends with '-'
-            # probably because either acronym or protein name is null in LIMS
-            if params["subdir"].endswith("-"):
-                params["subdir"] = sample_model.get_name()
-
-        # Making sure that there are no ":" left from the sample name incase
-        # no synchronisation with LIMS was done
-        params["subdir"] = params["subdir"].replace(":", "-")
-
-        if "{" in params.get("prefix", ""):
-            sample = self.app.SAMPLE_LIST["sampleList"].get(sample_model.loc_str, {})
-            prefix = self.get_default_prefix(sample)
-            shape = params.get("shape") or ""
-            params["prefix"] = params["prefix"].format(PREFIX=prefix, POSITION=shape)
-
-            if params["prefix"].endswith("_"):
-                params["prefix"] = params["prefix"][:-1]
-
-        # mxcube web passes entire prefix as prefix, including reference, mad and wedge
-        # prefix. So we strip those before setting the actual base_prefix.
-        params["prefix"] = self.strip_prefix(path_template, params["prefix"])
-
-    def strip_prefix(self, pt, prefix):
-        """Strip the reference, wedge and mad prefix from a given prefix.
-
-        For example,
-        remove ``ref-`` from the beginning
-        and ``_w[n]`` and ``-pk``, ``-ip``, ``-ipp`` from the end.
-
-        :param PathTemplate pt: path template used to create the prefix
-        :param str prefix: prefix from the client
-        :returns: stripped prefix
-        """
-        if (
-            pt.reference_image_prefix
-            and pt.reference_image_prefix == prefix[0 : len(pt.reference_image_prefix)]
-        ):
-            prefix = prefix[len(pt.reference_image_prefix) + 1 :]
-
-        if pt.wedge_prefix and pt.wedge_prefix == prefix[-len(pt.wedge_prefix) :]:
-            prefix = prefix[: -(len(pt.wedge_prefix) + 1)]
-
-        if pt.mad_prefix and pt.mad_prefix == prefix[-len(pt.mad_prefix) :]:
-            prefix = prefix[: -(len(pt.mad_prefix) + 1)]
-
-        return prefix
-
     def get_session_manager(self) -> LimsSessionManager:
         return HWR.beamline.lims.session_manager
 

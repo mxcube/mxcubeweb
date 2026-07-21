@@ -83,13 +83,6 @@ class MXCUBEApplication:
     # "automatic/pipeline" mode
     AUTO_MOUNT_SAMPLE = False
 
-    # Automatically add and execute diffraction plans coming from
-    # characterizations
-    AUTO_ADD_DIFFPLAN = False
-
-    # Number of sample snapshots taken before collect
-    DEFAULT_NUM_SNAPSHOTS = 4
-
     # Remember collection paramters between samples
     # or reset (defualt) between samples.
     REMEMBER_PARAMETERS_BETWEEN_SAMPLES = False
