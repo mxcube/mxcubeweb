@@ -215,7 +215,6 @@ class SampleChangerAdapter(AdapterBase):
                     msg = "Starting autoloop Focusing ..."
                     logging.getLogger("MX3.HWR").info(msg)
                     sc.move_to_crystal_position(None)
-
             else:
                 msg = f"Mounting sample: {sample.sample_name}"
                 logging.getLogger("user_level_log").info(msg)
@@ -262,9 +261,7 @@ class SampleChangerAdapter(AdapterBase):
     def get_value(self) -> dict:
         if HWR.beamline.sample_changer_maintenance is not None:
             global_state, cmdstate, msg = self.get_global_state()
-
             cmds = HWR.beamline.sample_changer_maintenance.get_cmd_info()
-
         else:
             global_state = {}
             cmdstate = "SC maintenance controller not defined"
@@ -299,11 +296,7 @@ class SampleChangerAdapter(AdapterBase):
         return "READY" if self._ho.is_ready() else "BUSY"
 
     def loaded_sample(self) -> dict:
-        if self._ho.has_loaded_sample():
-            address, barcode = self._ho.get_loaded_sample()
-        else:
-            address, barcode = "", ""
-
+        address, barcode = self.get_loaded_sample()
         return {"address": address, "barcode": barcode}
 
     def get_contents(self):
