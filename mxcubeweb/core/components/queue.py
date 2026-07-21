@@ -1,6 +1,5 @@
 import contextlib
 import itertools
-import json
 import logging
 import os
 import re
@@ -601,9 +600,6 @@ class QueueSerializer:
 
         return result
 
-    def queue_to_json(self, root_node=None) -> str:
-        return json.dumps(self.queue_to_dict(root_node), sort_keys=True, indent=4)
-
     def pretty_print_queue(self, msg: str | None = None) -> None:
         """Pretty print current queue state for debugging."""
         try:
@@ -1017,25 +1013,6 @@ class QueueSerializer:
 class QueueBuilder:
     """Creates queue models the creation of queue entries are handled
     in queue_model_child_added event handler"""
-
-    def build_prefix_path_dict(self, path_list):
-        prefix_path_dict = {}
-
-        for path in path_list:
-            try:
-                path, run_number, _ = qmo.PathTemplate.interpret_path(path)
-            except ValueError:
-                logging.getLogger("MX3.HWR").info(
-                    '[QUEUE] Warning, failed to interpret path: "%s", please check path'
-                    % path
-                )
-                path, run_number = (path, 0)
-            if path in prefix_path_dict:
-                prefix_path_dict[path] = max(prefix_path_dict[path], run_number)
-            else:
-                prefix_path_dict[path] = run_number
-
-        return prefix_path_dict
 
     def get_run_number(self, pt):
         # Path templates of files not yet written to disk, we are only
@@ -1862,24 +1839,6 @@ class QueueBuilder:
 
         return model
 
-    def add_centring(self, _id, params):
-        msg = "[QUEUE] centring add requested with data: " + str(params)
-        logging.getLogger("MX3.HWR").info(msg)
-
-        # The matching SampleCentringQueueEntry is created and enqueued
-        # automatically by Queue.queue_model_child_added, listening for the
-        # "child_added" signal - no need to build/enqueue it here.
-        cent_node = qmo.SampleCentring()
-        new_node = HWR.beamline.queue_model.add_child_at_id(int(_id), cent_node)
-
-        logging.getLogger("MX3.HWR").info("[QUEUE] centring added to sample")
-
-        return {
-            "QueueId": new_node,
-            "Type": "Centring",
-            "Params": params,
-        }
-
 
 class Queue(ComponentBase):
     def __init__(self, app, config):
@@ -1887,12 +1846,6 @@ class Queue(ComponentBase):
         self.init_queue_settings()
         self._qb = QueueBuilder()
         self._qs = QueueSerializer(self._qb)
-
-    def build_prefix_path_dict(self, path_list):
-        return self._qb.build_prefix_path_dict(path_list)
-
-    def get_run_number(self, pt):
-        return self._qb.get_run_number(pt)
 
     def node_index(self, node):
         """Get the position (index) in the queue, sample and node id of node <node>.
@@ -1927,32 +1880,6 @@ class Queue(ComponentBase):
                 the corresponding node.
         """
         return self._qs.queue_to_dict(node)
-
-    def queue_to_json(self, node: qmo.TaskNode | None = None):
-        """Return the json representation of the queue.
-
-        :param node: list of Node objects to get representation for,
-                            queue root used if nothing is passed.
-
-        :returns: json str on the form:
-                [ { sampleID_1: sid_1,
-                    queueID: qid_1,
-                    location: location_n
-                    tasks: [task1, ... taskn]},
-                    .
-                    .
-                    .
-                    { sampleID_N: sid_N,
-                    queueID: qid_N,
-                    location: location_n,
-                    tasks: [task1, ... taskn]} ]
-
-                where the contents of task is a dictionary, the content depends on
-                the TaskNode type (Datacollection, Chracterisation, Sample). The
-                task dict can be directly used with the set_from_dict methods of
-                the corresponding node.
-        """
-        return self._qs.queue_to_json(node)
 
     def get_node_state(self, node_id: int):
         """Get the state of the given node.
@@ -2068,18 +1995,6 @@ class Queue(ComponentBase):
         """
         return HWR.beamline.queue_manager.enable_entry(id_or_qentry, flag)
 
-    def swap_task_entry(self, sid: str, ti1: int, ti2: int):
-        """Swap order of two queue entries in the queue, with the same sample as parent.
-
-        Swaps order of two queue entries in the queue, with the same sample <sid>
-        as parent.
-
-        :param sid: Sample id
-        :param ti1: Position of task1 (old position)
-        :param ti2: Position of task2 (new position)
-        """
-        HWR.beamline.queue_manager.swap_task_entry(sid, ti1, ti2)
-
     def queue_add_item(self, item_list):
         """Add queue items to the queue.
 
@@ -2100,14 +2015,6 @@ class Queue(ComponentBase):
         """
         return self._qs.queue_add_item(item_list)
 
-    def add_sample(self, sample_id: str, item):
-        """Add a sample with sample id <sample_id> the queue.
-
-        :param sample_id: Sample id (often sample changer location)
-        :returns: SampleQueueEntry
-        """
-        return self._qb.add_sample(sample_id, item)
-
     def notify_sample_added(self, sample):
         """Register a manually-added ("free pin") sample in the mxcubeweb
         sample list.
@@ -2121,175 +2028,6 @@ class Queue(ComponentBase):
 
         sample_dict = self._qs._build_sample_node(sample).model_dump()
         self.app.lims.sample_list_update_sample(sample.loc_str, sample_dict)
-
-    def get_folder_tag(self, params):
-        return self._qb.get_folder_tag(params)
-
-    def set_dc_params(
-        self,
-        model: qmo.DataCollection,
-        entry: qe.BaseQueueEntry,
-        task_data: dict,
-        sample_model,
-    ):
-        """Helper method that sets the data collection parameters for a DataCollection.
-
-        :param model: The model to set parameters of
-        :param entry: The queue entry of the model
-        :param task_data: Dictionary with new parameters
-        """
-        return self._qb.set_dc_params(model, entry, task_data, sample_model)
-
-    def set_gphl_wf_params(
-        self,
-        model: qmo.GphlWorkflow,
-        entry: qe.BaseQueueEntry,
-        task_data: dict,
-        sample_model,
-    ):
-        """Helper method that sets the parameters for a GPhL workflow task.
-
-        :param model: The model to set parameters of
-        :param entry: The queue entry of the model
-        :param task_data: Dictionary with new parameters
-        :param sample_model: The Sample queueModelObject
-        """
-        return self._qb.set_gphl_wf_params(model, entry, task_data, sample_model)
-
-    def set_wf_params(
-        self,
-        model: qmo.Workflow,
-        entry: qe.BaseQueueEntry,
-        task_data: dict,
-        sample_model,
-    ):
-        """Helper method that sets the parameters for a workflow task.
-
-        :param model: The model to set parameters of
-        :param entry: The queue entry of the model
-        :param task_data: Dictionary with new parameters
-        """
-        return self._qb.set_wf_params(model, entry, task_data, sample_model)
-
-    def set_char_params(
-        self,
-        model: qmo.Characterisation,
-        entry: qe.BaseQueueEntry,
-        task_data: dict,
-        sample_model,
-    ):
-        """Helper method that sets the characterisation parameters.
-
-        Helper method that sets the characterisation parameters for a Characterisation.
-
-        :param model: The mode to set parameters of
-        :param entry: The queue entry of the model
-        :param task_data: Dictionary with new parameters
-        """
-        return self._qb.set_char_params(model, entry, task_data, sample_model)
-
-    def set_xrf_params(
-        self,
-        model: qmo.XRFSpectrum,
-        entry: qe.BaseQueueEntry,
-        task_data: dict,
-        sample_model,
-    ):
-        """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
-
-        :param model: The model to set parameters of
-        :param entry: The queue entry of the model
-        :param task_data: Dictionary with new parameters
-        """
-        return self._qb.set_xrf_params(model, entry, task_data, sample_model)
-
-    def set_energy_scan_params(
-        self,
-        model: qmo.EnergyScan,
-        entry: qe.BaseQueueEntry,
-        task_data: dict,
-        sample_model,
-    ):
-        """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
-
-        :param model: The model to set parameters of
-        :param entry: The queue entry of the model
-        :param task_data: Dictionary with new parameters
-        """
-        return self._qb.set_energy_scan_params(model, entry, task_data, sample_model)
-
-    def add_characterisation(self, node_id: int, task: dict) -> int:
-        """Add a data characterisation task to the sample with id: <id>.
-
-        :param node_id: id of the sample to which the task belongs
-        :param task: Task data (parameters)
-
-        :returns: The queue id of the Data collection
-        """
-        return self._qb.add_characterisation(node_id, task)
-
-    def add_data_collection(self, node_id: int, task: dict) -> int:
-        """Add a data collection task to the sample with id: <id>.
-
-        :param node_id: id of the sample to which the task belongs
-        :param task: task data
-
-        :returns: The queue id of the data collection
-        """
-        return self._qb.add_data_collection(node_id, task)
-
-    def add_queue_entry(self, node_id: int, task: dict, task_name: str):
-        """Add a queue entry to the sample with id <node_id>.
-
-        Args:
-            node_id: id of the sample to which the task belongs
-            task: task data
-            task_name: The task name
-        """
-        return self._qb.add_queue_entry(node_id, task, task_name)
-
-    def add_workflow(self, node_id: int, task: dict) -> int:
-        """Add a worklfow task to the parent node with id: <id>.
-
-        For adding GPhL Auto workflow, call with node_id==parent_node_id
-        and all required parameters in task["parameters"]
-
-        :param node_id: id of the parent node to which the task belongs
-        :param task: task data
-
-        :returns: The queue id of the data collection
-        """
-        return self._qb.add_workflow(node_id, task)
-
-    def add_interleaved(self, node_id: int, task: dict) -> int:
-        """Add a interleaved data collection task to the sample with id: <id>.
-
-        :param node_id: id of the sample to which the task belongs
-        :param task: task data
-
-        :returns: The queue id of the data collection
-        """
-        return self._qb.add_interleaved(node_id, task)
-
-    def add_xrf_scan(self, node_id: int, task: dict) -> int:
-        """Add a XRF Scan task to the sample with id: <id>.
-
-        :param node_id: id of the sample to which the task belongs
-        :param task: task data
-
-        :returns: The queue id of the data collection
-        """
-        return self._qb.add_xrf_scan(node_id, task)
-
-    def add_energy_scan(self, node_id: int, task: dict) -> int:
-        """Add a energy scan task to the sample with id: <id>.
-
-        :param node_id: id of the sample to which the task belongs
-        :param task: task data
-
-        :returns: The queue id of the data collection
-        """
-        return self._qb.add_energy_scan(node_id, task)
 
     def clear_queue(self):
         """Create a new queue.
@@ -2917,9 +2655,6 @@ class Queue(ComponentBase):
     def queue_enable_item(self, qid_list, enabled):
         return HWR.beamline.queue_manager.enable_entry(qid_list, enabled)
 
-    def add_centring(self, _id, params):
-        return self._qb.add_centring(_id, params)
-
     def update_dependent_field(self, task_name, data):
         return HWR.beamline.queue_model.update_dependent_field(task_name, data)
 
@@ -3015,33 +2750,6 @@ class Queue(ComponentBase):
                 task_info[task] = self.get_default_task_parameters(task)
 
         return task_info
-
-    def get_sample(self, _id):
-        sample = self.queue_to_dict().get(_id, None)
-
-        if not sample:
-            msg = "[QUEUE] sample info could not be retrieved"
-            logging.getLogger("MX3.HWR").error(msg)
-
-        return sample
-
-    def get_method(self, sample_id, method_id):
-        sample = self.queue_to_dict().get(int(sample_id), None)
-
-        if not sample:
-            msg = "[QUEUE] sample info could not be retrieved"
-            logging.getLogger("MX3.HWR").error(msg)
-            raise KeyError(msg)
-        # Find task with queue id method_id
-        for task in sample.tasks:
-            if task["queueID"] == int(method_id):
-                return task
-
-        msg = "[QUEUE] method info could not be retrieved, it does not exits for"
-        msg += " the given sample"
-        logging.getLogger("MX3.HWR").exception(msg)
-
-        raise ValueError(msg)
 
     def set_group_folder(self, group_folder: GroupFolderModel):
         path = group_folder.path
