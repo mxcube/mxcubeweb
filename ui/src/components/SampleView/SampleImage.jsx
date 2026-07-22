@@ -8,18 +8,17 @@ import { setAttribute } from '../../actions/beamline.js';
 import { displayImage } from '../../actions/general.js';
 import {
   abortCentring,
-  addDistancePoint,
   addShape,
   deleteShape,
   moveToBeam,
   recordCentringClick,
   rotateToShape,
-  setImageRatio,
   toggleDrawGrid,
   updateShapes,
 } from '../../actions/sampleview.js';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import { showShapeMenu } from '../../reducers/contextMenu.js';
+import { addDistancePoint, setImageRatio } from '../../reducers/sampleview.js';
 import { selectSelectedShapeIds, setOverlay } from '../../reducers/shapes.js';
 import SampleControls from '../SampleControls/SampleControls';
 import DrawGridPlugin from './DrawGridPlugin';
@@ -535,10 +534,10 @@ class SampleImage extends React.Component {
       );
     } else if (measureDistance) {
       this.canvas.selection = false; // Disable group selection
-      this.props.addDistancePoint(
-        option.e.layerX / imageRatio,
-        option.e.layerY / imageRatio,
-      );
+      this.props.addDistancePoint({
+        x: option.e.layerX / imageRatio,
+        y: option.e.layerY / imageRatio,
+      });
     } else if (drawGrid) {
       this.canvas.selection = false; // Disable group selection
       this.drawGridPlugin.startDrawing(option, this.canvas, imageRatio);

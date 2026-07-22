@@ -12,51 +12,21 @@ import {
   sendStartClickCentring,
 } from '../api/sampleview';
 import {
+  centringClicksLeft,
+  drawGrid,
+  saveImageSize,
+  setAperture,
+  setCurrentPhase,
+  showVideoMessageOverlay,
+  startClickCentring as startClickCentringAction,
+  stopClickCentring,
+} from '../reducers/sampleview';
+import {
   addShape as addShapeAction,
   deleteShape as deleteShapeAction,
   updateShapes as updateShapesAction,
 } from '../reducers/shapes';
 import { showErrorPanel } from './general';
-
-export function setBeamInfo(info) {
-  return { type: 'SET_BEAM_INFO', info };
-}
-
-export function setCurrentPhase(phase) {
-  return { type: 'SET_CURRENT_PHASE', phase };
-}
-
-export function setImageRatio(clientWidth) {
-  return { type: 'SET_IMAGE_RATIO', clientWidth };
-}
-
-function setAperture(size) {
-  return { type: 'SET_APERTURE', size };
-}
-
-export function setPixelsPerMm(pixelsPerMm) {
-  return { type: 'SET_PIXELS_PER_MM', pixelsPerMm };
-}
-
-export function measureDistance(mode) {
-  return { type: 'MEASURE_DISTANCE', mode };
-}
-
-export function addDistancePoint(x, y) {
-  return { type: 'ADD_DISTANCE_POINT', x, y };
-}
-
-export function startClickCentringAction() {
-  return { type: 'START_CLICK_CENTRING' };
-}
-
-export function stopClickCentring() {
-  return { type: 'STOP_CLICK_CENTRING' };
-}
-
-export function videoMessageOverlay(show, msg) {
-  return { type: 'SHOW_VIDEO_MESSAGE_OVERLAY', show, msg };
-}
 
 export function setVideoSize(width, height) {
   return async (dispatch, getState) => {
@@ -66,13 +36,14 @@ export function setVideoSize(width, height) {
     }
 
     const json = await sendSetVideoSize(width, height);
-    dispatch({
-      type: 'SAVE_IMAGE_SIZE',
-      width: json.imageWidth,
-      height: json.imageHeight,
-      pixelsPerMm: json.pixelsPerMm,
-      sourceScale: json.scale,
-    });
+    dispatch(
+      saveImageSize({
+        width: json.imageWidth,
+        height: json.imageHeight,
+        pixelsPerMm: json.pixelsPerMm,
+        sourceScale: json.scale,
+      }),
+    );
   };
 }
 
@@ -97,13 +68,8 @@ export function toggleDrawGrid() {
       dispatch(showErrorPanel(true, 'There is no sample mounted'));
       return;
     }
-
-    dispatch({ type: 'DRAW_GRID' });
+    dispatch(drawGrid());
   };
-}
-
-function centringClicksLeft(clicksLeft) {
-  return { type: 'CENTRING_CLICKS_LEFT', clicksLeft };
 }
 
 export function rotateToShape(sid) {
@@ -139,14 +105,24 @@ export function recordCentringClick(x, y) {
     } else {
       msg += `Clicks left: ${clicksLeft}`;
     }
-    dispatch(videoMessageOverlay(true, msg));
+    dispatch(
+      showVideoMessageOverlay({
+        msg,
+        show: true,
+      }),
+    );
   };
 }
 
 export function acceptCentring() {
   return async (dispatch) => {
     await sendAcceptCentring();
-    dispatch(videoMessageOverlay(false, ''));
+    dispatch(
+      showVideoMessageOverlay({
+        msg: '',
+        show: false,
+      }),
+    );
   };
 }
 
@@ -218,7 +194,7 @@ export function toggleCentring() {
 
     // Turn off grid drawing if active
     if (sampleview.drawGrid) {
-      dispatch({ type: 'DRAW_GRID' });
+      dispatch(drawGrid());
     }
 
     if (sampleview.clickCentring) {
@@ -250,8 +226,12 @@ function startClickCentring() {
         ? 'Save centring or clicking on screen to restart'
         : `Clicks left: ${clicksLeft}`
     }`;
-
-    dispatch(videoMessageOverlay(true, msg));
+    dispatch(
+      showVideoMessageOverlay({
+        msg,
+        show: true,
+      }),
+    );
   };
 }
 
@@ -261,7 +241,7 @@ export function abortCentring() {
 
     await sendAbortCentring();
     dispatch(stopClickCentring());
-    dispatch(videoMessageOverlay(false, ''));
+    dispatch(showVideoMessageOverlay({ show: false, msg: '' }));
   };
 }
 

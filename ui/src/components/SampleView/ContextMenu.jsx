@@ -10,14 +10,13 @@ import {
   add2DPoint,
   addShape,
   deleteShape,
-  measureDistance,
   moveToBeam,
   moveToPoint,
-  stopClickCentring,
   toggleDrawGrid,
 } from '../../actions/sampleview';
 import { showTaskForm } from '../../actions/taskForm';
 import { hideMenu } from '../../reducers/contextMenu';
+import { measureDistance, stopClickCentring } from '../../reducers/sampleview';
 import { useAppSelector } from '../../ts-store';
 import { getLastUsedParameters } from '../Tasks/fields';
 
