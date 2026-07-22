@@ -1,4 +1,3 @@
-import json
 import logging
 
 from flask import (
@@ -40,7 +39,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def harvest_crystal():
         try:
-            crystal_uuid = json.loads(request.data)
+            crystal_uuid = request.get_json(force=False, silent=True)
             HWR.beamline.harvester.harvest_crystal(crystal_uuid)
         except Exception:
             logging.getLogger("MX3.HWR").exception("Cannot Harvest Crystal")
@@ -57,7 +56,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @server.restrict
     def harvest_and_mount_sample():
         try:
-            crystal_uuid = json.loads(request.data)
+            crystal_uuid = request.get_json(force=False, silent=True)
             sample = app.harvester.get_sample_by_id(crystal_uuid)
             HWR.beamline.sample_changer.harvest_and_mount_sample(
                 crystal_uuid, sample["sampleID"]
@@ -84,7 +83,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     @bp.route("/validate_calibration", methods=["POST"])
     @server.restrict
     def validate_calibration():
-        validated = json.loads(request.data)
+        validated = request.get_json(force=False, silent=True)
         if validated:
             HWR.beamline.harvester_maintenance.validate_calibration()
         else:
