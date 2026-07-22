@@ -1052,10 +1052,10 @@ class QueueBuilder:
 
         return pt.run_number
 
-    def add_sample(self, sample_id, item):
+    def add_sample(self, sample_id: str, item):
         """Add a sample with sample id <sample_id> the queue.
 
-        :param str sample_id: Sample id (often sample changer location)
+        :param sample_id: Sample id (often sample changer location)
         :returns: SampleQueueEntry
         """
         # Sample is already in the queue, just enable it (incase it was disabled)
@@ -1110,12 +1110,18 @@ class QueueBuilder:
 
         return tag
 
-    def set_dc_params(self, model, entry, task_data, sample_model):
+    def set_dc_params(
+        self,
+        model: qmo.DataCollection,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the data collection parameters for a DataCollection.
 
-        :param DataCollectionQueueModel: The model to set parameters of
-        :param DataCollectionQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         acq = model.acquisitions[0]
         params = task_data["parameters"]
@@ -1227,13 +1233,19 @@ class QueueBuilder:
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-    def set_gphl_wf_params(self, model, entry, task_data, sample_model):
+    def set_gphl_wf_params(
+        self,
+        model: qmo.GphlWorkflow,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the parameters for a GPhL workflow task.
 
-        :param queue_model_objectsGphlWorkflow: The model to set parameters of
-        :param GphlWorkflowQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
-        :param dict sample_model: The Sample queueModelObject
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
+        :param sample_model: The Sample queueModelObject
         """
         params = task_data["parameters"]
         self.app.lims.apply_template(params, sample_model, model.path_template)
@@ -1251,12 +1263,18 @@ class QueueBuilder:
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-    def set_wf_params(self, model, entry, task_data, sample_model):
+    def set_wf_params(
+        self,
+        model: qmo.Workflow,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the parameters for a workflow task.
 
-        :param WorkflowQueueModel: The model to set parameters of
-        :param GenericWorkflowQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         params = task_data["parameters"]
         model.parameters = params
@@ -1308,14 +1326,20 @@ class QueueBuilder:
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-    def set_char_params(self, model, entry, task_data, sample_model):
+    def set_char_params(
+        self,
+        model: qmo.Characterisation,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the characterisation parameters.
 
         Helper method that sets the characterisation parameters for a Characterisation.
 
-        :param CharacterisationQueueModel: The mode to set parameters of
-        :param CharacterisationQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The mode to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         params = task_data["parameters"]
         self.set_dc_params(
@@ -1334,12 +1358,18 @@ class QueueBuilder:
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-    def set_xrf_params(self, model, entry, task_data, sample_model):
+    def set_xrf_params(
+        self,
+        model: qmo.XRFSpectrum,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
 
-        :param XRFSpectrum QueueModel: The model to set parameters of
-        :param XrfSpectrumQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         params = task_data["parameters"]
 
@@ -1370,12 +1400,18 @@ class QueueBuilder:
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-    def set_energy_scan_params(self, model, entry, task_data, sample_model):
+    def set_energy_scan_params(
+        self,
+        model: qmo.EnergyScan,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
 
-        :param EnergyScan QueueModel: The model to set parameters of
-        :param EnergyScanQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         params = task_data["parameters"]
 
@@ -1407,7 +1443,7 @@ class QueueBuilder:
         model.set_enabled(task_data["checked"])
         entry.set_enabled(task_data["checked"])
 
-    def _create_dc(self):
+    def _create_dc(self) -> qmo.DataCollection:
         """Create a data collection model.
 
         Its corresponding DataCollectionQueueEntry is created and enqueued
@@ -1415,7 +1451,6 @@ class QueueBuilder:
         Queue.queue_model_child_added.
 
         :returns: The data collection model.
-        :rtype: DataCollection
         """
         dc_model = qmo.DataCollection()
         dc_model.set_origin(ORIGIN_MX3)
@@ -1456,46 +1491,42 @@ class QueueBuilder:
 
         return model
 
-    def _create_wf(self):
+    def _create_wf(self) -> qmo.Workflow:
         """Create a workflow model.
 
         :returns: The workflow model.
-        :rtype: Workflow
         """
         wf_model = qmo.Workflow()
         wf_model.set_origin(ORIGIN_MX3)
 
         return wf_model
 
-    def _create_gphl_wf(self):
+    def _create_gphl_wf(self) -> qmo.GphlWorkflow:
         """Create a gphl workflow model.
 
         :returns: The GPhL workflow model.
-        :rtype: GphlWorkflow
         """
         wf_model = qmo.GphlWorkflow()
         wf_model.set_origin(ORIGIN_MX3)
 
         return wf_model
 
-    def _create_xrf(self, sample_model):
+    def _create_xrf(self, sample_model: qmo.Sample) -> qmo.XRFSpectrum:
         """Create a XRFSpectrum model.
 
-        :param dict task: Collection parameters
+        :param sample_model: The sample the collection belongs to
         :returns: The XRFSpectrum model.
-        :rtype: XRFSpectrum
         """
         xrf_model = qmo.XRFSpectrum(sample=sample_model)
         xrf_model.set_origin(ORIGIN_MX3)
 
         return xrf_model
 
-    def _create_energy_scan(self, sample_model):
+    def _create_energy_scan(self, sample_model: qmo.Sample) -> qmo.EnergyScan:
         """Create an energy scan model.
 
-        :param dict task: Collection parameters
+        :param sample_model: The sample the collection belongs to
         :returns: The energy scan model.
-        :rtype: EnergyScan
         """
         escan_model = qmo.EnergyScan(sample=sample_model)
         escan_model.set_origin(ORIGIN_MX3)
@@ -1546,14 +1577,13 @@ class QueueBuilder:
             prefix if prefix else HWR.beamline.session.get_default_prefix(sample_model)
         )
 
-    def add_characterisation(self, node_id, task):
+    def add_characterisation(self, node_id: int, task: dict) -> int:
         """Add a data characterisation task to the sample with id: <id>.
 
-        :param int id: id of the sample to which the task belongs
-        :param dict task: Task data (parameters)
+        :param node_id: id of the sample to which the task belongs
+        :param task: Task data (parameters)
 
         :returns: The queue id of the Data collection
-        :rtype: int
         """
         sample_model, sample_entry = self.app.queue.get_entry(node_id)
         params = task["parameters"]
@@ -1587,14 +1617,13 @@ class QueueBuilder:
 
         return char_model._node_id
 
-    def add_data_collection(self, node_id, task):
+    def add_data_collection(self, node_id: int, task: dict) -> int:
         """Add a data collection task to the sample with id: <id>.
 
-        :param int id: id of the sample to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the sample to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         sample_model, _sample_entry = self.app.queue.get_entry(node_id)
         dc_model = self._create_dc()
@@ -1605,13 +1634,13 @@ class QueueBuilder:
 
         return dc_model._node_id
 
-    def add_queue_entry(self, node_id, task, task_name):
+    def add_queue_entry(self, node_id: int, task: dict, task_name: str):
         """Add a queue entry to the sample with id <node_id>.
 
         Args:
-            node_id (int): id of the sample to which the task belongs
-            task (dict): task data
-            task_name (str): The task name
+            node_id: id of the sample to which the task belongs
+            task: task data
+            task_name: The task name
         """
         sample_model, _sample_entry = self.app.queue.get_entry(node_id)
         model = self._create_queue_entry(task, task_name)
@@ -1654,17 +1683,16 @@ class QueueBuilder:
 
         return model._node_id
 
-    def add_workflow(self, node_id, task):
+    def add_workflow(self, node_id: int, task: dict) -> int:
         """Add a worklfow task to the parent node with id: <id>.
 
         For adding GPhL Auto workflow, call with node_id==parent_node_id
         and all required parameters in task["parameters"]
 
-        :param int node_id: id of the parent node to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the parent node to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         parent_model, _parent_entry = self.app.queue.get_entry(node_id)
         sample_model = parent_model.get_sample_node()
@@ -1687,14 +1715,13 @@ class QueueBuilder:
 
         return wf_model._node_id
 
-    def add_interleaved(self, node_id, task):
+    def add_interleaved(self, node_id: int, task: dict) -> int:
         """Add a interleaved data collection task to the sample with id: <id>.
 
-        :param int node_id: id of the sample to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the sample to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         sample_model, _sample_entry = self.app.queue.get_entry(node_id)
 
@@ -1717,14 +1744,13 @@ class QueueBuilder:
 
         return group_model._node_id
 
-    def add_xrf_scan(self, node_id, task):
+    def add_xrf_scan(self, node_id: int, task: dict) -> int:
         """Add a XRF Scan task to the sample with id: <id>.
 
-        :param int id: id of the sample to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the sample to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         sample_model, _sample_entry = self.app.queue.get_entry(node_id)
         xrf_model = self._create_xrf(sample_model)
@@ -1735,14 +1761,13 @@ class QueueBuilder:
 
         return xrf_model._node_id
 
-    def add_energy_scan(self, node_id, task):
+    def add_energy_scan(self, node_id: int, task: dict) -> int:
         """Add a energy scan task to the sample with id: <id>.
 
-        :param int id: id of the sample to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the sample to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         sample_model, _sample_entry = self.app.queue.get_entry(node_id)
         escan_model = self._create_energy_scan(sample_model)
@@ -1840,10 +1865,10 @@ class Queue(ComponentBase):
             "sample_node": sample_model,
         }
 
-    def queue_to_dict(self, node=None):
+    def queue_to_dict(self, node: qmo.TaskNode | None = None):
         """Returns the dictionary representation of the queue.
 
-        :param TaskNode node: list of Node objects to get representation for,
+        :param node: list of Node objects to get representation for,
                             queue root used if nothing is passed.
 
         :returns: dictionary on the form:
@@ -1866,10 +1891,10 @@ class Queue(ComponentBase):
         """
         return self._qs.queue_to_dict(node)
 
-    def queue_to_json(self, node=None):
+    def queue_to_json(self, node: qmo.TaskNode | None = None):
         """Return the json representation of the queue.
 
-        :param TaskNode node: list of Node objects to get representation for,
+        :param node: list of Node objects to get representation for,
                             queue root used if nothing is passed.
 
         :returns: json str on the form:
@@ -1892,10 +1917,10 @@ class Queue(ComponentBase):
         """
         return self._qs.queue_to_json(node)
 
-    def get_node_state(self, node_id):
+    def get_node_state(self, node_id: int):
         """Get the state of the given node.
 
-        :param TaskNode node: Node to get state for
+        :param node_id: Node id of node to get state for
 
         :returns: tuple containing (enabled, state)
                 where state: {0, 1, 2, 3} = {in_queue, running, success, failed}
@@ -1985,12 +2010,11 @@ class Queue(ComponentBase):
 
         return state
 
-    def get_entry(self, _id):
+    def get_entry(self, _id: int) -> tuple:
         """Retrieve the model and the queue entry for the model node with id <id>.
 
-        :param int _id: Node id of node to retrieve
+        :param _id: Node id of node to retrieve
         :returns: The tuple model, entry or the root node and QueueManger if _id is None
-        :rtype: Tuple
         """
         if _id is None:
             dummy_variable = "Cannot retrieve entry without a node id"
@@ -2033,7 +2057,7 @@ class Queue(ComponentBase):
 
             self.delete_entry(entry)
 
-    def enable_entry(self, id_or_qentry, flag):
+    def enable_entry(self, id_or_qentry: int | qe.BaseQueueEntry, flag: bool):
         """Helper function that sets the enabled flag for the entry and its model.
 
         Helper function that sets the enabled flag to <flag> for the entry and associated model.
@@ -2041,8 +2065,8 @@ class Queue(ComponentBase):
 
         Sets enabled flag on both the entry and model.
 
-        :param object id_or_qentry: Node id of model or QueueEntry object
-        :param bool flag: True for enabled False for disabled
+        :param id_or_qentry: Node id of model or QueueEntry object
+        :param flag: True for enabled False for disabled
         """
         if isinstance(id_or_qentry, qe.BaseQueueEntry):
             id_or_qentry.set_enabled(flag)
@@ -2052,15 +2076,15 @@ class Queue(ComponentBase):
             entry.set_enabled(flag)
             model.set_enabled(flag)
 
-    def swap_task_entry(self, sid, ti1, ti2):
+    def swap_task_entry(self, sid: str, ti1: int, ti2: int):
         """Swap order of two queue entries in the queue, with the same sample as parent.
 
         Swaps order of two queue entries in the queue, with the same sample <sid>
         as parent.
 
-        :param str sid: Sample id
-        :param int ti1: Position of task1 (old position)
-        :param int ti2: Position of task2 (new position)
+        :param sid: Sample id
+        :param ti1: Position of task1 (old position)
+        :param ti2: Position of task2 (new position)
         """
         current_queue = self.queue_to_dict()
 
@@ -2099,10 +2123,10 @@ class Queue(ComponentBase):
         """
         return self._qs.queue_add_item(item_list)
 
-    def add_sample(self, sample_id, item):
+    def add_sample(self, sample_id: str, item):
         """Add a sample with sample id <sample_id> the queue.
 
-        :param str sample_id: Sample id (often sample changer location)
+        :param sample_id: Sample id (often sample changer location)
         :returns: SampleQueueEntry
         """
         return self._qb.add_sample(sample_id, item)
@@ -2110,139 +2134,169 @@ class Queue(ComponentBase):
     def get_folder_tag(self, params):
         return self._qb.get_folder_tag(params)
 
-    def set_dc_params(self, model, entry, task_data, sample_model):
+    def set_dc_params(
+        self,
+        model: qmo.DataCollection,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the data collection parameters for a DataCollection.
 
-        :param DataCollectionQueueModel: The model to set parameters of
-        :param DataCollectionQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         return self._qb.set_dc_params(model, entry, task_data, sample_model)
 
-    def set_gphl_wf_params(self, model, entry, task_data, sample_model):
+    def set_gphl_wf_params(
+        self,
+        model: qmo.GphlWorkflow,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the parameters for a GPhL workflow task.
 
-        :param queue_model_objectsGphlWorkflow: The model to set parameters of
-        :param GphlWorkflowQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
-        :param dict sample_model: The Sample queueModelObject
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
+        :param sample_model: The Sample queueModelObject
         """
         return self._qb.set_gphl_wf_params(model, entry, task_data, sample_model)
 
-    def set_wf_params(self, model, entry, task_data, sample_model):
+    def set_wf_params(
+        self,
+        model: qmo.Workflow,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the parameters for a workflow task.
 
-        :param WorkflowQueueModel: The model to set parameters of
-        :param GenericWorkflowQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         return self._qb.set_wf_params(model, entry, task_data, sample_model)
 
-    def set_char_params(self, model, entry, task_data, sample_model):
+    def set_char_params(
+        self,
+        model: qmo.Characterisation,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the characterisation parameters.
 
         Helper method that sets the characterisation parameters for a Characterisation.
 
-        :param CharacterisationQueueModel: The mode to set parameters of
-        :param CharacterisationQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The mode to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         return self._qb.set_char_params(model, entry, task_data, sample_model)
 
-    def set_xrf_params(self, model, entry, task_data, sample_model):
+    def set_xrf_params(
+        self,
+        model: qmo.XRFSpectrum,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
 
-        :param XRFSpectrum QueueModel: The model to set parameters of
-        :param XrfSpectrumQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         return self._qb.set_xrf_params(model, entry, task_data, sample_model)
 
-    def set_energy_scan_params(self, model, entry, task_data, sample_model):
+    def set_energy_scan_params(
+        self,
+        model: qmo.EnergyScan,
+        entry: qe.BaseQueueEntry,
+        task_data: dict,
+        sample_model,
+    ):
         """Helper method that sets the xrf scan parameters for a XRF spectrum Scan.
 
-        :param EnergyScan QueueModel: The model to set parameters of
-        :param EnergyScanQueueEntry: The queue entry of the model
-        :param dict task_data: Dictionary with new parameters
+        :param model: The model to set parameters of
+        :param entry: The queue entry of the model
+        :param task_data: Dictionary with new parameters
         """
         return self._qb.set_energy_scan_params(model, entry, task_data, sample_model)
 
-    def add_characterisation(self, node_id, task):
+    def add_characterisation(self, node_id: int, task: dict) -> int:
         """Add a data characterisation task to the sample with id: <id>.
 
-        :param int id: id of the sample to which the task belongs
-        :param dict task: Task data (parameters)
+        :param node_id: id of the sample to which the task belongs
+        :param task: Task data (parameters)
 
         :returns: The queue id of the Data collection
-        :rtype: int
         """
         return self._qb.add_characterisation(node_id, task)
 
-    def add_data_collection(self, node_id, task):
+    def add_data_collection(self, node_id: int, task: dict) -> int:
         """Add a data collection task to the sample with id: <id>.
 
-        :param int id: id of the sample to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the sample to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         return self._qb.add_data_collection(node_id, task)
 
-    def add_queue_entry(self, node_id, task, task_name):
+    def add_queue_entry(self, node_id: int, task: dict, task_name: str):
         """Add a queue entry to the sample with id <node_id>.
 
         Args:
-            node_id (int): id of the sample to which the task belongs
-            task (dict): task data
-            task_name (str): The task name
+            node_id: id of the sample to which the task belongs
+            task: task data
+            task_name: The task name
         """
         return self._qb.add_queue_entry(node_id, task, task_name)
 
-    def add_workflow(self, node_id, task):
+    def add_workflow(self, node_id: int, task: dict) -> int:
         """Add a worklfow task to the parent node with id: <id>.
 
         For adding GPhL Auto workflow, call with node_id==parent_node_id
         and all required parameters in task["parameters"]
 
-        :param int node_id: id of the parent node to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the parent node to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         return self._qb.add_workflow(node_id, task)
 
-    def add_interleaved(self, node_id, task):
+    def add_interleaved(self, node_id: int, task: dict) -> int:
         """Add a interleaved data collection task to the sample with id: <id>.
 
-        :param int node_id: id of the sample to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the sample to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         return self._qb.add_interleaved(node_id, task)
 
-    def add_xrf_scan(self, node_id, task):
+    def add_xrf_scan(self, node_id: int, task: dict) -> int:
         """Add a XRF Scan task to the sample with id: <id>.
 
-        :param int id: id of the sample to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the sample to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         return self._qb.add_xrf_scan(node_id, task)
 
-    def add_energy_scan(self, node_id, task):
+    def add_energy_scan(self, node_id: int, task: dict) -> int:
         """Add a energy scan task to the sample with id: <id>.
 
-        :param int id: id of the sample to which the task belongs
-        :param dict task: task data
+        :param node_id: id of the sample to which the task belongs
+        :param task: task data
 
         :returns: The queue id of the data collection
-        :rtype: int
         """
         return self._qb.add_energy_scan(node_id, task)
 
@@ -2343,13 +2397,13 @@ class Queue(ComponentBase):
 
         self.app.server.emit("add_diff_plan", {"tasks": cols}, namespace="/hwr")
 
-    def set_auto_add_diffplan(self, autoadd):
+    def set_auto_add_diffplan(self, autoadd: bool):
         """Set auto add diffraction plan flag.
 
         Sets auto add diffraction plan flag, automatically add to the queue
         (True) or wait for user (False)
 
-        :param bool autoadd: True autoadd, False wait for user
+        :param autoadd: True autoadd, False wait for user
         """
         self.app.AUTO_ADD_DIFFPLAN = autoadd
         current_queue = self.queue_to_dict()
@@ -2366,11 +2420,11 @@ class Queue(ComponentBase):
                     _, entry = self.get_entry(t["queueID"])
                     entry.auto_add_diff_plan = autoadd
 
-    def execute_entry_with_id(self, sid, tindex=None):
+    def execute_entry_with_id(self, sid: str, tindex: int | None = None):
         """Execute the entry at position (sampleID, task index) in queue.
 
-        :param str sid: sampleID
-        :param int tindex: task index of task within sample with id sampleID
+        :param sid: sampleID
+        :param tindex: task index of task within sample with id sampleID
         """
         current_queue = self.queue_to_dict()
         HWR.beamline.queue_manager.set_pause(False)
@@ -2779,21 +2833,20 @@ class Queue(ComponentBase):
             sample_data = current_queue[sample_id]
             self.enable_entry(sample_data["queueID"], flag)
 
-    def set_auto_mount_sample(self, automount):
+    def set_auto_mount_sample(self, automount: bool):
         """Set auto mount next flag.
 
         Sets auto mount next flag, automatically mount next sample in queue
         (True) or wait for user (False)
 
-        :param bool automount: True auto-mount, False wait for user
+        :param automount: True auto-mount, False wait for user
         """
         self.app.AUTO_MOUNT_SAMPLE = automount
 
-    def get_auto_mount_sample(self):
+    def get_auto_mount_sample(self) -> bool:
         """Get auto-mount sample.
 
         :returns: Returns auto mount flag
-        :rtype: bool
         """
         return self.app.AUTO_MOUNT_SAMPLE
 
