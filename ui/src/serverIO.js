@@ -40,12 +40,7 @@ import { updateSampleState } from './actions/sampleGrid';
 import {
   abortCentring,
   saveMotorPosition,
-  setBeamInfo,
-  setCurrentPhase,
-  setPixelsPerMm,
-  startClickCentringAction,
   updateMotorState,
-  videoMessageOverlay,
 } from './actions/sampleview';
 import { setEnergyScanResult } from './actions/taskResults';
 import { hideWaitDialog, showWaitDialog } from './actions/waitDialog';
@@ -57,6 +52,13 @@ import {
 import { processChatMessageRecord } from './components/ChatComponent/chatMessages';
 import { CLICK_CENTRING } from './constants';
 import { addLogRecord } from './reducers/logger';
+import {
+  setBeamInfo,
+  setCurrentPhase,
+  setPixelsPerMm,
+  showVideoMessageOverlay,
+  startClickCentring as startClickCentringAction,
+} from './reducers/sampleview';
 import { setShapes, updateShapes } from './reducers/shapes';
 import { store } from './store';
 
@@ -296,10 +298,10 @@ class ServerIO {
       if (data.method === CLICK_CENTRING) {
         dispatch(startClickCentringAction());
         const msg = `${numClicks}-Click Centring: \nSelect centered position or center`;
-        dispatch(videoMessageOverlay(true, msg));
+        dispatch(showVideoMessageOverlay({ show: true, msg }));
       } else {
         const msg = 'Auto loop centring: \n Save position or re-center';
-        dispatch(videoMessageOverlay(true, msg));
+        dispatch(showVideoMessageOverlay({ show: true, msg }));
       }
     });
 
