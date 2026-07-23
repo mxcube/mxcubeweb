@@ -41,7 +41,6 @@ import {
   saveMotorPosition,
   updateMotorState,
 } from './actions/sampleview';
-import { hideWaitDialog, showWaitDialog } from './actions/waitDialog';
 import {
   showGphlWorkflowParametersDialog,
   showWorkflowParametersDialog,
@@ -60,6 +59,7 @@ import {
 } from './reducers/sampleview';
 import { setShapes, updateShapes } from './reducers/shapes';
 import { setEnergyScanResult } from './reducers/taskResult';
+import { hideWaitDialog, showWaitDialog } from './reducers/waitDialog';
 import { store } from './store';
 
 const { dispatch } = store;
@@ -239,12 +239,12 @@ class ServerIO {
       switch (record.signal) {
         case 'operatingSampleChanger': {
           dispatch(
-            showWaitDialog(
-              'Sample changer in operation',
-              record.message,
-              true,
-              () => dispatch(stopQueue()),
-            ),
+            showWaitDialog({
+              title: 'Sample changer in operation',
+              message: record.message,
+              blocking: true,
+              abortFun: () => dispatch(stopQueue()),
+            }),
           );
 
           break;
@@ -253,12 +253,12 @@ class ServerIO {
         case 'loadingSample':
         case 'loadedSample': {
           dispatch(
-            showWaitDialog(
-              `Loading sample ${record.location}`,
-              record.message,
-              true,
-              () => dispatch(stopQueue()),
-            ),
+            showWaitDialog({
+              title: `Loading sample ${record.location}`,
+              message: record.message,
+              blocking: true,
+              abortFun: () => dispatch(stopQueue()),
+            }),
           );
 
           break;
@@ -267,12 +267,12 @@ class ServerIO {
         case 'unLoadingSample':
         case 'unLoadedSample': {
           dispatch(
-            showWaitDialog(
-              `Unloading sample ${record.location}`,
-              record.message,
-              true,
-              () => dispatch(stopQueue()),
-            ),
+            showWaitDialog({
+              title: `Unloading sample ${record.location}`,
+              message: record.message,
+              blocking: true,
+              abortFun: () => dispatch(stopQueue()),
+            }),
           );
 
           break;
@@ -322,11 +322,11 @@ class ServerIO {
       );
 
       if (!wasInControl && inControl && !hasIncomingRequest) {
-        dispatch(showWaitDialog('You were given control', message));
+        dispatch(showWaitDialog({ title: 'You were given control', message }));
       } else if (wasInControl && !inControl) {
-        dispatch(showWaitDialog('You lost control'));
+        dispatch(showWaitDialog({ title: 'You lost control' }));
       } else if (wasRequestingControl && !requestsControl && !inControl) {
-        dispatch(showWaitDialog('You were denied control', message));
+        dispatch(showWaitDialog({ title: 'You were denied control', message }));
       }
     });
 

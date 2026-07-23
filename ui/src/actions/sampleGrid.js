@@ -1,8 +1,8 @@
 import { fetchLimsSamples, fetchSamplesList } from '../api/lims';
 import { sendSyncWithCrims } from '../api/sampleChanger';
+import { hideWaitDialog, showWaitDialog } from '../reducers/waitDialog';
 import { showErrorPanel } from './general';
 import { setQueue } from './queue';
-import { hideWaitDialog, showWaitDialog } from './waitDialog';
 
 export function updateSampleState(sampleData) {
   return { type: 'UPDATE_SAMPLE_STATE', sampleData };
@@ -52,7 +52,11 @@ export function filterAction(filterOptions) {
 export function getSamplesList() {
   return async (dispatch) => {
     dispatch(
-      showWaitDialog('Please wait', 'Retrieving sample changer contents', true),
+      showWaitDialog({
+        title: 'Please wait',
+        message: 'Retrieving sample changer contents',
+        blocking: true,
+      }),
     );
 
     try {
@@ -70,7 +74,13 @@ export function getSamplesList() {
 
 export function getLimsSamples(lims) {
   return async (dispatch) => {
-    dispatch(showWaitDialog('Please wait', 'Synchronizing with LIMS', true));
+    dispatch(
+      showWaitDialog({
+        title: 'Please wait',
+        message: 'Synchronizing with LIMS',
+        blocking: true,
+      }),
+    );
 
     try {
       const json = await fetchLimsSamples(lims);

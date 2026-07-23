@@ -1,14 +1,18 @@
 import { Button, Modal, ProgressBar } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { hideWaitDialog } from '../actions/waitDialog';
+import { hideWaitDialog } from '../reducers/waitDialog';
+import { useAppDispatch, useAppSelector } from '../ts-store';
 
 function PleaseWaitDialog() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const { show, title, message, blocking, abortFun } = useSelector(
-    (state) => state.waitDialog,
-  );
+  const { show, dialog } = useAppSelector((state) => state.waitDialog);
+
+  if (dialog === null) {
+    return null;
+  }
+
+  const { blocking, message, abortFun, title } = dialog;
 
   return (
     <Modal
@@ -24,7 +28,7 @@ function PleaseWaitDialog() {
       {(message || blocking) && (
         <Modal.Body>
           <div>
-            <p>{message || ''}</p>
+            <p>{message}</p>
             {blocking && <ProgressBar variant="primary" animated now={100} />}
           </div>
         </Modal.Body>
@@ -34,10 +38,7 @@ function PleaseWaitDialog() {
           <Button
             variant="outline-secondary"
             onClick={() => {
-              if (abortFun) {
-                abortFun();
-              }
-
+              abortFun?.();
               dispatch(hideWaitDialog());
             }}
           >
