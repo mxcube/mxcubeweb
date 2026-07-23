@@ -11,9 +11,9 @@ import {
   sendUpdateAllowRemote,
   sendUpdateNickname,
 } from '../api/remoteAccess';
+import { showWaitDialog } from '../reducers/waitDialog';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
-import { showWaitDialog } from './waitDialog';
 
 export function getRaState() {
   return async (dispatch) => {
@@ -37,12 +37,12 @@ export function requestControl(message) {
 
       dispatch(getLoginInfo());
       dispatch(
-        showWaitDialog(
-          'Asking for control',
-          'Please wait while asking for control',
-          true,
-          () => dispatch(cancelControlRequest()),
-        ),
+        showWaitDialog({
+          title: 'Asking for control',
+          message: 'Please wait while asking for control',
+          blocking: true,
+          abortFun: () => dispatch(cancelControlRequest()),
+        }),
       );
     } catch (error) {
       if (error.status === 409) {
