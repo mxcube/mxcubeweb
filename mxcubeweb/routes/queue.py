@@ -1,5 +1,3 @@
-import json
-
 from flask import (
     Blueprint,
     Response,
@@ -247,7 +245,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
         :statuscode: 409: sample info could not be updated, possibly because
             the given sample does not exist in the queue
         """
-        params = json.loads(request.data)
+        params = request.get_json()
         node_id = int(sample_id)
 
         try:
