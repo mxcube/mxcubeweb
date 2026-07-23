@@ -13,12 +13,11 @@ function PleaseWaitDialog() {
   }
 
   const { blocking, message, abortFun, title } = dialog;
-
   return (
     <Modal
       keyboard={!blocking}
       backdrop={!blocking || 'static'}
-      show={show}
+      show
       onHide={() => dispatch(hideWaitDialog())}
       data-default-styles
     >
