@@ -256,9 +256,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
     def set_num_snapshots():
         data = request.get_json()
         app.queue.set_num_snapshots(data["numSnapshots"])
-        resp = jsonify(
-            {"numSnapshots": data["numSnapshots"]}
-        )
+        resp = jsonify({"numSnapshots": data["numSnapshots"]})
         resp.status_code = 200
 
         return resp
