@@ -42,7 +42,6 @@ import {
   saveMotorPosition,
   updateMotorState,
 } from './actions/sampleview';
-import { setEnergyScanResult } from './actions/taskResults';
 import { hideWaitDialog, showWaitDialog } from './actions/waitDialog';
 import {
   showGphlWorkflowParametersDialog,
@@ -60,6 +59,7 @@ import {
   startClickCentring as startClickCentringAction,
 } from './reducers/sampleview';
 import { setShapes, updateShapes } from './reducers/shapes';
+import { setEnergyScanResult } from './reducers/taskResult';
 import { store } from './store';
 
 const { dispatch } = store;
@@ -172,7 +172,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('energy_scan_result', (data) => {
-      dispatch(setEnergyScanResult(data.pk, data.ip, data.rm));
+      dispatch(setEnergyScanResult({ pk: data.pk, ip: data.ip, rm: data.rm }));
     });
 
     this.hwrSocket.on('task', (record, callback) => {
