@@ -43,7 +43,6 @@ import {
   updateMotorState,
 } from './actions/sampleview';
 import { setEnergyScanResult } from './actions/taskResults';
-import { hideWaitDialog, showWaitDialog } from './actions/waitDialog';
 import {
   showGphlWorkflowParametersDialog,
   showWorkflowParametersDialog,
@@ -60,6 +59,7 @@ import {
   startClickCentring as startClickCentringAction,
 } from './reducers/sampleview';
 import { setShapes, updateShapes } from './reducers/shapes';
+import { hideWaitDialog, showWaitDialog } from './reducers/waitDialog';
 import { store } from './store';
 
 const { dispatch } = store;

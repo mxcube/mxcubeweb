@@ -1,8 +1,8 @@
 import { fetchLimsSamples, fetchSamplesList } from '../api/lims';
 import { sendSyncWithCrims } from '../api/sampleChanger';
+import { hideWaitDialog, showWaitDialog } from '../reducers/waitDialog';
 import { showErrorPanel } from './general';
 import { setQueue } from './queue';
-import { hideWaitDialog, showWaitDialog } from './waitDialog';
 
 export function updateSampleState(sampleData) {
   return { type: 'UPDATE_SAMPLE_STATE', sampleData };

@@ -4,7 +4,7 @@ import { useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { respondToControlRequest } from '../../actions/remoteAccess';
-import { hideWaitDialog } from '../../actions/waitDialog';
+import { hideWaitDialog } from '../../reducers/waitDialog';
 
 function PassControlDialog() {
   const dispatch = useDispatch();

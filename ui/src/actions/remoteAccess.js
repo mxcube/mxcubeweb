@@ -11,9 +11,9 @@ import {
   sendUpdateAllowRemote,
   sendUpdateNickname,
 } from '../api/remoteAccess';
+import { showWaitDialog } from '../reducers/waitDialog';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
-import { showWaitDialog } from './waitDialog';
 
 export function getRaState() {
   return async (dispatch) => {

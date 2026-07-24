@@ -1,12 +1,12 @@
 import { Button, Modal, ProgressBar } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { hideWaitDialog } from '../actions/waitDialog';
+import { hideWaitDialog } from '../reducers/waitDialog';
+import { useAppDispatch, useAppSelector } from '../ts-store';
 
 function PleaseWaitDialog() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const { show, title, message, blocking, abortFun } = useSelector(
+  const { show, title, message, blocking, abortFun } = useAppSelector(
     (state) => state.waitDialog,
   );
 
