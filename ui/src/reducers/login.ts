@@ -41,7 +41,7 @@ export interface Session {
   volume: string | null;
 }
 // derived from mxcubecore/core/models/usermodels.py
-interface User {
+export interface User {
   currentLoginAt: string;
   email: string | null;
   fullname: string | null;
@@ -84,7 +84,7 @@ export interface LoggedInSliceState {
   user: User;
 }
 
-type LoginSliceState =
+export type LoginSliceState =
   | LoginUnknownSliceState
   | LoginKnownSliceState
   | LoggedInSliceState;

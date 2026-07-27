@@ -1,4 +1,9 @@
-export function processChatMessageRecord(record, currentUsername) {
+import { type Message, type MessageEntry } from '../../reducers/remoteAccess';
+
+export function processChatMessageRecord(
+  record: MessageEntry,
+  currentUsername: string,
+): Message {
   const isSelf = record.username === currentUsername;
 
   let date;
