@@ -7,7 +7,7 @@ import {
   setCentringMethod,
   setQueueSettings,
 } from '../actions/queue';
-import { AUTO_LOOP_CENTRING, CLICK_CENTRING } from '../constants';
+import { CENTRING_METHOD } from '../constants';
 import GroupFolderInput from './GroupFolderInput.jsx';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 import styles from './QueueSettings.module.css';
@@ -40,12 +40,14 @@ export default function QueueSettings() {
             onChange={(e) => {
               dispatch(
                 setCentringMethod(
-                  e.target.checked ? AUTO_LOOP_CENTRING : CLICK_CENTRING,
+                  e.target.checked
+                    ? CENTRING_METHOD.LOOP
+                    : CENTRING_METHOD.MANUAL,
                 ),
               );
             }}
             name="autoLoopCentring"
-            checked={queueState.centringMethod === AUTO_LOOP_CENTRING}
+            checked={queueState.centringMethod === CENTRING_METHOD.LOOP}
             label="Auto loop centring"
             id="auto-loop-centring"
           />

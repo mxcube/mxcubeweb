@@ -34,7 +34,7 @@ export default function SSXChip() {
   const freeFormCanvasRef = useRef(null);
 
   const dispatch = useDispatch();
-  const currentSampleID = useSelector((state) => state.queue.currentSampleID);
+  const currentSampleID = useSelector((state) => state.queue.current);
   const sampleData = useSelector(
     (state) => state.sampleGrid.sampleList[currentSampleID],
   );

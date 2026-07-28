@@ -18,6 +18,14 @@ import {
 } from '../api/queue';
 import { sendSetCentringMethod } from '../api/sampleview';
 import { TASK_UNCOLLECTED } from '../constants';
+import {
+  setAutoAddDiffPlan as setAutoAddDiffPlanAction,
+  setAutoMount as setAutoMountAction,
+  setCentringMethod as setCentringMethodAction,
+  setGroupFolder as setGroupFolderAction,
+  setNumSnapshots as setNumSnapshotsAction,
+  setQueueSetting as setQueueSettingAction,
+} from '../reducers/queue';
 import { showErrorPanel } from './general';
 import { mountSample } from './sampleChanger';
 import { clearSampleGrid, selectSamplesAction } from './sampleGrid';
@@ -44,28 +52,12 @@ export function setQueue(queue) {
     const { address: loadedSampleId } = state.sampleChanger.loadedSample;
     if (
       queue.sampleOrder.includes(loadedSampleId) &&
-      state.queue.currentSampleID !== loadedSampleId
+      state.queue.current !== loadedSampleId
     ) {
       // If queue contains sample loaded by sample changer, set it as the current sample (unless it already is)
       dispatch(setCurrentSample(loadedSampleId));
     }
   };
-}
-
-function setCentringMethodAction(centringMethod) {
-  return { type: 'SET_CENTRING_METHOD', centringMethod };
-}
-
-function setQueueSettingAction(settingName, value) {
-  return { type: 'SET_QUEUE_SETTING', settingName, value };
-}
-
-function setNumSnapshotsAction(n) {
-  return { type: 'SET_NUM_SNAPSHOTS', n };
-}
-
-function setGroupFolderAction(path) {
-  return { type: 'SET_GROUP_FOLDER', path };
 }
 
 function removeSamplesFromQueueAction(sampleIDList) {
@@ -74,10 +66,6 @@ function removeSamplesFromQueueAction(sampleIDList) {
 
 export function setSampleAttribute(sampleIDList, attr, value) {
   return { type: 'SET_SAMPLE_ATTRIBUTE', sampleIDList, attr, value };
-}
-
-export function clearCurrentSample() {
-  return { type: 'CLEAR_CURRENT_SAMPLE' };
 }
 
 export function addSamplesToQueue(sampleDataList) {
@@ -124,10 +112,6 @@ export function clearQueue(clearQueueOnly = false) {
       dispatch(clearSampleGrid());
     }
   };
-}
-
-export function setStatus(queueState) {
-  return { type: 'SET_QUEUE_STATUS', queueState };
 }
 
 export function startQueue(autoMountNext = true, sid = -1) {
@@ -418,10 +402,6 @@ export function deleteSamplesFromQueue(sampleIDList) {
   };
 }
 
-function setAutoMountAction(automount) {
-  return { type: 'SET_AUTO_MOUNT_SAMPLE', automount };
-}
-
 export function setAutoMountSample(automount) {
   return async (dispatch) => {
     try {
@@ -436,10 +416,6 @@ export function setAutoMountSample(automount) {
       dispatch(showErrorPanel(true, 'Could not set/unset automount'));
     }
   };
-}
-
-function setAutoAddDiffPlanAction(autoadd) {
-  return { type: 'SET_AUTO_ADD_DIFFPLAN', autoadd };
 }
 
 export function setAutoAddDiffPlan(autoadddiffplan) {
@@ -478,7 +454,7 @@ export function setGroupFolder(path) {
 export function setQueueSettings(name, value) {
   return async (dispatch) => {
     await sendSetQueueSettings(name, value);
-    dispatch(setQueueSettingAction(name, value));
+    dispatch(setQueueSettingAction({ settingName: name, value }));
   };
 }
 
