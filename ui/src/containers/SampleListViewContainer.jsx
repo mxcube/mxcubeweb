@@ -443,7 +443,7 @@ export default function SampleListViewContainer() {
     for (const sampleID of sampleIDList) {
       if (inQueue(sampleID)) {
         // Do not remove currently mounted sample
-        if (queue.currentSampleID !== sampleID) {
+        if (queue.current !== sampleID) {
           samplesToRemove.push(sampleID);
         }
       } else {

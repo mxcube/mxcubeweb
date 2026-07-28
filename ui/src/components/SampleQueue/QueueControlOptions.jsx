@@ -1,5 +1,4 @@
 import { Button } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
 
 import {
   pauseQueue,
@@ -11,15 +10,16 @@ import {
 import { showConfirmCollectDialog } from '../../actions/queueGUI';
 import { unmountSample } from '../../actions/sampleChanger';
 import { QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED } from '../../constants';
+import { useAppDispatch, useAppSelector } from '../../ts-store';
 import { getSampleName } from '../../utils';
 
 export default function QueueControlOptions() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const queueStatus = useSelector((state) => state.queue.queueStatus);
-  const queue = useSelector((state) => state.queue.queue);
-  const currentSampleID = useSelector((state) => state.queue.currentSampleID);
-  const sampleList = useSelector((state) => state.sampleGrid.sampleList);
+  const queueStatus = useAppSelector((state) => state.queue.queueStatus);
+  const queue = useAppSelector((state) => state.queue.queue);
+  const currentSampleID = useAppSelector((state) => state.queue.current);
+  const sampleList = useAppSelector((state) => state.sampleGrid.sampleList);
 
   if (!queue) {
     return null;

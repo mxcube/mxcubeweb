@@ -64,7 +64,7 @@ export function toggleDrawGrid() {
       await dispatch(abortCentring());
     }
 
-    if (!sampleview.drawGrid && !queue.currentSampleID) {
+    if (!sampleview.drawGrid && !queue.current) {
       dispatch(showErrorPanel(true, 'There is no sample mounted'));
       return;
     }
@@ -210,7 +210,7 @@ function startClickCentring() {
     const { queue, general } = getState();
     dispatch(unselectShapes());
 
-    if (!queue.currentSampleID) {
+    if (!queue.current) {
       dispatch(showErrorPanel(true, 'There is no sample mounted'));
       return;
     }

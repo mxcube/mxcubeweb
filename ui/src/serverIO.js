@@ -26,7 +26,6 @@ import {
   getQueue,
   setCurrentSample,
   setSampleAttribute,
-  setStatus,
   stopQueue,
 } from './actions/queue';
 import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
@@ -49,8 +48,9 @@ import {
   updateGphlWorkflowParametersDialog,
 } from './actions/workflow';
 import { processChatMessageRecord } from './components/ChatComponent/chatMessages';
-import { CLICK_CENTRING } from './constants';
+import { CENTRING_METHOD } from './constants';
 import { addLogRecord } from './reducers/logger';
+import { setStatus } from './reducers/queue';
 import {
   setBeamInfo,
   setCurrentPhase,
@@ -295,7 +295,7 @@ class ServerIO {
     this.hwrSocket.on('sample_centring', (data) => {
       const numClicks = store.getState().general.clickCentringNumClicks;
 
-      if (data.method === CLICK_CENTRING) {
+      if (data.method === CENTRING_METHOD.MANUAL) {
         dispatch(startClickCentringAction());
         const msg = `${numClicks}-Click Centring: \nSelect centered position or center`;
         dispatch(showVideoMessageOverlay({ show: true, msg }));

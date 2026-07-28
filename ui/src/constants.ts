@@ -3,10 +3,19 @@
 // are not used within the same file. So disable eslint for this
 // section
 
-export const QUEUE_RUNNING = 'QueueRunning';
-export const QUEUE_STOPPED = 'QueueStopped';
-export const QUEUE_PAUSED = 'QueuePaused';
-export const QUEUE_FAILED = 'QueueFailed';
+export const QUEUE_STATUS = {
+  RUNNING: 'QueueRunning',
+  STOPPED: 'QueueStopped',
+  PAUSED: 'QueuePaused',
+  FAILED: 'QueueFailed',
+} as const;
+
+export type QueueStatus = (typeof QUEUE_STATUS)[keyof typeof QUEUE_STATUS];
+
+export const QUEUE_RUNNING = QUEUE_STATUS.RUNNING;
+export const QUEUE_STOPPED = QUEUE_STATUS.STOPPED;
+export const QUEUE_PAUSED = QUEUE_STATUS.PAUSED;
+export const QUEUE_FAILED = QUEUE_STATUS.FAILED;
 
 export const SAMPLE_MOUNTED = 0x8;
 export const TASK_COLLECTED = 0x4;
@@ -18,21 +27,34 @@ export const TASK_UNCOLLECTED = 0x0;
 export const READY = 0;
 export const RUNNING = 0x1;
 
-export const AUTO_LOOP_CENTRING = 1;
-export const CLICK_CENTRING = 0;
+export const CENTRING_METHOD = {
+  MANUAL: 0,
+  LOOP: 1,
+  FULLY_AUTOMATIC: 2,
+  XRAY: 3,
+  NONE: 4,
+} as const;
+
+export type CentringMethod =
+  (typeof CENTRING_METHOD)[keyof typeof CENTRING_METHOD];
 
 export const TWO_STATE_ACTUATOR = 'INOUT';
 
-export function isCollected(task) {
+/** `state` is a bitmask of the TASK_* flags, not a single one of them. */
+interface TaskState {
+  state: number;
+}
+
+export function isCollected(task: TaskState): boolean {
   return (task.state & TASK_COLLECTED) === TASK_COLLECTED; // eslint-disable-line no-bitwise
 }
 
-export function isUnCollected(task) {
+export function isUnCollected(task: TaskState): boolean {
   return task.state === TASK_UNCOLLECTED;
 }
 
-export function twoStateActuatorIsActive(state) {
-  return ['in', 'on', 'enabled'].includes(String(state).toLowerCase());
+export function twoStateActuatorIsActive(state: string): boolean {
+  return ['in', 'on', 'enabled'].includes(state.toLowerCase());
 }
 
 export const SPACE_GROUPS = [
@@ -102,7 +124,7 @@ export const SPACE_GROUPS = [
   'I213',
   'I432',
   'I4132',
-];
+] as const;
 
 /*
  * Base hardware object states: https://github.com/mxcube/mxcubecore/blob/03c89f2eef8af604b211f5788813df3ad4216138/mxcubecore/BaseHardwareObjects.py#L61
@@ -115,7 +137,7 @@ export const HW_STATE = {
   READY: 'READY',
   FAULT: 'FAULT',
   OFF: 'OFF',
-};
+} as const;
 
 /**
  * Sample List View Modes
@@ -123,4 +145,4 @@ export const HW_STATE = {
 export const SAMPLE_LIST_VIEW_MODES = {
   graphical_view: 'Graphical View',
   table_view: 'Table View',
-};
+} as const;

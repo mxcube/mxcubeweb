@@ -8,17 +8,13 @@ import {
 } from '../actions/queue';
 import { showConfirmCollectDialog } from '../actions/queueGUI';
 import TaskTable from '../components/ConfirmCollectDialog/TaskTable.jsx';
-import {
-  AUTO_LOOP_CENTRING,
-  CLICK_CENTRING,
-  TASK_UNCOLLECTED,
-} from '../constants';
+import { CENTRING_METHOD, TASK_UNCOLLECTED } from '../constants';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
 export default function ConfirmCollectDialog() {
   const dispatch = useDispatch();
 
-  const currentSampleID = useSelector((state) => state.queue.currentSampleID);
+  const currentSampleID = useSelector((state) => state.queue.current);
   const queue = useSelector((state) => state.queue.queue);
   const autoMountNext = useSelector((state) => state.queue.autoMountNext);
   const sampleList = useSelector((state) => state.sampleGrid.sampleList);
@@ -38,7 +34,9 @@ export default function ConfirmCollectDialog() {
 
   function autoLoopCentringOnClick(e) {
     dispatch(
-      setCentringMethod(e.target.checked ? AUTO_LOOP_CENTRING : CLICK_CENTRING),
+      setCentringMethod(
+        e.target.checked ? CENTRING_METHOD.LOOP : CENTRING_METHOD.MANUAL,
+      ),
     );
   }
 
@@ -104,7 +102,7 @@ export default function ConfirmCollectDialog() {
             <Form.Check
               className="mb-2"
               type="checkbox"
-              defaultChecked={centringMethod === AUTO_LOOP_CENTRING}
+              defaultChecked={centringMethod === CENTRING_METHOD.LOOP}
               onClick={autoLoopCentringOnClick}
               id="auto-lopp-centring"
               label="Auto loop centring"

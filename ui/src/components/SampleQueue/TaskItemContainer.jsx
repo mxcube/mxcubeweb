@@ -1,6 +1,5 @@
 import { Collapse, ProgressBar } from 'react-bootstrap';
 import { contextMenu } from 'react-contexify';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteTask } from '../../actions/queue';
 import { collapseItem, selectItem } from '../../actions/queueGUI';
@@ -10,6 +9,7 @@ import {
   TASK_RUNNING,
   TASK_UNCOLLECTED,
 } from '../../constants';
+import { useAppDispatch, useAppSelector } from '../../ts-store';
 import styles from './Item.module.css';
 
 const stateBasedStyles = {
@@ -43,12 +43,12 @@ export default function TaskItemContainer({
   index,
   pointIDString,
 }) {
-  const dispatch = useDispatch();
-  const currentSampleID = useSelector((state) => state.queue.currentSampleID);
-  const displayData = useSelector(
+  const dispatch = useAppDispatch();
+  const currentSampleID = useAppSelector((state) => state.queue.current);
+  const displayData = useAppSelector(
     (state) => state.queueGUI.displayData[data.queueID] || {},
   );
-  const taskState = useSelector(
+  const taskState = useAppSelector(
     (state) =>
       state.sampleGrid.sampleList[currentSampleID]?.tasks[index]?.state,
   );

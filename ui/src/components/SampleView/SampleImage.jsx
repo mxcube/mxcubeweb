@@ -16,7 +16,7 @@ import {
   toggleDrawGrid,
   updateShapes,
 } from '../../actions/sampleview.js';
-import { HW_STATE, QUEUE_RUNNING } from '../../constants';
+import { HW_STATE, QUEUE_RUNNING } from '../../constants.js';
 import { showShapeMenu } from '../../reducers/contextMenu.js';
 import { addDistancePoint, setImageRatio } from '../../reducers/sampleview.js';
 import { selectSelectedShapeIds, setOverlay } from '../../reducers/shapes.js';

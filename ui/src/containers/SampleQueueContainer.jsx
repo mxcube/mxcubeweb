@@ -14,7 +14,7 @@ import styles from './SampleQueueContainer.module.css';
 function SampleQueueContainer() {
   const dispatch = useDispatch();
 
-  const currentSampleID = useSelector((state) => state.queue.currentSampleID);
+  const currentSampleID = useSelector((state) => state.queue.current);
   const sampleOrder = useSelector((state) => state.sampleGrid.order);
   const queue = useSelector((state) => state.queue.queue);
   const sampleList = useSelector((state) => state.sampleGrid.sampleList);

@@ -1,25 +1,25 @@
 import { FabricImage } from 'fabric';
 import { useCallback, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
-import { useSelector } from 'react-redux';
 
 import { sendTakeSnapshot } from '../../api/sampleview';
+import { useAppSelector } from '../../ts-store';
 import styles from './SampleControls.module.css';
 import { download } from './utils';
 
 function SnapshotControl(props) {
   const { canvas } = props;
 
-  const proposal = useSelector((state) => state.login.selectedProposal);
+  const proposal = useAppSelector((state) => state.login.selectedProposal);
 
-  const currentSampleName = useSelector(({ queue, sampleGrid }) => {
-    const { currentSampleID } = queue;
+  const currentSampleName = useAppSelector(({ queue, sampleGrid }) => {
+    const { current: currentSampleID } = queue;
     return currentSampleID
       ? sampleGrid.sampleList[currentSampleID]?.sampleName
       : 'no-sample';
   });
 
-  const ratio = useSelector((state) => {
+  const ratio = useAppSelector((state) => {
     const { sourceScale, imageRatio } = state.sampleview;
     return sourceScale * imageRatio;
   });

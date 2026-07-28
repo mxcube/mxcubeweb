@@ -1,6 +1,5 @@
 import { Dropdown } from 'react-bootstrap';
 import { createPortal } from 'react-dom';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { showErrorPanel } from '../../actions/general';
 import { updateTask } from '../../actions/queue';
@@ -17,7 +16,7 @@ import {
 import { showTaskForm } from '../../actions/taskForm';
 import { hideMenu } from '../../reducers/contextMenu';
 import { measureDistance, stopClickCentring } from '../../reducers/sampleview';
-import { useAppSelector } from '../../ts-store';
+import { useAppDispatch, useAppSelector } from '../../ts-store';
 import { getLastUsedParameters } from '../Tasks/fields';
 
 const BESPOKE_TASK_NAMES = new Set([
@@ -32,33 +31,37 @@ const BESPOKE_TASK_NAMES = new Set([
 ]);
 
 export default function ContextMenu() {
-  const defaultParameters = useSelector(
+  const defaultParameters = useAppSelector(
     (state) => state.taskForm.defaultParameters,
   );
-  const workflows = useSelector((state) => state.workflow.workflows);
-  const enableNativeMesh = useSelector((state) => state.general.useNativeMesh);
-  const enable2DPoints = useSelector((state) => state.general.enable2DPoints);
+  const workflows = useAppSelector((state) => state.workflow.workflows);
+  const enableNativeMesh = useAppSelector(
+    (state) => state.general.useNativeMesh,
+  );
+  const enable2DPoints = useAppSelector(
+    (state) => state.general.enable2DPoints,
+  );
   const availableMethods = new Set(Object.keys(defaultParameters));
-  const sampleID = useSelector((state) => state.queue.currentSampleID);
-  const sampleData = useSelector(
+  const sampleID = useAppSelector((state) => state.queue.current);
+  const sampleData = useAppSelector(
     (state) => state.sampleGrid.sampleList[sampleID],
   );
-  const { clickCentring } = useSelector((state) => state.sampleview);
-  const groupFolder = useSelector((state) => state.queue.groupFolder);
+  const { clickCentring } = useAppSelector((state) => state.sampleview);
+  const groupFolder = useAppSelector((state) => state.queue.groupFolder);
   const contextMenu = useAppSelector((state) => state.contextMenu);
   const { pageX, pageY, sampleViewX, sampleViewY, shape } =
     contextMenu.type === 'Shape'
       ? contextMenu
       : { pageX: 0, pageY: 0, sampleViewX: 0, sampleViewY: 0 };
 
-  const isDrawGridAvailable = useSelector(
+  const isDrawGridAvailable = useAppSelector(
     (state) =>
       state.uiproperties.sample_view_video_controls.components.find(
         ({ id }) => id === 'draw_grid',
       )?.show || false,
   );
 
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   // eslint-disable-next-line complexity
   function menuOptions() {

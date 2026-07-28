@@ -319,8 +319,8 @@ export default function SampleGridTableContainer(props) {
   function currentSample(sampleID) {
     let current = false;
 
-    if (queue.currentSampleID) {
-      current = queue.currentSampleID === sampleID;
+    if (queue.current) {
+      current = queue.current === sampleID;
     } else if (sampleChanger.loadedSample.address) {
       current = sampleChanger.loadedSample.address === sampleID;
     }

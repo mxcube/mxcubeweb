@@ -8,8 +8,8 @@ import {
   sendSelectContainer,
   sendUnmountCurrentSample,
 } from '../api/sampleChanger';
+import { clearCurrentSample } from '../reducers/queue';
 import { showErrorPanel } from './general';
-import { clearCurrentSample } from './queue';
 
 export function setContents(contents) {
   return { type: 'SET_SC_CONTENTS', data: { sampleChangerContents: contents } };
