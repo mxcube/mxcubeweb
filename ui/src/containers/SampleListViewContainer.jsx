@@ -24,7 +24,6 @@ import {
   setEnabledSample,
   stopQueue,
 } from '../actions/queue';
-import { showConfirmCollectDialog } from '../actions/queueGUI';
 import {
   filterAction,
   getLimsSamples,
@@ -39,6 +38,7 @@ import {
 } from '../constants';
 import loader from '../img/loader.gif';
 import { showGenericMenu } from '../reducers/contextMenu';
+import { showConfirmCollectDialog } from '../reducers/queueGUI';
 import { getSampleName } from '../utils';
 import QueueSettings from './QueueSettings';
 import SampleGridTableContainer from './SampleGridTableContainer';
@@ -541,7 +541,7 @@ export default function SampleListViewContainer() {
    */
   function startCollect() {
     navigate('/datacollection', { replace: true });
-    dispatch(showConfirmCollectDialog());
+    dispatch(showConfirmCollectDialog(true));
   }
 
   function getSynchronizationDropDownList() {

@@ -1,13 +1,13 @@
 import { Button } from 'react-bootstrap';
-import { useDispatch } from 'react-redux';
 
-import { showList } from '../../actions/queueGUI';
 import { mountSample } from '../../actions/sampleChanger';
+import { showList } from '../../reducers/queueGUI';
+import { useAppDispatch } from '../../ts-store';
 import { getSampleName } from '../../utils';
 import styles from './Item.module.css';
 
 export default function TodoItem({ sampleData }) {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   if (!sampleData) {
     return null;

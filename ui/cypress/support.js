@@ -21,6 +21,8 @@ Cypress.Commands.add('takeControl', () => {
   cy.get('body').then(($body) => {
     if ($body.text().includes('Observer mode')) {
       cy.findByRole('button', { name: 'Continue' }).click();
+      // Wait for the dialog to be gone, so its backdrop doesn't swallow the click
+      cy.findByRole('dialog').should('not.exist');
       cy.findByRole('link', { name: /Remote/u, hidden: true }).click();
       cy.findByRole('button', { name: 'Take control' }).click();
       cy.findByRole('button', { name: 'Hide' }).click();
@@ -51,6 +53,25 @@ Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
     'not.have.class',
     'active',
   );
+});
+
+// Adds a data collection task to the given sample via the sample list context
+// menu, then returns to the "Data collection" page. Expects to start there too.
+Cypress.Commands.add('addDataCollection', (sampleLabel = 'test - test') => {
+  cy.findByText('Samples').click();
+
+  // Right-clicking a sample row both selects it and opens its context menu
+  cy.findByText(sampleLabel).rightclick();
+  cy.findByRole('menu').within(() => {
+    cy.findByText('Data collection').click();
+  });
+
+  cy.findByRole('dialog').within(() => {
+    cy.findByText('Standard Data Collection').should('be.visible');
+    cy.findByRole('button', { name: 'Add to Queue' }).click();
+  });
+
+  cy.findByRole('link', { name: /Data collection/u, hidden: true }).click();
 });
 
 Cypress.Commands.add('clearSamples', () => {

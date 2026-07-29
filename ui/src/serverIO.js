@@ -28,7 +28,6 @@ import {
   setSampleAttribute,
   stopQueue,
 } from './actions/queue';
-import { collapseItem, showResumeQueueDialog } from './actions/queueGUI';
 import { addChatMessage, getRaState } from './actions/remoteAccess';
 import {
   setLoadedSample,
@@ -50,6 +49,7 @@ import { processChatMessageRecord } from './components/ChatComponent/chatMessage
 import { CENTRING_METHOD } from './constants';
 import { addLogRecord } from './reducers/logger';
 import { setStatus } from './reducers/queue';
+import { collapseItem, showResumeQueueDialog } from './reducers/queueGUI';
 import {
   setBeamInfo,
   setCurrentPhase,

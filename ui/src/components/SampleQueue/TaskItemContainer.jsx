@@ -2,13 +2,13 @@ import { Collapse, ProgressBar } from 'react-bootstrap';
 import { contextMenu } from 'react-contexify';
 
 import { deleteTask } from '../../actions/queue';
-import { collapseItem, selectItem } from '../../actions/queueGUI';
 import {
   TASK_COLLECT_FAILED,
   TASK_COLLECTED,
   TASK_RUNNING,
   TASK_UNCOLLECTED,
 } from '../../constants';
+import { collapseItem, selectItem } from '../../reducers/queueGUI';
 import { useAppDispatch, useAppSelector } from '../../ts-store';
 import styles from './Item.module.css';
 
@@ -20,7 +20,7 @@ const stateBasedStyles = {
 
 /**
  * @typedef {Object} TaskData
- * @property {string} queueID
+ * @property {number} queueID
  * @property {string} type
  * @property {string} label
  * @property {{ label: string }} [parameters]

@@ -1,11 +1,11 @@
 import { Button, Modal } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { showResumeQueueDialog } from '../actions/queueGUI';
+import { showResumeQueueDialog } from '../reducers/queueGUI';
+import { useAppDispatch, useAppSelector } from '../ts-store';
 
 function ResumeQueueDialog() {
-  const dispatch = useDispatch();
-  const show = useSelector((state) => state.queueGUI.showResumeQueueDialog);
+  const dispatch = useAppDispatch();
+  const show = useAppSelector((state) => state.queueGUI.showResumeQueueDialog);
 
   return (
     <Modal

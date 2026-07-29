@@ -1,27 +1,27 @@
 import { Nav, Stack } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { showList } from '../actions/queueGUI';
 import UserMessage from '../components/Notify/UserMessage';
 import CurrentTree from '../components/SampleQueue/CurrentTree';
 import QueueControl from '../components/SampleQueue/QueueControl';
 import TodoTree from '../components/SampleQueue/TodoTree';
 import SSXChip from '../components/SSXChip/SSXChip';
 import loader from '../img/loader.gif';
+import { showList } from '../reducers/queueGUI';
+import { useAppDispatch, useAppSelector } from '../ts-store';
 import { getSampleName } from '../utils';
 import styles from './SampleQueueContainer.module.css';
 
 function SampleQueueContainer() {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
-  const currentSampleID = useSelector((state) => state.queue.current);
-  const sampleOrder = useSelector((state) => state.sampleGrid.order);
-  const queue = useSelector((state) => state.queue.queue);
-  const sampleList = useSelector((state) => state.sampleGrid.sampleList);
-  const visibleList = useSelector((state) => state.queueGUI.visibleList);
-  const loading = useSelector((state) => state.queueGUI.loading);
+  const currentSampleID = useAppSelector((state) => state.queue.current);
+  const sampleOrder = useAppSelector((state) => state.sampleGrid.order);
+  const queue = useAppSelector((state) => state.queue.queue);
+  const sampleList = useAppSelector((state) => state.sampleGrid.sampleList);
+  const visibleList = useAppSelector((state) => state.queueGUI.visibleList);
+  const loading = useAppSelector((state) => state.queueGUI.loading);
 
-  const mode = useSelector((state) => state.general.mode);
+  const mode = useAppSelector((state) => state.general.mode);
 
   // Find samples in the queue that have not yet been collected
   const todo = sampleOrder

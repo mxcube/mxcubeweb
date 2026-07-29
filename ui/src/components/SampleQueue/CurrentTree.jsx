@@ -1,8 +1,8 @@
 import { Item, Menu } from 'react-contexify';
-import { useDispatch, useSelector } from 'react-redux';
 
 import { addTask } from '../../actions/queue';
 import { showTaskForm } from '../../actions/taskForm';
+import { useAppDispatch, useAppSelector } from '../../ts-store';
 import CharacterisationTaskItem from './CharacterisationTaskItem';
 import EnergyScanTaskItem from './EnergyScanTaskItem';
 import TaskItem from './TaskItem';
@@ -14,8 +14,8 @@ function CurrentTree(props) {
   const { currentSample } = props;
   const { sampleID: sampleId, tasks = [] } = currentSample;
 
-  const dispatch = useDispatch();
-  const displayData = useSelector((state) => state.queueGUI.displayData);
+  const dispatch = useAppDispatch();
+  const displayData = useAppSelector((state) => state.queueGUI.displayData);
 
   const selectedTasks = tasks.filter((t) => displayData[t.queueID]?.selected);
 
