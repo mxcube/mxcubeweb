@@ -7,9 +7,9 @@ import {
   setEnabledSample,
   stopQueue,
 } from '../../actions/queue';
-import { showConfirmCollectDialog } from '../../actions/queueGUI';
 import { unmountSample } from '../../actions/sampleChanger';
 import { QUEUE_PAUSED, QUEUE_RUNNING, QUEUE_STOPPED } from '../../constants';
+import { showConfirmCollectDialog } from '../../reducers/queueGUI';
 import { useAppDispatch, useAppSelector } from '../../ts-store';
 import { getSampleName } from '../../utils';
 
@@ -71,7 +71,7 @@ export default function QueueControlOptions() {
         <Button
           variant="success"
           style={{ marginRight: '0.6em' }}
-          onClick={() => dispatch(showConfirmCollectDialog())}
+          onClick={() => dispatch(showConfirmCollectDialog(true))}
         >
           Run Queue
         </Button>

@@ -5,9 +5,9 @@ import { useDispatch } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
 import { addSampleAndMount, addSamplesToQueue } from '../../actions/queue';
-import { showList } from '../../actions/queueGUI';
 import { addSamplesToList } from '../../actions/sampleGrid';
 import { hideTaskParametersForm } from '../../actions/taskForm';
+import { showList } from '../../reducers/queueGUI';
 
 const REQUIRED_MSG = 'This field is required';
 const PATTERN = /^[\w+\-:]*$/u;

@@ -6,9 +6,9 @@ import {
   setCentringMethod,
   startQueue,
 } from '../actions/queue';
-import { showConfirmCollectDialog } from '../actions/queueGUI';
 import TaskTable from '../components/ConfirmCollectDialog/TaskTable.jsx';
 import { CENTRING_METHOD, TASK_UNCOLLECTED } from '../constants';
+import { showConfirmCollectDialog } from '../reducers/queueGUI';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
 export default function ConfirmCollectDialog() {
