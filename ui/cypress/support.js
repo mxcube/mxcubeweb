@@ -1,4 +1,4 @@
-/* global Cypress, cy, beforeEach */
+/* global Cypress, cy, beforeEach, afterEach */
 import '@testing-library/cypress/add-commands';
 
 import installLogsCollector from 'cypress-terminal-report/src/installLogsCollector.js';
@@ -7,6 +7,19 @@ installLogsCollector();
 
 beforeEach(() => {
   cy.visit('/');
+});
+
+afterEach(() => {
+  // Only log out if a session is actually active, so specs that never
+  // logged in or failed aren't broken / failure isn't shadowed by this hook.
+  cy.get('body').then(($body) => {
+    if ($body.find('button:contains("Sign out")').length > 0) {
+      cy.findByRole('button', { name: /Sign out/u }).click();
+      cy.findByRole('button', { name: 'Sign in with proposal' }).should(
+        'be.visible',
+      );
+    }
+  });
 });
 
 Cypress.Commands.add('login', (username = 'idtest0', password = '0000') => {
