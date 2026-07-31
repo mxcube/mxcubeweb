@@ -109,9 +109,11 @@ export function getInitialState() {
           const { state, contents, loaded_sample, cmds, global_state, msg } =
             json;
           return {
-            sampleChangerState: { state },
-            sampleChangerContents: contents,
-            loadedSample: loaded_sample,
+            sampleChanger: {
+              state,
+              contents,
+              loadedSample: loaded_sample,
+            },
             sampleChangerCommands: cmds,
             sampleChangerGlobalState: global_state,
             sampleChangerMessage: msg,
