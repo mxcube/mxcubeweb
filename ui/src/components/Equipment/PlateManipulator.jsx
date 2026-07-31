@@ -12,15 +12,18 @@ import { MdSync } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { showErrorPanel } from '../../actions/general';
-import {
-  mountSample,
-  refresh,
-  selectDrop,
-  selectWell,
-  sendCommand,
-  setPlate,
-} from '../../actions/sampleChanger';
+import { mountSample, refresh, sendCommand } from '../../actions/sampleChanger';
 import { syncWithCrims } from '../../actions/sampleGrid';
+import {
+  chipX,
+  crystalQUickX,
+  greinerImpact1536,
+  mitegenInSitu1,
+  PLATE_LABEL_TO_GRID,
+  setCurrentPlate,
+  setSelectedDrop,
+  setSelectedWell,
+} from '../../reducers/sampleChanger';
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './equipment.module.css';
 
@@ -72,29 +75,12 @@ export default function PlateManipulator(props) {
     });
   }
 
-  function _setPlate() {
-    let cplate_label = '';
-    let plate_index = 0;
-    if (plateInfo?.plate_label) {
-      cplate_label = plateInfo.plate_label;
-    }
-
-    plateGrid.forEach((cplate, index) => {
-      if (cplate_label === cplate.name) {
-        plate_index = index;
-      }
-    });
-
-    dispatch(setPlate(plate_index));
-  }
-
   useEffect(() => {
-    _setPlate();
-  });
-
-  function refreshClicked() {
-    dispatch(refresh());
-  }
+    const label = plateInfo?.plate_label ?? '';
+    const plate = PLATE_LABEL_TO_GRID[label];
+    const index = plate ? plateGrid.indexOf(plate) : 0;
+    dispatch(setCurrentPlate(index));
+  }, [plateInfo?.plate_label, plateGrid, dispatch]);
 
   // PlateManipulator: Check whether a drop contain crystal --?
   function hasCrystals() {
@@ -239,10 +225,10 @@ export default function PlateManipulator(props) {
             strokeWidth: drop === selectedDrop ? '3' : '1',
           }}
           onClick={() => {
-            dispatch(selectDrop(drop));
+            dispatch(setSelectedDrop(drop));
           }}
           onContextMenu={() => {
-            dispatch(selectDrop(drop));
+            dispatch(setSelectedDrop(drop));
           }}
           onDoubleClick={() => {
             loadSample(drop);
@@ -262,10 +248,10 @@ export default function PlateManipulator(props) {
                 : '#ffffff',
           }}
           onClick={() => {
-            dispatch(selectDrop(drop));
+            dispatch(setSelectedDrop(drop));
           }}
           onContextMenu={() => {
-            dispatch(selectDrop(drop));
+            dispatch(setSelectedDrop(drop));
           }}
           onDoubleClick={() => {
             loadSample(drop);
@@ -278,9 +264,9 @@ export default function PlateManipulator(props) {
   }
 
   let dropPosy = 0;
-  if (plate.name === 'Crystal QuickX') {
+  if (plate === crystalQUickX) {
     dropPosy = 95;
-  } else if (plate.name === 'Greiner Impact 1536') {
+  } else if (plate === greinerImpact1536) {
     dropPosy = 135;
   } else {
     dropPosy = 70;
@@ -325,7 +311,7 @@ export default function PlateManipulator(props) {
               crystalForSelectedWell.image_url,
               crystalForSelectedWell.sample,
             )}
-          {plate.name === 'ChipX' ? (
+          {plate === chipX ? (
             <div
               style={{
                 display: 'grid',
@@ -345,7 +331,7 @@ export default function PlateManipulator(props) {
             <svg
               id="wellPlateRef"
               className={styles.single_well}
-              width={plate.name.includes('InSitu-1') ? 220 : 240}
+              width={plate === mitegenInSitu1 ? 220 : 240}
               height={240}
               transform={`rotate(${plate.rotation})`}
             >
@@ -354,7 +340,7 @@ export default function PlateManipulator(props) {
                   key={`wellplate-${wo.color}`}
                   width={
                     (120 * plate.wellOption.length) / (idx + 1) -
-                    (plate.name.includes('InSitu-1') ? 20 : 0)
+                    (plate === mitegenInSitu1 ? 20 : 0)
                   }
                   height={225}
                   x={0}
@@ -428,7 +414,7 @@ export default function PlateManipulator(props) {
               </span>
             ))}
           </div>
-          {plate.name !== 'ChipX' ? (
+          {plate === chipX ? (
             <div
               style={{
                 width: '400px',
@@ -467,10 +453,10 @@ export default function PlateManipulator(props) {
                               initLoadSample(rowIdx, colIdx, row, col);
                             }}
                             onClick={() => {
-                              dispatch(selectWell(row, col));
+                              dispatch(setSelectedWell({ row, col }));
                             }}
                             onContextMenu={() => {
-                              dispatch(selectWell(row, col));
+                              dispatch(setSelectedWell({ row, col }));
                             }}
                           >
                             <rect
@@ -573,10 +559,10 @@ export default function PlateManipulator(props) {
                               initLoadSample(rowIdx, colIdx, row, col);
                             }}
                             onClick={() => {
-                              dispatch(selectWell(row, col));
+                              dispatch(setSelectedWell({ row, col }));
                             }}
                             onContextMenu={() => {
-                              dispatch(selectWell(row, col));
+                              dispatch(setSelectedWell({ row, col }));
                             }}
                           >
                             <rect
@@ -671,7 +657,11 @@ export default function PlateManipulator(props) {
               id="refresh-tooltip"
               tooltipContent="Refresh if plate location not updated"
             >
-              <Button size="sm" variant="outline-info" onClick={refreshClicked}>
+              <Button
+                size="sm"
+                variant="outline-info"
+                onClick={() => dispatch(refresh())}
+              >
                 <MdSync size="1.5em" /> Refresh
               </Button>
             </TooltipTrigger>

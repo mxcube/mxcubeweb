@@ -26,11 +26,7 @@ import {
   setCurrentSample,
 } from './actions/queue';
 import { getRaState } from './actions/remoteAccess';
-import {
-  setLoadedSample,
-  setSCGlobalState,
-  setSCState,
-} from './actions/sampleChanger';
+import { setSCGlobalState } from './actions/sampleChangerMaintenance';
 import {
   abortCentring,
   saveMotorPosition,
@@ -47,6 +43,7 @@ import { addLogRecord } from './reducers/logger';
 import { setStatus } from './reducers/queue';
 import { collapseItem, showResumeQueueDialog } from './reducers/queueGUI';
 import { addChatMessage } from './reducers/remoteAccess';
+import { setLoadedSample, setState } from './reducers/sampleChanger';
 import {
   addDiffractionPlan,
   setSampleChecked,
@@ -400,7 +397,7 @@ class ServerIO {
     });
 
     this.hwrSocket.on('sc_state', (state) => {
-      dispatch(setSCState(state));
+      dispatch(setState(state));
     });
 
     this.hwrSocket.on('loaded_sample_changed', (data) => {
