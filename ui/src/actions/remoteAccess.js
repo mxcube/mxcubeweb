@@ -41,7 +41,7 @@ export function requestControl(message) {
           title: 'Asking for control',
           message: 'Please wait while asking for control',
           blocking: true,
-          abortFun: () => dispatch(cancelControlRequest()),
+          abortAction: 'cancelControlRequest',
         }),
       );
     } catch (error) {
@@ -55,7 +55,7 @@ export function requestControl(message) {
   };
 }
 
-function cancelControlRequest() {
+export function cancelControlRequest() {
   return async (dispatch) => {
     await sendCancelControlRequest();
     dispatch(getLoginInfo());

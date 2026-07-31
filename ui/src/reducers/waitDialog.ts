@@ -1,7 +1,13 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+// Identifies which action to dispatch when the dialog's Cancel button is
+// pressed. A key rather than a function so the store only ever holds
+// serializable values - see ABORT_ACTIONS in PleaseWaitDialog for the
+// lookup table that maps these back to real thunks.
+export type WaitDialogAbortAction = 'cancelControlRequest' | 'stopQueue';
+
 interface ShowWaitDialogPayload {
-  abortFun?: () => void;
+  abortAction?: WaitDialogAbortAction;
   blocking?: boolean;
   message?: string;
   title: string;
@@ -12,7 +18,7 @@ const HIDDEN_STATE = { show: false, dialog: null } as const;
 // The dialog is either open (holding its content) or closed (nothing at all).
 
 interface DialogState {
-  abortFun?: () => void;
+  abortAction?: WaitDialogAbortAction;
   blocking: boolean;
   message: string;
   title: string;
@@ -43,9 +49,9 @@ const waitDialogSlice = createSlice({
         title,
         message = '',
         blocking = false,
-        abortFun,
+        abortAction,
       } = action.payload;
-      return { show: true, dialog: { title, message, blocking, abortFun } };
+      return { show: true, dialog: { title, message, blocking, abortAction } };
     },
     hideWaitDialog: (): WaitDialogSliceState => HIDDEN_STATE,
   },
