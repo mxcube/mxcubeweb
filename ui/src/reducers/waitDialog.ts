@@ -1,3 +1,4 @@
+/* eslint-disable no-param-reassign */
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
 // Identifies which action to dispatch when the dialog's Cancel button is
@@ -13,7 +14,7 @@ interface ShowWaitDialogPayload {
   title: string;
 }
 
-const HIDDEN_STATE = { show: false, dialog: null } as const;
+const INITIAL_STATE = { show: false, dialog: null } as const;
 
 // The dialog is either open (holding its content) or closed (nothing at all).
 
@@ -39,7 +40,7 @@ type WaitDialogSliceState =
 
 const waitDialogSlice = createSlice({
   name: 'waitDialog',
-  initialState: (): WaitDialogSliceState => HIDDEN_STATE,
+  initialState: (): WaitDialogSliceState => INITIAL_STATE,
   reducers: {
     showWaitDialog: (
       _state,
@@ -53,7 +54,9 @@ const waitDialogSlice = createSlice({
       } = action.payload;
       return { show: true, dialog: { title, message, blocking, abortAction } };
     },
-    hideWaitDialog: (): WaitDialogSliceState => HIDDEN_STATE,
+    hideWaitDialog(state) {
+      state.show = false;
+    },
   },
 });
 
