@@ -24,7 +24,6 @@ class DoseEstimatorAdapter(AdapterBase):
     dose presets as a readable attribute.
     """
 
-    ATTRIBUTES: ClassVar[list[str]] = ["experimental_goals"]
     SUPPORTED_TYPES: ClassVar[list[object]] = [AbstractDoseEstimator]
 
     def __init__(
@@ -33,7 +32,6 @@ class DoseEstimatorAdapter(AdapterBase):
         role: str,
         app: Flask,
     ) -> None:
-        self._type = "DOSEESTIMATOR"
         super().__init__(ho, role, app, resource_handler_config)
 
     def estimate_dose(

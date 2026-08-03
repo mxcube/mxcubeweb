@@ -1,3 +1,4 @@
+/* eslint-disable complexity*/
 function warn(values, props) {
   const warnings = {};
   if (!props.beamline.hardwareObjects) {
