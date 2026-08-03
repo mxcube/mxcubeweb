@@ -26,24 +26,29 @@ export function hideTaskParametersForm() {
 }
 
 /**
- * @typedef {Object} DoseEstimationParameters
- * @property {number} num_images
- * @property {number} exp_time_s
+ * @typedef {Object} DoseRateParameters
  * @property {number} energy_kev
  * @property {number} transmission_pct
- * @property {string} experimental_goal
- * @property {number} resolution_a
  *
- * @param {DoseEstimationParameters} doseParams
+ * @param {DoseRateParameters} doseRateParams
  */
-export function estimateDose(doseParams) {
+export function estimateDoseRate(doseRateParams) {
   return async (dispatch) => {
-    const result = await sendExecuteCommand(
-      'doseestimator',
-      'dose_estimator',
-      'estimate_dose',
-      doseParams,
-    );
-    dispatch({ type: 'SET_DOSE_ESTIMATE', data: result });
+    let result;
+    try {
+      const response = await sendExecuteCommand(
+        'doseestimator',
+        'dose_estimator',
+        'estimate_dose_rate',
+        doseRateParams,
+      );
+      result = { mgy_per_s: response.return };
+    } catch (error) {
+      // 422: no estimate possible for these inputs, e.g. unknown flux.
+      // Anything else (e.g. an empty energy field) shows N/A rather than
+      // a stale rate.
+      result = error.status === 422 ? { msg: error.json?.msg } : null;
+    }
+    dispatch({ type: 'SET_DOSE_RATE', data: result });
   };
 }

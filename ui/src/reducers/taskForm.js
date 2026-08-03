@@ -5,7 +5,7 @@ const INITIAL_STATE = {
   showForm: '',
   path: '',
   fileSuffix: '',
-  doseEstimate: null,
+  doseRate: null,
   defaultParameters: {
     datacollection: {},
     characterisation: {},
@@ -30,10 +30,10 @@ function taskFormReducer(state = INITIAL_STATE, action = {}) {
       };
     }
     case 'HIDE_FORM': {
-      return { ...state, showForm: '', doseEstimate: null };
+      return { ...state, showForm: '', doseRate: null };
     }
-    case 'SET_DOSE_ESTIMATE': {
-      return { ...state, doseEstimate: action.data };
+    case 'SET_DOSE_RATE': {
+      return { ...state, doseRate: action.data };
     }
     case 'SET_INITIAL_STATE': {
       return {

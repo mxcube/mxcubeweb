@@ -4,7 +4,7 @@ import { Button, ButtonToolbar, Col, Form, Modal, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
 import { change, formValueSelector, reduxForm } from 'redux-form';
 
-import { estimateDose } from '../../actions/taskForm';
+import { estimateDoseRate } from '../../actions/taskForm';
 import { SPACE_GROUPS } from '../../constants';
 import { DraggableModal } from '../DraggableModal';
 import TooltipTrigger from '../TooltipTrigger';
@@ -290,30 +290,30 @@ class DataCollection extends React.Component {
                       Estimated dose (MGy)
                     </Form.Label>
                     <Form.Label column sm={5}>
-                      {this.props.doseEstimate?.status === 'ok' && (
+                      {Number.isFinite(this.props.doseMgy) && (
                         <span
                           className={
-                            this.props.doseEstimate.dose_mgy >
-                            this.props.doseLimit
+                            this.props.doseMgy > this.props.doseLimit
                               ? doseStyles.over
                               : doseStyles.under
                           }
                         >
-                          {this.props.doseEstimate.dose_mgy?.toFixed(2)}
+                          {this.props.doseMgy.toFixed(2)}
                         </span>
                       )}
-                      {this.props.doseEstimate?.status === 'error' && (
+                      {this.props.doseRate?.msg && (
                         <TooltipTrigger
                           id="dose-estimate-error-tooltip"
-                          tooltipContent={this.props.doseEstimate.msg}
+                          tooltipContent={this.props.doseRate.msg}
                           inModal
                         >
                           <span className={doseStyles.unavailable}>N/A</span>
                         </TooltipTrigger>
                       )}
-                      {!this.props.doseEstimate && (
-                        <span className={doseStyles.unavailable}>N/A</span>
-                      )}
+                      {!Number.isFinite(this.props.doseMgy) &&
+                        !this.props.doseRate?.msg && (
+                          <span className={doseStyles.unavailable}>N/A</span>
+                        )}
                     </Form.Label>
                   </Row>
                 </Form.Group>
@@ -413,38 +413,24 @@ const DataCollectionForm = reduxForm({
     if (!structure.deepEqual(values, nextProps.values)) {
       return true;
     }
-    return props.doseEstimate !== nextProps.doseEstimate;
+    return props.doseRate !== nextProps.doseRate;
   },
   onChange: (values, dispatch, props, previousValues) => {
     // when using dose estimation, changes to form fields
-    // may trigger a need to reestimate.
-    // this handled computations of dependent fields for
-    // dose and dose limit.
+    // may trigger a need to reestimate the dose rate.
+    // Dose and max images are derived from the rate locally.
+    // this also handles recomputing the dose limit.
     if (!props.canEstimateDose) {
       return;
     }
-    const estimateTriggers = [
-      'energy',
-      'transmission',
-      'num_images',
-      'exp_time',
-      'resolution',
-      'exp_goal',
-      'dose_limit',
-    ];
-    const estimateChanged = estimateTriggers.some(
-      (field) => values[field] !== previousValues[field],
-    );
-    if (estimateChanged) {
+    if (
+      values.energy !== previousValues.energy ||
+      values.transmission !== previousValues.transmission
+    ) {
       dispatch(
-        estimateDose({
-          num_images: Number.parseInt(values.num_images, 10),
+        estimateDoseRate({
           energy_kev: Number.parseFloat(values.energy),
           transmission_pct: Number.parseFloat(values.transmission),
-          exp_time_s: Number.parseFloat(values.exp_time),
-          resolution_a: Number.parseFloat(values.resolution),
-          experimental_goal: values?.exp_goal,
-          dose_limit_mgy: Number.parseFloat(values?.dose_limit),
         }),
       );
     }
@@ -468,7 +454,7 @@ const DataCollectionForm = reduxForm({
 const selector = formValueSelector('datacollection');
 
 export default connect((state) => {
-  const { doseEstimate } = state.taskForm;
+  const { doseRate } = state.taskForm;
 
   const doseEstimatorHO = state.beamline.hardwareObjects?.dose_estimator;
   const subdir = selector(state, 'subdir');
@@ -501,6 +487,20 @@ export default connect((state) => {
   const doseLimit = selector(state, 'dose_limit');
   const currentGoalId = selector(state, 'exp_goal');
 
+  // Dose grows linearly with exposure, so it is derived from the rate here.
+  const doseMgyPerImage =
+    doseRate?.mgy_per_s === undefined
+      ? null
+      : doseRate.mgy_per_s * Number.parseFloat(selector(state, 'exp_time'));
+  const doseMgy =
+    doseMgyPerImage === null
+      ? null
+      : doseMgyPerImage * Number.parseInt(selector(state, 'num_images'), 10);
+  const maxImages =
+    doseMgyPerImage > 0 && doseLimit
+      ? Math.floor(Number.parseFloat(doseLimit) / doseMgyPerImage)
+      : null;
+
   if (Number.parseFloat(parameters.osc_range) === 0) {
     parameters.osc_range =
       state.taskForm.defaultParameters[
@@ -529,7 +529,9 @@ export default connect((state) => {
     canEstimateDose,
     goals,
     resolution,
-    doseEstimate,
+    doseRate,
+    doseMgy,
+    maxImages,
     doseLimit,
     currentGoalId,
     detector_mode_list: acq_parameters.detector_mode_list,
