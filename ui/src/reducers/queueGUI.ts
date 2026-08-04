@@ -1,6 +1,8 @@
 /* eslint-disable no-param-reassign */
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
 
+import { type SampleList, type TaskNode } from './sampleGrid';
+
 export type VisibleList = 'current' | 'todo' | 'chip';
 
 interface TaskDisplayData {
@@ -8,28 +10,6 @@ interface TaskDisplayData {
   selected: boolean;
   progress: number;
 }
-
-// mirrors TaskNodeModel from backend, in reality there may be additional
-// fields for specific types of tasks.
-interface TaskNode {
-  type: string;
-  queueID: number;
-  checked: boolean;
-  state: number;
-  label: string;
-  sampleID: string;
-  sampleQueueID: number | null;
-  taskIndex: number | null;
-  diffractionPlan: TaskNode[] | null;
-  diffractionPlanID: number | null;
-  name: string | null;
-}
-
-interface SampleTasks {
-  tasks: TaskNode[];
-}
-
-type SampleList = Record<string, SampleTasks>;
 
 interface SetQueueAction {
   type: 'SET_QUEUE';

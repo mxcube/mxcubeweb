@@ -1,20 +1,13 @@
 import { fetchLimsSamples, fetchSamplesList } from '../api/lims';
 import { sendSyncWithCrims } from '../api/sampleChanger';
+import {
+  addSamples,
+  updateCrystalList,
+  updateSampleList,
+} from '../reducers/sampleGrid';
 import { hideWaitDialog, showWaitDialog } from '../reducers/waitDialog';
 import { showErrorPanel } from './general';
 import { setQueue } from './queue';
-
-export function updateSampleState(sampleData) {
-  return { type: 'UPDATE_SAMPLE_STATE', sampleData };
-}
-
-export function updateSampleList(sampleList, order) {
-  return { type: 'UPDATE_SAMPLE_LIST', sampleList, order };
-}
-
-export function clearSampleGrid() {
-  return { type: 'CLEAR_SAMPLE_GRID' };
-}
 
 export function addSamplesToList(samplesData) {
   return (dispatch, getState) => {
@@ -37,16 +30,8 @@ export function addSamplesToList(samplesData) {
       }
     }
 
-    dispatch({ type: 'ADD_SAMPLES_TO_LIST', samplesData });
+    dispatch(addSamples(samplesData));
   };
-}
-
-export function selectSamplesAction(keys, selected = true) {
-  return { type: 'SELECT_SAMPLES', keys, selected };
-}
-
-export function filterAction(filterOptions) {
-  return { type: 'FILTER_SAMPLE_LIST', filterOptions };
 }
 
 export function getSamplesList() {
@@ -62,7 +47,7 @@ export function getSamplesList() {
     try {
       const json = await fetchSamplesList();
       const { sampleList, sampleOrder } = json;
-      dispatch(updateSampleList(sampleList, sampleOrder));
+      dispatch(updateSampleList({ sampleList, order: sampleOrder }));
       dispatch(setQueue(json));
     } catch {
       dispatch(showErrorPanel(true, 'Could not get samples list'));
@@ -84,7 +69,12 @@ export function getLimsSamples(lims) {
 
     try {
       const json = await fetchLimsSamples(lims);
-      dispatch(updateSampleList(json.sampleList, json.sampleOrder));
+      dispatch(
+        updateSampleList({
+          sampleList: json.sampleList,
+          order: json.sampleOrder,
+        }),
+      );
       dispatch(setQueue(json));
     } catch (error) {
       dispatch(
@@ -102,10 +92,6 @@ export function getLimsSamples(lims) {
 }
 
 // update list crystal from crims
-function updateCrystalList(crystalList) {
-  return { type: 'UPDATE_CRYSTAL_LIST', crystalList };
-}
-
 export function syncWithCrims() {
   return async (dispatch) => {
     try {

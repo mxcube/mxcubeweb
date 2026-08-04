@@ -26,9 +26,14 @@ import {
   setNumSnapshots as setNumSnapshotsAction,
   setQueueSetting as setQueueSettingAction,
 } from '../reducers/queue';
+import {
+  clearSampleGrid,
+  selectSamples,
+  setSampleChecked,
+  updateTask as updateTaskAction,
+} from '../reducers/sampleGrid';
 import { showErrorPanel } from './general';
 import { mountSample } from './sampleChanger';
-import { clearSampleGrid, selectSamplesAction } from './sampleGrid';
 import { abortCentring, updateShapes } from './sampleview';
 
 function queueLoading(loading) {
@@ -64,10 +69,6 @@ function removeSamplesFromQueueAction(sampleIDList) {
   return { type: 'REMOVE_SAMPLES_FROM_QUEUE', sampleIDList };
 }
 
-export function setSampleAttribute(sampleIDList, attr, value) {
-  return { type: 'SET_SAMPLE_ATTRIBUTE', sampleIDList, attr, value };
-}
-
 export function addSamplesToQueue(sampleDataList) {
   return async (dispatch) => {
     dispatch(queueLoading(true));
@@ -91,7 +92,7 @@ export function addSampleAndMount(sampleData) {
     try {
       const json = await sendAddQueueItem([sampleData]);
       dispatch(setQueue(json));
-      dispatch(selectSamplesAction([sampleData.sampleID]));
+      dispatch(selectSamples({ keys: [sampleData.sampleID] }));
     } catch {
       dispatch(showErrorPanel(true, 'Server refused to add sample'));
     }
@@ -163,7 +164,7 @@ export function setEnabledSample(sampleIDList, value) {
 
     try {
       await sendSetEnabledQueueItem(qidList, value);
-      dispatch(setSampleAttribute(sampleIDList, 'checked', value));
+      dispatch(setSampleChecked({ sampleIDList, value }));
 
       sampleIDList.forEach((sid) => {
         // If sample is loaded by SC, set as current
@@ -243,10 +244,6 @@ export function addTaskAction(tasks) {
   return { type: 'ADD_TASKS', tasks };
 }
 
-function updateTaskAction(sampleID, taskIndex, taskData) {
-  return { type: 'UPDATE_TASK', sampleID, taskIndex, taskData };
-}
-
 export function updateTask(sampleID, taskIndex, params, runNow) {
   return async (dispatch, getState) => {
     const { sampleGrid } = getState();
@@ -264,7 +261,7 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
         taskData.queueID,
         taskData,
       );
-      dispatch(updateTaskAction(sampleID, taskIndex, json));
+      dispatch(updateTaskAction({ sampleID, taskIndex, taskData: json }));
 
       if (runNow) {
         dispatch(runSample(sampleID, taskIndex));
@@ -277,10 +274,6 @@ export function updateTask(sampleID, taskIndex, params, runNow) {
 
     dispatch(queueLoading(false));
   };
-}
-
-export function addDiffractionPlanAction(tasks) {
-  return { type: 'ADD_DIFF_PLAN', tasks };
 }
 
 export function addTask(sampleIDs, parameters, runNow) {

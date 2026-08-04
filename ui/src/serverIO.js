@@ -20,12 +20,10 @@ import {
 } from './actions/harvester';
 import { getLoginInfo, signOut } from './actions/login';
 import {
-  addDiffractionPlanAction,
   addTaskAction,
   addTaskResultAction,
   getQueue,
   setCurrentSample,
-  setSampleAttribute,
 } from './actions/queue';
 import { getRaState } from './actions/remoteAccess';
 import {
@@ -33,7 +31,6 @@ import {
   setSCGlobalState,
   setSCState,
 } from './actions/sampleChanger';
-import { updateSampleState } from './actions/sampleGrid';
 import {
   abortCentring,
   saveMotorPosition,
@@ -50,6 +47,11 @@ import { addLogRecord } from './reducers/logger';
 import { setStatus } from './reducers/queue';
 import { collapseItem, showResumeQueueDialog } from './reducers/queueGUI';
 import { addChatMessage } from './reducers/remoteAccess';
+import {
+  addDiffractionPlan,
+  setSampleChecked,
+  updateSampleState,
+} from './reducers/sampleGrid';
 import {
   setBeamInfo,
   setCurrentPhase,
@@ -215,12 +217,17 @@ class ServerIO {
       if (callback) {
         callback();
       }
-      dispatch(addDiffractionPlanAction(record.tasks));
+      dispatch(addDiffractionPlan(record.tasks));
     });
 
     this.hwrSocket.on('queue', (record) => {
       if (record.Signal === 'DisableSample') {
-        dispatch(setSampleAttribute([record.sampleID], 'checked', false));
+        dispatch(
+          setSampleChecked({
+            sampleIDList: [record.sampleID],
+            value: false,
+          }),
+        );
       } else if (record.Signal === 'update') {
         if (record.message === 'all') {
           dispatch(getQueue());

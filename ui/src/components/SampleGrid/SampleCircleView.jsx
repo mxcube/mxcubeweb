@@ -2,8 +2,8 @@ import { useEffect } from 'react';
 import { Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { filterAction } from '../../actions/sampleGrid';
 import styles from '../../containers/SampleFlexView.module.css';
+import { filterSampleList } from '../../reducers/sampleGrid';
 
 const CELL_ID = 1;
 
@@ -18,14 +18,14 @@ export default function SampleCircleView(props) {
 
   function handleClickOnPuck(event, puckID) {
     dispatch(
-      filterAction({ cellFilter: `${CELL_ID}`, puckFilter: `${puckID}` }),
+      filterSampleList({ cellFilter: `${CELL_ID}`, puckFilter: `${puckID}` }),
     );
     event.stopPropagation();
   }
 
   useEffect(() => {
     if (filterOptions.cellFilter === '') {
-      dispatch(filterAction({ cellFilter: '1', puckFilter: '1' }));
+      dispatch(filterSampleList({ cellFilter: '1', puckFilter: '1' }));
     }
   }, [filterOptions.cellFilter, dispatch]);
 
