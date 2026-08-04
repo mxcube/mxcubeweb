@@ -19,7 +19,6 @@ import { bindActionCreators } from 'redux';
 import { showDialog } from '../actions/general';
 import { deleteTask } from '../actions/queue';
 import { mountSample, unmountSample } from '../actions/sampleChanger';
-import { selectSamplesAction } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import MXContextMenu from '../components/GenericContextMenu/MXContextMenu';
 import SampleCircleView from '../components/SampleGrid/SampleCircleView';
@@ -28,6 +27,7 @@ import { TaskItem } from '../components/SampleGrid/TaskItem';
 import TooltipTrigger from '../components/TooltipTrigger';
 import { isCollected, QUEUE_RUNNING, QUEUE_STOPPED } from '../constants';
 import { hideMenu, showGenericMenu } from '../reducers/contextMenu';
+import { selectSamples } from '../reducers/sampleGrid';
 import { useAppSelector } from '../ts-store';
 import SampleFlexView from './SampleFlexView';
 import styles from './SampleGridTableContainer.module.css';
@@ -173,7 +173,9 @@ export default function SampleGridTableContainer(props) {
   const onKeyDown = useCallback(
     (e) => {
       if (e.key === 'Escape') {
-        dispatch(selectSamplesAction(Object.keys(sampleList), false));
+        dispatch(
+          selectSamples({ keys: Object.keys(sampleList), selected: false }),
+        );
         setRubberBandVisible(false);
         selectionRubberBandRef.current.style.display = 'none';
       }
@@ -233,7 +235,7 @@ export default function SampleGridTableContainer(props) {
         );
       }
 
-      dispatch(selectSamplesAction(samplesToSelect));
+      dispatch(selectSamples({ keys: samplesToSelect }));
     },
     [selected, sampleItemIsSelected, dispatch],
   );
@@ -345,7 +347,7 @@ export default function SampleGridTableContainer(props) {
     } else {
       // The sample is not in the set of selected samples (or no samples are
       // selected), select only sample with sampleID and add it queue
-      dispatch(selectSamplesAction([sampleID]));
+      dispatch(selectSamples({ keys: [sampleID] }));
       inQueueDeleteElseAddSamples([sampleID], true);
     }
   }

@@ -2,7 +2,7 @@ import { useEffect } from 'react';
 import { Col } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { filterAction } from '../actions/sampleGrid';
+import { filterSampleList } from '../reducers/sampleGrid';
 import styles from './SampleFlexView.module.css';
 
 export default function SampleFlexView(props) {
@@ -22,7 +22,7 @@ export default function SampleFlexView(props) {
 
   function handleClickOnCellPuck(event, cellID, puckID) {
     dispatch(
-      filterAction({ cellFilter: `${cellID}`, puckFilter: `${puckID}` }),
+      filterSampleList({ cellFilter: `${cellID}`, puckFilter: `${puckID}` }),
     );
     event.stopPropagation();
   }
@@ -40,7 +40,7 @@ export default function SampleFlexView(props) {
 
   useEffect(() => {
     if (filterOptions.cellFilter === '') {
-      dispatch(filterAction({ cellFilter: `${1}`, puckFilter: '' }));
+      dispatch(filterSampleList({ cellFilter: `${1}`, puckFilter: '' }));
     }
   }, [filterOptions.cellFilter, dispatch]);
 

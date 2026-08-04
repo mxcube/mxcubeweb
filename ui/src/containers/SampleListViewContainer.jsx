@@ -24,11 +24,7 @@ import {
   setEnabledSample,
   stopQueue,
 } from '../actions/queue';
-import {
-  filterAction,
-  getLimsSamples,
-  getSamplesList,
-} from '../actions/sampleGrid';
+import { getLimsSamples, getSamplesList } from '../actions/sampleGrid';
 import { showTaskForm } from '../actions/taskForm';
 import TooltipTrigger from '../components/TooltipTrigger';
 import {
@@ -39,6 +35,7 @@ import {
 import loader from '../img/loader.gif';
 import { showGenericMenu } from '../reducers/contextMenu';
 import { showConfirmCollectDialog } from '../reducers/queueGUI';
+import { filterSampleList } from '../reducers/sampleGrid';
 import { getSampleName } from '../utils';
 import QueueSettings from './QueueSettings';
 import SampleGridTableContainer from './SampleGridTableContainer';
@@ -89,9 +86,9 @@ export default function SampleListViewContainer() {
         sampleChangerType.includes('FLEX') &&
         mode === SAMPLE_LIST_VIEW_MODES.graphical_view
       ) {
-        dispatch(filterAction({ cellFilter: '1' }));
+        dispatch(filterSampleList({ cellFilter: '1' }));
       } else {
-        dispatch(filterAction({ cellFilter: '' }));
+        dispatch(filterSampleList({ cellFilter: '' }));
       }
 
       localStorage.setItem('view-mode', mode);
@@ -370,7 +367,7 @@ export default function SampleListViewContainer() {
       filterValue = e.target.checked;
     }
 
-    dispatch(filterAction({ [e.target.id]: filterValue }));
+    dispatch(filterSampleList({ [e.target.id]: filterValue }));
 
     if (Number(e.target.value) > 2) {
       window.scroll({
@@ -386,7 +383,7 @@ export default function SampleListViewContainer() {
    */
   function sampleGridClearFilter() {
     dispatch(
-      filterAction({
+      filterSampleList({
         inQueue: false,
         notInQueue: false,
         collected: false,
