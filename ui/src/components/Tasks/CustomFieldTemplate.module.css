@@ -20,7 +20,7 @@
   row-gap: 0.25rem;
 }
 
-:global(.has-error) .fieldInput input {
+:global(.rjsf-field-error) .fieldInput input {
   border-color: var(--bs-danger);
 }
 

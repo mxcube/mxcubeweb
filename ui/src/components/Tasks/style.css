@@ -18,7 +18,8 @@
 .json-schema-form-container .rjsf [type='submit'] {
   display: none;
 }
-.form-group .field:not(.field-object) {
+
+.json-schema-form-container .rjsf-field:not(.rjsf-field-object) {
   display: grid;
   grid-template-rows: min-content min-content 1fr;
 }

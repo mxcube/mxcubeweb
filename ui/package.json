@@ -22,9 +22,9 @@
   "dependencies": {
     "@fortawesome/fontawesome-free": "^5.15.4",
     "@reduxjs/toolkit": "2.6.1",
-    "@rjsf/core": "5.13.1",
-    "@rjsf/utils": "5.13.1",
-    "@rjsf/validator-ajv8": "5.13.1",
+    "@rjsf/core": "6.7.1",
+    "@rjsf/utils": "6.7.1",
+    "@rjsf/validator-ajv8": "6.7.1",
     "bootstrap": "5.3.7",
     "classnames": "^2.5.1",
     "fabric": "7.4.0",
