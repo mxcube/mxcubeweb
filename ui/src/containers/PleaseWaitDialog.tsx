@@ -1,7 +1,18 @@
 import { Button, Modal, ProgressBar } from 'react-bootstrap';
 
-import { hideWaitDialog } from '../reducers/waitDialog';
+import { stopQueue } from '../actions/queue';
+import { cancelControlRequest } from '../actions/remoteAccess';
+import {
+  hideWaitDialog,
+  type WaitDialogAbortAction,
+} from '../reducers/waitDialog';
 import { useAppDispatch, useAppSelector } from '../ts-store';
+
+// Set of well-known abort actions that can be triggered from the wait dialog.
+const ABORT_ACTIONS: Record<WaitDialogAbortAction, () => () => void> = {
+  cancelControlRequest,
+  stopQueue,
+};
 
 function PleaseWaitDialog() {
   const dispatch = useAppDispatch();
@@ -12,8 +23,7 @@ function PleaseWaitDialog() {
     return null;
   }
 
-  const { blocking, message, abortFun, title } = dialog;
-
+  const { blocking, message, abortAction, title } = dialog;
   return (
     <Modal
       keyboard={!blocking}
@@ -38,7 +48,9 @@ function PleaseWaitDialog() {
           <Button
             variant="outline-secondary"
             onClick={() => {
-              abortFun?.();
+              if (abortAction) {
+                dispatch(ABORT_ACTIONS[abortAction]());
+              }
               dispatch(hideWaitDialog());
             }}
           >

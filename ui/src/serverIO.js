@@ -26,7 +26,6 @@ import {
   getQueue,
   setCurrentSample,
   setSampleAttribute,
-  stopQueue,
 } from './actions/queue';
 import { getRaState } from './actions/remoteAccess';
 import {
@@ -244,7 +243,7 @@ class ServerIO {
               title: 'Sample changer in operation',
               message: record.message,
               blocking: true,
-              abortFun: () => dispatch(stopQueue()),
+              abortAction: 'stopQueue',
             }),
           );
 
@@ -258,7 +257,7 @@ class ServerIO {
               title: `Loading sample ${record.location}`,
               message: record.message,
               blocking: true,
-              abortFun: () => dispatch(stopQueue()),
+              abortAction: 'stopQueue',
             }),
           );
 
@@ -272,7 +271,7 @@ class ServerIO {
               title: `Unloading sample ${record.location}`,
               message: record.message,
               blocking: true,
-              abortFun: () => dispatch(stopQueue()),
+              abortAction: 'stopQueue',
             }),
           );
 
