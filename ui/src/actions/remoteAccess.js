@@ -11,6 +11,12 @@ import {
   sendUpdateAllowRemote,
   sendUpdateNickname,
 } from '../api/remoteAccess';
+import {
+  addChatMessage,
+  markAllMessagesRead,
+  setAllowRemote,
+  setRemoteAccessState,
+} from '../reducers/remoteAccess';
 import { showWaitDialog } from '../reducers/waitDialog';
 import { showErrorPanel } from './general';
 import { getLoginInfo } from './login';
@@ -18,7 +24,7 @@ import { getLoginInfo } from './login';
 export function getRaState() {
   return async (dispatch) => {
     const data = await fetchRemoteAccessState();
-    dispatch({ type: 'SET_RA_STATE', data: data.data });
+    dispatch(setRemoteAccessState(data.data));
   };
 }
 
@@ -97,12 +103,8 @@ export function respondToControlRequest(giveCtrl = true, message = '') {
 export function updateAllowRemote(allow) {
   return async (dispatch) => {
     await sendUpdateAllowRemote(allow);
-    dispatch({ type: 'SET_ALLOW_REMOTE', allow });
+    dispatch(setAllowRemote(allow));
   };
-}
-
-export function addChatMessage(message) {
-  return { type: 'ADD_CHAT_MESSAGE', message };
 }
 
 export function sendChatMessage(message, username) {
@@ -125,7 +127,7 @@ export function sendChatMessage(message, username) {
 
 export function markAllAsRead() {
   return async (dispatch) => {
-    dispatch({ type: 'MARK_ALL_READ' });
+    dispatch(markAllMessagesRead());
     await sendSetAllMessagesRead();
   };
 }

@@ -27,7 +27,7 @@ import {
   setCurrentSample,
   setSampleAttribute,
 } from './actions/queue';
-import { addChatMessage, getRaState } from './actions/remoteAccess';
+import { getRaState } from './actions/remoteAccess';
 import {
   setLoadedSample,
   setSCGlobalState,
@@ -49,6 +49,7 @@ import { CENTRING_METHOD } from './constants';
 import { addLogRecord } from './reducers/logger';
 import { setStatus } from './reducers/queue';
 import { collapseItem, showResumeQueueDialog } from './reducers/queueGUI';
+import { addChatMessage } from './reducers/remoteAccess';
 import {
   setBeamInfo,
   setCurrentPhase,

@@ -92,3 +92,31 @@ Cypress.Commands.add('clearSamples', () => {
   cy.findByRole('button', { name: /Clear sample list/u }).click('left');
   cy.findByRole('button', { name: 'Clear' }).click();
 });
+
+// Add second user's tasks to commands
+Cypress.Commands.add(
+  'secondUserLogin',
+  (nickname = 'secondUser', proposal = 'idtest0', password = '0000') => {
+    cy.task('secondUser:login', { proposal, password });
+    cy.task('secondUser:setNickname', nickname);
+    cy.task('secondUser:connectSocket');
+  },
+);
+
+Cypress.Commands.add('secondUserRequestControl', (message) => {
+  cy.task('secondUser:requestControl', message);
+});
+
+Cypress.Commands.add('secondUserSendChatMessage', (message) => {
+  cy.task('secondUser:sendChatMessage', message);
+});
+
+Cypress.Commands.add('secondUserEvents', () => cy.task('secondUser:getEvents'));
+
+Cypress.Commands.add('secondUserLoginInfo', () =>
+  cy.task('secondUser:getLoginInfo'),
+);
+
+Cypress.Commands.add('secondUserLogout', () => {
+  cy.task('secondUser:disconnect');
+});
