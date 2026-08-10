@@ -12,9 +12,9 @@ import TaskItemContainer from './TaskItemContainer';
 
 function CharacterisationTaskItem(props) {
   const { index, data, sampleId } = props;
-  const { parameters, diffractionPlan } = data;
+  const { type, parameters, diffractionPlan } = data;
 
-  const { type, fileName, path = '', shape } = parameters;
+  const { fileName, path = '', shape } = parameters;
   const pathEndPart = path.slice(-40);
 
   const dispatch = useDispatch();
