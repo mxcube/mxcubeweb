@@ -666,10 +666,14 @@ class SampleImage extends React.Component {
 
       if (shapeData && include) {
         const selected = !shapeData.selected;
-        shape.active = selected;
+        if (Object.isExtensible(shape)) {
+          shape.active = selected;
+        }
         updatedShapes.push({ ...shapeData, selected });
       } else if (shapeData && !shapeData.selected) {
-        shape.active = true;
+        if (Object.isExtensible(shape)) {
+          shape.active = true;
+        }
         updatedShapes.push({ ...shapeData, selected: true });
       }
     });
@@ -687,7 +691,9 @@ class SampleImage extends React.Component {
       const shape = s;
 
       if (shapeData && shapeData.selected && !include) {
-        shape.active = false;
+        if (Object.isExtensible(shape)) {
+          shape.active = false;
+        }
         updatedShapes.push({ ...shapeData, selected: false });
       }
     });
