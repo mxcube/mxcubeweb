@@ -748,16 +748,18 @@ class SampleImage extends React.Component {
 
   toggleGridVisibility(id) {
     const grid = this.props.grids[id];
+    let state;
+    let user_state;
 
     if (grid.state === 'HIDDEN') {
-      grid.state = 'SAVED';
-      grid.user_state = 'SAVED';
+      state = 'SAVED';
+      user_state = 'SAVED';
     } else {
-      grid.state = 'HIDDEN';
-      grid.user_state = 'HIDDEN';
+      state = 'HIDDEN';
+      user_state = 'HIDDEN';
     }
 
-    this.props.updateShapes([grid]);
+    this.props.updateShapes([{ ...grid, state, user_state }]);
   }
 
   renderSampleView() {
