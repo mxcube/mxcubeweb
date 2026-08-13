@@ -1,5 +1,6 @@
 import contextlib
 import itertools
+import json
 import logging
 import os
 import re
@@ -613,8 +614,6 @@ class QueueSerializer:
                 debug(q)
                 return
             except Exception:
-                import json
-
                 pretty = json.dumps(q, indent=2, sort_keys=True, ensure_ascii=False)
                 header = msg or "Queue state after addition:"
                 print(f"[QueueSerializer] {header}\n{pretty}")
@@ -2678,9 +2677,9 @@ class Queue(ComponentBase):
         schema = self.get_task_schema(data_model) if data_model else {}
 
         try:
-            ui_schema = data_model.ui_schema() if data_model else {}
-        except Exception:
-            ui_schema = {}
+            ui_schema = data_model.ui_schema() if data_model else json.dumps({})
+        except AttributeError:
+            ui_schema = json.dumps({})
 
         if schema:
             for parameter_group in schema.values():
