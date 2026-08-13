@@ -170,7 +170,7 @@ default_dc_params = {
     "queue_entry": "datacollection",
     "requires": [],
     "schema": {},
-    "ui_schema": {},
+    "ui_schema": "{}",
 }
 
 default_char_acq_params = {
@@ -253,7 +253,7 @@ default_char_acq_params = {
     "queue_entry": "characterisation",
     "requires": [],
     "schema": {},
-    "ui_schema": {},
+    "ui_schema": "{}",
 }
 
 default_mesh_params = {
@@ -306,7 +306,7 @@ default_mesh_params = {
     "queue_entry": "mesh",
     "requires": [],
     "schema": {},
-    "ui_schema": {},
+    "ui_schema": "{}",
 }
 
 
@@ -360,5 +360,5 @@ default_xrf_parameters = {
     "queue_entry": "xrf_spectrum",
     "requires": [],
     "schema": {},
-    "ui_schema": {},
+    "ui_schema": "{}",
 }
