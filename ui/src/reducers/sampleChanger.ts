@@ -23,24 +23,6 @@ interface SCLoadedSample {
   barcode: string;
 }
 
-interface WellOption {
-  color: string;
-}
-
-interface PlateGrid {
-  wellHeight: number;
-  wellWidth: number;
-  dropHeight: number;
-  dropWidth: number;
-  rowTitle: string[];
-  colTitle: number[];
-  numberOfDrops: number;
-  type: string;
-  title: string;
-  wellOption: WellOption[];
-  rotation: number;
-}
-
 type SampleChangerHWOState =
   | 'Ready'
   | 'Loaded'
@@ -63,68 +45,16 @@ interface SampleChanger {
   contents: SCContents | null;
   currentPlateIndex: number;
   loadedSample: SCLoadedSample | null;
-  plateGrid: PlateGrid[];
   selectedCol: number | null;
   selectedDrop: number | null;
   selectedRow: string | null;
   state: SampleChangerHWOState;
 }
 
-const PLATE_GRID_DEFAULTS: PlateGrid = {
-  wellHeight: 25,
-  wellWidth: 25,
-  dropHeight: 25,
-  dropWidth: 25,
-  rowTitle: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'],
-  colTitle: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-  numberOfDrops: 3,
-  type: 'square',
-  title: '96 Deep Well Plate',
-  wellOption: [{ color: '#eeeeee' }, { color: '#e0e0e0' }],
-  rotation: 0,
-};
-
-function createPlateGrid(overrides: Partial<PlateGrid> = {}): PlateGrid {
-  return { ...PLATE_GRID_DEFAULTS, ...overrides };
-}
-
-export const crystalDirect: PlateGrid = createPlateGrid();
-export const crystalQUickX: PlateGrid = createPlateGrid({ numberOfDrops: 2 });
-export const mitegenInSitu1: PlateGrid = createPlateGrid({ rotation: -90 });
-export const greinerImpact1536: PlateGrid = createPlateGrid({
-  numberOfDrops: 1,
-  wellOption: [{ color: '#eeeeee' }],
-});
-export const chipX: PlateGrid = createPlateGrid({
-  wellHeight: 130,
-  wellWidth: 400,
-  dropHeight: 20,
-  dropWidth: 20,
-  rowTitle: ['A', 'B'],
-  colTitle: [1],
-  numberOfDrops: 20,
-  wellOption: [{ color: '#eeeeee' }],
-});
-
-export const PLATE_LABEL_TO_GRID = {
-  'Crystal Direct': crystalDirect,
-  'Crystal QuickX': crystalQUickX,
-  'Mitegen InSitu-1': mitegenInSitu1,
-  'Greiner Impact 1536': greinerImpact1536,
-  ChipX: chipX,
-};
-
 const initialState: SampleChanger = {
   contents: null,
   state: 'Ready',
   loadedSample: null,
-  plateGrid: [
-    crystalDirect,
-    crystalQUickX,
-    mitegenInSitu1,
-    greinerImpact1536,
-    chipX,
-  ],
   currentPlateIndex: 4,
   selectedRow: null,
   selectedCol: null,
