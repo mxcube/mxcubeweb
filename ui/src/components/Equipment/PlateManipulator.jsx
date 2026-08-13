@@ -15,17 +15,18 @@ import { showErrorPanel } from '../../actions/general';
 import { mountSample, refresh, sendCommand } from '../../actions/sampleChanger';
 import { syncWithCrims } from '../../actions/sampleGrid';
 import {
-  chipX,
-  crystalQUickX,
-  greinerImpact1536,
-  mitegenInSitu1,
-  PLATE_LABEL_TO_GRID,
   setCurrentPlate,
   setSelectedDrop,
   setSelectedWell,
 } from '../../reducers/sampleChanger';
 import TooltipTrigger from '../TooltipTrigger';
 import styles from './equipment.module.css';
+import {
+  chipX,
+  mitegenInSitu1,
+  PLATE_GRIDS,
+  PLATE_LABEL_TO_GRID,
+} from './PlateGrid';
 
 const strokeColor = 'rgb(136, 136, 136)';
 
@@ -42,7 +43,6 @@ export default function PlateManipulator(props) {
   const sampleAddress = useSelector(
     (state) => state.sampleChanger.loadedSample.address,
   );
-  const plateGrid = useSelector((state) => state.sampleChanger.plateGrid);
   const currentPlateIndex = useSelector(
     (state) => state.sampleChanger.currentPlateIndex,
   );
@@ -78,9 +78,9 @@ export default function PlateManipulator(props) {
   useEffect(() => {
     const label = plateInfo?.plate_label ?? '';
     const plate = PLATE_LABEL_TO_GRID[label];
-    const index = plate ? plateGrid.indexOf(plate) : 0;
+    const index = plate ? PLATE_GRIDS.indexOf(plate) : 0;
     dispatch(setCurrentPlate(index));
-  }, [plateInfo?.plate_label, plateGrid, dispatch]);
+  }, [plateInfo?.plate_label, dispatch]);
 
   // PlateManipulator: Check whether a drop contain crystal --?
   function hasCrystals() {
@@ -173,7 +173,7 @@ export default function PlateManipulator(props) {
     }
   }
 
-  const plate = plateGrid[currentPlateIndex];
+  const plate = PLATE_GRIDS[currentPlateIndex];
   const nbcols = plate.colTitle.length;
   const nbrows = plate.rowTitle.length;
   let loadedDrop = '';
@@ -263,15 +263,6 @@ export default function PlateManipulator(props) {
     ));
   }
 
-  let dropPosy = 0;
-  if (plate === crystalQUickX) {
-    dropPosy = 95;
-  } else if (plate === greinerImpact1536) {
-    dropPosy = 135;
-  } else {
-    dropPosy = 70;
-  }
-
   function renderWellPlate() {
     return (
       <div
@@ -357,7 +348,7 @@ export default function PlateManipulator(props) {
                 235,
                 120 * plate.wellOption.length - 60,
                 258,
-                dropPosy,
+                plate.dropPosy,
               )}
             </svg>
           )}
