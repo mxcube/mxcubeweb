@@ -47,6 +47,10 @@ export function setVideoSize(width, height) {
   };
 }
 
+export function setVideoSource(url, hash) {
+  return { type: 'SET_VIDEO_SOURCE', url, hash };
+}
+
 export function saveMotorPosition(name, value) {
   return { type: 'SAVE_MOTOR_POSITION', name, value };
 }

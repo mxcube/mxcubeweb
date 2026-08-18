@@ -26,6 +26,12 @@ interface VideoOverlayState {
   msg: string;
 }
 
+interface SetVideoSourceAction {
+  type: 'SET_VIDEO_SOURCE';
+  url: string;
+  hash: string | string[];
+}
+
 // Dispatched from actions/login.js and handled by several other reducers too,
 // so it isn't owned by this slice.
 interface SetInitialStateAction {
@@ -54,6 +60,11 @@ interface SetInitialStateAction {
       phaseList: string[];
       currentPhase: string;
     };
+    argus?: {
+      stream_proxy_url: string;
+      main_camera_stream: string;
+      multi_views: Record<string, string[]>;
+    };
   };
 }
 
@@ -65,8 +76,10 @@ interface SampleViewState {
   width: number;
   height: number;
   videoFormat: 'MJPEG' | 'MPEG1';
-  videoHash: string;
+  videoHash: string[];
   videoURL: string;
+  mainStreamHash: string;
+  multiViews: Record<string, string[]>;
   sourceIsScalable: boolean;
   videoSizes: [number, number][];
   imageRatio: number;
@@ -91,8 +104,10 @@ const INITIAL_STATE: SampleViewState = {
   width: 659,
   height: 493,
   videoFormat: 'MJPEG',
-  videoHash: '',
+  videoHash: [],
   videoURL: '',
+  mainStreamHash: '',
+  multiViews: {},
   sourceIsScalable: false,
   videoSizes: [],
   imageRatio: 0,
@@ -173,6 +188,12 @@ const sampleViewSlice = createSlice({
       .addCase('SET_CURRENT_SAMPLE', (state) => {
         state.distancePoints = [];
       })
+      .addCase('SET_VIDEO_SOURCE', (state, action: SetVideoSourceAction) => {
+        state.videoHash = Array.isArray(action.hash)
+          ? action.hash
+          : [action.hash];
+        state.videoURL = action.url;
+      })
       .addCase('CLEAR_QUEUE', (state) => {
         state.distancePoints = [];
       })
@@ -183,8 +204,9 @@ const sampleViewSlice = createSlice({
         state.videoFormat = camera.format;
         state.videoSizes = camera.videoSizes;
         state.sourceIsScalable = camera.sourceIsScalable;
-        state.videoHash = camera.videoHash;
+        state.videoHash = [camera.videoHash];
         state.videoURL = camera.videoURL;
+        state.mainStreamHash = camera.videoHash;
         state.apertureList = beamInfo.apertureList;
         state.currentAperture = beamInfo.currentAperture;
         state.beamPosition = beamInfo.position;
@@ -194,6 +216,14 @@ const sampleViewSlice = createSlice({
         state.currentPhase = diffractometer.currentPhase;
         state.pixelsPerMm = camera.pixelsPerMm;
         state.sourceScale = camera.scale;
+
+        if (action.data.argus) {
+          const { argus } = action.data;
+          state.multiViews = argus.multi_views;
+          state.videoHash = [argus.main_camera_stream];
+          state.videoURL = argus.stream_proxy_url;
+          state.mainStreamHash = argus.main_camera_stream;
+        }
       });
   },
 });
