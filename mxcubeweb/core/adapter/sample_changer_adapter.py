@@ -235,7 +235,6 @@ class SampleChangerAdapter(AdapterBase):
                 self.app.queue.queue_toggle_sample(self.app.queue.get_entry(node_id)[1])
         finally:
             self._sc_load_ready(sample.location)
-
         return res
 
     def _unmount_sample(self, location):
@@ -270,7 +269,6 @@ class SampleChangerAdapter(AdapterBase):
 
         contents = self._ho.get_contents_as_dict()
         address, barcode = self.get_loaded_sample()
-
         loaded_sample = {"address": address, "barcode": barcode}
 
         try:
@@ -296,7 +294,11 @@ class SampleChangerAdapter(AdapterBase):
         return "READY" if self._ho.is_ready() else "BUSY"
 
     def loaded_sample(self) -> dict:
-        address, barcode = self.get_loaded_sample()
+        address, barcode = "", ""
+
+        if self._ho.has_loaded_sample():
+            address, barcode = self.get_loaded_sample()
+
         return {"address": address, "barcode": barcode}
 
     def get_contents(self):
