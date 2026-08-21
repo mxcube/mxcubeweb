@@ -14,6 +14,7 @@ import {
 import {
   centringClicksLeft,
   drawGrid,
+  drawGridWithClicks,
   saveImageSize,
   setAperture,
   setCurrentPhase,
@@ -69,6 +70,12 @@ export function toggleDrawGrid() {
       return;
     }
     dispatch(drawGrid());
+  };
+}
+
+export function toggleDrawGridWithClicks(x = 0, y = 0) {
+  return async (dispatch) => {
+    dispatch(drawGridWithClicks({ x, y }));
   };
 }
 
@@ -192,7 +199,10 @@ export function toggleCentring() {
   return async (dispatch, getState) => {
     const { sampleview } = getState();
 
-    // Turn off grid drawing if active
+    // Turn off grid drawings if active
+    if (sampleview.drawGridWithClicks) {
+      dispatch(drawGridWithClicks());
+    }
     if (sampleview.drawGrid) {
       dispatch(drawGrid());
     }

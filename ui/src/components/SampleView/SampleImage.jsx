@@ -71,6 +71,8 @@ class SampleImage extends React.Component {
     this.drawGridPlugin = new DrawGridPlugin();
     this.drawGridPlugin.setGridResultFormat(props.meshResultFormat);
     this._keyPressed = null;
+    this.prevLayerX = null;
+    this.prevLayerY = null;
     this.removeShapes = this.removeShapes.bind(this);
   }
 
@@ -114,7 +116,75 @@ class SampleImage extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const { imageRatio, width } = this.props;
+    const {
+      drawGridWithClicks,
+      drawGridWithClicksCoords,
+      imageRatio,
+      sampleVerticalMotorValue,
+      sampleVerticalMotorState,
+      sampleHorizontalMotorValue,
+      sampleHorizontalMotorState,
+      pixelsPerMm,
+      width,
+    } = this.props;
+
+    if (drawGridWithClicks && !prevProps.drawGridWithClicks) {
+      this.canvas.discardActiveObject();
+      const { x, y } = drawGridWithClicksCoords;
+      this.drawGridPlugin.startDrawing(
+        { e: { layerX: x * imageRatio, layerY: y * imageRatio } },
+        this.canvas,
+      );
+    } else if (!drawGridWithClicks && prevProps.drawGridWithClicks) {
+      this.drawGridPlugin.endDrawing();
+    }
+
+    // In case motors move while drawing with clicks shift the grid's start corner
+    if (this.drawGridPlugin.drawing && drawGridWithClicks) {
+      // Record the starting position of the grid before motors moved
+      if (
+        prevProps.sampleHorizontalMotorState === 'READY' &&
+        sampleHorizontalMotorState === 'BUSY'
+      ) {
+        this.motorOriginH = prevProps.sampleHorizontalMotorValue;
+      }
+      if (
+        prevProps.sampleVerticalMotorState === 'READY' &&
+        sampleVerticalMotorState === 'BUSY'
+      ) {
+        this.motorOriginV = prevProps.sampleVerticalMotorValue;
+      }
+      // Calculate deltas and update canvas when motors have stopped
+      const deltaX = this.calculateMotorDelta(
+        prevProps.sampleHorizontalMotorState,
+        sampleHorizontalMotorState,
+        this.motorOriginH,
+        sampleHorizontalMotorValue,
+        imageRatio,
+        pixelsPerMm[0],
+      );
+      const deltaY = this.calculateMotorDelta(
+        prevProps.sampleVerticalMotorState,
+        sampleVerticalMotorState,
+        this.motorOriginV,
+        sampleVerticalMotorValue,
+        imageRatio,
+        pixelsPerMm[1],
+        -1,
+      );
+      if (deltaX !== undefined || deltaY !== undefined) {
+        this.drawGridPlugin.currentTopLeftX += deltaX ?? 0;
+        this.drawGridPlugin.currentTopLeftY += deltaY ?? 0;
+        this.prevLayerX += deltaX ?? 0;
+        this.prevLayerY += deltaY ?? 0;
+        this.drawGridPlugin.update(
+          this.canvas,
+          this.prevLayerX,
+          this.prevLayerY,
+        );
+      }
+    }
+
     if (imageRatio !== prevProps.imageRatio || width !== prevProps.width) {
       this.setImageRatio();
     }
@@ -142,6 +212,21 @@ class SampleImage extends React.Component {
     imageOverlay.removeEventListener('contextmenu', this.rightClick);
     imageOverlay.removeEventListener('wheel', this.wheel);
     imageOverlay.removeEventListener('dblclick', this.goToBeam);
+  }
+
+  calculateMotorDelta(
+    prevState,
+    state,
+    originPosition,
+    position,
+    imageRatio,
+    pxPerMm,
+    sign = 1,
+  ) {
+    if (prevState === 'BUSY' && state === 'READY') {
+      return sign * (position - originPosition) * pxPerMm * imageRatio;
+    }
+    return undefined;
   }
 
   onMouseMove(options) {
@@ -172,19 +257,22 @@ class SampleImage extends React.Component {
       this.canvas.add(this.centringHorizontalLine);
     }
 
-    if (options.e.buttons === 1 && this.drawGridPlugin.drawing) {
-      this.drawGridPlugin.update(
-        this.canvas,
-        options.e.layerX,
-        options.e.layerY,
-      );
+    if (
+      (options.e.buttons === 1 || this.props.drawGridWithClicks) &&
+      this.drawGridPlugin.drawing
+    ) {
+      this.prevLayerX = options.e.layerX;
+      this.prevLayerY = options.e.layerY;
+      this.drawGridPlugin.update(this.canvas, this.prevLayerX, this.prevLayerY);
     }
 
     this.drawGridPlugin.onCellMouseOver(options, this.canvas);
   }
 
   onMouseUp() {
-    this.drawGridPlugin.endDrawing();
+    if (!this.props.drawGridWithClicks) {
+      this.drawGridPlugin.endDrawing();
+    }
   }
 
   setImageRatio() {
@@ -832,8 +920,9 @@ class SampleImage extends React.Component {
     });
 
     // Grid being defined (being drawn)
-    if (this.drawGridPlugin.shapeGroup) {
-      fabricSelectables.push(this.drawGridPlugin.shapeGroup);
+    // — repaint rebuilds and adds shapeGroup to canvas internally
+    if (this.drawGridPlugin.drawing) {
+      this.drawGridPlugin.repaint(this.canvas);
     }
 
     // Add points last so they are in front of grids
@@ -921,6 +1010,17 @@ class SampleImage extends React.Component {
 }
 
 function mapStateToProps(state) {
+  const motorComponents =
+    state.uiproperties.sample_view_motors?.components?.filter(
+      (c) => c.value_type === 'MOTOR',
+    ) ?? [];
+  const verticalMotorAttr = motorComponents.find(
+    (c) => c.role === 'sample_vertical',
+  )?.attribute;
+  const horizontalMotorAttr = motorComponents.find(
+    (c) => c.role === 'sample_horizontal',
+  )?.attribute;
+
   return {
     uiproperties: state.uiproperties,
     hardwareObjects: state.beamline.hardwareObjects,
@@ -940,11 +1040,21 @@ function mapStateToProps(state) {
     sourceScale: state.sampleview.sourceScale,
     drawGrid: state.sampleview.drawGrid,
     selectedShapes: selectSelectedShapeIds(state),
+    drawGridWithClicks: state.sampleview.drawGridWithClicks,
+    drawGridWithClicksCoords: state.sampleview.drawGridWithClicksCoords,
     pixelsPerMm: state.sampleview.pixelsPerMm,
     beamPosition: state.sampleview.beamPosition,
     beamShape: state.sampleview.beamShape,
     beamSize: state.sampleview.beamSize,
     videoMessageOverlay: state.sampleview.videoMessageOverlay,
+    sampleVerticalMotorValue:
+      state.beamline.hardwareObjects[verticalMotorAttr]?.value ?? 0,
+    sampleVerticalMotorState:
+      state.beamline.hardwareObjects[verticalMotorAttr]?.state ?? null,
+    sampleHorizontalMotorValue:
+      state.beamline.hardwareObjects[horizontalMotorAttr]?.value ?? 0,
+    sampleHorizontalMotorState:
+      state.beamline.hardwareObjects[horizontalMotorAttr]?.state ?? null,
   };
 }
 
