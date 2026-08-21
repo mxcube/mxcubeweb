@@ -118,6 +118,7 @@ class BeamlineActionAdapter(AdapterBase):
         """Stop the execution."""
         for cmd in self._ho.get_commands():
             self._ho.abort_command(cmd.name())
+        return {}
 
     def _valid_action_input(self, value: dict | list) -> bool:
         """Validate the action input value.
@@ -168,6 +169,8 @@ class BeamlineActionAdapter(AdapterBase):
             msg = f"Action cannot run: command {value.cmd} does not exist"
             logging.getLogger("MX3.HWR").exception(msg)
             raise
+
+        return {}
 
     def get_all_actions(self) -> ActionsList:
         actions: list[Action] = []
