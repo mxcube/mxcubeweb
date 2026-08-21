@@ -53,7 +53,10 @@ export function isUnCollected(task: TaskState): boolean {
   return task.state === TASK_UNCOLLECTED;
 }
 
-export function twoStateActuatorIsActive(state: string): boolean {
+export function twoStateActuatorIsActive(state: string | undefined): boolean {
+  if (!state) {
+    return false;
+  }
   return ['in', 'on', 'enabled'].includes(state.toLowerCase());
 }
 
