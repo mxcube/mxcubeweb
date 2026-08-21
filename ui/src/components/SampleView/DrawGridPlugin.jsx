@@ -229,6 +229,7 @@ export default class DrawGridPlugin {
     if (this.gridData.id !== gridData.id) {
       this.gridData = {
         ...gridData,
+        screenCoord: [...gridData.screenCoord],
         pixelsPerMMX: gridData.pixelsPerMm[0],
         pixelsPerMMY: gridData.pixelsPerMm[1],
       };
@@ -236,18 +237,26 @@ export default class DrawGridPlugin {
 
     const numRows = Number.parseInt(rows);
     if (!Number.isNaN(numRows)) {
-      const cellTH =
-        this.getCellHeight(this.gridData) + this.getCellVSpace(this.gridData);
-      this.gridData.height = numRows * cellTH;
+      const prevHeight = this.gridData.height;
+      this.gridData.height =
+        (numRows *
+          this.gridData.pixelsPerMMY *
+          (this.gridData.cellHeight + this.gridData.cellVSpace)) /
+        1000;
       this.gridData.numRows = numRows;
+      this.gridData.screenCoord[1] += (prevHeight - this.gridData.height) / 2;
     }
 
     const numCols = Number.parseInt(cols);
     if (!Number.isNaN(numCols)) {
-      const cellTW =
-        this.getCellWidth(this.gridData) + this.getCellHSpace(this.gridData);
-      this.gridData.width = numCols * cellTW;
+      const prevWidth = this.gridData.width;
+      this.gridData.width =
+        (numCols *
+          this.gridData.pixelsPerMMX *
+          (this.gridData.cellWidth + this.gridData.cellHSpace)) /
+        1000;
       this.gridData.numCols = numCols;
+      this.gridData.screenCoord[0] += (prevWidth - this.gridData.width) / 2;
     }
 
     this.repaint(canvas);
@@ -645,16 +654,15 @@ export default class DrawGridPlugin {
    */
   saveGrid(_gd) {
     const gd = structuredClone(_gd);
-    // screenCoord is only in raw screen-pixel units while a grid is being
-    // freshly drawn (id === null, see update()). A grid resized after being
-    // saved (id !== null) already has a normalized screenCoord (see
-    // shapeFromGridData), so it must not be divided again here.
+    // screenCoord/width/height are only in raw screen-pixel units while a grid
+    // is being freshly drawn (id === null). A grid resized after being saved
+    // (id !== null) is already normalized (see resize()/shapeFromGridData).
     if (gd.id === null) {
       gd.screenCoord[0] /= this.scale;
       gd.screenCoord[1] /= this.scale;
+      gd.width /= this.scale;
+      gd.height /= this.scale;
     }
-    gd.width /= this.scale;
-    gd.height /= this.scale;
     return gd;
   }
 
