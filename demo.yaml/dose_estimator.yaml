@@ -1,0 +1,14 @@
+class: mxcubecore.HardwareObjects.mockup.dose_estimator.MockupDoseEstimator
+configuration:
+    dose_rate_mgy_per_s: 1.0
+    error_probability: 0.1
+    experimental_goals:
+        cryo_highres:
+            label: Cryo High Resolution
+            type: resolution_dependent
+            mgy_per_angstrom: 10
+        room:
+            label: Room Temperature
+            type: static
+            mgy: 0.2
+
