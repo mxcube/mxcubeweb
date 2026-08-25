@@ -181,6 +181,15 @@ class SampleViewAdapter(AdapterBase):
             namespace="/hwr",
         )
 
+    def _get_grid_center_positions(self, shape_data, x, y):
+        """Get the motor positions for the center of the grid shape."""
+        x_c = x + (shape_data["num_cols"] / 2.0) * shape_data["cell_width"]
+        y_c = y + (shape_data["num_rows"] / 2.0) * shape_data["cell_height"]
+        center_positions = self._ho.get_centred_point_from_coord(
+            x_c, y_c, return_by_names=True
+        )
+        return center_positions
+
     def centring_clicks_left(self):
         return self._click_limit - self._click_count
 
@@ -328,19 +337,8 @@ class SampleViewAdapter(AdapterBase):
 
                         # We also store the center of the grid
                         if t == "G":
-                            # coords for the center of the grid
-                            x_c = (
-                                x
-                                + (shape_data["num_cols"] / 2.0)
-                                * shape_data["cell_width"]
-                            )
-                            y_c = (
-                                y
-                                + (shape_data["num_rows"] / 2.0)
-                                * shape_data["cell_height"]
-                            )
-                            center_positions = self._ho.get_centred_point_from_coord(
-                                x_c, y_c, return_by_names=True
+                            center_positions = self._get_grid_center_positions(
+                                shape_data, x, y
                             )
                             pos.append(center_positions)
 
@@ -358,6 +356,31 @@ class SampleViewAdapter(AdapterBase):
             # shape will be none if creation failed, so we check if shape exists
             # before setting additional parameters
             if shape:
+                # If the shape is a resized grid, we need to update the top left mpos
+                if (
+                    shape_data.get("t", "") == "G"
+                    and "num_cols" in shape_data
+                    and "num_rows" in shape_data
+                ):
+                    # Check if the grid has been resized
+                    grid_resized = (
+                        shape_data["num_cols"] != shape.num_cols
+                        or shape_data["num_rows"] != shape.num_rows
+                    )
+                    if grid_resized:
+                        x, y = shape_data["screen_coord"][:2]
+                        mpos = self._ho.get_centred_point_from_coord(
+                            x, y, return_by_names=True
+                        )
+                        pos.append(mpos)
+                        center_positions = self._get_grid_center_positions(
+                            shape_data, x, y
+                        )
+                        # have to get center position again for move_to_pos
+                        pos.append(center_positions)
+
+                        shape.move_to_mpos(pos, shape_data["screen_coord"])
+
                 shape.update_from_dict(shape_data)
                 shape_dict = to_camel(shape.as_dict())
                 updated_shapes.append(shape_dict)
