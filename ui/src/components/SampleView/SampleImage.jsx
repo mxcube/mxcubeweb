@@ -73,6 +73,7 @@ class SampleImage extends React.Component {
     this._keyPressed = null;
     this.removeShapes = this.removeShapes.bind(this);
     this.resizeGrid = this.resizeGrid.bind(this);
+    this.submitResizeGrid = this.submitResizeGrid.bind(this);
   }
 
   componentDidMount() {
@@ -187,6 +188,10 @@ class SampleImage extends React.Component {
   resizeGrid(rows, cols) {
     const gridData = this.selectedGrid();
     this.drawGridPlugin.resize(this.canvas, gridData, rows, cols);
+  }
+
+  submitResizeGrid() {
+    this.props.updateShapes([this.drawGridPlugin.currentGridData()]);
   }
 
   onMouseUp() {
@@ -901,6 +906,7 @@ class SampleImage extends React.Component {
               selectGrid={this.selectShape}
               selectedGrids={this.props.selectedGrids.map((grid) => grid.id)}
               resizeGrid={this.resizeGrid}
+              submitResizeGrid={this.submitResizeGrid}
             />
             <div className={styles.videoCanvasWrapper}>
               <VideoPlayer />

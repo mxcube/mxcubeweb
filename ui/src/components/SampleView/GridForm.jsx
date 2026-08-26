@@ -42,6 +42,7 @@ export default function GridForm(props) {
     show,
     toggleVisibility,
     resizeGrid,
+    submitResizeGrid,
   } = props;
 
   const draggableRef = useRef(null);
@@ -96,8 +97,60 @@ export default function GridForm(props) {
             {vdim} x {hdim}
           </td>
           <td>{grid.numRows * grid.numCols}</td>
-          <td>
-            {grid.numRows} x {grid.numCols}
+          <td className="align-items-center d-flex gap-1">
+            <Form
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitResizeGrid();
+              }}
+            >
+              <Form.Control
+                key={`${grid.id}-rows`}
+                style={{ width: '50px' }}
+                type="text"
+                defaultValue={
+                  grid.numRows
+                }
+                onChange={(e) => {
+                  resizeGrid(e.target.value, null);
+                }}
+                onFocus={() => {
+                  if (!selected) {
+                    selectGrid([grid], false);
+                  }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                onBlur={(e) => e.currentTarget.form.requestSubmit()}
+              />
+            </Form>
+            x
+            <Form
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitResizeGrid();
+              }}
+            >
+              <Form.Control
+                key={`${grid.id}-cols`}
+                style={{ width: '50px' }}
+                type="text"
+                defaultValue={
+                  grid.numCols
+                }
+                onChange={(e) => {
+                  resizeGrid(null, e.target.value);
+                }}
+                onFocus={() => {
+                  if (!selected) {
+                    selectGrid([grid], false);
+                  }
+                }}
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+                onBlur={(e) => e.currentTarget.form.requestSubmit()}
+              />
+            </Form>
           </td>
           <td>{grid.motorPositions.omega.toFixed(2)}&deg;</td>
           <td>
@@ -178,39 +231,7 @@ export default function GridForm(props) {
         )}
         <td />
         <td />
-        <td className="align-items-center d-flex gap-1">
-          <Form onSubmit={(event) => event.preventDefault()}>
-            <Form.Control
-              key={selectedGrids[0] ?? 'new-grid-rows'}
-              style={{ width: '50px' }}
-              type="text"
-              defaultValue={
-                selectedGrids.length > 0
-                  ? gridList[selectedGrids[0]].numRows
-                  : 10
-              }
-              onChange={(e) => {
-                resizeGrid(e.target.value, null);
-              }}
-            />
-          </Form>
-          x
-          <Form onSubmit={(event) => event.preventDefault()}>
-            <Form.Control
-              key={selectedGrids[0] ?? 'new-grid-cols'}
-              style={{ width: '50px' }}
-              type="text"
-              defaultValue={
-                selectedGrids.length > 0
-                  ? gridList[selectedGrids[0]].numCols
-                  : 10
-              }
-              onChange={(e) => {
-                resizeGrid(null, e.target.value);
-              }}
-            />
-          </Form>
-        </td>
+        <td />
         <td />
         <td />
         <td />
