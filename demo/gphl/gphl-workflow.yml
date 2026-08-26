@@ -192,7 +192,7 @@ configuration:
 #        Set in gph-setup.xml
 # gphl_subdir is not a workflow option. It is set in gphl-setup.xml
 workflows:
-  "GΦL Acquisition Workflow":
+  "GPhL Acquisition Workflow":
     wfpath: Gphl
     wftype: acquisition
     requires:
@@ -233,7 +233,7 @@ workflows:
           # File name pattern for characterisation data collection
           charpattern: generic
 
-      - title: Phasing (SAD)
+      - title: SAD Phasing
         strategy_type: phasing
         wf_selection: mxexpt
         variants:
@@ -315,7 +315,7 @@ workflows:
           # File name pattern for characterisation data collection
           charpattern: generic
 
-    "GΦL Diffractometer calibration":
+    "GPhL Diffractometer calibration":
       wfpath: Gphl
       wftype: diffractcal
       requires:
@@ -363,7 +363,7 @@ workflows:
             # # Path of file to dump persisted instrumentation configuration. OPTIONAL
             # instcfgout: gphl_diffractcal_out.nml
 
-    "GΦL Translational Calibration":
+    "GPhL Translational Calibration":
       wfpath: Gphl
       wftype: transcal
       requires:
