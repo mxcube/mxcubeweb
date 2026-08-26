@@ -181,14 +181,14 @@ class SampleViewAdapter(AdapterBase):
             namespace="/hwr",
         )
 
-    def _get_grid_center_positions(self, shape_data, x, y):
-        """Get the motor positions for the center of the grid shape."""
+    def _get_grid_centre_positions(self, shape_data, x, y):
+        """Get the motor positions for the centre of the grid shape."""
         x_c = x + (shape_data["num_cols"] / 2.0) * shape_data["cell_width"]
         y_c = y + (shape_data["num_rows"] / 2.0) * shape_data["cell_height"]
-        center_positions = self._ho.get_centred_point_from_coord(
+        centre_positions = self._ho.get_centred_point_from_coord(
             x_c, y_c, return_by_names=True
         )
-        return center_positions
+        return centre_positions
 
     def centring_clicks_left(self):
         return self._click_limit - self._click_count
@@ -337,10 +337,10 @@ class SampleViewAdapter(AdapterBase):
 
                         # We also store the center of the grid
                         if t == "G":
-                            center_positions = self._get_grid_center_positions(
+                            centre_positions = self._get_grid_centre_positions(
                                 shape_data, x, y
                             )
-                            pos.append(center_positions)
+                            pos.append(centre_positions)
 
                         shape = self._ho.add_shape_from_mpos(
                             pos, (x, y), t, state, user_state
@@ -373,11 +373,11 @@ class SampleViewAdapter(AdapterBase):
                             x, y, return_by_names=True
                         )
                         pos.append(mpos)
-                        center_positions = self._get_grid_center_positions(
+                        centre_positions = self._get_grid_centre_positions(
                             shape_data, x, y
                         )
-                        # have to get center position again for move_to_pos
-                        pos.append(center_positions)
+                        # have to get centre position again for move_to_pos
+                        pos.append(centre_positions)
 
                         shape.move_to_mpos(pos, shape_data["screen_coord"])
 
