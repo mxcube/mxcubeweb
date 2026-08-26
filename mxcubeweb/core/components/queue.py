@@ -762,7 +762,7 @@ class QueueSerializer:
         parameters["path"] = parameters["directory"]
         parameters["subdir"] = self._subdir_from_path(parameters["path"])
         parameters["strategy_name"] = node.strategy_name
-        parameters["label"] = f"GΦL {parameters['strategy_name']}"
+        parameters["label"] = f"GPhL {parameters['strategy_name']}"
         parameters["shape"] = node.shape
         parameters["fileName"] = pt.get_image_file_name().replace(
             "%" + ("%sd" % str(pt.precision)), int(pt.precision) * "#"
