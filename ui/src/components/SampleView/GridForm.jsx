@@ -108,9 +108,7 @@ export default function GridForm(props) {
                 key={`${grid.id}-rows`}
                 style={{ width: '50px' }}
                 type="text"
-                defaultValue={
-                  grid.numRows
-                }
+                defaultValue={grid.numRows}
                 onChange={(e) => {
                   resizeGrid(e.target.value, null);
                 }}
@@ -135,9 +133,7 @@ export default function GridForm(props) {
                 key={`${grid.id}-cols`}
                 style={{ width: '50px' }}
                 type="text"
-                defaultValue={
-                  grid.numCols
-                }
+                defaultValue={grid.numCols}
                 onChange={(e) => {
                   resizeGrid(null, e.target.value);
                 }}
