@@ -20,7 +20,7 @@ function Workflow(props) {
     const parameters = {
       ...params,
       type: isGphlWorkflow ? 'GphlWorkflow' : 'Workflow',
-      label: params.wfname,
+      label: isGphlWorkflow ? `GPhL ${props.strategy_name}` : params.wfname,
       shape: props.pointID,
       suffix: props.suffix,
     };
@@ -37,11 +37,6 @@ function Workflow(props) {
       'wfpath',
       'suffix',
     ];
-
-    if (isGphlWorkflow) {
-      parameters.strategy_name = props.strategy_name;
-      stringFields.push('strategy_name');
-    }
 
     props.addTask(parameters, stringFields, runNow);
     props.hide();
