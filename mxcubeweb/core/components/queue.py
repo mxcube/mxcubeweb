@@ -147,7 +147,7 @@ class TaskDataPathModel(BaseModel):
     precision: int = 0
     start_num: int = 0
     num_files: int = 0
-    compression: str = ""
+    compression: bool = False
     path: str = ""
     prefix: str = ""
 
