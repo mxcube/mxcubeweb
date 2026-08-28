@@ -104,4 +104,4 @@ class AppSettingsModel(BaseModel):
     )
 
     class Config:
-        extra: "forbid"  # noqa: F821
+        extra = "forbid"
