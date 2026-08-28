@@ -17,10 +17,8 @@ class HOModel(BaseModel):
     attributes: dict = Field({}, description="Data attributes")
     commands: dict | list = Field({}, description="Available methods")
 
-    # pyflakes are a bit picky with F821 (Undefined name),
-    # not even sure "forbid" should ba considered as an undefined name
     class Config:
-        extra: "forbid"  # noqa: F821
+        extra = "forbid"
 
 
 class HOActuatorModel(HOModel):
@@ -61,7 +59,7 @@ class HOBeamValueModel(BaseModel):
     )
 
     class Config:
-        extra: "forbid"  # noqa: F821
+        extra = "forbid"
 
 
 class HOBeamModel(HOActuatorModel):
