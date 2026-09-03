@@ -11,7 +11,9 @@ import styles from './MXNavbar.module.css';
 function MXNavbar() {
   const isUserLogin = useSelector((state) => state.login.loginType === 'User');
   const selectedProposal = useSelector((state) => state.login.selectedProposal);
-  const { nickname, fullname } = useSelector((state) => state.login.user);
+  const { nickname, fullname, isstaff } = useSelector(
+    (state) => state.login.user,
+  );
   const inControl = useSelector((state) => state.login.user.inControl);
 
   const mode = useSelector((state) => state.general.mode);
@@ -62,9 +64,11 @@ function MXNavbar() {
             >
               Data collection
             </Nav.Link>
-            <Nav.Link as={NavLink} className={styles.navLink} to="/equipment">
-              Equipment
-            </Nav.Link>
+            {isstaff && (
+              <Nav.Link as={NavLink} className={styles.navLink} to="/equipment">
+                Equipment
+              </Nav.Link>
+            )}
           </Nav>
           <Nav className={styles.subNav}>
             <Nav.Link as={NavLink} className={styles.navLink} to="/help">
