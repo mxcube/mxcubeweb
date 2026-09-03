@@ -1,5 +1,6 @@
 import { Col, Container, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 
 import { executeCommand } from '../actions/beamline';
 import GenericEquipment from '../components/Equipment/GenericEquipment';
@@ -19,6 +20,11 @@ function EquipmentContainer() {
   const scState = useSelector((state) => state.sampleChanger.state);
   const haContents = useSelector((state) => state.harvester.contents);
   const haState = useSelector((state) => state.harvester.state);
+  const isStaff = useSelector((state) => state.login.user.isstaff);
+
+  if (!isStaff) {
+    return <Navigate to="/datacollection" replace/>
+  }
 
   return (
     <Container fluid className="mt-3">
