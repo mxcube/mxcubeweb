@@ -23,7 +23,7 @@ function EquipmentContainer() {
   const isStaff = useSelector((state) => state.login.user.isstaff);
 
   if (!isStaff) {
-    return <Navigate to="/datacollection" replace/>
+    return <Navigate to="/datacollection" replace />;
   }
 
   return (
