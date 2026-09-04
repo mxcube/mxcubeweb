@@ -9,6 +9,8 @@ from mxcubecore.model.lims_session import LimsSessionManager
 from mxcubecore.queuelib import (
     COLLECTED,
     UNCOLLECTED,
+    SampleNode,
+    validate_model_tolerant,
 )
 
 from mxcubeweb.core.components.component_base import ComponentBase
@@ -125,6 +127,9 @@ class Lims(ComponentBase):
 
         if loc:
             res = self.app.SAMPLE_LIST.get("sampleList").get(loc, {})
+
+        for key, sample_dict in res["sampleList"].items():
+            res["sampleList"][key] = validate_model_tolerant(SampleNode, sample_dict).model_dump()
 
         return res
 
