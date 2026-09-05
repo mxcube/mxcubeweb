@@ -54,6 +54,7 @@ function _GridData() {
 export default class DrawGridPlugin {
   constructor() {
     this.startDrawing = this.startDrawing.bind(this);
+    this.resize = this.resize.bind(this);
     this.update = this.update.bind(this);
     this.endDrawing = this.endDrawing.bind(this);
     this.repaint = this.repaint.bind(this);
@@ -219,6 +220,46 @@ export default class DrawGridPlugin {
       this.currentTopLeftX = options.e.layerX;
       this.currentTopLeftY = options.e.layerY;
     }
+  }
+
+  resize(canvas, gridData, rows, cols) {
+    // Keep accumulating onto plugins own in-progress copy while the same grid
+    // is being resized, otherwise re-read gridData from Redux. That would
+    // discard whichever row/col edit hasn't been saved yet.
+    if (this.gridData.id !== gridData.id) {
+      this.gridData = {
+        ...gridData,
+        screenCoord: [...gridData.screenCoord],
+        pixelsPerMMX: gridData.pixelsPerMm[0],
+        pixelsPerMMY: gridData.pixelsPerMm[1],
+      };
+    }
+
+    const numRows = Number.parseInt(rows);
+    if (!Number.isNaN(numRows)) {
+      const prevHeight = this.gridData.height;
+      this.gridData.height =
+        (numRows *
+          this.gridData.pixelsPerMMY *
+          (this.gridData.cellHeight + this.gridData.cellVSpace)) /
+        1000;
+      this.gridData.numRows = numRows;
+      this.gridData.screenCoord[1] += (prevHeight - this.gridData.height) / 2;
+    }
+
+    const numCols = Number.parseInt(cols);
+    if (!Number.isNaN(numCols)) {
+      const prevWidth = this.gridData.width;
+      this.gridData.width =
+        (numCols *
+          this.gridData.pixelsPerMMX *
+          (this.gridData.cellWidth + this.gridData.cellHSpace)) /
+        1000;
+      this.gridData.numCols = numCols;
+      this.gridData.screenCoord[0] += (prevWidth - this.gridData.width) / 2;
+    }
+
+    this.repaint(canvas);
   }
 
   /**
@@ -613,10 +654,15 @@ export default class DrawGridPlugin {
    */
   saveGrid(_gd) {
     const gd = structuredClone(_gd);
-    gd.screenCoord[0] /= this.scale;
-    gd.screenCoord[1] /= this.scale;
-    gd.width /= this.scale;
-    gd.height /= this.scale;
+    // screenCoord/width/height are only in raw screen-pixel units while a grid
+    // is being freshly drawn (id === null). A grid resized after being saved
+    // (id !== null) is already normalized (see resize()/shapeFromGridData).
+    if (gd.id === null) {
+      gd.screenCoord[0] /= this.scale;
+      gd.screenCoord[1] /= this.scale;
+      gd.width /= this.scale;
+      gd.height /= this.scale;
+    }
     return gd;
   }
 
