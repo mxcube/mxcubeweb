@@ -269,6 +269,9 @@ class Lims(ComponentBase):
                 if data.get("proteinAcronym", ""):
                     sample.pop("proteinAcronym")
 
+                if data.get("limsID"):
+                    sample.pop("limsID", None)
+
                 # defaultSubDir and prefix are derived from proteinAcronym
                 # and/or sampleName so make sure that those are removed from
                 # queue sample so that they can be updated if changed.
