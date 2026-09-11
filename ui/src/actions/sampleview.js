@@ -16,7 +16,6 @@ import {
   drawGrid,
   saveImageSize,
   setAperture,
-  setCurrentPhase,
   showVideoMessageOverlay,
   startClickCentring as startClickCentringAction,
   stopClickCentring,
@@ -263,10 +262,9 @@ export function changeAperture(size) {
 }
 
 export function changeCurrentPhase(phase) {
-  return async (dispatch) => {
+  return async () => {
     await sendExecuteCommand('diffractometer', 'diffractometer', 'set_phase', {
       phase,
     });
-    dispatch(setCurrentPhase(phase));
   };
 }

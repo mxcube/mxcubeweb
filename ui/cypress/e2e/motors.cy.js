@@ -6,8 +6,8 @@ describe('Motors', () => {
   });
 
   it('can control motors', () => {
-    cy.findByLabelText('Phase Control').select('COLLECT');
-    cy.findByLabelText('Phase Control').should('have.value', 'COLLECT');
+    cy.findByLabelText('Phase Control').select('DataCollection');
+    cy.findByLabelText('Phase Control').should('have.value', 'DataCollection');
 
     cy.findByLabelText('Beam size').select('A20');
     cy.findByLabelText('Beam size').should('have.value', 'A20');
