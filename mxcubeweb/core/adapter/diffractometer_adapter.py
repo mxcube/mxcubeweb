@@ -50,7 +50,7 @@ class DiffractometerAdapter(AdapterBase):
 
     def get_value(self) -> dict:
         return {
-            "currentPhase": self._ho.get_phase().name,
+            "currentPhase": self._ho.get_phase().value,
             "phaseList": self._ho.get_phase_list(),
         }
 
