@@ -1,9 +1,11 @@
 import logging
+import time
 from datetime import datetime
 
 import flask_login
 from flask import (
     Blueprint,
+    g,
     jsonify,
     request,
 )
@@ -65,6 +67,8 @@ def init_route(app, server, url_prefix):
 
     @server.flask.before_request
     def before_request():
+        g.request_start_time = time.monotonic()
+
         if not flask_login.current_user.is_anonymous:
             flask_login.current_user.last_request_timestamp = datetime.now()
             app.usermanager.update_user(flask_login.current_user)
@@ -76,13 +80,19 @@ def init_route(app, server, url_prefix):
             and request.path not in _IGNORED_PATHS
             and not request.path.startswith("/static")
         ):
+            start_time = getattr(g, "request_start_time", None)
+            duration_ms = (
+                (time.monotonic() - start_time) * 1000 if start_time else -1
+            )
+
             _access_log.info(
-                "[REQUEST] user=%s ip=%s method=%s path=%s status=%s",
+                "[REQUEST] user=%s ip=%s method=%s path=%s status=%s duration_ms=%.1f",
                 flask_login.current_user.username,
                 networkutils.remote_addr(),
                 request.method,
                 request.path,
                 response.status_code,
+                duration_ms,
             )
         return response
 
