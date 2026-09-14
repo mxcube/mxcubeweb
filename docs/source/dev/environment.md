@@ -85,15 +85,23 @@ pnpm --dir ui build
 
 ### 7. Running the application (server)
 
-```
-# The paths passed below need to be the absolute paths
-# to the demo and build directories
-# (that is why there is an extra `$(pwd)` in the command).
-mxcubeweb-server -r $(pwd)/mxcubeweb/demo/ --static-folder $(pwd)/mxcubeweb/ui/build/ -L debug
+The demo/mockup configuration lives in the shared
+[`mxcube_configuration`](https://github.com/mxcube/mxcube_configuration) repository
+rather than inside `mxcubeweb` itself. `mxcubecore` ships a small helper,
+`mxcube-fetch-config`, that clones (or updates) a local copy of it and prints
+the lookup path `mxcubeweb-server` expects for `-r`:
 
-# Or for the YAML version of the demo:
-mxcubeweb-server -r $(pwd)/mxcubeweb/demo.yml/ --static-folder $(pwd)/mxcubeweb/ui/build/ -L debug
 ```
+# The paths passed below need to be the absolute path
+# to the build directory (that is why there is an extra `$(pwd)` in the command).
+mxcubeweb-server -r "$(mxcube-fetch-config --for web)" --static-folder $(pwd)/mxcubeweb/ui/build/ -L debug
+```
+
+The first run clones `mxcube_configuration` into
+`~/.cache/mxcube/mxcube_configuration` (override with `$MXCUBE_CONFIG_HOME`);
+later runs just update that checkout. Add `--gphl` if you also need the GPhL
+workflow configuration overrides. See `mxcube-fetch-config --help` for all
+options, including pinning a specific tag with `--ref`.
 
 _Running the above should give something similar to_
 ![mxcube-backend](assets/mxcube-backend.gif)
@@ -162,7 +170,7 @@ The development server listens on port **5173**
 # so before starting the development server, open a new terminal and run (as in step 7):
 
 conda activate mxcubeweb
-mxcubeweb-server -r $(pwd)/mxcubeweb/demo/ --static-folder $(pwd)/mxcubeweb/ui/build/ --log-level debug
+mxcubeweb-server -r "$(mxcube-fetch-config --for web)" --static-folder $(pwd)/mxcubeweb/ui/build/ --log-level debug
 
 # In another terminal, from the root directory of `mxcubeweb`
 pnpm --dir ui start
@@ -212,11 +220,13 @@ are the same as the command line options but with the `MXCUBE` prefix.
 _Example .env file:_
 
 ```
-MXCUBE_HWR_DIRECTORY="/full/path/to/mxcube/mxcubeweb/demo"
+MXCUBE_HWR_DIRECTORY="/full/path/to/mxcube_configuration/demo.yaml"
 MXCUBE_STATIC_FOLDER="/full/path/to/mxcube/mxcubeweb/ui/build/"
 MXCUBE_LOG_LEVEL=DEBUG
 MXCUBE_ALLOW_REMOTE=True
 ```
+
+(`mxcube-fetch-config --for web` prints the value to use for `MXCUBE_HWR_DIRECTORY` above.)
 
 The server can be started with `gunicorn` like this:
 
