@@ -7,6 +7,7 @@ from mxcubeweb.core.models.configmodels import FlaskConfigModel  # noqa: I001 E4
 # Disabling E402 (module level import not at top of file)
 # for the lines below as we are monkey patching
 import argparse  # noqa: E402
+import logging  # noqa: E402
 import os  # noqa: E402
 import sys  # noqa: E402
 import traceback  # noqa: E402
@@ -113,6 +114,21 @@ def build_server_and_config(test=False, argv=None):
     runtime_options = RuntimeOptions(**vars(args))
 
     try:
+        # MXCUBEApplication.init_logging() is what attaches the
+        # "HWR" logger's handlers, but it runs later, once the
+        # server object it depends on exists, which also depends
+        # on HWR is initialised. Give "HWR" a plain console handler
+        # before everything is initilized so that messages apear in
+        # the console,
+        
+        early_hwr_logger = logging.getLogger("HWR")
+        early_hwr_logger.setLevel((runtime_options.log_level or "INFO").upper())
+        early_handler = logging.StreamHandler(sys.stdout)
+        early_handler.setFormatter(
+            logging.Formatter("%(asctime)s |%(name)-7s|%(levelname)-7s| %(message)s")
+        )
+        early_hwr_logger.addHandler(early_handler)
+
         # This refactoring (with other bits) allows you to pass a 'path1:path2' lookup path
         # as the hwr_directory. I need it for sensible managing of a multi-beamline test set-up
         # without continuously editing the main config files.
