@@ -122,9 +122,9 @@ configuration:
       cell_spacing: vertical, horizontal
       mesh_center: top-left
 
-      gphlworkflow:
-        {}
-        # Apparently this must be here, but we use all values same as default
+    gphlworkflow:
+      {}
+      # Apparently this must be here, but we use all values same as default
 
   acquisition_limit_values:
     exposure_time:
