@@ -2,7 +2,9 @@
 
 config_metadata:
   version: 1.0.0
+
 modules:
+  equipment: ui-modules/equipment.yaml
   sample_list_view_modes: ui-modules/sample_list_view_modes.yaml
   sample_view: ui-modules/sample_view.yaml
   sample_view_motors: ui-modules/sample_view_motors.yaml

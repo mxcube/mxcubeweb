@@ -193,7 +193,13 @@ class UISessionPickerModel(BaseModel):
     tabs: UiSessionPickerTabs = UiSessionPickerTabs()
 
 
+class UIEquipmentModel(BaseModel):
+    id: Literal["equipment"] = "equipment"
+    show_for_staff_only: bool = False
+
+
 class UIPropertiesListModel(BaseModel):
+    equipment: UIEquipmentModel = UIEquipmentModel()
     sample_view: UIPropertiesModel | None = None
     beamline_setup: UIPropertiesModel
     camera_setup: UICameraConfigModel | None = None

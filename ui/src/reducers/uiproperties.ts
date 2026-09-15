@@ -58,7 +58,13 @@ export interface UISessionPicker {
   };
 }
 
+export interface UIEquipment {
+  id: 'equipment';
+  show_for_staff_only: boolean;
+}
+
 export interface UIProperties {
+  equipment: UIEquipment;
   beamline_setup: UISection;
   sample_view_motors: UISection;
   sample_list_view_modes: UISampleListViewModes;

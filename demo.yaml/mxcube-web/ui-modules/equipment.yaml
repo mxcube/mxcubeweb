@@ -1,0 +1,4 @@
+---
+equipment:
+  id: equipment
+  show_for_staff_only: false
