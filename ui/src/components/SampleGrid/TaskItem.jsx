@@ -44,7 +44,8 @@ export class TaskItem extends React.Component {
 
         break;
       }
-      case 'Workflow': {
+      case 'Workflow':
+      case 'GphlWorkflow': {
         res = 'WF';
 
         break;

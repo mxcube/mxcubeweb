@@ -165,6 +165,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
             {
                 "sampleOrder": queue.get("sample_order", []),
                 "sampleList": sample_list.get("sampleList", {}),
+                "addResults": queue.get("add_results", []),
             }
         )
         resp.status_code = 200

@@ -1,7 +1,10 @@
 import copy
 import json
+import os
 import time
 
+from mxcubecore import HardwareRepository as HWR
+from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
 from mxcubecore.queuelib import QUEUE_FORMAT_VERSION, WARNING
 
@@ -99,6 +102,43 @@ def test_add_and_edit_task(client):
         json.loads(resp.data).get("parameters")[parameter_to_update]
         == parameter_update_value
     )
+
+
+def test_gphl_wf_node_serializes_with_wfpath(client):
+    """A GphlWorkflow node's serialized parameters must include
+    wfpath="Gphl"
+
+    Uses a minimal TaskNode stand-in rather than a real qmo.GphlWorkflow()
+    - the latter's __init__ requires HWR.beamline.gphl_workflow.config.
+    """
+
+    class FakeGphlNode(qmo.TaskNode):
+        def __init__(self):
+            super().__init__()
+            self.path_template = qmo.PathTemplate()
+            self.path_template.precision = "3"
+            self.path_template.directory = os.path.join(
+                HWR.beamline.session.get_base_image_directory(), "gphl"
+            )
+            self.strategy_name = "MX3sw"
+            self.shape = -1
+            # QueueModel.node_index walks every sample child expecting
+            # TaskGroup-shaped nodes to have this attribute.
+            self.interleave_num_images = 0
+
+    sample_model = HWR.beamline.queue_model.get_sample_by_loc_str("1:05")
+    node = FakeGphlNode()
+    HWR.beamline.queue_model.add_child(sample_model, node)
+
+    # No real QueueEntry gets auto-created for this stand-in node (that
+    # only happens for types registered in MODEL_QUEUE_ENTRY_MAPPINGS) -
+    # stub out state lookup, irrelevant to what this test checks.
+    serializer = mxcube.queue._qs
+    serializer.get_node_state = lambda node_id: (True, 0)
+    result = serializer._handle_gphl_node(sample_model, node)
+
+    assert result.type == "GphlWorkflow"
+    assert result.parameters.wfpath == "Gphl"
 
 
 def _new_dc_task(sample_id, subdir):
