@@ -153,6 +153,23 @@ def test_add_task_by_queue_id(client):
     assert tasks_after[0]["queueID"] == task_id
 
 
+def test_new_tasks_get_distinct_run_numbers(client):
+    """Two DataCollections added to the same sample with the same subdir
+    must get distinct, incrementing run numbers
+    """
+    mxcube.queue.add_task("1:01", _new_dc_task("1:01", "Sample-1-01/"))
+    mxcube.queue.add_task("1:01", _new_dc_task("1:01", "Sample-1-01/"))
+
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    tasks = json.loads(resp.data)["1:01"]["tasks"]
+    assert len(tasks) == 2
+
+    run_numbers = [t["parameters"]["run_number"] for t in tasks]
+    assert run_numbers[0] != run_numbers[1], (
+        f"expected distinct run numbers, got {run_numbers}"
+    )
+
+
 def test_add_task_unknown_loc_str_raises(client):
     """Test add_task raises for a sample that isn't in the queue."""
     try:
