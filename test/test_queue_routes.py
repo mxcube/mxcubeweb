@@ -2,6 +2,11 @@ import copy
 import json
 import time
 
+from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
+from mxcubecore.queuelib import QUEUE_FORMAT_VERSION, WARNING
+
+from mxcubeweb.app import MXCUBEApplication as mxcube
+
 from .input_parameters import (
     default_char_acq_params,
     default_dc_params,
@@ -17,6 +22,12 @@ def test_queue_get(client):
     assert resp.status_code == 200
 
 
+def test_queue_get_reports_format_version(client):
+    """Test the root queue response always carries format_version."""
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    assert json.loads(resp.data)["format_version"] == QUEUE_FORMAT_VERSION
+
+
 def test_add_and_get_sample(client):
     """Test if we can add a sample. The sample is added by a fixture."""
     resp = client.get("/mxcube/api/v0.1/queue/")
@@ -29,6 +40,40 @@ def test_add_and_get_task(client):
     resp = client.get("/mxcube/api/v0.1/queue/")
     assert resp.status_code == 200
     assert len(json.loads(resp.data).get("1:05")["tasks"]) == 1
+
+
+def test_warning_entry_status_reported_as_warning_not_uncollected(client):
+    """QUEUE_ENTRY_STATUS.WARNING (e.g. a Characterisation that ran to
+    completion but produced no diffraction plan) must surface as WARNING
+    """
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    node_id = json.loads(resp.data)["1:05"]["tasks"][0]["queueID"]
+
+    _model, entry = mxcube.queue.get_entry(node_id)
+    entry.status = QUEUE_ENTRY_STATUS.WARNING
+
+    _enabled, state = mxcube.queue.get_node_state(node_id)
+    assert state == WARNING
+
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    task = json.loads(resp.data)["1:05"]["tasks"][0]
+    assert task["state"] == WARNING
+
+
+def test_node_to_dict_returns_the_node_itself(client):
+    """node_to_dict(node) is the unambiguous replacement for the old
+    queue_to_dict([node]) trick (JSON_FORMAT.md known issue #2) - it must
+    return a single dict representing that node, not the whole queue and
+    not a list of its children."""
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    task_queue_id = json.loads(resp.data)["1:05"]["tasks"][0]["queueID"]
+
+    model, _entry = mxcube.queue.get_entry(task_queue_id)
+    node_dict = mxcube.queue.node_to_dict(model)
+
+    assert node_dict["queueID"] == task_queue_id
+    assert node_dict["type"] == "DataCollection"
+    assert "sample_order" not in node_dict
 
 
 def test_add_and_edit_task(client):
@@ -54,6 +99,68 @@ def test_add_and_edit_task(client):
         json.loads(resp.data).get("parameters")[parameter_to_update]
         == parameter_update_value
     )
+
+
+def _new_dc_task(sample_id, subdir):
+    return {
+        "type": "DataCollection",
+        "checked": True,
+        "sampleID": sample_id,
+        "parameters": {
+            "num_images": 3,
+            "osc_start": 0,
+            "osc_range": 0.1,
+            "exp_time": 0.05,
+            "energy": 12.7,
+            "resolution": 2.0,
+            "shape": -1,
+            "prefix": "local-user",
+            "path": "",
+            "subdir": subdir,
+        },
+    }
+
+
+def test_add_task_by_loc_str(client):
+    """Test add_task appends a single task to a sample addressed by loc_str."""
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    tasks_before = json.loads(resp.data)["1:05"]["tasks"]
+    assert len(tasks_before) == 1
+
+    task_id = mxcube.queue.add_task("1:05", _new_dc_task("1:05", "Sample-1-05/"))
+    assert isinstance(task_id, int)
+
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    tasks_after = json.loads(resp.data)["1:05"]["tasks"]
+    assert len(tasks_after) == 2
+    assert tasks_after[-1]["queueID"] == task_id
+
+
+def test_add_task_by_queue_id(client):
+    """Test add_task appends a single task to a sample addressed by queueID."""
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    sample = json.loads(resp.data)["1:01"]
+    assert sample["tasks"] == []
+
+    task_id = mxcube.queue.add_task(
+        sample["queueID"], _new_dc_task("1:01", "Sample-1-01/")
+    )
+    assert isinstance(task_id, int)
+
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    tasks_after = json.loads(resp.data)["1:01"]["tasks"]
+    assert len(tasks_after) == 1
+    assert tasks_after[0]["queueID"] == task_id
+
+
+def test_add_task_unknown_loc_str_raises(client):
+    """Test add_task raises for a sample that isn't in the queue."""
+    try:
+        mxcube.queue.add_task("9:99", _new_dc_task("9:99", "Sample-9-99/"))
+    except RuntimeError:
+        pass
+    else:
+        raise AssertionError("Expected RuntimeError for unknown sample loc_str")
 
 
 def test_queue_start(client):
@@ -136,13 +243,15 @@ def test_queue_abort(client):
 def test_queue_clear(client):
     """Test if we can clear the queue.
 
-    A sample and a task are added by fixtures and then cleared.
+    A sample and a task are added by fixtures and then cleared. The
+    response still carries "format_version" (see JSON_FORMAT.md) even
+    though there are no samples left - only sample_order is omitted.
     """
     resp = client.put("/mxcube/api/v0.1/queue/clear")
     assert resp.status_code == 200
 
     resp = client.get("/mxcube/api/v0.1/queue/")
-    assert len(json.loads(resp.data)) == 0
+    assert json.loads(resp.data) == {"format_version": QUEUE_FORMAT_VERSION}
 
 
 def test_queue_get_state(client):
@@ -227,6 +336,22 @@ def test_get_default_char_acq_params(client):
 
     assert resp.status_code == 200
     assert actual == default_char_acq_params
+
+
+def test_get_task_schema_is_flat_and_matches_add_item_payload(client):
+    """get_task_schema must describe one flat dict (what queue_add_item
+    actually expects), not data_model's own 5-sub-model nested shape
+    """
+    from mxcubecore.queue_entry.test_collection import TestCollectionTaskParameters
+
+    schema = mxcube.queue.get_task_schema(TestCollectionTaskParameters)
+
+    assert schema["type"] == "object"
+    assert "path_parameters" not in schema["properties"]
+    for flat_field in ("prefix", "subdir", "exp_time", "cell_a", "offset"):
+        assert flat_field in schema["properties"]
+
+    assert "allOf" in schema["properties"]["num_images"]
 
 
 def test_get_default_xrf_parameters(client):

@@ -4,12 +4,12 @@ from typing import ClassVar
 import pydantic
 from mxcubecore import HardwareRepository as HWR
 from mxcubecore.HardwareObjects.Beamline import Beamline
-
-from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
-from mxcubeweb.core.components.queue import (
+from mxcubecore.queuelib import (
     COLLECTED,
     RUNNING,
 )
+
+from mxcubeweb.core.adapter.adapter_base import ActuatorAdapterBase
 from mxcubeweb.core.models.configmodels import ResourceHandlerConfigModel
 
 resource_handler_config = ResourceHandlerConfigModel(

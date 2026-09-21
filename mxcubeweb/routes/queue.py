@@ -183,7 +183,7 @@ def init_route(app, server, url_prefix):  # noqa: C901
 
         model = app.queue.queue_update_item(sqid, tqid, data)
 
-        resp = jsonify(app.queue.queue_to_dict([model]))
+        resp = jsonify(app.queue.node_to_dict(model))
         resp.status_code = 200
 
         server.emit(

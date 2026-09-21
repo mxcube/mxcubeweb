@@ -171,6 +171,10 @@ default_dc_params = {
     "requires": [],
     "schema": {},
     "ui_schema": "{}",
+    "template_fields": {
+        "prefix": ["{PREFIX}", "{POSITION}"],
+        "subdir": ["{ACRONYM}", "{NAME}", "{POSITION}"],
+    },
 }
 
 default_char_acq_params = {
@@ -254,6 +258,10 @@ default_char_acq_params = {
     "requires": [],
     "schema": {},
     "ui_schema": "{}",
+    "template_fields": {
+        "prefix": ["{PREFIX}", "{POSITION}"],
+        "subdir": ["{ACRONYM}", "{NAME}", "{POSITION}"],
+    },
 }
 
 default_mesh_params = {
@@ -307,6 +315,10 @@ default_mesh_params = {
     "requires": [],
     "schema": {},
     "ui_schema": "{}",
+    "template_fields": {
+        "prefix": ["{PREFIX}", "{POSITION}"],
+        "subdir": ["{ACRONYM}", "{NAME}", "{POSITION}"],
+    },
 }
 
 
@@ -361,4 +373,8 @@ default_xrf_parameters = {
     "requires": [],
     "schema": {},
     "ui_schema": "{}",
+    "template_fields": {
+        "prefix": ["{PREFIX}", "{POSITION}"],
+        "subdir": ["{ACRONYM}", "{NAME}", "{POSITION}"],
+    },
 }
