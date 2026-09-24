@@ -1,3 +1,4 @@
+/* eslint-disable complexity*/
 function warn(values, props) {
   const warnings = {};
   if (!props.beamline.hardwareObjects) {
@@ -72,7 +73,13 @@ function warn(values, props) {
       5
   ) {
     warnings.osc_range =
-      'The given oscillation range might be to large for this centring';
+      'The given oscillation range might be to large for this centering';
+  }
+
+  const numImages = Number.parseInt(values.num_images, 10);
+  const maxImages = props.doseEstimate?.max_images;
+  if (Number.isFinite(maxImages) && numImages > maxImages) {
+    warnings.num_images = `Exceeds max images (${maxImages}) at current settings`;
   }
 
   if (!values.prefix) {

@@ -1,0 +1,30 @@
+.wrapper {
+  position: relative;
+}
+
+.list {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.list :global(.list-group-item) {
+  padding: 0.25rem;
+}
+
+.list :global(.list-group-item):hover {
+  background-color: var(--bs-primary);
+  cursor: pointer;
+}
+
+.goalLabel {
+  font-size: 0.75rem;
+  color: var(--bs-secondary-color);
+}
+
+.goalValue {
+  font-size: 1rem;
+  color: inherit;
+}

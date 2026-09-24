@@ -1,0 +1,15 @@
+.unavailable {
+  text-decoration: underline dashed;
+  cursor: help;
+  color: var(--bs-danger);
+}
+
+.over {
+  color: var(--bs-danger);
+  font-weight: 600;
+}
+
+.under {
+  color: var(--bs-success);
+  font-weight: 600;
+}
