@@ -437,8 +437,8 @@ class SampleImage extends React.Component {
           this.props.points[threeDpointList[0]].state === 'TMP'
         ) {
           ctxMenuObj = { type: 'TMP', id: threeDpointList[0] };
-        } else if (threeDpointList.length > 2) {
-          ctxMenuObj = { type: 'GROUP', id: threeDpointList };
+        } else if (threeDpointList.length > 2 || twoDPointList.length > 2 ) {
+          ctxMenuObj = { type: 'GROUP', id: this.props.selectedShapes };
         } else if (gridList.length === 1) {
           const gridData = this.drawGridPlugin.setPixelsPerMM(
             this.props.pixelsPerMm,
