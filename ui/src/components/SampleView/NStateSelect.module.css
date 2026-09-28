@@ -1,10 +1,69 @@
 .select {
-  background-color: var(--hw-ready--bg);
   transition: background-color 100ms ease-in;
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.select[data-busy] {
+.select[data-state='ready'],
+.select[data-state='ready']:hover,
+.select[data-state='ready']:focus,
+.select[data-state='ready']:active,
+.select[data-state='ready'].show {
+  background-color: var(--hw-ready--bg);
+}
+
+.select[data-state='busy'] {
   background-color: var(--hw-busy--bg);
   font-weight: 600;
   cursor: wait;
+}
+
+.menu {
+  padding: 0;
+  width: 100%;
+}
+
+.menu :global(.dropdown-divider) {
+  margin: 0;
+}
+
+.item {
+  padding: 0.25rem 0.5rem;
+  text-align: center;
+  text-wrap: wrap;
+}
+
+.item:global(.active) {
+  font-weight: 600;
+}
+
+.item:global(.active):not(:hover):not(:focus) {
+  background-color: transparent;
+  color: inherit;
+}
+
+.item:global(.active):hover,
+.item:global(.active):focus {
+  background-color: var(--bs-dropdown-link-hover-bg);
+  color: var(--bs-dropdown-link-hover-color);
+}
+
+.description {
+  font-size: 0.8em;
+  line-height: 1.1;
+}
+
+.info {
+  color: var(--bs-info);
+}
+
+.warning {
+  color: var(--bs-warning);
+}
+
+.danger {
+  color: var(--bs-danger);
 }
