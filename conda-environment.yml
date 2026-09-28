@@ -31,7 +31,11 @@ dependencies:
 
   - nodejs ==22.*|24.*  # Make sure it matches `ui/package.json`
   - pnpm ==10.*  # Make sure it matches `ui/package.json`
-  - poetry ==2.4.1  # Make sure it matches `.pre-commit-config.yaml` and `poetry.lock`
+  # Intentionally one patch behind `.pre-commit-config.yaml`/`pyproject.toml` (2.4.3):
+  # conda-forge's `poetry` build raised its Python floor to >=3.11 starting at 2.4.3,
+  # which conflicts with `python >=3.10,<3.12` above. 2.4.2 is the newest conda-forge
+  # build still compatible with Python 3.10.
+  - poetry ==2.4.2
 
 
 ...

@@ -12,7 +12,7 @@ inputs:
     default: conda-environment.yml
   poetry-version:
     description: Version of poetry to use
-    default: 2.4.1
+    default: 2.4.3
   micromamba-version:
     description: Version of micromamba to use
     default: 1.5.10-0
