@@ -64,6 +64,8 @@ objects:
   - offline_processing: auto_processing.yaml
   - online_processing: parallel_processing.yaml
   - characterisation: characterisation.yaml
+  - ipc_gateway: ipc_gateway.yaml
+  - ipc_server: ipc_server.yaml
 
 configuration:
   advanced_methods:
