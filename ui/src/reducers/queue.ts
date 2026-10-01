@@ -9,7 +9,10 @@ import {
   type QueueStatus,
 } from '../constants';
 
-type QueueSettingName = 'rememberParametersBetweenSamples' | 'autoAddDiffplan';
+type QueueSettingName =
+  | 'rememberParametersBetweenSamples'
+  | 'autoAddDiffplan'
+  | 'pauseAfterEachEntry';
 
 interface SetQueueAction {
   type: 'SET_QUEUE';
@@ -40,6 +43,7 @@ interface QueueSliceState {
   current: string;
   groupFolder: string;
   numSnapshots: number;
+  pauseAfterEachEntry: boolean;
   queue: string[];
   queueStatus: QueueStatus;
   rememberParametersBetweenSamples: boolean;
@@ -52,6 +56,7 @@ const INITIAL_STATE: QueueSliceState = {
   current: '',
   groupFolder: '',
   numSnapshots: 4,
+  pauseAfterEachEntry: false,
   queue: [],
   queueStatus: QUEUE_STOPPED,
   rememberParametersBetweenSamples: true,
@@ -129,6 +134,7 @@ const queueSlice = createSlice({
         state.centringMethod = queue.centringMethod;
         state.rememberParametersBetweenSamples =
           queue.rememberParametersBetweenSamples;
+        state.pauseAfterEachEntry = queue.pauseAfterEachEntry;
         state.current = queue.current;
         state.queueStatus = queue.queueStatus;
       });
