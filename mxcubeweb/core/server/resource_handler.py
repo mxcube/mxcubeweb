@@ -427,7 +427,9 @@ class ResourceHandler:
                     # The handler expects a number/bool but the client sent a string
                     # coerce instead of passing the raw string
                     try:
-                        return _coerce_str_to_type(param_data[param_name], param_type)
+                        return _coerce_str_to_type(
+                            param_data[param_name], param_type
+                        )
                     except ValueError as e:
                         msg = (
                             f"Invalid {param_type.__name__} input for "
