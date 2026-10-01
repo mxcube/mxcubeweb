@@ -79,6 +79,20 @@ export default function QueueSettings() {
             id="remember-params"
           />
         </Dropdown.Item>
+        <Dropdown.Item as="div">
+          <Form.Check
+            type="checkbox"
+            name="pauseAfterEachEntry"
+            onChange={(e) => {
+              dispatch(
+                setQueueSettings('pauseAfterEachEntry', e.target.checked),
+              );
+            }}
+            checked={queueState.pauseAfterEachEntry}
+            label="Pause after each queue entry"
+            id="pause-after-each-entry"
+          />
+        </Dropdown.Item>
         <Dropdown.Divider />
         <Dropdown.Item as="div">
           <NumSnapshotsDropDown align="end" />

@@ -26,6 +26,7 @@ from mxcubeweb.core.models.adaptermodels import (
 )
 from mxcubeweb.core.models.generic import (
     ALLOWED_APP_SETTINGS,
+    ALLOWED_QUEUE_MANAGER_SETTINGS,
     GroupFolderModel,
     SettingNameValue,
 )
@@ -147,6 +148,11 @@ class Queue(ComponentBase):
         settings[str_to_camel("AUTO_ADD_DIFFPLAN")] = (
             HWR.beamline.queue_manager.auto_add_diff_plan
         )
+
+        for setting_name in ALLOWED_QUEUE_MANAGER_SETTINGS:
+            settings[str_to_camel(setting_name)] = getattr(
+                HWR.beamline.queue_manager, setting_name.lower()
+            )
 
         res = {
             "current": current,
@@ -1009,7 +1015,9 @@ class Queue(ComponentBase):
         return {"path": path, "rootPath": root_path}
 
     def set_setting(self, name_value: SettingNameValue) -> tuple:  # noqa: D417
-        """Set the setting (on the MXCUBEApplication object) with name to value.
+        """Set the setting with name to value, on the MXCUBEApplication
+        object or, for settings in ALLOWED_QUEUE_MANAGER_SETTINGS, on
+        HWR.beamline.queue_manager.
 
         Args:
            name: The name of the setting
@@ -1019,25 +1027,34 @@ class Queue(ComponentBase):
            A tuple with name, value on success else empty tuple
         """
         name = str_to_snake(name_value.name).upper()
+        val = name_value.value
 
-        if name in ALLOWED_APP_SETTINGS.keys() and hasattr(self.app, name):
-            logging.getLogger("HWR").debug(
-                f"Setting application setting {name} to {name_value.value}"
+        if name in ALLOWED_QUEUE_MANAGER_SETTINGS and hasattr(
+            HWR.beamline.queue_manager, name.lower()
+        ):
+            target, attr_name, expected_type = (
+                HWR.beamline.queue_manager,
+                name.lower(),
+                ALLOWED_QUEUE_MANAGER_SETTINGS[name],
             )
-            expected_type = ALLOWED_APP_SETTINGS[name]
-            val = name_value.value
-
-            try:
-                conv = expected_type(val)
-            except Exception as exc:
-                raise ValueError(f"Invalid value for setting {name}: {val!r}") from exc
-            else:
-                setattr(self.app, name, conv)
-                result = name, conv
+        elif name in ALLOWED_APP_SETTINGS and hasattr(self.app, name):
+            target, attr_name, expected_type = (
+                self.app,
+                name,
+                ALLOWED_APP_SETTINGS[name],
+            )
         else:
             raise ValueError(f"Invalid setting {name}")
 
-        return result
+        try:
+            conv = expected_type(val)
+        except Exception as exc:
+            raise ValueError(f"Invalid value for setting {name}: {val!r}") from exc
+
+        logging.getLogger("HWR").debug(f"Setting {name} to {conv}")
+        setattr(target, attr_name, conv)
+
+        return name, conv
 
     def set_num_snapshots(self, num_snapshots: int):
         """Set the number of snapshots to take during data collection.

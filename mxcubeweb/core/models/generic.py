@@ -14,6 +14,12 @@ ALLOWED_APP_SETTINGS = {
     "ALLOW_REMOTE": bool,
 }
 
+# Settings that live on HWR.beamline.queue_manager instead of on the
+# MXCUBEApplication instance.
+ALLOWED_QUEUE_MANAGER_SETTINGS = {
+    "PAUSE_AFTER_EACH_ENTRY": bool,
+}
+
 
 def setting_name_to_constant(name: str) -> str:
     return "".join(
@@ -35,7 +41,11 @@ class SettingNameValue(BaseModel):
     @field_validator("name")
     @classmethod
     def validate_name(cls, value: str) -> str:
-        if setting_name_to_constant(value) not in ALLOWED_APP_SETTINGS.keys():
+        constant = setting_name_to_constant(value)
+        if (
+            constant not in ALLOWED_APP_SETTINGS
+            and constant not in ALLOWED_QUEUE_MANAGER_SETTINGS
+        ):
             raise ValueError(f"Setting {value!r} is not allowed")
 
         return value
