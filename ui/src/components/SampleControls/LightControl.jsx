@@ -42,7 +42,7 @@ function LightControl(props) {
               value={light.value}
               disabled={light.state !== HW_STATE.READY}
               onChange={(evt) =>
-                dispatch(setAttribute(hwoId, evt.target.value))
+                dispatch(setAttribute(hwoId, Number(evt.target.value)))
               }
             />
           </Popover>

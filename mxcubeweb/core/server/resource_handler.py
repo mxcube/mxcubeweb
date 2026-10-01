@@ -40,6 +40,22 @@ def validate_input_str(input_string: str) -> bool:
     return bool(re.match(pattern, input_string))
 
 
+def _coerce_str_to_type(value: str, param_type: type) -> int | float | bool:
+    """Coerce a string value to the numeric/bool type.
+
+    Raises:
+        ValueError: If `value` cannot be interpreted as `param_type`.
+    """
+    if param_type is bool:
+        if value.lower() in ("true", "1"):
+            return True
+        if value.lower() in ("false", "0"):
+            return False
+        msg = f"Cannot interpret '{value}' as bool"
+        raise ValueError(msg)
+    return param_type(value)
+
+
 def assert_valid_type_arguments(func):
     """Make sure that all the arguments of the function are typehinted correctly.
 
@@ -407,6 +423,18 @@ class ResourceHandler:
             # We consider str safe if it contains, alpha numerical
             # characters and dot "." and underscore "_"
             if validate_input_str(param_data[param_name]):
+                if param_type in (int, float, bool):
+                    # The handler expects a number/bool but the client sent a string
+                    # coerce instead of passing the raw string
+                    try:
+                        return _coerce_str_to_type(param_data[param_name], param_type)
+                    except ValueError as e:
+                        msg = (
+                            f"Invalid {param_type.__name__} input for "
+                            f"'{param_name}' '{param_data[param_name]}'"
+                            f" on: {request.url}"
+                        )
+                        raise ValueError(msg) from e
                 return param_data[param_name]
 
             msg = f"Invalid string input for '{param_name}' '{param_data[param_name]}'"

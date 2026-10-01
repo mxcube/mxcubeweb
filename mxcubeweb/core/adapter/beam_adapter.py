@@ -49,7 +49,7 @@ class BeamAdapter(ActuatorAdapterBase):
 
         return aperture_list, current_aperture
 
-    def set_value(self, value: int) -> HOBeamModel:
+    def set_value(self, value: str) -> HOBeamModel:
         self._ho.set_value(value)
         msg = f"Changing beams size to: {value}"
         logging.getLogger("MX3.HWR").info(msg)
