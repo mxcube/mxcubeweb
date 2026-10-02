@@ -48,7 +48,9 @@ export default function TaskTable(props) {
                 : task.parameters;
 
             const sample = sampleList[task.sampleID];
-            const relativePath = parameters.fullPath.split(rootPath).pop();
+            const relativePath = (parameters.fullPath || '')
+              .split(rootPath)
+              .pop();
 
             return (
               <OverlayTrigger

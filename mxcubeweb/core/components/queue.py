@@ -102,7 +102,7 @@ class Queue(ComponentBase):
 
         if status == QUEUE_ENTRY_STATUS.FAILED:
             state = FAILED
-        elif status == QUEUE_ENTRY_STATUS.WARNING:
+        elif status in (QUEUE_ENTRY_STATUS.WARNING, QUEUE_ENTRY_STATUS.SKIPPED):
             # Same as QueueSerializer.get_node_state in mxcubecore.queuelib -
             # checked before is_executed()/SUCCESS below, since e.g. a
             # completed-without-diffraction-plan Characterisation is also
@@ -577,6 +577,8 @@ class Queue(ComponentBase):
             "sample": node_index["sample"],
             "state": state,
             "progress": 1 if state == COLLECTED else 0,
+            "startedAt": getattr(entry, "started_at", None),
+            "endedAt": getattr(entry, "ended_at", None),
         }
 
     def handle_auto_mount_next(self, entry):

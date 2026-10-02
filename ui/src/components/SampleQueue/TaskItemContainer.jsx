@@ -44,19 +44,18 @@ export default function TaskItemContainer({
   pointIDString,
 }) {
   const dispatch = useAppDispatch();
-  const currentSampleID = useAppSelector((state) => state.queue.current);
+  const { sampleID } = data;
   const displayData = useAppSelector(
     (state) => state.queueGUI.displayData[data.queueID] || {},
   );
   const taskState = useAppSelector(
-    (state) =>
-      state.sampleGrid.sampleList[currentSampleID]?.tasks[index]?.state,
+    (state) => state.sampleGrid.sampleList[sampleID]?.tasks[index]?.state,
   );
 
   function handleContextMenu(e) {
     e.preventDefault();
     contextMenu.show({
-      id: 'currentSampleQueueContextMenu',
+      id: `queueContextMenu-${sampleID}`,
       event: e,
       props: {
         taskIndex: index,
@@ -81,7 +80,7 @@ export default function TaskItemContainer({
 
   function onDeleteTask(e) {
     e.stopPropagation();
-    dispatch(deleteTask(currentSampleID, index));
+    dispatch(deleteTask(sampleID, index));
   }
 
   let taskCSS = displayData.selected
