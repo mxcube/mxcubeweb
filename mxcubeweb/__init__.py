@@ -18,7 +18,7 @@ from mxcubecore import HardwareRepository as HWR  # noqa: E402
 from mxcubeweb.app import MXCUBEApplication as mxcube  # noqa: E402
 from mxcubeweb.config import Config  # noqa: E402
 from mxcubeweb.core.models.configmodels import RuntimeOptions  # noqa: E402
-
+from mxcubeweb.logging_handler import LOGGER_NAMES  # noqa: E402
 from mxcubeweb.core.server.server import create_server  # noqa: E402
 from mxcubeweb.core.server.routes import register_routes  # noqa: E402
 
@@ -67,24 +67,13 @@ def parse_args(argv):
     )
 
     opt_parser.add_argument(
-        "-el",
+        "-e",
         "--enabled-loggers",
         dest="enabled_logger_list",
-        help=(
-            "Which loggers to use, default is to use all loggers"
-            " ([exception_logger, hwr_logger, server_logger,"
-            " user_logger, queue_logger])"
-        ),
-        default=[
-            "exception_logger",
-            "hwr_logger",
-            "server_logger",
-            "user_logger",
-            "queue_logger",
-            "ui_logger",
-            "csp_logger",
-            "server_access_logger",
-        ],
+        nargs="+",
+        choices=LOGGER_NAMES,
+        default=LOGGER_NAMES,
+        help="Loggers to enable; by default all loggers are enabled.",
     )
 
     opt_parser.add_argument(
@@ -93,6 +82,15 @@ def parse_args(argv):
         action="store_true",
         dest="allow_remote",
         help="Enable remote access",
+        default=False,
+    )
+
+    opt_parser.add_argument(
+        "-t",
+        "--ra-timeout",
+        action="store_true",
+        dest="ra_timeout",
+        help="Timeout gives control",
         default=False,
     )
 
@@ -144,6 +142,7 @@ def build_server_and_config(test=False, argv=None):
         mxcube.init(
             server,
             runtime_options.allow_remote,
+            runtime_options.ra_timeout,
             runtime_options.log_file,
             runtime_options.log_level,
             runtime_options.enabled_logger_list,
