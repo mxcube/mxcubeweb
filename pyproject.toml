@@ -68,3 +68,34 @@ sphinxcontrib-httpdomain = "^1.8.1"
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-arm64"]
+
+[tool.pixi.dependencies]
+python-ldap = ">=3.4.5,<4"  # overwrite pip package with conda as there is no wheel available
+ffmpeg = "*"  # Not directly used by mxcube, but necessary for the video-streamer
+
+[tool.pixi.pypi-dependencies]
+mxcubeweb = { path = ".", editable = true }
+
+[tool.pixi.tasks.start]
+args = [ { "arg" = "repository", "default" = "$PIXI_PROJECT_ROOT/demo" } ]
+cmd = "mxcubeweb-server --repository {{ repository }} --static-folder $PIXI_PROJECT_ROOT/ui/build --log-level debug"
+
+[tool.pixi.feature.ui.dependencies]
+nodejs = "24.*"  # Make sure it matches `ui/package.json`
+pnpm = "10.*"    # Make sure it matches `ui/package.json`
+
+[tool.pixi.feature.ui.tasks]
+pnpm = "pnpm"
+_install-ui = { cmd = "pnpm --prefix ui install", inputs = ["ui/package.json"] }
+build-ui = { cmd = "pnpm --prefix ui build", depends-on = ["_install-ui"] }
+start-ui = { cmd = "pnpm --prefix ui start", depends-on = ["_install-ui"] }
+preview-ui = { cmd = "pnpm --prefix ui start", depends-on = ["build-ui"] }
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+graylog = { features = ["graylog"], solve-group = "default" }
+ui = { features = ["ui"], no-default-feature = true }
