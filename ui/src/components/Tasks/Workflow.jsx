@@ -36,6 +36,7 @@ function Workflow(props) {
       'wfname',
       'wfpath',
       'suffix',
+      'beam_size',
     ];
 
     props.addTask(parameters, stringFields, runNow);
