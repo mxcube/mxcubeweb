@@ -2,11 +2,15 @@
 import React from 'react';
 import { Button, ButtonToolbar, Col, Form, Modal, Row } from 'react-bootstrap';
 import { connect } from 'react-redux';
-import { formValueSelector, reduxForm } from 'redux-form';
+import { change, formValueSelector, reduxForm } from 'redux-form';
 
+import { estimateDose } from '../../actions/taskForm';
 import { SPACE_GROUPS } from '../../constants';
 import { DraggableModal } from '../DraggableModal';
+import TooltipTrigger from '../TooltipTrigger';
 import asyncValidate from './asyncValidate';
+import doseStyles from './DoseEstimation/DoseEstimate.module.css';
+import { computeLimit, DoseLimitInput } from './DoseEstimation/DoseLimitInput';
 import {
   CollapsableRows,
   FieldsHeader,
@@ -278,6 +282,55 @@ class DataCollection extends React.Component {
                 />
               </FieldsRow>
             )}
+            {this.props.canEstimateDose && (
+              <FieldsRow>
+                <Form.Group>
+                  <Row>
+                    <Form.Label column sm={6}>
+                      Estimated dose (MGy)
+                    </Form.Label>
+                    <Form.Label column sm={5}>
+                      {this.props.doseEstimate?.status === 'ok' && (
+                        <span
+                          className={
+                            this.props.doseEstimate.dose_mgy >
+                            this.props.doseLimit
+                              ? doseStyles.over
+                              : doseStyles.under
+                          }
+                        >
+                          {this.props.doseEstimate.dose_mgy?.toFixed(2)}
+                        </span>
+                      )}
+                      {this.props.doseEstimate?.status === 'error' && (
+                        <TooltipTrigger
+                          id="dose-estimate-error-tooltip"
+                          tooltipContent={this.props.doseEstimate.msg}
+                          inModal
+                        >
+                          <span className={doseStyles.unavailable}>N/A</span>
+                        </TooltipTrigger>
+                      )}
+                      {!this.props.doseEstimate && (
+                        <span className={doseStyles.unavailable}>N/A</span>
+                      )}
+                    </Form.Label>
+                  </Row>
+                </Form.Group>
+                <DoseLimitInput
+                  goals={this.props.goals}
+                  resolution={this.props.resolution}
+                  value={this.props.doseLimit || Number.POSITIVE_INFINITY}
+                  currentGoalId={this.props.currentGoalId}
+                  onLimitChange={(limit) => {
+                    this.props.change('dose_limit', limit);
+                  }}
+                  onGoalChange={(goal) =>
+                    this.props.change('exp_goal', goal ?? null)
+                  }
+                />
+              </FieldsRow>
+            )}
             <CollapsableRows>
               <FieldsRow>
                 <InputField propName="kappa" type="number" label="Kappa" />
@@ -352,12 +405,78 @@ const DataCollectionForm = reduxForm({
   validate,
   asyncValidate,
   warn,
+  shouldWarn: ({ values, nextProps, props, initialRender, structure }) => {
+    // Default behaviour + recomputing warnings on estimate changes.
+    if (initialRender) {
+      return true;
+    }
+    if (!structure.deepEqual(values, nextProps.values)) {
+      return true;
+    }
+    return props.doseEstimate !== nextProps.doseEstimate;
+  },
+  onChange: (values, dispatch, props, previousValues) => {
+    // when using dose estimation, changes to form fields
+    // may trigger a need to reestimate.
+    // this handled computations of dependent fields for
+    // dose and dose limit.
+    if (!props.canEstimateDose) {
+      return;
+    }
+    const estimateTriggers = [
+      'energy',
+      'transmission',
+      'num_images',
+      'exp_time',
+      'resolution',
+      'exp_goal',
+      'dose_limit',
+    ];
+    const estimateChanged = estimateTriggers.some(
+      (field) => values[field] !== previousValues[field],
+    );
+    if (estimateChanged) {
+      dispatch(
+        estimateDose({
+          num_images: Number.parseInt(values.num_images, 10),
+          energy_kev: Number.parseFloat(values.energy),
+          transmission_pct: Number.parseFloat(values.transmission),
+          exp_time_s: Number.parseFloat(values.exp_time),
+          resolution_a: Number.parseFloat(values.resolution),
+          experimental_goal: values?.exp_goal,
+          dose_limit_mgy: Number.parseFloat(values?.dose_limit),
+        }),
+      );
+    }
+
+    const currentGoal = props.goals?.[values.exp_goal];
+    if (
+      values.resolution !== previousValues.resolution &&
+      currentGoal?.type === 'resolution_dependent'
+    ) {
+      dispatch(
+        change(
+          'datacollection',
+          'dose_limit',
+          computeLimit(currentGoal, values.resolution),
+        ),
+      );
+    }
+  },
 })(DataCollection);
 
 const selector = formValueSelector('datacollection');
 
 export default connect((state) => {
+  const { doseEstimate } = state.taskForm;
+
+  const doseEstimatorHO = state.beamline.hardwareObjects?.dose_estimator;
   const subdir = selector(state, 'subdir');
+  const canEstimateDose = !!doseEstimatorHO;
+
+  const goals = doseEstimatorHO?.attributes?.experimental_goals || {};
+
+  const resolution = Number.parseFloat(toFixed(state, 'resolution'));
 
   let position = state.taskForm.pointID === '' ? 'PX' : state.taskForm.pointID;
   if (typeof position === 'object') {
@@ -378,6 +497,9 @@ export default connect((state) => {
   const { limits, acq_parameters } =
     state.taskForm.defaultParameters[type.toLowerCase()];
   const { parameters } = state.taskForm.taskData;
+
+  const doseLimit = selector(state, 'dose_limit');
+  const currentGoalId = selector(state, 'exp_goal');
 
   if (Number.parseFloat(parameters.osc_range) === 0) {
     parameters.osc_range =
@@ -404,11 +526,21 @@ export default connect((state) => {
     filename: fname,
     acqParametersLimits: limits,
     beamline: state.beamline,
+    canEstimateDose,
+    goals,
+    resolution,
+    doseEstimate,
+    doseLimit,
+    currentGoalId,
     detector_mode_list: acq_parameters.detector_mode_list,
     components: state.uiproperties.sample_view_motors.components,
     initialValues: {
       ...parameters,
       beam_size: state.sampleview.currentAperture,
+      dose_limit: Object.values(goals)[0]
+        ? computeLimit(Object.values(goals)[0], resolution)
+        : undefined,
+      exp_goal: Object.keys(goals)[0],
       resolution: toFixed(state, 'resolution'),
       energy: toFixed(state, 'energy'),
       transmission: toFixed(state, 'transmission'),
