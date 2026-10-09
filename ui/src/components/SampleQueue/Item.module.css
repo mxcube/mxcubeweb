@@ -108,3 +108,37 @@
   right: 60px;
   margin-left: 10px;
 }
+
+.stateIcon {
+  width: 1.1em;
+  margin-right: 0.45rem;
+  text-align: center;
+  align-self: center;
+}
+
+.elapsed {
+  margin-left: auto;
+  padding-left: 10px;
+  font-size: smaller;
+  color: #555;
+  white-space: nowrap;
+}
+
+.editTask {
+  padding: 0 10px;
+  color: #337ab7;
+  cursor: pointer;
+}
+
+.groupTask {
+  display: flex;
+  align-items: center;
+  padding: 0.3rem 1rem 0.3rem 1.75rem;
+  border: 1px solid #ddd;
+  border-top: 0;
+}
+
+.groupTaskRunning {
+  border-left: 4px solid #337ab7;
+  font-weight: 600;
+}

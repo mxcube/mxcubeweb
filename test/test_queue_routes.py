@@ -4,6 +4,7 @@ import os
 import time
 
 from mxcubecore import HardwareRepository as HWR
+from mxcubecore import queue_entry as qe
 from mxcubecore.model import queue_model_objects as qmo
 from mxcubecore.queue_entry.base_queue_entry import QUEUE_ENTRY_STATUS
 from mxcubecore.queuelib import QUEUE_FORMAT_VERSION, WARNING
@@ -191,6 +192,68 @@ def test_add_task_by_queue_id(client):
     tasks_after = json.loads(resp.data)["1:01"]["tasks"]
     assert len(tasks_after) == 1
     assert tasks_after[0]["queueID"] == task_id
+
+
+def test_add_unattended_collect(client):
+    """An unattended collect is queued as one row per task of one task group."""
+    mxcube.queue.add_task(
+        "1:01",
+        {
+            "type": "UnattendedCollect",
+            "sampleID": "1:01",
+            "parameters": {"num_images": 10},
+        },
+    )
+
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    tasks = json.loads(resp.data)["1:01"]["tasks"]
+    group, _ = mxcube.queue.get_entry(tasks[0]["groupID"])
+
+    assert isinstance(group, qmo.UnattendedCollect)
+    assert [t["label"] for t in tasks] == [p[0] for p in qmo.UNATTENDED_TASKS]
+    assert {t["groupID"] for t in tasks} == {group._node_id}
+    assert all(t["parameters"]["num_images"] == 10 for t in tasks)
+
+    # The collection of the group is a standard data collection
+    collection = group.get_data_collection()
+    _, collection_entry = mxcube.queue.get_entry(collection._node_id)
+
+    assert isinstance(collection_entry, qe.DataCollectionQueueEntry)
+    assert (
+        collection.acquisitions[0].path_template.directory
+        == (tasks[0]["parameters"]["path"])
+    )
+
+    _, entry = mxcube.queue.get_entry(tasks[1]["queueID"])
+    state = mxcube.queue.get_task_state(entry)
+
+    assert state["taskIndex"] == 1
+    assert state["startedAt"] is None
+
+
+def test_update_unattended_collect(client):
+    """A row sent back the way the task form does updates the collection."""
+    mxcube.queue.add_task(
+        "1:01",
+        {"type": "UnattendedCollect", "sampleID": "1:01", "parameters": {}},
+    )
+    sample = json.loads(client.get("/mxcube/api/v0.1/queue/").data)["1:01"]
+    first = sample["tasks"][0]
+    # The form turns the empty wedges list of the row into a number
+    parameters = {**first["parameters"], "num_images": 25, "wedges": 0}
+
+    resp = client.post(
+        f"/mxcube/api/v0.1/queue/{sample['queueID']}/{first['queueID']}",
+        json={**first, "parameters": parameters},
+    )
+    row = json.loads(resp.data)
+    tasks = json.loads(client.get("/mxcube/api/v0.1/queue/").data)["1:01"]["tasks"]
+
+    assert resp.status_code == 200
+    assert (row["type"], row["queueID"]) == ("UnattendedCollect", first["queueID"])
+    assert all(t["parameters"]["num_images"] == 25 for t in tasks)
+    assert tasks[0]["parameters"]["path"] == first["parameters"]["path"]
+    assert tasks[0]["parameters"]["run_number"] == first["parameters"]["run_number"]
 
 
 def test_new_tasks_get_distinct_run_numbers(client):

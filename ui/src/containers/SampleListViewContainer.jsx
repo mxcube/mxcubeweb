@@ -105,6 +105,10 @@ export default function SampleListViewContainer() {
     displayTaskForm('DataCollection', {});
   }
 
+  function showUnattendedCollectForm() {
+    displayTaskForm('UnattendedCollect', {});
+  }
+
   function showAddSampleForm() {
     displayTaskForm('AddSample');
   }
@@ -872,6 +876,7 @@ export default function SampleListViewContainer() {
             addSamplesToQueue={handleAddSamplesToQueue}
             showCharacterisationForm={showCharacterisationForm}
             showDataCollectionForm={showDataCollectionForm}
+            showUnattendedCollectForm={showUnattendedCollectForm}
             showWorkflowForm={showWorkflowForm}
             inQueue={inQueue}
             inQueueDeleteElseAddSamples={inQueueDeleteElseAddSamples}

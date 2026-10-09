@@ -60,6 +60,11 @@ export class TaskItem extends React.Component {
 
         break;
       }
+      case 'UnattendedCollect': {
+        res = 'UC';
+
+        break;
+      }
       // No default
     }
 

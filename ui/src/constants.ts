@@ -23,6 +23,8 @@ export const TASK_COLLECT_FAILED = 0x2;
 export const TASK_COLLECT_WARNING = 0x3;
 export const TASK_RUNNING = 0x1;
 export const TASK_UNCOLLECTED = 0x0;
+/** The queue reached the task and skipped it, e.g. no spots to collect on. */
+export const TASK_SKIPPED = 0x10;
 
 export const READY = 0;
 export const RUNNING = 0x1;
@@ -51,6 +53,57 @@ export function isCollected(task: TaskState): boolean {
 
 export function isUnCollected(task: TaskState): boolean {
   return task.state === TASK_UNCOLLECTED;
+}
+
+const TASK_END_STATES = new Set([
+  TASK_COLLECTED,
+  TASK_COLLECT_FAILED,
+  TASK_SKIPPED,
+]);
+
+/** Rows of a task group (e.g. the tasks of an unattended collect). */
+export function isGroupHead(
+  task: { groupID?: number | null },
+  i: number,
+  tasks: { groupID?: number | null }[],
+): boolean {
+  return (
+    typeof task.groupID === 'number' && tasks[i - 1]?.groupID !== task.groupID
+  );
+}
+
+/** State, progress and timing of a task group, from its rows. */
+export function groupSummary(
+  rows: (TaskState & { label: string; startedAt?: number; endedAt?: number })[],
+): {
+  state: number;
+  done: number;
+  running?: string;
+  startedAt?: number;
+  endedAt?: number;
+} {
+  const ended = rows.filter((row) => TASK_END_STATES.has(row.state));
+  const running = rows.find((row) => row.state === TASK_RUNNING);
+  const done = ended.length === rows.length;
+  let state: number = TASK_UNCOLLECTED;
+
+  if (running) {
+    state = TASK_RUNNING;
+  } else if (rows.some((row) => row.state === TASK_COLLECT_FAILED)) {
+    state = TASK_COLLECT_FAILED;
+  } else if (done) {
+    state = rows.every((row) => row.state === TASK_COLLECTED)
+      ? TASK_COLLECTED
+      : TASK_SKIPPED;
+  }
+
+  return {
+    state,
+    done: ended.length,
+    running: running?.label,
+    startedAt: rows[0]?.startedAt,
+    endedAt: done ? rows.at(-1)?.endedAt : undefined,
+  };
 }
 
 export function twoStateActuatorIsActive(state: string): boolean {

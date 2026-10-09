@@ -7,7 +7,7 @@ import {
   startQueue,
 } from '../actions/queue';
 import TaskTable from '../components/ConfirmCollectDialog/TaskTable.jsx';
-import { CENTRING_METHOD, TASK_UNCOLLECTED } from '../constants';
+import { CENTRING_METHOD, isGroupHead, TASK_UNCOLLECTED } from '../constants';
 import { showConfirmCollectDialog } from '../reducers/queueGUI';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
@@ -67,7 +67,12 @@ export default function ConfirmCollectDialog() {
       .map((sampleID) => sampleList[sampleID] || {})
       .flatMap((sample) => sample.tasks || {});
 
-    return tasks.filter((task) => task.state === TASK_UNCOLLECTED);
+    // A task group (unattended collect) is listed once
+    return tasks.filter(
+      (task, i) =>
+        task.state === TASK_UNCOLLECTED &&
+        (typeof task.groupID !== 'number' || isGroupHead(task, i, tasks)),
+    );
   }
 
   function collectText(numTasks) {
@@ -87,6 +92,8 @@ export default function ConfirmCollectDialog() {
   }
 
   const tasks = tasksToCollect();
+  // An unattended collect centres the sample itself
+  const unattended = tasks.some((task) => task.type === 'UnattendedCollect');
 
   return (
     <Modal show={show}>
@@ -99,14 +106,16 @@ export default function ConfirmCollectDialog() {
         </p>
         <div>
           <span>
-            <Form.Check
-              className="mb-2"
-              type="checkbox"
-              defaultChecked={centringMethod === CENTRING_METHOD.LOOP}
-              onClick={autoLoopCentringOnClick}
-              id="auto-lopp-centring"
-              label="Auto loop centring"
-            />
+            {!unattended && (
+              <Form.Check
+                className="mb-2"
+                type="checkbox"
+                defaultChecked={centringMethod === CENTRING_METHOD.LOOP}
+                onClick={autoLoopCentringOnClick}
+                id="auto-lopp-centring"
+                label="Auto loop centring"
+              />
+            )}
             {queue.length > 1 && (
               <Form.Check
                 className="mb-2"
