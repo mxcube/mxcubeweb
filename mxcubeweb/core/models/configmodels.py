@@ -26,6 +26,7 @@ class RuntimeOptions(BaseSettings):
     ]
     allow_remote: bool = False
     yaml_export_directory: str | None = None
+    config_validation: Literal["lax", "strict"] = "lax"
 
     # Pydantic-settings config
     model_config = SettingsConfigDict(
