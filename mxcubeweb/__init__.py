@@ -103,6 +103,17 @@ def parse_args(argv):
         help="write YAML configuration to specified path",
     )
 
+    opt_parser.add_argument(
+        "--config-validation",
+        dest="config_validation",
+        choices=["lax", "strict"],
+        default="lax",
+        help=(
+            "Handling of undeclared properties in hardware object configuration:"
+            " 'lax' logs a warning, 'strict' gives an error (default: lax)"
+        ),
+    )
+
     # If `argv` is `None`, then `argparse.ArgumentParser.parse_args`
     # will know to read from `sys.argv` instead.
     return opt_parser.parse_args(argv)
@@ -118,7 +129,9 @@ def build_server_and_config(test=False, argv=None):
         # without continuously editing the main config files.
         # Note that the machinery was all there in the core already. rhfogh.
         HWR.init_hardware_repository(
-            runtime_options.hwr_directory, runtime_options.yaml_export_directory
+            runtime_options.hwr_directory,
+            runtime_options.yaml_export_directory,
+            config_validation=runtime_options.config_validation,
         )
         config_path = HWR.get_hardware_repository().find_in_repository("mxcube-web")
 

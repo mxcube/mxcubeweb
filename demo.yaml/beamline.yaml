@@ -151,9 +151,9 @@ configuration:
     gphlworkflow: true
     test_collection: true
 
-    undulators:
-      - type: PPU35C_GAP
-        device_uri: //orion:10000/id/id/30
+  undulators:
+    - type: PPU35C_GAP
+      device_uri: //orion:10000/id/id/30
 
-      - type: PPU35D_GAP
-        device_uri: //orion:10000/id/id/30
+    - type: PPU35D_GAP
+      device_uri: //orion:10000/id/id/30
