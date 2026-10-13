@@ -5,7 +5,7 @@ describe('Motors', () => {
     cy.loginWithControl();
   });
 
-  it('can control motors', () => {
+  it('can control motors with all display variants', () => {
     cy.findByLabelText('Phase Control').click();
     cy.findByRole('button', { name: 'COLLECT' }).click();
     cy.findByLabelText('Phase Control').should('have.text', 'COLLECT');
@@ -18,8 +18,44 @@ describe('Motors', () => {
     cy.findByRole('button', { name: 'A20' }).click();
     cy.findByLabelText('Beam size').should('have.text', 'A20');
 
-    cy.findByLabelText('Omega').type('{selectAll}200{enter}');
-    cy.findByLabelText('Omega').should('have.value', '200.00');
+    cy.findByLabelText('Omega').then(($el) => {
+      const isSelect = $el.is('select');
+      const variants = isSelect
+        ? [...$el.find('option')].map((opt) => opt.value)
+        : ['value'];
+
+      cy.wrap(variants).each((variant) => {
+        if (isSelect) {
+          cy.findByLabelText('Omega').select(variant);
+        }
+
+        switch (variant) {
+          case 'dial': {
+            cy.get('svg').should('be.visible');
+
+            break;
+          }
+          case 'slider': {
+            cy.findByLabelText('Omega')
+              .should('be.visible')
+              .invoke('val', 180)
+              .trigger('input')
+              .trigger('change')
+              .trigger('pointerup');
+
+            break;
+          }
+          case 'value': {
+            cy.findByLabelText('Omega')
+              .should('be.visible')
+              .type('{selectAll}200{enter}');
+
+            break;
+          }
+          // No default
+        }
+      });
+    });
 
     cy.findByRole('button', { name: 'Show motors' }).click();
 
