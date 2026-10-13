@@ -5,15 +5,54 @@ describe('Motors', () => {
     cy.loginWithControl();
   });
 
-  it('can control motors', () => {
+  it('can control motors with all display variants', () => {
     cy.findByLabelText('Phase Control').select('COLLECT');
     cy.findByLabelText('Phase Control').should('have.value', 'COLLECT');
 
     cy.findByLabelText('Beam size').select('A20');
     cy.findByLabelText('Beam size').should('have.value', 'A20');
 
-    cy.findByLabelText('Omega').type('{selectAll}200{enter}');
-    cy.findByLabelText('Omega').should('have.value', '200.00');
+    const variantsConfig = {
+      dial: ($container) => {
+        cy.wrap($container).find('svg').should('be.visible').click();
+      },
+      slider: ($container) => {
+        cy.wrap($container)
+          .find('input[type="range"]')
+          .should('be.visible')
+          .invoke('val', 180)
+          .trigger('change')
+          .trigger('pointerup');
+      },
+      value: ($container) => {
+        cy.wrap($container)
+          .find('input[type="number"], input[type="text"]')
+          .first()
+          .type('{selectAll}200{enter}');
+        cy.wrap($container)
+          .find('input[type="number"], input[type="text"]')
+          .first()
+          .should('have.value', '200.00');
+      },
+    };
+
+    cy.findByTestId('MotorInput_omega').within(($container) => {
+      cy.get('select')
+        .find('option')
+        .then((options) => {
+          const availableValues = [...options].map((opt) => opt.value);
+
+          availableValues.forEach((variant) => {
+            cy.root().find('select').select(variant);
+
+            cy.root().should('have.attr', 'data-variant', variant);
+
+            if (variantsConfig[variant]) {
+              variantsConfig[variant]($container);
+            }
+          });
+        });
+    });
 
     cy.findByRole('button', { name: 'Show motors' }).click();
 
