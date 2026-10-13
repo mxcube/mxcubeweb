@@ -106,6 +106,7 @@ class UIComponentModel(BaseModel):
     suffix: str | None = None
     description: str | None = None
     # Set internally not to be set through configuration
+    variants: list[str] | None = None
     value_type: str | None = None
     object_type: str | None = None
     format: str | None = None
