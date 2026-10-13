@@ -73,14 +73,12 @@ function CharacterisationTaskItem(props) {
             id="wedge-path-tooltip"
             tooltipContent={
               <>
-                {path}
-                {fileName}
+                {path}/{fileName}
               </>
             }
           >
             <a style={{ flexGrow: 1 }}>
-              .../{pathEndPart.slice(pathEndPart.indexOf('/') + 1)}
-              {fileName}
+              ...{pathEndPart.slice(pathEndPart.indexOf('/'))}/{fileName}
             </a>
           </TooltipTrigger>
           <Button
