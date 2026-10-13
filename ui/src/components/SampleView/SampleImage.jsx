@@ -269,17 +269,7 @@ class SampleImage extends React.Component {
   }
 
   getGridOverlayOpacity() {
-    let overlay = 1;
-    if (this.selectedGrid() !== null) {
-      const gridData = this.selectedGrid();
-      if (gridData) {
-        overlay = gridData.overlayLevel;
-      }
-    } else if (this.selectedGrid() === null && this.props.drawGrid) {
-      overlay = 1;
-    }
-
-    return overlay;
+    return this.drawGridPlugin.overlayLevel;
   }
 
   selectedGrid() {
