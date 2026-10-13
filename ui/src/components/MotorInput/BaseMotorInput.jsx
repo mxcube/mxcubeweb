@@ -15,6 +15,7 @@ function BaseMotorInput(props) {
     max,
     disabled,
     onChange,
+    isChanging,
   } = props;
 
   const [inputValue, setInputValue] = useState(value.toFixed(precision));
@@ -92,7 +93,7 @@ function BaseMotorInput(props) {
         disabled={disabled || !isReady}
         data-invalid={!isInsideLimits || undefined}
         data-dirty={isEdited || undefined}
-        data-busy={isBusy || undefined}
+        data-busy={isBusy || isChanging || undefined}
         data-warning={isWarning || undefined}
         data-fault={isFault || undefined}
         onKeyDown={handleKey}

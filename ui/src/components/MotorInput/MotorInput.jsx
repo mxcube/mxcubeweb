@@ -1,24 +1,40 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { Button } from 'react-bootstrap';
+import { useEffect, useMemo, useState } from 'react';
+import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-
 import { setAttribute } from '../../actions/beamline';
 import { stopBeamlineAction } from '../../actions/beamlineActions';
 import { showErrorPanel } from '../../actions/general';
 import { HW_STATE, QUEUE_RUNNING } from '../../constants';
 import { setMotorStep } from '../../reducers/uiproperties';
+import AngleIndicator from './AngleIndicator';
 import BaseMotorInput from './BaseMotorInput';
 import styles from './MotorInput.module.css';
 
 function MotorInput(props) {
-  const { role, idPrefix = 'MotorInput' } = props;
+  const {role, idPrefix = 'MotorInput' } = props;
   const dispatch = useDispatch();
 
-  const { attribute, label, precision, step, suffix } = useSelector((state) =>
+  const componentConfig = useSelector((state) =>
     state.uiproperties.sample_view_motors.components.find(
       (el) => el.role === role,
     ),
   );
+
+  const { attribute, label, precision, step, suffix } = componentConfig;
+
+  const availableVariants = useMemo(() => {
+    let variantsList = [];
+
+    if (componentConfig?.variants) {
+      variantsList = [...componentConfig.variants];
+    } else if (componentConfig?.variant) {
+      variantsList = [componentConfig.variant];
+    }
+    return variantsList;
+  }, [componentConfig?.variants, componentConfig?.variant]);
+
+  const [activeVariant, setActiveVariant] = useState('number');
 
   const motor = useSelector(
     (state) => state.beamline.hardwareObjects[attribute],
@@ -34,6 +50,19 @@ function MotorInput(props) {
   const isReady = state === HW_STATE.READY;
   const id = `${idPrefix}_${role}`;
 
+  const [localValue, setLocalValue] = useState(null);
+  const [isChanging, setIsChanging] = useState(false);
+
+  useEffect(() => {
+    setLocalValue(value);
+  }, [value]);
+
+  useEffect(() => {
+    if (availableVariants.length > 0 && activeVariant !== 'none' && !availableVariants.includes(activeVariant)) {
+      setActiveVariant(availableVariants[0]);
+    }
+  }, [availableVariants, activeVariant]);
+
   if (Number.isNaN(motor.value)) {
     return null;
   }
@@ -41,29 +70,67 @@ function MotorInput(props) {
   async function handleChange(val) {
     try {
       await dispatch(setAttribute(attribute, val));
+      setIsChanging(false);
     } catch (error) {
       dispatch(showErrorPanel(true, error.message));
     }
   }
 
+  function handleSliderChange(evt) {
+    setIsChanging(true);
+    setLocalValue(Number(evt.target.value));
+  }
+
+  const getVariantLabel = (variantKey) => {
+    switch (variantKey) {
+      case 'value':
+        return 'Value';
+      case 'slider':
+        return 'Slider';
+      case 'dial':
+        return 'Dial';
+      default:
+        return variantKey;
+    }
+  };
+
   return (
     <div className={styles.container}>
+      <div className="d-flex align-items-center justify-content-between mb-1">
       <label className={styles.label} htmlFor={id}>
         {label}
       </label>
+        {availableVariants.length > 1 && (
+          <Form.Select
+            size="sm"
+            className="w-auto py-0 ps-3 pe-6"
+            style={{ fontSize: '0.75rem' }}
+            value={activeVariant}
+            onChange={(e) => setActiveVariant(e.target.value)}
+          >
+            {availableVariants.map((v) => (
+              <option key={v} value={v}>
+                {getVariantLabel(v)}
+              </option>
+            ))}
+          </Form.Select>
+        )}
+      </div>
 
+      {activeVariant === 'value' && (
       <div className={styles.wrapper}>
         <BaseMotorInput
           min={motor.limits[0]}
           max={motor.limits[1]}
           id={id}
           className={styles.valueInput}
-          value={value}
+            value={localValue ?? value}
           state={state}
           precision={precision}
           step={step}
           disabled={disabled}
           onChange={handleChange}
+            isChanging={isChanging}
         />
 
         <div className={styles.arrows}>
@@ -113,6 +180,43 @@ function MotorInput(props) {
           </Button>
         )}
       </div>
+
+      )}
+
+      {activeVariant === 'slider' && (
+        <div className={styles.sliderContainer}>
+          <Form.Range
+            className={styles.sliderInput}
+            min={motor.limits[0]}
+            max={motor.limits[1]}
+            step={1}
+            value={localValue ?? value}
+            disabled={!isReady || disabled}
+            onChange={handleSliderChange}
+            onPointerUp={() => handleChange(localValue) && setLocalValue(null)}
+          />
+          <div className={styles.sliderLabels}>
+            <span>{motor.limits[0]}</span>
+            <div className={styles.sliderValue}>{Number(localValue ?? value).toFixed(precision)}</div>
+            <span>{motor.limits[1]}</span>
+          </div>
+        </div>
+      )}
+
+      {(activeVariant === 'dial') && (
+        <AngleIndicator
+          angle={localValue ?? value}
+          disabled={!isReady || disabled}
+          onChange={(newAngle) => {
+            setIsChanging(true);
+            setLocalValue(newAngle);
+          }}
+          onChangeEnd={(finalAngle) => {
+            handleChange(finalAngle);
+            setLocalValue(null);
+          }}
+        />
+      )}
     </div>
   );
 }
