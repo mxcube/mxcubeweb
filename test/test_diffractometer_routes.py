@@ -36,13 +36,13 @@ def test_set_phase(client):
     assert new_phase == actual_phase
 
 
-def test_set_aperture(client):
-    """Check the "set aperture" operation.
+def test_set_beam_size(client):
+    """Check the "set beam size" operation.
 
-    Sets the aperture to an aperture AP belonging to the list of valid
-    apertures and verifies that the aperture actually changed to AP.
+    Sets the beam size to a value belonging to the list of valid
+    beam sizes and verifies that the beam size actually changed to it.
 
-    Moves the aperture back to its original value and verifies that the
+    Moves the beam size back to its original value and verifies that the
     original value also is the current
     """
     resp = client.get(
@@ -50,18 +50,18 @@ def test_set_aperture(client):
     )
     data = json.loads(resp.data)
 
-    original_aperture = data["value"]["currentAperture"]
+    original_beam_size = data["value"]["currentAperture"]
 
     # apertureList entries are NStateOption objects ({"value", "label", ...}),
     # the underlying hardware object's set_value expects the plain string value
-    ap = data["value"]["apertureList"][0]["value"]
+    beam_size = data["value"]["apertureList"][0]["value"]
 
-    # make sure we are testing a change of aperture
-    assert ap != original_aperture
+    # make sure we are testing a change of beam size
+    assert beam_size != original_beam_size
 
     resp = client.put(
         "/mxcube/api/v0.1/hwobj/beam/beam/set_value",
-        data=json.dumps({"value": ap}),
+        data=json.dumps({"value": beam_size}),
         content_type="application/json",
     )
     assert resp.status_code == 200
@@ -69,28 +69,28 @@ def test_set_aperture(client):
     resp = client.get(
         "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
     )
-    actual_aperture = json.loads(resp.data)["value"]["currentAperture"]
+    actual_beam_size = json.loads(resp.data)["value"]["currentAperture"]
 
-    aperture_value_changed = Event()
+    beam_size_value_changed = Event()
     # listen for 'valueChanged' signal
     HWR.beamline.beam.aperture.connect(
-        "valueChanged", lambda *_, **__: aperture_value_changed.set()
+        "valueChanged", lambda *_, **__: beam_size_value_changed.set()
     )
 
     resp = client.put(
         "/mxcube/api/v0.1/hwobj/beam/beam/set_value",
-        data=json.dumps({"value": original_aperture}),
+        data=json.dumps({"value": original_beam_size}),
         content_type="application/json",
     )
     assert resp.status_code == 200
-    # wait until aperture changes the value
-    aperture_value_changed.wait(timeout=10)
-    assert aperture_value_changed.is_set(), "valueChanged signal was not emitted"
+    # wait until beam size changes the value
+    beam_size_value_changed.wait(timeout=10)
+    assert beam_size_value_changed.is_set(), "valueChanged signal was not emitted"
 
     resp = client.get(
         "/mxcube/api/v0.1/hwobj/beam/beam/get_value",
     )
-    actual_original_aperture = json.loads(resp.data)["value"]["currentAperture"]
+    actual_original_beam_size = json.loads(resp.data)["value"]["currentAperture"]
 
-    assert ap == actual_aperture
-    assert actual_original_aperture == original_aperture
+    assert beam_size == actual_beam_size
+    assert actual_original_beam_size == original_beam_size
