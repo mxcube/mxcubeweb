@@ -1,8 +1,9 @@
 import logging
+import time
 from pathlib import Path
 
 import werkzeug
-from flask import Flask, request
+from flask import Flask, g, has_request_context, request
 from flask_login import current_user
 from flask_socketio import SocketIO
 from werkzeug.exceptions import HTTPException
@@ -51,11 +52,16 @@ class Server:
         self.route = staticmethod(self.flask.route)
 
     def emit(self, *args, **kwargs):
-        from flask import has_request_context
-
         if has_request_context() and current_user.is_authenticated:
+            start_time = getattr(g, "request_start_time", None)
+            elapsed_ms = (time.monotonic() - start_time) * 1000 if start_time else -1
+
             logging.getLogger("server_access").debug(
-                f"{current_user.username} websocket emit: {args} {kwargs}"
+                "%s websocket emit (t+%.1fms): %s %s",
+                current_user.username,
+                elapsed_ms,
+                args,
+                kwargs,
             )
         self.flask_socketio.emit(*args, **kwargs)
 
