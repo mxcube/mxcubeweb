@@ -27,7 +27,9 @@ function SampleQueueContainer() {
   const todo = sampleOrder
     .filter((id) => queue.includes(id))
     .map((id) => sampleList[id])
-    .filter((sample) => sample.sampleID !== currentSampleID && sample.checked);
+    .filter(
+      (sample) => sample?.sampleID !== currentSampleID && sample?.checked,
+    );
 
   const currentSample = currentSampleID
     ? sampleList[currentSampleID]
