@@ -440,7 +440,9 @@ export default class DrawGridPlugin {
       width,
     });
     shapes.push(grid);
-    if (cellTW > 0 && cellTH > 0) {
+    // Only render grid cells if the grid is being drawn or if it has been saved
+    const shouldRenderGridCells = gridData.id !== null || !this.drawing;
+    if (cellTW > 0 && cellTH > 0 && shouldRenderGridCells) {
       if (this.gridResultFormat === 'RGB') {
         const fillingMatrix = this.cellFillingFromData(
           gridData,
