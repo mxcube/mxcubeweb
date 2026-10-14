@@ -9,11 +9,11 @@ import { NStateSelect } from './NStateSelect';
  *
  * @param {Props} props
  */
-function ApertureInput({ tooltip }) {
+function BeamSizeInput({ tooltip }) {
   const dispatch = useDispatch();
   return (
     <NStateSelect
-      id="ApertureInput"
+      id="BeamSizeInput"
       value={useSelector((state) => state.sampleview.currentAperture)}
       options={useSelector((state) => state.sampleview.apertureList)}
       isBusy={useSelector(
@@ -26,4 +26,4 @@ function ApertureInput({ tooltip }) {
   );
 }
 
-export default ApertureInput;
+export default BeamSizeInput;
