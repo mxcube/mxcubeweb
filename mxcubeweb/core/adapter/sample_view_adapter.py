@@ -444,6 +444,7 @@ class SampleViewAdapter(AdapterBase):
                 logging.getLogger("MX3.HWR").exception("")
                 msg = "Error while centring, please try again"
                 self._click_in_progress = False
+                self._ho.cancel_centring()
                 raise RuntimeError(msg) from ex
         else:
             self.centring_reset_click_count()
@@ -486,7 +487,7 @@ class SampleViewAdapter(AdapterBase):
                 logging.getLogger("user_level_log").info(
                     "Aborting current centring ..."
                 )
-                self._ho.reject_centring()
+                self._ho.cancel_centring()
                 self._click_in_progress = False
             nb_clicks = HWR.beamline.config.click_centring_num_clicks
             msg = f"Centring using {nb_clicks}-click centring"
