@@ -189,7 +189,7 @@ export default function ContextMenu() {
           : {},
         availableMethods.has('xrf_spectrum')
           ? {
-              text: 'Add XRF Scan',
+              text: 'Add XRF Spectrum',
               action: () => showModal('xrf_spectrum'),
               key: 'xrf_spectrum',
             }
@@ -233,7 +233,7 @@ export default function ContextMenu() {
           : {},
         availableMethods.has('xrf_spectrum')
           ? {
-              text: 'Add XRF Scan',
+              text: 'Add XRF Spectrum',
               action: () => showModal('xrf_spectrum'),
               key: 'xrf_spectrum',
             }
