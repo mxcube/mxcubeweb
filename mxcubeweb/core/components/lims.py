@@ -129,7 +129,9 @@ class Lims(ComponentBase):
             res = self.app.SAMPLE_LIST.get("sampleList").get(loc, {})
 
         for key, sample_dict in res["sampleList"].items():
-            res["sampleList"][key] = validate_model_tolerant(SampleNode, sample_dict).model_dump()
+            res["sampleList"][key] = validate_model_tolerant(
+                SampleNode, sample_dict
+            ).model_dump()
 
         return res
 
