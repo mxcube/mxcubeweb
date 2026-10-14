@@ -1,14 +1,11 @@
 import { Button, Form, Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
-import {
-  setAutoMountSample,
-  setCentringMethod,
-  startQueue,
-} from '../actions/queue';
+import { setAutoMountSample, startQueue } from '../actions/queue';
 import TaskTable from '../components/ConfirmCollectDialog/TaskTable.jsx';
-import { CENTRING_METHOD, TASK_UNCOLLECTED } from '../constants';
+import { TASK_UNCOLLECTED } from '../constants';
 import { showConfirmCollectDialog } from '../reducers/queueGUI';
+import CentringMethodDropDown from './CentringMethodDropDown.jsx';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 
 export default function ConfirmCollectDialog() {
@@ -19,7 +16,6 @@ export default function ConfirmCollectDialog() {
   const autoMountNext = useSelector((state) => state.queue.autoMountNext);
   const sampleList = useSelector((state) => state.sampleGrid.sampleList);
   const show = useSelector((state) => state.queueGUI.showConfirmCollectDialog);
-  const centringMethod = useSelector((state) => state.queue.centringMethod);
   const rootPath = useSelector((state) => state.login.rootPath);
 
   function onOkClick() {
@@ -30,14 +26,6 @@ export default function ConfirmCollectDialog() {
 
   function onCancelClick() {
     dispatch(showConfirmCollectDialog(false));
-  }
-
-  function autoLoopCentringOnClick(e) {
-    dispatch(
-      setCentringMethod(
-        e.target.checked ? CENTRING_METHOD.LOOP : CENTRING_METHOD.MANUAL,
-      ),
-    );
   }
 
   function autoMountNextOnClick(e) {
@@ -99,14 +87,9 @@ export default function ConfirmCollectDialog() {
         </p>
         <div>
           <span>
-            <Form.Check
-              className="mb-2"
-              type="checkbox"
-              defaultChecked={centringMethod === CENTRING_METHOD.LOOP}
-              onClick={autoLoopCentringOnClick}
-              id="auto-lopp-centring"
-              label="Auto loop centring"
-            />
+            <div className="mb-2">
+              <CentringMethodDropDown align="start" />
+            </div>
             {queue.length > 1 && (
               <Form.Check
                 className="mb-2"

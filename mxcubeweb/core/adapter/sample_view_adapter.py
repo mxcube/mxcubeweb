@@ -506,6 +506,9 @@ class SampleViewAdapter(AdapterBase):
         if method == CENTRING_METHOD.LOOP:
             msg = "Using automatic loop centring when mounting samples"
             HWR.beamline.queue_manager.centring_method = CENTRING_METHOD.LOOP
+        elif method == CENTRING_METHOD.FULLY_AUTOMATIC:
+            msg = "Using fully automatic centring when mounting samples"
+            HWR.beamline.queue_manager.centring_method = CENTRING_METHOD.FULLY_AUTOMATIC
         else:
             msg = "Using click centring when mounting samples"
             HWR.beamline.queue_manager.centring_method = CENTRING_METHOD.MANUAL
