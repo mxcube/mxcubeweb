@@ -5,16 +5,15 @@ import { NStateSelect } from './NStateSelect';
 
 /**
  * @typedef {Object} Props
- * @property {string?} tooltip - Optional hover tooltip text.
+ * @property {string} [tooltip] - Optional hover tooltip text.
  *
  * @param {Props} props
  */
-function ApertureInput({ tooltip }) {
+function BeamSizeInput({ tooltip }) {
   const dispatch = useDispatch();
-
   return (
     <NStateSelect
-      id="ApertureInput"
+      id="BeamSizeInput"
       value={useSelector((state) => state.sampleview.currentAperture)}
       options={useSelector((state) => state.sampleview.apertureList)}
       isBusy={useSelector(
@@ -27,4 +26,4 @@ function ApertureInput({ tooltip }) {
   );
 }
 
-export default ApertureInput;
+export default BeamSizeInput;
