@@ -10,6 +10,7 @@ import GenericTaskForm from '../components/Tasks/GenericTaskForm';
 import Helical from '../components/Tasks/Helical';
 import Interleaved from '../components/Tasks/Interleaved';
 import Mesh from '../components/Tasks/Mesh';
+import UnattendedCollect from '../components/Tasks/UnattendedCollect';
 import Workflow from '../components/Tasks/Workflow';
 import XRFScan from '../components/Tasks/XRFScan';
 
@@ -195,6 +196,17 @@ function TaskContainer() {
           apertureList={apertureList}
           availableElements={energyScanElements}
           rootPath={path}
+        />
+      );
+    }
+    case 'UnattendedCollect': {
+      return (
+        <UnattendedCollect
+          show
+          addTask={doAddTask}
+          sampleIds={sampleIds}
+          taskData={taskData}
+          hide={() => dispatch(hideTaskParametersForm())}
         />
       );
     }

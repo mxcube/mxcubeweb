@@ -1,0 +1,7 @@
+%YAML 1.2
+---
+
+class: mxcubecore.HardwareObjects.mockup.UnattendedCollectMockup.UnattendedCollectMockup
+configuration:
+  task_time: 1
+  found_spots: true

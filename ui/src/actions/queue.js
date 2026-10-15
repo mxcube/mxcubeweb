@@ -145,10 +145,6 @@ export function runSample(sampleID, taskIndex) {
   };
 }
 
-function removeTaskAction(sampleID, taskIndex, queueID = null) {
-  return { type: 'REMOVE_TASK', sampleID, taskIndex, queueID };
-}
-
 function removeTaskListAction(taskList, queueIDList = null) {
   return { type: 'REMOVE_TASKS_LIST', taskList, queueIDList };
 }
@@ -191,9 +187,15 @@ export function setEnabledSample(sampleIDList, value) {
 export function deleteTask(sampleID, taskIndex) {
   return async (dispatch, getState) => {
     const state = getState();
-    const task = state.sampleGrid.sampleList[sampleID].tasks[taskIndex];
+    const { tasks } = state.sampleGrid.sampleList[sampleID];
+    const task = tasks[taskIndex];
+    // The server deletes a task group as a whole
+    const removed =
+      typeof task.groupID !== 'number'
+        ? [task]
+        : tasks.filter((t) => t.groupID === task.groupID);
 
-    if (task.state !== TASK_UNCOLLECTED) {
+    if (removed.some((t) => t.state !== TASK_UNCOLLECTED)) {
       return;
     }
 
@@ -201,7 +203,12 @@ export function deleteTask(sampleID, taskIndex) {
 
     try {
       await sendDeleteQueueItem([[sampleID, taskIndex]]);
-      dispatch(removeTaskAction(sampleID, taskIndex, task.queueID));
+      dispatch(
+        removeTaskListAction(
+          removed,
+          removed.map((t) => t.queueID),
+        ),
+      );
     } catch {
       dispatch(showErrorPanel(true, 'Server refused to delete task'));
     }
@@ -218,9 +225,15 @@ export function deleteTaskList(sampleIDList) {
     const queueIDList = [];
 
     sampleIDList.forEach((sid) => {
-      state.sampleGrid.sampleList[sid].tasks.forEach((task, index) => {
+      const { tasks } = state.sampleGrid.sampleList[sid];
+
+      // Last first, so that the indices stay valid while the server deletes
+      tasks.toReversed().forEach((task, i) => {
         if (task.state === TASK_UNCOLLECTED) {
-          itemPosList.push([sid, index]);
+          // One position deletes a whole task group
+          if (!taskList.some((t) => t.groupID && t.groupID === task.groupID)) {
+            itemPosList.push([sid, tasks.length - 1 - i]);
+          }
           taskList.push(task);
           queueIDList.push(task.queueID);
         }
@@ -365,6 +378,8 @@ export function addTaskResultAction(
   state,
   progress,
   queueID,
+  startedAt,
+  endedAt,
 ) {
   return {
     type: 'ADD_TASK_RESULT',
@@ -373,6 +388,8 @@ export function addTaskResultAction(
     state,
     progress,
     queueID,
+    startedAt,
+    endedAt,
   };
 }
 

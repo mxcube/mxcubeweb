@@ -58,6 +58,7 @@ objects:
   - gphl_connection: gphl/gphl-setup.yml
   - gphl_workflow: gphl/gphl-workflow.yml
   - xray_centring: xray_centring2.yml
+  - unattended_collect: unattended_collect.yml
   #    - centring: centring.xml
   - xml_rpc_server: xml_rpc_server.xml
   # Analysis:
@@ -154,3 +155,4 @@ configuration:
     ssx_chip_collection: true
     gphlworkflow: true
     test_collection: true
+    unattendedcollect: true

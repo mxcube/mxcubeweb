@@ -201,6 +201,8 @@ class ServerIO {
             record.state,
             record.progress,
             record.queueID,
+            record.startedAt,
+            record.endedAt,
           ),
         );
       }

@@ -2,11 +2,13 @@ import { Item, Menu } from 'react-contexify';
 
 import { addTask } from '../../actions/queue';
 import { showTaskForm } from '../../actions/taskForm';
+import { isGroupHead } from '../../constants';
 import { useAppDispatch, useAppSelector } from '../../ts-store';
 import CharacterisationTaskItem from './CharacterisationTaskItem';
 import EnergyScanTaskItem from './EnergyScanTaskItem';
 import TaskItem from './TaskItem';
 import styles from './Tree.module.css';
+import UnattendedCollectItem from './UnattendedCollectItem';
 import WorkflowTaskItem from './WorkflowTaskItem';
 import XRFTaskItem from './XRFTaskItem';
 
@@ -60,6 +62,17 @@ function CurrentTree(props) {
       <div className={styles.listBody}>
         {tasks.map((taskData, i) => {
           switch (taskData.type) {
+            case 'UnattendedCollect': {
+              return (
+                isGroupHead(taskData, i, tasks) && (
+                  <UnattendedCollectItem
+                    key={taskData.queueID}
+                    index={i}
+                    tasks={tasks.filter((t) => t.groupID === taskData.groupID)}
+                  />
+                )
+              );
+            }
             case 'Workflow':
             case 'GphlWorkflow': {
               return (
@@ -114,7 +127,7 @@ function CurrentTree(props) {
         })}
       </div>
 
-      <Menu id="currentSampleQueueContextMenu">
+      <Menu id={`queueContextMenu-${sampleId}`}>
         <Item
           onClick={() => showInterleavedDialog()}
           disabled={!isInterleavedAvailable}
