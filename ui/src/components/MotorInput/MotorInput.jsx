@@ -23,6 +23,8 @@ function MotorInput(props) {
 
   const { attribute, label, precision, step, suffix } = componentConfig;
 
+  const [isEditingSliderValue, setIsEditingSliderValue] = useState(false);
+
   const availableVariants = useMemo(() => {
   const extraVariants = componentConfig?.variants || [];
   if (componentConfig?.variant) {
@@ -200,7 +202,50 @@ function MotorInput(props) {
           />
           <div className={styles.sliderLabels}>
             <span>{motor.limits[0]}</span>
-            <div className={styles.sliderValue}>{Number(localValue ?? value).toFixed(precision)}</div>
+            {isEditingSliderValue ? (
+        <Form.Control
+          size="sm"
+          type="number"
+          className={styles.sliderInputEdit}
+          style={{ width: '80px', textAlign: 'center', padding: '0 4px' }}
+          autoFocus
+          defaultValue={Number(localValue ?? value).toFixed(precision)}
+          disabled={!isReady || disabled}
+          onBlur={(e) => {
+            const val = Number(e.target.value);
+            if (!Number.isNaN(val)) {
+              handleChange(val);
+            }
+            setIsEditingSliderValue(false);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              const val = Number(e.target.value);
+              if (!Number.isNaN(val)) {
+                handleChange(val);
+              }
+              setIsEditingSliderValue(false);
+            } else if (e.key === 'Escape') {
+              setIsEditingSliderValue(false);
+            }
+          }}
+        />
+      ) : (
+        <div
+          role="button"
+          tabIndex={0}
+          className={styles.sliderValue}
+          style={{ cursor: 'pointer', textDecoration: 'underline dotted' }}
+          onClick={() => !disabled && isReady && setIsEditingSliderValue(true)}
+          onKeyDown={(e) => {
+            if ((e.key === 'Enter' || e.key === ' ') && !disabled && isReady) {
+              setIsEditingSliderValue(true);
+            }
+          }}
+        >
+          {Number(localValue ?? value).toFixed(precision)}
+        </div>
+      )}
             <span>{motor.limits[1]}</span>
           </div>
         </div>
