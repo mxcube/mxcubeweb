@@ -9,6 +9,7 @@ from pydantic import (
     BaseModel,
     ValidationError,
 )
+from ruamel.yaml.error import MarkedYAMLError
 
 from mxcubeweb.core.models.configmodels import (
     AppConfigModel,
@@ -113,6 +114,87 @@ class ConfigLoader:
             time.sleep(1)
 
         return ui_index
+
+
+def check_config_files(config_path, check) -> None:
+    """Check the mxcube-web configuration files (server.yaml, ui.yaml and its
+    modules): YAML syntax and validity according to the configuration models.
+
+    Problems are added to check, a mxcubecore.config_check.ConfigurationCheck
+    """
+    if not config_path:
+        check.add_error("mxcube-web", "no mxcube-web configuration directory found")
+        return
+
+    def load(path: pathlib.Path):
+        name = check.display_name(path)
+        check.checked_files.append(name)
+        try:
+            with path.open(encoding="utf-8") as f:
+                return ruamel.yaml.YAML(typ="safe", pure=True).load(f)
+        except MarkedYAMLError as ex:
+            mark = ex.problem_mark or ex.context_mark
+            where = f"line {mark.line + 1}, column {mark.column + 1}: " if mark else ""
+            check.add_error(name, f"YAML syntax error, {where}{ex.problem or ex}")
+        except OSError as ex:
+            check.add_error(name, f"cannot read file: {ex}")
+        return None
+
+    def validate(path: pathlib.Path, data, schema) -> None:
+        name = check.display_name(path)
+        try:
+            data = ConfigLoader.walk_and_resolve(data)
+            schema.model_validate(data)
+        except RuntimeError as ex:  # environment variable not set
+            check.add_error(name, str(ex))
+        except ValidationError as ex:
+            for err in ex.errors():
+                loc = ".".join(str(x) for x in err["loc"]) or "-"
+                value = repr(err.get("input"))
+                value = value if len(value) <= 60 else value[:57] + "..."
+                check.add_error(name, f"{loc}: {err['msg']} (value: {value})")
+
+    base = pathlib.Path(config_path)
+    server_file = base / "server.yaml"
+    if not server_file.exists():
+        check.add_error(check.display_name(base), "server.yaml not found")
+    else:
+        data = load(server_file)
+        if data is not None:
+            validate(server_file, data, AppConfigModel)
+
+    ui_file = base / "ui.yaml"
+    if not ui_file.exists():
+        check.add_error(check.display_name(base), "ui.yaml not found")
+        return
+    ui_index = load(ui_file)
+    if not isinstance(ui_index, dict):
+        if ui_index is not None:
+            check.add_error(
+                check.display_name(ui_file), "ui.yaml must contain a mapping"
+            )
+        return
+    merged = ui_index
+    if ui_index.get("modules") is not None:
+        merged = {}
+        for module, rel in ui_index["modules"].items():
+            module_file = base / rel
+            if not module_file.exists():
+                check.add_error(
+                    check.display_name(ui_file),
+                    f"modules.{module}: file '{rel}' not found",
+                )
+                continue
+            data = load(module_file)
+            if isinstance(data, dict):
+                merged.update(data)
+    else:
+        check.add_warning(
+            check.display_name(ui_file),
+            "legacy format (no 'modules'), convert with"
+            " demo/mxcube-web/scripts/convert_ui_yaml.py",
+        )
+    validate(ui_file, merged, UIPropertiesListModel)
 
 
 class Config:

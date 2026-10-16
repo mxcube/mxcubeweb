@@ -16,7 +16,7 @@ from unittest import mock  # noqa: E402
 from mxcubecore import HardwareRepository as HWR  # noqa: E402
 
 from mxcubeweb.app import MXCUBEApplication as mxcube  # noqa: E402
-from mxcubeweb.config import Config  # noqa: E402
+from mxcubeweb.config import Config, check_config_files  # noqa: E402
 from mxcubeweb.core.models.configmodels import RuntimeOptions  # noqa: E402
 
 from mxcubeweb.core.server.server import create_server  # noqa: E402
@@ -114,9 +114,37 @@ def parse_args(argv):
         ),
     )
 
+    opt_parser.add_argument(
+        "--check-config",
+        action="store_true",
+        dest="check_config",
+        default=False,
+        help=(
+            "Check the configuration files (syntax, and validity according to the"
+            " configuration models), print the result and exit"
+        ),
+    )
+
     # If `argv` is `None`, then `argparse.ArgumentParser.parse_args`
     # will know to read from `sys.argv` instead.
     return opt_parser.parse_args(argv)
+
+
+def check_configuration(runtime_options) -> bool:
+    """Check all configuration files and print the result.
+
+    Returns:
+        True if there are no errors (there may be warnings)
+    """
+    from mxcubecore.config_check import check_configuration as check_hwr_config
+
+    check = check_hwr_config(
+        runtime_options.hwr_directory,
+        strict=runtime_options.config_validation == "strict",
+    )
+    check_config_files(check.find("mxcube-web"), check)
+    print(check.report())  # noqa: T201
+    return check.ok
 
 
 def build_server_and_config(test=False, argv=None):
@@ -172,6 +200,11 @@ def build_server_and_config(test=False, argv=None):
 
 
 def main():
+    runtime_options = RuntimeOptions(**vars(parse_args(None)))
+    config_ok = check_configuration(runtime_options)
+    if runtime_options.check_config:
+        return 0 if config_ok else 1
+
     server, cfg = build_server_and_config()
     if server and cfg:
         try:
