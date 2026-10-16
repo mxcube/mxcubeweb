@@ -24,17 +24,20 @@ function MotorInput(props) {
   const { attribute, label, precision, step, suffix } = componentConfig;
 
   const availableVariants = useMemo(() => {
-    let variantsList = [];
+  const extraVariants = componentConfig?.variants || [];
+  if (componentConfig?.variant) {
+    extraVariants.push(componentConfig.variant);
+  }
+  if (extraVariants.length > 0) {
+    return Array.from(new Set([...extraVariants, 'value']));
+  }
 
-    if (componentConfig?.variants) {
-      variantsList = [...componentConfig.variants];
-    } else if (componentConfig?.variant) {
-      variantsList = [componentConfig.variant];
-    }
-    return variantsList;
-  }, [componentConfig?.variants, componentConfig?.variant]);
+  return ['value'];
+}, [componentConfig?.variants, componentConfig?.variant]);
 
-  const [activeVariant, setActiveVariant] = useState('number');
+  const [activeVariant, setActiveVariant] = useState(() => {
+    return componentConfig?.variants?.[0] ?? 'value';
+  });
 
   const motor = useSelector(
     (state) => state.beamline.hardwareObjects[attribute],
@@ -95,7 +98,7 @@ function MotorInput(props) {
   };
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} data-variant={activeVariant} data-testid={id}>
       <div className="d-flex align-items-center justify-content-between mb-1">
       <label className={styles.label} htmlFor={id}>
         {label}
@@ -124,13 +127,13 @@ function MotorInput(props) {
           max={motor.limits[1]}
           id={id}
           className={styles.valueInput}
-            value={localValue ?? value}
+          value={localValue ?? value}
           state={state}
           precision={precision}
           step={step}
           disabled={disabled}
           onChange={handleChange}
-            isChanging={isChanging}
+          isChanging={isChanging}
         />
 
         <div className={styles.arrows}>

@@ -12,7 +12,6 @@ sample_view_motors:
       variants: 
         - dial
         - slider
-        - value
     - label: Kappa
       attribute: diffractometer.kappa
       role: kappa
@@ -28,8 +27,6 @@ sample_view_motors:
       step: 0.1
       precision: 1
       suffix: °
-      variants: 
-        - value
     - label: X
       attribute: diffractometer.focus
       role: focus

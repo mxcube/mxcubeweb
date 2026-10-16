@@ -27,16 +27,21 @@ describe('Sample controls', () => {
     cy.findByText(/Clicks left: 3/u, { hidden: true }).should('exist');
 
     // Click on sample view to rotate sample once
-    cy.findByLabelText('Omega')
-      .invoke('val')
-      .then((initialValue) => {
-        cy.get('.canvas-container').click();
-        cy.findByText(/Clicks left: 2/u, { hidden: true }).should('exist');
+    cy.findByTestId('MotorInput_omega').then(($container) => {
+      if ($container.attr('data-variant') !== 'value') {
+        cy.wrap($container).find('select').select('value');
+      }
+      cy.findByLabelText('Omega')
+        .invoke('val')
+        .then((initialValue) => {
+          cy.get('.canvas-container').click();
+          cy.findByText(/Clicks left: 2/u, { hidden: true }).should('exist');
 
-        cy.findByLabelText('Omega').should(
-          'have.value',
-          (Number.parseFloat(initialValue) + 90).toFixed(2),
-        );
-      });
+          cy.findByLabelText('Omega').should(
+            'have.value',
+            (Number.parseFloat(initialValue) + 90).toFixed(2),
+          );
+        });
+    });
   });
 });
