@@ -2,6 +2,4 @@
 ---
 class: MotorMockup.MotorMockup
 configuration:
-  exporter_address: 130.235.94.124:9001
-  motor_name: Phi
   username: Kappa Phi

@@ -22,7 +22,7 @@ objects:
   #
   # Hardware:
   - session: session.yaml
-  - data_publisher: data_publisher.yaml
+  # - data_publisher: data_publisher.yaml  # disabled (data_publisher.yaml.disabled)
   - machine_info: machine_info.yaml
   - detector: detector.yaml
   - beam: beam.yaml
@@ -66,8 +66,8 @@ objects:
   # - argus: argus.yaml
 
   # Analysis:
-  - offline_processing: auto_processing.yaml
-  - online_processing: parallel_processing.yaml
+  # - offline_processing: auto_processing.yaml  # no configuration file
+  # - online_processing: parallel_processing.yaml  # no configuration file
   - characterisation: characterisation.yaml
 
 configuration:
@@ -77,7 +77,6 @@ configuration:
 
   tunable_wavelength: true
   disable_num_passes: true
-  run_processing_parallel: true
   run_number: 1
   click_centring_num_clicks: 3
 

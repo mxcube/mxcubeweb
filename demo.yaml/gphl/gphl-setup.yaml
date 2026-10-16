@@ -45,7 +45,7 @@ configuration:
 
   software_paths:
     # Mandatory. Directory with workflow config input, e.g. instrumentation.nml
-    gphl_beamline_config: gphl_beamline_config
+    gphl_beamline_config: gphl/gphl_beamline_config
 
     # MANDATORY for CCP4 => $GPHL_CCP4_PATH/bin/ccp4.setup-sh,
     # unless already sourced in environment

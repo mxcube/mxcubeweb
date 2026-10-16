@@ -67,15 +67,3 @@ configuration:
         symbol: Pb
       - energy: L
         symbol: U
-  mad:
-    defaultenergy:
-      - directory: pk
-        energy: 12.6595
-      - directory: ip
-        energy: 12.6595
-      - directory: rm
-        energy: 12.708
-  max_integrated_counts: 50000
-  min_integrated_counts: 2000
-  offset_keV: 0.025
-  theoritical_edge_threshold: 0.01

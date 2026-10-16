@@ -2,6 +2,5 @@
 ---
 class: ExporterNStateMockup.ExporterNStateMockup
 configuration:
-  use_hwstate: true
   username: beamstop
   values: '{"OUT": "OFF", "IN": "BEAM"}'

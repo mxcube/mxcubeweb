@@ -9,15 +9,11 @@ configuration:
     by: 1702.058
   exports: '["restart"]'
   fileSuffix: cbf
-  hasShutterless: true
   height: 3269
-  humidityThreshold: 20.0
   manufacturer: DECTRIS
   model: 9M
   px: 0.075
   py: 0.075
-  tempThreshold: 33.5
-  tolerance: 0.2
   type: Eiger2
   username: detector
   width: 3110
