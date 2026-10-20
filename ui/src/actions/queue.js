@@ -22,6 +22,7 @@ import {
   setAutoAddDiffPlan as setAutoAddDiffPlanAction,
   setAutoMount as setAutoMountAction,
   setCentringMethod as setCentringMethodAction,
+  setAvailableCentringOptions as setAvailableCentringOptionsAction,
   setGroupFolder as setGroupFolderAction,
   setNumSnapshots as setNumSnapshotsAction,
   setQueueSetting as setQueueSettingAction,
@@ -456,6 +457,9 @@ export function getQueue() {
     try {
       const json = await fetchQueueState();
       dispatch(setQueue(json.sampleList));
+      dispatch(
+        setAvailableCentringOptionsAction(json.availableCentringOptions),
+      );
     } catch (error) {
       console.log(error); // eslint-disable-line no-console
     }
