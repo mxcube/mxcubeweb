@@ -21,8 +21,8 @@ import { TASK_UNCOLLECTED } from '../constants';
 import {
   setAutoAddDiffPlan as setAutoAddDiffPlanAction,
   setAutoMount as setAutoMountAction,
-  setCentringMethod as setCentringMethodAction,
   setAvailableCentringOptions as setAvailableCentringOptionsAction,
+  setCentringMethod as setCentringMethodAction,
   setGroupFolder as setGroupFolderAction,
   setNumSnapshots as setNumSnapshotsAction,
   setQueueSetting as setQueueSettingAction,
