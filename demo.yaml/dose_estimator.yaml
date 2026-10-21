@@ -1,0 +1,13 @@
+%YAML 1.2
+---
+class: mxcubecore.HardwareObjects.DoseEstimator.DoseEstimator
+configuration:
+  experimental_goals:
+    cryo_highres:
+      label: Cryo High Resolution
+      type: resolution_dependent
+      mgy_per_angstrom: 10
+    room:
+      label: Room Temperature
+      type: static
+      mgy: 0.2
