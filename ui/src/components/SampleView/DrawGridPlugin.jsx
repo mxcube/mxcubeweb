@@ -335,9 +335,11 @@ export default class DrawGridPlugin {
     return dataFill;
   }
 
-  initializeCellFilling(_gd, col, row) {
-    const level = this.overlayLevel || 0.2;
-    const fill = `rgba(0, 0, 200, ${level})`;
+  initializeCellFilling(_gd, col, row, temp = false) {
+    const level = this.overlayLevel;
+    const fill = temp
+      ? `rgba(0, 126, 180, ${level})`
+      : `rgba(0, 0, 200, ${level})`;
     return Array.from({ length: col }).map(() =>
       Array.from({ length: row }).fill(fill),
     );
@@ -348,10 +350,11 @@ export default class DrawGridPlugin {
    * @param {GridData} gd grid data
    * @param {number} col - number of columns
    * @param {number} row - number of rows
+   * @param {boolean} temp - if true, use temp color
    * @returns {string[][]} fillingMatrix - matrix of colors for each cell
    */
-  cellFillingFromData(gd, col, row) {
-    const fillingMatrix = this.initializeCellFilling(gd, col, row);
+  cellFillingFromData(gd, col, row, temp) {
+    const fillingMatrix = this.initializeCellFilling(gd, col, row, temp);
 
     // Assume flat result object to remain compatible with old format only
     // supporting one type of results
@@ -437,12 +440,15 @@ export default class DrawGridPlugin {
       width,
     });
     shapes.push(grid);
-    if (cellTW > 0 && cellTH > 0 && !this.drawing) {
+    // Only render grid cells if the grid is being drawn or if it has been saved
+    const shouldRenderGridCells = gridData.id !== null || !this.drawing;
+    if (cellTW > 0 && cellTH > 0 && shouldRenderGridCells) {
       if (this.gridResultFormat === 'RGB') {
         const fillingMatrix = this.cellFillingFromData(
           gridData,
           gridData.numCols,
           gridData.numRows,
+          gridData.id === null,
         );
         shapes.push(
           new GridResult({
