@@ -4,10 +4,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   setAutoAddDiffPlan,
   setAutoMountSample,
-  setCentringMethod,
   setQueueSettings,
 } from '../actions/queue';
-import { CENTRING_METHOD } from '../constants';
+import CentringMethodDropDown from './CentringMethodDropDown.jsx';
 import GroupFolderInput from './GroupFolderInput.jsx';
 import NumSnapshotsDropDown from './NumSnapshotsDropDown.jsx';
 import styles from './QueueSettings.module.css';
@@ -32,24 +31,6 @@ export default function QueueSettings() {
             checked={queueState.autoMountNext}
             label="Automount next sample"
             id="auto-mount-next"
-          />
-        </Dropdown.Item>
-        <Dropdown.Item as="div">
-          <Form.Check
-            type="checkbox"
-            onChange={(e) => {
-              dispatch(
-                setCentringMethod(
-                  e.target.checked
-                    ? CENTRING_METHOD.LOOP
-                    : CENTRING_METHOD.MANUAL,
-                ),
-              );
-            }}
-            name="autoLoopCentring"
-            checked={queueState.centringMethod === CENTRING_METHOD.LOOP}
-            label="Auto loop centring"
-            id="auto-loop-centring"
           />
         </Dropdown.Item>
         <Dropdown.Item as="div">
@@ -80,6 +61,9 @@ export default function QueueSettings() {
           />
         </Dropdown.Item>
         <Dropdown.Divider />
+        <Dropdown.Item as="div">
+          <CentringMethodDropDown align="end" />
+        </Dropdown.Item>
         <Dropdown.Item as="div">
           <NumSnapshotsDropDown align="end" />
         </Dropdown.Item>

@@ -159,6 +159,7 @@ class Queue(ComponentBase):
                 "num_snapshots", HWR.beamline.collect.number_of_snapshots
             ),
             "centringMethod": HWR.beamline.queue_manager.centring_method,
+            "availableCentringOptions": HWR.beamline.queue_manager.available_centring_options,
         }
 
         self.app.queue.set_num_snapshots(

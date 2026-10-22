@@ -21,6 +21,7 @@ import { TASK_UNCOLLECTED } from '../constants';
 import {
   setAutoAddDiffPlan as setAutoAddDiffPlanAction,
   setAutoMount as setAutoMountAction,
+  setAvailableCentringOptions as setAvailableCentringOptionsAction,
   setCentringMethod as setCentringMethodAction,
   setGroupFolder as setGroupFolderAction,
   setNumSnapshots as setNumSnapshotsAction,
@@ -456,6 +457,9 @@ export function getQueue() {
     try {
       const json = await fetchQueueState();
       dispatch(setQueue(json.sampleList));
+      dispatch(
+        setAvailableCentringOptionsAction(json.availableCentringOptions),
+      );
     } catch (error) {
       console.log(error); // eslint-disable-line no-console
     }
