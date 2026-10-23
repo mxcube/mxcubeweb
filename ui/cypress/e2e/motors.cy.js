@@ -6,11 +6,17 @@ describe('Motors', () => {
   });
 
   it('can control motors', () => {
-    cy.findByLabelText('Phase Control').select('COLLECT');
-    cy.findByLabelText('Phase Control').should('have.value', 'COLLECT');
+    cy.findByLabelText('Phase Control').click();
+    cy.findByRole('button', { name: 'COLLECT' }).click();
+    cy.findByLabelText('Phase Control').should('have.text', 'COLLECT');
 
-    cy.findByLabelText('Beam size').select('A20');
-    cy.findByLabelText('Beam size').should('have.value', 'A20');
+    cy.findByLabelText('Phase Control').click();
+    cy.findByRole('button', { name: 'TRANSFER' }).click();
+    cy.findByLabelText('Phase Control').should('have.text', 'TRANSFER');
+
+    cy.findByLabelText('Beam size').click();
+    cy.findByRole('button', { name: 'A20' }).click();
+    cy.findByLabelText('Beam size').should('have.text', 'A20');
 
     cy.findByLabelText('Omega').type('{selectAll}200{enter}');
     cy.findByLabelText('Omega').should('have.value', '200.00');

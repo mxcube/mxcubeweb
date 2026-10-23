@@ -36,18 +36,18 @@ class BeamAdapter(ActuatorAdapterBase):
     def limits(self):
         return -1, -1
 
-    def _get_aperture(self) -> tuple:
-        """Return list of apertures and the one currently used.
+    def _get_beam_size(self) -> tuple:
+        """Return list of beam sizes and the one currently used.
 
-        :return: Tuple, (list of apertures, current aperture)
+        :return: Tuple, (list of beam sizes, current beam size)
         :rtype: tuple
         """
         beam_ho = self._ho
 
-        aperture_list = beam_ho.get_available_size()["values"]
-        current_aperture = beam_ho.get_value()[-1]
+        beam_size_list = beam_ho.get_available_size_options()
+        current_beam_size = beam_ho.get_value()[-1]
 
-        return aperture_list, current_aperture
+        return beam_size_list, current_beam_size
 
     def set_value(self, value: str) -> HOBeamModel:
         self._ho.set_value(value)
@@ -73,12 +73,12 @@ class BeamAdapter(ActuatorAdapterBase):
             }
         )
 
-        aperture_list, current_aperture = self._get_aperture()
+        beam_size_list, current_beam_size = self._get_beam_size()
 
         beam_info_dict.update(
             {
-                "apertureList": aperture_list,
-                "currentAperture": current_aperture,
+                "apertureList": beam_size_list,
+                "currentAperture": current_beam_size,
             }
         )
 

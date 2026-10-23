@@ -3,14 +3,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { changeCurrentPhase } from '../../actions/sampleview';
 import { NStateSelect } from './NStateSelect';
 
-const READ_ONLY_OPTIONS = ['Unknown'];
-
-/**
- * Source hook for the diffractometer phase.
- *
- * @returns {NStateSource}
- */
-
 /**
  * @typedef {Object} Props
  * @property {string?} tooltip - Optional hover tooltip text.
@@ -30,7 +22,6 @@ function PhaseInput({ tooltip }) {
           state.beamline.hardwareObjects.diffractometer?.state === 'BUSY',
       )}
       onSelect={(value) => dispatch(changeCurrentPhase(value))}
-      readOnlyOptions={READ_ONLY_OPTIONS}
       tooltip={tooltip}
     />
   );

@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 
 import PlateManipulator from '../components/Equipment/PlateManipulator';
 import motorInputStyles from '../components/MotorInput/MotorInput.module.css';
-import ApertureInput from '../components/SampleView/ApertureInput';
+import BeamSizeInput from '../components/SampleView/BeamSizeInput';
 import ContextMenu from '../components/SampleView/ContextMenu';
 import MotorControls from '../components/SampleView/MotorControls';
 import { NStateHOInput } from '../components/SampleView/NStateHOInput';
@@ -85,11 +85,11 @@ function SampleViewContainer() {
               <div className={motorInputStyles.container}>
                 <label
                   className={motorInputStyles.label}
-                  htmlFor="ApertureInput"
+                  htmlFor="BeamSizeInput"
                 >
                   {beamSize.label}
                 </label>
-                <ApertureInput tooltip={beamSize.tooltip} />
+                <BeamSizeInput tooltip={beamSize.tooltip} />
               </div>
             )}
             {nStatesComponents.map((component) => (
