@@ -9,12 +9,18 @@ sample_view_motors:
       step: 90
       precision: 2
       suffix: °
+      variants:
+        - slider
+        - dial
     - label: Kappa
       attribute: diffractometer.kappa
       role: kappa
       step: 0.1
       precision: 1
       suffix: °
+      variants:
+        - value
+        - slider
     - label: Kappa Phi
       attribute: diffractometer.kappa_phi
       role: kappa_phi

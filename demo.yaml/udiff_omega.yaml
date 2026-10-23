@@ -6,3 +6,4 @@ configuration:
   exporter_address: 130.235.94.124:9001
   tolerance: 0.001
   username: Omega
+  default_limits: (0, 360)

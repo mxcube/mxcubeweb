@@ -4,4 +4,5 @@
   <default_value>11</default_value>
   <motor_name>Omega</motor_name>
   <unit>1e-3</unit>
+  <default_limits>(0, 360)</default_limits>
 </object>
