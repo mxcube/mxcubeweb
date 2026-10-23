@@ -241,7 +241,9 @@ function beamlineReducer(state = INITIAL_STATE, action = {}) {
       state.beamlineActionsList.some((beamlineAction, i) => {
         if (beamlineAction.name === action.cmdName) {
           beamlineActionsList[i].state = action.state;
-          beamlineActionsList[i].data = action.data;
+          if (action.data !== undefined) {
+            beamlineActionsList[i].data = action.data;
+          }
 
           if (action.state === RUNNING) {
             beamlineActionsList[i].messages = [];
