@@ -36,27 +36,36 @@ function TaskContainer() {
   function doAddTask(params, stringFields, runNow) {
     const parameters = { ...params };
 
-    for (const key in parameters) {
-      if (key in parameters && !stringFields.includes(key) && parameters[key]) {
-        parameters[key] = Number(parameters[key]);
+    // The form gives numbers as strings, convert them back. Other values,
+    // for instance paths or lists, are kept as they are.
+    for (const [key, value] of Object.entries(parameters)) {
+      if (
+        !stringFields.includes(key) &&
+        typeof value === 'string' &&
+        value.trim() !== '' &&
+        !Number.isNaN(Number(value))
+      ) {
+        parameters[key] = Number(value);
       }
     }
 
     if (Array.isArray(sampleIds)) {
       dispatch(addTask(sampleIds, parameters, runNow));
     } else {
-      if (taskData.queueID === null) {
+      // A queueID of -1 (or none) means the task is not queued yet, for
+      // instance the collections of a diffraction plan
+      const taskIndex =
+        taskData.queueID === null ||
+        taskData.queueID === undefined ||
+        taskData.queueID === -1
+          ? -1
+          : sampleList[sampleIds].tasks.findIndex(
+              (task) => task.queueID === taskData.queueID,
+            );
+
+      if (taskIndex === -1) {
         dispatch(addTask([sampleIds], parameters, runNow));
       } else {
-        let taskIndex = -1;
-
-        for (const task of sampleList[sampleIds].tasks) {
-          if (task.queueID === taskData.queueID) {
-            taskIndex = sampleList[sampleIds].tasks.indexOf(task);
-            break;
-          }
-        }
-
         dispatch(updateTask(sampleIds, taskIndex, parameters, runNow));
       }
     }
