@@ -43,13 +43,11 @@ export interface Sample extends QueueNode {
   crystalUUID?: string;
   defaultPrefix: string | null;
   defaultSubDir: string | null;
-  experimentType?: string;
   image_url?: string;
   image_x?: number | string;
   image_y?: number | string;
   limsID?: number;
   limsLink?: string;
-  lims_location?: string;
   loadable?: boolean;
   location: string;
   proteinAcronym: string | null;
@@ -60,7 +58,6 @@ export interface Sample extends QueueNode {
   sampleName: string;
   sample_barcode?: string;
   sc_state?: number;
-  smiles?: string | null;
   tasks: TaskNode[];
 }
 
