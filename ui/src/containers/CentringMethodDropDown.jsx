@@ -5,17 +5,24 @@ import { setCentringMethod } from '../actions/queue';
 import { CENTRING_METHOD } from '../constants';
 
 const CENTRING_METHOD_OPTIONS = [
-  { value: CENTRING_METHOD.MANUAL, label: 'Manual (click) centring' },
-  { value: CENTRING_METHOD.LOOP, label: 'Auto loop centring' },
-  { value: CENTRING_METHOD.FULLY_AUTOMATIC, label: 'Fully automatic centring' },
-  { value: CENTRING_METHOD.NONE, label: 'No centring' },
-];
+  { name: 'MANUAL', label: 'Manual (click) centring' },
+  { name: 'LOOP', label: 'Auto loop centring' },
+  { name: 'FULLY_AUTOMATIC', label: 'Fully automatic centring' },
+  { name: 'XRAY', label: 'X-ray centring' },
+  { name: 'NONE', label: 'No centring' },
+].map((option) => ({ ...option, value: CENTRING_METHOD[option.name] }));
 
 function CentringMethodDropDown(props) {
   const { align } = props;
 
   const dispatch = useDispatch();
   const centringMethod = useSelector((state) => state.queue.centringMethod);
+  const availableCentringOptions = useSelector(
+    (state) => state.queue.availableCentringOptions,
+  );
+  const options = CENTRING_METHOD_OPTIONS.filter((option) =>
+    availableCentringOptions.includes(option.name),
+  );
 
   const current = CENTRING_METHOD_OPTIONS.find(
     (option) => option.value === centringMethod,
@@ -33,7 +40,7 @@ function CentringMethodDropDown(props) {
         </span>
       }
     >
-      {CENTRING_METHOD_OPTIONS.map(({ value, label }) => (
+      {options.map(({ value, label }) => (
         <Dropdown.Item
           key={value}
           active={value === centringMethod}

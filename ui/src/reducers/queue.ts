@@ -37,6 +37,7 @@ interface QueueSliceState {
   autoAddDiffplan: boolean;
   autoMountNext: boolean;
   centringMethod: CentringMethod;
+  availableCentringOptions: string[];
   current: string;
   groupFolder: string;
   numSnapshots: number;
@@ -49,6 +50,7 @@ const INITIAL_STATE: QueueSliceState = {
   autoAddDiffplan: false,
   autoMountNext: false,
   centringMethod: CENTRING_METHOD.MANUAL,
+  availableCentringOptions: ['MANUAL', 'LOOP'],
   current: '',
   groupFolder: '',
   numSnapshots: 4,
@@ -75,6 +77,9 @@ const queueSlice = createSlice({
     },
     setAutoAddDiffPlan(state, action: PayloadAction<boolean>) {
       state.autoAddDiffplan = action.payload;
+    },
+    setAvailableCentringOptions(state, action: PayloadAction<string[]>) {
+      state.availableCentringOptions = action.payload;
     },
     setCentringMethod(state, action: PayloadAction<CentringMethod>) {
       state.centringMethod = action.payload;
@@ -141,6 +146,7 @@ export const {
   setAutoMount,
   setAutoAddDiffPlan,
   setCentringMethod,
+  setAvailableCentringOptions,
   setNumSnapshots,
   setGroupFolder,
   setQueueSetting,
