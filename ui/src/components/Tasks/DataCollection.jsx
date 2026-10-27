@@ -356,6 +356,28 @@ const DataCollectionForm = reduxForm({
 
 const selector = formValueSelector('datacollection');
 
+const CELL_PARAMETERS = [
+  'cellA',
+  'cellAlpha',
+  'cellB',
+  'cellBeta',
+  'cellC',
+  'cellGamma',
+];
+
+function crystalParameters(sample, parameters) {
+  // Crystal information from LIMS is null when the sample has none
+  return {
+    ...Object.fromEntries(
+      CELL_PARAMETERS.map((name) => [
+        name,
+        sample[name] ?? parameters[name] ?? 0,
+      ]),
+    ),
+    space_group: sample.crystalSpaceGroup ?? parameters.space_group ?? '',
+  };
+}
+
 export default connect((state) => {
   const subdir = selector(state, 'subdir');
 
@@ -389,15 +411,7 @@ export default connect((state) => {
   const currentSampleId =
     state.taskForm.sampleIds.length === 1 ? state.taskForm.sampleIds[0] : null;
 
-  const {
-    cellA,
-    cellAlpha,
-    cellB,
-    cellBeta,
-    cellC,
-    cellGamma,
-    crystalSpaceGroup,
-  } = state.sampleGrid.sampleList[currentSampleId] ?? {};
+  const sample = state.sampleGrid.sampleList[currentSampleId] ?? {};
 
   return {
     path: `${state.login.rootPath}/${subdir}`,
@@ -413,13 +427,7 @@ export default connect((state) => {
       energy: toFixed(state, 'energy'),
       transmission: toFixed(state, 'transmission'),
       osc_start: toFixed(state, 'diffractometer.omega', 'osc_start'),
-      cellA,
-      cellAlpha,
-      cellB,
-      cellBeta,
-      cellC,
-      cellGamma,
-      space_group: crystalSpaceGroup,
+      ...crystalParameters(sample, parameters),
     },
   };
 })(DataCollectionForm);
