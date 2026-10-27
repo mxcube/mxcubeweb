@@ -25,7 +25,7 @@ classifiers = [
 requires-python = ">=3.10,<3.12"
 scripts.mxcubeweb-server = 'mxcubeweb:main'
 dependencies = [
-    "authlib>=1.6.12,<2.0.0",
+    "authlib>=1.9.1,<2.0.0",
     "Flask>=3.1.3,<4.0.0",
     "flask-limiter>=3.12,<4.0.0",
     "flask-login>=0.6.3,<0.7.0",
