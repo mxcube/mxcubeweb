@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/control-has-associated-label */
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { HW_STATE } from '../../constants';
 
@@ -15,12 +15,23 @@ function BaseMotorInput(props) {
     max,
     disabled,
     onChange,
+    onBlur,
     isChanging,
+    onKeyDown,
+    autoFocus,
   } = props;
 
+  const inputRef = useRef(null);
   const [inputValue, setInputValue] = useState(value.toFixed(precision));
   const [isEdited, setEdited] = useState(false);
   const [isInsideLimits, setInsideLimits] = useState(true);
+
+  useEffect(() => {
+    if (autoFocus && inputRef.current) {
+      inputRef.current.focus();
+      inputRef.current.select();
+    }
+  }, [autoFocus]);
 
   useEffect(() => {
     setInputValue(value.toFixed(precision));
@@ -28,6 +39,9 @@ function BaseMotorInput(props) {
   }, [value, precision, state]); // `state` to re-apply `precision` in case `value` doesn't change
 
   function handleKey(evt) {
+    if (evt.key === 'Escape' && onKeyDown) {
+      onKeyDown(evt);
+    }
     switch (evt.key) {
       case 'ArrowUp': {
         evt.preventDefault();
@@ -54,7 +68,7 @@ function BaseMotorInput(props) {
     }
   }
 
-  function handleBlur() {
+  function handleBlur(evt) {
     //
     // restore widget to display motor's current position,
     // when focus is lost
@@ -62,6 +76,9 @@ function BaseMotorInput(props) {
     setInsideLimits(true);
     setEdited(false);
     setInputValue(value.toFixed(precision));
+    if (onBlur) {
+      onBlur(evt);
+    }
   }
 
   function handleChange(evt) {
@@ -83,6 +100,7 @@ function BaseMotorInput(props) {
   return (
     <form className="d-flex" noValidate onSubmit={handleSubmit}>
       <input
+        ref={inputRef}
         id={id}
         className={className}
         type="number"

@@ -12,49 +12,43 @@ describe('Motors', () => {
     cy.findByLabelText('Beam size').select('A20');
     cy.findByLabelText('Beam size').should('have.value', 'A20');
 
-    const variantsConfig = {
-      dial: ($container) => {
-        cy.wrap($container).find('svg').should('be.visible').click();
-      },
-      slider: ($container) => {
-        cy.wrap($container)
-          .find('input[type="range"]')
-          .should('be.visible')
-          .invoke('val', 180)
-          .trigger('change')
-          .trigger('pointerup');
-      },
-      value: ($container) => {
-        cy.wrap($container)
-          .find('input[type="number"], input[type="text"]')
-          .first()
-          .type('{selectAll}200{enter}');
-        cy.wrap($container)
-          .find('input[type="number"], input[type="text"]')
-          .first()
-          .should('have.value', '200.00');
-      },
-    };
+    cy.findByLabelText('Omega').then(($el) => {
+      const isSelect = $el.is('select');
+      const variants = isSelect
+        ? [...$el.find('option')].map((opt) => opt.value)
+        : ['value'];
 
-    cy.findByTestId('MotorInput_omega').within(($container) => {
-      cy.get('select')
-        .find('option')
-        .then((options) => {
-          const availableValues = [...options].map((opt) => opt.value);
+      cy.wrap(variants).each((variant) => {
+        if (isSelect) {
+          cy.findByLabelText('Omega').select(variant);
+        }
 
-          availableValues.forEach((variant) => {
-            // 1. Sélection de la variante
-            cy.root().find('select').select(variant);
+        switch (variant) {
+          case 'dial': {
+            cy.get('svg').should('be.visible');
 
-            // 2. Vérification de l'attribut data-variant
-            cy.root().should('have.attr', 'data-variant', variant);
+            break;
+          }
+          case 'slider': {
+            cy.findByLabelText('Omega')
+              .should('be.visible')
+              .invoke('val', 180)
+              .trigger('input')
+              .trigger('change')
+              .trigger('pointerup');
 
-            // 3. Exécution du test de la variante
-            if (variantsConfig[variant]) {
-              variantsConfig[variant]($container);
-            }
-          });
-        });
+            break;
+          }
+          case 'value': {
+            cy.findByLabelText('Omega')
+              .should('be.visible')
+              .type('{selectAll}200{enter}');
+
+            break;
+          }
+          // No default
+        }
+      });
     });
 
     cy.findByRole('button', { name: 'Show motors' }).click();

@@ -1,9 +1,10 @@
-import { useRef, useState, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
+import { useCallback, useRef, useState } from 'react';
+
 import styles from './AngleIndicator.module.css';
 
 function AngleIndicator({ angle, onChange, onChangeEnd, disabled }) {
-  const svgRef = useRef(null); 
+  const svgRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
 
   const center = 50;
@@ -13,123 +14,140 @@ function AngleIndicator({ angle, onChange, onChangeEnd, disabled }) {
   const x = center + radius * Math.cos(radians);
   const y = center + radius * Math.sin(radians);
 
-  const calculateAngleFromEvent = useCallback(
-    (e) => {
-      if (!svgRef.current) return null;
+  const calculateAngle = useCallback((e) => {
+    if (!svgRef.current) {
+      return null;
+    }
 
-      const rect = svgRef.current.getBoundingClientRect(); //Get the current mouse coordinates
-      const centerX = rect.left + rect.width / 2; //Get the x position of the center of the circle
-      const centerY = rect.top + rect.height / 2; //Get the y position of the center of the circle
-      const mouseX = e.clientX - centerX; //Get the x distance between the center and the mouse position
-      const mouseY = e.clientY - centerY; //Get the y distance between the center and the mouse position
-      let rad = Math.atan2(mouseY, mouseX); //Calculates the rad angle corresponding to the mouse position
-      let deg = (rad * 180) / Math.PI; //Convert it to degrees
-      if (deg < 0) {
-        deg += 360; //Puts the value between 0 and 360
-      }
-      return Math.round(deg);
-    },
-    [],
-  );
+    const rect = svgRef.current.getBoundingClientRect();
+    const centerX = rect.left + rect.width / 2;
+    const centerY = rect.top + rect.height / 2;
+    const mouseX = e.clientX - centerX;
+    const mouseY = e.clientY - centerY;
+    const rad = Math.atan2(mouseY, mouseX);
+    let deg = ((rad * 180) / Math.PI) % 360;
+    if (deg < 0) {
+      deg += 360;
+    }
+    return Math.round(deg);
+  }, []);
 
-  const handleMouseDown = (e) => {
-    if (disabled) return;
+  function handlePointerDown(e) {
+    if (disabled || e.button !== 0) {
+      return;
+    }
+    e.currentTarget.setPointerCapture(e.pointerId);
     setIsDragging(true);
-    const newAngle = calculateAngleFromEvent(e);
+    const newAngle = calculateAngle(e);
     if (newAngle !== null && onChange) {
       onChange(newAngle);
     }
-  };
+  }
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (isDragging) {
-        const newAngle = calculateAngleFromEvent(e);
-        if (newAngle !== null && onChange) {
-          onChange(newAngle);
-        }
-      }
-    };
-
-    const handleMouseUp = (e) => {
-      if (isDragging) {
-        setIsDragging(false);
-        const newAngle = calculateAngleFromEvent(e);
-        if (newAngle !== null && onChangeEnd) {
-          onChangeEnd(newAngle);
-        }
-      }
-    };
-
-    if (isDragging) {
-      window.addEventListener('mousemove', handleMouseMove);
-      window.addEventListener('mouseup', handleMouseUp);
+  function handlePointerMove(e) {
+    if (!isDragging) {
+      return;
     }
 
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      window.removeEventListener('mouseup', handleMouseUp);
-    };
-  }, [isDragging, calculateAngleFromEvent, onChange, onChangeEnd]);
+    const newAngle = calculateAngle(e);
+    if (newAngle !== null && onChange) {
+      onChange(newAngle);
+    }
+  }
 
+  function handlePointerUp(e) {
+    if (!isDragging) {
+      return;
+    }
+    if (e.currentTarget.hasPointerCapture(e.pointerId)) {
+      e.currentTarget.releasePointerCapture(e.pointerId);
+    }
+    setIsDragging(false);
+    const newAngle = calculateAngle(e);
+    if (newAngle !== null && onChangeEnd) {
+      onChangeEnd(newAngle);
+    }
+  }
   return (
     <div className={styles.container}>
       <svg
         ref={svgRef}
         className={styles.svg}
         viewBox="0 0 100 100"
-        aria-label={`Angle actuel : ${angle} degrés`}
-        onMouseDown={handleMouseDown}
+        aria-label={`Current Angle : ${angle} degree${angle === 1 ? '' : 's'}`}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         style={{
-          cursor: disabled ? 'not-allowed' : isDragging ? 'grabbing' : 'pointer',
+          cursor: disabled
+            ? 'not-allowed'
+            : isDragging
+            ? 'grabbing'
+            : 'pointer',
           opacity: disabled ? 0.6 : 1,
         }}
       >
         <circle
           id="circle"
-          cx="50"
-          cy="50"
-          r="42"
+          cx={center}
+          cy={center}
+          r={radius}
           className={styles.circle}
         />
 
         <line
-          x1="50"
-          y1="50"
+          x1={center}
+          y1={center}
           x2={x}
           y2={y}
           className={styles.pointer}
         />
 
-        <circle
-          cx="50"
-          cy="50"
-          r="3"
-          className={styles.center}
-        />
+        <circle cx={center} cy={center} r="3" className={styles.center} />
 
         <text
-          x="50"
-          y="65"
+          x={center}
+          y={center * 1.3}
           textAnchor="middle"
           className={styles.value}
         >
           {Number(angle).toFixed(0)}°
         </text>
 
-        <text x="50" y="5" textAnchor="middle" className={styles.label}>
+        <text
+          x={center}
+          y={center - radius * 1.2}
+          textAnchor="middle"
+          className={styles.label}
+        >
           270°
         </text>
 
-        <text x="100" y="53" textAnchor="middle" className={styles.label}>
+        <text
+          x={center + radius * 1.2}
+          y={center * 1.05}
+          textAnchor="middle"
+          className={styles.label}
+        >
           0°
         </text>
 
-        <text x="50" y="99" textAnchor="middle" className={styles.label}>
+        <text
+          x={center}
+          y={center + radius * 1.2}
+          textAnchor="middle"
+          className={styles.label}
+        >
           90°
         </text>
 
-        <text x="0" y="53" textAnchor="middle" className={styles.label}>
+        <text
+          x={center - radius * 1.2}
+          y={center * 1.05}
+          textAnchor="middle"
+          className={styles.label}
+        >
           180°
         </text>
       </svg>

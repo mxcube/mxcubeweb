@@ -37,3 +37,10 @@
   fill: #666;
   font-size: 8px;
 }
+
+.dialDisabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  pointer-events: none;
+  filter: grayscale(100%);
+}
