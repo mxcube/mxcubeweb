@@ -2,4 +2,5 @@
   <username>backlight</username>
   <motor_name>backlight</motor_name>
   <exporter_address>192.168.96.43:9001</exporter_address>
+  <default_limits>(0,100)</default_limits>
 </object>

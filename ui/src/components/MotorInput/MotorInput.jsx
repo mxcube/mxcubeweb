@@ -2,6 +2,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
+
 import { setAttribute } from '../../actions/beamline';
 import { stopBeamlineAction } from '../../actions/beamlineActions';
 import { showErrorPanel } from '../../actions/general';
@@ -29,7 +30,7 @@ function getVariantLabel(variantKey) {
 }
 
 function MotorInput(props) {
-  const {role, idPrefix = 'MotorInput' } = props;
+  const { role, idPrefix = 'MotorInput' } = props;
   const dispatch = useDispatch();
 
   const sliderRef = useRef(null);
@@ -99,24 +100,6 @@ function MotorInput(props) {
       setIsChanging(false);
     }
   }
-
-  function handleSliderChange(evt) {
-    setIsChanging(true);
-    setLocalValue(Number(evt.target.value));
-  }
-
-  const getVariantLabel = (variantKey) => {
-    switch (variantKey) {
-      case 'value':
-        return 'Value';
-      case 'slider':
-        return 'Slider';
-      case 'dial':
-        return 'Dial';
-      default:
-        return variantKey;
-    }
-  };
 
   function handleLocalChange(evt) {
     setIsChanging(true);

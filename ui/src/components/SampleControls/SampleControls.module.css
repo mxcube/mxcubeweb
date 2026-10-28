@@ -2,19 +2,29 @@
   display: flex;
   position: absolute;
   top: 0;
-  left: 50%;
+  left: 0;
+  right: 0;
+  width: 100%;
   z-index: 500;
-  transform: translateX(-50%);
-  background-color: rgba(34, 34, 34, 0.8);
-  border-radius: 0 0 0.25rem 0.25rem;
+  justify-content: space-around;
+  align-items: center;
+  background-color: rgb(34, 34, 34);
+  backdrop-filter: blur(4px);
+  border-radius: 0;
+  border: none;
+  padding: 0.15rem 0.5rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .controlWrapper {
   position: relative;
+  display: inline-flex;
+  align-items: stretch;
 }
 
 .controlBtn {
-  padding-top: 0.5rem;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
   background-color: transparent !important;
   border: 0 !important;
   color: #33beff;
@@ -25,12 +35,12 @@
 
 .controls > .controlWrapper,
 .controls > .controlBtn {
-  min-width: 60px;
+  min-width: clamp(25px, 3.5vw, 55px);
 }
 
 @media (max-width: 1400px) {
   .controls > .controlWrapper {
-    max-width: 60px;
+    max-width: 50px;
   }
 }
 
@@ -71,26 +81,41 @@
   color: var(--bs-btn-active-color) !important;
 }
 
+.lightBtn {
+  position: relative;
+  border-radius: 0 !important;
+  padding: 0.25rem 0.4rem;
+  background-color: transparent !important;
+  border: none !important;
+}
+
 .lightArrowBtn {
-  position: absolute;
-  top: 2px;
-  left: 55%;
-  padding-left: 4px;
+  position: relative;
+  top: auto;
+  left: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem 0.35rem;
+  background-color: transparent !important;
+  border: none !important;
+  border-left: 1px solid rgba(51, 190, 255, 0.4) !important;
 }
 
 .controlLabel {
   display: block;
-  font-size: 11px;
+  font-size: clamp(5px, 0.8vw, 11px);
+  line-height: 1.1;
 }
 
 .controlIcon {
-  font-size: 25px;
+  font-size: clamp(10px, 1.5vw, 22px);
 }
 
 .dropdownIcon {
-  margin-top: 6px;
-  margin-left: 4px;
-  margin-right: -3px;
+  margin-top: 3px;
+  margin-left: 2px;
+  margin-right: -2px;
   vertical-align: top;
 }
 
@@ -119,4 +144,48 @@
 
 .dropdownItem:global(.active):hover {
   background-color: var(--bs-dropdown-link-hover-bg);
+}
+
+.sliderInput {
+  cursor: pointer;
+}
+
+.sliderInput {
+  margin-bottom: -10px;
+}
+
+.sliderInput::-webkit-slider-thumb {
+  cursor: grab;
+}
+
+.sliderInput::-webkit-slider-thumb:active {
+  cursor: grabbing;
+}
+
+.sliderInput::-moz-range-thumb {
+  cursor: grab;
+}
+
+.sliderInput::-moz-range-thumb:active {
+  cursor: grabbing;
+}
+
+.sliderInput:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+}
+
+.sliderValue {
+  text-align: center;
+  font-weight: bold;
+  margin-bottom: 0.25rem;
+}
+
+.sliderLabels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
 }

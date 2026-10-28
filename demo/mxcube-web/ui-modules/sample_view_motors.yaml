@@ -12,6 +12,7 @@ sample_view_motors:
       variants:
         - slider
         - dial
+        - dial
     - label: Kappa
       attribute: diffractometer.kappa
       role: kappa

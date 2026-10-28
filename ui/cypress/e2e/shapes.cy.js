@@ -114,7 +114,7 @@ describe('Shapes', () => {
     // The 2 points stay active-selected after adding the line, so a right
     // click at the same spot would still hit the "2 points selected" menu
     // rather than the line itself. Clear the selection first.
-    cy.get('.upper-canvas').click(20, 20);
+    cy.get('.upper-canvas').click(50, 50);
 
     // Line now exists: right-clicking its midpoint shows the line's own menu
     rightClickAwaitMenuItem(MIDPOINT.x, MIDPOINT.y, 'Delete Line');

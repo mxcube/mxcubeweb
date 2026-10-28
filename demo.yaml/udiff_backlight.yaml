@@ -5,3 +5,4 @@ configuration:
   exporter_address: 192.168.96.43:9001
   motor_name: backlight
   username: backlight
+  default_limits: (0,100)
