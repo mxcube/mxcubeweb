@@ -41,8 +41,8 @@ export class GridResult extends FabricObject {
   }
 
   _render(ctx) {
-    const xOffset = -this.width / 2 + this.cellTH / 2;
-    const yOffset = -this.height / 2 + this.cellTW / 2;
+    const xOffset = -this.width / 2 + this.cellTW / 2;
+    const yOffset = -this.height / 2 + this.cellTH / 2;
 
     if (inSmallCellSizeMode(this.cellTW, this.cellTH)) {
       //
