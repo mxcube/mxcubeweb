@@ -71,6 +71,13 @@ export function sendMoveToPoint(point_id) {
   return sendSampleViewCommand('move_to_centred_position', { point_id });
 }
 
+export function sendMoveToGridPosition(grid_id, jump_to) {
+  return sendSampleViewCommand('move_to_grid_position', {
+    grid_id,
+    jump_to,
+  });
+}
+
 export function sendMoveToBeam(x, y) {
   return sendSampleViewCommand('move_to_beam', {
     x,
