@@ -19,6 +19,8 @@ export interface TaskParameters {
 export interface TaskNode extends QueueNode {
   diffractionPlan: TaskNode[] | null;
   diffractionPlanID: number | null;
+  /** UNIX time of the end of the last run, see startedAt */
+  endedAt?: number | null;
   label: string;
   name: string | null;
   originID?: number;
@@ -26,6 +28,8 @@ export interface TaskNode extends QueueNode {
   result?: unknown;
   sampleID: string;
   sampleQueueID: number | null;
+  /** UNIX time of the start of the last run, null until it ran */
+  startedAt?: number | null;
   taskIndex: number | null;
 }
 
@@ -121,6 +125,8 @@ interface AddTaskResultAction {
   sampleID: string;
   taskIndex: number;
   state: number;
+  startedAt?: number | null;
+  endedAt?: number | null;
 }
 
 interface RemoveTaskAction {
@@ -305,6 +311,8 @@ const sampleGridSlice = createSlice({
         const task = state.sampleList[action.sampleID].tasks[action.taskIndex];
         task.checked = false;
         task.state = action.state;
+        task.startedAt = action.startedAt;
+        task.endedAt = action.endedAt;
       })
       .addCase('REMOVE_TASK', (state, action: RemoveTaskAction) => {
         state.sampleList[action.sampleID].tasks.splice(action.taskIndex, 1);

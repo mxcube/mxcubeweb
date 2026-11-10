@@ -108,3 +108,11 @@
   right: 60px;
   margin-left: 10px;
 }
+
+.elapsed {
+  margin-left: auto;
+  padding: 0 10px;
+  font-size: smaller;
+  color: #555;
+  white-space: nowrap;
+}

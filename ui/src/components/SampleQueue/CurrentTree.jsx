@@ -114,7 +114,7 @@ function CurrentTree(props) {
         })}
       </div>
 
-      <Menu id="currentSampleQueueContextMenu">
+      <Menu id={`queueContextMenu-${sampleId}`}>
         <Item
           onClick={() => showInterleavedDialog()}
           disabled={!isInterleavedAvailable}
