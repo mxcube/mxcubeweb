@@ -326,12 +326,14 @@ export default class DrawGridPlugin {
     }
   }
 
-  heatMapColorForValue(_gd, value) {
+  // A pinned grid away from its omega (fade 0..1) is drawn more transparent
+  heatMapColorForValue(gd, value) {
+    const level = this.overlayLevel * (1 - 0.7 * (gd.fade || 0));
     let dataFill = `rgba(${Number.parseInt(value[0], 10)}, ${Number.parseInt(
       value[1],
       10,
     )},`;
-    dataFill += `${Number.parseInt(value[2], 10)}, ${this.overlayLevel})`;
+    dataFill += `${Number.parseInt(value[2], 10)}, ${level})`;
     return dataFill;
   }
 
@@ -425,6 +427,13 @@ export default class DrawGridPlugin {
       ? 'rgba(136, 255, 91, 1)'
       : 'rgba(228, 255, 9, 0.5)';
     color = gridData.result?.length > 0 ? 'rgba(228, 255, 9, 1)' : color;
+    // A pinned grid follows the sample at all omegas (mxcubecore Shape.fade):
+    // greyer the further it faces away from its own omega
+    const fade = gridData.pinned ? gridData.fade || 0 : 0;
+    if (fade > 0) {
+      const grey = Math.round(200 - 120 * fade);
+      color = `rgba(${grey}, ${grey}, ${grey}, 1)`;
+    }
     const grid = new Grid({
       cellRows: gridData.numRows,
       cellCols: gridData.numCols,
@@ -495,7 +504,7 @@ export default class DrawGridPlugin {
       }
     }
 
-    if (gridData.name) {
+    if (gridData.name && fade === 0) {
       shapes.push(
         new FabricText(gridData.name, {
           left: width / 2,
