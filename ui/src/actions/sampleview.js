@@ -3,6 +3,7 @@ import {
   sendAbortCentring,
   sendAcceptCentring,
   sendAddOrUpdateShapes,
+  sendDeleteAllShapes,
   sendDeleteShape,
   sendMoveToBeam,
   sendMoveToPoint,
@@ -167,6 +168,17 @@ export function deleteShape(id) {
       dispatch(deleteShapeAction(id));
     } catch {
       throw new Error('Server refused to delete shape');
+    }
+  };
+}
+
+export function deleteAllShapes() {
+  return async () => {
+    try {
+      // The server then sends the (empty) shapes to every client
+      await sendDeleteAllShapes();
+    } catch {
+      throw new Error('Server refused to delete the shapes');
     }
   };
 }

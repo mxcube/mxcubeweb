@@ -32,6 +32,7 @@ resource_handler_config = ResourceHandlerConfigModel(
         "move_to_centred_position",
         "update_shapes",
         "delete_shape",
+        "delete_all_shapes",
         "rotate_to",
         "centre_click",
         "abort_centring",
@@ -389,6 +390,14 @@ class SampleViewAdapter(AdapterBase):
 
     def delete_shape(self, sid: str):
         self._ho.delete_shape(sid)
+        return {}
+
+    def delete_all_shapes(self):
+        """Delete all the points, lines and grids.
+
+        The sample view emits shapesChanged: every client gets the empty list.
+        """
+        self._ho.clear_all()
         return {}
 
     def rotate_to(self, sid: str):

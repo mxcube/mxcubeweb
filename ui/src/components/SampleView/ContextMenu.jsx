@@ -8,6 +8,7 @@ import {
   acceptCentring,
   add2DPoint,
   addShape,
+  deleteAllShapes,
   deleteShape,
   moveToBeam,
   moveToPoint,
@@ -48,6 +49,9 @@ export default function ContextMenu() {
   );
   const { clickCentring } = useAppSelector((state) => state.sampleview);
   const groupFolder = useAppSelector((state) => state.queue.groupFolder);
+  const hasShapes = useAppSelector(
+    (state) => Object.keys(state.shapes.shapes).length > 0,
+  );
   const contextMenu = useAppSelector((state) => state.contextMenu);
   const { pageX, pageY, sampleViewX, sampleViewY, shape } =
     contextMenu.type === 'Shape'
@@ -380,6 +384,11 @@ export default function ContextMenu() {
               },
             ]
           : []),
+        hasShapes && {
+          text: 'Delete All Shapes',
+          action: () => dispatch(deleteAllShapes()),
+          key: 'delete_all_shapes',
+        },
         { text: 'divider', key: 8 },
         ...genericTasks.none,
       ],
