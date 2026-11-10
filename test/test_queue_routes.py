@@ -478,3 +478,39 @@ def test_set_autoadd(client):
     )
     assert resp.status_code == 200
     assert json.loads(resp.data).get("autoadddiffplan") == True
+
+
+def test_xray_centring_on_a_grid(client):
+    """An X-ray centring is offered and can be queued on a drawn grid."""
+    resp = client.get("/mxcube/api/v0.1/queue/available_tasks")
+    assert "xray_centring" in json.loads(resp.data)
+
+    position = HWR.beamline.sample_view.get_positions()
+    grid = HWR.beamline.sample_view.add_shape_from_mpos([position], (0, 0), "G")
+    queue = json.loads(client.get("/mxcube/api/v0.1/queue/").data)
+    sample = queue["1:05"]
+    task = {
+        "type": "XrayCentring",
+        "label": "X-ray centring",
+        "sampleID": "1:05",
+        "sampleQueueID": sample["queueID"],
+        "checked": True,
+        "parameters": {"shape": grid.id, "prefix": "xc", "subdir": "xc"},
+    }
+
+    try:
+        resp = client.post(
+            "/mxcube/api/v0.1/queue/",
+            data=json.dumps([{**sample, "tasks": [task]}]),
+            content_type="application/json",
+        )
+        assert resp.status_code == 200
+
+        tasks = json.loads(client.get("/mxcube/api/v0.1/queue/").data)["1:05"]["tasks"]
+        node_id = tasks[-1]["queueID"]
+
+        assert tasks[-1]["type"] == "XrayCentring"
+        assert tasks[-1]["parameters"]["shape"] == grid.id
+        assert isinstance(mxcube.queue.get_entry(node_id)[0], qmo.XrayCentring2)
+    finally:
+        HWR.beamline.sample_view.delete_shape(grid.id)
