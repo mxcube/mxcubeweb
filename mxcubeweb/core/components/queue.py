@@ -575,6 +575,9 @@ class Queue(ComponentBase):
             "sample": node_index["sample"],
             "state": state,
             "progress": 1 if state == COLLECTED else 0,
+            # time.time() at the start and end of the run, see QueueManager
+            "startedAt": getattr(entry, "started_at", None),
+            "endedAt": getattr(entry, "ended_at", None),
         }
 
     def handle_auto_mount_next(self, entry):

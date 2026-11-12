@@ -20,6 +20,41 @@
   border-top: 0;
 }
 
+.caption {
+  padding: 0.25rem 0.75rem;
+  font-size: smaller;
+  color: var(--bs-secondary-color);
+  border-bottom: 1px solid var(--bs-border-color);
+}
+
+/* The live tab: a blue accent while the queue runs, greyed out otherwise */
+.liveTab {
+  border-top: 3px solid #337ab7 !important;
+}
+
+.idleTab {
+  color: var(--bs-tertiary-color) !important;
+  background-color: var(--bs-tertiary-bg) !important;
+}
+
+.spinner {
+  display: inline-block;
+  width: 0.85em;
+  height: 0.85em;
+  margin-right: 0.5rem;
+  vertical-align: -0.1em;
+  border: 2px solid #337ab7;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.9s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 .logs {
   display: flex;
   flex-direction: column;

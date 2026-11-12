@@ -9,7 +9,7 @@ import TodoItem from './TodoItem';
 import styles from './Tree.module.css';
 
 function TodoTree(props) {
-  const { list } = props;
+  const { list, mounted } = props;
 
   const dispatch = useDispatch();
   const queueStatus = useSelector((state) => state.queue.queueStatus);
@@ -52,6 +52,9 @@ function TodoTree(props) {
         </div>
       </ListGroup.Item>
       <ListGroup.Item className={styles.listBody}>
+        {mounted && (
+          <TodoItem key={mounted.sampleID} sampleData={mounted} mounted />
+        )}
         {filteredList.map((sample) => (
           <TodoItem key={sample.sampleID} sampleData={sample} />
         ))}
