@@ -51,6 +51,7 @@ def init_route(app, server, url_prefix):
         return jsonify(
             {
                 "mode": app.CONFIG.app.mode,
+                "mode_description": app.CONFIG.app.mode_description,
                 "version": __version__.__version__,
                 "mesh_result_format": _blc.mesh_result_format,
                 "use_native_mesh": _blc.use_native_mesh,
