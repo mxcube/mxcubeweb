@@ -2,7 +2,7 @@ import { Dropdown } from 'react-bootstrap';
 import { createPortal } from 'react-dom';
 
 import { showErrorPanel } from '../../actions/general';
-import { updateTask } from '../../actions/queue';
+import { addTask, updateTask } from '../../actions/queue';
 import {
   abortCentring,
   acceptCentring,
@@ -28,6 +28,7 @@ const BESPOKE_TASK_NAMES = new Set([
   'helical',
   'workflow',
   'interleaved',
+  'xray_centring',
 ]);
 
 export default function ContextMenu() {
@@ -318,6 +319,13 @@ export default function ContextMenu() {
               key: 'mesh_scan',
             }
           : {},
+        availableMethods.has('xray_centring')
+          ? {
+              text: 'X-ray Centring',
+              action: () => addXrayCentring(),
+              key: 'xray_centring',
+            }
+          : {},
         {
           text: 'Centring Point on Cell',
           action: () => {
@@ -496,6 +504,33 @@ export default function ContextMenu() {
     }
 
     dispatch(deleteShape(shape.id));
+  }
+
+  // Queued and run at once, on the grid, with the beamline's defaults
+  function addXrayCentring() {
+    if (!sampleData) {
+      dispatch(
+        showErrorPanel(
+          true,
+          'There is no sample mounted, cannot run the X-ray centring.',
+        ),
+      );
+      return;
+    }
+
+    dispatch(
+      addTask(
+        [sampleID],
+        {
+          type: 'XrayCentring',
+          label: 'X-ray centring',
+          shape: shape.id,
+          prefix: sampleData.defaultPrefix,
+          subdir: `${groupFolder}${sampleData.defaultSubDir}`,
+        },
+        true,
+      ),
+    );
   }
 
   function saveGrid() {
