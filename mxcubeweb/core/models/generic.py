@@ -80,6 +80,9 @@ class GroupFolderModel(BaseModel):
 
 class AppSettingsModel(BaseModel):
     mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
+    mode_description: str = Field(
+        "", description="Free-form text describing the current mode"
+    )
     version: str = Field("", description="MXCuBE version")
     mesh_result_format: str = Field(
         "PNG", description="Format of mesh result for display"

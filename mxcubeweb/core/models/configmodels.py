@@ -267,6 +267,10 @@ class MXCUBEAppConfigModel(BaseModel):
     mode: ModeEnum = Field(
         ModeEnum.OSC, description="MXCuBE mode OSC, SSX-CHIP or SSX-INJECTOR"
     )
+    mode_description: str = Field(
+        "",
+        description="Free-form text shown next to the mode in the navigation bar",
+    )
     LOCAL_DOMAINS: list[str] = Field(
         [],
         description="If the connected client's hostname ends with one of these domains"
