@@ -15,7 +15,6 @@ async function get_resolution_limits_for_energy(energy) {
 
 async function asyncValidate(values, _d, props) {
   const errors = {};
-
   if (!props.beamline) {
     // for some reason redux-form is loaded before the initial status
     return errors;
