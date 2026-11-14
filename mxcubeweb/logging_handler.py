@@ -1,6 +1,18 @@
 import logging
 import uuid
 
+LOGGER_NAMES_MAP = {
+    "csp_logger": "csp",
+    "exception_logger": "ex_logger",
+    "hwr_logger": "HWR",
+    "queue_logger": "queue_exec",
+    "server_access_logger": "server_access",
+    "server_logger": "MX3.HWR",
+    "ui_logger": "MX3.UI",
+    "user_logger": "user_level_log",
+}
+LOGGER_NAMES = list(LOGGER_NAMES_MAP.keys())
+
 
 class MX3LoggingHandler(logging.handlers.BufferingHandler):
     def __init__(self, server):
