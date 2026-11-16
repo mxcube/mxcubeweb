@@ -1,6 +1,7 @@
 ---
 # Dependabot version updates.
-# Security updates for Python and UI dependencies are enabled in the repository settings.
+# Security updates for Python and UI dependencies are enabled
+# in the repository settings.
 version: 2
 
 updates:
