@@ -54,25 +54,39 @@ conda env create --file conda-environment.yml
 conda env create --file conda-environment.yml --name another_name
 ```
 
-To switch to a specific Python version inside the conda environment,
-one can additionally use a command such as the following after environment creation,
-for example for Python 3.10:
+The conda environment only provides Python itself and the dependencies
+that are not Python packages (`ffmpeg`, `openldap`, `nodejs`, `pnpm`).
+All Python packages are installed from PyPI with Poetry (see step 5).
+
+```{warning}
+Avoid installing Python packages into this environment with `conda install`.
+Mixing Python packages from conda and from PyPI in the same environment
+can lead to version conflicts that are hard to debug.
+```
+
+### 4. Install Poetry
+
+[Poetry](https://python-poetry.org/) is used to install the Python dependencies.
+Poetry must be installed in its own isolated environment,
+**not** in the `mxcubeweb` conda environment,
+see [Poetry's installation instructions](https://python-poetry.org/docs/#installation).
+We recommend using [pipx](https://pipx.pypa.io/stable/installation/):
 
 ```
-conda install --name mxcubeweb 'python=3.10'
+pipx install poetry==2.5.1
 ```
 
-### 4. Activate the environment
+The Poetry version used by the project is defined in `pyproject.toml` (`requires-poetry`).
+
+### 5. Activate the environment and install the back-end dependencies
 
 ```
 conda activate mxcubeweb
-```
-
-### 5. Install the back-end dependencies
-
-```
 poetry install
 ```
+
+When run from an activated conda environment (other than `base`),
+Poetry installs the dependencies into that conda environment.
 
 (front-end)=
 

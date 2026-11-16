@@ -13,7 +13,7 @@ dependencies:
   # ====================
 
   - ffmpeg  # Not directly used by mxcube, but necessary for the video-streamer
-  - python >=3.10,<3.12  # Make sure it matches `pyproject.toml`
+  - python >=3.11,<3.12  # Make sure it matches `pyproject.toml`
   - pip
 
   # `openldap` is necessary for `python-ldap` but can not be installed by pip or Poetry.
@@ -31,11 +31,10 @@ dependencies:
 
   - nodejs ==22.*|24.*  # Make sure it matches `ui/package.json`
   - pnpm ==10.*  # Make sure it matches `ui/package.json`
-  # Intentionally one patch behind `.pre-commit-config.yaml`/`pyproject.toml` (2.4.3):
-  # conda-forge's `poetry` build raised its Python floor to >=3.11 starting at 2.4.3,
-  # which conflicts with `python >=3.10,<3.12` above. 2.4.2 is the newest conda-forge
-  # build still compatible with Python 3.10.
-  - poetry ==2.4.2
+
+  # Poetry is intentionally NOT part of this environment.
+  # Install it in its own isolated environment (for example with `pipx install poetry`),
+  # see the development install instructions in `docs/source/dev/environment.md`.
 
 
 ...
