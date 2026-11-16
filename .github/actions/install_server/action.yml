@@ -16,11 +16,6 @@ inputs:
   micromamba-version:
     description: Version of micromamba to use
     default: 1.5.10-0
-  install-poetry:
-    description: >-
-      Install Poetry and the MXCuBE server package on top of the Conda env.
-      Set to "false" for jobs that only need Conda-provided tools (e.g. pnpm/node).
-    default: "true"
 
 runs:
   using: composite
@@ -41,13 +36,11 @@ runs:
         # https://github.com/python-poetry/poetry/issues/4055
         # Using pipx is reccomended by poetry devs, as it creates a venv for each tool.
     - name: Install Poetry
-      if: inputs.install-poetry == 'true'
       shell: bash
       run: |
         pipx install "poetry==${{ inputs.poetry-version }}"
 
     - name: Cache Poetry environment
-      if: inputs.install-poetry == 'true'
       uses: actions/cache@v4
       with:
         path: .venv
@@ -56,7 +49,6 @@ runs:
           ${{ hashFiles('poetry.lock', inputs.environment-file) }}
 
     - name: Install MXCuBE
-      if: inputs.install-poetry == 'true'
       shell: bash
       run: |
         CONDA_PY="$("${MAMBA_EXE}" run --name mxcubeweb bash -c 'command -v python')"
