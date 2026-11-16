@@ -12,7 +12,7 @@ inputs:
     default: conda-environment.yml
   poetry-version:
     description: Version of poetry to use
-    default: 2.4.3
+    default: 2.5.1  # Keep in sync with `pyproject.toml` and `.pre-commit-config.yaml`
   micromamba-version:
     description: Version of micromamba to use
     default: 1.5.10-0
