@@ -7,6 +7,11 @@ name: Create/Update Tag
     branches:
       - develop
 
+# Never run two releases at the same time
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 env:
   # Keep in sync with `pyproject.toml` and `.pre-commit-config.yaml`
   POETRY_VERSION: "2.5.1"
