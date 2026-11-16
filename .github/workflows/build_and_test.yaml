@@ -3,23 +3,48 @@ name: Python build and test
 
 "on":
   pull_request: null
-  push: null
+  merge_group: null
+  push:
+    branches:
+      - develop
+      - master
+  workflow_dispatch: null
+
+# Cancel outdated runs of the same pull request, but never runs on branches
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
-  checks: write   # for test result from pytest
 
 jobs:
+  lint:
+    name: Linting & Code Quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # All hooks run in their own isolated environments managed by pre-commit,
+      # so neither Conda nor the project's dependencies are needed here.
+      - name: Cache pre-commit environments
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pre-commit
+          key: pre-commit-${{ runner.os }}-${{ hashFiles('.pre-commit-config.yaml') }}
+
+      - name: Run pre-commit hooks
+        run: >-
+          pipx run --spec "pre-commit>=4.1,<5"
+          pre-commit run --all-files --show-diff-on-failure
+
   build-linux:
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 5
+      fail-fast: false
       matrix:
         python-version: ["3.11"]
-
-    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
-    # yamllint disable-line rule:line-length
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
 
     # Service containers to run with `container-job`
     services:
@@ -45,9 +70,6 @@ jobs:
         uses: ./.github/actions/install_server
         with:
           python-version: ${{ matrix.python-version }}
-
-      - name: Linting & Code Quality
-        run: poetry run pre-commit run --all-files
 
       - name: Test with pytest
         run: poetry run pytest

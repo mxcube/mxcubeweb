@@ -1,12 +1,20 @@
 ---
 name: "Pages"
 
-concurrency:
-  group: "pages"
-
 "on":
-  pull_request: null
-  push: null
+  # The docs include the Flask routes (`autoflask`), so code changes matter too
+  pull_request:
+    paths:
+      - "docs/**"
+      - "mxcubeweb/**"
+      - "pyproject.toml"
+      - "poetry.lock"
+      - "conda-environment.yml"
+      - ".github/workflows/pages.yaml"
+  push:
+    branches:
+      - develop
+  workflow_dispatch: null
 
 permissions:
   contents: read
@@ -14,7 +22,12 @@ permissions:
 
 jobs:
   "pages-build":
-    runs-on: "ubuntu-22.04"
+    runs-on: "ubuntu-latest"
+
+    # Cancel outdated runs of the same pull request, but never runs on branches
+    concurrency:
+      group: "pages-build-${{ github.ref }}"
+      cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
     services:
       # The Redis server is necessary to run the app,
@@ -84,7 +97,12 @@ jobs:
       pages: "write"
       id-token: "write"
 
-    runs-on: "ubuntu-22.04"
+    runs-on: "ubuntu-latest"
+
+    # Only one deployment at a time, and never cancel one in progress
+    concurrency:
+      group: "pages-deploy"
+      cancel-in-progress: false
 
     steps:
       - name: "Setup GitHub Pages"
