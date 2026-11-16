@@ -5,7 +5,7 @@ from typing import (
     Literal,
 )
 
-from pydantic import BaseModel, Field, validator
+from pydantic import BaseModel, Field, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -164,7 +164,7 @@ class UISampleListViewModesModel(BaseModel):
         description="List of components for sample list view modes",
     )
 
-    @validator("components")
+    @field_validator("components")
     @classmethod
     def check_at_least_one_component_shown(
         cls, components: list[_UISampleListViewModesComponentModel]

@@ -399,11 +399,11 @@ class ResourceHandler:
                 # We handle complex structures by checking if param_data
                 # contains a value or a dictionary.
                 if isinstance(param_data.get(param_name), dict):
-                    return param_type.parse_obj(param_data[param_name])
+                    return param_type.model_validate(param_data[param_name])
 
                 # If its a single value and Pydantic model, pass the entire
                 # Pydantic model
-                return param_type.parse_obj(param_data)
+                return param_type.model_validate(param_data)
             except ValidationError as e:
                 msg = f"Invalid input for '{param_name}' '{e.errors()}' with data"
                 msg += f" '{param_data}' on: {request.url}"
@@ -461,7 +461,7 @@ class ResourceHandler:
             # Check if the result is a Pydantic model or any other serializable object
             if isinstance(result, BaseModel):
                 # Convert Pydantic model to a dict
-                result = result.dict()
+                result = result.model_dump()
             elif isinstance(result, dict):
                 # If it's already a dictionary, it's ready for JSON serialization
                 pass
