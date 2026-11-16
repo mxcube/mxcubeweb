@@ -2,6 +2,7 @@ import re
 
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
     field_validator,
 )
@@ -106,5 +107,4 @@ class AppSettingsModel(BaseModel):
         description="Number of clicks used for the manual click centring",
     )
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")

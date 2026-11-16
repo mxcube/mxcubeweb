@@ -1,5 +1,6 @@
 import contextlib
 import inspect
+import json
 import logging
 import traceback
 import typing
@@ -289,7 +290,7 @@ class AdapterBase:
                     model = self._model_from_typehint(attr)
                     exported_methods[export["attr"]] = {
                         "signature": model["signature"],
-                        "schema": model["args"].schema_json(),
+                        "schema": json.dumps(model["args"].model_json_schema()),
                         # Only display methods actually expoerted, not the ones that
                         # are "overriden" by the Adapter but not explicitly exported.
                         "display": export["attr"] in self._ho_exported_commands,
@@ -353,7 +354,7 @@ class AdapterBase:
 
     def emit_ho_changed(self, state, **kwargs):
         """Signal handler to send entire object to the client via socketIO."""
-        data = self.data().dict()
+        data = self.data().model_dump()
 
         if hasattr(state, "name"):
             data["state"] = state.name

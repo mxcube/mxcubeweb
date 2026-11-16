@@ -1,6 +1,7 @@
 from mxcubecore.model.nstate import NStateOption
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
 )
 
@@ -18,8 +19,7 @@ class HOModel(BaseModel):
     attributes: dict = Field({}, description="Data attributes")
     commands: dict | list = Field({}, description="Available methods")
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class HOActuatorModel(HOModel):
@@ -52,7 +52,7 @@ class HOBeamValueModel(BaseModel):
     )
     currentAperture: str = Field(0, description="Current beam size label")
     position: tuple[float, float] = Field((0, 0), description="Beam position on OAV")
-    shape: str = Field("ellipse", descrption="Beam shape")
+    shape: str = Field("ellipse", description="Beam shape")
     size_x: float = Field(
         0.01,
         description="Current beam x size (width) in millimieters",
@@ -62,8 +62,7 @@ class HOBeamValueModel(BaseModel):
         description="Current beam y size (height) in millimieters",
     )
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")
 
 
 class HOBeamModel(HOActuatorModel):
@@ -105,8 +104,7 @@ class SampleInputModel(BaseModel):
     sample_name: str = Field(default="", alias="sampleName", pattern=r"^[\w+\-:]*$")
     sample_id: str = Field(default="", alias="sampleID")
 
-    class Config:
-        populate_by_name = True
+    model_config = ConfigDict(populate_by_name=True)
 
 
 class ListOfShapesModel(BaseModel):
