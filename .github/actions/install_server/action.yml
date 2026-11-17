@@ -21,7 +21,7 @@ runs:
   using: composite
   steps:
     - name: Set up Conda environment
-      uses: mamba-org/setup-micromamba@v2
+      uses: mamba-org/setup-micromamba@v3
       with:
         create-args: >-
           python=${{ inputs.python-version }}
@@ -41,7 +41,7 @@ runs:
         pipx install "poetry==${{ inputs.poetry-version }}"
 
     - name: Cache Poetry environment
-      uses: actions/cache@v4
+      uses: actions/cache@v6
       with:
         path: .venv
         key: >-
