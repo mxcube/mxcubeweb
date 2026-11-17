@@ -24,6 +24,52 @@ If it has not been reported yet, then:
 
 - Assign a label to the issue (see available labels).
 
+## Review of code
+
+All contributions are valuable to the project, whether it's a bug fix, a new
+feature, improved documentation, or a small typo correction. Don't worry if your
+pull request isn't perfect; opening one is the best way to start a discussion,
+and reviewers are here to help you get it ready to merge. Every attempt to
+contribute is highly encouraged and appreciated.
+
+All changes are reviewed through pull requests before being merged. Reviews help
+catch issues early, share knowledge, learn, and keep the codebase consistent.
+
+Before a pull request can be merged, it must:
+
+- Pass all CI pipelines, and
+- Be approved by a developer from a different site than the author.
+
+A pull request should ideally be reviewed wihtin two or three days of it's creation.
+If a pull request has not been reviewed within 15 days, it may be merged without
+a review, provided it passes all pipelines and the change is minor or
+uncontroversial.
+
+### Guidelines for reviewers
+
+- **Acknowledge good work.** Positive feedback is always encouraging, try to
+  understand the time and effort the author went through to write and create
+  the PR.
+- **Collaborative and constructive** Keep comments respectful and collaborative,
+  where possible, make a comment or use GitHub's suggestion feature to offer
+  a concrete change or develop your thoughts.
+- **Ask questions.** If something is unclear, or your uncertain raise it as a
+  question, e.g. *"Could this fail if the input is empty?"*
+- **Prioritize.** It's important to not block a PR unless its necessary,
+  distinguish between an actual blocking issue, i.e a bug or simply a
+  possible improvement to the code.
+
+If you request for changes, make sure that you also approve or take a second
+look to the changes made by the author within a reasonable time (2-3 days max).
+
+### Guidelines for authors
+
+- Keep pull requests small and focused, with a clear description of the change.
+- Treat review comments as a discussion between colleagues.
+- Resolve conversations once they have been addressed.
+- The reviewer takes time to look at your PR, get back with an answer as soon as
+  possible.
+
 ## Submitting code to the repository
 
 Pull requests (PRs) are used to submit new code to the repository;
