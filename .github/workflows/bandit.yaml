@@ -4,8 +4,17 @@ name: Bandit
 
 "on":
   pull_request: null
-  push: null
+  merge_group: null
+  push:
+    branches:
+      - develop
+      - master
   workflow_dispatch: null
+
+# Cancel outdated runs of the same pull request, but never runs on branches
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
   contents: read
@@ -16,10 +25,10 @@ jobs:
   bandit:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v7
         with:
           python-version: '3.11'
 
@@ -52,7 +61,7 @@ jobs:
         continue-on-error: false
 
       - name: Upload Bandit results as artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bandit-results
           path: results.sarif
@@ -60,7 +69,7 @@ jobs:
 
       - name: Upload SARIF to Code Scanning
         if: always()
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@v4
         with:
           sarif_file: results.sarif
         continue-on-error: true

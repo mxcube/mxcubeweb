@@ -368,7 +368,9 @@ class BaseUserManager(ComponentBase):
             "beamlineName": HWR.beamline.session.beamline_name,
             "loggedIn": True,
             "loginType": login_type,
-            "limsName": [item.dict() for item in HWR.beamline.lims.get_lims_name()],
+            "limsName": [
+                item.model_dump() for item in HWR.beamline.lims.get_lims_name()
+            ],
             "proposalList": [session.__dict__ for session in session_manager.sessions],
             "rootPath": HWR.beamline.session.get_base_image_directory(),
             "user": current_user.todict(),

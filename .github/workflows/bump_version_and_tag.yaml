@@ -1,5 +1,4 @@
 ---
-# yamllint disable rule:line-length
 
 name: Create/Update Tag
 
@@ -8,96 +7,63 @@ name: Create/Update Tag
     branches:
       - develop
 
+# Never run two releases at the same time
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+env:
+  # Keep in sync with `pyproject.toml` and `.pre-commit-config.yaml`
+  POETRY_VERSION: "2.5.1"
+
 jobs:
   create-version-tag:
     runs-on: ubuntu-latest
+
+    # The `pypi` environment must match the "Trusted Publisher" configured on PyPI
+    environment:
+      name: pypi
+      url: https://pypi.org/p/mxcubeweb
+
     permissions:
-      contents: write
-      packages: write
+      contents: write  # push the version bump commit and the tag
+      id-token: write  # PyPI Trusted Publishing (no API token needed)
+
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           token: ${{ secrets.CI_TOKEN }}
 
-      - name: Set up Conda environment with Micromamba
-        uses: mamba-org/setup-micromamba@v2
+      # Building does not need the project's dependencies,
+      # only a Python version allowed by `requires-python`.
+      - name: Set up Python
+        uses: actions/setup-python@v7
         with:
-          cache-environment: true
-          create-args: >-
-            python=3.10
-          environment-file: conda-environment.yml
-          post-cleanup: all
+          python-version: "3.11"
+
+      - name: Install Poetry
+        run: pipx install --python python3.11 "poetry==${{ env.POETRY_VERSION }}"
 
       - name: Update version
-        id: update-version
+        env:
+          BOT_NAME: github-actions[bot]
+          BOT_EMAIL: 41898282+github-actions[bot]@users.noreply.github.com
         run: |
-          ${MAMBA_EXE} run --name mxcubeweb poetry version minor
-          git config --global user.email "oscarsso@esrf.fr"
-          git config --global user.name "Marcus Oskarsson"
-          git add -A
+          poetry version minor
+          git config --global user.name "${BOT_NAME}"
+          git config --global user.email "${BOT_EMAIL}"
+          git add pyproject.toml
           git commit -m "[skip ci] Bumped minor version"
-          git push -f
-          ${MAMBA_EXE} run --name mxcubeweb poetry build
+          git push
+
+      - name: Build package
+        run: poetry build
 
       - name: Publish package to PyPI
-        id: publish-package
+        uses: pypa/gh-action-pypi-publish@release/v1
+
+      - name: Create or update tag
         run: |
-          ${MAMBA_EXE} run --name mxcubeweb poetry config pypi-token.pypi ${{ secrets.PYPI }}
-          ${MAMBA_EXE} run --name mxcubeweb poetry publish
-
-      - name: Read package version
-        id: set-tag
-        run: |
-          pip install --upgrade pip
-          pip install toml
-          echo "tag_name=v$(${MAMBA_EXE} run --name mxcubeweb poetry version -s)" >> $GITHUB_ENV
-
-      - name: Check tag exists
-        id: check-tag-exists
-        uses: actions/github-script@v7
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            // https://github.com/mukunku/tag-exists-action
-            var exists = 'false';
-            try {
-                const getRefResponse = await github.rest.git.getRef({
-                    owner: context.repo.owner,
-                    repo: context.repo.repo,
-                    ref: "refs/tags/${{ env.tag_name }}"
-                });
-
-                if (getRefResponse.status === 200) {
-                    console.log("Tag was found");
-                    exists = 'true';
-                }
-            } catch(error) {
-                console.log("Tag was not found");
-            }
-            core.setOutput('exists', exists);
-
-      - name: Update tag
-        uses: actions/github-script@v7
-        if: steps.check-tag-exists.outputs.exists == 'true'
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            github.rest.git.updateRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ env.tag_name }}",
-              sha: context.sha
-            })
-
-      - name: Create tag
-        uses: actions/github-script@v7
-        if: steps.check-tag-exists.outputs.exists != 'true'
-        with:
-          github-token: ${{ github.token }}
-          script: |
-            github.rest.git.createRef({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              ref: "refs/tags/${{ env.tag_name }}",
-              sha: context.sha
-            })
+          TAG="v$(poetry version --short)"
+          git tag --force "${TAG}"
+          git push --force origin "refs/tags/${TAG}"

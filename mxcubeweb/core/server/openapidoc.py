@@ -90,7 +90,9 @@ class OpenAPISpec:
         schema_name = model.__name__
 
         if schema_name not in self._openapi_spec["components"]["schemas"]:
-            self._openapi_spec["components"]["schemas"][schema_name] = model.schema()
+            self._openapi_spec["components"]["schemas"][schema_name] = (
+                model.model_json_schema()
+            )
 
         self._openapi_spec["paths"][open_api_path][http_method.lower()][
             "requestBody"
@@ -116,7 +118,7 @@ class OpenAPISpec:
         if schema_name:
             if schema_name not in self._openapi_spec["components"]["schemas"]:
                 self._openapi_spec["components"]["schemas"][schema_name] = (
-                    model.schema()
+                    model.model_json_schema()
                 )
 
             self._openapi_spec["paths"][open_api_path][http_method.lower()][

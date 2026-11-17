@@ -21,6 +21,7 @@ function MXNavbar() {
   const canAccessEquipment = !showForStaffOnly || isstaff;
 
   const mode = useSelector((state) => state.general.mode);
+  const modeDescription = useSelector((state) => state.general.modeDescription);
   const numObservers = useSelector(
     (state) => state.remoteAccess.observers.length,
   );
@@ -49,6 +50,9 @@ function MXNavbar() {
       <Container fluid>
         <Navbar.Brand as="h1" className={styles.brand}>
           MXCuBE-Web <span className={styles.brandSub}>({mode})</span>
+          {modeDescription ? (
+            <span className={styles.brandSub}> {modeDescription}</span>
+          ) : null}
         </Navbar.Brand>
         <Navbar.Toggle
           bsPrefix={styles.toggleBtn}

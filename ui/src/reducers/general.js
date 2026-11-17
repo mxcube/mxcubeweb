@@ -8,6 +8,7 @@ const INITIAL_STATE = {
   showConnectionLostDialog: false,
   showConfirmClearQueueDialog: false,
   mode: 'OSC',
+  modeDescription: '',
   useGetSamplesFromSC: true,
   autosyncLims: false,
   serverVersion: '3',
@@ -42,6 +43,7 @@ function generalReducer(state = INITIAL_STATE, action = {}) {
       return {
         ...state,
         mode: action.data.general.mode,
+        modeDescription: action.data.general.mode_description ?? '',
         useGetSamplesFromSC: action.data.general.use_get_samples_from_sc,
         autosyncLims: action.data.general.autosync_lims,
         serverVersion: action.data.general.version,
