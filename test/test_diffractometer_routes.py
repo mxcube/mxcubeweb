@@ -20,7 +20,8 @@ def test_set_phase(client):
 
     phase_list = info["phaseList"]
 
-    new_phase = phase_list[random.randint(0, len(phase_list) - 1)]
+    # phaseList entries are NStateOption objects, set_phase expects the value
+    new_phase = phase_list[random.randint(0, len(phase_list) - 1)]["value"]
 
     # Set a phase (any in the phase list)
     resp = client.put(
