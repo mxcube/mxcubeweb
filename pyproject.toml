@@ -22,7 +22,7 @@ classifiers = [
     "Natural Language :: English",
     "Topic :: Scientific/Engineering",
 ]
-requires-python = ">=3.11,<3.14"
+requires-python = ">=3.11,<3.15"
 scripts.mxcubeweb-server = 'mxcubeweb:main'
 dependencies = [
     "authlib>=1.9.1,<2.0.0",
@@ -33,7 +33,7 @@ dependencies = [
     "Flask-SocketIO>=5.3.6,<6.0.0",
     "gevent>=24.10.1,<27.0.0",
     "markupsafe>=3.0.0,<4.0.0",
-    "mxcubecore>=2.167.0",
+    "mxcubecore>=2.168.0",
     "pydantic>=2.14,<3.0.0",
     "pytz>=2022.6,<2023.0",
     "requests>=2.33.0,<3.0.0",
