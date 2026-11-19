@@ -819,19 +819,29 @@ class SampleImage extends React.Component {
 
     const fabricSelectables = [...makeLines(lines, imageRatio)];
 
-    // Grids already defined (drawn)
-    Object.values(grids).forEach((gd) => {
-      let gridData = { ...gd };
+    // Grids already defined (drawn), the most faded first so that those at
+    // the current omega are on top (see the pinned grids of DrawGridPlugin)
+    Object.values(grids)
+      .sort((a, b) => (b.fade || 0) - (a.fade || 0))
+      .forEach((gd) => {
+        let gridData = { ...gd };
 
-      if (!this.props.busy && gridData.state !== 'HIDDEN') {
-        this.drawGridPlugin.setScale(imageRatio);
-        gridData = this.drawGridPlugin.setPixelsPerMM(pixelsPerMm, gridData);
-        fabricSelectables.push(
-          this.drawGridPlugin.shapeFromGridData(gridData, this.canvas)
-            .shapeGroup,
-        );
-      }
-    });
+        if (gridData.state !== 'HIDDEN') {
+          this.drawGridPlugin.setScale(imageRatio);
+          gridData = this.drawGridPlugin.setPixelsPerMM(pixelsPerMm, gridData);
+          const { shapeGroup } = this.drawGridPlugin.shapeFromGridData(
+            gridData,
+            this.canvas,
+          );
+          // While the queue runs the grids and their results are shown, but
+          // they cannot be selected
+          shapeGroup.set({
+            selectable: !this.props.busy,
+            evented: !this.props.busy,
+          });
+          fabricSelectables.push(shapeGroup);
+        }
+      });
 
     // Grid being defined (being drawn)
     if (this.drawGridPlugin.shapeGroup) {
