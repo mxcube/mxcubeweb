@@ -366,6 +366,8 @@ export function addTaskResultAction(
   state,
   progress,
   queueID,
+  startedAt,
+  endedAt,
 ) {
   return {
     type: 'ADD_TASK_RESULT',
@@ -374,6 +376,8 @@ export function addTaskResultAction(
     state,
     progress,
     queueID,
+    startedAt,
+    endedAt,
   };
 }
 

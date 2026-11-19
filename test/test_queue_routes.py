@@ -63,6 +63,22 @@ def test_warning_entry_status_reported_as_warning_not_uncollected(client):
     assert task["state"] == WARNING
 
 
+def test_task_state_reports_the_run_times(client):
+    """The task signal carries the start and end time of the entry's run."""
+    resp = client.get("/mxcube/api/v0.1/queue/")
+    node_id = json.loads(resp.data)["1:05"]["tasks"][0]["queueID"]
+
+    _model, entry = mxcube.queue.get_entry(node_id)
+    task_state = mxcube.queue.get_task_state(entry)
+
+    assert (task_state["startedAt"], task_state["endedAt"]) == (None, None)
+
+    entry.started_at, entry.ended_at = 10.0, 12.5
+    task_state = mxcube.queue.get_task_state(entry)
+
+    assert (task_state["startedAt"], task_state["endedAt"]) == (10.0, 12.5)
+
+
 def test_node_to_dict_returns_the_node_itself(client):
     """node_to_dict(node) is the unambiguous replacement for the old
     queue_to_dict([node]) trick (JSON_FORMAT.md known issue #2) - it must
