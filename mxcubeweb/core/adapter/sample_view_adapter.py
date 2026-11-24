@@ -1,5 +1,6 @@
 import io
 import logging
+from enum import Enum
 from threading import Lock
 from typing import ClassVar
 
@@ -19,6 +20,19 @@ from mxcubeweb.core.util.convertutils import (
 
 logger = logging.getLogger("MX3.HWR")
 
+
+class JumpPosition(str, Enum):
+    TOP_LEFT = "top_left"
+    TOP_RIGHT = "top_right"
+    BOTTOM_LEFT = "bottom_left"
+    BOTTOM_RIGHT = "bottom_right"
+    LEFT = "left"
+    RIGHT = "right"
+    TOP = "top"
+    BOTTOM = "bottom"
+    CENTER = "center"
+
+
 resource_handler_config = ResourceHandlerConfigModel(
     name="sample_view",
     attributes=[
@@ -30,6 +44,7 @@ resource_handler_config = ResourceHandlerConfigModel(
         "snapshot",
         "set_image_size",
         "move_to_centred_position",
+        "move_to_grid_position",
         "update_shapes",
         "delete_shape",
         "rotate_to",
@@ -296,6 +311,66 @@ class SampleViewAdapter(AdapterBase):
             return {}
         msg = "Could not move to centred position"
         raise RuntimeError(msg)
+
+    def move_to_grid_position(self, grid_id: str, jump_to: JumpPosition):
+        """Move to a specified position in the grid.
+
+        Args:
+            grid_id (str): The id of the grid shape.
+            jump_to (str): The position to jump to in the grid:
+                - "top_left": Move to the top left corner of the grid.
+                - "top_right": Move to the top right corner of the grid.
+                - "bottom_left": Move to the bottom left corner of the grid.
+                - "bottom_right": Move to the bottom right corner of the grid.
+                - "left": Move to the left edge of the grid (no vertical movement).
+                - "right": Move to the right edge of the grid (no vertical movement).
+                - "center": Move to center of the grid
+
+        Returns:
+            dict: An empty dictionary if successful.
+        """
+        grid_shape = self._ho.get_shape(grid_id)
+        x, y = grid_shape.screen_coord[:2]
+
+        match jump_to:
+            case JumpPosition.TOP_LEFT:
+                # x, y are already set to the top left corner of the grid
+                pass
+            case JumpPosition.TOP_RIGHT:
+                x += grid_shape.width
+            case JumpPosition.BOTTOM_LEFT:
+                y += grid_shape.height
+            case JumpPosition.BOTTOM_RIGHT:
+                x += grid_shape.width
+                y += grid_shape.height
+            case JumpPosition.LEFT:
+                # x is already set to the left edge of the grid
+                y += grid_shape.height / 2
+            case JumpPosition.RIGHT:
+                x += grid_shape.width
+                y += grid_shape.height / 2
+            case JumpPosition.TOP:
+                x += grid_shape.width / 2
+                # y is already set the the top of the grid
+            case JumpPosition.BOTTOM:
+                x += grid_shape.width / 2
+                y += grid_shape.height
+            case JumpPosition.CENTER:
+                x += grid_shape.width / 2
+                y += grid_shape.height / 2
+
+        target_positions = self._ho.get_centred_point_from_coord(
+            x, y, return_by_names=True
+        )
+        movable_motor_names = {"phix", "phiy", "phiz", "sampx", "sampy"}
+        target_positions = {
+            name: position
+            for name, position in target_positions.items()
+            if name in movable_motor_names
+        }
+        HWR.beamline.diffractometer.set_value_motors(target_positions)
+        HWR.beamline.diffractometer.save_centring_positions()
+        return {}
 
     def update_shapes(self, shapes: ListOfShapesModel) -> dict:
         updated_shapes = []

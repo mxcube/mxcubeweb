@@ -10,6 +10,7 @@ import {
   addShape,
   deleteShape,
   moveToBeam,
+  moveToGridPosition,
   moveToPoint,
   toggleDrawGrid,
 } from '../../actions/sampleview';
@@ -29,6 +30,18 @@ const BESPOKE_TASK_NAMES = new Set([
   'workflow',
   'interleaved',
 ]);
+
+const JumpPosition = {
+  TOP_LEFT: 'top_left',
+  TOP_RIGHT: 'top_right',
+  BOTTOM_LEFT: 'bottom_left',
+  BOTTOM_RIGHT: 'bottom_right',
+  LEFT: 'left',
+  RIGHT: 'right',
+  TOP: 'top',
+  BOTTOM: 'bottom',
+  CENTER: 'center',
+};
 
 export default function ContextMenu() {
   const defaultParameters = useAppSelector(
@@ -326,9 +339,54 @@ export default function ContextMenu() {
           },
           key: 5,
         },
-        { text: 'divider', key: 2 },
+        genericTasks.grid.length > 0 ? { text: 'divider', key: 2 } : {},
         ...genericTasks.grid,
         genericTasks.grid.length > 0 ? { text: 'divider', key: 3 } : {},
+        {
+          text: 'Jump to Left Edge',
+          action: () => jumpToGridPosition(JumpPosition.LEFT),
+          key: 'jump-left',
+        },
+        {
+          text: 'Jump to Right Edge',
+          action: () => jumpToGridPosition(JumpPosition.RIGHT),
+          key: 'jump-right',
+        },
+        {
+          text: 'Jump to Top Left',
+          action: () => jumpToGridPosition(JumpPosition.TOP_LEFT),
+          key: 'jump-top-left',
+        },
+        {
+          text: 'Jump to Top Right',
+          action: () => jumpToGridPosition(JumpPosition.TOP_RIGHT),
+          key: 'jump-top-right',
+        },
+        {
+          text: 'Jump to Bottom Left',
+          action: () => jumpToGridPosition(JumpPosition.BOTTOM_LEFT),
+          key: 'jump-bottom-left',
+        },
+        {
+          text: 'Jump to Bottom Right',
+          action: () => jumpToGridPosition(JumpPosition.BOTTOM_RIGHT),
+          key: 'jump-bottom-right',
+        },
+        {
+          text: 'Jump to Top',
+          action: () => jumpToGridPosition(JumpPosition.TOP),
+          key: 'jump-top',
+        },
+        {
+          text: 'Jump to Bottom',
+          action: () => jumpToGridPosition(JumpPosition.BOTTOM),
+          key: 'jump-bottom',
+        },
+        {
+          text: 'Jump to Center',
+          action: () => jumpToGridPosition(JumpPosition.CENTER),
+          key: 'jump-center',
+        },
         { text: 'Delete', action: () => removeShape(), key: 4 },
       ],
       NONE: [
@@ -502,6 +560,10 @@ export default function ContextMenu() {
     const { gridData } = shape;
     dispatch(addShape({ t: 'G', ...gridData }));
     dispatch(toggleDrawGrid());
+  }
+
+  function jumpToGridPosition(jumpPosition) {
+    dispatch(moveToGridPosition(shape.gridData.id, jumpPosition));
   }
 
   async function createPointAndShowModal(name, extraParams = {}) {

@@ -270,3 +270,18 @@ export function changeCurrentPhase(phase) {
     dispatch(setCurrentPhase(phase));
   };
 }
+
+export function moveToGridPosition(grid_id, jump_to) {
+  return async (dispatch) => {
+    try {
+      await sendExecuteCommand(
+        'sample_view',
+        'sample_view',
+        'move_to_grid_position',
+        { grid_id, jump_to },
+      );
+    } catch {
+      dispatch(showErrorPanel(true, 'Server refused to move to grid position'));
+    }
+  };
+}
