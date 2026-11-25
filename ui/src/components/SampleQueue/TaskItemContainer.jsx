@@ -10,6 +10,7 @@ import {
 } from '../../constants';
 import { collapseItem, selectItem } from '../../reducers/queueGUI';
 import { useAppDispatch, useAppSelector } from '../../ts-store';
+import ElapsedTime from './ElapsedTime';
 import styles from './Item.module.css';
 
 const stateBasedStyles = {
@@ -23,8 +24,11 @@ const stateBasedStyles = {
  * @property {number} queueID
  * @property {string} type
  * @property {string} label
+ * @property {string} sampleID
  * @property {{ label: string }} [parameters]
  * @property {Array<any>} [diffractionPlan]
+ * @property {number} [startedAt] - UNIX time of the start of the last run
+ * @property {number} [endedAt] - UNIX time of the end of the last run
  */
 
 /**
@@ -44,19 +48,18 @@ export default function TaskItemContainer({
   pointIDString,
 }) {
   const dispatch = useAppDispatch();
-  const currentSampleID = useAppSelector((state) => state.queue.current);
+  const { sampleID } = data;
   const displayData = useAppSelector(
     (state) => state.queueGUI.displayData[data.queueID] || {},
   );
   const taskState = useAppSelector(
-    (state) =>
-      state.sampleGrid.sampleList[currentSampleID]?.tasks[index]?.state,
+    (state) => state.sampleGrid.sampleList[sampleID]?.tasks[index]?.state,
   );
 
   function handleContextMenu(e) {
     e.preventDefault();
     contextMenu.show({
-      id: 'currentSampleQueueContextMenu',
+      id: `queueContextMenu-${sampleID}`,
       event: e,
       props: {
         taskIndex: index,
@@ -81,7 +84,7 @@ export default function TaskItemContainer({
 
   function onDeleteTask(e) {
     e.stopPropagation();
-    dispatch(deleteTask(currentSampleID, index));
+    dispatch(deleteTask(sampleID, index));
   }
 
   let taskCSS = displayData.selected
@@ -120,6 +123,11 @@ export default function TaskItemContainer({
           <span className={styles.nodeName} style={{ fontWeight: 'bold' }}>
             {pointIDString} {dataLabel}
           </span>
+          <ElapsedTime
+            startedAt={data.startedAt}
+            endedAt={data.endedAt}
+            className={styles.elapsed}
+          />
           {taskState === TASK_RUNNING && (
             <ProgressBar
               variant="info"

@@ -61,10 +61,9 @@ Cypress.Commands.add('mountSample', (sample = 'test', protein = 'test') => {
     cy.findByRole('button', { name: 'Mount' }).click(); // multiple "Mount" buttons if queue isn't empty
   });
 
-  // Wait for "Queued Samples" tab to no longer be selected to ensure that mount command has been sent
-  cy.findByRole('button', { name: /Queued Samples/u }).should(
-    'not.have.class',
-    'active',
+  // Wait for the sample to be listed as mounted to ensure that mount command has been sent
+  cy.findByRole('button', { name: `Sample: ${protein} - ${sample}` }).should(
+    'be.visible',
   );
 });
 
