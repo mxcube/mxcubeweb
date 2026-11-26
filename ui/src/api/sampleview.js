@@ -39,6 +39,10 @@ export function sendDeleteShape(sid) {
   });
 }
 
+export function sendDeleteAllShapes() {
+  return sendSampleViewCommand('delete_all_shapes');
+}
+
 export function sendRotateToShape(sid) {
   return sendSampleViewCommand('rotate_to', {
     sid,
