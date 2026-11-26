@@ -147,6 +147,7 @@ configuration:
     xrf_spectrum: true
     energy_scan: true
     mesh: true
+    xray_centring: true
     ssx_chip_collection: true
     gphlworkflow: true
     test_collection: true
