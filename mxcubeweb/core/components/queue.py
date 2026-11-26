@@ -280,7 +280,9 @@ class Queue(ComponentBase):
         sample = parent.get_sample_node()
         task = self._qs._handle_dc_node(sample, child)
 
-        self.app.server.emit("add_task", {"tasks": [task.dict()]}, namespace="/hwr")
+        self.app.server.emit(
+            "add_task", {"tasks": [task.model_dump()]}, namespace="/hwr"
+        )
 
     def queue_model_diff_plan_available(self, char, collection_list):
         cols = []
@@ -298,7 +300,7 @@ class Queue(ComponentBase):
 
                 setattr(collection, "shape", origin_model.shape)
 
-                task = self._qs._handle_dc_node(sample, collection).dict()
+                task = self._qs._handle_dc_node(sample, collection).model_dump()
                 task.update(
                     {
                         "isDiffractionPlan": True,

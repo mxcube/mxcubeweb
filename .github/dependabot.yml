@@ -1,0 +1,19 @@
+---
+# Dependabot version updates.
+# Security updates for Python and UI dependencies are enabled
+# in the repository settings.
+version: 2
+
+updates:
+  # GitHub Actions used in the workflows and in the local composite actions,
+  # grouped into a single weekly pull request.
+  - package-ecosystem: github-actions
+    directories:
+      - "/"
+      - "/.github/actions/*"
+    schedule:
+      interval: weekly
+    groups:
+      github-actions:
+        patterns:
+          - "*"

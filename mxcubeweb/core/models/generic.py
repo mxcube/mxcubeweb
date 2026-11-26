@@ -2,6 +2,7 @@ import re
 
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
     field_validator,
 )
@@ -80,6 +81,9 @@ class GroupFolderModel(BaseModel):
 
 class AppSettingsModel(BaseModel):
     mode: ModeEnum = Field(ModeEnum.OSC, description="MXCuBE mode SSX or OSC")
+    mode_description: str = Field(
+        "", description="Free-form text describing the current mode"
+    )
     version: str = Field("", description="MXCuBE version")
     mesh_result_format: str = Field(
         "PNG", description="Format of mesh result for display"
@@ -103,5 +107,4 @@ class AppSettingsModel(BaseModel):
         description="Number of clicks used for the manual click centring",
     )
 
-    class Config:
-        extra = "forbid"
+    model_config = ConfigDict(extra="forbid")

@@ -373,7 +373,7 @@ class MXCUBEApplication:
                             component.value_type = value_type
 
         return {
-            key: value.dict()
+            key: value.model_dump()
             for (
                 key,
                 value,

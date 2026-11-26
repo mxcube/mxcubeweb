@@ -30,7 +30,9 @@ class BeamAdapter(ActuatorAdapterBase):
     def _beam_changed(self, *args, **kwargs):  # noqa: ARG002
         """Callback method for beam position and info changes."""
         self.app.server.emit(
-            "beam_changed", {"data": self.get_value().dict()["value"]}, namespace="/hwr"
+            "beam_changed",
+            {"data": self.get_value().model_dump()["value"]},
+            namespace="/hwr",
         )
 
     def limits(self):
