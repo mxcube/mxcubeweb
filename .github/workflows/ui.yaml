@@ -1,97 +1,69 @@
 ---
 # yamllint disable rule:line-length
 
-# Pin micromamba version to `1.5.10-0` because of following issue:
-# https://github.com/mamba-org/setup-micromamba/issues/225
-
 name: UI
 
 "on":
   pull_request: null
-  push: null
+  merge_group: null
+  push:
+    branches:
+      - develop
+      - master
+  workflow_dispatch: null
+
+# Cancel outdated runs of the same pull request, but never runs on branches
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 permissions:
-  contents: read    # Required for checkout
-  actions: read     # for cache
-  packages: read    # for package access
+  contents: read
 
 jobs:
   format:
     name: JS-Format
     runs-on: ubuntu-latest
-
-    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Set up Conda environment
-        uses: ./.github/actions/install_server
-        with:
-          install-poetry: "false"
-
-      - name: Install UI dependencies
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
+      - name: Set up Node.js, pnpm and UI dependencies
+        uses: ./.github/actions/setup_ui
 
       - name: Run Prettier
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui prettier"
+        run: pnpm --dir ui prettier
 
   lint:
     name: JS-Lint
     runs-on: ubuntu-latest
-
-    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Set up Conda environment
-        uses: ./.github/actions/install_server
-        with:
-          install-poetry: "false"
-
-      - name: Install UI dependencies
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
+      - name: Set up Node.js, pnpm and UI dependencies
+        uses: ./.github/actions/setup_ui
 
       - name: Run ESLint
         # fail on warnings
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui eslint --max-warnings=0"
+        run: pnpm --dir ui eslint --max-warnings=0
 
   lint-tsc:
     name: JS-Lint-TSC
     runs-on: ubuntu-latest
-
-    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
-
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
-      - name: Set up Conda environment
-        uses: ./.github/actions/install_server
-        with:
-          install-poetry: "false"
-
-      - name: Install UI dependencies
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
+      - name: Set up Node.js, pnpm and UI dependencies
+        uses: ./.github/actions/setup_ui
 
       - name: Run tsc
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui lint:tsc"
+        run: pnpm --dir ui lint:tsc
 
   e2e:
     name: E2E-Test
     runs-on: ubuntu-latest
-
-    permissions:
-      id-token: write       # for artifact upload
-
-    # Skip `pull_request` runs on local PRs for which `push` runs are already triggered
-    if: github.event_name == 'push' || github.event.pull_request.head.repo.full_name != github.repository
 
     # Service containers to run with `container-job`
     services:
@@ -111,13 +83,15 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
+      # The E2E tests need the full server environment (Conda + Poetry),
+      # which also provides Node.js and pnpm.
       - name: Install MXCuBE
         uses: ./.github/actions/install_server
 
       - name: Install UI dependencies
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install"
+        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install --frozen-lockfile"
 
       - name: Build UI
         run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui build"
@@ -139,7 +113,7 @@ jobs:
         env:
           CYPRESS_BASE_URL: http://127.0.0.1:8081
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: failure()
         with:
           name: debug
@@ -150,7 +124,7 @@ jobs:
 
   sync-lockfile:
     name: Sync pnpm-lock.yaml for Snyk PRs
-    if: contains(github.event.pull_request.title, '[Snyk]')
+    if: github.event_name == 'pull_request' && contains(github.event.pull_request.title, '[Snyk]')
     runs-on: ubuntu-latest
 
     permissions:
@@ -158,28 +132,23 @@ jobs:
 
     steps:
       - name: Checkout PR branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.head.ref }}
           token: ${{ secrets.CI_TOKEN }}
 
-      - name: Set up Conda environment
-        uses: mamba-org/setup-micromamba@v2
+      - name: Set up Node.js and pnpm
+        uses: ./.github/actions/setup_ui
         with:
-          micromamba-version: 1.5.10-0
-          environment-file: conda-environment.yml
-          cache-environment: true
-          post-cleanup: "all"
+          install-dependencies: "false"
 
       - name: Update pnpm-lock.yaml
-        run: "${MAMBA_EXE} run --name mxcubeweb pnpm --dir ui install --lockfile-only"
+        run: pnpm --dir ui install --lockfile-only
 
       - name: Commit changes (if lockfile updated)
-        env:
-          GITHUB_TOKEN: ${{ secrets.CI_TOKEN }}
         run: |
-          git config --global user.name "GitHub Actions"
-          git config --global user.email "actions@github.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add ui/pnpm-lock.yaml
           if ! git diff --quiet --staged; then
             git commit -m "CI: update pnpm-lock.yaml"

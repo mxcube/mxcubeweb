@@ -62,7 +62,7 @@ class DiffractometerAdapter(AdapterBase):
 
     def head_configuration(self) -> dict:
         data = self._ho.get_chip_configuration()
-        return data.dict() if data else {}
+        return data.model_dump() if data else {}
 
     def set_chip_layout(
         self,
@@ -76,7 +76,7 @@ class DiffractometerAdapter(AdapterBase):
         return True
 
     def use_position_for_calibration(self, data: ChipCalibrationInputModel) -> bool:
-        return self._ho.use_position_for_calibration(data.dict())
+        return self._ho.use_position_for_calibration(data.model_dump())
 
     def ir_auto_focus(self) -> bool:
         return self._ho.ir_auto_focus()

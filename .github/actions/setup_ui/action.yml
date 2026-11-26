@@ -1,0 +1,31 @@
+---
+name: Set up UI tooling
+description: >-
+  Installs Node.js and pnpm (without Conda), with the pnpm store cached,
+  then installs the UI dependencies.
+
+inputs:
+  install-dependencies:
+    description: Run `pnpm install` for the UI after setting up the tools.
+    default: "true"
+
+runs:
+  using: composite
+  steps:
+    - name: Install pnpm
+      uses: pnpm/action-setup@v6
+      with:
+        version: 10  # Keep in sync with `ui/package.json` and `conda-environment.yml`
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v7
+      with:
+        # Keep in sync with `ui/package.json` and `conda-environment.yml`
+        node-version: 24
+        cache: pnpm
+        cache-dependency-path: ui/pnpm-lock.yaml
+
+    - name: Install UI dependencies
+      if: inputs.install-dependencies == 'true'
+      shell: bash
+      run: pnpm --dir ui install --frozen-lockfile

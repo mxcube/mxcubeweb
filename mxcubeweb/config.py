@@ -51,7 +51,7 @@ class ConfigLoader:
             config = ruamel.yaml.YAML().load(f.read())
             config = ConfigLoader.walk_and_resolve(config)
             try:
-                model = schema.parse_obj(config)
+                model = schema.model_validate(config)
             except ValidationError:
                 logging.getLogger("HWR").error(f"Validation error in {path}:")
                 logging.getLogger("HWR").exception("")
@@ -141,7 +141,7 @@ class Config:
             data = ConfigLoader.walk_and_resolve(data)
 
             try:
-                model = schema.parse_obj(data)
+                model = schema.model_validate(data)
             except ValidationError:
                 logging.getLogger("HWR").error(f"Validation error in {index_path}:")
                 logging.getLogger("HWR").exception("")
