@@ -33,7 +33,7 @@ from mxcubeweb.core.components.workflow import Workflow
 from mxcubeweb.core.components.lims import Lims
 from mxcubeweb.core.components.log import Log
 from mxcubeweb.core.models.configmodels import UIComponentModel
-from mxcubeweb.logging_handler import MX3LoggingHandler
+from mxcubeweb.logging_handler import MX3LoggingHandler, LOGGER_NAMES_MAP
 from mxcubeweb.core.server.resource_handler import ResourceHandlerFactory
 
 removeLoggingHandlers()
@@ -79,9 +79,19 @@ class MXCUBEApplication:
     # Enabled or Disable remote usage
     ALLOW_REMOTE = False
 
+    # Enable timeout gives control (if ALLOW_REMOTE is True)
+    TIMEOUT_GIVES_CONTROL = False
+
     # Enable automatic Mountie of sample when queue executed in
     # "automatic/pipeline" mode
     AUTO_MOUNT_SAMPLE = False
+
+    # Automatically add and execute diffraction plans coming from
+    # characterizations
+    AUTO_ADD_DIFFPLAN = False
+
+    # Number of sample snapshots taken before collect
+    DEFAULT_NUM_SNAPSHOTS = 4
 
     # Remember collection paramters between samples
     # or reset (defualt) between samples.
@@ -101,6 +111,7 @@ class MXCUBEApplication:
     def init(
         server,
         allow_remote,
+        ra_timeout,
         log_fpath,
         log_level,
         enabled_logger_list,
@@ -110,6 +121,7 @@ class MXCUBEApplication:
 
         Params:
             allow_remote(bool): Allow remote usage, ``True`` else ``False``.
+            ra_timeout(bool): Timeout gives control, ``True`` else ``False``.
         """
         # The routes created by the AdapterResourceHandler
         # via the factory are kept between calls to init as they
@@ -124,6 +136,7 @@ class MXCUBEApplication:
         logging.getLogger("MX3.HWR").info("Starting MXCuBE-Web...")
         MXCUBEApplication.server = server
         MXCUBEApplication.ALLOW_REMOTE = allow_remote
+        MXCUBEApplication.TIMEOUT_GIVES_CONTROL = ra_timeout
         MXCUBEApplication.CONFIG = cfg
         MXCUBEApplication.mxcubecore = HardwareObjectAdapterManager(MXCUBEApplication)
 
@@ -277,17 +290,7 @@ class MXCUBEApplication:
         stdout_handler = StreamHandler(sys.stdout)
         stdout_handler.setFormatter(console_fmt)
 
-        logger_map = {
-            "hwr_logger": "HWR",
-            "server_logger": "MX3.HWR",
-            "user_logger": "user_level_log",
-            "queue_logger": "queue_exec",
-            "ui_logger": "MX3.UI",
-            "csp_logger": "csp",
-            "server_access_logger": "server_access",
-        }
-
-        for attr, name in logger_map.items():
+        for attr, name in LOGGER_NAMES_MAP.items():
             logger = logging.getLogger(name)
 
             if attr in enabled_logger_list:
